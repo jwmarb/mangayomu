@@ -9,6 +9,7 @@ module.exports = function (api) {
           alias: {
             '@components': './src/components',
             '@services': './src/services',
+            '@redux': './src/redux',
           },
         },
       ],

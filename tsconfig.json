@@ -5,7 +5,8 @@
     "baseUrl": ".",
     "paths": {
       "@components/*": ["./src/components/*"],
-      "@services/*": ["./src/services/*"]
+      "@services/*": ["./src/services/*"],
+      "@redux/*": ["./src/redux/*"]
     }
   }
 }
