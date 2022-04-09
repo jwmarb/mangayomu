@@ -24,4 +24,4 @@ export type ThemedPalette = {
   text: TextColors;
 };
 
-export type AppColors = typeof applicableColors | 'textPrimary' | 'textSecondary';
+export type AppColors = keyof typeof applicableColors | 'textPrimary' | 'textSecondary';

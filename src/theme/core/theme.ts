@@ -1,12 +1,12 @@
 import { ThemedPalette } from '@theme/Color/Color.interfaces';
-import { Palette } from '@theme/Color';
+import { Palette, applicableColors } from '@theme/Color';
 import spacing from '@theme/Spacing';
 import { useColorScheme } from 'react-native';
 import { DefaultTheme } from 'styled-components';
 
 declare module 'styled-components' {
   export interface DefaultTheme {
-    palette: ThemedPalette;
+    palette: ThemedPalette & typeof applicableColors;
     spacing: typeof spacing;
     borderRadius: number;
   }
