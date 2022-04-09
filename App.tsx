@@ -11,6 +11,7 @@ export default function App() {
     <Provider store={store}>
       <ThemeProvider theme={theme()}>
         <Root />
+        <StatusBar translucent />
       </ThemeProvider>
     </Provider>
   );
