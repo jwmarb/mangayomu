@@ -1,3 +1,6 @@
+import { applicableColors } from '@theme/core';
+import { ColorSchemeName } from 'react-native';
+
 export interface RGBA {
   red: number;
   green: number;
@@ -9,3 +12,16 @@ export interface ThemedColorValue<T = string> {
   light: T;
   dark: T;
 }
+
+export interface TextColors {
+  primary: Color;
+  secondary: Color;
+  disabled: Color;
+}
+
+export type ThemedPalette = {
+  mode: ColorSchemeName;
+  text: TextColors;
+};
+
+export type AppColors = typeof applicableColors | 'textPrimary' | 'textSecondary';
