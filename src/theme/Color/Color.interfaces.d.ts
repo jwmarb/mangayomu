@@ -24,10 +24,17 @@ export interface BackgroundColors {
   paper: Color;
 }
 
+export interface ActionColors {
+  disabledOpacity: number;
+  disabledBackground: Color;
+  disabled: Color;
+}
+
 export type ThemedPalette = {
   mode: ColorSchemeName;
   text: TextColors;
   background: BackgroundColors;
+  action: ActionColors;
 };
 
 export type ColorConstant = {
@@ -50,3 +57,5 @@ export type NeutralColorConstant = {
 } & ColorConstant;
 
 export type AppColors = keyof typeof applicableColors | 'textPrimary' | 'textSecondary' | Color;
+
+export type ButtonColors = keyof typeof applicableColors | Color;

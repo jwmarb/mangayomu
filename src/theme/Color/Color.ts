@@ -1,5 +1,6 @@
 import { hexToRgb, parseRGBA, rgbaToHex, rgbaToString } from '@theme/Color/Color.helpers';
 import {
+  ActionColors,
   AppColors,
   BackgroundColors,
   RGBA,
@@ -94,6 +95,12 @@ export default class Color {
   }
 }
 
+export const actionColors: ActionColors = {
+  disabledOpacity: 0.38,
+  disabled: Color.rgba('rgba(0, 0, 0, 0.26)', 'rgba(255, 255, 255, 0.3)'),
+  disabledBackground: Color.rgba('rgba(0, 0, 0, 0.12)', 'rgba(255, 255, 255, 0.12)'),
+};
+
 export const applicableColors = {
   primary: Color.hex('#1890ff', '#1890ff'),
   secondary: Color.hex('#ff7875', '#ff7875'),
@@ -114,5 +121,6 @@ export const Palette = (): ThemedPalette & typeof applicableColors => ({
   mode: Appearance.getColorScheme(),
   text: textColors,
   background,
+  action: actionColors,
   ...applicableColors,
 });
