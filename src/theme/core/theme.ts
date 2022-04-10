@@ -3,12 +3,15 @@ import { Palette, applicableColors } from '@theme/Color';
 import spacing from '@theme/Spacing';
 import { useColorScheme } from 'react-native';
 import { DefaultTheme } from 'styled-components';
+import { TypographyTheme } from '@theme/Typography/typography.interfaces';
+import { typographyTheme } from '@theme/Typography';
 
 declare module 'styled-components' {
   export interface DefaultTheme {
     palette: ThemedPalette & typeof applicableColors;
     spacing: typeof spacing;
     borderRadius: number;
+    typography: TypographyTheme;
   }
 }
 
@@ -18,6 +21,7 @@ const theme = (): DefaultTheme => {
     palette: Palette(),
     spacing,
     borderRadius: 24,
+    typography: typographyTheme,
   };
 };
 
