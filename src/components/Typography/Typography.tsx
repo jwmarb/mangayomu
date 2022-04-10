@@ -4,6 +4,7 @@ import { Color } from '@theme/core';
 
 export const Typography = styled.Text<TypographyProps>`
   ${(props) => css`
+    ${props.theme.typography[props.variant ?? 'body1']};
     color: ${() => {
       if (props.color == null) return props.theme.palette.text.primary.get();
       if (props.color instanceof Color) return props.color.get();
@@ -16,6 +17,6 @@ export const Typography = styled.Text<TypographyProps>`
           return props.theme.palette[props.color].get();
       }
     }};
-    ${props.theme.typography[props.variant ?? 'body1']};
+    font-family: ${props.bold ? props.theme.typography.fontFamily.heavy : props.theme.typography.fontFamily.regular};
   `}
 `;
