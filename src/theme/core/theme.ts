@@ -5,6 +5,7 @@ import { useColorScheme } from 'react-native';
 import { DefaultTheme } from 'styled-components';
 import { TypographyTheme } from '@theme/Typography/typography.interfaces';
 import { typographyTheme } from '@theme/Typography';
+import { Theme as NavigationTheme, DefaultTheme as DefaultNavigationTheme } from '@react-navigation/native';
 
 declare module 'styled-components' {
   export interface DefaultTheme {
@@ -12,16 +13,29 @@ declare module 'styled-components' {
     spacing: typeof spacing;
     borderRadius: number;
     typography: TypographyTheme;
+    '@react-navigation': NavigationTheme;
   }
 }
 
 const theme = (): DefaultTheme => {
-  useColorScheme(); // this must be used here so that this will always rerender when the color scheme changes
-  return {
+  const mode = useColorScheme(); // this must be used here so that this will always rerender when the color scheme changes
+  const generated = {
     palette: Palette(),
     spacing,
     borderRadius: 24,
     typography: typographyTheme,
+  };
+  return {
+    ...generated,
+    '@react-navigation': {
+      colors: {
+        ...DefaultNavigationTheme.colors,
+        background: generated.palette.background.default.get(),
+        text: generated.palette.text.primary.get(),
+        primary: generated.palette.primary.get(),
+      },
+      dark: mode === 'dark',
+    },
   };
 };
 

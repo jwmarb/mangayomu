@@ -1,5 +1,12 @@
 import { hexToRgb, parseRGBA, rgbaToHex, rgbaToString } from '@theme/Color/Color.helpers';
-import { AppColors, RGBA, TextColors, ThemedColorValue, ThemedPalette } from '@theme/Color/Color.interfaces';
+import {
+  AppColors,
+  BackgroundColors,
+  RGBA,
+  TextColors,
+  ThemedColorValue,
+  ThemedPalette,
+} from '@theme/Color/Color.interfaces';
 import { Appearance } from 'react-native';
 
 export default class Color {
@@ -93,8 +100,14 @@ export const textColors: TextColors = {
   disabled: Color.rgba('rgba(0, 0, 0, 0.38)', 'rgba(255, 255, 255, 0.5)'),
 };
 
+export const background: BackgroundColors = {
+  default: Color.hex('#fafafa', '#141414'),
+  paper: Color.hex('#ffffff', '#262626'),
+};
+
 export const Palette = (): ThemedPalette & typeof applicableColors => ({
   mode: Appearance.getColorScheme(),
   text: textColors,
+  background,
   ...applicableColors,
 });

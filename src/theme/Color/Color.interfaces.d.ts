@@ -19,9 +19,15 @@ export interface TextColors {
   disabled: Color;
 }
 
+export interface BackgroundColors {
+  default: Color;
+  paper: Color;
+}
+
 export type ThemedPalette = {
   mode: ColorSchemeName;
   text: TextColors;
+  background: BackgroundColors;
 };
 
 export type AppColors = keyof typeof applicableColors | 'textPrimary' | 'textSecondary' | Color;
