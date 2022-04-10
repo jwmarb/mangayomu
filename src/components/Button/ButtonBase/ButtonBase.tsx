@@ -76,18 +76,12 @@ const TouchableContainer = styled.View<ButtonBaseProps>`
   `}
 `;
 
-export const ButtonBase: React.FC<ButtonBaseProps & Omit<ButtonProps, 'title'>> = ({ children, ...rest }) => {
-  if (!rest.expand)
-    return (
-      <Flex>
-        <TouchableContainer {...rest}>
-          <TouchableBase {...rest}>{children}</TouchableBase>
-        </TouchableContainer>
-      </Flex>
-    );
+export const ButtonBase: React.FC<ButtonBaseProps & Omit<ButtonProps, 'title'>> = ({ children, onPress, ...rest }) => {
   return (
     <TouchableContainer {...rest}>
-      <TouchableBase {...rest}>{children}</TouchableBase>
+      <TouchableBase onPress={onPress} {...rest}>
+        {children}
+      </TouchableBase>
     </TouchableContainer>
   );
 };

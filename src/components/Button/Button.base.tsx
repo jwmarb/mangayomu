@@ -10,7 +10,7 @@ export const ButtonContainer = styled.View<Pick<ButtonProps, 'expand'>>`
   `}
 `;
 
-export const ButtonText = styled.Text<Required<ButtonBaseProps>>`
+export const ButtonText = styled.Text<Omit<Required<ButtonBaseProps>, 'onPress'>>`
   ${(props) => css`
     ${props.theme.typography.button};
     color: ${() => {

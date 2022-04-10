@@ -1,5 +1,5 @@
 import { ButtonBase } from '@components/Button/ButtonBase/ButtonBase';
-import { ButtonProps } from '@components/Button/Button.interfaces';
+import { ButtonProps, ButtonTextProps } from '@components/Button/Button.interfaces';
 import React from 'react';
 import { ButtonContainer, ButtonText } from '@components/Button/Button.base';
 import { Typography } from '@components/Typography';
@@ -23,10 +23,17 @@ const Button: React.FC<ButtonProps> = (props) => {
     onPress,
     round: false,
   };
+  const buttonTextProps: ButtonTextProps = {
+    color,
+    variant,
+    disabled,
+    expand,
+    round: false,
+  };
   return (
     <ButtonBase {...passedProps} {...rest}>
       <ButtonContainer expand={expand}>
-        <ButtonText {...passedProps}>{title}</ButtonText>
+        <ButtonText {...buttonTextProps}>{title}</ButtonText>
       </ButtonContainer>
     </ButtonBase>
   );
