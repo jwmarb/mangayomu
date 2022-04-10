@@ -6,4 +6,5 @@ export interface ButtonBaseProps {
   round?: boolean;
   variant?: ButtonVariants;
   disabled?: boolean;
+  expand?: boolean;
 }

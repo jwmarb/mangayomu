@@ -1,0 +1,28 @@
+import { ButtonProps } from '@components/Button/Button.interfaces';
+import { ButtonBaseProps } from '@components/Button/ButtonBase/ButtonBase.interfaces';
+import { Color } from '@theme/core';
+import styled, { css } from 'styled-components/native';
+
+export const ButtonContainer = styled.View<Pick<ButtonProps, 'expand'>>`
+  ${(props) => css`
+    flex-grow: 1;
+    padding: ${props.theme.spacing(1.2, 2)};
+  `}
+`;
+
+export const ButtonText = styled.Text<Required<ButtonBaseProps>>`
+  ${(props) => css`
+    ${props.theme.typography.button};
+    color: ${() => {
+      if (props.color == null) return props.theme.palette.text.primary.get();
+      switch (props.variant) {
+        case 'contained':
+          if (props.color instanceof Color) return props.color.getContrastText(props.color);
+          return props.theme.palette[props.color].main.getContrastText(props.theme.palette[props.color].main);
+        default:
+          if (props.color instanceof Color) return props.color.get();
+          return props.theme.palette[props.color].main.get();
+      }
+    }};
+  `}
+`;

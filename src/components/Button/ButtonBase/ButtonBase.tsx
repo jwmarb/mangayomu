@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import styled, { css } from 'styled-components/native';
 import { ButtonProps } from '@components/Button/Button.interfaces';
+import { Flex } from '@components/Flex';
 
 const TouchableBase = styled(Platform.OS === 'ios' ? TouchableOpacity : TouchableNativeFeedback).attrs<
   ButtonBaseProps & ButtonProps
@@ -25,8 +26,16 @@ const TouchableBase = styled(Platform.OS === 'ios' ? TouchableOpacity : Touchabl
       background: TouchableNativeFeedback.Ripple(Constants.GRAY[4].get(), round),
     } as TouchableNativeFeedbackProps;
 
+  if (props.color instanceof Color)
+    return {
+      background: TouchableNativeFeedback.Ripple(props.color.get(), round),
+    } as TouchableNativeFeedbackProps;
+
   return {
-    background: TouchableNativeFeedback.Ripple(Color.valueOf(props.color), round),
+    background: TouchableNativeFeedback.Ripple(
+      props.theme.palette[props.color][props.theme.palette.mode === 'dark' ? 'light' : 'dark'].get(),
+      round
+    ),
   } as TouchableNativeFeedbackProps;
 })``;
 const TouchableContainer = styled.View<ButtonBaseProps>`
@@ -49,8 +58,8 @@ const TouchableContainer = styled.View<ButtonBaseProps>`
           return css`
             border: 1px solid
               ${props.disabled
-                ? props.theme.palette[props.color ?? 'primary'].toDisabled().get()
-                : props.theme.palette[props.color ?? 'primary'].get()};
+                ? props.theme.palette[props.color ?? 'primary'].main.toDisabled().get()
+                : props.theme.palette[props.color ?? 'primary'].main.get()};
           `;
       }
     }}
@@ -63,8 +72,8 @@ const TouchableContainer = styled.View<ButtonBaseProps>`
             `;
           return css`
             background-color: ${props.disabled
-              ? props.theme.palette[props.color ?? 'primary'].toDisabled().get()
-              : props.theme.palette[props.color ?? 'primary'].get()};
+              ? props.theme.palette[props.color ?? 'primary'].main.toDisabled().get()
+              : props.theme.palette[props.color ?? 'primary'].main.get()};
           `;
       }
     }}
@@ -72,6 +81,14 @@ const TouchableContainer = styled.View<ButtonBaseProps>`
 `;
 
 export const ButtonBase: React.FC<ButtonBaseProps & Omit<ButtonProps, 'title'>> = ({ children, ...rest }) => {
+  if (!rest.expand)
+    return (
+      <Flex>
+        <TouchableContainer {...rest}>
+          <TouchableBase {...rest}>{children}</TouchableBase>
+        </TouchableContainer>
+      </Flex>
+    );
   return (
     <TouchableContainer {...rest}>
       <TouchableBase {...rest}>{children}</TouchableBase>
