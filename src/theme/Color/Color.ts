@@ -88,6 +88,10 @@ export default class Color {
   public static rgba(lightRGBA: string, darkRGBA: string) {
     return new Color({ light: parseRGBA(lightRGBA), dark: parseRGBA(darkRGBA) });
   }
+
+  public static constant(hex: string) {
+    return new Color({ light: hex, dark: hex });
+  }
 }
 
 export const applicableColors = {
