@@ -1,5 +1,5 @@
 import { ColorConstant, NeutralColorConstant } from '@theme/Color/Color.interfaces';
-import { Color } from '@theme/core';
+import Color from './Color';
 
 export const GRAY: NeutralColorConstant = {
   1: Color.constant('#ffffff'),
