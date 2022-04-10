@@ -1,5 +1,5 @@
 import { hexToRgb, parseRGBA, rgbaToHex, rgbaToString } from '@theme/Color/Color.helpers';
-import { RGBA, TextColors, ThemedColorValue, ThemedPalette } from '@theme/Color/Color.interfaces';
+import { AppColors, RGBA, TextColors, ThemedColorValue, ThemedPalette } from '@theme/Color/Color.interfaces';
 import { Appearance } from 'react-native';
 
 export default class Color {
@@ -61,8 +61,16 @@ export default class Color {
   /**
    * Get the color from the color palette
    */
-  public static valueOf(v: keyof Omit<typeof Palette, 'mode' | 'text'>): Color {
-    return Palette[v];
+  public static valueOf(v: Exclude<AppColors, Color>): Color {
+    const palette = Palette();
+    switch (v) {
+      case 'textPrimary':
+        return palette.text.primary;
+      case 'textSecondary':
+        return palette.text.secondary;
+      default:
+        return palette[v];
+    }
   }
 
   public static hex(lightThemeHex: string, darkThemeHex: string): Color {
