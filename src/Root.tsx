@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import RootStack from '@navigators/Root';
+import WelcomeScreen from '@screens/Welcome';
 
 const Root: React.FC = () => {
   return (
-    <View>
-      <Text>Hello World</Text>
-    </View>
+    <RootStack.Navigator>
+      <RootStack.Screen component={WelcomeScreen} name='Welcome' options={{ headerShown: false }} />
+    </RootStack.Navigator>
   );
 };
 
