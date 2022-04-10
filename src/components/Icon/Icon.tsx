@@ -26,24 +26,19 @@ export default function Icon<T extends IconPack>(props: IconProps<T>) {
     }
   }, [size]);
 
-  const colorValue = React.useMemo(() => {
-    if (color instanceof Color) return color.get();
-    return Color.valueOf(color).get();
-  }, [color]);
-
   switch (bundle) {
     case 'FontAwesome5':
-      return <FontAwesome5Base name={name} color={colorValue} size={numSize} />;
+      return <FontAwesome5Base name={name} color={Color.valueOf(color)} size={numSize} />;
     case 'AntDesign':
-      return <AntDesignBase name={name} color={colorValue} size={numSize} />;
+      return <AntDesignBase name={name} color={Color.valueOf(color)} size={numSize} />;
     case 'MaterialCommunityIcons':
-      return <MaterialCommunityIconsBase name={name} color={colorValue} size={numSize} />;
+      return <MaterialCommunityIconsBase name={name} color={Color.valueOf(color)} size={numSize} />;
     case 'Foundation':
-      return <FoundationBase name={name} color={colorValue} size={numSize} />;
+      return <FoundationBase name={name} color={Color.valueOf(color)} size={numSize} />;
     case 'Feather':
-      return <FeatherBase name={name} color={colorValue} size={numSize} />;
+      return <FeatherBase name={name} color={Color.valueOf(color)} size={numSize} />;
     case 'Octicons':
-      return <OcticonsBase name={name} color={colorValue} size={numSize} />;
+      return <OcticonsBase name={name} color={Color.valueOf(color)} size={numSize} />;
     default:
       return null;
   }

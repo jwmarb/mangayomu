@@ -68,15 +68,16 @@ export default class Color {
   /**
    * Get the color from the color palette
    */
-  public static valueOf(v: Exclude<AppColors, Color>): Color {
+  public static valueOf(v: AppColors): string {
+    if (v instanceof Color) return v.get();
     const palette = Palette();
     switch (v) {
       case 'textPrimary':
-        return palette.text.primary;
+        return palette.text.primary.get();
       case 'textSecondary':
-        return palette.text.secondary;
+        return palette.text.secondary.get();
       default:
-        return palette[v];
+        return palette[v].get();
     }
   }
 
