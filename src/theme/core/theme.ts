@@ -32,7 +32,7 @@ const theme = (): DefaultTheme => {
         ...DefaultNavigationTheme.colors,
         background: generated.palette.background.default.get(),
         text: generated.palette.text.primary.get(),
-        primary: generated.palette.primary.get(),
+        primary: generated.palette.primary.main.get(),
       },
       dark: mode === 'dark',
     },

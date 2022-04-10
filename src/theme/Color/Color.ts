@@ -90,7 +90,7 @@ export default class Color {
       case 'textSecondary':
         return palette.text.secondary.get();
       default:
-        return palette[v].get();
+        return palette[v].main.get();
     }
   }
 
@@ -114,8 +114,16 @@ export const actionColors: ActionColors = {
 };
 
 export const applicableColors = {
-  primary: Color.hex('#1890ff', '#1890ff'),
-  secondary: Color.hex('#ff7875', '#ff7875'),
+  primary: {
+    light: Color.constant('#69c0ff'),
+    main: Color.constant('#1890ff'),
+    dark: Color.constant('#0050b3'),
+  },
+  secondary: {
+    light: Color.constant('#ffccc7'),
+    main: Color.constant('#ff7875'),
+    dark: Color.constant('#f5222d'),
+  },
 };
 
 export const textColors: TextColors = {
