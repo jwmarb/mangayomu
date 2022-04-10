@@ -43,7 +43,7 @@ export function parseRGBA(rgba: string): RGBA {
     red: parseInt(red),
     green: parseInt(green),
     blue: parseInt(blue),
-    alpha: parseInt(alpha),
+    alpha: parseFloat(alpha),
   };
 }
 
