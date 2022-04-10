@@ -20,5 +20,20 @@ export const Flex = styled.View<Partial<FlexProps>>`
     flex-direction: ${props.direction ?? 'row'};
     align-items: ${props.alignItems ?? 'stretch'};
     justify-content: ${props.justifyContent ?? 'flex-start'};
+    ${() => {
+      if (props.grow && props.growMax)
+        switch (props.direction) {
+          case 'row':
+          case 'row-reverse':
+            return css`
+              max-width: ${props.growMax};
+            `;
+          case 'column-reverse':
+          case 'column':
+            return css`
+              max-height: ${props.growMax};
+            `;
+        }
+    }}
   `}
 `;
