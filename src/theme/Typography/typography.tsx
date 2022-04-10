@@ -6,6 +6,7 @@ const typographyConstants = {
     light: 'Nunito-light',
     regular: 'Nunito',
     heavy: 'Nunito-heavy',
+    semi: 'Nunito-semi',
   },
 };
 
