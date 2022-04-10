@@ -43,9 +43,10 @@ export default class Color {
     } else throw Error('Invalid argument type in constructor of Color');
   }
 
-  public getContrastText(): string {
+  public getContrastText(background: Color): string {
     const mode = Appearance.getColorScheme() ?? 'light';
-    const yiq = (this.rgba[mode].red * 299 + this.rgba[mode].green * 587 + this.rgba[mode].blue * 114) / 1000;
+    const yiq =
+      (background.rgba[mode].red * 299 + background.rgba[mode].green * 587 + background.rgba[mode].blue * 114) / 1000;
     return yiq >= 128 ? rgbaToString(textColors.primary.rgba.dark) : rgbaToString(textColors.primary.rgba.light);
   }
 
@@ -56,6 +57,17 @@ export default class Color {
   public toString(): string {
     const rgbaFromCurrentTheme = this.rgba[Appearance.getColorScheme() ?? 'light'];
     return `rgba(${rgbaFromCurrentTheme.red}, ${rgbaFromCurrentTheme.green}, ${rgbaFromCurrentTheme.blue}, ${rgbaFromCurrentTheme.alpha})`;
+  }
+
+  /**
+   * Get the disabled version of the color
+   * @returns Returns the disabled color version of the color
+   */
+  public toDisabled(): Color {
+    return Color.rgba(
+      rgbaToString({ ...this.rgba.light, alpha: actionColors.disabledOpacity }),
+      rgbaToString({ ...this.rgba.dark, alpha: actionColors.disabledOpacity })
+    );
   }
 
   /**
