@@ -1,12 +1,7 @@
 import { ButtonBaseProps } from './ButtonBase.interfaces';
 import { Color, Constants } from '@theme/core';
-import {
-  Platform,
-  TouchableOpacity,
-  TouchableNativeFeedback,
-  TouchableOpacityProps,
-  TouchableNativeFeedbackProps,
-} from 'react-native';
+import { Platform, TouchableOpacityProps, TouchableNativeFeedbackProps } from 'react-native';
+import { TouchableOpacity, TouchableNativeFeedback } from 'react-native-gesture-handler';
 import styled, { css } from 'styled-components/native';
 import { ButtonProps } from '@components/Button/Button.interfaces';
 import { Flex } from '@components/Flex';
@@ -43,6 +38,7 @@ const TouchableContainer = styled.View<ButtonBaseProps>`
     border-radius: ${props.theme.borderRadius}px;
     flex-direction: row;
     align-items: center;
+    overflow: hidden;
     ${() => {
       if (props.color instanceof Color)
         return css`

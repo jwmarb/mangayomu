@@ -7,4 +7,5 @@ export interface ButtonBaseProps {
   variant?: ButtonVariants;
   disabled?: boolean;
   expand?: boolean;
+  onPress?: () => void;
 }

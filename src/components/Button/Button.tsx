@@ -20,10 +20,11 @@ const Button: React.FC<ButtonProps> = (props) => {
     variant,
     disabled,
     expand,
+    onPress,
     round: false,
   };
   return (
-    <ButtonBase {...passedProps} {...rest} round>
+    <ButtonBase {...passedProps} {...rest}>
       <ButtonContainer expand={expand}>
         <ButtonText {...passedProps}>{title}</ButtonText>
       </ButtonContainer>
