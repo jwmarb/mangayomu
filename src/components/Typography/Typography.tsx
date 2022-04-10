@@ -5,16 +5,17 @@ import { Color } from '@theme/core';
 export const Typography = styled.Text<TypographyProps>`
   ${(props) => css`
     color: ${() => {
-      if (props.color == null) return props.theme.palette.text.primary;
-      if (props.color instanceof Color) return props.color;
+      if (props.color == null) return props.theme.palette.text.primary.get();
+      if (props.color instanceof Color) return props.color.get();
       switch (props.color) {
         case 'textPrimary':
-          return props.theme.palette.text.primary;
+          return props.theme.palette.text.primary.get();
         case 'textSecondary':
-          return props.theme.palette.text.secondary;
+          return props.theme.palette.text.secondary.get();
         default:
-          return props.theme.palette[props.color];
+          return props.theme.palette[props.color].get();
       }
     }};
+    ${props.theme.typography[props.variant ?? 'body1']};
   `}
 `;
