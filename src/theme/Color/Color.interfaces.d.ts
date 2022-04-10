@@ -1,4 +1,4 @@
-import { applicableColors } from '@theme/core';
+import { applicableColors, Color } from '@theme/core';
 import { ColorSchemeName } from 'react-native';
 
 export interface RGBA {
@@ -24,4 +24,4 @@ export type ThemedPalette = {
   text: TextColors;
 };
 
-export type AppColors = keyof typeof applicableColors | 'textPrimary' | 'textSecondary';
+export type AppColors = keyof typeof applicableColors | 'textPrimary' | 'textSecondary' | Color;
