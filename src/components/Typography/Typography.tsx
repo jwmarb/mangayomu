@@ -7,15 +7,7 @@ export const Typography = styled.Text<TypographyProps>`
     ${props.theme.typography[props.variant ?? 'body1']};
     color: ${() => {
       if (props.color == null) return props.theme.palette.text.primary.get();
-      if (props.color instanceof Color) return props.color.get();
-      switch (props.color) {
-        case 'textPrimary':
-          return props.theme.palette.text.primary.get();
-        case 'textSecondary':
-          return props.theme.palette.text.secondary.get();
-        default:
-          return props.theme.palette[props.color].get();
-      }
+      return Color.valueOf(props.color);
     }};
     font-family: ${props.bold ? props.theme.typography.fontFamily.heavy : props.theme.typography.fontFamily.regular};
   `}
