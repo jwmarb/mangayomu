@@ -5,7 +5,7 @@ import React from 'react';
 const ResponsiveImage: React.FC<ResponsiveImageProps> = (props) => {
   return (
     <ResponsiveImageContainer {...props}>
-      <ResponsiveImageBase source={props.source} />
+      <ResponsiveImageBase source={props.source} resizeMode={props.resizeMode} />
     </ResponsiveImageContainer>
   );
 };
