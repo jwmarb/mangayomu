@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components/native';
+import Animated from 'react-native-reanimated';
 
-export const ProgressDot = styled.View<{ selected: boolean }>`
+export const ProgressDotBase = styled(Animated.View)<{ selected: boolean }>`
   width: 16px;
   height: 16px;
   border-radius: 32px;
