@@ -8,7 +8,7 @@ export interface ButtonProps extends Omit<RNButtonProps, 'onPress'> {
   onPress?: () => void;
   color?: ButtonColors;
   variant?: ButtonVariants;
-  expand?: boolean;
+  expand?: boolean | number | string;
 }
 
 export type ButtonTextProps = Omit<Required<ButtonBaseProps>, 'onPress'>;

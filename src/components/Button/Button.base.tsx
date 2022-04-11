@@ -13,6 +13,7 @@ export const ButtonContainer = styled.View<Pick<ButtonProps, 'expand'>>`
 export const ButtonText = styled.Text<Omit<Required<ButtonBaseProps>, 'onPress'>>`
   ${(props) => css`
     ${props.theme.typography.button};
+    text-align: ${props.expand ? 'center' : 'left'};
     color: ${() => {
       if (props.color == null) return props.theme.palette.text.primary.get();
       switch (props.variant) {

@@ -36,9 +36,24 @@ const TouchableBase = styled(Platform.OS === 'ios' ? TouchableOpacity : Touchabl
 const TouchableContainer = styled.View<ButtonBaseProps>`
   ${(props) => css`
     border-radius: ${props.theme.borderRadius}px;
-    flex-direction: row;
-    align-items: center;
     overflow: hidden;
+    ${props.expand
+      ? css`
+          ${() => {
+            switch (typeof props.expand) {
+              case 'boolean':
+                return props.expand ? 'width: 100%' : '';
+              case 'number':
+                return `width: ${props.expand}px`;
+              case 'string':
+                return `width: ${props.expand}`;
+            }
+          }};
+        `
+      : css`
+          flex-direction: row;
+          align-items: center;
+        `}
     ${() => {
       if (props.color instanceof Color)
         return css`
