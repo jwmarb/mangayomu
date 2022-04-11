@@ -24,7 +24,12 @@ const slides = [
     </Typography>
   </>,
   <>
-    <ResponsiveImage source={require('../../../assets/images/progressive.png')} width='90%' height='30%' />
+    <ResponsiveImage
+      source={require('../../../assets/images/progressive.png')}
+      width='90%'
+      height='35%'
+      resizeMode='contain'
+    />
     <Spacer y={4} />
     <Typography variant='header' bold align='center'>
       Read anywhere, regardless of device
@@ -35,7 +40,12 @@ const slides = [
     </Typography>
   </>,
   <>
-    <ResponsiveImage source={require('../../../assets/images/bookshelf.png')} width='90%' height='50%' />
+    <ResponsiveImage
+      source={require('../../../assets/images/bookshelf.png')}
+      width='90%'
+      height='50%'
+      resizeMode='contain'
+    />
     <Spacer y={4} />
     <Typography variant='header' bold align='center'>
       Variety of sources to read from

@@ -9,8 +9,6 @@ const Presentation: React.FC<PresentationProps> = (props) => {
     if (screens.length - 1 > index) onNextScreen(index + 1);
   }
   function handleOnPreviousScreen() {
-    console.log('called back');
-
     if (index > 0) onPreviousScreen(index - 1);
   }
 
@@ -19,7 +17,7 @@ const Presentation: React.FC<PresentationProps> = (props) => {
       <Flex grow growMax='70%' direction='column' justifyContent='flex-end' alignItems='center'>
         {screens[index]}
         <Flex grow growMax='10%' direction='column' alignItems='center' justifyContent='center'>
-          <Flex>
+          <Flex spacing={1}>
             {screens.map((_, i) => (
               <ProgressDot key={i} selected={i === index} />
             ))}
