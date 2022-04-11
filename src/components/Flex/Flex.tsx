@@ -3,6 +3,12 @@ import styled, { css } from 'styled-components/native';
 
 export const Flex = styled.View<Partial<FlexProps>>`
   ${(props) => css`
+    ${() =>
+      props.debug
+        ? css`
+            background-color: red;
+          `
+        : ''}
     ${() => {
       if (props.grow)
         return css`

@@ -7,4 +7,5 @@ export interface FlexProps {
   grow?: boolean;
   shrink?: boolean;
   growMax: number | string;
+  debug?: boolean;
 }
