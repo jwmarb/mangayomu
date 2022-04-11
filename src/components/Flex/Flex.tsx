@@ -1,45 +1,46 @@
 import { FlexProps } from '@components/Flex/Flex.interfaces';
 import styled, { css } from 'styled-components/native';
+import { FlexBase } from '@components/Flex/Flex.base';
+import React from 'react';
+import Spacer from '@components/Spacer';
 
-export const Flex = styled.View<Partial<FlexProps>>`
-  ${(props) => css`
-    ${() =>
-      props.debug
-        ? css`
-            background-color: red;
-          `
-        : ''}
-    ${() => {
-      if (props.grow)
-        return css`
-          flex-grow: 1;
-        `;
-      if (props.shrink)
-        return css`
-          flex-shrink: 1;
-        `;
+const Flex: React.FC<FlexProps> = (props) => {
+  const { spacing } = props;
+  if (spacing != null)
+    return (
+      <FlexBase {...props}>
+        {React.Children.map(props.children, (child, index) => {
+          if (React.isValidElement(child)) {
+            switch (index) {
+              case React.Children.toArray(props.children).length - 1:
+                return <>{child}</>;
+              default:
+                switch (props.direction) {
+                  case 'column':
+                  case 'column-reverse':
+                    return (
+                      <>
+                        {child}
+                        <Spacer y={spacing} />
+                      </>
+                    );
+                  default:
 
-      return css`
-        display: flex;
-      `;
-    }}
-    flex-direction: ${props.direction ?? 'row'};
-    align-items: ${props.alignItems ?? 'stretch'};
-    justify-content: ${props.justifyContent ?? 'flex-start'};
-    ${() => {
-      if (props.grow && props.growMax)
-        switch (props.direction) {
-          case 'row':
-          case 'row-reverse':
-            return css`
-              max-width: ${props.growMax};
-            `;
-          case 'column-reverse':
-          case 'column':
-            return css`
-              max-height: ${props.growMax};
-            `;
-        }
-    }}
-  `}
-`;
+                  case 'row':
+                  case 'row-reverse':
+                    return (
+                      <>
+                        {child}
+                        <Spacer x={spacing} />
+                      </>
+                    );
+                }
+            }
+          }
+        })}
+      </FlexBase>
+    );
+  return <FlexBase {...props} />;
+};
+
+export default Flex;

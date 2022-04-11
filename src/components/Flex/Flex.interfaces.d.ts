@@ -6,6 +6,7 @@ export interface FlexProps {
   direction?: FlexStyle['flexDirection'];
   grow?: boolean;
   shrink?: boolean;
-  growMax: number | string;
+  growMax?: number | string;
   debug?: boolean;
+  spacing?: number;
 }

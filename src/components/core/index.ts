@@ -1,4 +1,4 @@
-export * from '../Flex';
+export { default as Flex } from '../Flex';
 export * from '../Typography';
 export { default as Icon } from '../Icon';
 export { default as Screen } from '../Screen';
