@@ -1,10 +1,9 @@
 import { ButtonBaseProps } from './ButtonBase.interfaces';
 import { Color, Constants } from '@theme/core';
-import { Platform, TouchableOpacityProps, TouchableNativeFeedbackProps } from 'react-native';
-import { TouchableOpacity, TouchableNativeFeedback } from 'react-native-gesture-handler';
+import { Platform, TouchableOpacityProps, TouchableNativeFeedbackProps, TouchableNativeFeedback } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import styled, { css } from 'styled-components/native';
 import { ButtonProps } from '@components/Button/Button.interfaces';
-import { Flex } from '@components/Flex';
 
 const TouchableBase = styled(Platform.OS === 'ios' ? TouchableOpacity : TouchableNativeFeedback).attrs<
   ButtonBaseProps & ButtonProps
@@ -51,8 +50,11 @@ const TouchableContainer = styled.View<ButtonBaseProps>`
           }};
         `
       : css`
-          flex-direction: row;
-          align-items: center;
+          /**
+          * Uncomment and import from react-native-gesture-handler to use these properties
+          */
+          /* flex-direction: row;
+          align-items: center; */
         `}
     ${() => {
       if (props.color instanceof Color)
