@@ -6,6 +6,9 @@ function generateCSS<Component, Props>(props: ThemedStyledProps<Props & React.Re
   return css`
     min-height: 100%;
     flex: 1;
+    ${(props) => css`
+      padding: ${props.theme.spacing(0, 2)};
+    `}
   `;
 }
 

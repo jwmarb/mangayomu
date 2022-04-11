@@ -11,16 +11,19 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 
 export default function App() {
+  const generated = theme();
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
         <ResourceLoader
           onFinishedLoading={
             <Provider store={store}>
-              <ThemeProvider theme={theme()}>
-                <Root />
-                <StatusBar translucent />
-              </ThemeProvider>
+              <NavigationThemeProvider value={generated['@react-navigation']}>
+                <ThemeProvider theme={generated}>
+                  <Root />
+                  <StatusBar translucent />
+                </ThemeProvider>
+              </NavigationThemeProvider>
             </Provider>
           }
         />
