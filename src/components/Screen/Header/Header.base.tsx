@@ -10,5 +10,8 @@ export const HeaderBaseContainer = styled.View`
     background-color: ${props.theme.palette.background.paper.get()};
     padding-horizontal: ${props.theme.spacing(2)};
     padding-bottom: ${props.theme.spacing(2)};
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   `}
 `;
