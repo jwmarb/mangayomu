@@ -1,7 +1,7 @@
 /**
  * A space multiplier. Default is 8
  */
-const SPACE_MULTIPLIER = 8;
+export const SPACE_MULTIPLIER = 8;
 
 /**
  * Automatically apply theme spacing to keep spacing consistency throughout the designing the application.
