@@ -1,4 +1,4 @@
-import { Manga, MangaMeta } from '@services/scraper/scraper.interfaces';
+import { MangaMeta } from '@services/scraper/scraper.interfaces';
 import { Dispatch } from 'redux';
 import { MangaReducerAction } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 
