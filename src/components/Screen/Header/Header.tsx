@@ -12,6 +12,7 @@ const Header: React.FC<StackHeaderProps> = (props) => {
     options: { headerTitle = props.route.name, headerRight },
     navigation,
   } = props;
+  const HeaderRightComponent = headerRight as React.FC;
   function handleOnBack() {
     navigation.goBack();
   }
@@ -25,7 +26,7 @@ const Header: React.FC<StackHeaderProps> = (props) => {
       )}
       <Typography variant='subheader'>{headerTitle}</Typography>
       <Flex grow justifyContent='flex-end'>
-        {headerRight}
+        {HeaderRightComponent && <HeaderRightComponent />}
       </Flex>
     </HeaderBaseContainer>
   );
