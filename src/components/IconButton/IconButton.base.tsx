@@ -4,9 +4,9 @@ import styled, { css } from 'styled-components/native';
 export const IconButtonBaseContainer = styled.View`
   ${(props) => css`
     padding: ${props.theme.spacing(1)};
-    width: 48px;
+    width: 36px;
     align-items: center;
     justify-content: center;
-    height: 48px;
+    height: 36px;
   `}
 `;
