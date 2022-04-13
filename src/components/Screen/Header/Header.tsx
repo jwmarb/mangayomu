@@ -1,7 +1,10 @@
 import { StackHeaderProps } from '@react-navigation/stack';
 import React from 'react';
 import { HeaderBaseContainer } from './Header.base';
-import { Typography, IconButton, Icon, Spacer } from '@components/core';
+import { Typography } from '../../Typography';
+import IconButton from '../../IconButton';
+import Icon from '../../Icon';
+import Spacer from '../../Spacer';
 
 const Header: React.FC<StackHeaderProps> = (props) => {
   const {
