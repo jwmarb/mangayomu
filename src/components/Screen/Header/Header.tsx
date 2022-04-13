@@ -1,7 +1,7 @@
 import { StackHeaderProps } from '@react-navigation/stack';
 import React from 'react';
 import { HeaderBaseContainer } from './Header.base';
-import { Typography, IconButton, Icon } from '@components/core';
+import { Typography, IconButton, Icon, Spacer } from '@components/core';
 
 const Header: React.FC<StackHeaderProps> = (props) => {
   const {
@@ -13,10 +13,13 @@ const Header: React.FC<StackHeaderProps> = (props) => {
   }
   return (
     <HeaderBaseContainer>
-      <IconButton icon={<Icon bundle='FontAwesome5' name='chevron-left' />} />
-      <Typography variant='subheader' bold align='center'>
-        {headerTitle}
-      </Typography>
+      {navigation.canGoBack() && (
+        <>
+          <IconButton icon={<Icon bundle='FontAwesome5' name='chevron-left' />} onPress={handleOnBack} />
+          <Spacer x={1} />
+        </>
+      )}
+      <Typography variant='subheader'>{headerTitle}</Typography>
     </HeaderBaseContainer>
   );
 };
