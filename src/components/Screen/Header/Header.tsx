@@ -5,10 +5,11 @@ import { Typography } from '../../Typography';
 import IconButton from '../../IconButton';
 import Icon from '../../Icon';
 import Spacer from '../../Spacer';
+import Flex from '../../Flex';
 
 const Header: React.FC<StackHeaderProps> = (props) => {
   const {
-    options: { headerTitle = props.route.name },
+    options: { headerTitle = props.route.name, headerRight },
     navigation,
   } = props;
   function handleOnBack() {
@@ -23,6 +24,9 @@ const Header: React.FC<StackHeaderProps> = (props) => {
         </>
       )}
       <Typography variant='subheader'>{headerTitle}</Typography>
+      <Flex grow justifyContent='flex-end'>
+        {headerRight}
+      </Flex>
     </HeaderBaseContainer>
   );
 };
