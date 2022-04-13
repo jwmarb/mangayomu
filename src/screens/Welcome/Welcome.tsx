@@ -74,6 +74,7 @@ const WelcomeScreen: React.FC<StackScreenProps<RootStackParamList, 'Welcome'>> =
   const [screen, setScreen] = React.useState<number>(0);
   function handleOnFinish() {
     navigation.navigate('Home');
+    navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
   }
 
   return (
