@@ -8,7 +8,7 @@ export const HeaderBaseContainer = styled.View`
       ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 2)
       : props.theme.spacing(2)};
     background-color: ${props.theme.palette.background.paper.get()};
-    padding-horizontal: ${props.theme.spacing(2)};
+    padding-horizontal: ${props.theme.spacing(3)};
     padding-bottom: ${props.theme.spacing(2)};
     display: flex;
     flex-direction: row;
