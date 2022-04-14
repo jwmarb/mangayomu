@@ -1,11 +1,3 @@
-export interface MangaSeeVMObject {
-  HotArr: string[];
-  SubArr: string[];
-  TopTenJSON: TopTenJSON[];
-  HotUpdateJSON: HotUpdateJSON[];
-  LatestJSON: LatestJSON[];
-}
-
 export interface TopTenJSON {
   IndexName: string;
   SeriesName: string;
