@@ -7,7 +7,7 @@ abstract class MangaHost {
   /**
    * The link to the manga hosting website
    */
-  protected readonly link: string;
+  private readonly link: string;
   public constructor(host: string) {
     this.link = url.parse(host).hostname ?? '';
   }
@@ -15,6 +15,10 @@ abstract class MangaHost {
   protected async route(path: string): Promise<cheerio.CheerioAPI> {
     const { data } = await axios.get(`https://${this.link}${path}`);
     return cheerio.load(data, { decodeEntities: false });
+  }
+
+  protected getLink() {
+    return this.link;
   }
 
   /**
