@@ -1,6 +1,7 @@
 import { Manga, MangaChapter, MangaMeta } from '@services/scraper/scraper.interfaces';
 import axios from 'axios';
 import url from 'url';
+import * as cheerio from 'cheerio';
 
 abstract class MangaHost {
   /**
@@ -11,9 +12,9 @@ abstract class MangaHost {
     this.link = url.parse(host).hostname ?? '';
   }
 
-  protected async route(path: string) {
+  protected async route(path: string): Promise<cheerio.CheerioAPI> {
     const { data } = await axios.get(`https://${this.link}${path}`);
-    return data;
+    return cheerio.load(data, { decodeEntities: false });
   }
 
   /**
