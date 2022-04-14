@@ -9,7 +9,10 @@ export const Typography = styled.Text<TypographyProps>`
       if (props.color == null) return props.theme.palette.text.primary.get();
       return Color.valueOf(props.color);
     }};
-    font-family: ${props.bold ? props.theme.typography.fontFamily.heavy : props.theme.typography.fontFamily.regular};
+    ${props.bold != null &&
+    css`
+      font-family: ${props.bold ? props.theme.typography.fontFamily.heavy : props.theme.typography.fontFamily.regular};
+    `};
     text-align: ${props.align ?? 'left'};
   `}
 `;
