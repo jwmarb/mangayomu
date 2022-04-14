@@ -43,6 +43,10 @@ export default class Color {
     } else throw Error('Invalid argument type in constructor of Color');
   }
 
+  /**
+   * Get the contrast text color that would be preferred when this color is used as a background
+   * @returns Returns the recommended text color where this color is used as the background
+   */
   public getContrastText(): string {
     const mode = Appearance.getColorScheme() ?? 'light';
     const yiq = (this.rgba[mode].red * 299 + this.rgba[mode].green * 587 + this.rgba[mode].blue * 114) / 1000;
