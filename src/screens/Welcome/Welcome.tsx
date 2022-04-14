@@ -5,6 +5,7 @@ import React from 'react';
 import { Image, useWindowDimensions, View } from 'react-native';
 import Presentation from '@screens/Welcome/components/Presentation/Presentation';
 import Slide from './components/Slide';
+import { useAppDispatch } from '@redux/store';
 
 const slides = [
   () => (
@@ -71,6 +72,12 @@ const slides = [
 ];
 
 const WelcomeScreen: React.FC<StackScreenProps<RootStackParamList, 'Welcome'>> = ({ route, navigation }) => {
+  const dispatch = useAppDispatch();
+
+  React.useEffect(() => {
+    dispatch({ type: 'INTRO_DONE' });
+  }, []);
+
   const [screen, setScreen] = React.useState<number>(0);
   function handleOnFinish() {
     navigation.navigate('Home');
