@@ -1,4 +1,6 @@
 import { Manga, MangaChapter, MangaMeta } from '@services/scraper/scraper.interfaces';
+import axios from 'axios';
+import url from 'url';
 
 abstract class MangaHost {
   /**
@@ -6,7 +8,12 @@ abstract class MangaHost {
    */
   protected readonly link: string;
   public constructor(host: string) {
-    this.link = host;
+    this.link = url.parse(host).hostname ?? '';
+  }
+
+  protected async route(path: string) {
+    const { data } = await axios.get(`https://${this.link}${path}`);
+    return data;
   }
 
   /**
