@@ -18,7 +18,7 @@ const TouchableBase = styled(Platform.OS === 'ios' ? TouchableOpacity : Touchabl
   if (props.color == null)
     return {
       background: TouchableNativeFeedback.Ripple(
-        Constants.GRAY[props.theme.palette.mode === 'light' ? 4 : 8].get(),
+        Constants.GRAY[props.theme.palette.mode === 'light' ? 6 : 8].get(),
         round
       ),
     } as TouchableNativeFeedbackProps;
