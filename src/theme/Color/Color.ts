@@ -43,11 +43,11 @@ export default class Color {
     } else throw Error('Invalid argument type in constructor of Color');
   }
 
-  public getContrastText(background: Color): string {
+  public getContrastText(): string {
     const mode = Appearance.getColorScheme() ?? 'light';
-    const yiq =
-      (background.rgba[mode].red * 299 + background.rgba[mode].green * 587 + background.rgba[mode].blue * 114) / 1000;
-    return yiq >= 128 ? rgbaToString(textColors.primary.rgba.dark) : rgbaToString(textColors.primary.rgba.light);
+    const yiq = (this.rgba[mode].red * 299 + this.rgba[mode].green * 587 + this.rgba[mode].blue * 114) / 1000;
+
+    return yiq > 125 ? rgbaToString(textColors.primary.rgba.light) : rgbaToString(textColors.primary.rgba.dark);
   }
 
   /**

@@ -18,8 +18,8 @@ export const ButtonText = styled.Text<Omit<Required<ButtonBaseProps>, 'onPress'>
       if (props.color == null) return props.theme.palette.text.primary.get();
       switch (props.variant) {
         case 'contained':
-          if (props.color instanceof Color) return props.color.getContrastText(props.color);
-          return props.theme.palette[props.color].main.getContrastText(props.theme.palette[props.color].main);
+          if (props.color instanceof Color) return props.color.getContrastText();
+          return props.theme.palette[props.color].main.getContrastText();
         default:
           if (props.color instanceof Color) return props.color.get();
           return props.theme.palette[props.color].main.get();

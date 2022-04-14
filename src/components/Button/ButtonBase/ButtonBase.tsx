@@ -29,10 +29,7 @@ const TouchableBase = styled(Platform.OS === 'ios' ? TouchableOpacity : Touchabl
     } as TouchableNativeFeedbackProps;
 
   return {
-    background: TouchableNativeFeedback.Ripple(
-      props.theme.palette[props.color][props.theme.palette.mode === 'dark' ? 'light' : 'dark'].get(),
-      round
-    ),
+    background: TouchableNativeFeedback.Ripple(props.theme.palette[props.color]['light'].get(), round),
   } as TouchableNativeFeedbackProps;
 })``;
 const TouchableContainer = styled.View<ButtonBaseProps>`
