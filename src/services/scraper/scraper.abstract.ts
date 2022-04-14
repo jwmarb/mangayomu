@@ -10,10 +10,28 @@ abstract class MangaHost {
   }
 
   /**
-   * List all mangas from the website, if available
-   * @returns {Promise<Manga[]>} Returns a list of mangas from the website
+   * List all recently updated mangas from the website, if available
+   * @returns {Promise<Manga[] | null>} Returns a list of mangas that were recently updated
    */
-  public abstract listMangas(): Promise<Manga[]>;
+  public listRecentlyUpdatedManga(): Promise<Manga[] | null> {
+    return Promise.resolve(null);
+  }
+
+  /**
+   * List all hot/trending mangas from the website, if available
+   * @returns {Promise<Manga[] | null>} Returns a list of mangas that are trending/hot
+   */
+  public listHotMangas(): Promise<Manga[] | null> {
+    return Promise.resolve(null);
+  }
+
+  /**
+   * List all mangas from the website, if available
+   * @returns {Promise<Manga[] | null>} Returns a list of mangas from the website
+   */
+  public listMangas(): Promise<Manga[] | null> {
+    return Promise.resolve(null);
+  }
 
   /**
    * Search for a manga from the website
