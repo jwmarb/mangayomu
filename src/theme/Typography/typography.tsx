@@ -27,7 +27,7 @@ export const typographyVariants = {
     letter-spacing: -0.2px;
   `,
   button: css`
-    font-family: ${typographyConstants.fontFamily.semi};
+    font-family: ${typographyConstants.fontFamily.heavy};
     font-size: ${rem(12)};
     letter-spacing: -0.44px;
   `,
