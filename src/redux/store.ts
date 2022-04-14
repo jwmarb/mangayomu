@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import reducers from './reducers';
 import thunk from 'redux-thunk';
 import { useDispatch, useSelector } from 'react-redux';
-import { PersistConfig, persistReducer } from 'redux-persist';
+import { PersistConfig, persistReducer, persistStore } from 'redux-persist';
 const persistConfig: PersistConfig<AppState> = {
   key: '@root',
   storage: AsyncStorage,
@@ -18,3 +18,5 @@ export type AppState = ReturnType<typeof reducers>;
 export type UseSelector = typeof useSelector;
 
 export const useAppDispatch = () => useDispatch<AppDispatch>();
+
+export const persistor = persistStore(store);
