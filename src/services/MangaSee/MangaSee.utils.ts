@@ -1,5 +1,5 @@
 export function extractDataFromVariable(html: string | null) {
-  return (variableName: string) => {
+  return <T>(variableName: string): T => {
     if (html == null) throw Error('HTML is null');
     const match = html.match(new RegExp(`${variableName} = .*;`, 'g'));
     if (match == null) throw Error(`${variableName} does not exist`);
@@ -9,7 +9,7 @@ export function extractDataFromVariable(html: string | null) {
 }
 
 export function extractFunctionFromVariable(html: string | null) {
-  return (fnName: string) => {
+  return <T extends (...args: any) => any>(fnName: string): T => {
     if (html == null) throw Error('HTML is null');
     const splitted = html.split('\n');
     let start = 0;

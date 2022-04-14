@@ -1,3 +1,28 @@
+export interface FullDirectory {
+  AllGenres: string[];
+  Directory: {
+    /**
+     * Short for genres. Number corresponds with key
+     */
+    g: number[];
+
+    /**
+     * same as IndexName
+     */
+    i: string;
+
+    /**
+     * same as Series
+     */
+    s: string;
+
+    /**
+     * manga status
+     */
+    st: string;
+  }[];
+}
+
 export interface TopTenJSON {
   IndexName: string;
   SeriesName: string;
