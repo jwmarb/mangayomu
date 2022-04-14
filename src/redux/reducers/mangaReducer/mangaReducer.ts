@@ -2,7 +2,7 @@ import { MangaReducerAction, MangaReducerState } from '@redux/reducers/mangaRedu
 
 const INITIAL_STATE: MangaReducerState = {};
 
-const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerAction) => {
+const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerAction): MangaReducerState => {
   switch (action.type) {
     case 'VIEW_MANGA':
       return state;
