@@ -93,6 +93,8 @@ export default class Color {
         return palette.text.primary.get();
       case 'textSecondary':
         return palette.text.secondary.get();
+      case 'disabled':
+        return palette.text.disabled.get();
       default:
         return palette[v].main.get();
     }

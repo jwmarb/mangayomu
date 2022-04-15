@@ -56,6 +56,6 @@ export type NeutralColorConstant = {
   13: Color;
 } & ColorConstant;
 
-export type AppColors = keyof typeof applicableColors | 'textPrimary' | 'textSecondary' | Color;
+export type AppColors = keyof typeof applicableColors | 'textPrimary' | 'textSecondary' | 'disabled' | Color;
 
 export type ButtonColors = keyof typeof applicableColors | Color;
