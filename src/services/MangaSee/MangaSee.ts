@@ -1,10 +1,16 @@
 import { MANGASEE_URL, MANGASEE_GENRES } from '@services/MangaSee/MangaSee.constants';
-import { Directory, HotUpdateJSON, LatestJSON, MangaSeeManga } from '@services/MangaSee/MangaSee.interfaces';
+import {
+  Directory,
+  HotUpdateJSON,
+  LatestJSON,
+  MangaSeeFilter,
+  MangaSeeManga,
+} from '@services/MangaSee/MangaSee.interfaces';
 import { processScript } from '@services/MangaSee/MangaSee.utils';
-import MangaHost from '@services/scraper/scraper.abstract';
+import { MangaHostWithFilters, MangaSortType } from '@services/scraper/scraper.filters';
 import { Manga, MangaChapter } from '@services/scraper/scraper.interfaces';
 
-class MangaSee extends MangaHost {
+class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   public constructor() {
     super(MANGASEE_URL, MANGASEE_GENRES);
   }
@@ -40,7 +46,7 @@ class MangaSee extends MangaHost {
     );
   }
 
-  public async listMangas(): Promise<MangaSeeManga[] | null> {
+  public async listMangas(): Promise<MangaSeeManga[]> {
     const $ = await super.route('/search');
     const html = $('body').html();
     const { variable } = processScript(html);
@@ -70,7 +76,12 @@ class MangaSee extends MangaHost {
     return Promise.resolve([]);
   }
 
-  public search<T extends Record<string, unknown>, R extends Manga>(query: string, filters: T): Promise<R[]> {
+  public async search(query: string, filters?: MangaSeeFilter): Promise<MangaSeeManga[]> {
+    const directory = await this.listMangas();
+    return Promise.resolve([]);
+  }
+
+  protected async filter(options: MangaSeeFilter, mangas?: MangaSeeManga[]): Promise<MangaSeeManga[]> {
     return Promise.resolve([]);
   }
 }
