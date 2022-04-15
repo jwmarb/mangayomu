@@ -54,10 +54,9 @@ abstract class MangaHost {
   /**
    * Search for a manga from the website
    * @param query The string query to use to find matching results
-   * @param filters Filters applied when searching
    * @returns {Promise<Manga[]>} Returns a list of mangas according to the search result
    */
-  public abstract search<T extends Record<string, unknown>, R extends Manga>(query: string, filters?: T): Promise<R[]>;
+  public abstract search(query: string): Promise<Manga[]>;
 
   /**
    * Get the meta data of the manga
