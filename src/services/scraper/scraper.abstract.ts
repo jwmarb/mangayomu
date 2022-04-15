@@ -4,14 +4,25 @@ import url from 'url';
 import * as cheerio from 'cheerio';
 
 abstract class MangaHost {
+  /**
+   * The name of the manga host
+   */
+  public readonly name: string;
+
+  /**
+   *
+   */
+  public readonly icon: string;
   private readonly genres: string[];
   /**
    * The link to the manga hosting website
    */
   private readonly link: string;
-  public constructor(host: string, genres: string[]) {
+  public constructor(name: string, host: string, genres: string[]) {
     this.link = url.parse(host).hostname ?? '';
     this.genres = genres;
+    this.icon = `https://s2.googleusercontent.com/s2/favicons?domain_url=${this.link}`;
+    this.name = name;
   }
 
   protected async route(path: string): Promise<cheerio.CheerioAPI> {
