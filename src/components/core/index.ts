@@ -7,3 +7,4 @@ export { default as Button } from '../Button';
 export { default as ResponsiveImage } from '../ResponsiveImage';
 export { default as Spacer } from '../Spacer';
 export { default as IconButton } from '../IconButton';
+export { Tabs as StackTabs } from '../Screen';
