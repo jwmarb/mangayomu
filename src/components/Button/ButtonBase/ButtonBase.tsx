@@ -34,14 +34,14 @@ const TouchableBase = styled(Platform.OS === 'ios' ? TouchableOpacity : Touchabl
 })``;
 const TouchableContainer = styled.View<ButtonBaseProps>`
   ${(props) => css`
-    border-radius: ${props.round ? 100 : props.theme.borderRadius}px;
+    border-radius: ${props.round ? props.theme.borderRadius : 0}px;
     overflow: hidden;
     ${props.expand
       ? css`
           ${() => {
             switch (typeof props.expand) {
               case 'boolean':
-                return props.expand ? 'width: 100%' : '';
+                return props.expand ? 'flex-grow: 1' : '';
               case 'number':
                 return `width: ${props.expand}px`;
               case 'string':
