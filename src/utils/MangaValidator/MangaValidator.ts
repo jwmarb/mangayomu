@@ -1,4 +1,11 @@
-import { Manga, WithGenres, WithHentai, WithStatus, WithType } from '@services/scraper/scraper.interfaces';
+import {
+  Manga,
+  WithGenres,
+  WithHentai,
+  WithStatus,
+  WithType,
+  WithYearReleased,
+} from '@services/scraper/scraper.interfaces';
 
 class MangaValidator {
   public hasGenres(manga: any): manga is WithGenres {
@@ -19,6 +26,10 @@ class MangaValidator {
 
   public hasStatus(manga: any): manga is WithStatus {
     return 'status' in manga;
+  }
+
+  public hasYearReleased(manga: any): manga is WithYearReleased {
+    return 'yearReleased' in manga;
   }
 }
 
