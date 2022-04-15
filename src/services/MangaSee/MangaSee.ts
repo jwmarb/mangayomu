@@ -1,13 +1,12 @@
-import { FullDirectory, HotUpdateJSON, LatestJSON } from '@services/MangaSee/MangaSee.interfaces';
+import { MANGASEE_URL, MANGASEE_GENRES } from '@services/MangaSee/MangaSee.constants';
+import { Directory, HotUpdateJSON, LatestJSON, MangaSeeManga } from '@services/MangaSee/MangaSee.interfaces';
 import { processScript } from '@services/MangaSee/MangaSee.utils';
 import MangaHost from '@services/scraper/scraper.abstract';
-import { Manga, MangaChapter, MangaMeta } from '@services/scraper/scraper.interfaces';
-
-const MANGASEE_URL = 'https://mangasee123.com/';
+import { Manga, MangaChapter } from '@services/scraper/scraper.interfaces';
 
 class MangaSee extends MangaHost {
-  public constructor(link: string) {
-    super(link);
+  public constructor() {
+    super(MANGASEE_URL, MANGASEE_GENRES);
   }
 
   public async listRecentlyUpdatedManga(): Promise<Manga[] | null> {
@@ -41,16 +40,24 @@ class MangaSee extends MangaHost {
     );
   }
 
-  public async listMangas(): Promise<Manga[] | null> {
-    const $ = await super.route('/directory');
+  public async listMangas(): Promise<MangaSeeManga[] | null> {
+    const $ = await super.route('/search');
     const html = $('body').html();
     const { variable } = processScript(html);
-    const FullDirectory = variable<FullDirectory>('vm.FullDirectory');
-    return Promise.resolve<Manga[]>(
-      FullDirectory.Directory.map((x) => ({
+    const Directory = variable<Directory[]>('vm.Directory');
+    return Promise.resolve<MangaSeeManga[]>(
+      Directory.map((x) => ({
         title: x.s,
         link: `https://${super.getLink()}/manga/${x.i}`,
         imageCover: `https://cover.nep.li/cover/${x.i}.jpg`,
+        status: {
+          scan: x.ss,
+          publish: x.ps,
+        },
+        isHentai: x.h,
+        type: x.t,
+        genre: x.g,
+        yearReleased: x.y,
       }))
     );
   }
@@ -68,4 +75,4 @@ class MangaSee extends MangaHost {
   }
 }
 
-export default new MangaSee(MANGASEE_URL);
+export default new MangaSee();

@@ -4,12 +4,14 @@ import url from 'url';
 import * as cheerio from 'cheerio';
 
 abstract class MangaHost {
+  private readonly genres: string[];
   /**
    * The link to the manga hosting website
    */
   private readonly link: string;
-  public constructor(host: string) {
+  public constructor(host: string, genres: string[]) {
     this.link = url.parse(host).hostname ?? '';
+    this.genres = genres;
   }
 
   protected async route(path: string): Promise<cheerio.CheerioAPI> {
@@ -19,6 +21,10 @@ abstract class MangaHost {
 
   protected getLink() {
     return this.link;
+  }
+
+  protected getGenre(index: number) {
+    return this.genres[index];
   }
 
   /**

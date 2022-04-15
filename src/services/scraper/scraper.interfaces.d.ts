@@ -1,4 +1,64 @@
 /**
+ * A manga with a given released date
+ */
+export declare interface WithYearReleased {
+  /**
+   * The time the manga was released
+   */
+  yearReleased: string;
+}
+
+/**
+ * A manga that is a hentai or not
+ */
+export declare interface WithHentai {
+  /**
+   * Whether the manga is a hentai or not
+   */
+  isHentai: boolean;
+}
+
+/**
+ * A type of manga (manga, manhwa, manhua)
+ */
+export declare interface WithType {
+  /**
+   * The type of the manga
+   */
+  type: string;
+}
+
+/**
+ * A manga with listed genres
+ */
+export declare interface WithGenres {
+  /**
+   * The category genre that matches the manga
+   */
+  genre: string[];
+}
+
+/**
+ * The status of the manga (Ongoing, Hiatus, etc.)
+ */
+export declare interface WithStatus {
+  /**
+   * The status of the manga
+   */
+  status: {
+    /**
+     * The scan status of the manga
+     */
+    scan: string;
+
+    /**
+     * The publish status of the manga
+     */
+    publish: string;
+  };
+}
+
+/**
  * The generic interface for a Manga. This is meant to be universal and should work with every manga website.
  */
 export declare interface Manga {
