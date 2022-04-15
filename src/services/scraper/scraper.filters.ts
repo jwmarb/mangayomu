@@ -8,8 +8,6 @@ export enum MangaSortType {
 }
 
 export abstract class MangaHostWithFilters<T> extends MangaHost {
-  protected abstract filter(options: T, mangas?: Manga[]): Promise<Manga[]>;
-
   /**
    * Search for a manga from the website
    * @param query The string query to use to find matching results
