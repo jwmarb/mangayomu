@@ -13,7 +13,7 @@ import titleIncludes from '@utils/MangaFilters';
 
 class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   public constructor() {
-    super(MANGASEE_URL, MANGASEE_GENRES);
+    super('MangaSee', MANGASEE_URL, MANGASEE_GENRES);
   }
 
   public async listRecentlyUpdatedManga(): Promise<Manga[] | null> {
