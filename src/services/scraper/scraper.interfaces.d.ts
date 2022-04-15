@@ -118,3 +118,50 @@ export declare interface MangaChapter {
    */
   name?: string | null;
 }
+
+export type ExclusiveInclusiveFilter<T> = {
+  include: T[];
+  exclude: T[];
+};
+
+/**
+ * A filter for genres
+ */
+export type WithGenresFilter = {
+  /**
+   * Include/exclude genres from search
+   */
+  genres: ExclusiveInclusiveFilter<string>;
+};
+
+/**
+ * A filter with sort
+ */
+export type WithSortFilter = {
+  /**
+   * Sort the mangas in an order
+   * First element of this array should be a boolean declaring if its in descending or ascending order
+   * Second element of this array should be a MangaSortType declaring how the mangas should be sorted
+   */
+  sort: [boolean, MangaSortType];
+};
+
+/**
+ * A filter for manga status
+ */
+export type WithStatusFilter = {
+  /**
+   * Only include mangas from search that match status
+   */
+  status: string | null;
+};
+
+/**
+ * A filter for official translations
+ */
+export type WithOfficialTranslationFilter = {
+  /**
+   * Only include mangas from search that are officially translated and are not fan translations
+   */
+  officialTranslation: boolean;
+};
