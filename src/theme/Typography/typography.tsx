@@ -36,6 +36,11 @@ export const typographyVariants = {
     font-size: ${rem(18)};
     letter-spacing: -0.2px;
   `,
+  bottomtab: css`
+    font-family: ${typographyConstants.fontFamily.heavy};
+    font-size: ${rem(10)};
+    letter-spacing: -0.56px;
+  `,
 };
 
 export const typographyTheme = {
