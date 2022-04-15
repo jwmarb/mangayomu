@@ -5,9 +5,19 @@ import {
   WithHentai,
   WithStatus,
   WithType,
+  MangaMeta,
+  ExclusiveInclusiveFilter,
+  WithGenresFilter,
+  WithSortFilter,
+  WithOfficialTranslationFilter,
+  WithStatusFilter,
 } from '@services/scraper/scraper.interfaces';
 
 export type MangaSeeManga = Manga & WithGenres & WithStatus & WithHentai & WithYearReleased & WithType;
+
+export type MangaSeeMangaMeta = MangaMeta & WithGenres;
+
+export type MangaSeeFilter = WithGenresFilter & WithSortFilter & WithOfficialTranslationFilter & WithStatusFilter;
 
 export interface Directory {
   /**
