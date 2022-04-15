@@ -34,7 +34,7 @@ const TouchableBase = styled(Platform.OS === 'ios' ? TouchableOpacity : Touchabl
 })``;
 const TouchableContainer = styled.View<ButtonBaseProps>`
   ${(props) => css`
-    border-radius: ${props.round ? props.theme.borderRadius : 0}px;
+    border-radius: ${props.round ? 100 : props.theme.borderRadius}px;
     overflow: hidden;
     ${props.expand
       ? css`
