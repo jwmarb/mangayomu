@@ -1,26 +1,69 @@
-export interface FullDirectory {
-  AllGenres: string[];
-  Directory: {
-    /**
-     * Short for genres. Number corresponds with key
-     */
-    g: number[];
+import {
+  Manga,
+  WithYearReleased,
+  WithGenres,
+  WithHentai,
+  WithStatus,
+  WithType,
+} from '@services/scraper/scraper.interfaces';
 
-    /**
-     * same as IndexName
-     */
-    i: string;
+export type MangaSeeManga = Manga & WithGenres & WithStatus & WithHentai & WithYearReleased & WithType;
 
-    /**
-     * same as Series
-     */
-    s: string;
+export interface Directory {
+  /**
+   * Authors of the manga
+   */
+  a: string[];
 
-    /**
-     * manga status
-     */
-    st: string;
-  }[];
+  /**
+   * Date of latest chapter
+   */
+  ls: string;
+
+  /**
+   * Short for genres
+   */
+  g: string[];
+
+  /**
+   * same as IndexName
+   */
+  i: string;
+
+  /**
+   * same as Series
+   */
+  s: string;
+
+  /**
+   * manga status (scan)
+   */
+  ss: string;
+
+  /**
+   * manga status (publish)
+   */
+  ps: string;
+
+  /**
+   * Official translation
+   */
+  o: string;
+
+  /**
+   * Whether or not the manga is a hentai
+   */
+  h: boolean;
+
+  /**
+   * The type of the manga
+   */
+  t: string;
+
+  /**
+   * The year the manga was released
+   */
+  y: string;
 }
 
 export interface TopTenJSON {
