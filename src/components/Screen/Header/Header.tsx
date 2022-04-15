@@ -14,17 +14,9 @@ const Header: React.FC<BottomTabHeaderProps> = (props) => {
     navigation,
   } = props;
   const HeaderRightComponent = headerRight as React.FC;
-  function handleOnBack() {
-    navigation.goBack();
-  }
+
   return (
     <HeaderBaseContainer>
-      {navigation.canGoBack() && (
-        <>
-          <IconButton icon={<Icon bundle='FontAwesome5' name='chevron-left' />} onPress={handleOnBack} />
-          <Spacer x={1} />
-        </>
-      )}
       <Typography variant='subheader'>{headerTitle}</Typography>
       <Flex grow justifyContent='flex-end'>
         {HeaderRightComponent && <HeaderRightComponent />}
