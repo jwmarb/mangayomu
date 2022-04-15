@@ -9,7 +9,9 @@ const persistConfig: PersistConfig<AppState> = {
   storage: AsyncStorage,
 };
 
-const store = createStore(persistReducer<AppState>(persistConfig, reducers), {}, applyMiddleware(thunk));
+const persistReducers = persistReducer(persistConfig, reducers);
+
+const store = createStore(persistReducers, {}, applyMiddleware(thunk));
 
 export default store;
 
