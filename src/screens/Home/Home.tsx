@@ -1,20 +1,21 @@
-import { StackHeader, IconButton, Icon } from '@components/core';
-import HomeStack from '@navigators/Home';
+import { StackHeader, IconButton, Icon, StackTabs } from '@components/core';
+import BottomTab from '@navigators/BottomTab';
 import React from 'react';
 import { HomeProps } from './Home.interfaces';
 import Main from './screens/Main';
 
 const HomeScreen: React.FC<HomeProps> = (props) => {
   return (
-    <HomeStack.Navigator
-      initialRouteName='Main'
+    <BottomTab.Navigator
+      initialRouteName='Explore'
       screenOptions={{
         header: StackHeader,
 
         headerRight: () => <IconButton icon={<Icon bundle='AntDesign' name='search1' />} />,
-      }}>
-      <HomeStack.Screen component={Main} name='Main' options={{ headerTitle: 'Explore' }} />
-    </HomeStack.Navigator>
+      }}
+      tabBar={StackTabs}>
+      <BottomTab.Screen component={Main} name='Explore' options={{ headerTitle: 'Explore' }} />
+    </BottomTab.Navigator>
   );
 };
 

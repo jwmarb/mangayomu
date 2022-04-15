@@ -6,8 +6,9 @@ import IconButton from '../../IconButton';
 import Icon from '../../Icon';
 import Spacer from '../../Spacer';
 import Flex from '../../Flex';
+import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 
-const Header: React.FC<StackHeaderProps> = (props) => {
+const Header: React.FC<BottomTabHeaderProps> = (props) => {
   const {
     options: { headerTitle = props.route.name, headerRight },
     navigation,
@@ -32,4 +33,4 @@ const Header: React.FC<StackHeaderProps> = (props) => {
   );
 };
 
-export default (props: StackHeaderProps) => <Header {...props} />;
+export default (props: BottomTabHeaderProps) => <Header {...props} />;
