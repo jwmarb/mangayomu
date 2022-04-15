@@ -9,6 +9,7 @@ import {
 import { processScript } from '@services/MangaSee/MangaSee.utils';
 import { MangaHostWithFilters, MangaSortType } from '@services/scraper/scraper.filters';
 import { Manga, MangaChapter } from '@services/scraper/scraper.interfaces';
+import titleIncludes from '@utils/MangaFilters';
 
 class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   public constructor() {
@@ -78,11 +79,9 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
 
   public async search(query: string, filters?: MangaSeeFilter): Promise<MangaSeeManga[]> {
     const directory = await this.listMangas();
-    return Promise.resolve([]);
-  }
+    const filtered = directory.filter(titleIncludes(query));
 
-  protected async filter(options: MangaSeeFilter, mangas?: MangaSeeManga[]): Promise<MangaSeeManga[]> {
-    return Promise.resolve([]);
+    return filtered;
   }
 }
 
