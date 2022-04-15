@@ -1,4 +1,4 @@
-import { Manga, MangaChapter, MangaMeta } from '@services/scraper/scraper.interfaces';
+import { Manga, MangaChapter, MangaHostInfo, MangaMeta } from '@services/scraper/scraper.interfaces';
 import axios from 'axios';
 import url from 'url';
 import * as cheerio from 'cheerio';
@@ -18,11 +18,11 @@ abstract class MangaHost {
    * The link to the manga hosting website
    */
   private readonly link: string;
-  public constructor(name: string, host: string, genres: string[]) {
-    this.link = url.parse(host).hostname ?? '';
-    this.genres = genres;
-    this.icon = `https://s2.googleusercontent.com/s2/favicons?domain_url=${this.link}`;
-    this.name = name;
+  public constructor(info: MangaHostInfo) {
+    this.link = url.parse(info.host).hostname ?? '';
+    this.genres = info.genres;
+    this.icon = info.icon;
+    this.name = info.name;
   }
 
   protected async route(path: string): Promise<cheerio.CheerioAPI> {

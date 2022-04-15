@@ -1,4 +1,4 @@
-import { MANGASEE_URL, MANGASEE_GENRES } from '@services/MangaSee/MangaSee.constants';
+import { MANGASEE_INFO } from '@services/MangaSee/MangaSee.constants';
 import {
   Directory,
   HotUpdateJSON,
@@ -12,10 +12,6 @@ import { Manga, MangaChapter } from '@services/scraper/scraper.interfaces';
 import titleIncludes from '@utils/MangaFilters';
 
 class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
-  public constructor() {
-    super('MangaSee', MANGASEE_URL, MANGASEE_GENRES);
-  }
-
   public async listRecentlyUpdatedManga(): Promise<Manga[] | null> {
     const $ = await super.route('/');
     const html = $('body').html();
@@ -85,4 +81,4 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   }
 }
 
-export default new MangaSee();
+export default new MangaSee(MANGASEE_INFO);

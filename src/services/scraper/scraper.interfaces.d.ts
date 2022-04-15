@@ -1,3 +1,10 @@
+export declare interface MangaHostInfo {
+  name: string;
+  host: string;
+  genres: string[];
+  icon: string;
+}
+
 /**
  * A manga with a given released date
  */

@@ -1,5 +1,7 @@
-export const MANGASEE_URL = 'https://mangasee123.com/';
-export const MANGASEE_GENRES = [
+import { MangaHostInfo } from '@services/scraper/scraper.interfaces';
+
+const MANGASEE_URL = 'https://mangasee123.com/';
+const MANGASEE_GENRES = [
   'Action',
   'Adult',
   'Adventure',
@@ -39,3 +41,10 @@ export const MANGASEE_GENRES = [
   'Yaoi',
   'Yuri',
 ];
+
+export const MANGASEE_INFO: MangaHostInfo = {
+  host: MANGASEE_URL,
+  genres: MANGASEE_GENRES,
+  name: 'MangaSee',
+  icon: 'https://mangasee123.com/media/favicon.png',
+};
