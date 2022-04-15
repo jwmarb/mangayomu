@@ -3,4 +3,5 @@ export type BottomTabParamList = {
   Explore: undefined;
   History: undefined;
   Settings: undefined;
+  Library: undefined;
 };
