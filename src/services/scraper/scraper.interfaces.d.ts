@@ -35,7 +35,7 @@ export declare interface WithGenres {
   /**
    * The category genre that matches the manga
    */
-  genre: string[];
+  genres: string[];
 }
 
 /**

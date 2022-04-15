@@ -56,7 +56,7 @@ class MangaSee extends MangaHost {
         },
         isHentai: x.h,
         type: x.t,
-        genre: x.g,
+        genres: x.g,
         yearReleased: x.y,
       }))
     );
