@@ -10,7 +10,7 @@ abstract class MangaHost {
   public readonly name: string;
 
   /**
-   *
+   * The icon of the manga host
    */
   public readonly icon: string;
   private readonly genres: string[];
