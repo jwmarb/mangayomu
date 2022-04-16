@@ -13,11 +13,12 @@ abstract class MangaHost {
    * The icon of the manga host
    */
   public readonly icon: string;
-  private readonly genres: string[];
+
+  public readonly genres: string[];
   /**
    * The link to the manga hosting website
    */
-  private readonly link: string;
+  public readonly link: string;
   public constructor(info: MangaHostInfo) {
     this.link = url.parse(info.host).hostname ?? '';
     this.genres = info.genres;
