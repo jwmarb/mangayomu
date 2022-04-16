@@ -4,6 +4,7 @@ import url from 'url';
 import * as cheerio from 'cheerio';
 
 abstract class MangaHost {
+  public static availableSources = new Map<string, MangaHost>();
   /**
    * The name of the manga host
    */
@@ -28,6 +29,7 @@ abstract class MangaHost {
     this.genres = info.genres;
     this.icon = info.icon;
     this.name = info.name;
+    MangaHost.availableSources.set(info.name, this);
   }
 
   protected async route(path: string): Promise<cheerio.CheerioAPI> {
