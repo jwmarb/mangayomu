@@ -42,8 +42,12 @@ abstract class MangaHost {
     MangaHost.availableSources.set(info.name, this);
   }
 
-  protected async route(path: string): Promise<cheerio.CheerioAPI> {
-    const { data } = await axios.get(`https://${this.link}${path}`);
+  protected async route(path: string | { url: string }): Promise<cheerio.CheerioAPI> {
+    if (typeof path === 'string') {
+      const { data } = await axios.get(`https://${this.link}${path}`);
+      return cheerio.load(data, { decodeEntities: false });
+    }
+    const { data } = await axios.get(path.url);
     return cheerio.load(data, { decodeEntities: false });
   }
 
@@ -91,7 +95,7 @@ abstract class MangaHost {
    * @param manga The manga to fetch the meta data from
    * @returns Returns the meta of the manga from the parameters
    */
-  public abstract getMeta<T extends Manga, R extends MangaMeta>(manga: T): Promise<R>;
+  public abstract getMeta(manga: Manga): Promise<MangaMeta>;
 
   /**
    * Get the pages of a manga chapter
