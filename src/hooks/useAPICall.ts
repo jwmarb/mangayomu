@@ -20,7 +20,7 @@ export default function useAPICall<T>(apiCall: () => Promise<T[]>) {
   }
 
   return {
-    state: [items, setItems],
+    state: [items, setItems] as [T[], React.Dispatch<React.SetStateAction<T[]>>],
     error,
     loading,
     refresh,
