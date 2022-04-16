@@ -12,6 +12,7 @@ import { Manga, MangaChapter } from '@services/scraper/scraper.interfaces';
 import titleIncludes from '@utils/MangaFilters';
 
 class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
+  private memo: MangaSeeManga[] | null = null;
   public async listRecentlyUpdatedManga(): Promise<Manga[] | null> {
     const $ = await super.route('/');
     const html = $('body').html();
@@ -44,12 +45,13 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   }
 
   public async listMangas(): Promise<MangaSeeManga[]> {
-    const $ = await super.route('/search');
-    const html = $('body').html();
-    const { variable } = processScript(html);
-    const Directory = variable<Directory[]>('vm.Directory');
-    return Promise.resolve<MangaSeeManga[]>(
-      Directory.map((x) => ({
+    if (this.memo == null) {
+      console.log('not memoized. fetching...');
+      const $ = await super.route('/search');
+      const html = $('body').html();
+      const { variable } = processScript(html);
+      const Directory = variable<Directory[]>('vm.Directory');
+      const result = Directory.map((x) => ({
         title: x.s,
         link: `https://${super.getLink()}/manga/${x.i}`,
         imageCover: `https://cover.nep.li/cover/${x.i}.jpg`,
@@ -61,8 +63,11 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         type: x.t,
         genres: x.g,
         yearReleased: x.y,
-      }))
-    );
+      }));
+      this.memo = result;
+      return result;
+    }
+    return this.memo;
   }
 
   getMeta(manga: Manga) {
