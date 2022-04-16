@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 const Explore: React.FC = (props) => {
   const source = useMangaSource();
   return (
-    <Screen>
+    <Screen scrollable>
       <Flex direction='column' spacing={2}>
         {source.genres.length > 0 && <Genres />}
         {source.hasHotMangas && <HotManga />}
