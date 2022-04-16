@@ -1,5 +1,6 @@
-import { Button, Category, Icon, Spacer, Typography } from '@components/core';
+import { Button, Category, Icon, IconButton, Placeholder, Spacer, Typography } from '@components/core';
 import Flex from '@components/Flex';
+import MangaSkeleton from '@components/Manga/Manga.skeleton';
 import useAPICall from '@hooks/useAPICall';
 import { keyExtractor, renderItem } from '@screens/Home/screens/Explore/components/HotManga/HotManga.flatlist';
 import { useMangaSource } from '@services/scraper';
@@ -25,7 +26,9 @@ const HotManga: React.FC = (props) => {
       </Category.Header>
       <Spacer y={1} />
       {loading ? (
-        <Typography>Loading...</Typography>
+        <Category.Header>
+          <Placeholder.MangaComponent />
+        </Category.Header>
       ) : error ? (
         <Typography>{error}</Typography>
       ) : (
