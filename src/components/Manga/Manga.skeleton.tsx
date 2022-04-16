@@ -19,10 +19,9 @@ const MangaSkeleton: React.FC = (props) => {
     <MangaBaseContainer>
       <Flex direction='column'>
         <MangaSkeletonImage />
-        <Spacer y={1} />
+        <Spacer y={0.5} />
         <TypographySkeleton width={1} />
         <Spacer y={0.5} />
-
         <TypographySkeleton width={1} />
       </Flex>
     </MangaBaseContainer>
