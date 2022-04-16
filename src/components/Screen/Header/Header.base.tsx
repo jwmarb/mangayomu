@@ -41,16 +41,19 @@ export const MangaSource: React.FC = () => {
       {
         text: 'Change Source',
         onPress: () => {},
+        icon: 'book-open',
       },
       {
         text: 'View Website',
         onPress: () => {
           Linking.openURL(`https://${mangaSource.link}`);
         },
+        icon: 'link',
       },
       {
         text: 'Report Source',
         isDestructive: true,
+        icon: 'flag',
       },
     ],
     [mangaSource]
