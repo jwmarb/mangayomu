@@ -7,7 +7,7 @@ import { HomeProps } from './Home.interfaces';
 import Main from './screens/Explore';
 
 function createTabIcon<T extends IconPack>(bundle: T, name: IconProps<T>['name']) {
-  return (props: any) => <Icon {...props} bundle={bundle} name={name} />;
+  return (props: any) => <Icon {...props} bundle={bundle} name={name} size='tab' />;
 }
 
 const HomeScreen: React.FC<HomeProps> = (props) => {

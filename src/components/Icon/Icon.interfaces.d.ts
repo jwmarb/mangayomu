@@ -24,7 +24,7 @@ export type IconProps<T extends IconPack> = {
     ? keyof typeof OctIconNames
     : '';
   color?: AppColors;
-  size?: 'small' | 'large' | 'medium';
+  size?: 'small' | 'large' | 'medium' | 'tab';
 };
 
 export type IconBaseProps<
