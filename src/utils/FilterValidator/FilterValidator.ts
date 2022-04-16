@@ -1,3 +1,5 @@
+import MangaHost from '@services/scraper/scraper.abstract';
+import { MangaHostWithFilters } from '@services/scraper/scraper.filters';
 import {
   ExclusiveInclusiveFilter,
   WithGenresFilter,
@@ -7,6 +9,9 @@ import {
 } from '@services/scraper/scraper.interfaces';
 
 class FilterValidator {
+  public isMangaHostWithFilters<T>(obj: any): obj is MangaHostWithFilters<T> {
+    return obj instanceof MangaHostWithFilters;
+  }
   public isIncludeExcludeFilter(obj: any): obj is ExclusiveInclusiveFilter<unknown> {
     return 'include' in obj && 'exclude' in obj && Array.isArray(obj.include) && Array.isArray(obj.exclude);
   }
