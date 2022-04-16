@@ -14,7 +14,11 @@ abstract class MangaHost {
    */
   public readonly icon: string;
 
+  /**
+   * The available genres the manga host provides
+   */
   public readonly genres: string[];
+
   /**
    * The link to the manga hosting website
    */
