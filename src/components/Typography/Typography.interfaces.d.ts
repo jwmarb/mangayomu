@@ -10,3 +10,8 @@ export interface TypographyProps {
   align?: TextStyle['textAlign'];
   variant?: TypographyVariants;
 }
+
+export interface TypographySkeletonProps {
+  variant?: TypographyVariants;
+  width: number | string;
+}
