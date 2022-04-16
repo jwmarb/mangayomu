@@ -44,4 +44,4 @@ const HotManga: React.FC = (props) => {
   );
 };
 
-export default HotManga;
+export default React.memo(HotManga);
