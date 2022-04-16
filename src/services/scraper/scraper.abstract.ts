@@ -57,26 +57,26 @@ abstract class MangaHost {
 
   /**
    * List all recently updated mangas from the website, if available
-   * @returns {Promise<Manga[] | null>} Returns a list of mangas that were recently updated
+   * @returns {Promise<Manga[]>} Returns a list of mangas that were recently updated
    */
-  public listRecentlyUpdatedManga(): Promise<Manga[] | null> {
-    return Promise.resolve(null);
+  public listRecentlyUpdatedManga(): Promise<Manga[]> {
+    return Promise.resolve([]);
   }
 
   /**
    * List all hot/trending mangas from the website, if available
-   * @returns {Promise<Manga[] | null>} Returns a list of mangas that are trending/hot
+   * @returns {Promise<Manga[]>} Returns a list of mangas that are trending/hot
    */
-  public listHotMangas(): Promise<Manga[] | null> {
-    return Promise.resolve(null);
+  public listHotMangas(): Promise<Manga[]> {
+    return Promise.resolve([]);
   }
 
   /**
    * List all mangas from the website, if available
-   * @returns {Promise<Manga[] | null>} Returns a list of mangas from the website
+   * @returns {Promise<Manga[]>} Returns a list of mangas from the website
    */
-  public listMangas(): Promise<Manga[] | null> {
-    return Promise.resolve(null);
+  public listMangas(): Promise<Manga[]> {
+    return Promise.resolve([]);
   }
 
   /**
