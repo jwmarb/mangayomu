@@ -9,9 +9,4 @@ export { default as Spacer } from '../Spacer';
 export { default as IconButton } from '../IconButton';
 export { Tabs as StackTabs } from '../Screen';
 export { default as Genre } from '../Genre';
-import { CategoryHeader } from '../CategoryHeader';
-import { CategoryList } from '@components/CategoryList';
-export const Category = {
-  Header: CategoryHeader,
-  FlatList: CategoryList,
-};
+export { default as Category } from '../Category';
