@@ -30,7 +30,7 @@ const theme = (): DefaultTheme => {
     '@react-navigation': {
       colors: {
         ...DefaultNavigationTheme.colors,
-        background: generated.palette.background.default.get(),
+        background: generated.palette.background.paper.get(),
         text: generated.palette.text.primary.get(),
         primary: generated.palette.primary.main.get(),
       },
