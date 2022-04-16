@@ -18,7 +18,11 @@ const Manga: React.FC<MangaProps> = (props) => {
         <Flex direction='column'>
           <Image
             source={{ uri: imageCover }}
-            style={{ width: pixelToNumber(theme.spacing(13)), height: pixelToNumber(theme.spacing(20)) }}
+            style={{
+              width: pixelToNumber(theme.spacing(13)),
+              height: pixelToNumber(theme.spacing(20)),
+              borderRadius: theme.borderRadius,
+            }}
           />
           <Spacer y={1} />
           <Typography numberOfLines={2}>{title}</Typography>
