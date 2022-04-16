@@ -22,7 +22,7 @@ const theme = (): DefaultTheme => {
   const generated = {
     palette: Palette(),
     spacing,
-    borderRadius: 24,
+    borderRadius: 10,
     typography: typographyTheme,
   };
   return {
