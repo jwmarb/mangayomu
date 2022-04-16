@@ -10,27 +10,31 @@ import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { PersistGate } from 'redux-persist/integration/react';
+import { HoldMenuProvider } from 'react-native-hold-menu';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 
 export default function App() {
   const generated = theme();
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer>
-        <ResourceLoader
-          onFinishedLoading={
-            <Provider store={store}>
-              <PersistGate persistor={persistor}>
-                <NavigationThemeProvider value={generated['@react-navigation']}>
-                  <ThemeProvider theme={generated}>
-                    <Root />
-                    <StatusBar translucent />
-                  </ThemeProvider>
-                </NavigationThemeProvider>
-              </PersistGate>
-            </Provider>
-          }
-        />
-      </NavigationContainer>
-    </GestureHandlerRootView>
+    <ThemeProvider theme={generated}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <NavigationContainer>
+          <ResourceLoader
+            onFinishedLoading={
+              <HoldMenuProvider iconComponent={FeatherIcon} theme={generated.palette.mode ?? 'light'}>
+                <Provider store={store}>
+                  <PersistGate persistor={persistor}>
+                    <NavigationThemeProvider value={generated['@react-navigation']}>
+                      <Root />
+                      <StatusBar translucent />
+                    </NavigationThemeProvider>
+                  </PersistGate>
+                </Provider>
+              </HoldMenuProvider>
+            }
+          />
+        </NavigationContainer>
+      </GestureHandlerRootView>
+    </ThemeProvider>
   );
 }
