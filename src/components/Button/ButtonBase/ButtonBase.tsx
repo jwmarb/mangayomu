@@ -96,12 +96,29 @@ const TouchableContainer = styled.View<ButtonBaseProps>`
   `}
 `;
 
-export const ButtonBase: React.FC<ButtonBaseProps & Omit<ButtonProps, 'title'>> = ({ children, onPress, ...rest }) => {
+const OpacityBase = styled(TouchableOpacity).attrs<ButtonBaseProps & ButtonProps>(() => {
+  return {
+    activeOpacity: 0.5,
+  } as TouchableOpacityProps;
+})``;
+
+export const ButtonBase: React.FC<ButtonBaseProps & Omit<ButtonProps, 'title'>> = ({
+  children,
+  onPress,
+  opacity,
+  ...rest
+}) => {
   return (
     <TouchableContainer {...rest}>
-      <TouchableBase onPress={onPress} {...rest}>
-        {children}
-      </TouchableBase>
+      {opacity ? (
+        <OpacityBase onPress={onPress} {...rest}>
+          {children}
+        </OpacityBase>
+      ) : (
+        <TouchableBase onPress={onPress} {...rest}>
+          {children}
+        </TouchableBase>
+      )}
     </TouchableContainer>
   );
 };
