@@ -9,8 +9,6 @@ import { FlatList } from 'react-native';
 import { keyExtractor, renderItem } from '@screens/Home/screens/Explore/components/Genres/Genres.flatlist';
 import { Category } from '@components/core';
 
-const Separator = () => <Spacer x={1} />;
-
 const Genres: React.FC = (props) => {
   const {} = props;
   const genres = useSelector((state: AppState) => state.settings.selectedSource.genres);
@@ -24,7 +22,6 @@ const Genres: React.FC = (props) => {
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         horizontal
-        ItemSeparatorComponent={Separator}
         data={genres}
         initialNumToRender={7}
         maxToRenderPerBatch={15}
