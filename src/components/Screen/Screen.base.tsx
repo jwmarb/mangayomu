@@ -1,3 +1,4 @@
+import pixelToNumber from '@utils/pixelToNumber';
 import { ViewProps, View } from 'react-native';
 import { ThemedStyledProps } from 'styled-components';
 import styled, { css, DefaultTheme } from 'styled-components/native';
@@ -19,5 +20,8 @@ export const Screen = styled.View`
 `;
 
 export const ScrollableScreen = styled.ScrollView`
-  ${generateCSS}
+  min-height: 100%;
+  ${(props) => css`
+    background-color: ${props.theme.palette.background.default.get()};
+  `}
 `;
