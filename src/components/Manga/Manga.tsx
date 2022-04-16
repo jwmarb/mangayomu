@@ -8,12 +8,17 @@ import { useTheme } from 'styled-components/native';
 import pixelToNumber from '@utils/pixelToNumber';
 import { MangaBaseContainer } from '@components/Manga/Manga.base';
 import Spacer from '@components/Spacer';
+import { useRootNavigation } from '@navigators/Root';
 
 const Manga: React.FC<MangaProps> = (props) => {
   const { title, link, imageCover } = props;
   const theme = useTheme();
+  const navigation = useRootNavigation();
+  function handleOnPress() {
+    navigation.navigate('MangaViewer', { manga: props });
+  }
   return (
-    <ButtonBase opacity>
+    <ButtonBase onPress={handleOnPress} opacity>
       <MangaBaseContainer>
         <Flex direction='column'>
           <Image
