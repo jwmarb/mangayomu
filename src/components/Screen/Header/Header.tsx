@@ -1,12 +1,15 @@
 import React from 'react';
-import { HeaderBaseContainer } from './Header.base';
+import { HeaderBaseContainer, MangaSource } from './Header.base';
 import { Typography } from '../../Typography';
-import IconButton from '../../IconButton';
 import Spacer from '../../Spacer';
 import Flex from '../../Flex';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
+import { useSelector } from 'react-redux';
+import { AppState, useAppDispatch } from '@redux/store';
 import { Image } from 'react-native';
-import MangaSee from '@services/MangaSee';
+import IconButton from '../../IconButton';
+import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
+import { Linking } from 'react-native';
 
 const Header: React.FC<BottomTabHeaderProps> = (props) => {
   const {
@@ -17,7 +20,7 @@ const Header: React.FC<BottomTabHeaderProps> = (props) => {
 
   return (
     <HeaderBaseContainer>
-      <IconButton icon={<Image source={{ uri: MangaSee.icon }} style={{ width: 24, height: 24 }} />} />
+      <MangaSource />
       <Spacer x={1} />
       <Typography variant='subheader'>{headerTitle}</Typography>
       <Flex grow justifyContent='flex-end'>

@@ -1,6 +1,12 @@
+import { AppState } from '@redux/store';
 import { SPACE_MULTIPLIER } from '@theme/Spacing';
-import { StatusBar } from 'react-native';
+import { StatusBar, Image, Linking } from 'react-native';
+import { useSelector } from 'react-redux';
 import styled, { css } from 'styled-components/native';
+import React from 'react';
+import IconButton from '../../IconButton';
+import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
+import { HoldItem } from 'react-native-hold-menu';
 
 export const HeaderBaseContainer = styled.View`
   ${(props) => css`
@@ -22,3 +28,36 @@ export const HeaderBaseContainer = styled.View`
     align-items: center;
   `}
 `;
+
+export const MangaSource: React.FC = () => {
+  const mangaSource = useSelector((state: AppState) => state.settings.selectedSource);
+  const menuItems: MenuItemProps[] = React.useMemo(
+    () => [
+      {
+        text: mangaSource.name,
+        isTitle: true,
+        withSeparator: true,
+      },
+      {
+        text: 'Change Source',
+        onPress: () => {},
+      },
+      {
+        text: 'View Website',
+        onPress: () => {
+          Linking.openURL(`https://${mangaSource.link}`);
+        },
+      },
+      {
+        text: 'Report Source',
+        isDestructive: true,
+      },
+    ],
+    [mangaSource]
+  );
+  return (
+    <HoldItem activateOn='tap' hapticFeedback='Heavy' items={menuItems}>
+      <IconButton icon={<Image source={{ uri: mangaSource.icon }} style={{ width: 24, height: 24 }} />} />
+    </HoldItem>
+  );
+};
