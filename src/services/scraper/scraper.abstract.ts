@@ -6,6 +6,13 @@ import * as cheerio from 'cheerio';
 abstract class MangaHost {
   public static availableSources = new Map<string, MangaHost>();
   /**
+   *
+   */
+  public readonly hasHotMangas: boolean;
+
+  public readonly hasLatestMangas: boolean;
+
+  /**
    * The name of the manga host
    */
   public readonly name: string;
@@ -29,6 +36,9 @@ abstract class MangaHost {
     this.genres = info.genres;
     this.icon = info.icon;
     this.name = info.name;
+    this.hasHotMangas = info.hasHotMangas ?? false;
+    this.hasLatestMangas = info.hasLatestMangas ?? false;
+
     MangaHost.availableSources.set(info.name, this);
   }
 

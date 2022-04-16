@@ -1,8 +1,38 @@
 export declare interface MangaHostInfo {
+  /**
+   * The name of the manga host
+   */
   name: string;
+
+  /**
+   * The host URL of the manga host
+   */
   host: string;
+
+  /**
+   * All the available genres the manga host provides
+   */
   genres: string[];
+
+  /**
+   * The icon of the manga host. It is preferable to use favicon for this
+   */
   icon: string;
+
+  /**
+   * Whether or not the manga host has a page for listing hot/trending updated manga
+   */
+  hasHotMangas: boolean;
+
+  /**
+   * Whether or not the manga host has a page for listing latest/recently updated manga
+   */
+  hasLatestMangas: boolean;
+
+  /**
+   * Whether or not the manga host has a manga directory like MangaSee
+   */
+  hasMangaDirectory: boolean;
 }
 
 /**
