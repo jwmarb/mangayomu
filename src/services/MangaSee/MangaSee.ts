@@ -13,7 +13,7 @@ import titleIncludes from '@utils/MangaFilters';
 
 class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   private memo: MangaSeeManga[] | null = null;
-  public async listRecentlyUpdatedManga(): Promise<Manga[] | null> {
+  public async listRecentlyUpdatedManga(): Promise<Manga[]> {
     const $ = await super.route('/');
     const html = $('body').html();
     const { variable, fn } = processScript(html);
@@ -25,11 +25,12 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         link: `https://${super.getLink()}/read-online/${x.IndexName}${ChapterURLEncode(x.Chapter)}`,
         title: x.SeriesName,
         imageCover: `https://cover.nep.li/cover/${x.IndexName}.jpg`,
+        source: super.name,
       }))
     );
   }
 
-  public async listHotMangas(): Promise<Manga[] | null> {
+  public async listHotMangas(): Promise<Manga[]> {
     const $ = await super.route('/');
     const html = $('body').html();
     const { variable, fn } = processScript(html);
@@ -40,6 +41,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         link: `https://${super.getLink()}/read-online/${x.IndexName}${ChapterURLEncode(x.Chapter)}`,
         title: x.SeriesName,
         imageCover: `https://cover.nep.li/cover/${x.IndexName}.jpg`,
+        source: super.name,
       }))
     );
   }
@@ -63,6 +65,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         type: x.t,
         genres: x.g,
         yearReleased: x.y,
+        source: super.name,
       }));
       this.memo = result;
       return result;

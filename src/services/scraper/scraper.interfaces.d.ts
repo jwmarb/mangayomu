@@ -100,6 +100,10 @@ export declare interface WithStatus {
  */
 export declare interface Manga {
   /**
+   * The source the manga was fetched from
+   */
+  source: string;
+  /**
    * The title of the manga
    */
   title: string;
