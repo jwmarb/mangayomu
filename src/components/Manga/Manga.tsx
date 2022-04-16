@@ -9,6 +9,7 @@ import pixelToNumber from '@utils/pixelToNumber';
 import { MangaBaseContainer } from '@components/Manga/Manga.base';
 import Spacer from '@components/Spacer';
 import { useRootNavigation } from '@navigators/Root';
+import Cover from '@components/Manga/Cover/Cover';
 
 const Manga: React.FC<MangaProps> = (props) => {
   const { title, link, imageCover } = props;
@@ -21,14 +22,7 @@ const Manga: React.FC<MangaProps> = (props) => {
     <ButtonBase onPress={handleOnPress} opacity>
       <MangaBaseContainer>
         <Flex direction='column'>
-          <Image
-            source={{ uri: imageCover }}
-            style={{
-              width: pixelToNumber(theme.spacing(13)),
-              height: pixelToNumber(theme.spacing(20)),
-              borderRadius: theme.borderRadius,
-            }}
-          />
+          <Cover uri={imageCover} />
           <Spacer y={1} />
           <Typography numberOfLines={2}>{title}</Typography>
         </Flex>
