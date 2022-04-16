@@ -26,3 +26,4 @@ export const Placeholder = {
 };
 
 export { MangaCover } from '../Manga';
+export * from '../Container';
