@@ -10,3 +10,4 @@ export { default as IconButton } from '../IconButton';
 export { Tabs as StackTabs } from '../Screen';
 export { default as Genre } from '../Genre';
 export { default as Category } from '../Category';
+export { default as MangaComponent } from '../Manga';
