@@ -15,7 +15,7 @@ const Button: React.FC<ButtonProps> = (props) => {
     expand = false,
     ...rest
   } = props;
-  const passedProps: Required<ButtonBaseProps> = {
+  const passedProps: Required<Omit<ButtonBaseProps, 'opacity'>> = {
     color,
     variant,
     disabled,

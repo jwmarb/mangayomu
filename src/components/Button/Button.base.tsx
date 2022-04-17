@@ -10,7 +10,7 @@ export const ButtonContainer = styled.View<Pick<ButtonProps, 'expand'>>`
   `}
 `;
 
-export const ButtonText = styled.Text<Omit<Required<ButtonBaseProps>, 'onPress'>>`
+export const ButtonText = styled.Text<Omit<Required<ButtonBaseProps>, 'onPress' | 'opacity'>>`
   ${(props) => css`
     ${props.theme.typography.button};
     text-align: ${props.expand ? 'center' : 'left'};
