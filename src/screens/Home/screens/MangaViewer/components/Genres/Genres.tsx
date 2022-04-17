@@ -23,7 +23,9 @@ const Genres: React.FC<GenresProps> = (props) => {
             </Flex>
           </Category.Header>
         ) : (
-          <Typography color='textSecondary'>{genres.join(' · ')}</Typography>
+          <Typography color='textSecondary' numberOfLines={2}>
+            {genres.join(' · ')}
+          </Typography>
         ),
         withAnimatedMounting
       );

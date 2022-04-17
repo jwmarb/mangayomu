@@ -4,7 +4,11 @@ import React from 'react';
 
 const Title: React.FC<TitleProps> = (props) => {
   const { title } = props;
-  return <Typography variant='subheader'>{title}</Typography>;
+  return (
+    <Typography variant='subheader' numberOfLines={2}>
+      {title}
+    </Typography>
+  );
 };
 
 export default React.memo(Title);

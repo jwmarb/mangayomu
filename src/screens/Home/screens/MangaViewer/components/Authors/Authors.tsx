@@ -12,14 +12,20 @@ const Authors: React.FC<AuthorsProps> = (props) => {
   const animatedMount = useAnimatedMounting(!loading);
   return MangaValidator.hasAuthors(manga) ? (
     <Typography>
-      By <Typography color='textSecondary'>{manga.authors.join(', ')}</Typography>
+      By{' '}
+      <Typography color='textSecondary' numberOfLines={1}>
+        {manga.authors.join(', ')}
+      </Typography>
     </Typography>
   ) : loading ? (
     animate(<Skeleton.Typography width='80%' />, withAnimatedLoading)
   ) : (
     <Animated.View style={animatedMount}>
       <Typography>
-        By <Typography color='textSecondary'>{authors?.join(', ')}</Typography>
+        By{' '}
+        <Typography color='textSecondary' numberOfLines={1}>
+          {authors?.join(', ')}
+        </Typography>
       </Typography>
     </Animated.View>
   );
