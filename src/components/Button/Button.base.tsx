@@ -6,6 +6,8 @@ import styled, { css } from 'styled-components/native';
 export const ButtonContainer = styled.View<Pick<ButtonProps, 'expand'>>`
   ${(props) => css`
     flex-grow: 1;
+    align-items: center;
+    flex-direction: row;
     padding: ${props.theme.spacing(1.5, 2)};
   `}
 `;
