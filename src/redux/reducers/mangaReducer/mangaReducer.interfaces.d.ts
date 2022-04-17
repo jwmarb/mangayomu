@@ -1,4 +1,4 @@
-import { MangaChapter, MangaMeta, MangaPage } from '@services/scraper/scraper.interfaces';
+import { Manga, MangaChapter, MangaMeta, MangaPage } from '@services/scraper/scraper.interfaces';
 
 export interface ReadingChapterInfo extends MangaChapter {
   /**
@@ -17,7 +17,7 @@ export interface ReadingChapterInfo extends MangaChapter {
   indexPage: number;
 }
 
-export interface ReadingMangaInfo extends MangaMeta {
+export interface ReadingMangaInfo extends MangaMeta, Manga {
   /**
    * Determines whether or not the user has the manga added in their library
    */
@@ -38,5 +38,5 @@ export type MangaReducerState = Record<string, MangaMeta>;
 
 export type MangaReducerAction = {
   type: 'VIEW_MANGA';
-  payload: MangaMeta;
+  payload: Manga & MangaMeta;
 };
