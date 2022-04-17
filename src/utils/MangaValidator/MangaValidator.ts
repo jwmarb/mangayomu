@@ -1,6 +1,7 @@
 import {
   Manga,
   WithAuthors,
+  WithDate,
   WithGenres,
   WithHentai,
   WithStatus,
@@ -10,6 +11,9 @@ import {
 import { ADULT_GENRES } from '@utils/MangaValidator/MangaValidator.constants';
 
 class MangaValidator {
+  public hasDate(manga: any): manga is WithDate {
+    return 'date' in manga;
+  }
   /**
    * Check if there are 18+ genres
    * @param genres The genres of the manga
