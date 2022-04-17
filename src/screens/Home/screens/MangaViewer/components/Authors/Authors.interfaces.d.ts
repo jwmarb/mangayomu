@@ -1,6 +1,6 @@
 import { Manga } from '@services/scraper/scraper.interfaces';
 
-export interface Authors {
+export interface AuthorsProps {
   manga: Manga;
   loading: boolean;
   authors?: string[];
