@@ -9,8 +9,8 @@ const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerA
         ...state,
         [action.payload.title]: {
           ...action.payload,
-          inLibrary: state[action.payload.title].inLibrary ?? false,
-          currentlyReadingChapter: state[action.payload.title].currentlyReadingChapter ?? null,
+          inLibrary: state[action.payload.title]?.inLibrary ?? false,
+          currentlyReadingChapter: state[action.payload.title]?.currentlyReadingChapter ?? null,
         },
       };
     case 'TOGGLE_LIBRARY':
@@ -18,7 +18,7 @@ const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerA
         ...state,
         [action.payload.title]: {
           ...state[action.payload.title],
-          inLibrary: !state[action.payload.title].inLibrary,
+          inLibrary: !state[action.payload.title]?.inLibrary ?? false,
         },
       };
     default:
