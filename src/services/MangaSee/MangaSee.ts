@@ -13,6 +13,7 @@ import { extractDataFromApplicationLDJson, parseMangaSeeDate, processScript } fr
 import { MangaHostWithFilters, MangaSortType } from '@services/scraper/scraper.filters';
 import { Manga, MangaChapter, MangaMeta } from '@services/scraper/scraper.interfaces';
 import titleIncludes from '@utils/MangaFilters';
+import { parse } from 'date-fns';
 
 class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   private memo: MangaSeeManga[] | null = null;
@@ -125,7 +126,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         published: parseMangaSeeDate(data.datePublished),
       },
       chapters: Chapters.map((chapter) => ({
-        date: chapter.Date,
+        date: parseMangaSeeDate(chapter.Date),
         name: `${chapter.Type != '' ? chapter.Type : 'Chapter'} ${ChapterDisplay(chapter.Chapter)}`,
         link: `https://${super.getLink()}/read-online/${IndexName}${ChapterURLEncode(chapter.Chapter)}`,
       })),
