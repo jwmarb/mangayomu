@@ -1,4 +1,14 @@
 /**
+ * A manga with an author
+ */
+export interface WithAuthors {
+  /**
+   * The authors of the manga
+   */
+  authors: string[];
+}
+
+/**
  * A manga/chapter with a given release date
  */
 export interface WithDate {

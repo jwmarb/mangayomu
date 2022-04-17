@@ -1,5 +1,6 @@
 import {
   Manga,
+  WithAuthors,
   WithGenres,
   WithHentai,
   WithStatus,
@@ -8,6 +9,9 @@ import {
 } from '@services/scraper/scraper.interfaces';
 
 class MangaValidator {
+  public hasAuthors(manga: any): manga is WithAuthors {
+    return 'authors' in manga;
+  }
   public hasGenres(manga: any): manga is WithGenres {
     return 'genre' in manga;
   }
