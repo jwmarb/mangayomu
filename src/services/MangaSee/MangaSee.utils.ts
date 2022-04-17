@@ -8,43 +8,27 @@ export function extractDataFromVariable(html: string | null) {
   };
 }
 
+export function extractDataFromApplicationLDJson<T>(html: string | null): T {
+  if (html == null) throw Error('HTML is null');
+  const target = /"mainEntity":{((\s|.)*?)}/g;
+  const closing = /}/g;
+  const obj = html.match(target);
+  if (obj == null) throw Error('Invalid regular expression');
+  const parsed = JSON.parse(`{${obj[0]}}`);
+
+  return parsed;
+}
+
 export function extractFunctionFromVariable(html: string | null) {
   return <T extends (...args: any) => any>(fnName: string): T => {
     if (html == null) throw Error('HTML is null');
-    const splitted = html.split('\n');
-    let start = 0;
-    let end = -1;
-    let i = 0;
-    const regex = new RegExp(`${fnName} = .*`);
-    const closingBracket = /};/g;
-    while (end === -1) {
-      if (regex.test(splitted[i])) {
-        start = i;
-        let j = i;
-        while (end === -1) {
-          if (closingBracket.test(splitted[j])) {
-            end = j;
-          }
-          j++;
-        }
-      }
-      i++;
-    }
+    const b = html.match(new RegExp(`${fnName}( = |=)function\\((.)*?\\){(\\s|.)*?}(;|,)`));
 
-    const linesContainingFunctionContent = splitted
-      .slice(start, end + 1) // from lines start to end, we get the content of the function
-      .map((x, i) => {
-        switch (i) {
-          case 0:
-            return x.replace(`${fnName}`, 'extractedFunction').trim();
-          default:
-            return x.trim();
-        }
-      });
+    if (b == null) throw Error('Invalid regexp');
 
-    linesContainingFunctionContent.push(`return extractedFunction;`);
-
-    return new Function('var ' + linesContainingFunctionContent.join(''))();
+    return new Function(
+      `var ${b[0].replace(fnName, 'extractedFunction').replace('},', '};')} return extractedFunction`
+    )();
   };
 }
 
