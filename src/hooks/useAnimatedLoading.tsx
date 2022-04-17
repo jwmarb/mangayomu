@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   useAnimatedStyle,
   useSharedValue,
@@ -7,8 +7,11 @@ import {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
+import { AnimatedContext } from 'src/context/AnimatedContext';
 
 export default function useAnimatedLoading() {
+  const providedStyle = useContext(AnimatedContext);
+  if (providedStyle) return providedStyle;
   const opacity = useSharedValue(0.5);
   React.useEffect(() => {
     opacity.value = withRepeat(
