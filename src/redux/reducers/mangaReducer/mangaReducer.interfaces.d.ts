@@ -34,7 +34,7 @@ export interface ReadingMangaInfo extends MangaMeta, Manga {
   currentlyReadingChapter: MangaChapter | null;
 }
 
-export type MangaReducerState = Record<string, MangaMeta>;
+export type MangaReducerState = Record<string, ReadingMangaInfo>;
 
 export type MangaReducerAction = {
   type: 'VIEW_MANGA';
