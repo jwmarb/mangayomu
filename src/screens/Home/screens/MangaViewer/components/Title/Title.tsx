@@ -3,10 +3,15 @@ import { TitleProps } from '@screens/Home/screens/MangaViewer/components/Title/T
 import React from 'react';
 
 const Title: React.FC<TitleProps> = (props) => {
-  const { title } = props;
+  const { title, isAdult } = props;
   return (
     <Typography variant='subheader' numberOfLines={2}>
-      {title}
+      {title}{' '}
+      {isAdult && (
+        <Typography color='secondary' variant='body2'>
+          18+
+        </Typography>
+      )}
     </Typography>
   );
 };
