@@ -8,6 +8,7 @@ const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerA
       return {
         ...state,
         [action.payload.title]: {
+          ...state[action.payload.title],
           ...action.payload,
           inLibrary: false,
           currentlyReadingChapter: null,
