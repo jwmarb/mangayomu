@@ -33,6 +33,7 @@ import useMountedEffect from '@hooks/useMountedEffect';
 import Toast from 'react-native-root-toast';
 import { InteractionManager, Platform, ToastAndroid } from 'react-native';
 import StatusIndicator from '@screens/Home/screens/MangaViewer/components/StatusIndicator';
+import connector, { MangaViewerProps } from '@screens/Home/screens/MangaViewer/MangaViewer.redux';
 
 const displayMessage = (msg: string) =>
   Platform.OS !== 'android'
@@ -46,22 +47,22 @@ const displayMessage = (msg: string) =>
       })
     : ToastAndroid.show(msg, ToastAndroid.SHORT);
 
-const MangaViewer: React.FC<StackScreenProps<RootStackParamList, 'MangaViewer'>> = (props) => {
+const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   const {
     route: {
       params: { manga },
     },
     navigation,
+    viewManga,
+    userMangaInfo,
+    source,
   } = props;
-  const source = useMangaSource(manga.source);
   const {
     state: [meta],
     loading,
     error,
     refresh,
   } = useAPICall(() => source.getMeta(manga));
-  const dispatch = useAppDispatch();
-  const userMangaInfo = useViewingManga(manga) as unknown as ReadingMangaInfo | null;
   const animatedMount = useAnimatedMounting();
   const options: UseCollapsibleOptions = React.useMemo(
     () => ({
@@ -94,7 +95,7 @@ const MangaViewer: React.FC<StackScreenProps<RootStackParamList, 'MangaViewer'>>
 
   React.useEffect(() => {
     if (!loading && meta) {
-      dispatch({ type: 'VIEW_MANGA', payload: { ...manga, ...meta } });
+      viewManga({ ...manga, ...meta });
     }
   }, [loading, meta]);
 
@@ -126,4 +127,4 @@ const MangaViewer: React.FC<StackScreenProps<RootStackParamList, 'MangaViewer'>>
   );
 };
 
-export default MangaViewer;
+export default connector(MangaViewer);
