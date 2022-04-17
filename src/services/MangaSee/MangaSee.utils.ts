@@ -1,3 +1,5 @@
+import { parse } from 'date-fns';
+
 export function extractDataFromVariable(html: string | null) {
   return <T>(variableName: string): T => {
     if (html == null) throw Error('HTML is null');
@@ -37,4 +39,8 @@ export function processScript(html: string | null) {
     variable: extractDataFromVariable(html),
     fn: extractFunctionFromVariable(html),
   };
+}
+
+export function parseMangaSeeDate(dateStr: string) {
+  return parse(dateStr, 'yyyy-MM-dd HH:mm:ss', new Date()).toString();
 }

@@ -9,7 +9,7 @@ import {
   MangaSeeManga,
   MangaSeeMangaMeta,
 } from '@services/MangaSee/MangaSee.interfaces';
-import { extractDataFromApplicationLDJson, processScript } from '@services/MangaSee/MangaSee.utils';
+import { extractDataFromApplicationLDJson, parseMangaSeeDate, processScript } from '@services/MangaSee/MangaSee.utils';
 import { MangaHostWithFilters, MangaSortType } from '@services/scraper/scraper.filters';
 import { Manga, MangaChapter, MangaMeta } from '@services/scraper/scraper.interfaces';
 import titleIncludes from '@utils/MangaFilters';
@@ -106,14 +106,25 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     }; return v`)();
     const IndexName = variable<string>('vm.IndexName');
     const description = $('span.mlabel').siblings('div.Content').text();
+    const yearReleased = $('a[href*="/search/?year="]').text();
+    const [scanStatus, publishStatus] = $('a[href*="/search/?status="]')
+      .map((_, el) => $(el).text())
+      .get();
+    const type = $('a[href*="/search/?type="]').text();
 
     return {
       authors: data.author,
       genres: data.genre,
       description,
+      yearReleased,
+      type,
+      status: {
+        scan: scanStatus,
+        publish: publishStatus,
+      },
       date: {
-        modified: data.dateModified,
-        published: data.datePublished,
+        modified: parseMangaSeeDate(data.dateModified),
+        published: parseMangaSeeDate(data.datePublished),
       },
       chapters: Chapters.map((chapter) => ({
         date: chapter.Date,
