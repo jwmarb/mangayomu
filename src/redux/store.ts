@@ -20,6 +20,7 @@ export type AppDispatch = Dispatch<AppActions>;
 export type AppState = ReturnType<typeof reducers>;
 export type UseSelector = typeof useSelector;
 export type AppActions = Parameters<typeof reducers>[1];
+export type MapStateToProps<ComponentTProps> = (state: AppState, props: ComponentTProps) => unknown;
 
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 
