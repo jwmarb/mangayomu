@@ -12,6 +12,7 @@ export const Container = styled(Animated.View)<ContainerProps>`
           return css`
             padding-vertical: ${props.theme.spacing(3)};
           `;
+        else return;
       case 'number':
         return css`
           padding-vertical: ${props.theme.spacing(verticalPadding)};
@@ -19,16 +20,19 @@ export const Container = styled(Animated.View)<ContainerProps>`
     }
   }}
   ${(props) => {
-    switch (typeof props.horizontalPadding) {
+    const { horizontalPadding = false } = props;
+    switch (typeof horizontalPadding) {
       default:
       case 'boolean':
-        if (props.horizontalPadding)
+        if (horizontalPadding)
           return css`
             padding-horizontal: ${props.theme.spacing(3)};
           `;
+        else return;
+
       case 'number':
         return css`
-          padding-horizontal: ${props.theme.spacing(props.horizontalPadding)};
+          padding-horizontal: ${props.theme.spacing(horizontalPadding)};
         `;
     }
   }}
