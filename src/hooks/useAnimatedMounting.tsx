@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { InteractionManager } from 'react-native';
 import { useSharedValue, withSpring, withTiming, useAnimatedStyle } from 'react-native-reanimated';
+import { AnimatedContext } from 'src/context/AnimatedContext';
 
 export default function useAnimatedMounting(condition: boolean = true) {
+  const providedStyle = useContext(AnimatedContext);
+  if (providedStyle) return providedStyle;
   const opacity = useSharedValue(0);
   const transformY = useSharedValue(-10);
   React.useEffect(() => {
