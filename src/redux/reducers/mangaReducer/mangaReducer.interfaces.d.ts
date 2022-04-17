@@ -31,7 +31,9 @@ export interface ReadingMangaInfo extends MangaMeta, Manga {
 
 export type MangaReducerState = Record<string, ReadingMangaInfo>;
 
-export type MangaReducerAction = {
-  type: 'VIEW_MANGA';
-  payload: Manga & MangaMeta;
-};
+export type MangaReducerAction =
+  | {
+      type: 'VIEW_MANGA';
+      payload: Manga & MangaMeta;
+    }
+  | { type: 'TOGGLE_LIBRARY'; payload: Manga };

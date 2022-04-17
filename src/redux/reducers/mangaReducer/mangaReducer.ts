@@ -13,6 +13,14 @@ const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerA
           currentlyReadingChapter: null,
         },
       };
+    case 'TOGGLE_LIBRARY':
+      return {
+        ...state,
+        [action.payload.title]: {
+          ...state[action.payload.title],
+          inLibrary: !state[action.payload.title].inLibrary,
+        },
+      };
     default:
       return state;
   }
