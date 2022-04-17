@@ -4,6 +4,11 @@ import styled, { css } from 'styled-components/native';
 export const FlexBase = styled.View<Partial<FlexProps>>`
   ${(props) => css`
     ${() =>
+      props.fullWidth &&
+      css`
+        width: 100%;
+      `}
+    ${() =>
       props.debug
         ? css`
             background-color: red;

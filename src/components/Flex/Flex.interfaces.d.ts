@@ -9,4 +9,5 @@ export interface FlexProps {
   growMax?: number | string;
   debug?: boolean;
   spacing?: number;
+  fullWidth?: boolean;
 }
