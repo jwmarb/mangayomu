@@ -23,15 +23,7 @@ const HomeScreen: React.FC<HomeProps> = (props) => {
         name='Explore'
         options={{ headerTitle: 'Explore', tabBarIcon: createTabIcon('Feather', 'home') }}
       />
-      <BottomTab.Screen
-        component={Browse}
-        name='Library'
-        options={{
-          headerTitle: 'Library',
-          tabBarIcon: createTabIcon('Feather', 'bookmark'),
-          headerRight: () => <IconButton icon={<Icon bundle='AntDesign' name='search1' />} />,
-        }}
-      />
+      <BottomTab.Screen component={Browse} name='Library' />
       <BottomTab.Screen
         component={Browse}
         name='Browse'
