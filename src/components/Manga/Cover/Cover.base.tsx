@@ -3,7 +3,7 @@ import pixelToNumber from '@utils/pixelToNumber';
 import { RFValue } from 'react-native-responsive-fontsize';
 import styled, { css } from 'styled-components/native';
 
-export const MangaCoverBase = styled.Image<Omit<MangaCoverProps, 'uri'>>`
+export const MangaCoverBase = styled.Image.attrs({ cache: 'force-cache' })<Omit<MangaCoverProps, 'uri'>>`
   ${(props) => css`
     border-radius: ${props.theme.borderRadius}px;
   `}

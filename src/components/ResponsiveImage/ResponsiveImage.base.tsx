@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components/native';
 
 export const ResponsiveImageBase = styled.Image.attrs<ResponsiveImageProps>((props) => ({
   resizeMode: props.resizeMode,
+  cache: 'force-cache',
 }))`
   width: 100%;
   height: 100%;
