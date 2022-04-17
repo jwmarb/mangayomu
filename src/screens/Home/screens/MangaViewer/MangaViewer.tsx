@@ -1,39 +1,24 @@
-import {
-  Typography,
-  Screen,
-  Flex,
-  Spacer,
-  Container,
-  IconButton,
-  Icon,
-  Skeleton,
-  Header,
-  Button,
-} from '@components/core';
-import useAnimatedMounting from '@hooks/useAnimatedMounting';
+import { Flex, Spacer, IconButton, Icon, Header, Progress } from '@components/core';
 import useAPICall from '@hooks/useAPICall';
-import { RootStackParamList } from '@navigators/Root/Root.interfaces';
-import { StackScreenProps } from '@react-navigation/stack';
-import Description from '@screens/Home/screens/MangaViewer/components/Description';
-import Authors from '@screens/Home/screens/MangaViewer/components/Authors';
-import { useMangaSource } from '@services/scraper';
+
 import React from 'react';
-import Title from '@screens/Home/screens/MangaViewer/components/Title';
-import MangaCover from '@screens/Home/screens/MangaViewer/components/MangaCover';
-import { UseCollapsibleOptions } from 'react-navigation-collapsible';
+import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-collapsible';
 import MangaValidator from '@utils/MangaValidator';
 import Genres from '@screens/Home/screens/MangaViewer/components/Genres';
-import { WithGenres } from '@services/scraper/scraper.interfaces';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { useAppDispatch } from '@redux/store';
-import useViewingManga from '@hooks/useViewingManga';
-import MangaAction from '@screens/Home/screens/MangaViewer/components/MangaAction';
-import { ReadingMangaInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import useMountedEffect from '@hooks/useMountedEffect';
 import Toast from 'react-native-root-toast';
-import { InteractionManager, Platform, ToastAndroid } from 'react-native';
+import { Platform, ToastAndroid } from 'react-native';
 import StatusIndicator from '@screens/Home/screens/MangaViewer/components/StatusIndicator';
 import connector, { MangaViewerProps } from '@screens/Home/screens/MangaViewer/MangaViewer.redux';
+import { MangaViewerContainer } from '@screens/Home/screens/MangaViewer/MangaViewer.base';
+import useAnimatedLoading from '@hooks/useAnimatedLoading';
+import { AnimatedProvider } from '@context/AnimatedContext';
+const Title = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Title'));
+const Description = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Description'));
+const Authors = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Authors'));
+const MangaCover = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/MangaCover'));
+const MangaAction = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/MangaAction'));
+const Overview = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Overview'));
 
 const displayMessage = (msg: string) =>
   Platform.OS !== 'android'
@@ -63,7 +48,6 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     error,
     refresh,
   } = useAPICall(() => source.getMeta(manga));
-  const animatedMount = useAnimatedMounting();
   const options: UseCollapsibleOptions = React.useMemo(
     () => ({
       navigationOptions: {
@@ -77,6 +61,9 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     }),
     [userMangaInfo?.inLibrary]
   );
+
+  const collapsible = useCollapsibleHeader(options);
+  const loadingAnimation = useAnimatedLoading();
   const isAdult = React.useMemo(
     () => userMangaInfo && MangaValidator.isNSFW(userMangaInfo.genres),
     [userMangaInfo?.genres]
@@ -100,30 +87,39 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   }, [loading, meta]);
 
   return (
-    <Screen scrollable={options}>
-      <Container style={animatedMount}>
-        <Flex>
-          <MangaCover mangaCoverURI={manga.imageCover} />
-          <Spacer x={2} />
-          <Flex direction='column' shrink>
-            <Title title={manga.title} isAdult={isAdult} />
-            <Authors manga={manga} loading={loading} authors={meta?.authors} />
-            <Spacer y={1} />
-            <Genres genres={meta?.genres} loading={loading} />
-            <Spacer y={1} />
-            <StatusIndicator meta={meta} loading={loading} />
-            <Spacer y={1} />
-            <MangaAction manga={manga} />
-          </Flex>
+    <React.Suspense
+      fallback={
+        <Flex grow alignItems='center' justifyContent='center'>
+          <Progress />
         </Flex>
+      }>
+      <AnimatedProvider style={loadingAnimation}>
+        <Overview chapters={userMangaInfo?.chapters} collapsible={collapsible}>
+          <MangaViewerContainer>
+            <Flex>
+              <MangaCover mangaCoverURI={manga.imageCover} />
+              <Spacer x={2} />
+              <Flex direction='column' shrink>
+                <Title title={manga.title} isAdult={isAdult} />
+                <Authors manga={manga} loading={loading} authors={meta?.authors} />
+                <Spacer y={1} />
+                <Genres genres={meta?.genres} loading={loading} />
+                <Spacer y={1} />
+                <StatusIndicator meta={meta} loading={loading} />
+                <Spacer y={1} />
+                <MangaAction manga={manga} />
+              </Flex>
+            </Flex>
 
-        <Spacer y={2} />
-        <Description loading={loading} description={meta?.description} />
-      </Container>
-      <Spacer y={2} />
-      <Genres buttons genres={meta?.genres} loading={loading} />
-      <Spacer y={2} />
-    </Screen>
+            <Spacer y={2} />
+            <Description loading={loading} description={meta?.description} />
+            <Spacer y={2} />
+            <Genres buttons genres={meta?.genres} loading={loading} />
+            <Spacer y={2} />
+          </MangaViewerContainer>
+        </Overview>
+      </AnimatedProvider>
+    </React.Suspense>
   );
 };
 
