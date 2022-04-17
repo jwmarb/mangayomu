@@ -8,9 +8,9 @@ abstract class MangaHost {
   /**
    *
    */
-  public readonly hasHotMangas: boolean;
+  public readonly hotMangas: boolean;
 
-  public readonly hasLatestMangas: boolean;
+  public readonly latestMangas: boolean;
 
   /**
    * The name of the manga host
@@ -36,8 +36,8 @@ abstract class MangaHost {
     this.genres = info.genres;
     this.icon = info.icon;
     this.name = info.name;
-    this.hasHotMangas = info.hasHotMangas ?? false;
-    this.hasLatestMangas = info.hasLatestMangas ?? false;
+    this.hotMangas = info.hasHotMangas ?? false;
+    this.latestMangas = info.hasLatestMangas ?? false;
 
     MangaHost.availableSources.set(info.name, this);
   }
@@ -57,6 +57,26 @@ abstract class MangaHost {
 
   protected getGenre(index: number) {
     return this.genres[index];
+  }
+
+  protected getName() {
+    return this.name;
+  }
+
+  protected getIcon() {
+    return this.icon;
+  }
+
+  protected getGenres() {
+    return this.genres;
+  }
+
+  protected hasHotMangas() {
+    return this.hotMangas;
+  }
+
+  protected hasLatestMangas() {
+    return this.latestMangas;
   }
 
   /**
