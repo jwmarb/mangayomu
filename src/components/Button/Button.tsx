@@ -27,6 +27,7 @@ const Button: React.FC<ButtonProps> = (props) => {
     expand,
     onPress,
     round: false,
+    square: false,
   };
   const buttonTextProps: ButtonTextProps = {
     color,
@@ -34,6 +35,7 @@ const Button: React.FC<ButtonProps> = (props) => {
     disabled,
     expand,
     round: false,
+    square: false,
   };
 
   const theme = useTheme();

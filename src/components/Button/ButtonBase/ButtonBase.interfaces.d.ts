@@ -9,4 +9,5 @@ export interface ButtonBaseProps {
   expand?: boolean | string | number;
   onPress?: () => void;
   opacity?: boolean;
+  square?: boolean;
 }
