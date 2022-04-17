@@ -8,6 +8,7 @@ const TypographySkeletonBase = styled.Text<TypographySkeletonProps>`
     background-color: ${props.theme.palette.action.disabledBackground.get()};
     color: transparent;
     border-radius: ${props.theme.borderRadius}px;
+    width: ${typeof props.width === 'string' ? props.width : `${props.width}px`};
   `}
 `;
 
