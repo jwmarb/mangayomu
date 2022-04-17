@@ -111,14 +111,16 @@ export interface NewSeriesJSON {
 }
 
 export interface MainEntityJSON {
-  '@type': string;
-  about: string;
-  alternateName: string[];
-  author: string[];
-  datePublished: string;
-  dateModified: string;
-  genre: string[];
-  name: string[];
+  mainEntity: {
+    '@type': string;
+    about: string;
+    alternateName: string[];
+    author: string[];
+    datePublished: string;
+    dateModified: string;
+    genre: string[];
+    name: string[];
+  };
 }
 
 export interface MangaSeeChapterJSON {
