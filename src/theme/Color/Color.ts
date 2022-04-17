@@ -126,9 +126,9 @@ export const applicableColors = {
     dark: Color.constant('#0050b3'),
   },
   secondary: {
-    light: Color.constant('#ffccc7'),
+    light: Color.constant('#ffa39e'),
     main: Color.constant('#ff7875'),
-    dark: Color.constant('#f5222d'),
+    dark: Color.constant('#ff4d4f'),
   },
 };
 
