@@ -11,11 +11,15 @@ import {
   WithSortFilter,
   WithOfficialTranslationFilter,
   WithStatusFilter,
+  MangaChapter,
+  WithDate,
 } from '@services/scraper/scraper.interfaces';
 
 export type MangaSeeManga = Manga & WithGenres & WithStatus & WithHentai & WithYearReleased & WithType;
 
-export type MangaSeeMangaMeta = MangaMeta & WithGenres;
+export type MangaSeeMangaMeta = MangaMeta<MangaSeeChapter> & WithGenres;
+
+export type MangaSeeChapter = MangaChapter & WithDate;
 
 export type MangaSeeFilter = WithGenresFilter & WithSortFilter & WithOfficialTranslationFilter & WithStatusFilter;
 
@@ -104,4 +108,22 @@ export interface LatestJSON {
 export interface NewSeriesJSON {
   IndexName: string;
   SeriesName: string;
+}
+
+export interface MainEntityJSON {
+  '@type': string;
+  about: string;
+  alternateName: string[];
+  author: string[];
+  datePublished: string;
+  dateModified: string;
+  genre: string[];
+  name: string[];
+}
+
+export interface MangaSeeChapterJSON {
+  Chapter: string;
+  Type: string;
+  Date: string;
+  ChapterName: string | null;
 }

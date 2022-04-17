@@ -1,3 +1,13 @@
+/**
+ * A manga/chapter with a given release date
+ */
+export interface WithDate {
+  /**
+   * The date the manga/chapter was released
+   */
+  date: string;
+}
+
 export declare interface MangaHostInfo {
   /**
    * The name of the manga host
@@ -119,7 +129,7 @@ export declare interface Manga {
   link: string;
 }
 
-export declare interface MangaMeta {
+export declare interface MangaMeta<TChapters extends MangaChapter = MangaChapter> {
   /**
    * The authors of the manga
    */
@@ -128,7 +138,7 @@ export declare interface MangaMeta {
   /**
    * The chapters of the manga
    */
-  chapters: MangaChapter[];
+  chapters: TChapters[];
 
   /**
    * The description of the manga, also known as the synopsis
