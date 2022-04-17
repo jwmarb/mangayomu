@@ -20,6 +20,8 @@ export const ButtonText = styled.Text.attrs({ numberOfLines: 1 })<
     ${props.theme.typography.button};
     text-align: ${props.expand ? 'center' : 'left'};
     color: ${() => {
+      if (props.disabled) return props.theme.palette.action.disabled.get();
+
       if (props.color == null) return props.theme.palette.text.primary.get();
       switch (props.variant) {
         case 'contained':

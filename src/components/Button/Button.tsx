@@ -5,6 +5,8 @@ import { ButtonContainer, ButtonText } from '@components/Button/Button.base';
 import { Typography } from '@components/Typography';
 import { ButtonBaseProps } from '@components/Button/ButtonBase/ButtonBase.interfaces';
 import Spacer from '@components/Spacer';
+import { useTheme } from 'styled-components/native';
+import { Color } from '@theme/core';
 
 const Button: React.FC<ButtonProps> = (props) => {
   const {
@@ -34,13 +36,21 @@ const Button: React.FC<ButtonProps> = (props) => {
     round: false,
   };
 
+  const theme = useTheme();
+
+  const iconColor = React.useMemo(() => {
+    if (disabled) return 'disabled';
+    if (color instanceof Color) return Color.rgba(color.getContrastText(), color.getContrastText());
+    return Color.rgba(theme.palette[color].main.getContrastText(), theme.palette[color].main.getContrastText());
+  }, [color, disabled]);
+
   return (
     <ButtonBase {...passedProps} {...rest}>
       <ButtonContainer expand={expand}>
         {icon ? (
           iconPlacement === 'left' ? (
             <>
-              {React.cloneElement(icon, { size: 'small', color: color })}
+              {React.cloneElement(icon, { size: 'small', color: iconColor })}
               <Spacer x={1} />
               <ButtonText {...buttonTextProps}>{title}</ButtonText>
             </>
@@ -48,7 +58,7 @@ const Button: React.FC<ButtonProps> = (props) => {
             <>
               <ButtonText {...buttonTextProps}>{title}</ButtonText>
               <Spacer x={1} />
-              {React.cloneElement(icon, { size: 'small', color: color })}
+              {React.cloneElement(icon, { size: 'small', color: iconColor })}
             </>
           )
         ) : (

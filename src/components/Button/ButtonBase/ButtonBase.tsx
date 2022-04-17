@@ -74,7 +74,7 @@ const TouchableContainer = styled.View<ButtonBaseProps>`
           return css`
             border: 1px solid
               ${props.disabled
-                ? props.theme.palette[props.color ?? 'primary'].main.toDisabled().get()
+                ? props.theme.palette.action.disabled.get()
                 : props.theme.palette[props.color ?? 'primary'].main.get()};
           `;
       }
@@ -84,11 +84,11 @@ const TouchableContainer = styled.View<ButtonBaseProps>`
         case 'contained':
           if (props.color instanceof Color)
             return css`
-              background-color: ${props.disabled ? props.color.toDisabled().get() : props.color.get()};
+              background-color: ${props.disabled ? props.theme.palette.action.disabled.get() : props.color.get()};
             `;
           return css`
             background-color: ${props.disabled
-              ? props.theme.palette[props.color ?? 'primary'].main.toDisabled().get()
+              ? props.theme.palette.action.disabled.get()
               : props.theme.palette[props.color ?? 'primary'].main.get()};
           `;
       }
