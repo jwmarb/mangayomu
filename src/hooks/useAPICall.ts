@@ -5,8 +5,8 @@ import React from 'react';
  * @param apiCall The API call is a function that returns a promise. This function is invoked upon the component mounting
  * @returns Returns the necessary variables needed for a component that uses an API call
  */
-export default function useAPICall<T>(apiCall: () => Promise<T[]>) {
-  const [items, setItems] = React.useState<T[]>([]);
+export default function useAPICall<T>(apiCall: () => Promise<T>) {
+  const [items, setItems] = React.useState<T>();
   const [error, setError] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(true);
   React.useEffect(() => {
@@ -25,7 +25,7 @@ export default function useAPICall<T>(apiCall: () => Promise<T[]>) {
   }
 
   return {
-    state: [items, setItems] as [T[], React.Dispatch<React.SetStateAction<T[]>>],
+    state: [items!, setItems] as [T, React.Dispatch<React.SetStateAction<T>>],
     error,
     loading,
     refresh,
