@@ -17,7 +17,7 @@ import {
 
 export type MangaSeeManga = Manga & WithGenres & WithStatus & WithHentai & WithYearReleased & WithType;
 
-export type MangaSeeMangaMeta = MangaMeta<MangaSeeChapter> & WithGenres;
+export type MangaSeeMangaMeta = MangaMeta<MangaSeeChapter> & WithGenres & WithYearReleased & WithType & WithStatus;
 
 export type MangaSeeChapter = MangaChapter & WithDate;
 
