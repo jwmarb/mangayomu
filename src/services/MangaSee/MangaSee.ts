@@ -27,7 +27,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         link: `https://${super.getLink()}/manga/${x.IndexName}`,
         title: x.SeriesName,
         imageCover: `https://cover.nep.li/cover/${x.IndexName}.jpg`,
-        source: super.name,
+        source: super.getName(),
       }))
     );
   }
@@ -42,7 +42,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         link: `https://${super.getLink()}/manga/${x.IndexName}`,
         title: x.SeriesName,
         imageCover: `https://cover.nep.li/cover/${x.IndexName}.jpg`,
-        source: super.name,
+        source: super.getName(),
       }))
     );
   }
@@ -66,7 +66,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         type: x.t,
         genres: x.g,
         yearReleased: x.y,
-        source: super.name,
+        source: super.getName(),
       }));
       this.memo = result;
       return result;
