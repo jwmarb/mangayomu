@@ -36,7 +36,7 @@ const HotManga: React.FC = (props) => {
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           horizontal
-          data={mangas.slice(0, 10)}
+          data={mangas?.slice(0, 10)}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
         />
