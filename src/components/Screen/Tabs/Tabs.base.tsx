@@ -1,3 +1,4 @@
+import { Constants } from '@theme/core';
 import { Platform, TouchableNativeFeedback } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import styled, { css } from 'styled-components/native';
@@ -27,7 +28,10 @@ export const TabButtonBase = styled(Platform.OS === 'ios' ? TouchableOpacity : T
       };
     }
     return {
-      background: TouchableNativeFeedback.Ripple(props.theme.palette.action.disabledBackground.get(), true),
+      background: TouchableNativeFeedback.Ripple(
+        Constants.GRAY[props.theme.palette.mode === 'light' ? 6 : 8].get(),
+        true
+      ),
     };
   }
 )``;
