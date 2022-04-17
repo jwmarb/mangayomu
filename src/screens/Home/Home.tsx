@@ -24,7 +24,13 @@ const HomeScreen: React.FC<HomeProps> = (props) => {
         name='Explore'
         options={{ headerTitle: 'Explore', tabBarIcon: createTabIcon('Feather', 'home') }}
       />
-      <BottomTab.Screen component={MangaLibrary} name='Library' />
+      <BottomTab.Screen
+        component={MangaLibrary}
+        name='Library'
+        options={{
+          tabBarIcon: createTabIcon('Feather', 'bookmark'),
+        }}
+      />
       <BottomTab.Screen
         component={Browse}
         name='Browse'
