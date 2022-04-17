@@ -1,4 +1,4 @@
 export interface ContainerProps {
-  verticalPadding?: boolean;
-  horizontalPadding?: boolean;
+  verticalPadding?: boolean | number;
+  horizontalPadding?: boolean | number;
 }
