@@ -139,7 +139,7 @@ export declare interface Manga {
   link: string;
 }
 
-export declare interface MangaMeta<TChapters extends MangaChapter = MangaChapter> {
+export declare interface MangaMeta<TChapters extends MangaChapter = MangaChapter> extends WithGenres {
   /**
    * The authors of the manga
    */
