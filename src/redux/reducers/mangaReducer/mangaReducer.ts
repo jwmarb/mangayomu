@@ -8,10 +8,9 @@ const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerA
       return {
         ...state,
         [action.payload.title]: {
-          ...state[action.payload.title],
           ...action.payload,
-          inLibrary: false,
-          currentlyReadingChapter: null,
+          inLibrary: state[action.payload.title].inLibrary ?? false,
+          currentlyReadingChapter: state[action.payload.title].currentlyReadingChapter ?? null,
         },
       };
     case 'TOGGLE_LIBRARY':
