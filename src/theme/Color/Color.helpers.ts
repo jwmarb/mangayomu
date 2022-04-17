@@ -1,4 +1,5 @@
 import { RGBA } from '@theme/Color/Color.interfaces';
+import { Color } from '@theme/core';
 
 /**
  * Convert a hexadecimal to RGB value
@@ -54,4 +55,14 @@ export function parseRGBA(rgba: string): RGBA {
  */
 export function rgbaToString(rgba: RGBA): string {
   return `rgba(${rgba.red}, ${rgba.green}, ${rgba.blue}, ${rgba.alpha})`;
+}
+
+/**
+ * Create colors that share the same color value
+ * @param names Name of the colors
+ * @param color The color
+ * @returns Returns names of the colors with the same color
+ */
+export function createSharedColors<T extends string>(names: readonly T[], color: Color): Record<T, Color> {
+  return names.reduce((prev, current) => ({ ...prev, [current]: color }), {} as any);
 }
