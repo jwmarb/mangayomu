@@ -7,9 +7,9 @@ export interface ReadingChapterInfo extends MangaChapter {
   scrollPosition: number;
 
   /**
-   * An array of manga pages
+   * An array of manga pages. Can be null if the user has not read the chapter yet
    */
-  pages: MangaPage[];
+  pages: MangaPage[] | null;
 
   /**
    * The index of the current page the user is on
@@ -18,6 +18,11 @@ export interface ReadingChapterInfo extends MangaChapter {
 }
 
 export interface ReadingMangaInfo extends MangaMeta, Manga {
+  /**
+   * The chapters of the manga which include user data with the chapter
+   */
+  chapters: ReadingChapterInfo[];
+
   /**
    * Determines whether or not the user has the manga added in their library
    */
