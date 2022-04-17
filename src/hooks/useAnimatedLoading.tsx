@@ -7,7 +7,7 @@ import {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-import { AnimatedContext } from 'src/context/AnimatedContext';
+import { AnimatedContext } from '@context/AnimatedContext';
 
 export default function useAnimatedLoading() {
   const providedStyle = useContext(AnimatedContext);
