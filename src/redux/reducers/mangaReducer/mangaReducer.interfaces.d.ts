@@ -24,11 +24,6 @@ export interface ReadingMangaInfo extends MangaMeta, Manga {
   inLibrary: boolean;
 
   /**
-   * The chapters of the manga
-   */
-  chapters: MangaChapter[];
-
-  /**
    * The current chapter the user is reading
    */
   currentlyReadingChapter: MangaChapter | null;
