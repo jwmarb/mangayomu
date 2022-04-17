@@ -41,8 +41,10 @@ const Button: React.FC<ButtonProps> = (props) => {
   const iconColor = React.useMemo(() => {
     if (disabled) return 'disabled';
     if (color instanceof Color) return Color.rgba(color.getContrastText(), color.getContrastText());
-    return Color.rgba(theme.palette[color].main.getContrastText(), theme.palette[color].main.getContrastText());
-  }, [color, disabled]);
+    if (variant === 'contained')
+      return Color.rgba(theme.palette[color].main.getContrastText(), theme.palette[color].main.getContrastText());
+    return color;
+  }, [color, disabled, variant]);
 
   return (
     <ButtonBase {...passedProps} {...rest}>
