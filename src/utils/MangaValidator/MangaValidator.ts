@@ -13,7 +13,7 @@ class MangaValidator {
     return 'authors' in manga;
   }
   public hasGenres(manga: any): manga is WithGenres {
-    return 'genre' in manga;
+    return 'genres' in manga;
   }
 
   public isManga(obj: any): obj is Manga {
