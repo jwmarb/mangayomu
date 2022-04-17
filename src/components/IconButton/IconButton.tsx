@@ -9,7 +9,7 @@ const IconButton: React.FC<IconButtonProps> = (props) => {
   const { onPress = () => void 0, color, disabled = false, icon } = props;
   return (
     <ButtonBase onPress={onPress} round color={color} disabled={disabled}>
-      <IconButtonBaseContainer>{React.cloneElement(icon, { size: 'small' })}</IconButtonBaseContainer>
+      <IconButtonBaseContainer>{React.cloneElement(icon, { size: 'small', color })}</IconButtonBaseContainer>
     </ButtonBase>
   );
 };
