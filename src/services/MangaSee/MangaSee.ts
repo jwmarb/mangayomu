@@ -20,7 +20,6 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     const $ = await super.route('/');
     const html = $('body').html();
     const { variable, fn } = processScript(html);
-    const ChapterURLEncode = fn<(indexName: string) => string>('vm.ChapterURLEncode');
     const LatestJSON = variable<LatestJSON[]>('vm.LatestJSON');
 
     return Promise.resolve<Manga[]>(
@@ -37,7 +36,6 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     const $ = await super.route('/');
     const html = $('body').html();
     const { variable, fn } = processScript(html);
-    const ChapterURLEncode = fn<(indexName: string) => string>('vm.ChapterURLEncode');
     const HotUpdateJSON = variable<HotUpdateJSON[]>('vm.HotUpdateJSON');
     return Promise.resolve<Manga[]>(
       HotUpdateJSON.map((x) => ({
