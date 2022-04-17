@@ -1,4 +1,4 @@
-import { hexToRgb, parseRGBA, rgbaToHex, rgbaToString } from '@theme/Color/Color.helpers';
+import { createSharedColors, hexToRgb, parseRGBA, rgbaToHex, rgbaToString } from '@theme/Color/Color.helpers';
 import {
   ActionColors,
   AppColors,
@@ -143,10 +143,18 @@ export const background: BackgroundColors = {
   paper: Color.hex('#ffffff', '#262626'),
 };
 
-export const Palette = (): ThemedPalette & typeof applicableColors => ({
+export const status = {
+  ...createSharedColors(['discontinued', 'canceled', 'cancelled'], Color.hex('#ff7875', '#f5222d')),
+  ...createSharedColors(['hiatus', 'on hiatus'], Color.hex('#ffe58f', '#ffc53d')),
+  ...createSharedColors(['ongoing', 'publishing'], Color.hex('#b7eb8f', '#73d13d')),
+  ...createSharedColors(['finished', 'complete', 'completed'], Color.hex('#8c8c8c', '#434343')),
+};
+
+export const Palette = (): ThemedPalette & typeof applicableColors & { status: typeof status } => ({
   mode: Appearance.getColorScheme(),
   text: textColors,
   background,
+  status,
   action: actionColors,
   ...applicableColors,
 });

@@ -1,4 +1,4 @@
-import { applicableColors, Color } from '@theme/core';
+import { applicableColors, Color, status } from '@theme/core';
 import { ColorSchemeName } from 'react-native';
 
 export interface RGBA {
@@ -35,6 +35,7 @@ export type ThemedPalette = {
   text: TextColors;
   background: BackgroundColors;
   action: ActionColors;
+  status: typeof status;
 };
 
 export type ColorConstant = {
