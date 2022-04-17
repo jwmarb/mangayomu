@@ -8,29 +8,29 @@ abstract class MangaHost {
   /**
    *
    */
-  public readonly hotMangas: boolean;
+  private readonly hotMangas: boolean;
 
-  public readonly latestMangas: boolean;
+  private readonly latestMangas: boolean;
 
   /**
    * The name of the manga host
    */
-  public readonly name: string;
+  private readonly name: string;
 
   /**
    * The icon of the manga host
    */
-  public readonly icon: string;
+  private readonly icon: string;
 
   /**
    * The available genres the manga host provides
    */
-  public readonly genres: string[];
+  private readonly genres: string[];
 
   /**
    * The link to the manga hosting website
    */
-  public readonly link: string;
+  private readonly link: string;
   public constructor(info: MangaHostInfo) {
     this.link = url.parse(info.host).hostname ?? '';
     this.genres = info.genres;
