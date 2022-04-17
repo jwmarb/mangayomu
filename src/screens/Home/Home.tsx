@@ -1,4 +1,4 @@
-import { StackHeader, IconButton, Icon, StackTabs } from '@components/core';
+import { BottomTabHeader, IconButton, Icon, StackTabs } from '@components/core';
 import { IconPack, IconProps } from '@components/Icon/Icon.interfaces';
 import BottomTab from '@navigators/BottomTab';
 import Browse from '@screens/Home/screens/Browse';
@@ -15,7 +15,7 @@ const HomeScreen: React.FC<HomeProps> = (props) => {
     <BottomTab.Navigator
       initialRouteName='Explore'
       screenOptions={{
-        header: StackHeader,
+        header: BottomTabHeader,
       }}
       tabBar={StackTabs}>
       <BottomTab.Screen
