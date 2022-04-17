@@ -8,14 +8,14 @@ const LoadingDescription: React.FC = (props) => {
   const {} = props;
   const loading = useAnimatedLoading();
   return (
-    <Flex spacing={1} direction='column'>
-      <Animated.View style={loading}>
+    <Animated.View style={loading}>
+      <Flex spacing={1} direction='column'>
         <Skeleton.Typography width='100%' />
         <Skeleton.Typography width='100%' />
         <Skeleton.Typography width='100%' />
         <Skeleton.Typography width='80%' />
-      </Animated.View>
-    </Flex>
+      </Flex>
+    </Animated.View>
   );
 };
 
