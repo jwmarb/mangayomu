@@ -19,6 +19,7 @@ const Genres: React.FC = (props) => {
       </Category.Header>
       <Spacer y={1} />
       <Category.FlatList
+        spacing={1}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         horizontal
