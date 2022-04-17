@@ -113,8 +113,9 @@ export declare interface WithStatus {
   status: {
     /**
      * The scan status of the manga
+     * This can be undefined because some manga websites only show the publish status of the manga
      */
-    scan: string;
+    scan?: string;
 
     /**
      * The publish status of the manga
