@@ -1,7 +1,9 @@
 import { Flex, MangaCover, Skeleton, Spacer, Typography } from '@components/core';
 import useAnimatedMounting from '@hooks/useAnimatedMounting';
 import { Authors } from '@screens/Home/screens/MangaViewer/components/Authors/Authors.interfaces';
+import animate from '@utils/animate';
 import MangaValidator from '@utils/MangaValidator';
+import withAnimatedLoading from '@utils/withAnimatedLoading';
 import React from 'react';
 import Animated from 'react-native-reanimated';
 
@@ -13,7 +15,7 @@ const Title: React.FC<Authors> = (props) => {
       By <Typography color='textSecondary'>{manga.authors.join(', ')}</Typography>
     </Typography>
   ) : loading ? (
-    <Skeleton.Typography width='80%' />
+    animate(<Skeleton.Typography width='80%' />, withAnimatedLoading)
   ) : (
     <Animated.View style={animatedMount}>
       <Typography>
