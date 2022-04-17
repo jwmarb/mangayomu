@@ -1,3 +1,4 @@
+import { CategoryListProps } from '@components/Category/CategoryList/CategoryList.interfaces';
 import Spacer from '@components/Spacer';
 import useAnimatedMounting from '@hooks/useAnimatedMounting';
 import pixelToNumber from '@utils/pixelToNumber';
@@ -12,10 +13,11 @@ const BaseList = styled.FlatList.attrs((props) => ({
   },
 }))``;
 
-const Separator = () => <Spacer x={2} />;
-
-export default function CategoryListBase<T = any>(props: FlatListProps<T>) {
+export default function CategoryListBase<T = any>(props: FlatListProps<T> & CategoryListProps) {
+  const { spacing = 2 } = props;
   const style = useAnimatedMounting();
+  const Separator = React.useCallback(() => <Spacer x={spacing} />, [spacing]);
+
   return (
     <Animated.View style={style}>
       <BaseList {...(props as any)} ItemSeparatorComponent={Separator} />
