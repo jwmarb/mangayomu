@@ -2,37 +2,35 @@ import ButtonBase from '@components/Button/ButtonBase';
 import { Icon, Skeleton, Flex } from '@components/core';
 import { AnimatedProvider } from '@context/AnimatedContext';
 import useAnimatedLoading from '@hooks/useAnimatedLoading';
-import {
-  FloatingActionButton,
-  FloatingActionButtonContainer,
-  FloatingContainer,
-  LoadingContainer,
-} from '@screens/Home/screens/MangaViewer/components/Overview/Overview.base';
+import { LoadingContainer } from '@screens/Home/screens/MangaViewer/components/Overview/Overview.base';
 import { renderItem, keyExtractor } from '@screens/Home/screens/MangaViewer/components/Overview/Overview.flat.list';
 import { OverviewProps } from '@screens/Home/screens/MangaViewer/components/Overview/Overview.interfaces';
 import React from 'react';
-import { Animated, View } from 'react-native';
+import { Animated, NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
+import FloatingActionButton from '../FloatingActionButton/FloatingActionButton';
 
 const Overview: React.FC<OverviewProps> = (props) => {
   const {
     children,
     chapters,
-    collapsible: { onScroll, scrollIndicatorInsetTop, containerPaddingTop },
+    collapsible: { scrollIndicatorInsetTop, containerPaddingTop, onScrollWithListener },
   } = props;
 
   const loadingAnim = useAnimatedLoading();
+  const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(false);
+
+  const listener = React.useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      setIsAtBeginning(event.nativeEvent.contentOffset.y > 200);
+    },
+    [setIsAtBeginning]
+  );
+
+  const onScroll = onScrollWithListener(listener);
 
   return (
     <>
-      <FloatingContainer>
-        <FloatingActionButtonContainer>
-          <ButtonBase round onPress={() => {}} color='primary'>
-            <FloatingActionButton>
-              <Icon bundle='MaterialCommunityIcons' name='play' />
-            </FloatingActionButton>
-          </ButtonBase>
-        </FloatingActionButtonContainer>
-      </FloatingContainer>
+      <FloatingActionButton isAtBeginning={isAtBeginning} />
       <Animated.FlatList
         keyExtractor={keyExtractor}
         scrollIndicatorInsets={{ top: scrollIndicatorInsetTop }}
