@@ -15,12 +15,6 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     },
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      console.log(mangas);
-    }, [mangas])
-  );
-
   const collapsible = useCollapsibleHeader(options);
 
   return (
