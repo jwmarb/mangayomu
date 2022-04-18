@@ -3,7 +3,12 @@ import { Manga, MangaMeta } from '@services/scraper/scraper.interfaces';
 export interface MangaLibReducerState {
   search: string;
   appliedFilters: Record<string, unknown>; // use mangavalidator to get fields
-  mangas: Manga[]; // use link to access mangas in mangaReducer state
+  mangas: LibraryManga[]; // use link to access mangas in mangaReducer state
+}
+
+export interface LibraryManga {
+  manga: Manga;
+  dateAdded: string;
 }
 
 export type MangaLibReducerAction =
