@@ -14,19 +14,15 @@ export default function (
   action: MangaLibReducerAction
 ): MangaLibReducerState {
   switch (action.type) {
-    case 'ADD_TO_LIBRARY': {
-      const oldState = state;
-      oldState.mangas.push(action.payload);
+    case 'ADD_TO_LIBRARY':
       return {
-        ...oldState,
+        ...state,
+        mangas: [...state.mangas, { manga: action.payload, dateAdded: new Date().toString() }],
       };
-    }
     case 'REMOVE_FROM_LIBRARY': {
-      const oldState = state;
-      oldState.mangas.splice(oldState.mangas.indexOf(action.payload));
-      console.log(action.type);
       return {
-        ...oldState,
+        ...state,
+        mangas: state.mangas.filter((manga) => manga.manga.link !== action.payload.link),
       };
     }
     default:
