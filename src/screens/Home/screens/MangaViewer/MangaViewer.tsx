@@ -7,12 +7,13 @@ import MangaValidator from '@utils/MangaValidator';
 import Genres from '@screens/Home/screens/MangaViewer/components/Genres';
 import useMountedEffect from '@hooks/useMountedEffect';
 import Toast from 'react-native-root-toast';
-import { Platform, ToastAndroid } from 'react-native';
+import { InteractionManager, Platform, ToastAndroid } from 'react-native';
 import StatusIndicator from '@screens/Home/screens/MangaViewer/components/StatusIndicator';
 import connector, { MangaViewerProps } from '@screens/Home/screens/MangaViewer/MangaViewer.redux';
 import { MangaViewerContainer } from '@screens/Home/screens/MangaViewer/MangaViewer.base';
 import useAnimatedLoading from '@hooks/useAnimatedLoading';
 import { AnimatedProvider } from '@context/AnimatedContext';
+import useLazyLoading from '@hooks/useLazyLoading';
 const Title = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Title'));
 const Description = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Description'));
 const Authors = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Authors'));
@@ -63,6 +64,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   );
 
   const collapsible = useCollapsibleHeader(options);
+  const { ready, Fallback } = useLazyLoading();
   const loadingAnimation = useAnimatedLoading();
   const isAdult = React.useMemo(
     () => userMangaInfo && MangaValidator.isNSFW(userMangaInfo.genres),
@@ -86,41 +88,43 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     }
   }, [loading, meta]);
 
-  return (
-    <React.Suspense
-      fallback={
-        <Flex grow alignItems='center' justifyContent='center'>
-          <Progress />
-        </Flex>
-      }>
-      <AnimatedProvider style={loadingAnimation}>
-        <Overview chapters={userMangaInfo?.chapters} collapsible={collapsible}>
-          <MangaViewerContainer>
-            <Flex>
-              <MangaCover mangaCoverURI={manga.imageCover} />
-              <Spacer x={2} />
-              <Flex direction='column' shrink>
-                <Title title={manga.title} isAdult={isAdult} />
-                <Authors manga={manga} loading={loading} authors={meta?.authors} />
-                <Spacer y={1} />
-                <Genres genres={meta?.genres} loading={loading} />
-                <Spacer y={1} />
-                <StatusIndicator meta={meta} loading={loading} />
-                <Spacer y={1} />
-                <MangaAction manga={manga} />
+  if (ready)
+    return (
+      <React.Suspense
+        fallback={
+          <Flex grow alignItems='center' justifyContent='center'>
+            <Progress />
+          </Flex>
+        }>
+        <AnimatedProvider style={loadingAnimation}>
+          <Overview chapters={userMangaInfo?.chapters} collapsible={collapsible}>
+            <MangaViewerContainer>
+              <Flex>
+                <MangaCover mangaCoverURI={manga.imageCover} />
+                <Spacer x={2} />
+                <Flex direction='column' shrink>
+                  <Title title={manga.title} isAdult={isAdult} />
+                  <Authors manga={manga} loading={loading} authors={meta?.authors} />
+                  <Spacer y={1} />
+                  <Genres genres={meta?.genres} loading={loading} />
+                  <Spacer y={1} />
+                  <StatusIndicator meta={meta} loading={loading} />
+                  <Spacer y={1} />
+                  <MangaAction manga={manga} />
+                </Flex>
               </Flex>
-            </Flex>
 
-            <Spacer y={2} />
-            <Description loading={loading} description={meta?.description} />
-            <Spacer y={2} />
-            <Genres buttons genres={meta?.genres} loading={loading} />
-            <Spacer y={2} />
-          </MangaViewerContainer>
-        </Overview>
-      </AnimatedProvider>
-    </React.Suspense>
-  );
+              <Spacer y={2} />
+              <Description loading={loading} description={meta?.description} />
+              <Spacer y={2} />
+              <Genres buttons genres={meta?.genres} loading={loading} />
+              <Spacer y={2} />
+            </MangaViewerContainer>
+          </Overview>
+        </AnimatedProvider>
+      </React.Suspense>
+    );
+  return Fallback;
 };
 
 export default connector(MangaViewer);
