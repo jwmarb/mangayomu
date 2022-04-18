@@ -1,3 +1,4 @@
+import { mapMangaToState } from '@redux/reducers/mangaReducer/mangaReducer.helpers';
 import {
   MangaReducerAction,
   MangaReducerState,
@@ -29,23 +30,34 @@ function updateChapters(payload: MangaChapter[], state: ReadingChapterInfo[]): R
 const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerAction): MangaReducerState => {
   switch (action.type) {
     case 'VIEW_MANGA':
-      return {
-        ...state,
-        [action.payload.title]: {
-          ...action.payload,
-          chapters: updateChapters(action.payload.chapters, state[action.payload.title]?.chapters),
-          inLibrary: state[action.payload.title]?.inLibrary ?? state[action.payload.title]?.inLibrary ?? false,
-          currentlyReadingChapter: state[action.payload.title]?.currentlyReadingChapter ?? null,
-        },
-      };
+      // return {
+      //   ...state,
+      //   [action.payload.link]: {
+      //     ...action.payload,
+      //     ...state[action.payload.link],
+      //     chapters: updateChapters(action.payload.chapters, state[action.payload.link]?.chapters ?? []),
+      //     inLibrary: state[action.payload.link]?.inLibrary ?? state[action.payload.link]?.inLibrary ?? false,
+      //     currentlyReadingChapter: state[action.payload.link]?.currentlyReadingChapter ?? null,
+      //   },
+      // };
+      return mapMangaToState(state, action.payload, (manga) => ({
+        ...action.payload,
+        chapters: updateChapters(action.payload.chapters, manga?.chapters ?? []),
+        inLibrary: manga?.inLibrary ?? manga?.inLibrary ?? false,
+        currentlyReadingChapter: manga?.currentlyReadingChapter ?? null,
+      }));
     case 'TOGGLE_LIBRARY':
-      return {
-        ...state,
-        [action.payload.title]: {
-          ...state[action.payload.title],
-          inLibrary: !state[action.payload.title]?.inLibrary ?? false,
-        },
-      };
+      return mapMangaToState(state, action.payload, (manga) => ({
+        ...manga,
+        inLibrary: !manga.inLibrary ?? false,
+      }));
+    // return {
+    //   ...state,
+    //   [action.payload.link]: {
+    //     ...state[action.payload.link],
+    //     inLibrary: !state[action.payload.link]?.inLibrary ?? false,
+    //   },
+    // };
     default:
       return state;
   }
