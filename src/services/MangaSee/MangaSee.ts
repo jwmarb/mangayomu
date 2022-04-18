@@ -50,7 +50,6 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
 
   public async listMangas(): Promise<MangaSeeManga[]> {
     if (this.memo == null) {
-      console.log('not memoized. fetching...');
       const $ = await super.route('/search');
       const html = $('body').html();
       const { variable } = processScript(html);
