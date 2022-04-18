@@ -12,3 +12,10 @@ export const SpacerBaseY = styled.View<{ y: number }>`
     height: ${props.theme.spacing(props.y)};
   `}
 `;
+
+export const SpacerXY = styled.View<{ x: number; y: number }>`
+  ${(props) => css`
+    width: ${props.theme.spacing(props.x)};
+    height: ${props.theme.spacing(props.y)};
+  `}
+`;
