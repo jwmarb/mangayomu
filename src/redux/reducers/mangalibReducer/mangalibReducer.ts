@@ -17,7 +17,6 @@ export default function (
     case 'ADD_TO_LIBRARY': {
       const oldState = state;
       oldState.mangas.push(action.payload);
-      console.log(action.type);
       return {
         ...oldState,
       };
