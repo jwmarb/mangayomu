@@ -6,7 +6,6 @@ import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-co
 import MangaValidator from '@utils/MangaValidator';
 import Genres from '@screens/Home/screens/MangaViewer/components/Genres';
 import useMountedEffect from '@hooks/useMountedEffect';
-import Toast from 'react-native-root-toast';
 import { InteractionManager, Platform, ToastAndroid } from 'react-native';
 import StatusIndicator from '@screens/Home/screens/MangaViewer/components/StatusIndicator';
 import connector, { MangaViewerProps } from '@screens/Home/screens/MangaViewer/MangaViewer.redux';
@@ -75,7 +74,10 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
           </Flex>
         }>
         <AnimatedProvider style={loadingAnimation}>
-          <Overview chapters={userMangaInfo?.chapters} collapsible={collapsible}>
+          <Overview
+            chapters={userMangaInfo?.chapters}
+            currentChapter={userMangaInfo?.currentlyReadingChapter}
+            collapsible={collapsible}>
             <MangaViewerContainer>
               <Flex>
                 <MangaCover mangaCoverURI={manga.imageCover} />
