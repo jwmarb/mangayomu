@@ -28,3 +28,4 @@ export const Placeholder = {
 export { MangaCover } from '../Manga';
 export * from '../Container';
 export { default as Progress } from '../Progress';
+export { default as Chapter } from '../Chapter';
