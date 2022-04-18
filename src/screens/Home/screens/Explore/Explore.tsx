@@ -14,9 +14,9 @@ const Explore: React.FC = (props) => {
   return (
     <Screen scrollable>
       <Flex direction='column' spacing={2}>
-        {source.genres.length > 0 && <Genres />}
-        {source.hasHotMangas && <HotManga />}
-        {source.hasLatestMangas && <LatestManga />}
+        {source?.getGenres().length > 0 && <Genres />}
+        {source?.hasHotMangas() && <HotManga />}
+        {source?.hasLatestMangas() && <LatestManga />}
       </Flex>
     </Screen>
   );
