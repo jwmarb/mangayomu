@@ -10,6 +10,7 @@ import { Container } from '@components/Container';
 import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
 import Spacer from '@components/Spacer';
+import { ChapterContainer } from '@components/Chapter/Chapter.base';
 
 const displayChapterInfo = (chapter: any) => {
   if (MangaValidator.hasDate(chapter)) {
@@ -30,7 +31,7 @@ const Chapter: React.FC<ChapterProps> = (props) => {
   function handleOnPress() {}
   return (
     <ButtonBase square onPress={handleOnPress}>
-      <Container horizontalPadding={3} verticalPadding={1}>
+      <ChapterContainer>
         <Flex justifyContent='space-between' alignItems='center'>
           <Flex direction='column'>
             <Typography bold>{chapter.name}</Typography>
@@ -38,7 +39,7 @@ const Chapter: React.FC<ChapterProps> = (props) => {
           </Flex>
           <IconButton icon={<Icon bundle='Feather' name='download' />} />
         </Flex>
-      </Container>
+      </ChapterContainer>
     </ButtonBase>
   );
 };
