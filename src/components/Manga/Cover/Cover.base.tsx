@@ -9,6 +9,11 @@ export const MangaCoverBase = styled.Image.attrs({ cache: 'force-cache' })<Omit<
   `}
   ${(props) => {
     switch (props.size) {
+      case 'compact':
+        return css`
+          width: ${RFValue(pixelToNumber(props.theme.spacing(11.5)))}px;
+          height: ${RFValue(pixelToNumber(props.theme.spacing(17.6923076923)))}px;
+        `;
       case 'medium':
         return css`
           width: ${RFValue(pixelToNumber(props.theme.spacing(13)))}px;
@@ -29,6 +34,11 @@ export const MangaCoverBaseContainer = styled.View<Omit<MangaCoverProps, 'uri'>>
   `}
   ${(props) => {
     switch (props.size) {
+      case 'compact':
+        return css`
+          width: ${RFValue(pixelToNumber(props.theme.spacing(11.5)))}px;
+          height: ${RFValue(pixelToNumber(props.theme.spacing(17.6923076923)))}px;
+        `;
       case 'medium':
         return css`
           width: ${RFValue(pixelToNumber(props.theme.spacing(13)))}px;

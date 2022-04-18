@@ -1,4 +1,4 @@
 export interface MangaCoverProps {
-  size?: 'medium' | 'large';
+  size?: 'compact' | 'medium' | 'large';
   uri: string;
 }

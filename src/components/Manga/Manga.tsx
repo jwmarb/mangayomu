@@ -12,8 +12,7 @@ import { useRootNavigation } from '@navigators/Root';
 import Cover from '@components/Manga/Cover/Cover';
 
 const Manga: React.FC<MangaProps> = (props) => {
-  const { title, link, imageCover } = props;
-  const theme = useTheme();
+  const { title, imageCover, compact = false } = props;
   const navigation = useRootNavigation();
   function handleOnPress() {
     navigation.navigate('MangaViewer', { manga: props });
@@ -22,7 +21,7 @@ const Manga: React.FC<MangaProps> = (props) => {
     <ButtonBase onPress={handleOnPress} opacity>
       <MangaBaseContainer>
         <Flex direction='column'>
-          <Cover uri={imageCover} />
+          <Cover uri={imageCover} size={compact ? 'compact' : 'medium'} />
           <Spacer y={1} />
           <Typography numberOfLines={2}>{title}</Typography>
         </Flex>
