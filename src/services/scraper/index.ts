@@ -1,4 +1,5 @@
 import { AppState } from '@redux/store';
+import MangaSee from '@services/MangaSee';
 import MangaHost from '@services/scraper/scraper.abstract';
 import { useSelector } from 'react-redux';
 
@@ -10,7 +11,7 @@ export { default as MangaSee } from '../MangaSee';
  */
 export function useMangaSource(src?: string) {
   if (src == null) {
-    const name = useSelector((state: AppState) => state.settings.selectedSource.name);
+    const name = useSelector((state: AppState) => state.settings.selectedSource.getName());
     return MangaHost.availableSources.get(name)!;
     /**
      * This can never return undefined because  all classes extending MangaHost will require a name

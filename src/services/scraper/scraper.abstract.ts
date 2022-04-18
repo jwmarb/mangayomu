@@ -30,7 +30,7 @@ abstract class MangaHost {
   /**
    * The link to the manga hosting website
    */
-  private readonly link: string;
+  public readonly link: string;
   public constructor(info: MangaHostInfo) {
     this.link = url.parse(info.host).hostname ?? '';
     this.genres = info.genres;
@@ -51,31 +51,31 @@ abstract class MangaHost {
     return cheerio.load(data, { decodeEntities: false });
   }
 
-  protected getLink() {
+  public getLink() {
     return this.link;
   }
 
-  protected getGenre(index: number) {
+  public getGenre(index: number) {
     return this.genres[index];
   }
 
-  protected getName() {
+  public getName() {
     return this.name;
   }
 
-  protected getIcon() {
+  public getIcon() {
     return this.icon;
   }
 
-  protected getGenres() {
+  public getGenres() {
     return this.genres;
   }
 
-  protected hasHotMangas() {
+  public hasHotMangas() {
     return this.hotMangas;
   }
 
-  protected hasLatestMangas() {
+  public hasLatestMangas() {
     return this.latestMangas;
   }
 
