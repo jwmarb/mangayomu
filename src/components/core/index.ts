@@ -13,9 +13,11 @@ export { default as Category } from '../Category';
 export { default as MangaComponent } from '../Manga';
 import { MangaSkeleton } from '@components/Manga';
 import { TypographySkeleton } from '@components/Typography';
+import { ChapterSkeleton } from '@components/Chapter';
 export const Skeleton = {
   MangaComponent: MangaSkeleton,
   Typography: TypographySkeleton,
+  Chapter: ChapterSkeleton,
 };
 import { MangaPlaceholder } from '@components/Manga';
 /**
