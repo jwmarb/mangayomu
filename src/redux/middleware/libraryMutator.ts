@@ -1,6 +1,20 @@
 import { addToLibrary, removeFromLibrary } from '@redux/reducers/mangalibReducer/mangalibReducer.actions';
-import { AppActions, AppDispatch, AppState } from '@redux/store';
-import { applyMiddleware, Middleware } from 'redux';
+import { AppActions, AppState } from '@redux/store';
+import { Platform, ToastAndroid } from 'react-native';
+import Toast from 'react-native-root-toast';
+import { Middleware } from 'redux';
+
+const displayMessage = (msg: string) =>
+  Platform.OS !== 'android'
+    ? Toast.show(msg, {
+        position: Toast.positions.BOTTOM,
+        duration: Toast.durations.SHORT,
+        animation: true,
+        hideOnPress: true,
+        delay: 0,
+        shadow: true,
+      })
+    : ToastAndroid.show(msg, ToastAndroid.SHORT);
 
 const libraryMutator: Middleware<any> =
   ({ getState }: { getState: () => AppState }) =>
@@ -9,10 +23,10 @@ const libraryMutator: Middleware<any> =
     dispatch(action);
 
     switch (action.type) {
-      case 'ADD_TO_LIBRARY':
-        addToLibrary(action.payload)(dispatch);
-      case 'REMOVE_FROM_LIBRARY':
-        removeFromLibrary(action.payload)(dispatch);
+      case 'TOGGLE_LIBRARY':
+        if (getState().mangas[action.payload.link].inLibrary) displayMessage('Added to library');
+        else displayMessage('Removed from library');
+        break;
     }
   };
 
