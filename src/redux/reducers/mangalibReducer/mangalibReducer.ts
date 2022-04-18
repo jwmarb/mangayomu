@@ -6,7 +6,7 @@ import {
 const INITIAL_STATE: MangaLibReducerState = {
   search: '',
   appliedFilters: {},
-  mangaKeys: [],
+  mangas: [],
 };
 
 export default function (
@@ -16,14 +16,16 @@ export default function (
   switch (action.type) {
     case 'ADD_TO_LIBRARY': {
       const oldState = state;
-      oldState.mangaKeys.push(action.payload);
+      oldState.mangas.push(action.payload);
+      console.log(action.type);
       return {
         ...oldState,
       };
     }
     case 'REMOVE_FROM_LIBRARY': {
       const oldState = state;
-      oldState.mangaKeys.splice(oldState.mangaKeys.indexOf(action.payload));
+      oldState.mangas.splice(oldState.mangas.indexOf(action.payload));
+      console.log(action.type);
       return {
         ...oldState,
       };
