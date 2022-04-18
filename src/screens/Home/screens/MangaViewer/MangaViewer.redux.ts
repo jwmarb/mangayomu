@@ -13,7 +13,7 @@ const mapStateToProps = (state: AppState, props: StackScreenProps<RootStackParam
   } = props;
   return {
     ...props,
-    userMangaInfo: state.mangas[manga.title],
+    userMangaInfo: state.mangas[manga.link],
     source: MangaHost.availableSources.get(manga.source)!,
   };
 };
