@@ -5,8 +5,4 @@ import { ListRenderItem } from 'react-native';
 
 export const keyExtractor = (manga: LibraryManga) => manga.manga.link;
 
-export const renderItem: ListRenderItem<LibraryManga> = ({ item }) => (
-  <MangaContainer>
-    <MangaComponent {...item.manga} />
-  </MangaContainer>
-);
+export const renderItem: ListRenderItem<LibraryManga> = ({ item }) => <MangaComponent {...item.manga} />;

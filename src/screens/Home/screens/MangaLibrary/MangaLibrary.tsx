@@ -6,7 +6,7 @@ import connector, { MangaLibraryProps } from '@screens/Home/screens/MangaLibrary
 import React from 'react';
 import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-collapsible';
 
-const Spacing = () => <Spacer x={2} y={2} />;
+const Spacing = () => <Spacer y={4} />;
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   const { mangas } = props;
   const options: UseCollapsibleOptions = {
@@ -26,9 +26,9 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   return (
     <FlatListScreen
       padding
-      contentContainerStyle={{ alignItems: 'center' }}
+      columnWrapperStyle={{ justifyContent: 'space-around' }}
       ItemSeparatorComponent={Spacing}
-      numColumns={3}
+      numColumns={2}
       collapsible={collapsible}
       renderItem={renderItem}
       data={mangas}
