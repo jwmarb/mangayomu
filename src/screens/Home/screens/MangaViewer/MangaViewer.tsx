@@ -14,6 +14,7 @@ import { MangaViewerContainer } from '@screens/Home/screens/MangaViewer/MangaVie
 import useAnimatedLoading from '@hooks/useAnimatedLoading';
 import { AnimatedProvider } from '@context/AnimatedContext';
 import useLazyLoading from '@hooks/useLazyLoading';
+import ChapterHeader from '@screens/Home/screens/MangaViewer/components/ChapterHeader';
 const Title = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Title'));
 const Description = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Description'));
 const Authors = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Authors'));
@@ -97,6 +98,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
               <Genres buttons genres={meta?.genres} loading={loading} />
               <Spacer y={2} />
             </MangaViewerContainer>
+            <ChapterHeader numOfChapters={meta?.chapters.length} />
           </Overview>
         </AnimatedProvider>
       </React.Suspense>
