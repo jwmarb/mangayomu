@@ -1,10 +1,12 @@
 import ButtonBase from '@components/Button/ButtonBase';
-import { Icon } from '@components/core';
-import { Typography } from '@components/Typography';
+import { Icon, Skeleton, Flex } from '@components/core';
+import { AnimatedProvider } from '@context/AnimatedContext';
+import useAnimatedLoading from '@hooks/useAnimatedLoading';
 import {
   FloatingActionButton,
   FloatingActionButtonContainer,
   FloatingContainer,
+  LoadingContainer,
 } from '@screens/Home/screens/MangaViewer/components/Overview/Overview.base';
 import { renderItem, keyExtractor } from '@screens/Home/screens/MangaViewer/components/Overview/Overview.flat.list';
 import { OverviewProps } from '@screens/Home/screens/MangaViewer/components/Overview/Overview.interfaces';
@@ -17,6 +19,8 @@ const Overview: React.FC<OverviewProps> = (props) => {
     chapters,
     collapsible: { onScroll, scrollIndicatorInsetTop, containerPaddingTop },
   } = props;
+
+  const loadingAnim = useAnimatedLoading();
 
   return (
     <>
@@ -38,6 +42,15 @@ const Overview: React.FC<OverviewProps> = (props) => {
         data={chapters}
         initialNumToRender={8}
         maxToRenderPerBatch={20}
+        ListEmptyComponent={
+          <AnimatedProvider style={loadingAnim}>
+            <LoadingContainer>
+              <Skeleton.Chapter />
+              <Skeleton.Chapter />
+              <Skeleton.Chapter />
+            </LoadingContainer>
+          </AnimatedProvider>
+        }
         windowSize={7}
         ListHeaderComponent={<>{children}</>}
       />
