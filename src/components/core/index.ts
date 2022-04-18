@@ -29,3 +29,4 @@ export { MangaCover } from '../Manga';
 export * from '../Container';
 export { default as Progress } from '../Progress';
 export { default as Chapter } from '../Chapter';
+export { default as FlatListScreen } from '../FlatListScreen';
