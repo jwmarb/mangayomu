@@ -14,3 +14,5 @@ const mapStateToProps = (state: AppState, props: BottomTabScreenProps<BottomTabP
 const connector = connect(mapStateToProps);
 
 export type MangaLibraryProps = ConnectedProps<typeof connector>;
+
+export default connector;
