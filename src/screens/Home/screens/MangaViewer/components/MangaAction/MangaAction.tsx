@@ -8,14 +8,14 @@ import React from 'react';
 import { ActivityIndicator } from 'react-native';
 
 const MangaAction: React.FC<MangaActionProps> = (props) => {
-  const { manga } = props;
-  const userMangaInfo = useViewingManga(manga) as unknown as ReadingMangaInfo | null; // This can be null if the user views this for the first time
+  const { manga, userMangaInfo } = props;
   const dispatch = useAppDispatch();
   const handleOnAddToLibrary = () => {
     if (userMangaInfo) {
       dispatch({ type: 'TOGGLE_LIBRARY', payload: manga });
     }
   };
+
   return (
     <Flex grow>
       <Flex fullWidth grow justifyContent='flex-end' direction='column'>
