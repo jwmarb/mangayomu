@@ -21,18 +21,6 @@ const MangaCover = React.lazy(() => import('@screens/Home/screens/MangaViewer/co
 const MangaAction = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/MangaAction'));
 const Overview = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Overview'));
 
-const displayMessage = (msg: string) =>
-  Platform.OS !== 'android'
-    ? Toast.show(msg, {
-        position: Toast.positions.BOTTOM,
-        duration: Toast.durations.SHORT,
-        animation: true,
-        hideOnPress: true,
-        delay: 0,
-        shadow: true,
-      })
-    : ToastAndroid.show(msg, ToastAndroid.SHORT);
-
 const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   const {
     route: {
@@ -72,15 +60,6 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   );
 
   const initializingStateDone = React.useRef(false);
-
-  useMountedEffect(() => {
-    if (userMangaInfo != null) {
-      if (initializingStateDone.current)
-        if (userMangaInfo.inLibrary) displayMessage('Added to library');
-        else displayMessage('Removed from library');
-      else initializingStateDone.current = true;
-    }
-  }, [userMangaInfo?.inLibrary]);
 
   React.useEffect(() => {
     if (!loading && meta) {
