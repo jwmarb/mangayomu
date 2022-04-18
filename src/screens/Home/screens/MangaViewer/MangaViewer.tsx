@@ -59,8 +59,6 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     [userMangaInfo?.genres]
   );
 
-  const initializingStateDone = React.useRef(false);
-
   React.useEffect(() => {
     if (!loading && meta) {
       viewManga({ ...manga, ...meta });
@@ -89,7 +87,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
                   <Spacer y={1} />
                   <StatusIndicator meta={meta} loading={loading} />
                   <Spacer y={1} />
-                  <MangaAction manga={manga} />
+                  <MangaAction manga={manga} userMangaInfo={userMangaInfo} />
                 </Flex>
               </Flex>
 
