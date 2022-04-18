@@ -13,6 +13,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
   const {
     children,
     chapters,
+    currentChapter,
     collapsible: { scrollIndicatorInsetTop, containerPaddingTop, onScrollWithListener },
   } = props;
 
@@ -21,7 +22,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
 
   const listener = React.useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      setIsAtBeginning(event.nativeEvent.contentOffset.y > 200);
+      setIsAtBeginning(event.nativeEvent.contentOffset.y < 200);
     },
     [setIsAtBeginning]
   );
@@ -30,7 +31,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
 
   return (
     <>
-      <FloatingActionButton isAtBeginning={isAtBeginning} />
+      <FloatingActionButton currentChapter={currentChapter} isAtBeginning={isAtBeginning} />
       <Animated.FlatList
         keyExtractor={keyExtractor}
         scrollIndicatorInsets={{ top: scrollIndicatorInsetTop }}
