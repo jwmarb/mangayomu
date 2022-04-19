@@ -1,7 +1,7 @@
 import { Flex, Skeleton, Spacer, Typography } from '@components/core';
 import { StatusCircle } from '@screens/Home/screens/MangaViewer/components/StatusIndicator/StatusIndicator.base';
 import { StatusIndicatorProps } from '@screens/Home/screens/MangaViewer/components/StatusIndicator/StatusIndicator.interfaces';
-import animate from '@utils/animate';
+import animate from '@utils/Animations/animate';
 import MangaValidator from '@utils/MangaValidator';
 import withAnimatedLoading from '@utils/Animations/withAnimatedLoading';
 import withAnimatedMounting from '@utils/Animations/withAnimatedMounting';
