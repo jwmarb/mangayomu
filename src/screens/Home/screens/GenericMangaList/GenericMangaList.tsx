@@ -30,7 +30,7 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
 
   const theme = useTheme();
 
-  const dataProvider = React.useRef(new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(mangas)).current;
+  const dataProvider = React.useRef(new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(mangas)).current; // may be an anti-practice, but this screen does not need to rerender since it is required to initialize this anyways
 
   const collapsible = useCollapsibleHeader(options);
 
