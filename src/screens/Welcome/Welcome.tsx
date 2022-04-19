@@ -1,11 +1,12 @@
 import { RootStackParamList } from '@navigators/Root/Root.interfaces';
 import { StackScreenProps } from '@react-navigation/stack';
-import { Button, Flex, Screen, Typography, ResponsiveImage, Spacer } from '@components/core';
+import { Button, Flex, Screen, Typography, ResponsiveImage, Spacer, Container } from '@components/core';
 import React from 'react';
 import { Image, useWindowDimensions, View } from 'react-native';
 import Presentation from '@screens/Welcome/components/Presentation/Presentation';
 import Slide from './components/Slide';
 import { useAppDispatch } from '@redux/store';
+import { WelcomeBase } from '@screens/Welcome/Welcome.base';
 
 const slides = [
   () => (
@@ -85,7 +86,7 @@ const WelcomeScreen: React.FC<StackScreenProps<RootStackParamList, 'Welcome'>> =
   }
 
   return (
-    <Screen>
+    <WelcomeBase>
       <Presentation
         onFinish={handleOnFinish}
         screens={slides}
@@ -97,7 +98,7 @@ const WelcomeScreen: React.FC<StackScreenProps<RootStackParamList, 'Welcome'>> =
       <Flex justifyContent='center'>
         <Button title='Skip introduction' onPress={handleOnFinish} />
       </Flex>
-    </Screen>
+    </WelcomeBase>
   );
 };
 
