@@ -11,19 +11,40 @@ import pixelToNumber from '@utils/pixelToNumber';
 import { useTheme } from 'styled-components/native';
 import Manga from '@components/Manga';
 import { Flex } from '@components/core';
-import { MangaItemContainer } from '@screens/Home/screens/GenericMangaList/GenericMangaList.base';
+import {
+  MangaItemContainerEven,
+  MangaItemContainerOdd,
+} from '@screens/Home/screens/GenericMangaList/GenericMangaList.base';
 const { width, height } = Dimensions.get('window');
 
+enum Type {
+  ODD,
+  EVEN,
+}
 const rowRenderer: (
   type: string | number,
   data: any,
   index: number,
   extendedState?: object | undefined
-) => JSX.Element | JSX.Element[] | null = (type, data) => (
-  <MangaItemContainer>
-    <Manga {...data} />
-  </MangaItemContainer>
-);
+) => JSX.Element | JSX.Element[] | null = (type, data) => {
+  switch (type) {
+    default:
+      return null;
+    case Type.EVEN:
+      return (
+        <MangaItemContainerEven>
+          <Manga {...data} />
+        </MangaItemContainerEven>
+      );
+    case Type.ODD: {
+      return (
+        <MangaItemContainerOdd>
+          <Manga {...data} />
+        </MangaItemContainerOdd>
+      );
+    }
+  }
+};
 
 const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMangaList'>> = (props) => {
   const {
@@ -47,7 +68,7 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
   const dataProvider = React.useRef(new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(mangas)).current;
   const layoutProvider = React.useRef(
     new LayoutProvider(
-      (mapToType) => mapToType,
+      (index) => (index % 2 === 1 ? Type.ODD : Type.EVEN),
       (type, dim) => {
         dim.width = width / 2;
         dim.height = 200;
