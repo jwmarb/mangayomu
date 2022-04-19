@@ -8,6 +8,7 @@ import IconButton from '../../IconButton';
 import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
 import { HoldItem } from 'react-native-hold-menu';
 import { ThemedStyledProps } from 'styled-components';
+import { useMangaSource } from '@services/scraper';
 
 const generateCSS = (props: ThemedStyledProps<ViewProps & React.RefAttributes<View>, DefaultTheme>) => css`
 padding-top: ${
@@ -33,11 +34,11 @@ export const HeaderBaseContainer = styled.View`
 `;
 
 export const MangaSource: React.FC = () => {
-  const mangaSource = useSelector((state: AppState) => state.settings.selectedSource);
+  const mangaSource = useMangaSource();
   const menuItems: MenuItemProps[] = React.useMemo(
     () => [
       {
-        text: mangaSource.name,
+        text: mangaSource.getName(),
         isTitle: true,
         withSeparator: true,
       },
@@ -49,7 +50,7 @@ export const MangaSource: React.FC = () => {
       {
         text: 'View Website',
         onPress: () => {
-          Linking.openURL(`https://${mangaSource.link}`);
+          Linking.openURL(`https://${mangaSource.getLink()}`);
         },
         icon: 'link',
       },
@@ -63,7 +64,7 @@ export const MangaSource: React.FC = () => {
   );
   return (
     <HoldItem activateOn='tap' hapticFeedback='Heavy' items={menuItems}>
-      <IconButton icon={<Image source={{ uri: mangaSource.icon }} style={{ width: 24, height: 24 }} />} />
+      <IconButton icon={<Image source={{ uri: mangaSource.getIcon() }} style={{ width: 24, height: 24 }} />} />
     </HoldItem>
   );
 };
