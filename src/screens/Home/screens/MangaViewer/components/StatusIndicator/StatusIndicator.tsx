@@ -3,8 +3,8 @@ import { StatusCircle } from '@screens/Home/screens/MangaViewer/components/Statu
 import { StatusIndicatorProps } from '@screens/Home/screens/MangaViewer/components/StatusIndicator/StatusIndicator.interfaces';
 import animate from '@utils/animate';
 import MangaValidator from '@utils/MangaValidator';
-import withAnimatedLoading from '@utils/withAnimatedLoading';
-import withAnimatedMounting from '@utils/withAnimatedMounting';
+import withAnimatedLoading from '@utils/Animations/withAnimatedLoading';
+import withAnimatedMounting from '@utils/Animations/withAnimatedMounting';
 import React from 'react';
 
 const StatusIndicator: React.FC<StatusIndicatorProps> = (props) => {

@@ -1,6 +1,6 @@
 import Flex from '@components/Flex';
 import MangaSkeleton from '@components/Manga/Manga.skeleton';
-import withAnimatedLoading from '@utils/withAnimatedLoading';
+import withAnimatedLoading from '@utils/Animations/withAnimatedLoading';
 import React from 'react';
 
 const placeholders = new Array(10).fill('').map((_, i) => <MangaSkeleton key={i} />);

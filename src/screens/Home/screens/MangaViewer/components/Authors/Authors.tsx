@@ -3,7 +3,7 @@ import useAnimatedMounting from '@hooks/useAnimatedMounting';
 import { AuthorsProps } from '@screens/Home/screens/MangaViewer/components/Authors/Authors.interfaces';
 import animate from '@utils/animate';
 import MangaValidator from '@utils/MangaValidator';
-import withAnimatedLoading from '@utils/withAnimatedLoading';
+import withAnimatedLoading from '@utils/Animations/withAnimatedLoading';
 import React from 'react';
 import Animated from 'react-native-reanimated';
 

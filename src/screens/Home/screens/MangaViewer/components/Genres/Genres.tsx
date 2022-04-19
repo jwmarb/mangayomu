@@ -2,8 +2,8 @@ import { Category, Flex, Genre, Skeleton, Typography } from '@components/core';
 import useAnimatedMounting from '@hooks/useAnimatedMounting';
 import { GenresProps } from '@screens/Home/screens/MangaViewer/components/Genres/Genres.interfaces';
 import animate from '@utils/animate';
-import withAnimatedLoading from '@utils/withAnimatedLoading';
-import withAnimatedMounting from '@utils/withAnimatedMounting';
+import withAnimatedLoading from '@utils/Animations/withAnimatedLoading';
+import withAnimatedMounting from '@utils/Animations/withAnimatedMounting';
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 

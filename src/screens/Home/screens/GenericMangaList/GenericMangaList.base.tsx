@@ -1,6 +1,6 @@
 import { Skeleton, Flex } from '@components/core';
-import withAnimatedLoading from '@utils/withAnimatedLoading';
-import withAnimatedMounting from '@utils/withAnimatedMounting';
+import withAnimatedLoading from '@utils/Animations/withAnimatedLoading';
+import withAnimatedMounting from '@utils/Animations/withAnimatedMounting';
 import { Dimensions } from 'react-native';
 import styled, { css } from 'styled-components/native';
 
