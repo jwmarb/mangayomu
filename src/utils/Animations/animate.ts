@@ -8,7 +8,12 @@ import React from 'react';
  */
 export default function animate(
   element: React.ReactElement,
-  preset: (component: React.FC) => React.FC
+  ...preset: ((component: React.FC) => React.FC)[]
 ): React.ReactElement {
-  return React.createElement(preset(() => element));
+  return React.createElement(
+    preset.reduce(
+      (prev, curr) => () => React.createElement(curr(prev)),
+      () => element
+    )
+  );
 }
