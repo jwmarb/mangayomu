@@ -13,19 +13,14 @@ import {
   MangaItemContainerEven,
   MangaItemContainerOdd,
 } from '@screens/Home/screens/GenericMangaList/GenericMangaList.base';
-import { ApplyWindowCorrectionEventHandler } from '@utils/RecyclerListView.interfaces';
+import { ApplyWindowCorrectionEventHandler, RowRenderer } from '@utils/RecyclerListView.interfaces';
 const { width, height } = Dimensions.get('window');
 
 enum Type {
   ODD,
   EVEN,
 }
-const rowRenderer: (
-  type: string | number,
-  data: any,
-  index: number,
-  extendedState?: object | undefined
-) => JSX.Element | JSX.Element[] | null = (type, data) => {
+const rowRenderer: RowRenderer = (type, data) => {
   switch (type) {
     default:
       return null;
