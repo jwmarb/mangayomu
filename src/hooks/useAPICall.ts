@@ -1,3 +1,4 @@
+import CancelablePromise from '@utils/CancelablePromise';
 import React from 'react';
 
 /**
@@ -6,22 +7,27 @@ import React from 'react';
  * @returns Returns the necessary variables needed for a component that uses an API call
  */
 export default function useAPICall<T>(apiCall: () => Promise<T>) {
+  const cancelable = React.useRef(new CancelablePromise<T>(apiCall)).current;
   const [items, setItems] = React.useState<T>();
   const [error, setError] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(true);
   React.useEffect(() => {
     refresh();
+    return () => {
+      cancelable.cancel();
+    };
   }, []);
   async function refresh() {
     setLoading(true);
-    try {
-      const response = await apiCall();
-      setItems(response);
-    } catch (e) {
-      setError(e as any);
-    } finally {
-      setLoading(false);
-    }
+    const response = await cancelable.start();
+    if (!cancelable.isCanceled())
+      try {
+        setItems(response);
+      } catch (e) {
+        setError(e as any);
+      } finally {
+        setLoading(false);
+      }
   }
 
   return {
