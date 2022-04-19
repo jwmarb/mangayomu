@@ -9,13 +9,9 @@ import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/
 import { HoldItem } from 'react-native-hold-menu';
 import { ThemedStyledProps } from 'styled-components';
 import { useMangaSource } from '@services/scraper';
+import { ContainerProps } from '@components/Container/Container.interfaces';
 
 const generateCSS = (props: ThemedStyledProps<ViewProps & React.RefAttributes<View>, DefaultTheme>) => css`
-padding-top: ${
-  StatusBar.currentHeight ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 2) : props.theme.spacing(2)
-};
-background-color: ${props.theme.palette.background.paper.get()};
-padding-bottom: ${props.theme.spacing(2)};
 height: ${
   StatusBar.currentHeight ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 8) : props.theme.spacing(8)
 }
@@ -24,14 +20,45 @@ flex-direction: row;
 align-items: center;
 `;
 
-export const HeaderBuilder = styled.View`
+export const HeaderBuilder = styled.View<ContainerProps & { paper?: boolean }>`
   ${generateCSS}
+  ${(props) => css`
+    background-color: ${props.paper
+      ? props.theme.palette.background.paper.get()
+      : props.theme.palette.background.default.get()};
+    padding-horizontal: ${typeof props.horizontalPadding === 'number'
+      ? props.theme.spacing(props.horizontalPadding ?? 3)
+      : props.theme.spacing(props.horizontalPadding ? 3 : 0)};
+    padding-bottom: ${typeof props.verticalPadding === 'number'
+      ? props.theme.spacing(props.verticalPadding ?? 2)
+      : props.theme.spacing(props.verticalPadding ? 2 : 0)};
+    padding-top: ${() => {
+      switch (typeof props.verticalPadding) {
+        default:
+        case 'boolean':
+          if (props.verticalPadding)
+            return StatusBar.currentHeight
+              ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 2)
+              : props.theme.spacing(2);
+          else return StatusBar.currentHeight ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER) : '0px';
+        case 'number':
+          return StatusBar.currentHeight
+            ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + (props.verticalPadding ?? 2))
+            : props.theme.spacing(props.verticalPadding ?? 2);
+      }
+    }};
+  `}
 `;
 
 export const HeaderBaseContainer = styled.View`
   ${generateCSS}
   ${(props) => css`
+    background-color: ${props.theme.palette.background.paper.get()};
     padding-horizontal: ${props.theme.spacing(3)};
+    padding-bottom: ${props.theme.spacing(2)};
+    padding-top: ${StatusBar.currentHeight
+      ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 2)
+      : props.theme.spacing(2)};
   `}
 `;
 
