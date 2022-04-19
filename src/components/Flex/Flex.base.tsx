@@ -7,6 +7,11 @@ const generateStyles = (
   props: ThemedStyledProps<ViewProps & React.RefAttributes<View> & Partial<FlexProps>, DefaultTheme>
 ) => css`
   ${() =>
+    props.wrap &&
+    css`
+      flex-wrap: wrap;
+    `}
+  ${() =>
     props.fullWidth &&
     css`
       width: 100%;
