@@ -1,15 +1,18 @@
-export default class CancelablePromise<T> extends Promise<T> {
+export default class CancelablePromise<T> {
   private _isCanceled: boolean;
-  public constructor(executor: (resolve: (value: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void) {
-    super(executor);
+  private promise: Promise<T>;
+
+  public constructor(executor: () => Promise<T>) {
+    this.promise = new Promise((res, rej) => {
+      executor()
+        .then((val) => (this.isCanceled() ? rej('Promise canceled') : res(val)))
+        .catch(rej);
+    });
     this._isCanceled = false;
   }
-  public async then<TResult1 = T, TResult2 = never>(
-    onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
-    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
-  ): Promise<TResult1 | TResult2> {
-    if (!this.isCanceled()) return super.then(onfulfilled, onrejected);
-    return Promise.reject('Promise canceled');
+
+  public start() {
+    return this.promise;
   }
 
   public isCanceled() {
