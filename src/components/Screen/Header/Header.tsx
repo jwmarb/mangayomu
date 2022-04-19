@@ -48,15 +48,14 @@ const Header: React.FC<StackHeaderProps> = (props) => {
 
   return (
     <HeaderBaseContainer>
-      {navigation.canGoBack() && (
-        <>
-          <IconButton icon={<Icon bundle='AntDesign' name='back' />} onPress={handleOnPress} />
-          <Spacer x={1} />
-        </>
-      )}
-      {HeaderLeftComponent && (
+      {HeaderLeftComponent ? (
         <>
           <HeaderLeftComponent />
+          <Spacer x={1} />
+        </>
+      ) : (
+        <>
+          <IconButton icon={<Icon bundle='AntDesign' name='back' />} onPress={handleOnPress} />
           <Spacer x={1} />
         </>
       )}
