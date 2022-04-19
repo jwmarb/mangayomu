@@ -11,7 +11,7 @@ export { default as MangaSee } from '../MangaSee';
  */
 export function useMangaSource(src?: string) {
   if (src == null) {
-    const name = useSelector((state: AppState) => state.settings.selectedSource.getName());
+    const name = useSelector((state: AppState) => (state.settings.selectedSource as any).name);
     return MangaHost.availableSources.get(name)!;
     /**
      * This can never return undefined because  all classes extending MangaHost will require a name
