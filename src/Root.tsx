@@ -5,6 +5,7 @@ import HomeScreen from '@screens/Home';
 import { useSelector } from 'react-redux';
 import { AppState } from '@redux/store';
 import MangaViewer from '@screens/Home/screens/MangaViewer/MangaViewer';
+import GenericMangaList from '@screens/Home/screens/GenericMangaList';
 
 const Root: React.FC = () => {
   const showIntroduction = useSelector((state: AppState) => state.settings.showIntroduction);
@@ -14,6 +15,7 @@ const Root: React.FC = () => {
       <RootStack.Screen component={WelcomeScreen} name='Welcome' options={{ headerShown: false }} />
       <RootStack.Screen component={HomeScreen} name='Home' options={{ headerShown: false }} />
       <RootStack.Screen component={MangaViewer} name='MangaViewer' />
+      <RootStack.Screen component={GenericMangaList} name='GenericMangaList' />
     </RootStack.Navigator>
   );
 };
