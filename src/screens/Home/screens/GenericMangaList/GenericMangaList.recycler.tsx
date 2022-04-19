@@ -6,6 +6,7 @@ import {
   MangaItemContainerOdd,
 } from '@screens/Home/screens/GenericMangaList/GenericMangaList.base';
 import Manga from '@components/Manga';
+import { animate, withAnimatedFadeIn, withAnimatedMounting } from '@utils/Animations';
 
 const { width } = Dimensions.get('window');
 enum Type {
@@ -18,16 +19,18 @@ export const rowRenderer: RowRenderer = (type, data) => {
     default:
       return null;
     case Type.EVEN:
-      return (
+      return animate(
         <MangaItemContainerEven>
           <Manga {...data} />
-        </MangaItemContainerEven>
+        </MangaItemContainerEven>,
+        withAnimatedMounting
       );
     case Type.ODD: {
-      return (
+      return animate(
         <MangaItemContainerOdd>
           <Manga {...data} />
-        </MangaItemContainerOdd>
+        </MangaItemContainerOdd>,
+        withAnimatedMounting
       );
     }
   }
