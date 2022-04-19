@@ -33,3 +33,4 @@ export { default as Progress } from '../Progress';
 export { default as Chapter } from '../Chapter';
 export { default as FlatListScreen } from '../FlatListScreen';
 export { default as RecyclerListViewScreen } from '../RecyclerListViewScreen';
+export { default as TextField } from '../TextField';
