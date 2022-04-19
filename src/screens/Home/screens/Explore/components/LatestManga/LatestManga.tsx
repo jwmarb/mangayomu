@@ -21,7 +21,7 @@ const HotManga: React.FC = (props) => {
 
   function handleOnPress() {
     if (mangas) {
-      navigation.navigate('GenericMangaList', { mangas });
+      navigation.navigate('GenericMangaList', { mangas, type: 'Recently updated' });
     }
   }
 
