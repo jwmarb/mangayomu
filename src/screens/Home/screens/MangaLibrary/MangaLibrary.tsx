@@ -2,6 +2,7 @@ import { Screen, Container, Typography, IconButton, Icon, Spacer, TextField, Fle
 import { FlatListScreen } from '@components/core';
 import { HeaderBuilder, MangaSource } from '@components/Screen/Header/Header.base';
 import { TextFieldProps } from '@components/TextField/TextField.interfaces';
+import useLazyLoading from '@hooks/useLazyLoading';
 import { useFocusEffect } from '@react-navigation/native';
 import { keyExtractor, renderItem } from '@screens/Home/screens/MangaLibrary/MangaLibrary.flatlist';
 import connector, { MangaLibraryProps } from '@screens/Home/screens/MangaLibrary/MangaLibrary.redux';
@@ -16,6 +17,7 @@ const Spacing = () => <Spacer y={4} />;
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   const { mangas, navigation } = props;
   const [showSearch, setShowSearch] = React.useState<boolean>(false);
+  const { ready, Fallback } = useLazyLoading();
   const [query, setQuery] = React.useState<string>('');
   const theme = useTheme();
   const textRef = React.useRef<TextInput>();
@@ -72,6 +74,8 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
       else setQuery('');
     }, 100);
   }, [showSearch]);
+
+  if (!ready) return Fallback;
 
   return (
     <FlatList
