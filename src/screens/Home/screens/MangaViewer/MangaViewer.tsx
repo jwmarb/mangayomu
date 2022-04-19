@@ -1,4 +1,4 @@
-import { Flex, Spacer, IconButton, Icon, Header, Progress } from '@components/core';
+import { Flex, Spacer, IconButton, Icon, Header, Progress, Container } from '@components/core';
 import useAPICall from '@hooks/useAPICall';
 
 import React from 'react';
@@ -78,7 +78,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
             currentChapter={userMangaInfo?.currentlyReadingChapter}
             collapsible={collapsible}>
             <MangaViewerContainer>
-              <Flex>
+              <Flex container horizontalPadding={3} verticalPadding={0}>
                 <MangaCover mangaCoverURI={manga.imageCover} />
                 <Spacer x={2} />
                 <Flex direction='column' shrink>
@@ -97,7 +97,6 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
               <Description loading={loading} description={meta?.description} />
               <Spacer y={2} />
               <Genres buttons genres={meta?.genres} loading={loading} />
-              <Spacer y={2} />
             </MangaViewerContainer>
             <ChapterHeader numOfChapters={meta?.chapters.length} />
           </Overview>

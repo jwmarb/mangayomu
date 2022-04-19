@@ -23,7 +23,7 @@ const Description: React.FC<DescriptionProps> = (props) => {
   const animatedMount = useAnimatedMounting(!loading);
   const buttonMount = useAnimatedMounting(showExpand);
   return (
-    <>
+    <Flex container direction='column' verticalPadding={0} horizontalPadding={3}>
       <Flex justifyContent='space-between' alignItems='center'>
         <Typography variant='subheader'>Description</Typography>
         {showExpand && (
@@ -47,7 +47,7 @@ const Description: React.FC<DescriptionProps> = (props) => {
       ) : (
         <LoadingDescription />
       )}
-    </>
+    </Flex>
   );
 };
 
