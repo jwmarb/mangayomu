@@ -15,7 +15,6 @@ padding-top: ${
   StatusBar.currentHeight ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 2) : props.theme.spacing(2)
 };
 background-color: ${props.theme.palette.background.paper.get()};
-padding-horizontal: ${props.theme.spacing(3)};
 padding-bottom: ${props.theme.spacing(2)};
 height: ${
   StatusBar.currentHeight ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 8) : props.theme.spacing(8)
@@ -25,12 +24,15 @@ flex-direction: row;
 align-items: center;
 `;
 
-export const HeaderBaseContainerNoHorizontalPadding = styled.View`
+export const HeaderBuilder = styled.View`
   ${generateCSS}
 `;
 
 export const HeaderBaseContainer = styled.View`
   ${generateCSS}
+  ${(props) => css`
+    padding-horizontal: ${props.theme.spacing(3)};
+  `}
 `;
 
 export const MangaSource: React.FC = () => {
