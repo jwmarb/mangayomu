@@ -1,6 +1,7 @@
+import { ContainerProps } from '@components/Container/Container.interfaces';
 import { FlexStyle } from 'react-native';
 
-export interface FlexProps {
+type FlexBaseProps = {
   justifyContent?: FlexStyle['justifyContent'];
   alignItems?: FlexStyle['alignItems'];
   direction?: FlexStyle['flexDirection'];
@@ -10,5 +11,12 @@ export interface FlexProps {
   debug?: boolean;
   spacing?: number;
   fullWidth?: boolean;
-  container?: boolean;
-}
+};
+
+export type FlexProps = FlexBaseProps &
+  (
+    | {
+        container?: false;
+      }
+    | ({ container?: true } & ContainerProps)
+  );
