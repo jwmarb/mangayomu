@@ -5,7 +5,7 @@ import Genres from '@screens/Home/screens/Explore/components/Genres';
 import HotManga from '@screens/Home/screens/Explore/components/HotManga';
 import LatestManga from '@screens/Home/screens/Explore/components/LatestManga';
 import { useMangaSource } from '@services/scraper';
-import withAnimatedMounting from '@utils/withAnimatedMounting';
+import { withAnimatedMounting } from '@utils/Animations';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
