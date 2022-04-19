@@ -50,11 +50,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
         scrollViewProps={{
           collapsible,
           listener,
-          header: (
-            <>
-              <View onLayout={handleOnLayout}>{children}</View>
-            </>
-          ),
+          header: <View onLayout={handleOnLayout}>{children}</View>,
         }}
         dataProvider={dataProvider}
         layoutProvider={layout}
