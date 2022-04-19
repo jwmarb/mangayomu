@@ -2,6 +2,7 @@ import { Button, Category, Icon, IconButton, Placeholder, Spacer, Typography } f
 import Flex from '@components/Flex';
 import MangaSkeleton from '@components/Manga/Manga.skeleton';
 import useAPICall from '@hooks/useAPICall';
+import { useRootNavigation } from '@navigators/Root';
 import { keyExtractor, renderItem } from '@screens/Home/screens/Explore/components/HotManga/HotManga.flatlist';
 import { useMangaSource } from '@services/scraper';
 import React from 'react';
@@ -16,13 +17,21 @@ const HotManga: React.FC = (props) => {
     refresh,
   } = useAPICall(() => source.listRecentlyUpdatedManga());
 
+  const navigation = useRootNavigation();
+
+  function handleOnPress() {
+    if (mangas) {
+      navigation.navigate('GenericMangaList', { mangas });
+    }
+  }
+
   return (
     <Flex direction='column'>
       <Category.Header>
         <Typography variant='subheader'>
           Recently updated <Icon bundle='MaterialCommunityIcons' name='update' color='secondary' />
         </Typography>
-        <Button title='View All' />
+        <Button title='View All' onPress={handleOnPress} />
       </Category.Header>
       <Spacer y={1} />
       {loading ? (
