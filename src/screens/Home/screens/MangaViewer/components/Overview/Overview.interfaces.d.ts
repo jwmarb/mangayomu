@@ -5,4 +5,5 @@ export interface OverviewProps {
   currentChapter?: ReadingChapterInfo | null;
   chapters: ReadingChapterInfo[];
   collapsible: Collapsible;
+  loading: boolean;
 }

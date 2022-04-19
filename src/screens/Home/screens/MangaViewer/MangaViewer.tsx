@@ -75,6 +75,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
         }>
         <AnimatedProvider style={loadingAnimation}>
           <Overview
+            loading={loading}
             chapters={userMangaInfo?.chapters}
             currentChapter={userMangaInfo?.currentlyReadingChapter}
             collapsible={collapsible}>
