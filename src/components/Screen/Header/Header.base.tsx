@@ -1,32 +1,35 @@
 import { AppState } from '@redux/store';
 import { SPACE_MULTIPLIER } from '@theme/Spacing';
-import { StatusBar, Image, Linking } from 'react-native';
+import { StatusBar, Image, Linking, View, ViewProps } from 'react-native';
 import { useSelector } from 'react-redux';
-import styled, { css } from 'styled-components/native';
+import styled, { css, DefaultTheme } from 'styled-components/native';
 import React from 'react';
 import IconButton from '../../IconButton';
 import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
 import { HoldItem } from 'react-native-hold-menu';
+import { ThemedStyledProps } from 'styled-components';
+
+const generateCSS = (props: ThemedStyledProps<ViewProps & React.RefAttributes<View>, DefaultTheme>) => css`
+padding-top: ${
+  StatusBar.currentHeight ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 2) : props.theme.spacing(2)
+};
+background-color: ${props.theme.palette.background.paper.get()};
+padding-horizontal: ${props.theme.spacing(3)};
+padding-bottom: ${props.theme.spacing(2)};
+height: ${
+  StatusBar.currentHeight ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 8) : props.theme.spacing(8)
+}
+display: flex;
+flex-direction: row;
+align-items: center;
+`;
+
+export const HeaderBaseContainerNoHorizontalPadding = styled.View`
+  ${generateCSS}
+`;
 
 export const HeaderBaseContainer = styled.View`
-  ${(props) => css`
-    padding-top: ${
-      StatusBar.currentHeight
-        ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 2)
-        : props.theme.spacing(2)
-    };
-    background-color: ${props.theme.palette.background.paper.get()};
-    padding-horizontal: ${props.theme.spacing(3)};
-    padding-bottom: ${props.theme.spacing(2)};
-    height: ${
-      StatusBar.currentHeight
-        ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 8)
-        : props.theme.spacing(8)
-    }
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  `}
+  ${generateCSS}
 `;
 
 export const MangaSource: React.FC = () => {
