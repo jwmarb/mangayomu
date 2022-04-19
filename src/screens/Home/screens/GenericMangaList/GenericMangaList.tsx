@@ -6,15 +6,14 @@ import React from 'react';
 import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-collapsible';
 import { DataProvider, LayoutProvider } from 'recyclerlistview';
 import { Dimensions } from 'react-native';
-import { RFValue } from 'react-native-responsive-fontsize';
 import pixelToNumber from '@utils/pixelToNumber';
 import { useTheme } from 'styled-components/native';
 import Manga from '@components/Manga';
-import { Flex } from '@components/core';
 import {
   MangaItemContainerEven,
   MangaItemContainerOdd,
 } from '@screens/Home/screens/GenericMangaList/GenericMangaList.base';
+import { ApplyWindowCorrectionEventHandler } from '@utils/RecyclerListView.interfaces';
 const { width, height } = Dimensions.get('window');
 
 enum Type {
@@ -70,13 +69,20 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
     new LayoutProvider(
       (index) => (index % 2 === 1 ? Type.ODD : Type.EVEN),
       (type, dim) => {
-        dim.width = width / 2;
-        dim.height = 200;
+        dim.width = width / 2 - 1;
+        dim.height = 265;
       }
     )
   ).current;
 
   const collapsible = useCollapsibleHeader(options);
+
+  const applyWindowCorrection: ApplyWindowCorrectionEventHandler = React.useCallback(
+    (offsetX, offsetY, windowCorrection) => {
+      windowCorrection.windowShift = -collapsible.containerPaddingTop;
+    },
+    [collapsible.containerPaddingTop]
+  );
 
   return (
     <RecyclerListViewScreen
@@ -84,7 +90,7 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
       dataProvider={dataProvider}
       layoutProvider={layoutProvider}
       rowRenderer={rowRenderer}
-      forceNonDeterministicRendering
+      applyWindowCorrection={applyWindowCorrection}
       scrollViewProps={{
         contentContainerStyle: {
           paddingTop: collapsible.containerPaddingTop + pixelToNumber(theme.spacing(3)),
