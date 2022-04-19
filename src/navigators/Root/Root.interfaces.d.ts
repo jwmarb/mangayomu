@@ -6,8 +6,12 @@ export type RootStackParamList = {
   MangaViewer: {
     manga: Manga;
   };
-  GenericMangaList: {
-    mangas: Manga[];
-    type: string;
-  };
+  GenericMangaList:
+    | {
+        mangas: Manga[];
+        type: string;
+      }
+    | {
+        genre: string;
+      };
 };
