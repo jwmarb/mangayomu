@@ -3,27 +3,23 @@ import { FlatListScreen } from '@components/core';
 import { useFocusEffect } from '@react-navigation/native';
 import { keyExtractor, renderItem } from '@screens/Home/screens/MangaLibrary/MangaLibrary.flatlist';
 import connector, { MangaLibraryProps } from '@screens/Home/screens/MangaLibrary/MangaLibrary.redux';
+import pixelToNumber from '@utils/pixelToNumber';
 import React from 'react';
+import { FlatList } from 'react-native-gesture-handler';
 import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-collapsible';
+import { useTheme } from 'styled-components/native';
 
 const Spacing = () => <Spacer y={4} />;
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   const { mangas } = props;
-  const options: UseCollapsibleOptions = {
-    navigationOptions: {
-      headerRight: () => <IconButton icon={<Icon bundle='Feather' name='search' />} />,
-    },
-  };
-
-  const collapsible = useCollapsibleHeader(options);
+  const theme = useTheme();
 
   return (
-    <FlatListScreen
-      padding
+    <FlatList
+      contentContainerStyle={{ paddingVertical: pixelToNumber(theme.spacing(3)) }}
       columnWrapperStyle={{ justifyContent: 'space-around' }}
       ItemSeparatorComponent={Spacing}
       numColumns={2}
-      collapsible={collapsible}
       renderItem={renderItem}
       data={mangas}
       keyExtractor={keyExtractor}
