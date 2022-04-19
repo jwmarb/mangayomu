@@ -1,3 +1,5 @@
+import { Skeleton, Flex } from '@components/core';
+import withAnimatedLoading from '@utils/withAnimatedLoading';
 import { Dimensions } from 'react-native';
 import styled, { css } from 'styled-components/native';
 
@@ -16,3 +18,21 @@ export const MangaItemContainerOdd = styled.View`
     padding: ${props.theme.spacing(1, 3)};
   `}
 `;
+
+export const MangaItemsLoading: React.FC = withAnimatedLoading(() => {
+  return (
+    <Flex wrap>
+      {new Array(8).fill('').map((_, i) =>
+        i % 2 === 1 ? (
+          <MangaItemContainerOdd key={i}>
+            <Skeleton.MangaComponent />
+          </MangaItemContainerOdd>
+        ) : (
+          <MangaItemContainerEven key={i}>
+            <Skeleton.MangaComponent />
+          </MangaItemContainerEven>
+        )
+      )}
+    </Flex>
+  );
+});
