@@ -1,11 +1,10 @@
 import { FlexProps } from '@components/Flex/Flex.interfaces';
-import styled, { css } from 'styled-components/native';
-import { FlexBase } from '@components/Flex/Flex.base';
+import { FlexBase, FlexContainerBase } from '@components/Flex/Flex.base';
 import React from 'react';
 import Spacer from '@components/Spacer';
 
 const Flex: React.FC<FlexProps> = (props) => {
-  const { spacing } = props;
+  const { spacing, container } = props;
   if (spacing != null)
     return (
       <FlexBase {...props}>
@@ -40,6 +39,7 @@ const Flex: React.FC<FlexProps> = (props) => {
         })}
       </FlexBase>
     );
+  if (container) return <FlexContainerBase {...props} />;
   return <FlexBase {...props} />;
 };
 

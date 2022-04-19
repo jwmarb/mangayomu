@@ -10,4 +10,5 @@ export interface FlexProps {
   debug?: boolean;
   spacing?: number;
   fullWidth?: boolean;
+  container?: boolean;
 }
