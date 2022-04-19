@@ -15,14 +15,15 @@ import Icon from '@components/Icon';
 
 const BottomTabHeader: React.FC<BottomTabHeaderProps> = (props) => {
   const {
-    options: { headerTitle = props.route.name, headerRight },
+    options: { headerTitle = props.route.name, headerRight, headerLeft },
     navigation,
   } = props;
   const HeaderRightComponent = headerRight as React.FC;
+  const HeaderLeftComponent = headerLeft as React.FC;
 
   return (
     <HeaderBaseContainer>
-      <MangaSource />
+      {HeaderLeftComponent ? <HeaderLeftComponent /> : <MangaSource />}
       <Spacer x={1} />
       <Typography variant='subheader'>{headerTitle}</Typography>
       <Flex grow justifyContent='flex-end'>
