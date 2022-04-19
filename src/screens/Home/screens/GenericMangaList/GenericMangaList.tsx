@@ -110,11 +110,12 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
       if (!loading && mangas) setDataProvider((prev) => prev.cloneWithRows(mangas));
     }, [mangas, loading]);
     if (ready) {
-      return (
-        <Screen scrollable={options}>
-          <MangaItemsLoading />
-        </Screen>
-      );
+      if (loading)
+        return (
+          <Screen scrollable={options}>
+            <MangaItemsLoading />
+          </Screen>
+        );
 
       return (
         <RecyclerListViewScreen
