@@ -1,3 +1,4 @@
+import Flex from '@components/Flex';
 import { RecyclerListViewScreenProps } from '@components/RecyclerListViewScreen/RecyclerListViewScreen.interfaces';
 import React from 'react';
 import { Animated, ScrollViewProps } from 'react-native';
@@ -6,6 +7,7 @@ export const ScrollViewWithCollapsible: React.FC<ScrollViewProps & RecyclerListV
   (props, ref) => {
     const {
       onScroll: regularScrollHandler = () => void 0,
+      contentContainerStyle = {},
       collapsible: { containerPaddingTop, scrollIndicatorInsetTop, onScrollWithListener },
       listener = () => void 0,
       children,
@@ -17,7 +19,7 @@ export const ScrollViewWithCollapsible: React.FC<ScrollViewProps & RecyclerListV
     });
     return (
       <Animated.ScrollView
-        contentContainerStyle={{ paddingTop: containerPaddingTop }}
+        contentContainerStyle={[{ paddingTop: containerPaddingTop }, contentContainerStyle]}
         scrollIndicatorInsets={{ top: scrollIndicatorInsetTop }}
         onScroll={onScroll}
         ref={ref}
