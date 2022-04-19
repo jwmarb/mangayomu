@@ -13,6 +13,7 @@ import { extractDataFromApplicationLDJson, parseMangaSeeDate, processScript } fr
 import { MangaHostWithFilters, MangaSortType } from '@services/scraper/scraper.filters';
 import { Manga, MangaChapter, MangaMeta } from '@services/scraper/scraper.interfaces';
 import titleIncludes from '@utils/MangaFilters';
+import filterGenres from '@utils/MangaFilters/filterGenres';
 import { parse } from 'date-fns';
 
 class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
@@ -139,6 +140,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   public async search(query: string, filters?: MangaSeeFilter): Promise<MangaSeeManga[]> {
     const directory = await this.listMangas();
     const filtered = directory.filter(titleIncludes(query));
+    // filterGenres(filtered)
 
     return filtered;
   }
