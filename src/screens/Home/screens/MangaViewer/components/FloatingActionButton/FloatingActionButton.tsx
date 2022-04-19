@@ -9,21 +9,23 @@ import {
 import { FloatingActionButtonProps } from './FloatingActionButton.interfaces';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming, Easing } from 'react-native-reanimated';
 import useAnimatedMounting from '@hooks/useAnimatedMounting';
-import { NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
+import { LayoutChangeEvent, NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
 import useMountedEffect from '@hooks/useMountedEffect';
+
+const BUTTON_WIDTH = 56;
 
 const FloatingActionButton: React.FC<FloatingActionButtonProps> = (props) => {
   const { isAtBeginning, currentChapter } = props;
   const [textWidth, setTextWidth] = React.useState<number>(0);
-  const width = useSharedValue(56);
+  const width = useSharedValue(BUTTON_WIDTH);
   const opacity = useSharedValue(0);
 
   useMountedEffect(() => {
     if (!isAtBeginning) {
-      width.value = withTiming(textWidth + 72, { duration: 500, easing: Easing.ease });
+      width.value = withTiming(textWidth + BUTTON_WIDTH + 16, { duration: 500, easing: Easing.ease });
       opacity.value = withSpring(1);
     } else {
-      width.value = withTiming(56, { duration: 500, easing: Easing.ease });
+      width.value = withTiming(BUTTON_WIDTH, { duration: 500, easing: Easing.ease });
       opacity.value = withSpring(0);
     }
   }, [isAtBeginning]);
@@ -37,7 +39,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = (props) => {
   }));
 
   function onTextLayout(e: NativeSyntheticEvent<TextLayoutEventData>) {
-    setTextWidth(e.nativeEvent.lines[0].width);
+    setTextWidth(e.nativeEvent.lines.reduce((total, curr) => total + curr.width, 0));
   }
 
   return (

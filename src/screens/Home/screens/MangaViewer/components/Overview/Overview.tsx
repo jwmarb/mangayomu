@@ -1,3 +1,4 @@
+import FloatingActionButton from '@screens/Home/screens/MangaViewer/components/FloatingActionButton/FloatingActionButton';
 import RecyclerListViewScrollView from '@screens/Home/screens/MangaViewer/components/Overview/components/RecyclerListViewScrollView';
 import { OverviewProps } from '@screens/Home/screens/MangaViewer/components/Overview/Overview.interfaces';
 import {
@@ -42,24 +43,26 @@ const Overview: React.FC<OverviewProps> = (props) => {
     );
 
   return (
-    <RecyclerListView
-      externalScrollView={RecyclerListViewScrollView as any}
-      scrollViewProps={{
-        collapsible,
-        listener,
-        header: (
-          <>
-            {/* <FloatingActionButton isAtBeginning={isAtBeginning} currentChapter={currentChapter} /> */}
-            <View onLayout={handleOnLayout}>{children}</View>
-          </>
-        ),
-      }}
-      dataProvider={dataProvider}
-      layoutProvider={layout}
-      rowRenderer={rowRenderer}
-      applyWindowCorrection={applyWindowCorrection}
-      renderFooter={createFooter(loading)}
-    />
+    <>
+      <FloatingActionButton isAtBeginning={isAtBeginning} currentChapter={currentChapter} />
+      <RecyclerListView
+        externalScrollView={RecyclerListViewScrollView as any}
+        scrollViewProps={{
+          collapsible,
+          listener,
+          header: (
+            <>
+              <View onLayout={handleOnLayout}>{children}</View>
+            </>
+          ),
+        }}
+        dataProvider={dataProvider}
+        layoutProvider={layout}
+        rowRenderer={rowRenderer}
+        applyWindowCorrection={applyWindowCorrection}
+        renderFooter={createFooter(loading)}
+      />
+    </>
   );
 };
 
