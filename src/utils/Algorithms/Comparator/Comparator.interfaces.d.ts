@@ -1,1 +1,1 @@
-export type Comparator<T, E> = (item: T, elementToFind: E) => number;
+export type Comparator<T, E = T> = (a: E, b: T) => number;
