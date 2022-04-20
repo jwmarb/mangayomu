@@ -189,6 +189,8 @@ export declare interface MangaChapter {
   name?: string | null;
 }
 
+export type WithFilters = WithGenresFilter | WithSortFilter | WithStatusFilter | WithOfficialTranslationFilter;
+
 export type ExclusiveInclusiveFilter<T> = {
   include: T[];
   exclude: T[];
