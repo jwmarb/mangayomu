@@ -6,7 +6,7 @@ import useLazyLoading from '@hooks/useLazyLoading';
 import { useFocusEffect } from '@react-navigation/native';
 import { keyExtractor, renderItem } from '@screens/Home/screens/MangaLibrary/MangaLibrary.flatlist';
 import connector, { MangaLibraryProps } from '@screens/Home/screens/MangaLibrary/MangaLibrary.redux';
-import titleIncludes from '@utils/MangaFilters';
+import { titleIncludes } from '@utils/MangaFilters';
 import pixelToNumber from '@utils/pixelToNumber';
 import React from 'react';
 import { NativeSyntheticEvent, TextInput, TextInputSubmitEditingEventData } from 'react-native';
