@@ -10,7 +10,7 @@ export const NumberComparator: Comparator<number, number> = (a, b) => {
   else return 1;
 };
 
-export const StringAlphabeticalComparator: Comparator<string, string> = (a, b) => {
+export const SearchQueryComparator: Comparator<string, string> = (a, b) => {
   const len = a.length;
   return a.substring(0, len).trim().localeCompare(b.substring(0, len).trim());
 };
