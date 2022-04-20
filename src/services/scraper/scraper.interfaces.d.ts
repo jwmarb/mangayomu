@@ -1,3 +1,13 @@
+/**
+ * A manga that has official translations
+ */
+export interface WithOfficialTranslations {
+  /**
+   * Whether or not the manga is officially translated
+   */
+  officialTranslation: boolean;
+}
+
 export interface MangaPage {
   uri: string;
   dimensions: {
