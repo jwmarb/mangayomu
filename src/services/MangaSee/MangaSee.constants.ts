@@ -52,5 +52,4 @@ export const MANGASEE_INFO: MangaHostInfo = {
   hasHotMangas: true,
   hasLatestMangas: true,
   hasMangaDirectory: true,
-  sort: MANGASEE_SORT,
 };
