@@ -53,6 +53,11 @@ export declare interface MangaHostInfo {
   genres: string[];
 
   /**
+   * All sorting types the manga host provides such as A-Z sorting, year released sorting, etc.
+   */
+  sort: string[];
+
+  /**
    * The icon of the manga host. It is preferable to use favicon for this
    */
   icon: string;
