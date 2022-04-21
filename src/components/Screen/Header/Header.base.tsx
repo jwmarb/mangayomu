@@ -12,17 +12,22 @@ import { useMangaSource } from '@services/scraper';
 import { ContainerProps } from '@components/Container/Container.interfaces';
 
 const generateCSS = (props: ThemedStyledProps<ViewProps & React.RefAttributes<View>, DefaultTheme>) => css`
-height: ${
-  StatusBar.currentHeight ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 8) : props.theme.spacing(8)
-}
-display: flex;
-flex-direction: row;
-align-items: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `;
 
-export const HeaderBuilder = styled.View<ContainerProps & { paper?: boolean }>`
+export const HeaderBuilder = styled.View<ContainerProps & { paper?: boolean; removeStatusBarPadding?: boolean }>`
   ${generateCSS}
   ${(props) => css`
+    height: ${() => {
+      if (!props.removeStatusBarPadding)
+        return StatusBar.currentHeight
+          ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 8)
+          : props.theme.spacing(8);
+
+      return props.theme.spacing(8);
+    }};
     background-color: ${props.paper
       ? props.theme.palette.background.paper.get()
       : props.theme.palette.background.default.get()};
@@ -37,12 +42,16 @@ export const HeaderBuilder = styled.View<ContainerProps & { paper?: boolean }>`
         default:
         case 'boolean':
           if (props.verticalPadding)
-            return StatusBar.currentHeight
+            return props.removeStatusBarPadding
+              ? props.theme.spacing(2)
+              : StatusBar.currentHeight
               ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 2)
               : props.theme.spacing(2);
           else return StatusBar.currentHeight ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER) : '0px';
         case 'number':
-          return StatusBar.currentHeight
+          return props.removeStatusBarPadding
+            ? props.theme.spacing(props.verticalPadding ?? 2)
+            : StatusBar.currentHeight
             ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + (props.verticalPadding ?? 2))
             : props.theme.spacing(props.verticalPadding ?? 2);
       }
@@ -53,6 +62,9 @@ export const HeaderBuilder = styled.View<ContainerProps & { paper?: boolean }>`
 export const HeaderBaseContainer = styled.View`
   ${generateCSS}
   ${(props) => css`
+    height: ${StatusBar.currentHeight
+      ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 8)
+      : props.theme.spacing(8)};
     background-color: ${props.theme.palette.background.paper.get()};
     padding-horizontal: ${props.theme.spacing(3)};
     padding-bottom: ${props.theme.spacing(2)};
