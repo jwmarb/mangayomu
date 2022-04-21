@@ -1,4 +1,16 @@
-import { Screen, Container, Typography, IconButton, Icon, Spacer, TextField, Flex, Modal } from '@components/core';
+import {
+  Screen,
+  Container,
+  Typography,
+  IconButton,
+  Icon,
+  Spacer,
+  TextField,
+  Flex,
+  Modal,
+  Tabs,
+  Tab,
+} from '@components/core';
 import { FlatListScreen } from '@components/core';
 import { HeaderBuilder, MangaSource } from '@components/Screen/Header/Header.base';
 import { TextFieldProps } from '@components/TextField/TextField.interfaces';
@@ -33,6 +45,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     [query]
   );
   const [expand, setExpand] = React.useState<boolean>(false);
+  const [tabIndex, setTabIndex] = React.useState<number>(0);
   const handleOnExpand = React.useCallback(() => {
     setExpand(true);
   }, [setExpand]);
@@ -70,13 +83,31 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
           </Flex>
         </HeaderBuilder>
         <Modal onClose={handleOnClose} visible={expand}>
-          <HeaderBuilder paper removeStatusBarPadding verticalPadding horizontalPadding>
-            <Typography variant='subheader'>Sort</Typography>
-          </HeaderBuilder>
+          <Tabs onTabChange={setTabIndex} tabIndex={tabIndex}>
+            <Tab name='Sort'>
+              <Typography>Hello World1</Typography>
+            </Tab>
+            <Tab name='Display'>
+              <Typography>Hello World2</Typography>
+            </Tab>
+            <Tab name='Tab3'>
+              <Typography>Hello World3</Typography>
+            </Tab>
+          </Tabs>
         </Modal>
       </>
     ),
-    [showSearch, setQuery, handleToggleSearch, handleOnSubmitEditing, handleOnExpand, expand, handleOnClose]
+    [
+      showSearch,
+      setQuery,
+      handleToggleSearch,
+      handleOnSubmitEditing,
+      handleOnExpand,
+      expand,
+      handleOnClose,
+      tabIndex,
+      setTabIndex,
+    ]
   );
 
   React.useEffect(() => {
@@ -84,7 +115,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
       headerTitle: '',
       header: header,
     });
-  }, [showSearch, setQuery, handleToggleSearch, handleOnSubmitEditing, handleOnExpand, expand]);
+  }, [showSearch, setQuery, handleToggleSearch, handleOnSubmitEditing, handleOnExpand, expand, tabIndex, setTabIndex]);
 
   React.useEffect(() => {
     setTimeout(() => {

@@ -35,3 +35,5 @@ export { default as FlatListScreen } from '../FlatListScreen';
 export { default as RecyclerListViewScreen } from '../RecyclerListViewScreen';
 export { default as TextField } from '../TextField';
 export { default as Modal } from '../Modal';
+export { default as Tabs } from '../Tabs';
+export { default as Tab } from '../Tabs/Tab';
