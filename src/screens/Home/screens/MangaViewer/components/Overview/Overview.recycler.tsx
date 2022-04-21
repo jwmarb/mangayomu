@@ -1,7 +1,6 @@
 import { LayoutProvider } from 'recyclerlistview';
 import { Chapter, Skeleton, Spacer } from '@components/core';
 import { Dimensions } from 'react-native';
-import { Typography } from '@components/core';
 import animate from '@utils/Animations/animate';
 import withAnimatedLoading from '@utils/Animations/withAnimatedLoading';
 const { width } = Dimensions.get('window');
