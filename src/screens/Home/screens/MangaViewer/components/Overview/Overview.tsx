@@ -16,9 +16,10 @@ const Overview: React.FC<OverviewProps> = (props) => {
   const { containerPaddingTop } = collapsible;
 
   const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(false);
-  const dataProvider = React.useRef<DataProvider>(
-    new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(chapters)
-  ).current;
+  const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider((r1, r2) => r1 !== r2));
+  React.useEffect(() => {
+    if (chapters) setDataProvider((d) => d.cloneWithRows(chapters));
+  }, [chapters]);
   const [layoutHeight, setLayoutHeight] = React.useState<number>(0);
 
   const listener = React.useCallback(
