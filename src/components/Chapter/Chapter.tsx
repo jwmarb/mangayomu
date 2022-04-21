@@ -11,6 +11,8 @@ import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
 import Spacer from '@components/Spacer';
 import { ChapterContainer } from '@components/Chapter/Chapter.base';
+import useAnimatedMounting from '@hooks/useAnimatedMounting';
+import Animated from 'react-native-reanimated';
 
 const displayChapterInfo = (chapter: any) => {
   if (MangaValidator.hasDate(chapter)) {
@@ -29,18 +31,21 @@ const displayChapterInfo = (chapter: any) => {
 const Chapter: React.FC<ChapterProps> = (props) => {
   const { chapter } = props;
   function handleOnPress() {}
+  const style = useAnimatedMounting();
   return (
-    <ButtonBase square onPress={handleOnPress}>
-      <ChapterContainer>
-        <Flex justifyContent='space-between' alignItems='center'>
-          <Flex direction='column'>
-            <Typography bold>{chapter.name}</Typography>
-            {displayChapterInfo(chapter)}
+    <Animated.View style={style}>
+      <ButtonBase square onPress={handleOnPress}>
+        <ChapterContainer>
+          <Flex justifyContent='space-between' alignItems='center'>
+            <Flex direction='column'>
+              <Typography bold>{chapter.name}</Typography>
+              {displayChapterInfo(chapter)}
+            </Flex>
+            <IconButton icon={<Icon bundle='Feather' name='download' />} />
           </Flex>
-          <IconButton icon={<Icon bundle='Feather' name='download' />} />
-        </Flex>
-      </ChapterContainer>
-    </ButtonBase>
+        </ChapterContainer>
+      </ButtonBase>
+    </Animated.View>
   );
 };
 
