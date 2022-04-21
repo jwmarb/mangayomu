@@ -4,6 +4,7 @@ import { HeaderBuilder, MangaSource } from '@components/Screen/Header/Header.bas
 import { TextFieldProps } from '@components/TextField/TextField.interfaces';
 import useLazyLoading from '@hooks/useLazyLoading';
 import { useFocusEffect } from '@react-navigation/native';
+import { ExpandedSortContainer } from '@screens/Home/screens/MangaLibrary/MangaLibrary.base';
 import { keyExtractor, renderItem } from '@screens/Home/screens/MangaLibrary/MangaLibrary.flatlist';
 import connector, { MangaLibraryProps } from '@screens/Home/screens/MangaLibrary/MangaLibrary.redux';
 import { titleIncludes } from '@utils/MangaFilters';
@@ -31,37 +32,48 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     },
     [query]
   );
+  const [expand, setExpand] = React.useState<boolean>(false);
+  const handleOnExpand = React.useCallback(() => {
+    setExpand((p) => !p);
+  }, [setExpand]);
 
   const header = React.useCallback(
     () => (
-      <HeaderBuilder horizontalPadding paper>
-        <Flex shrink alignItems='center'>
-          {showSearch ? (
-            <>
-              <IconButton icon={<Icon bundle='Feather' name='arrow-left' />} onPress={handleToggleSearch} />
-              <Spacer x={1} />
-              <TextField
-                placeholder='Search for a title'
-                ref={textRef}
-                onChangeText={setQuery}
-                onSubmitEditing={handleOnSubmitEditing}
-              />
-            </>
-          ) : (
-            <>
-              <MangaSource />
-              <Spacer x={1} />
-              <Typography variant='subheader'>Library</Typography>
-            </>
-          )}
-        </Flex>
-        <Flex spacing={1} grow justifyContent='flex-end' alignItems='center'>
-          {!showSearch && <IconButton icon={<Icon bundle='Feather' name='search' />} onPress={handleToggleSearch} />}
-          <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='sort' />} />
-        </Flex>
-      </HeaderBuilder>
+      <>
+        <HeaderBuilder horizontalPadding paper>
+          <Flex shrink alignItems='center'>
+            {showSearch ? (
+              <>
+                <IconButton icon={<Icon bundle='Feather' name='arrow-left' />} onPress={handleToggleSearch} />
+                <Spacer x={1} />
+                <TextField
+                  placeholder='Search for a title'
+                  ref={textRef}
+                  onChangeText={setQuery}
+                  onSubmitEditing={handleOnSubmitEditing}
+                />
+              </>
+            ) : (
+              <>
+                <MangaSource />
+                <Spacer x={1} />
+                <Typography variant='subheader'>Library</Typography>
+              </>
+            )}
+          </Flex>
+          <Flex spacing={1} grow justifyContent='flex-end' alignItems='center'>
+            {!showSearch && <IconButton icon={<Icon bundle='Feather' name='search' />} onPress={handleToggleSearch} />}
+            <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='sort' />} onPress={handleOnExpand} />
+          </Flex>
+        </HeaderBuilder>
+        {expand && (
+          <ExpandedSortContainer>
+            <Typography>Hello World</Typography>
+          </ExpandedSortContainer>
+        )}
+      </>
     ),
-    [showSearch, setQuery, handleToggleSearch, handleOnSubmitEditing]
+    [showSearch, setQuery, handleToggleSearch, handleOnSubmitEditing, handleOnExpand, expand]
   );
 
   React.useEffect(() => {
@@ -69,6 +81,9 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
       headerTitle: '',
       header: header,
     });
+  }, [showSearch, setQuery, handleToggleSearch, handleOnSubmitEditing, handleOnExpand, expand]);
+
+  React.useEffect(() => {
     setTimeout(() => {
       if (showSearch) textRef.current?.focus();
       else setQuery('');
