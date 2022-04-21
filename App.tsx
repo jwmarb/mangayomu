@@ -13,6 +13,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { HoldMenuProvider } from 'react-native-hold-menu';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import { RootSiblingParent } from 'react-native-root-siblings';
+import { PortalProvider } from '@gorhom/portal';
 
 export default function App() {
   const generated = theme();
@@ -27,7 +28,9 @@ export default function App() {
                   <Provider store={store}>
                     <PersistGate persistor={persistor}>
                       <NavigationThemeProvider value={generated['@react-navigation']}>
-                        <Root />
+                        <PortalProvider>
+                          <Root />
+                        </PortalProvider>
                         <StatusBar translucent />
                       </NavigationThemeProvider>
                     </PersistGate>
