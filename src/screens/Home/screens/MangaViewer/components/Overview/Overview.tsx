@@ -7,15 +7,17 @@ import {
   rowRenderer,
 } from '@screens/Home/screens/MangaViewer/components/Overview/Overview.recycler';
 import React from 'react';
-import { LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
+import { Dimensions, LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { WindowCorrection } from 'recyclerlistview/dist/reactnative/core/ViewabilityTracker';
+const { height } = Dimensions.get('window');
 
 const Overview: React.FC<OverviewProps> = (props) => {
   const { children, chapters, currentChapter, loading, collapsible } = props;
   const { containerPaddingTop } = collapsible;
 
   const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(false);
+  const [finished, setFinished] = React.useState<boolean>(false);
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider((r1, r2) => r1 !== r2));
   React.useEffect(() => {
     if (chapters) setDataProvider((d) => d.cloneWithRows(chapters));
@@ -24,10 +26,14 @@ const Overview: React.FC<OverviewProps> = (props) => {
 
   const listener = React.useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      setIsAtBeginning(event.nativeEvent.contentOffset.y < 200);
+      setIsAtBeginning(event.nativeEvent.contentOffset.y < height / 10);
     },
-    [setIsAtBeginning]
+    [setIsAtBeginning, height]
   );
+
+  const handleOnRecyclerListViewLayout = React.useCallback(() => {
+    setFinished(true);
+  }, [setFinished]);
 
   const handleOnLayout = React.useCallback(
     (e: LayoutChangeEvent) => {
@@ -52,12 +58,13 @@ const Overview: React.FC<OverviewProps> = (props) => {
           collapsible,
           listener,
           header: <View onLayout={handleOnLayout}>{children}</View>,
+          onLayout: handleOnRecyclerListViewLayout,
         }}
         dataProvider={dataProvider}
         layoutProvider={layout}
         rowRenderer={rowRenderer}
         applyWindowCorrection={applyWindowCorrection}
-        renderFooter={createFooter(loading)}
+        renderFooter={createFooter(!finished)}
       />
     </>
   );
