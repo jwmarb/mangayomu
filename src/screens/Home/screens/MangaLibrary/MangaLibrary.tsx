@@ -1,4 +1,4 @@
-import { Screen, Container, Typography, IconButton, Icon, Spacer, TextField, Flex } from '@components/core';
+import { Screen, Container, Typography, IconButton, Icon, Spacer, TextField, Flex, Modal } from '@components/core';
 import { FlatListScreen } from '@components/core';
 import { HeaderBuilder, MangaSource } from '@components/Screen/Header/Header.base';
 import { TextFieldProps } from '@components/TextField/TextField.interfaces';
@@ -34,7 +34,10 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   );
   const [expand, setExpand] = React.useState<boolean>(false);
   const handleOnExpand = React.useCallback(() => {
-    setExpand((p) => !p);
+    setExpand(true);
+  }, [setExpand]);
+  const handleOnClose = React.useCallback(() => {
+    setExpand(false);
   }, [setExpand]);
 
   const header = React.useCallback(
@@ -66,14 +69,14 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
             <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='sort' />} onPress={handleOnExpand} />
           </Flex>
         </HeaderBuilder>
-        {expand && (
-          <ExpandedSortContainer>
-            <Typography>Hello World</Typography>
-          </ExpandedSortContainer>
-        )}
+        <Modal onClose={handleOnClose} visible={expand}>
+          <HeaderBuilder paper removeStatusBarPadding verticalPadding horizontalPadding>
+            <Typography variant='subheader'>Sort</Typography>
+          </HeaderBuilder>
+        </Modal>
       </>
     ),
-    [showSearch, setQuery, handleToggleSearch, handleOnSubmitEditing, handleOnExpand, expand]
+    [showSearch, setQuery, handleToggleSearch, handleOnSubmitEditing, handleOnExpand, expand, handleOnClose]
   );
 
   React.useEffect(() => {
