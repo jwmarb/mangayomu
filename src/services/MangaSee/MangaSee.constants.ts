@@ -42,6 +42,8 @@ const MANGASEE_GENRES = [
   'Yuri',
 ];
 
+const MANGASEE_SORT = ['A-Z', 'Year Released', '# of Genres'];
+
 export const MANGASEE_INFO: MangaHostInfo = {
   host: MANGASEE_URL,
   genres: MANGASEE_GENRES,
@@ -49,4 +51,5 @@ export const MANGASEE_INFO: MangaHostInfo = {
   icon: 'https://mangasee123.com/media/favicon.png',
   hasHotMangas: true,
   hasLatestMangas: true,
+  hasMangaDirectory: true,
 };

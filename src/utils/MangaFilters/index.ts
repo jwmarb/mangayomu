@@ -1,1 +1,1 @@
-export { default } from './titleIncludes';
+export { default as titleIncludes } from './titleIncludes';

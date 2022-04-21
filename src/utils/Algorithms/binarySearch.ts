@@ -17,7 +17,7 @@ function lowerBound<T, E>(arr: T[], elementToFind: E, comparator: Comparator<T, 
   let l = 0;
   let r = arr.length - 1;
   let pos = -1;
-  while (l <= r) {
+  while (l < r) {
     const m = Math.floor((l + r) / 2);
     const comparison = comparator(elementToFind, arr[m]);
     if (comparison === 0) {
@@ -33,7 +33,7 @@ function upperBound<T, E>(arr: T[], elementToFind: E, comparator: Comparator<T, 
   let l = 0;
   let r = arr.length - 1;
   let pos = -1;
-  while (l <= r) {
+  while (l < r) {
     const m = Math.floor((l + r) / 2);
     const comparison = comparator(elementToFind, arr[m]);
     if (comparison === 0) {
@@ -46,17 +46,15 @@ function upperBound<T, E>(arr: T[], elementToFind: E, comparator: Comparator<T, 
 }
 
 function range<T, E>(arr: T[], elementToFind: E, comparator: Comparator<T, E>): [number, number] {
-  const min = lowerBound(arr, elementToFind, comparator);
-  if (min === -1) return [-1, -1];
-  const max = upperBound(arr, elementToFind, comparator);
-  return [min, max];
+  const l = lowerBound(arr, elementToFind, comparator);
+  if (l === -1) return [-1, -1];
+  const r = upperBound(arr, elementToFind, comparator);
+  return [l, r];
 }
 
-const binary = {
+export const binary = {
   search: binarySearch,
   lowerBound,
   upperBound,
   range,
 };
-
-export default binary;

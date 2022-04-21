@@ -1,16 +1,11 @@
 import { Comparator } from './Comparator.interfaces';
 
 export const StringComparator: Comparator<string, string> = (a, b) => {
-  return b.localeCompare(a);
+  return a.localeCompare(b);
 };
 
 export const NumberComparator: Comparator<number, number> = (a, b) => {
-  if (b > a) return -1;
-  else if (b === a) return 0;
+  if (a < b) return -1;
+  else if (a === b) return 0;
   else return 1;
-};
-
-export const SearchQueryComparator: Comparator<string, string> = (a, b) => {
-  const len = a.length;
-  return a.substring(0, len).trim().localeCompare(b.substring(0, len).trim());
 };

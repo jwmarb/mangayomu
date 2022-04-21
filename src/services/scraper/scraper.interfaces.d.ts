@@ -1,3 +1,13 @@
+/**
+ * A manga that has official translations
+ */
+export interface WithOfficialTranslations {
+  /**
+   * Whether or not the manga is officially translated
+   */
+  officialTranslation: boolean;
+}
+
 export interface MangaPage {
   uri: string;
   dimensions: {
@@ -188,6 +198,8 @@ export declare interface MangaChapter {
    */
   name?: string | null;
 }
+
+export type WithFilters = WithGenresFilter | WithSortFilter | WithStatusFilter | WithOfficialTranslationFilter;
 
 export type ExclusiveInclusiveFilter<T> = {
   include: T[];
