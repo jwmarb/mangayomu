@@ -57,6 +57,7 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
           dataProvider={dataProvider}
           layoutProvider={layoutProvider}
           rowRenderer={rowRenderer}
+          forceNonDeterministicRendering
           applyWindowCorrection={applyWindowCorrection}
           scrollViewProps={{
             contentContainerStyle: {
