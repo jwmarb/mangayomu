@@ -40,7 +40,6 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import SlidingUpPanel from 'rn-sliding-up-panel';
 import { useTheme } from 'styled-components/native';
 const { height } = Dimensions.get('window');
 
