@@ -57,7 +57,6 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
         </Flex>
         <Flex spacing={1} grow justifyContent='flex-end' alignItems='center'>
           {!showSearch && <IconButton icon={<Icon bundle='Feather' name='search' />} onPress={handleToggleSearch} />}
-          <IconButton icon={<Icon bundle='Feather' name='filter' />} />
           <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='sort' />} />
         </Flex>
       </HeaderBuilder>
