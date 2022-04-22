@@ -197,6 +197,11 @@ export declare interface MangaChapter {
    * The name of the chapter
    */
   name?: string | null;
+
+  /**
+   * The index the chapter belongs to in the array
+   */
+  index: number;
 }
 
 export type WithFilters = WithGenresFilter | WithSortFilter | WithStatusFilter | WithOfficialTranslationFilter;
