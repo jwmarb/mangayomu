@@ -66,19 +66,30 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   }, [setExpand]);
 
   const createSort = React.useCallback(
-    (compareFn: (a: ReadingMangaInfo, b: ReadingMangaInfo) => number) => {
+    (compareFn: (a: ReadingMangaInfo & LibraryManga, b: ReadingMangaInfo & LibraryManga) => number) => {
       return (a: LibraryManga, b: LibraryManga) => {
         const mangaA = history[a.manga.link];
         const mangaB = history[b.manga.link];
-        if (reverse) return -compareFn(mangaA, mangaB);
-        return compareFn(mangaA, mangaB);
+        if (reverse) return -compareFn({ ...mangaA, ...a }, { ...mangaB, ...b });
+        return compareFn({ ...mangaA, ...a }, { ...mangaB, ...b });
       };
     },
     [history, reverse]
   );
 
+  const createFilter = React.useCallback(
+    (compareFn: (manga: ReadingMangaInfo & LibraryManga) => boolean) => {
+      return (a: LibraryManga) => {
+        const saved = history[a.manga.link];
+        return compareFn({ ...saved, ...a });
+      };
+    },
+    [history]
+  );
+
   const sortTypes = React.useMemo(
     () => ({
+      'Age in Library': createSort((a, b) => Date.parse(a.dateAdded) - Date.parse(b.dateAdded)),
       Alphabetical: createSort((a, b) => a.title.localeCompare(b.title)),
       'Chapter Count': createSort((a, b) => a.chapters.length - b.chapters.length),
       'Genres Count': createSort((a, b) => a.genres.length - b.genres.length),
