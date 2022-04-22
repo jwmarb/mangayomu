@@ -19,8 +19,8 @@ const Tabs: React.FC<TabsProps> = (props) => {
   const tabTranslateX = useSharedValue(0);
   const widthPerButton = React.useMemo(() => width / React.Children.count(children), [React.Children.count(children)]);
   React.useLayoutEffect(() => {
-    translateX.value = withTiming(tabIndex * widthPerButton, { duration: 100, easing: Easing.ease });
-    tabTranslateX.value = withTiming(-width * tabIndex, { duration: 100, easing: Easing.ease });
+    translateX.value = withTiming(tabIndex * widthPerButton, { duration: 100, easing: Easing.linear });
+    tabTranslateX.value = withTiming(-width * tabIndex, { duration: 200, easing: Easing.linear });
   }, [tabIndex]);
   const style = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
