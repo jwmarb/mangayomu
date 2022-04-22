@@ -37,3 +37,5 @@ export { default as TextField } from '../TextField';
 export { default as Modal } from '../Modal';
 export { default as Tabs } from '../Tabs';
 export { default as Tab } from '../Tabs/Tab';
+export { default as List } from '../List';
+export { default as ListItem } from '../List/ListItem';
