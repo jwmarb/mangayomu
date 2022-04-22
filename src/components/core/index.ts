@@ -39,3 +39,4 @@ export { default as Tabs } from '../Tabs';
 export { default as Tab } from '../Tabs/Tab';
 export { default as List } from '../List';
 export { default as ListItem } from '../List/ListItem';
+export { default as SortTypeItem } from '../SortTypeItem';
