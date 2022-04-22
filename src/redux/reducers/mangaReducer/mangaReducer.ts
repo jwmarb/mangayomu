@@ -14,7 +14,7 @@ function updateChapters(payload: MangaChapter[], state: ReadingChapterInfo[]): R
      * If the user has already seen this manga but the server returns more chapters, this must mean there are new chapters
      */
     if (state.length < payload.length) {
-      const oldState = state;
+      const oldState = [...state];
       for (let i = state.length; i < payload.length; i++) {
         oldState.push({ ...payload[i], indexPage: 0, scrollPosition: 0, pages: null, dateRead: null });
       }
