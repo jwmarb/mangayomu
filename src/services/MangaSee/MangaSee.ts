@@ -124,10 +124,11 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         modified: parseMangaSeeDate(data.dateModified),
         published: parseMangaSeeDate(data.datePublished),
       },
-      chapters: Chapters.map((chapter) => ({
+      chapters: Chapters.map((chapter, index) => ({
         date: parseMangaSeeDate(chapter.Date),
         name: `${chapter.Type != '' ? chapter.Type : 'Chapter'} ${ChapterDisplay(chapter.Chapter)}`,
         link: `https://${super.getLink()}/read-online/${IndexName}${ChapterURLEncode(chapter.Chapter)}`,
+        index,
       })),
     };
   }
