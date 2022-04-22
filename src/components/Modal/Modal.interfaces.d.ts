@@ -8,3 +8,7 @@ export interface BackdropPressableProps {
 }
 
 export interface StatusBarFillerProps {}
+
+export type GestureContext = {
+  translateY: number;
+};
