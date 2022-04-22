@@ -2,8 +2,8 @@ import SortTypeItem from '@components/SortTypeItem';
 import List from '@components/List';
 import React from 'react';
 
-export default function useSort<Comparators>(c: (isReversed: boolean) => Comparators) {
-  const [sort, setSort] = React.useState<keyof typeof comparators>('Alphabetical' as any);
+export default function useSort<Comparators>(c: (isReversed: boolean) => Comparators, initialSort?: keyof Comparators) {
+  const [sort, setSort] = React.useState<keyof typeof comparators>(initialSort ?? ('Alphabetical' as any));
   const [reverse, setReverse] = React.useState<boolean>(false);
   const comparators = c(reverse);
   const [visible, setVisible] = React.useState<boolean>(false);
