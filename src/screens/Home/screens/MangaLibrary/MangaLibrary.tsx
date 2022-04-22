@@ -90,9 +90,6 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
             <Tab name='Display'>
               <Typography>Hello World2</Typography>
             </Tab>
-            <Tab name='Tab3'>
-              <Typography>Hello World3</Typography>
-            </Tab>
           </Tabs>
         </Modal>
       </>
