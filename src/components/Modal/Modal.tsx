@@ -141,17 +141,17 @@ const Modal: React.FC<ModalProps> = (props) => {
 
   return (
     <Portal>
-      <Provider>
-        <BackdropContainer style={style} pointerEvents={pointerEvents}>
-          <BackdropPressable visible={visible} onPress={handleOnClose} touchSoundDisabled />
-        </BackdropContainer>
-        <StatusBarFiller style={statusBarStyle} />
-        <PanGestureHandler enabled={visible} onGestureEvent={gestureHandlers}>
-          <Panel style={panelStyle}>
+      <BackdropContainer style={style} pointerEvents={pointerEvents}>
+        <BackdropPressable visible={visible} onPress={handleOnClose} touchSoundDisabled />
+      </BackdropContainer>
+      <StatusBarFiller style={statusBarStyle} />
+      <PanGestureHandler enabled={visible} onGestureEvent={gestureHandlers}>
+        <Panel style={panelStyle}>
+          <Provider>
             <ModalContainer style={containerStyle}>{children}</ModalContainer>
-          </Panel>
-        </PanGestureHandler>
-      </Provider>
+          </Provider>
+        </Panel>
+      </PanGestureHandler>
     </Portal>
   );
 };
