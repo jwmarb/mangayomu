@@ -12,10 +12,12 @@ import { Typography } from '@components/Typography';
 import { Portal } from '@gorhom/portal';
 import React from 'react';
 import {
+  BackHandler,
   Dimensions,
   GestureResponderEvent,
   LayoutChangeEvent,
   Modal as DefaultModal,
+  NativeEventSubscription,
   PanResponderGestureState,
   StatusBar,
   StyleSheet,
@@ -94,6 +96,16 @@ const Modal: React.FC<ModalProps> = (props) => {
 
   React.useEffect(() => {
     runOnUI(effects)();
+    if (visible) {
+      const t = BackHandler.addEventListener('hardwareBackPress', () => {
+        handleOnClose();
+
+        return true;
+      });
+      return () => {
+        t.remove();
+      };
+    }
   }, [visible]);
 
   const panelStyle = useAnimatedStyle(() => ({
