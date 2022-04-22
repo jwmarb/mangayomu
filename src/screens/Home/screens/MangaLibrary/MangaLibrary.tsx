@@ -16,6 +16,8 @@ import { HeaderBuilder, MangaSource } from '@components/Screen/Header/Header.bas
 import { TextFieldProps } from '@components/TextField/TextField.interfaces';
 import useLazyLoading from '@hooks/useLazyLoading';
 import { useFocusEffect } from '@react-navigation/native';
+import { LibraryManga } from '@redux/reducers/mangalibReducer/mangalibReducer.interfaces';
+import { ReadingMangaInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import { ExpandedSortContainer } from '@screens/Home/screens/MangaLibrary/MangaLibrary.base';
 import { keyExtractor, renderItem } from '@screens/Home/screens/MangaLibrary/MangaLibrary.flatlist';
 import connector, { MangaLibraryProps } from '@screens/Home/screens/MangaLibrary/MangaLibrary.redux';
@@ -29,8 +31,9 @@ import { useTheme } from 'styled-components/native';
 
 const Spacing = () => <Spacer y={4} />;
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
-  const { mangas, navigation } = props;
+  const { mangas, navigation, history } = props;
   const [showSearch, setShowSearch] = React.useState<boolean>(false);
+  const [reverse, setReverse] = React.useState<boolean>(false);
   const { ready, Fallback } = useLazyLoading();
   const [query, setQuery] = React.useState<string>('');
   const theme = useTheme();
@@ -52,6 +55,29 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   const handleOnClose = React.useCallback(() => {
     setExpand(false);
   }, [setExpand]);
+  const createSort = React.useCallback(
+    (compareFn: (a: ReadingMangaInfo, b: ReadingMangaInfo) => number) => {
+      return (a: LibraryManga, b: LibraryManga) => {
+        const mangaA = history[a.manga.link];
+        const mangaB = history[b.manga.link];
+        if (reverse) return -compareFn(mangaA, mangaB);
+        return compareFn(mangaA, mangaB);
+      };
+    },
+    [history, reverse]
+  );
+
+  const sortTypes = React.useMemo(
+    () => ({
+      Alphabetical: createSort((a, b) => a.title.localeCompare(b.title)),
+      'Chapter Count': createSort((a, b) => a.chapters.length - b.chapters.length),
+      'Genres Count': createSort((a, b) => a.genres.length - b.genres.length),
+      'Date Modified': createSort((a, b) => Date.parse(a.date.modified) - Date.parse(b.date.modified)),
+      'Date Published': createSort((a, b) => Date.parse(a.date.published) - Date.parse(b.date.published)),
+      Source: createSort((a, b) => a.source.localeCompare(b.source)),
+    }),
+    [createSort]
+  );
 
   const header = React.useCallback(
     () => (
@@ -84,11 +110,11 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
         </HeaderBuilder>
         <Modal onClose={handleOnClose} visible={expand}>
           <Tabs onTabChange={setTabIndex} tabIndex={tabIndex}>
+            <Tab name='Filter'></Tab>
             <Tab name='Sort'>
-              <Typography>Hello World1</Typography>
-            </Tab>
-            <Tab name='Display'>
-              <Typography>Hello World2</Typography>
+              {Object.keys(sortTypes).map((sortBy) => (
+                <Typography key={sortBy}>{sortBy}</Typography>
+              ))}
             </Tab>
           </Tabs>
         </Modal>
@@ -104,6 +130,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
       handleOnClose,
       tabIndex,
       setTabIndex,
+      sortTypes,
     ]
   );
 
