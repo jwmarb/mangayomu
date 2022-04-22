@@ -24,7 +24,7 @@ const Search: React.FC<SearchProps> = React.forwardRef((props, ref) => {
       </Flex>
       <Flex spacing={1} grow justifyContent='flex-end' alignItems='center'>
         {!showSearch && <IconButton icon={<Icon bundle='Feather' name='search' />} onPress={onToggleSearch} />}
-        <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='sort' />} onPress={onExpand} />
+        <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='filter-menu' />} onPress={onExpand} />
       </Flex>
     </HeaderBuilder>
   );
