@@ -20,7 +20,7 @@ const generateCSS = (props: ThemedStyledProps<ViewProps & React.RefAttributes<Vi
 export const HeaderBuilder = styled.View<ContainerProps & { paper?: boolean; removeStatusBarPadding?: boolean }>`
   ${generateCSS}
   ${(props) => css`
-    min-height: ${() => {
+    ${props.removeStatusBarPadding ? 'min-' : ''}height: ${() => {
       if (!props.removeStatusBarPadding)
         return StatusBar.currentHeight
           ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 8)
