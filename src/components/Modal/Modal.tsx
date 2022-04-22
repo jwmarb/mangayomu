@@ -77,7 +77,7 @@ const Modal: React.FC<ModalProps> = (props) => {
       top.value = withDecay({
         velocity: e.velocityY,
         deceleration: 0.997,
-        clamp: [MAX_PANEL_HEIGHT, height],
+        clamp: [MAX_PANEL_HEIGHT, height + MAX_PANEL_HEIGHT],
       });
     },
   });
