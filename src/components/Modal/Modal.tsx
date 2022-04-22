@@ -56,7 +56,7 @@ const MAX_PANEL_HEIGHT = StatusBar.currentHeight ?? 0;
 const APPROACHING_TOP = MAX_PANEL_HEIGHT + 20;
 
 const Modal: React.FC<ModalProps> = (props) => {
-  const { onClose, visible, children } = props;
+  const { onClose, visible, children, provider: Provider = ({ children }) => <>{children}</> } = props;
   const theme = useTheme();
   const backdrop = useSharedValue(0);
   const top = useSharedValue(height);
@@ -141,15 +141,17 @@ const Modal: React.FC<ModalProps> = (props) => {
 
   return (
     <Portal>
-      <BackdropContainer style={style} pointerEvents={pointerEvents}>
-        <BackdropPressable visible={visible} onPress={handleOnClose} touchSoundDisabled />
-      </BackdropContainer>
-      <StatusBarFiller style={statusBarStyle} />
-      <PanGestureHandler enabled={visible} onGestureEvent={gestureHandlers}>
-        <Panel style={panelStyle}>
-          <ModalContainer style={containerStyle}>{children}</ModalContainer>
-        </Panel>
-      </PanGestureHandler>
+      <Provider>
+        <BackdropContainer style={style} pointerEvents={pointerEvents}>
+          <BackdropPressable visible={visible} onPress={handleOnClose} touchSoundDisabled />
+        </BackdropContainer>
+        <StatusBarFiller style={statusBarStyle} />
+        <PanGestureHandler enabled={visible} onGestureEvent={gestureHandlers}>
+          <Panel style={panelStyle}>
+            <ModalContainer style={containerStyle}>{children}</ModalContainer>
+          </Panel>
+        </PanGestureHandler>
+      </Provider>
     </Portal>
   );
 };
