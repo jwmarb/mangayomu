@@ -20,7 +20,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
   const [finished, setFinished] = React.useState<boolean>(false);
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider((r1, r2) => r1 !== r2));
   React.useEffect(() => {
-    if (chapters) setDataProvider((d) => d.cloneWithRows(chapters));
+    if (chapters) setDataProvider(new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(chapters));
   }, [chapters]);
   const [layoutHeight, setLayoutHeight] = React.useState<number>(0);
 
