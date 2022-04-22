@@ -15,6 +15,11 @@ export interface ReadingChapterInfo extends MangaChapter {
    * The index of the current page the user is on
    */
   indexPage: number;
+
+  /**
+   * The time the chapter was last read
+   */
+  dateRead: string | null;
 }
 
 export interface ReadingMangaInfo extends MangaMeta, Manga {

@@ -16,7 +16,7 @@ function updateChapters(payload: MangaChapter[], state: ReadingChapterInfo[]): R
     if (state.length < payload.length) {
       const oldState = state;
       for (let i = state.length; i < payload.length; i++) {
-        oldState.push({ ...payload[i], indexPage: 0, scrollPosition: 0, pages: null });
+        oldState.push({ ...payload[i], indexPage: 0, scrollPosition: 0, pages: null, dateRead: null });
       }
       return oldState;
     }
@@ -24,7 +24,7 @@ function updateChapters(payload: MangaChapter[], state: ReadingChapterInfo[]): R
     return state;
   }
 
-  return payload.map((chapter) => ({ ...chapter, indexPage: 0, scrollPosition: 0, pages: null }));
+  return payload.map((chapter) => ({ ...chapter, indexPage: 0, scrollPosition: 0, pages: null, dateRead: null }));
 }
 
 const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerAction): MangaReducerState => {
