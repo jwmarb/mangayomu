@@ -13,6 +13,8 @@ export const TabContainer = styled(Animated.View)`
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+  position: absolute;
+  top: 0;
 `;
 
 export const TabContentContainer = styled.View`
