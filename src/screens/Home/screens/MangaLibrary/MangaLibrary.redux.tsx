@@ -8,6 +8,7 @@ const mapStateToProps = (state: AppState, props: BottomTabScreenProps<BottomTabP
   return {
     ...props,
     mangas: state.library.mangas,
+    history: state.mangas,
   };
 };
 
