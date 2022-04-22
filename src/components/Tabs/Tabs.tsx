@@ -45,13 +45,15 @@ const Tabs: React.FC<TabsProps> = (props) => {
           ))}
         </Flex>
       </HeaderBuilder>
-      <TabsContext.Provider value={setTabs}>
-        <TabContainer style={tabContentStyle}>
-          {React.Children.map(children, (child) => (
-            <TabContentContainer>{child}</TabContentContainer>
-          ))}
-        </TabContainer>
-      </TabsContext.Provider>
+      <Flex>
+        <TabsContext.Provider value={setTabs}>
+          <TabContainer style={tabContentStyle}>
+            {React.Children.map(children, (child) => (
+              <TabContentContainer>{child}</TabContentContainer>
+            ))}
+          </TabContainer>
+        </TabsContext.Provider>
+      </Flex>
     </Flex>
   );
 };
