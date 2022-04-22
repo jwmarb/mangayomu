@@ -18,6 +18,7 @@ import { FlatListScreen } from '@components/core';
 import { HeaderBuilder, MangaSource } from '@components/Screen/Header/Header.base';
 import { TextFieldProps } from '@components/TextField/TextField.interfaces';
 import useLazyLoading from '@hooks/useLazyLoading';
+import useSort from '@hooks/useSort';
 import { useFocusEffect } from '@react-navigation/native';
 import { LibraryManga } from '@redux/reducers/mangalibReducer/mangalibReducer.interfaces';
 import { ReadingMangaInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
@@ -44,7 +45,6 @@ import { useTheme } from 'styled-components/native';
 const Spacing = () => <Spacer y={4} />;
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   const { mangas, navigation, history } = props;
-  const [reverse, setReverse] = React.useState<boolean>(false);
 
   const [showSearch, setShowSearch] = React.useState<boolean>(false);
   const { ready, Fallback } = useLazyLoading();
@@ -65,18 +65,6 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     setExpand(false);
   }, [setExpand]);
 
-  const createSort = React.useCallback(
-    (compareFn: (a: ReadingMangaInfo & LibraryManga, b: ReadingMangaInfo & LibraryManga) => number) => {
-      return (a: LibraryManga, b: LibraryManga) => {
-        const mangaA = history[a.manga.link];
-        const mangaB = history[b.manga.link];
-        if (reverse) return -compareFn({ ...mangaA, ...a }, { ...mangaB, ...b });
-        return compareFn({ ...mangaA, ...a }, { ...mangaB, ...b });
-      };
-    },
-    [history, reverse]
-  );
-
   const createFilter = React.useCallback(
     (compareFn: (manga: ReadingMangaInfo & LibraryManga) => boolean) => {
       return (a: LibraryManga) => {
@@ -87,8 +75,18 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     [history]
   );
 
-  const sortTypes = React.useMemo(
-    () => ({
+  const { sortOptions, selectedSortOption } = useSort((reversed) => {
+    const createSort = (
+      compareFn: (a: ReadingMangaInfo & LibraryManga, b: ReadingMangaInfo & LibraryManga) => number
+    ) => {
+      return (a: LibraryManga, b: LibraryManga) => {
+        const mangaA = history[a.manga.link];
+        const mangaB = history[b.manga.link];
+        if (reversed) return -compareFn({ ...mangaA, ...a }, { ...mangaB, ...b });
+        return compareFn({ ...mangaA, ...a }, { ...mangaB, ...b });
+      };
+    };
+    return {
       'Age in Library': createSort((a, b) => Date.parse(a.dateAdded) - Date.parse(b.dateAdded)),
       Alphabetical: createSort((a, b) => a.title.localeCompare(b.title)),
       'Chapter Count': createSort((a, b) => a.chapters.length - b.chapters.length),
@@ -96,11 +94,8 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
       'Date Modified': createSort((a, b) => Date.parse(a.date.modified) - Date.parse(b.date.modified)),
       'Date Published': createSort((a, b) => Date.parse(a.date.published) - Date.parse(b.date.published)),
       Source: createSort((a, b) => a.source.localeCompare(b.source)),
-    }),
-    [createSort]
-  );
-
-  const [sort, setSort] = React.useState<keyof typeof sortTypes>('Alphabetical');
+    };
+  });
 
   React.useEffect(() => {
     navigation.setOptions({
@@ -115,15 +110,11 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
             setQuery={setQuery}
           />
           <FilterModal
-            sort={sort}
-            reverse={reverse}
-            setReverse={setReverse}
-            setSort={setSort as any}
+            sortOptions={sortOptions}
             onClose={handleOnClose}
             expand={expand}
             tabIndex={tabIndex}
             setTabIndex={setTabIndex}
-            sortTypes={Object.keys(sortTypes)}
           />
         </>
       ),
@@ -139,8 +130,8 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   }, [showSearch]);
 
   const data = React.useMemo(
-    () => mangas.filter(({ manga }) => titleIncludes(query)(manga)).sort(sortTypes[sort]),
-    [sortTypes, sort, query]
+    () => mangas.filter(({ manga }) => titleIncludes(query)(manga)).sort(selectedSortOption),
+    [selectedSortOption, query]
   );
 
   if (!ready) return Fallback;

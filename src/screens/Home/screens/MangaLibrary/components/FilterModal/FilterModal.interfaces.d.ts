@@ -5,9 +5,5 @@ export interface FilterModalProps {
   expand: boolean;
   setTabIndex: React.Dispatch<React.SetStateAction<number>>;
   tabIndex: number;
-  sortTypes: string[];
-  sort: string;
-  reverse: boolean;
-  setReverse: React.Dispatch<React.SetStateAction<boolean>>;
-  setSort: React.Dispatch<React.SetStateAction<string>>;
+  sortOptions: JSX.Element;
 }

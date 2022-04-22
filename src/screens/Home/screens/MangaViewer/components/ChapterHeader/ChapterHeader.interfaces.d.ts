@@ -1,3 +1,8 @@
+import { MangaChapter } from '@services/scraper/scraper.interfaces';
+import React from 'react';
+
 export interface ChapterHeaderProps {
-  numOfChapters?: number;
+  chapters?: MangaChapter[];
+  sort: string;
+  handleOnOpenModal: () => void;
 }
