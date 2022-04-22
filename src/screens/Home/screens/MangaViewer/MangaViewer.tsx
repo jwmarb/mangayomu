@@ -23,7 +23,7 @@ import useAnimatedLoading from '@hooks/useAnimatedLoading';
 import { AnimatedProvider } from '@context/AnimatedContext';
 import useLazyLoading from '@hooks/useLazyLoading';
 import useSort from '@hooks/useSort';
-import { MangaChapter } from '@services/scraper/scraper.interfaces';
+import { MangaChapter, WithDate } from '@services/scraper/scraper.interfaces';
 import { HeaderBuilder } from '@components/Screen/Header/Header.base';
 const Genres = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Genres'));
 const ChapterHeader = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/ChapterHeader'));
@@ -64,9 +64,18 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     [userMangaInfo?.inLibrary]
   );
 
-  const { sort, visible, handleOnCloseModal, handleOnOpenModal, sortOptions, ...rest } = useSort(() => ({
-    Alphabetical: (a: MangaChapter, b: MangaChapter) => (a.name && b.name ? a.name.localeCompare(b.name) : 0),
-  }));
+  const { sort, visible, handleOnCloseModal, handleOnOpenModal, sortOptions, selectedSortOption } = useSort(
+    (reversed) => ({
+      Chapter: (a: MangaChapter, b: MangaChapter) => (a.name && b.name ? (reversed ? -1 : 1) * a.index - b.index : 0),
+      ...(MangaValidator.hasDate(userMangaInfo?.chapters[0] ?? {})
+        ? {
+            'Date Released': (a: WithDate, b: WithDate) => Date.parse(a.date) - Date.parse(b.date),
+          }
+        : {}),
+    }),
+    'Chapter'
+  );
+
   const collapsible = useCollapsibleHeader(options);
   const { ready, Fallback } = useLazyLoading();
   const loadingAnimation = useAnimatedLoading();
@@ -81,6 +90,11 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     }
   }, [loading, meta]);
 
+  const sorted = React.useMemo(
+    () => userMangaInfo?.chapters.sort(selectedSortOption as any),
+    [userMangaInfo?.chapters, selectedSortOption]
+  );
+
   if (ready)
     return (
       <React.Suspense
@@ -92,7 +106,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
         <AnimatedProvider style={loadingAnimation}>
           <Overview
             loading={loading}
-            chapters={userMangaInfo?.chapters}
+            chapters={sorted}
             currentChapter={userMangaInfo?.currentlyReadingChapter}
             collapsible={collapsible}>
             <MangaViewerContainer>
