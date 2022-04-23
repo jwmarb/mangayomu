@@ -16,7 +16,7 @@ const MangaHostSearch: React.FC<MangaHostSearchProps> = (props) => {
     state: [mangas, setMangas],
     loading,
     error,
-  } = useAPICall(() => host.search(query), [query]);
+  } = useAPICall(() => host.search(query), [query], query.length > 0);
 
   return (
     <Flex direction='column'>
@@ -32,7 +32,7 @@ const MangaHostSearch: React.FC<MangaHostSearchProps> = (props) => {
       ) : error ? (
         <Typography>{error}</Typography>
       ) : (
-        <Category.FlatList horizontal data={mangas} renderItem={renderItem} keyExtractor={keyExtractor} />
+        <Category.FlatList horizontal data={mangas?.slice(0, 20)} renderItem={renderItem} keyExtractor={keyExtractor} />
       )}
     </Flex>
   );
