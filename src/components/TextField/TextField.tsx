@@ -17,7 +17,6 @@ const TextField: React.FC<TextFieldProps> = React.forwardRef((props, ref: any) =
   }
 
   function handleOnPress() {
-    textField.current?.blur();
     textField.current?.clear();
     if (onChangeText) onChangeText('');
     setText('');
