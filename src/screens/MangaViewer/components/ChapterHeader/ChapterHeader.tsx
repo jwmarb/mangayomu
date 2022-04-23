@@ -5,6 +5,7 @@ import {
   ChapterLoadingIndicatorBackground,
 } from '@screens/MangaViewer/components/ChapterHeader/ChapterHeader.base';
 import { ChapterHeaderProps } from '@screens/MangaViewer/components/ChapterHeader/ChapterHeader.interfaces';
+import LoadingChapters from '@screens/MangaViewer/components/LoadingChapters';
 import React from 'react';
 import { Dimensions } from 'react-native';
 import {
@@ -21,7 +22,7 @@ const { width } = Dimensions.get('window');
 const halfWidth = width / 2;
 
 const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
-  const { chapters, handleOnOpenModal, loading } = props;
+  const { chapters, handleOnOpenModal, loading, refresh } = props;
   const opacity = useSharedValue(1);
   const bgOpacity = useSharedValue(0);
   const translateX = useSharedValue(-halfWidth);
@@ -63,8 +64,12 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
           {chapters?.length ? `Chapters - ${chapters.length}` : 'Updating...'}
         </Typography>
         <Spacer x={2} />
-        <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='sort' />} onPress={handleOnOpenModal} />
+        <Flex>
+          <IconButton icon={<Icon bundle='Feather' name='refresh-cw' />} onPress={refresh} disabled={loading} />
+          <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='sort' />} onPress={handleOnOpenModal} />
+        </Flex>
       </ChapterHeaderContainer>
+      {loading && <LoadingChapters />}
     </>
   );
 };

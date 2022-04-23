@@ -46,15 +46,9 @@ const Overview: React.FC<OverviewProps> = (props) => {
     );
 
   if (chapters == null) {
-    const Footer = createFooter(true);
     return (
       <RecyclerListViewScrollView
-        header={
-          <View onLayout={handleOnLayout}>
-            {children}
-            <Footer />
-          </View>
-        }
+        header={<View onLayout={handleOnLayout}>{children}</View>}
         listener={listener}
         collapsible={collapsible}
       />

@@ -5,5 +5,6 @@ export interface ChapterHeaderProps {
   chapters?: MangaChapter[];
   sort: string;
   loading: boolean;
+  refresh: () => Promise<void>;
   handleOnOpenModal: () => void;
 }
