@@ -19,7 +19,7 @@ export type MangaSeeManga = Manga & WithGenres & WithStatus & WithHentai & WithY
 
 export type MangaSeeMangaMeta = MangaMeta<MangaSeeChapter> & WithGenres & WithYearReleased & WithType & WithStatus;
 
-export type MangaSeeChapter = MangaChapter & WithDate;
+export type MangaSeeChapter = MangaChapter;
 
 export type MangaSeeFilter = WithGenresFilter & WithSortFilter & WithOfficialTranslationFilter & WithStatusFilter;
 

@@ -202,6 +202,11 @@ export declare interface MangaChapter {
    * The index the chapter belongs to in the array
    */
   index: number;
+
+  /**
+   * The date the chapter was released
+   */
+  date: string;
 }
 
 export type WithFilters = WithGenresFilter | WithSortFilter | WithStatusFilter | WithOfficialTranslationFilter;
