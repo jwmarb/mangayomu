@@ -1,4 +1,4 @@
-import { RecyclerListViewScrollViewProps } from '@screens/Home/screens/MangaViewer/components/Overview/components/RecyclerListViewScrollView/RecyclerListViewScrollView.interfaces';
+import { RecyclerListViewScrollViewProps } from '@screens/MangaViewer/components/Overview/components/RecyclerListViewScrollView/RecyclerListViewScrollView.interfaces';
 import React from 'react';
 import { Animated } from 'react-native';
 

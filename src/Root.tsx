@@ -4,8 +4,8 @@ import WelcomeScreen from '@screens/Welcome';
 import HomeScreen from '@screens/Home';
 import { useSelector } from 'react-redux';
 import { AppState } from '@redux/store';
-import MangaViewer from '@screens/Home/screens/MangaViewer/MangaViewer';
-import GenericMangaList from '@screens/Home/screens/GenericMangaList';
+import MangaViewer from '@screens/MangaViewer';
+import GenericMangaList from '@screens/GenericMangaList';
 
 const Root: React.FC = () => {
   const showIntroduction = useSelector((state: AppState) => state.settings.showIntroduction);

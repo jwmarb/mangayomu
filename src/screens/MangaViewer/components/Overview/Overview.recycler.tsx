@@ -4,7 +4,7 @@ import { Dimensions } from 'react-native';
 import animate from '@utils/Animations/animate';
 import withAnimatedLoading from '@utils/Animations/withAnimatedLoading';
 const { width } = Dimensions.get('window');
-import { LoadingContainer } from '@screens/Home/screens/MangaViewer/components/Overview/Overview.base';
+import { LoadingContainer } from '@screens/MangaViewer/components/Overview/Overview.base';
 
 export const layout = new LayoutProvider(
   (index) => 0,

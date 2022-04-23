@@ -1,6 +1,6 @@
 import { Flex, MangaCover, Skeleton, Spacer, Typography } from '@components/core';
 import useAnimatedMounting from '@hooks/useAnimatedMounting';
-import { AuthorsProps } from '@screens/Home/screens/MangaViewer/components/Authors/Authors.interfaces';
+import { AuthorsProps } from '@screens/MangaViewer/components/Authors/Authors.interfaces';
 import animate from '@utils/Animations/animate';
 import MangaValidator from '@utils/MangaValidator';
 import withAnimatedLoading from '@utils/Animations/withAnimatedLoading';

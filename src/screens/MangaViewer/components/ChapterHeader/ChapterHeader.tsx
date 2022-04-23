@@ -2,8 +2,8 @@ import { Typography, Spacer, Icon, Button, Modal, ListItem, List, Flex, IconButt
 import {
   ChapterHeaderContainer,
   ChapterLoadingIndicator,
-} from '@screens/Home/screens/MangaViewer/components/ChapterHeader/ChapterHeader.base';
-import { ChapterHeaderProps } from '@screens/Home/screens/MangaViewer/components/ChapterHeader/ChapterHeader.interfaces';
+} from '@screens/MangaViewer/components/ChapterHeader/ChapterHeader.base';
+import { ChapterHeaderProps } from '@screens/MangaViewer/components/ChapterHeader/ChapterHeader.interfaces';
 import React from 'react';
 import { Dimensions } from 'react-native';
 import {

@@ -1,4 +1,4 @@
-import { StatusIndicatorProps } from '@screens/Home/screens/MangaViewer/components/StatusIndicator/StatusIndicator.interfaces';
+import { StatusIndicatorProps } from '@screens/MangaViewer/components/StatusIndicator/StatusIndicator.interfaces';
 import { rem } from '@theme/Typography';
 import { Props } from 'react';
 import styled, { css } from 'styled-components/native';

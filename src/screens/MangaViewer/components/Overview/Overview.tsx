@@ -1,11 +1,7 @@
-import FloatingActionButton from '@screens/Home/screens/MangaViewer/components/FloatingActionButton/FloatingActionButton';
-import RecyclerListViewScrollView from '@screens/Home/screens/MangaViewer/components/Overview/components/RecyclerListViewScrollView';
-import { OverviewProps } from '@screens/Home/screens/MangaViewer/components/Overview/Overview.interfaces';
-import {
-  createFooter,
-  layout,
-  rowRenderer,
-} from '@screens/Home/screens/MangaViewer/components/Overview/Overview.recycler';
+import FloatingActionButton from '@screens/MangaViewer/components/FloatingActionButton/FloatingActionButton';
+import RecyclerListViewScrollView from '@screens/MangaViewer/components/Overview/components/RecyclerListViewScrollView';
+import { OverviewProps } from '@screens/MangaViewer/components/Overview/Overview.interfaces';
+import { createFooter, layout, rowRenderer } from '@screens/MangaViewer/components/Overview/Overview.recycler';
 import React from 'react';
 import { Dimensions, LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';

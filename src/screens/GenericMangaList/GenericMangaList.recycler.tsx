@@ -1,13 +1,8 @@
 import { RowRenderer } from '@utils/RecyclerListView.interfaces';
 import { LayoutProvider } from 'recyclerlistview';
 import { Dimensions } from 'react-native';
-import {
-  MangaItemContainerEven,
-  MangaItemContainerOdd,
-} from '@screens/Home/screens/GenericMangaList/GenericMangaList.base';
+import { MangaItemContainerEven, MangaItemContainerOdd } from '@screens/GenericMangaList/GenericMangaList.base';
 import Manga from '@components/Manga';
-import { animate, withAnimatedFadeIn, withAnimatedMounting } from '@utils/Animations';
-
 const { width } = Dimensions.get('window');
 enum Type {
   ODD,

@@ -2,7 +2,7 @@ import { Button, Flex, Icon, IconButton, Progress, Spacer } from '@components/co
 import useViewingManga from '@hooks/useViewingManga';
 import { ReadingMangaInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import { useAppDispatch } from '@redux/store';
-import { MangaActionProps } from '@screens/Home/screens/MangaViewer/components/MangaAction/MangaAction.interfaces';
+import { MangaActionProps } from '@screens/MangaViewer/components/MangaAction/MangaAction.interfaces';
 import { useMangaSource } from '@services/scraper';
 import React from 'react';
 import { ActivityIndicator } from 'react-native';

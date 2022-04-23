@@ -16,23 +16,23 @@ import useAPICall from '@hooks/useAPICall';
 import React from 'react';
 import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-collapsible';
 import MangaValidator from '@utils/MangaValidator';
-import StatusIndicator from '@screens/Home/screens/MangaViewer/components/StatusIndicator';
-import connector, { MangaViewerProps } from '@screens/Home/screens/MangaViewer/MangaViewer.redux';
-import { MangaViewerContainer } from '@screens/Home/screens/MangaViewer/MangaViewer.base';
+import StatusIndicator from '@screens/MangaViewer/components/StatusIndicator';
+import connector, { MangaViewerProps } from '@screens/MangaViewer/MangaViewer.redux';
+import { MangaViewerContainer } from '@screens/MangaViewer/MangaViewer.base';
 import useAnimatedLoading from '@hooks/useAnimatedLoading';
 import { AnimatedProvider } from '@context/AnimatedContext';
 import useLazyLoading from '@hooks/useLazyLoading';
 import useSort from '@hooks/useSort';
 import { MangaChapter, WithDate } from '@services/scraper/scraper.interfaces';
 import { HeaderBuilder } from '@components/Screen/Header/Header.base';
-const Genres = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Genres'));
-const ChapterHeader = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/ChapterHeader'));
-const Title = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Title'));
-const Description = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Description'));
-const Authors = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Authors'));
-const MangaCover = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/MangaCover'));
-const MangaAction = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/MangaAction'));
-const Overview = React.lazy(() => import('@screens/Home/screens/MangaViewer/components/Overview'));
+const Genres = React.lazy(() => import('@screens/MangaViewer/components/Genres'));
+const ChapterHeader = React.lazy(() => import('@screens/MangaViewer/components/ChapterHeader'));
+const Title = React.lazy(() => import('@screens/MangaViewer/components/Title'));
+const Description = React.lazy(() => import('@screens/MangaViewer/components/Description'));
+const Authors = React.lazy(() => import('@screens/MangaViewer/components/Authors'));
+const MangaCover = React.lazy(() => import('@screens/MangaViewer/components/MangaCover'));
+const MangaAction = React.lazy(() => import('@screens/MangaViewer/components/MangaAction'));
+const Overview = React.lazy(() => import('@screens/MangaViewer/components/Overview'));
 
 const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   const {
