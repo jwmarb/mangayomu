@@ -4,7 +4,7 @@ import { Dimensions } from 'react-native';
 import animate from '@utils/Animations/animate';
 import withAnimatedLoading from '@utils/Animations/withAnimatedLoading';
 const { width } = Dimensions.get('window');
-import { LoadingContainer } from '@screens/MangaViewer/components/Overview/Overview.base';
+import LoadingChapters from '@screens/MangaViewer/components/LoadingChapters';
 
 export const layout = new LayoutProvider(
   (index) => 0,
@@ -22,14 +22,7 @@ export const rowRenderer: (
 
 export const createFooter = (loading: boolean) => () =>
   loading ? (
-    animate(
-      <LoadingContainer>
-        <Skeleton.Chapter />
-        <Skeleton.Chapter />
-        <Skeleton.Chapter />
-      </LoadingContainer>,
-      withAnimatedLoading
-    )
+    <LoadingChapters />
   ) : (
     <Spacer y={16} /> // extra padding for UX reasons
   );
