@@ -3,6 +3,7 @@ import React from 'react';
 
 export interface ListItemProps {
   title: string;
+  subtitle?: string;
   adornment?: React.ReactElement<any> | false;
   adornmentPlacement?: 'left' | 'right';
   onPress?: () => void;

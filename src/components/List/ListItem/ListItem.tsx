@@ -8,7 +8,7 @@ import { Typography } from '@components/Typography';
 import React from 'react';
 
 const ListItem: React.FC<ListItemProps> = (props) => {
-  const { title, onPress = () => void 0, typographyProps = {}, adornment } = props;
+  const { title, onPress = () => void 0, typographyProps = {}, adornment, subtitle } = props;
 
   return (
     <ListItemBase>
@@ -20,9 +20,18 @@ const ListItem: React.FC<ListItemProps> = (props) => {
               <Spacer x={3} />
             </>
           )}
-          <Typography variant='body2' numberOfLines={1} {...typographyProps}>
-            {title}
-          </Typography>
+          <Flex direction='column'>
+            <Typography numberOfLines={1} {...typographyProps}>
+              {title}
+            </Typography>
+            {subtitle && (
+              <>
+                <Typography variant='body2' color='textSecondary' numberOfLines={1} {...typographyProps}>
+                  {subtitle}
+                </Typography>
+              </>
+            )}
+          </Flex>
         </Flex>
       </ButtonBase>
     </ListItemBase>
