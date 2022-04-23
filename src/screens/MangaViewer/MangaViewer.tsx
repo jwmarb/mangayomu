@@ -127,6 +127,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
               <Genres buttons genres={userMangaInfo?.genres} />
             </MangaViewerContainer>
             <ChapterHeader
+              refresh={refresh}
               chapters={meta?.chapters}
               sort={sort}
               handleOnOpenModal={handleOnOpenModal}
