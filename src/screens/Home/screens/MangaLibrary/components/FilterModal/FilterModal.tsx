@@ -9,7 +9,6 @@ const FilterModal: React.FC<FilterModalProps> = (props) => {
   return (
     <Modal onClose={onClose} visible={expand}>
       <Tabs onTabChange={setTabIndex} tabIndex={tabIndex}>
-        <Tab name='Filter'></Tab>
         <Tab name='Sort'>{sortOptions}</Tab>
       </Tabs>
     </Modal>
