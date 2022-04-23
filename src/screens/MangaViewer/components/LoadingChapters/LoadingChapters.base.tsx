@@ -5,6 +5,5 @@ export const LoadingContainer = styled.View`
     background-color: ${props.theme.palette.background.default.get()};
     flex-grow: 1;
     flex-direction: column;
-    height: 400px;
   `}
 `;
