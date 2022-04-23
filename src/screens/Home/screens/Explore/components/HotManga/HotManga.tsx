@@ -28,7 +28,7 @@ const HotManga: React.FC = (props) => {
     <Flex direction='column'>
       <Category.Header>
         <Typography variant='subheader'>
-          Trending manga <Icon bundle='MaterialCommunityIcons' name='fire' color='secondary' />
+          Trending updates <Icon bundle='MaterialCommunityIcons' name='fire' color='secondary' />
         </Typography>
         <Button title='View All' onPress={handleOnPress} />
       </Category.Header>
