@@ -23,8 +23,14 @@ const BottomTabHeader: React.FC<BottomTabHeaderProps> = (props) => {
 
   return (
     <HeaderBaseContainer>
-      {HeaderLeftComponent ? <HeaderLeftComponent /> : <MangaSource />}
-      <Spacer x={1} />
+      {HeaderLeftComponent ? (
+        <HeaderLeftComponent />
+      ) : (
+        <>
+          <MangaSource />
+          <Spacer x={1} />
+        </>
+      )}
       <Typography variant='subheader'>{headerTitle}</Typography>
       <Flex grow justifyContent='flex-end'>
         {HeaderRightComponent && <HeaderRightComponent />}
