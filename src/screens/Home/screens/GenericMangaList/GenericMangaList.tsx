@@ -125,6 +125,7 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
           layoutProvider={layoutProvider}
           rowRenderer={rowRenderer}
           applyWindowCorrection={applyWindowCorrection}
+          forceNonDeterministicRendering
           scrollViewProps={{
             contentContainerStyle: {
               paddingTop: collapsible.containerPaddingTop + pixelToNumber(theme.spacing(3)),
