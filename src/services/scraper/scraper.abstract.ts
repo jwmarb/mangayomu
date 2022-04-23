@@ -4,12 +4,18 @@ import url from 'url';
 import * as cheerio from 'cheerio';
 
 abstract class MangaHost {
+  /**
+   * Total available of manga hosts
+   */
   public static availableSources = new Map<string, MangaHost>();
   /**
-   *
+   * Whether or not the manga host shows hot mangas
    */
   private readonly hotMangas: boolean;
 
+  /**
+   * Whether or not the manga host shows latest mangas
+   */
   private readonly latestMangas: boolean;
 
   /**
