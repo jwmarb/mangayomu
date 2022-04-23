@@ -6,5 +6,6 @@ export type SearchProps = {
   showSearchBar: boolean;
   setShowSearchBar: React.Dispatch<React.SetStateAction<boolean>>;
   additionalButtons?: React.ReactElement<any>;
+  title: string;
   ref?: any;
 };

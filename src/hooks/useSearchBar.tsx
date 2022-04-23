@@ -4,6 +4,10 @@ import { TextInput } from 'react-native';
 
 type SearchBarOptions = {
   /**
+   * The title of the screen
+   */
+  title: string;
+  /**
    * Condition to have to focus on the text field when the user clicks the button
    */
   focusCondition?: boolean;
@@ -24,7 +28,7 @@ type SearchBarOptions = {
  * @param options Options to provide for the search bar
  * @returns Returns a generated header with a search bar
  */
-export default function useSearchBar(options?: SearchBarOptions) {
+export default function useSearchBar(options: SearchBarOptions) {
   const defaultOptions: SearchBarOptions = { focusCondition: true, event: 'onChangeText', ...options };
   const [query, setQuery] = React.useState<string>('');
   const [showSearchBar, setShowSearchBar] = React.useState<boolean>(false);
@@ -40,6 +44,7 @@ export default function useSearchBar(options?: SearchBarOptions) {
   return {
     header: (
       <Search
+        title={defaultOptions.title}
         ref={textRef}
         setShowSearchBar={setShowSearchBar}
         showSearchBar={showSearchBar}

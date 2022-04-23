@@ -11,6 +11,7 @@ const Search: React.FC<SearchProps> = React.forwardRef((props, ref) => {
     additionalButtons,
     setShowSearchBar,
     showSearchBar,
+    title,
   } = props;
 
   function handleOnShowSearch() {
@@ -43,7 +44,7 @@ const Search: React.FC<SearchProps> = React.forwardRef((props, ref) => {
           <>
             <MangaSource />
             <Spacer x={1} />
-            <Typography variant='subheader'>Library</Typography>
+            <Typography variant='subheader'>{title}</Typography>
           </>
         )}
       </Flex>

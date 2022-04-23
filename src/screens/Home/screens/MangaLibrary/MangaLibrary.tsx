@@ -72,6 +72,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   );
 
   const { query, header } = useSearchBar({
+    title: 'Library',
     focusCondition: !expand,
     additionalButtons: (
       <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='filter-menu' />} onPress={handleOnExpand} />
