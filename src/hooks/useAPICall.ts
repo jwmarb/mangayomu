@@ -6,19 +6,22 @@ import React, { DependencyList } from 'react';
  * @param apiCall The API call is a function that returns a promise. This function is invoked upon the component mounting
  * @returns Returns the necessary variables needed for a component that uses an API call
  */
-export default function useAPICall<T>(apiCall: () => Promise<T>, deps: DependencyList = []) {
+export default function useAPICall<T>(
+  apiCall: () => Promise<T>,
+  deps: DependencyList = [],
+  fetchCondition: boolean = true
+) {
   const cancelable = React.useRef(new CancelablePromise<T>(apiCall));
   const [items, setItems] = React.useState<T>();
   const [error, setError] = React.useState<string>('');
-  const [loading, setLoading] = React.useState<boolean>(true);
-  const mounted = React.useRef(false);
+  const [loading, setLoading] = React.useState<boolean>(fetchCondition);
   React.useEffect(() => {
-    if (!mounted.current) {
+    if (fetchCondition) {
       refresh();
       return () => {
         cancelable.current.cancel();
       };
-    } else mounted.current = true;
+    }
   }, deps);
   const refresh = React.useCallback(async () => {
     cancelable.current = new CancelablePromise(apiCall);
