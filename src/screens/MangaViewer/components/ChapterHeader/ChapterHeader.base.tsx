@@ -25,3 +25,15 @@ export const ChapterLoadingIndicator = styled(Animated.View)`
     right: 0;
   `}
 `;
+
+export const ChapterLoadingIndicatorBackground = styled(Animated.View)`
+  ${(props) => css`
+    background-color: ${props.theme.palette.primary[props.theme.palette.mode ?? 'light'].get()};
+    height: 2px;
+    width: ${width}px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  `}
+`;
