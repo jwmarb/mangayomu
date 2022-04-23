@@ -19,6 +19,7 @@ import { HeaderBuilder, MangaSource } from '@components/Screen/Header/Header.bas
 import { TextFieldProps } from '@components/TextField/TextField.interfaces';
 import useLazyLoading from '@hooks/useLazyLoading';
 import useSort from '@hooks/useSort';
+import useStatefulHeader from '@hooks/useStatefulHeader';
 import { useFocusEffect } from '@react-navigation/native';
 import { LibraryManga } from '@redux/reducers/mangalibReducer/mangalibReducer.interfaces';
 import { ReadingMangaInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
@@ -97,29 +98,24 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     };
   });
 
-  React.useEffect(() => {
-    navigation.setOptions({
-      headerTitle: '',
-      header: () => (
-        <>
-          <Search
-            showSearch={showSearch}
-            ref={textRef as any}
-            onExpand={handleOnExpand}
-            onToggleSearch={handleToggleSearch}
-            setQuery={setQuery}
-          />
-          <FilterModal
-            sortOptions={sortOptions}
-            onClose={handleOnClose}
-            expand={expand}
-            tabIndex={tabIndex}
-            setTabIndex={setTabIndex}
-          />
-        </>
-      ),
-    });
-  });
+  useStatefulHeader(
+    <>
+      <Search
+        showSearch={showSearch}
+        ref={textRef as any}
+        onExpand={handleOnExpand}
+        onToggleSearch={handleToggleSearch}
+        setQuery={setQuery}
+      />
+      <FilterModal
+        sortOptions={sortOptions}
+        onClose={handleOnClose}
+        expand={expand}
+        tabIndex={tabIndex}
+        setTabIndex={setTabIndex}
+      />
+    </>
+  );
 
   React.useEffect(() => {
     if (!expand)
