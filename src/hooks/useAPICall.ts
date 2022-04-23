@@ -7,28 +7,31 @@ import React from 'react';
  * @returns Returns the necessary variables needed for a component that uses an API call
  */
 export default function useAPICall<T>(apiCall: () => Promise<T>) {
-  const cancelable = React.useRef(new CancelablePromise<T>(apiCall)).current;
+  const cancelable = React.useRef(new CancelablePromise<T>(apiCall));
   const [items, setItems] = React.useState<T>();
   const [error, setError] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(true);
+  const mounted = React.useRef(false);
   React.useEffect(() => {
-    refresh();
-    return () => {
-      cancelable.cancel();
-    };
+    if (!mounted.current) {
+      refresh();
+      return () => {
+        cancelable.current.cancel();
+      };
+    } else mounted.current = true;
   }, []);
-  async function refresh() {
+  const refresh = React.useCallback(async () => {
+    cancelable.current = new CancelablePromise(apiCall);
     setLoading(true);
-    const response = await cancelable.start();
-    if (!cancelable.isCanceled())
-      try {
-        setItems(response);
-      } catch (e) {
-        setError(e as any);
-      } finally {
-        setLoading(false);
-      }
-  }
+    const response = await cancelable.current.start();
+    try {
+      if (!cancelable.current.isCanceled()) setItems(response);
+    } catch (e) {
+      if (!cancelable.current.isCanceled()) setError(e as any);
+    } finally {
+      if (!cancelable.current.isCanceled()) setLoading(false);
+    }
+  }, [setLoading, cancelable, setItems, setError]);
 
   return {
     state: [items, setItems] as [T | undefined, React.Dispatch<React.SetStateAction<T>>],
