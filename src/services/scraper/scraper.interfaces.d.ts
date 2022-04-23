@@ -255,5 +255,5 @@ export type WithOfficialTranslationFilter = {
   /**
    * Only include mangas from search that are officially translated and are not fan translations
    */
-  officialTranslation: boolean;
+  officialTranslation: boolean | null;
 };
