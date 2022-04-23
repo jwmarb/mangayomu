@@ -2,9 +2,16 @@ import { Flex, Icon, IconButton, Spacer, TextField, Typography } from '@componen
 import { HeaderBuilder, MangaSource } from '@components/Screen/Header/Header.base';
 import { SearchProps } from '@screens/Home/screens/MangaLibrary/components/Search/Search.interfaces';
 import React from 'react';
+import { NativeSyntheticEvent, TextInputSubmitEditingEventData } from 'react-native';
 
 const Search: React.FC<SearchProps> = React.forwardRef((props, ref) => {
-  const { setQuery, additionalButtons, setShowSearchBar, showSearchBar } = props;
+  const {
+    onChangeText = () => void 0,
+    onSubmitEditing = () => void 0,
+    additionalButtons,
+    setShowSearchBar,
+    showSearchBar,
+  } = props;
 
   function handleOnShowSearch() {
     setShowSearchBar(true);
@@ -14,6 +21,10 @@ const Search: React.FC<SearchProps> = React.forwardRef((props, ref) => {
     setShowSearchBar(false);
   }
 
+  function handleOnSubmitEditing(e: NativeSyntheticEvent<TextInputSubmitEditingEventData>) {
+    onSubmitEditing(e.nativeEvent.text);
+  }
+
   return (
     <HeaderBuilder horizontalPadding paper>
       <Flex shrink alignItems='center'>
@@ -21,7 +32,12 @@ const Search: React.FC<SearchProps> = React.forwardRef((props, ref) => {
           <>
             <IconButton icon={<Icon bundle='Feather' name='arrow-left' />} onPress={handleOnHideSearch} />
             <Spacer x={1} />
-            <TextField placeholder='Search for a title' ref={ref} onChangeText={setQuery} />
+            <TextField
+              placeholder='Search for a title'
+              ref={ref}
+              onChangeText={onChangeText}
+              onSubmitEditing={handleOnSubmitEditing}
+            />
           </>
         ) : (
           <>
