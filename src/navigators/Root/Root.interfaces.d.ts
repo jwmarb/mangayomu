@@ -14,4 +14,5 @@ export type RootStackParamList = {
     | {
         genre: string;
       };
+  Settings: undefined;
 };
