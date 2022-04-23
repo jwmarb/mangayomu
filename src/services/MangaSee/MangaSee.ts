@@ -12,6 +12,7 @@ import {
 import { extractDataFromApplicationLDJson, parseMangaSeeDate, processScript } from '@services/MangaSee/MangaSee.utils';
 import { MangaHostWithFilters, MangaSortType } from '@services/scraper/scraper.filters';
 import { Manga, MangaChapter, MangaMeta } from '@services/scraper/scraper.interfaces';
+import { binary, StringComparator } from '@utils/Algorithms';
 import { titleIncludes } from '@utils/MangaFilters';
 import { parse } from 'date-fns';
 
@@ -67,6 +68,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         genres: x.g,
         yearReleased: x.y,
         source: super.getName(),
+        officialTranslation: x.o === 'yes' ? true : false,
       }));
       this.memo = result;
       return result;
@@ -139,9 +141,46 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
 
   public async search(query: string, filters?: MangaSeeFilter): Promise<MangaSeeManga[]> {
     const directory = await this.listMangas();
-    const filtered = directory.filter(titleIncludes(query)).sort();
-    // filterGenres(filtered)
+    const withTitle = titleIncludes(query);
 
+    if (filters) {
+      const withIncludingGenre = (manga: MangaSeeManga) => {
+        for (let i = 0; i < filters.genres.include.length; i++) {
+          if (binary.search(manga.genres, filters.genres.include[i], StringComparator) !== -1) return true;
+        }
+        return false;
+      };
+      const withExcludingGenre = (manga: MangaSeeManga) => {
+        for (let i = 0; i < filters.genres.exclude.length; i++) {
+          if (binary.search(manga.genres, filters.genres.exclude[i], StringComparator) !== -1) return false;
+        }
+        return true;
+      };
+
+      const withStatus = (manga: MangaSeeManga) => {
+        if (filters.status) {
+          return filters.status === manga.status.publish;
+        }
+
+        return true;
+      };
+
+      const withOfficialTranslation = (manga: MangaSeeManga) => {
+        if (filters.officialTranslation == null) return true;
+        return filters.officialTranslation === manga.officialTranslation;
+      };
+
+      const filtered = directory.filter(
+        (manga) =>
+          withIncludingGenre(manga) &&
+          withExcludingGenre(manga) &&
+          withTitle(manga) &&
+          withStatus(manga) &&
+          withOfficialTranslation(manga)
+      );
+      return filtered;
+    }
+    const filtered = directory.filter(withTitle);
     return filtered;
   }
 }
