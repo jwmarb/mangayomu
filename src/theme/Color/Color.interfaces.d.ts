@@ -37,6 +37,7 @@ export type ThemedPalette = {
   action: ActionColors;
   status: typeof status;
   modalOverlay: Color;
+  divider: Color;
 };
 
 export type ColorConstant = {

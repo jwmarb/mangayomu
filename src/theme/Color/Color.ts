@@ -157,5 +157,6 @@ export const Palette = (): ThemedPalette & typeof applicableColors & { status: t
   status,
   action: actionColors,
   modalOverlay: Color.rgba('rgba(0, 0, 0, 0.4)', 'rgba(0, 0, 0, 0.6)'),
+  divider: Color.rgba('rgba(0, 0, 0, 0.12)', 'rgba(255, 255, 255, 0.12)'),
   ...applicableColors,
 });
