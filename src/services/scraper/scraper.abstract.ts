@@ -85,6 +85,10 @@ abstract class MangaHost {
     return this.latestMangas;
   }
 
+  public static getAvailableSources() {
+    return this.availableSources;
+  }
+
   /**
    * List all recently updated mangas from the website, if available
    * @returns {Promise<Manga[]>} Returns a list of mangas that were recently updated
