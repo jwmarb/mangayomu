@@ -19,18 +19,16 @@ export const rowRenderer: RowRenderer = (type, data) => {
     default:
       return null;
     case Type.EVEN:
-      return animate(
+      return (
         <MangaItemContainerEven>
           <Manga {...data} />
-        </MangaItemContainerEven>,
-        withAnimatedMounting
+        </MangaItemContainerEven>
       );
     case Type.ODD: {
-      return animate(
+      return (
         <MangaItemContainerOdd>
           <Manga {...data} />
-        </MangaItemContainerOdd>,
-        withAnimatedMounting
+        </MangaItemContainerOdd>
       );
     }
   }
