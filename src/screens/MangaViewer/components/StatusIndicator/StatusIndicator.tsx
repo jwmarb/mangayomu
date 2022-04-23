@@ -6,40 +6,31 @@ import MangaValidator from '@utils/MangaValidator';
 import withAnimatedLoading from '@utils/Animations/withAnimatedLoading';
 import withAnimatedMounting from '@utils/Animations/withAnimatedMounting';
 import React from 'react';
+import useAnimatedMounting from '@hooks/useAnimatedMounting';
+import Animated from 'react-native-reanimated';
 
 const StatusIndicator: React.FC<StatusIndicatorProps> = (props) => {
   const { meta } = props;
-  if (meta && MangaValidator.hasStatus(meta)) {
+  if (MangaValidator.hasStatus(meta)) {
     const { status } = meta;
+    const mountingStyle = useAnimatedMounting();
     return (
-      <Flex direction='column'>
-        {status
-          ? animate(
-              <>
-                <Flex alignItems='center'>
-                  <StatusCircle publish={status.publish} />
-                  <Spacer x={1} />
-                  <Typography variant='body2'>{status.publish}</Typography>
-                </Flex>
-                {status.scan && (
-                  <Flex alignItems='center'>
-                    <StatusCircle scan={status.scan} />
-                    <Spacer x={1} />
-                    <Typography variant='body2'>{status.scan}</Typography>
-                  </Flex>
-                )}
-              </>,
-              withAnimatedMounting
-            )
-          : animate(
-              <>
-                <Skeleton.Typography width='100%' variant='body2' />
-                <Spacer y={1} />
-                <Skeleton.Typography width='100%' variant='body2' />
-              </>,
-              withAnimatedLoading
-            )}
-      </Flex>
+      <Animated.View style={mountingStyle}>
+        <Flex direction='column'>
+          <Flex alignItems='center'>
+            <StatusCircle publish={status.publish} />
+            <Spacer x={1} />
+            <Typography variant='body2'>{status.publish}</Typography>
+          </Flex>
+          {status.scan && (
+            <Flex alignItems='center'>
+              <StatusCircle scan={status.scan} />
+              <Spacer x={1} />
+              <Typography variant='body2'>{status.scan}</Typography>
+            </Flex>
+          )}
+        </Flex>
+      </Animated.View>
     );
   }
 
