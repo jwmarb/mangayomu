@@ -2,6 +2,7 @@ import { BottomTabHeader, IconButton, Icon, StackTabs } from '@components/core';
 import { IconPack, IconProps } from '@components/Icon/Icon.interfaces';
 import BottomTab from '@navigators/BottomTab';
 import Browse from '@screens/Home/screens/Browse';
+import History from '@screens/Home/screens/History';
 import MangaLibrary from '@screens/Home/screens/MangaLibrary';
 import React from 'react';
 import { HomeProps } from './Home.interfaces';
@@ -36,11 +37,7 @@ const HomeScreen: React.FC<HomeProps> = (props) => {
         name='Browse'
         options={{ headerTitle: 'Browse', tabBarIcon: createTabIcon('Feather', 'search') }}
       />
-      <BottomTab.Screen
-        component={Browse}
-        name='History'
-        options={{ headerTitle: 'History', tabBarIcon: createTabIcon('Feather', 'clock') }}
-      />
+      <BottomTab.Screen component={History} name='History' />
       <BottomTab.Screen
         component={Browse}
         name='Settings'
