@@ -1,9 +1,9 @@
 import React from 'react';
 
-export interface SearchProps {
-  showSearch: boolean;
-  onToggleSearch: () => void;
+export type SearchProps = {
   setQuery: React.Dispatch<React.SetStateAction<string>>;
-  onExpand: () => void;
+  showSearchBar: boolean;
+  setShowSearchBar: React.Dispatch<React.SetStateAction<boolean>>;
+  additionalButtons?: React.ReactElement<any>;
   ref?: any;
-}
+};

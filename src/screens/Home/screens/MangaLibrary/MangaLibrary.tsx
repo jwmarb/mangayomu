@@ -18,6 +18,7 @@ import { FlatListScreen } from '@components/core';
 import { HeaderBuilder, MangaSource } from '@components/Screen/Header/Header.base';
 import { TextFieldProps } from '@components/TextField/TextField.interfaces';
 import useLazyLoading from '@hooks/useLazyLoading';
+import useSearchBar from '@hooks/useSearchBar';
 import useSort from '@hooks/useSort';
 import useStatefulHeader from '@hooks/useStatefulHeader';
 import { useFocusEffect } from '@react-navigation/native';
@@ -47,15 +48,9 @@ const Spacing = () => <Spacer y={4} />;
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   const { mangas, navigation, history } = props;
 
-  const [showSearch, setShowSearch] = React.useState<boolean>(false);
   const { ready, Fallback } = useLazyLoading();
-  const [query, setQuery] = React.useState<string>('');
   const theme = useTheme();
   const textRef = React.useRef<TextInput>();
-  const handleToggleSearch = React.useCallback(() => {
-    setShowSearch((prev) => !prev);
-  }, [setShowSearch]);
-
   const [expand, setExpand] = React.useState<boolean>(false);
   const [tabIndex, setTabIndex] = React.useState<number>(0);
   const handleOnExpand = React.useCallback(() => {
@@ -75,6 +70,13 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     },
     [history]
   );
+
+  const { query, header } = useSearchBar({
+    focusCondition: !expand,
+    additionalButtons: (
+      <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='filter-menu' />} onPress={handleOnExpand} />
+    ),
+  });
 
   const { sortOptions, selectedSortOption } = useSort((_createSort) => {
     const createSort = (
@@ -99,13 +101,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
 
   useStatefulHeader(
     <>
-      <Search
-        showSearch={showSearch}
-        ref={textRef as any}
-        onExpand={handleOnExpand}
-        onToggleSearch={handleToggleSearch}
-        setQuery={setQuery}
-      />
+      {header}
       <FilterModal
         sortOptions={sortOptions}
         onClose={handleOnClose}
@@ -115,14 +111,6 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
       />
     </>
   );
-
-  React.useEffect(() => {
-    if (!expand)
-      setTimeout(() => {
-        if (showSearch) textRef.current?.focus();
-        else setQuery('');
-      }, 100);
-  }, [showSearch]);
 
   const data = React.useMemo(
     () => mangas.filter(({ manga }) => titleIncludes(query)(manga)).sort(selectedSortOption),

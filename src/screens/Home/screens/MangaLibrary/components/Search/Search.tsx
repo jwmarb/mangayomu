@@ -4,13 +4,22 @@ import { SearchProps } from '@screens/Home/screens/MangaLibrary/components/Searc
 import React from 'react';
 
 const Search: React.FC<SearchProps> = React.forwardRef((props, ref) => {
-  const { showSearch, onToggleSearch, onExpand, setQuery } = props;
+  const { setQuery, additionalButtons, setShowSearchBar, showSearchBar } = props;
+
+  function handleOnShowSearch() {
+    setShowSearchBar(true);
+  }
+
+  function handleOnHideSearch() {
+    setShowSearchBar(false);
+  }
+
   return (
     <HeaderBuilder horizontalPadding paper>
       <Flex shrink alignItems='center'>
-        {showSearch ? (
+        {showSearchBar ? (
           <>
-            <IconButton icon={<Icon bundle='Feather' name='arrow-left' />} onPress={onToggleSearch} />
+            <IconButton icon={<Icon bundle='Feather' name='arrow-left' />} onPress={handleOnHideSearch} />
             <Spacer x={1} />
             <TextField placeholder='Search for a title' ref={ref} onChangeText={setQuery} />
           </>
@@ -23,8 +32,8 @@ const Search: React.FC<SearchProps> = React.forwardRef((props, ref) => {
         )}
       </Flex>
       <Flex spacing={1} grow justifyContent='flex-end' alignItems='center'>
-        {!showSearch && <IconButton icon={<Icon bundle='Feather' name='search' />} onPress={onToggleSearch} />}
-        <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='filter-menu' />} onPress={onExpand} />
+        {!showSearchBar && <IconButton icon={<Icon bundle='Feather' name='search' />} onPress={handleOnShowSearch} />}
+        {additionalButtons}
       </Flex>
     </HeaderBuilder>
   );
