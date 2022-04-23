@@ -86,6 +86,7 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
       refresh,
     } = useAPICall(() => source.search('', { genres: { include: [genre], exclude: [] } }));
     const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider((r1, r2) => r1 !== r2));
+    const [showFooter, setShowFooter] = React.useState<boolean>(true);
     const { ready, Fallback } = useLazyLoading();
     const options: UseCollapsibleOptions = {
       navigationOptions: {
@@ -105,24 +106,22 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
       [collapsible.containerPaddingTop]
     );
 
+    const handleOnItemLayout = () => {
+      setShowFooter(false);
+    };
+
     const theme = useTheme();
 
     React.useEffect(() => {
       if (!loading && mangas) setDataProvider((prev) => prev.cloneWithRows(mangas));
     }, [mangas, loading]);
     if (ready) {
-      if (loading)
-        return (
-          <Screen scrollable={options}>
-            <MangaItemsLoading />
-          </Screen>
-        );
-
       return (
         <RecyclerListViewScreen
           collapsible={collapsible}
           dataProvider={dataProvider}
           layoutProvider={layoutProvider}
+          onItemLayout={handleOnItemLayout}
           rowRenderer={rowRenderer}
           applyWindowCorrection={applyWindowCorrection}
           forceNonDeterministicRendering
@@ -132,6 +131,7 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
               paddingBottom: pixelToNumber(theme.spacing(3)),
             },
           }}
+          renderFooter={() => (showFooter ? <MangaItemsLoading /> : null)}
         />
       );
     }
