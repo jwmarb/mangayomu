@@ -62,7 +62,7 @@ const Header: React.FC<StackHeaderProps> = (props) => {
         </>
       ) : (
         <>
-          <IconButton icon={<Icon bundle='AntDesign' name='back' />} onPress={handleOnPress} />
+          <IconButton icon={<Icon bundle='Feather' name='arrow-left' />} onPress={handleOnPress} />
           <Spacer x={1} />
         </>
       )}
