@@ -26,8 +26,7 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
     if (loading) {
       translateX.value = withRepeat(
         withSequence(
-          withTiming(width * 0.5, { duration: 800, easing: Easing.sin }),
-          withTiming(width * 1.5, { duration: 2000, easing: Easing.out(Easing.sin) }),
+          withTiming(width, { duration: 1000, easing: Easing.out(Easing.sin) }),
           withTiming(-halfWidth, { duration: 0 })
         ),
         -1
