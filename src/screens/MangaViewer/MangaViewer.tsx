@@ -85,10 +85,10 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   );
 
   React.useEffect(() => {
-    if (!loading && meta) {
+    if (meta) {
       viewManga({ ...manga, ...meta });
     }
-  }, [loading, meta]);
+  }, [meta]);
 
   const sorted = React.useMemo(
     () => userMangaInfo?.chapters.sort(selectedSortOption as any),
@@ -104,31 +104,27 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
           </Flex>
         }>
         <AnimatedProvider style={loadingAnimation}>
-          <Overview
-            loading={loading}
-            chapters={sorted}
-            currentChapter={userMangaInfo?.currentlyReadingChapter}
-            collapsible={collapsible}>
+          <Overview chapters={sorted} currentChapter={userMangaInfo?.currentlyReadingChapter} collapsible={collapsible}>
             <MangaViewerContainer>
               <Flex container horizontalPadding={3} verticalPadding={0}>
                 <MangaCover mangaCoverURI={manga.imageCover} />
                 <Spacer x={2} />
                 <Flex direction='column' shrink>
                   <Title title={manga.title} isAdult={isAdult} />
-                  <Authors manga={manga} loading={loading} authors={meta?.authors} />
+                  <Authors manga={manga} authors={userMangaInfo?.authors} />
                   <Spacer y={1} />
-                  <Genres genres={meta?.genres} loading={loading} />
+                  <Genres genres={userMangaInfo?.genres} />
                   <Spacer y={1} />
-                  <StatusIndicator meta={meta} loading={loading} />
+                  <StatusIndicator meta={userMangaInfo} />
                   <Spacer y={1} />
                   <MangaAction manga={manga} userMangaInfo={userMangaInfo} />
                 </Flex>
               </Flex>
 
               <Spacer y={2} />
-              <Description loading={loading} description={meta?.description} />
+              <Description description={userMangaInfo?.description} />
               <Spacer y={2} />
-              <Genres buttons genres={meta?.genres} loading={loading} />
+              <Genres buttons genres={userMangaInfo?.genres} />
             </MangaViewerContainer>
             <ChapterHeader
               chapters={meta?.chapters}

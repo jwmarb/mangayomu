@@ -8,8 +8,8 @@ import React from 'react';
 import Animated from 'react-native-reanimated';
 
 const Authors: React.FC<AuthorsProps> = (props) => {
-  const { manga, authors, loading } = props;
-  const animatedMount = useAnimatedMounting(!loading);
+  const { manga, authors } = props;
+  const animatedMount = useAnimatedMounting(!!authors);
   return MangaValidator.hasAuthors(manga) ? (
     <Typography>
       By{' '}
@@ -17,7 +17,7 @@ const Authors: React.FC<AuthorsProps> = (props) => {
         {manga.authors.join(', ')}
       </Typography>
     </Typography>
-  ) : loading ? (
+  ) : !authors ? (
     animate(<Skeleton.Typography width='80%' />, withAnimatedLoading)
   ) : (
     <Animated.View style={animatedMount}>

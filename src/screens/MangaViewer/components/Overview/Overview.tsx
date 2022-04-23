@@ -9,7 +9,7 @@ import { WindowCorrection } from 'recyclerlistview/dist/reactnative/core/Viewabi
 const { height } = Dimensions.get('window');
 
 const Overview: React.FC<OverviewProps> = (props) => {
-  const { children, chapters, currentChapter, loading, collapsible } = props;
+  const { children, chapters, currentChapter, collapsible } = props;
   const { containerPaddingTop } = collapsible;
 
   const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(false);
@@ -45,19 +45,21 @@ const Overview: React.FC<OverviewProps> = (props) => {
       [layoutHeight, containerPaddingTop]
     );
 
-  if (chapters == null || loading)
+  if (chapters == null) {
+    const Footer = createFooter(true);
     return (
       <RecyclerListViewScrollView
         header={
           <View onLayout={handleOnLayout}>
             {children}
-            {React.createElement(createFooter(true))}
+            <Footer />
           </View>
         }
         listener={listener}
         collapsible={collapsible}
       />
     );
+  }
 
   return (
     <>

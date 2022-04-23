@@ -4,13 +4,12 @@ import Spacer from '@components/Spacer';
 import useAnimatedMounting from '@hooks/useAnimatedMounting';
 import { DescriptionProps } from '@screens/MangaViewer/components/Description/Description.interfaces';
 import LoadingDescription from '@screens/MangaViewer/components/Description/Description.loading';
-import withAnimatedMounting from '@utils/withAnimatedMounting';
 import React from 'react';
 import { NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 const Description: React.FC<DescriptionProps> = (props) => {
-  const { description, loading } = props;
+  const { description } = props;
   const [showExpand, setShowExpand] = React.useState<boolean>(false);
   const [numOfLines, setNumOfLines] = React.useState<number | undefined>(5);
   function handleOnTextLayout(e: NativeSyntheticEvent<TextLayoutEventData>) {
@@ -20,7 +19,7 @@ const Description: React.FC<DescriptionProps> = (props) => {
     if (numOfLines == null) setNumOfLines(5);
     else setNumOfLines(undefined);
   }
-  const animatedMount = useAnimatedMounting(!loading);
+  const animatedMount = useAnimatedMounting(!!description);
   const buttonMount = useAnimatedMounting(showExpand);
   return (
     <Flex container direction='column' verticalPadding={0} horizontalPadding={3}>
@@ -38,7 +37,7 @@ const Description: React.FC<DescriptionProps> = (props) => {
         )}
       </Flex>
       <Spacer y={1} />
-      {!loading ? (
+      {description ? (
         <Animated.View style={animatedMount}>
           <Typography color='textSecondary' onTextLayout={handleOnTextLayout} numberOfLines={numOfLines}>
             {description}

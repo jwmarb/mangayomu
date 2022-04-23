@@ -8,8 +8,8 @@ import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 
 const Genres: React.FC<GenresProps> = (props) => {
-  const { genres, loading, buttons } = props;
-  return loading || !genres
+  const { genres, buttons } = props;
+  return !genres
     ? buttons
       ? null
       : animate(<Skeleton.Typography width='100%' />, withAnimatedLoading)

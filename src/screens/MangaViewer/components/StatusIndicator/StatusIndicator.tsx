@@ -8,12 +8,12 @@ import withAnimatedMounting from '@utils/Animations/withAnimatedMounting';
 import React from 'react';
 
 const StatusIndicator: React.FC<StatusIndicatorProps> = (props) => {
-  const { meta, loading } = props;
+  const { meta } = props;
   if (meta && MangaValidator.hasStatus(meta)) {
     const { status } = meta;
     return (
       <Flex direction='column'>
-        {!loading && status
+        {status
           ? animate(
               <>
                 <Flex alignItems='center'>
