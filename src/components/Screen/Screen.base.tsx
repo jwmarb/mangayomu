@@ -6,9 +6,6 @@ import { Animated } from 'react-native';
 
 function generateCSS<Component, Props>(props: ThemedStyledProps<Props & React.RefAttributes<Component>, DefaultTheme>) {
   return css`
-    min-height: 100%;
-    flex: 1;
-
     ${(props) => css`
       background-color: ${props.theme.palette.background.default.get()};
       padding: ${props.theme.spacing(3, 0)};
