@@ -28,7 +28,8 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
   const translateX = useSharedValue(-halfWidth);
   React.useEffect(() => {
     if (loading) {
-      bgOpacity.value = withSpring(0.55);
+      opacity.value = withTiming(1, { duration: 100, easing: Easing.ease });
+      bgOpacity.value = withTiming(0.55, { duration: 100, easing: Easing.ease });
       translateX.value = withRepeat(
         withSequence(
           withTiming(width, { duration: 1000, easing: Easing.out(Easing.sin) }),
@@ -37,8 +38,8 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
         -1
       );
     } else {
-      bgOpacity.value = withTiming(0, { duration: 1500, easing: Easing.ease });
-      opacity.value = withTiming(0, { duration: 1500, easing: Easing.ease });
+      bgOpacity.value = withTiming(0, { duration: 100, easing: Easing.ease });
+      opacity.value = withTiming(0, { duration: 100, easing: Easing.ease });
     }
   }, [loading]);
 
