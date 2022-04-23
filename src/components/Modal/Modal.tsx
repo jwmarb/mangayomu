@@ -59,7 +59,7 @@ const Modal: React.FC<ModalProps> = (props) => {
   const { onClose, visible, children } = props;
   const theme = useTheme();
   const backdrop = useSharedValue(0);
-  const top = useSharedValue(height);
+  const top = useSharedValue(height + MAX_PANEL_HEIGHT);
   const borderRadius = useSharedValue(theme.borderRadius);
   const statusBarHeight = useSharedValue(0);
   const [hasTouched, setHasTouched] = React.useState<boolean>(false);
