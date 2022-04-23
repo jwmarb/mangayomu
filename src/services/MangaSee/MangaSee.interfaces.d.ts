@@ -13,9 +13,16 @@ import {
   WithStatusFilter,
   MangaChapter,
   WithDate,
+  WithOfficialTranslations,
 } from '@services/scraper/scraper.interfaces';
 
-export type MangaSeeManga = Manga & WithGenres & WithStatus & WithHentai & WithYearReleased & WithType;
+export type MangaSeeManga = Manga &
+  WithGenres &
+  WithStatus &
+  WithHentai &
+  WithYearReleased &
+  WithType &
+  WithOfficialTranslations;
 
 export type MangaSeeMangaMeta = MangaMeta<MangaSeeChapter> & WithGenres & WithYearReleased & WithType & WithStatus;
 
