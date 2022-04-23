@@ -76,16 +76,15 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     [history]
   );
 
-  const { sortOptions, selectedSortOption } = useSort((reversed) => {
+  const { sortOptions, selectedSortOption } = useSort((_createSort) => {
     const createSort = (
       compareFn: (a: ReadingMangaInfo & LibraryManga, b: ReadingMangaInfo & LibraryManga) => number
     ) => {
-      return (a: LibraryManga, b: LibraryManga) => {
+      return _createSort((a: LibraryManga, b: LibraryManga) => {
         const mangaA = history[a.manga.link];
         const mangaB = history[b.manga.link];
-        if (reversed) return -compareFn({ ...mangaA, ...a }, { ...mangaB, ...b });
         return compareFn({ ...mangaA, ...a }, { ...mangaB, ...b });
-      };
+      });
     };
     return {
       'Age in Library': createSort((a, b) => Date.parse(a.dateAdded) - Date.parse(b.dateAdded)),

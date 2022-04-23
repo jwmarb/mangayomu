@@ -65,11 +65,11 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   );
 
   const { sort, visible, handleOnCloseModal, handleOnOpenModal, sortOptions, selectedSortOption } = useSort(
-    (reversed) => ({
-      Chapter: (a: MangaChapter, b: MangaChapter) => (a.name && b.name ? (reversed ? -1 : 1) * (a.index - b.index) : 0),
+    (createSort) => ({
+      Chapter: createSort((a: MangaChapter, b: MangaChapter) => (a.name && b.name ? a.index - b.index : 0)),
       ...(MangaValidator.hasDate(userMangaInfo?.chapters[0] ?? {})
         ? {
-            'Date Released': (a: WithDate, b: WithDate) => Date.parse(a.date) - Date.parse(b.date),
+            'Date Released': createSort((a: WithDate, b: WithDate) => Date.parse(a.date) - Date.parse(b.date)),
           }
         : {}),
     }),
