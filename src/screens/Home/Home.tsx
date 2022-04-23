@@ -4,6 +4,7 @@ import BottomTab from '@navigators/BottomTab';
 import Browse from '@screens/Home/screens/Browse';
 import History from '@screens/Home/screens/History';
 import MangaLibrary from '@screens/Home/screens/MangaLibrary';
+import Settings from '@screens/Home/screens/Settings';
 import React from 'react';
 import { HomeProps } from './Home.interfaces';
 import Main from './screens/Explore';
@@ -23,7 +24,7 @@ const HomeScreen: React.FC<HomeProps> = (props) => {
       <BottomTab.Screen
         component={Main}
         name='Explore'
-        options={{ headerTitle: 'Explore', tabBarIcon: createTabIcon('Feather', 'home') }}
+        options={{ headerTitle: 'Explore', tabBarIcon: createTabIcon('Feather', 'compass') }}
       />
       <BottomTab.Screen
         component={MangaLibrary}
@@ -43,7 +44,7 @@ const HomeScreen: React.FC<HomeProps> = (props) => {
         options={{ headerTitle: 'History', tabBarIcon: createTabIcon('Feather', 'clock') }}
       />
       <BottomTab.Screen
-        component={Browse}
+        component={Settings}
         name='Settings'
         options={{ headerTitle: 'Settings', tabBarIcon: createTabIcon('Feather', 'settings') }}
       />
