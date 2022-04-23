@@ -9,7 +9,7 @@ import React, { DependencyList } from 'react';
 export default function useStatefulHeader(customHeader: JSX.Element, deps?: DependencyList) {
   const navigation = useNavigation();
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     navigation.setOptions({ header: () => customHeader });
   }, deps);
 }
