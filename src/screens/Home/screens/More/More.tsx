@@ -36,10 +36,7 @@ const More: React.FC<StackScreenProps<RootStackParamList, 'Home'>> = (props) => 
           adornment={<Icon bundle='Feather' name='settings' color='primary' size='small' />}
           onPress={handleOnSettings}
         />
-        <ListItem
-          title='About MangaYomu'
-          adornment={<Icon bundle='Feather' name='info' color='primary' size='small' />}
-        />
+        <ListItem title='About' adornment={<Icon bundle='Feather' name='info' color='primary' size='small' />} />
       </List>
     </Screen>
   );
