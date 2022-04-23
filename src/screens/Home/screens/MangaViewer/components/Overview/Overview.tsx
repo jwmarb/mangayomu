@@ -20,7 +20,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
   const [finished, setFinished] = React.useState<boolean>(false);
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider((r1, r2) => r1 !== r2));
   React.useEffect(() => {
-    if (chapters) setDataProvider(new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(chapters));
+    if (chapters) setDataProvider((p) => p.cloneWithRows(chapters));
   }, [chapters]);
   const [layoutHeight, setLayoutHeight] = React.useState<number>(0);
 
@@ -47,6 +47,20 @@ const Overview: React.FC<OverviewProps> = (props) => {
         windowCorrection.windowShift = -layoutHeight;
       },
       [layoutHeight, containerPaddingTop]
+    );
+
+  if (chapters == null || loading)
+    return (
+      <RecyclerListViewScrollView
+        header={
+          <View onLayout={handleOnLayout}>
+            {children}
+            {React.createElement(createFooter(true))}
+          </View>
+        }
+        listener={listener}
+        collapsible={collapsible}
+      />
     );
 
   return (
