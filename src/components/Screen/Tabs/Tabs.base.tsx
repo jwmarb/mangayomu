@@ -29,7 +29,7 @@ export const TabButtonBase = styled(Platform.OS === 'ios' ? TouchableOpacity : T
     }
     return {
       background: TouchableNativeFeedback.Ripple(
-        Constants.GRAY[props.theme.palette.mode === 'light' ? 6 : 8].get(),
+        props.theme.palette.primary[props.theme.palette.mode ?? 'light'].get(),
         true
       ),
     };
