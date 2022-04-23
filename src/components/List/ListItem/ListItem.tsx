@@ -13,11 +13,11 @@ const ListItem: React.FC<ListItemProps> = (props) => {
   return (
     <ListItemBase>
       <ButtonBase expand onPress={onPress} color='primary' square>
-        <Flex container verticalPadding={1.75} horizontalPadding={2.5} alignItems='center'>
+        <Flex container verticalPadding={1.75} horizontalPadding={3} alignItems='center'>
           {adornment && (
             <>
               {adornment}
-              <Spacer x={2} />
+              <Spacer x={3} />
             </>
           )}
           <Typography variant='body2' numberOfLines={1} {...typographyProps}>
