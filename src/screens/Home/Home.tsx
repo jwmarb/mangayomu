@@ -4,7 +4,7 @@ import BottomTab from '@navigators/BottomTab';
 import Browse from '@screens/Home/screens/Browse';
 import History from '@screens/Home/screens/History';
 import MangaLibrary from '@screens/Home/screens/MangaLibrary';
-import Settings from '@screens/Home/screens/Settings';
+import More from '@screens/Home/screens/More';
 import React from 'react';
 import { HomeProps } from './Home.interfaces';
 import Main from './screens/Explore';
@@ -44,9 +44,13 @@ const HomeScreen: React.FC<HomeProps> = (props) => {
         options={{ headerTitle: 'History', tabBarIcon: createTabIcon('Feather', 'clock') }}
       />
       <BottomTab.Screen
-        component={Settings}
-        name='Settings'
-        options={{ headerTitle: 'Settings', tabBarIcon: createTabIcon('Feather', 'settings') }}
+        component={More}
+        name='More'
+        options={{
+          headerTitle: 'More',
+          tabBarIcon: createTabIcon('MaterialCommunityIcons', 'dots-horizontal'),
+          headerLeft: () => null,
+        }}
       />
     </BottomTab.Navigator>
   );
