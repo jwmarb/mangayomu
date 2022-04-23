@@ -37,7 +37,11 @@ const HomeScreen: React.FC<HomeProps> = (props) => {
         name='Browse'
         options={{ headerTitle: 'Browse', tabBarIcon: createTabIcon('Feather', 'search') }}
       />
-      <BottomTab.Screen component={History} name='History' />
+      <BottomTab.Screen
+        component={History}
+        name='History'
+        options={{ headerTitle: 'History', tabBarIcon: createTabIcon('Feather', 'clock') }}
+      />
       <BottomTab.Screen
         component={Browse}
         name='Settings'
