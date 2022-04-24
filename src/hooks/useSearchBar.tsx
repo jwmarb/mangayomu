@@ -21,6 +21,21 @@ type SearchBarOptions = {
    * The event where the state change should be performed on query
    */
   event?: 'onChangeText' | 'onSubmitEditing';
+
+  /**
+   * The initial query
+   */
+  initialQuery?: string;
+
+  /**
+   * Whether or not to always keep the search bar on screen
+   */
+  alwaysShowSearchBar?: boolean;
+
+  /**
+   * A callback that is called when the user exits the search
+   */
+  onExitSearch?: () => void;
 };
 
 /**
@@ -30,7 +45,7 @@ type SearchBarOptions = {
  */
 export default function useSearchBar(options: SearchBarOptions) {
   const defaultOptions: SearchBarOptions = { focusCondition: true, event: 'onChangeText', ...options };
-  const [query, setQuery] = React.useState<string>('');
+  const [query, setQuery] = React.useState<string>(defaultOptions.initialQuery ?? '');
   const [showSearchBar, setShowSearchBar] = React.useState<boolean>(false);
   const textRef = React.useRef<TextInput>();
   React.useEffect(() => {
@@ -45,9 +60,11 @@ export default function useSearchBar(options: SearchBarOptions) {
     header: (
       <Search
         title={defaultOptions.title}
+        defaultText={defaultOptions.initialQuery}
         ref={textRef}
+        onExitSearch={defaultOptions.onExitSearch}
         setShowSearchBar={setShowSearchBar}
-        showSearchBar={showSearchBar}
+        showSearchBar={defaultOptions.alwaysShowSearchBar ? true : showSearchBar}
         additionalButtons={defaultOptions.additionalButtons}
         {...(defaultOptions.event === 'onChangeText' ? { onChangeText: setQuery } : { onSubmitEditing: setQuery })}
       />
