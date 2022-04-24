@@ -8,6 +8,7 @@ import MangaViewer from '@screens/MangaViewer';
 import GenericMangaList from '@screens/GenericMangaList';
 import Settings from '@screens/Settings';
 import { Header } from '@components/core';
+import MangaBrowser from '@screens/MangaBrowser';
 
 const Root: React.FC = () => {
   const showIntroduction = useSelector((state: AppState) => state.settings.showIntroduction);
@@ -19,6 +20,7 @@ const Root: React.FC = () => {
       <RootStack.Screen component={MangaViewer} name='MangaViewer' />
       <RootStack.Screen component={Settings} name='Settings' options={{ headerShown: false }} />
       <RootStack.Screen component={GenericMangaList} name='GenericMangaList' />
+      <RootStack.Screen component={MangaBrowser} name='MangaBrowser' />
     </RootStack.Navigator>
   );
 };

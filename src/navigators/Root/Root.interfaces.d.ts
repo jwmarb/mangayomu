@@ -18,4 +18,8 @@ export type RootStackParamList = {
         source: string;
       };
   Settings: undefined;
+  MangaBrowser: {
+    mangas: Manga[];
+    source: string;
+  };
 };
