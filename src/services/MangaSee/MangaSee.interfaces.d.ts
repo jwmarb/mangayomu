@@ -28,8 +28,6 @@ export type MangaSeeMangaMeta = MangaMeta<MangaSeeChapter> & WithGenres & WithYe
 
 export type MangaSeeChapter = MangaChapter;
 
-export type MangaSeeFilter = WithGenresFilter & WithSortFilter & WithOfficialTranslationFilter & WithStatusFilter;
-
 export interface Directory {
   /**
    * Authors of the manga

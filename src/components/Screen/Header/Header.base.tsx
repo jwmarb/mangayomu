@@ -1,7 +1,6 @@
 import { AppState } from '@redux/store';
 import { SPACE_MULTIPLIER } from '@theme/Spacing';
 import { StatusBar, Image, Linking, View, ViewProps } from 'react-native';
-import { useSelector } from 'react-redux';
 import styled, { css, DefaultTheme } from 'styled-components/native';
 import React from 'react';
 import IconButton from '../../IconButton';

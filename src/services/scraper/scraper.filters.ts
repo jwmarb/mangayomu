@@ -1,5 +1,6 @@
 import MangaHost from '@services/scraper/scraper.abstract';
-import { Manga } from '@services/scraper/scraper.interfaces';
+import { Manga, MangaHostFiltersInfo } from '@services/scraper/scraper.interfaces';
+import { FilterSchemaObject } from '@utils/MangaFilters/schema';
 
 export enum MangaSortType {
   ALPHABETICAL = 'alphabetical',
@@ -8,6 +9,20 @@ export enum MangaSortType {
 }
 
 export abstract class MangaHostWithFilters<T> extends MangaHost {
+  /**
+   * The filter schema of the manga host
+   */
+  private readonly filterSchema: FilterSchemaObject<T>;
+
+  public constructor(options: MangaHostFiltersInfo<T>) {
+    super(options);
+    this.filterSchema = options.filters;
+  }
+
+  public getFilterSchema() {
+    return this.filterSchema;
+  }
+
   /**
    * Search for a manga from the website
    * @param query The string query to use to find matching results

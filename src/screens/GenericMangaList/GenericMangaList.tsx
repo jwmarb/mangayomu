@@ -12,10 +12,11 @@ import { ApplyWindowCorrectionEventHandler } from '@utils/RecyclerListView.inter
 import { layoutProvider, rowRenderer } from './GenericMangaList.recycler';
 import { useMangaSource } from '@services/scraper';
 import { MangaHostWithFilters } from '@services/scraper/scraper.filters';
-import { Manga, WithGenresFilter } from '@services/scraper/scraper.interfaces';
+import { ExclusiveInclusiveFilter, Manga, WithGenresFilter } from '@services/scraper/scraper.interfaces';
 import useAPICall from '@hooks/useAPICall';
 import { MangaItemsLoading } from './GenericMangaList.base';
 import useLazyLoading from '@hooks/useLazyLoading';
+import { animate, withAnimatedMounting } from '@utils/Animations';
 
 const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMangaList'>> = (props) => {
   if ('mangas' in props.route.params && 'type' in props.route.params) {
@@ -75,16 +76,16 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
   } else {
     const {
       route: {
-        params: { genre },
+        params: { genre, source },
       },
     } = props;
-    const source: MangaHostWithFilters<WithGenresFilter> = useMangaSource();
+    const mangaSource = useMangaSource(source) as MangaHostWithFilters<{ Genres: ExclusiveInclusiveFilter<string> }>;
     const {
       state: [mangas],
       loading,
       error,
       refresh,
-    } = useAPICall(() => source.search('', { genres: { include: [genre], exclude: [] } }));
+    } = useAPICall(() => mangaSource.search('', { Genres: { include: [genre], exclude: [] } }));
     const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider((r1, r2) => r1 !== r2));
     const [showFooter, setShowFooter] = React.useState<boolean>(true);
     const { ready, Fallback } = useLazyLoading();
@@ -116,6 +117,12 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
       if (!loading && mangas) setDataProvider((prev) => prev.cloneWithRows(mangas));
     }, [mangas, loading]);
     if (ready) {
+      if (loading || !mangas)
+        return (
+          <Screen scrollable collapsible={collapsible}>
+            {animate(<MangaItemsLoading />, withAnimatedMounting)}
+          </Screen>
+        );
       return (
         <RecyclerListViewScreen
           collapsible={collapsible}

@@ -32,8 +32,6 @@ const ListLoading = new Array(8).fill('').map((_, i) =>
   )
 );
 
-export const MangaItemsLoading: React.FC = withAnimatedMounting(
-  withAnimatedLoading(() => {
-    return <Flex wrap>{ListLoading}</Flex>;
-  })
-);
+export const MangaItemsLoading: React.FC = withAnimatedLoading(() => {
+  return <Flex wrap>{ListLoading}</Flex>;
+});

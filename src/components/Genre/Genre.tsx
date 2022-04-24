@@ -12,12 +12,11 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 const Genre: React.FC<GenreProps> = (props) => {
-  const { genre } = props;
+  const { genre, source } = props;
   const navigation = useRootNavigation();
-  const source = useMangaSource();
   async function handleOnPress() {
     if (FilterValidator.isMangaHostWithFilters<WithGenresFilter>(source)) {
-      navigation.navigate('GenericMangaList', { genre });
+      navigation.navigate('GenericMangaList', { genre, source: source.getName() });
     }
   }
   return (

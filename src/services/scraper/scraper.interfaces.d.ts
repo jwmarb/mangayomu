@@ -1,3 +1,5 @@
+import { FilterSchemaObject } from '@utils/MangaFilters/schema';
+
 /**
  * A manga that has official translations
  */
@@ -34,6 +36,10 @@ export interface WithDate {
    * The date the manga/chapter was released
    */
   date: string;
+}
+
+export declare interface MangaHostFiltersInfo<T> extends MangaHostInfo {
+  filters: FilterSchemaObject<T>;
 }
 
 export declare interface MangaHostInfo {
@@ -223,7 +229,7 @@ export type WithGenresFilter = {
   /**
    * Include/exclude genres from search
    */
-  genres: ExclusiveInclusiveFilter<string>;
+  Genres: ExclusiveInclusiveFilter<string>;
 };
 
 /**

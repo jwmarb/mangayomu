@@ -1,5 +1,4 @@
 import { AppState } from '@redux/store';
-import MangaSee from '@services/MangaSee';
 import MangaHost from '@services/scraper/scraper.abstract';
 import { useSelector } from 'react-redux';
 

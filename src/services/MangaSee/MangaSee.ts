@@ -1,20 +1,18 @@
-import { MANGASEE_INFO } from '@services/MangaSee/MangaSee.constants';
+import { MANGASEE_INFO, MangaSeeFilter } from '@services/MangaSee/MangaSee.constants';
 import {
   Directory,
   HotUpdateJSON,
   LatestJSON,
   MainEntityJSON,
   MangaSeeChapterJSON,
-  MangaSeeFilter,
   MangaSeeManga,
   MangaSeeMangaMeta,
 } from '@services/MangaSee/MangaSee.interfaces';
 import { extractDataFromApplicationLDJson, parseMangaSeeDate, processScript } from '@services/MangaSee/MangaSee.utils';
-import { MangaHostWithFilters, MangaSortType } from '@services/scraper/scraper.filters';
-import { Manga, MangaChapter, MangaMeta } from '@services/scraper/scraper.interfaces';
+import { MangaHostWithFilters } from '@services/scraper/scraper.filters';
+import { Manga, MangaChapter } from '@services/scraper/scraper.interfaces';
 import { binary, StringComparator } from '@utils/Algorithms';
 import { titleIncludes } from '@utils/MangaFilters';
-import { parse } from 'date-fns';
 
 class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   private memo: MangaSeeManga[] | null = null;
@@ -145,29 +143,34 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
 
     if (filters) {
       const withIncludingGenre = (manga: MangaSeeManga) => {
-        for (let i = 0; i < filters.genres.include.length; i++) {
-          if (binary.search(manga.genres, filters.genres.include[i], StringComparator) !== -1) return true;
+        if (filters.Genres == null) return true;
+        for (let i = 0; i < filters.Genres.include.length; i++) {
+          if (binary.search(manga.genres, filters.Genres.include[i], StringComparator) !== -1) return true;
         }
         return false;
       };
       const withExcludingGenre = (manga: MangaSeeManga) => {
-        for (let i = 0; i < filters.genres.exclude.length; i++) {
-          if (binary.search(manga.genres, filters.genres.exclude[i], StringComparator) !== -1) return false;
+        if (filters.Genres == null) return true;
+        for (let i = 0; i < filters.Genres.exclude.length; i++) {
+          if (binary.search(manga.genres, filters.Genres.exclude[i], StringComparator) !== -1) return false;
         }
         return true;
       };
 
-      const withStatus = (manga: MangaSeeManga) => {
-        if (filters.status) {
-          return filters.status === manga.status.publish;
-        }
+      const withScanStatus = (manga: MangaSeeManga) => {
+        if (filters['Scan Status'] == null) return true;
+        return filters['Scan Status'].value === manga.status.scan;
+      };
 
-        return true;
+      const withPublishStatus = (manga: MangaSeeManga) => {
+        if (filters['Publish Status'] == null) return true;
+        return filters['Publish Status'].value === manga.status.publish;
       };
 
       const withOfficialTranslation = (manga: MangaSeeManga) => {
-        if (filters.officialTranslation == null) return true;
-        return filters.officialTranslation === manga.officialTranslation;
+        if (filters['Official Translation'] == null) return true;
+        if (filters['Official Translation'].value == 'Any') return true;
+        return manga.officialTranslation;
       };
 
       const filtered = directory.filter(
@@ -175,8 +178,9 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
           withIncludingGenre(manga) &&
           withExcludingGenre(manga) &&
           withTitle(manga) &&
-          withStatus(manga) &&
-          withOfficialTranslation(manga)
+          withScanStatus(manga) &&
+          withOfficialTranslation(manga) &&
+          withPublishStatus(manga)
       );
       return filtered;
     }

@@ -5,13 +5,24 @@ import { Typography } from '@components/Typography';
 import { AppState } from '@redux/store';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { FlatList } from 'react-native';
-import { keyExtractor, renderItem } from '@screens/Home/screens/Explore/components/Genres/Genres.flatlist';
+import { FlatList, ListRenderItem } from 'react-native';
+import { keyExtractor } from '@screens/Home/screens/Explore/components/Genres/Genres.flatlist';
 import { Category } from '@components/core';
+import { useMangaSource } from '@services/scraper';
+import { MangaHostWithFilters } from '@services/scraper/scraper.filters';
+import { WithGenresFilter } from '@services/scraper/scraper.interfaces';
 
 const Genres: React.FC = (props) => {
   const {} = props;
-  const genres = useSelector((state: AppState) => state.settings.selectedSource.genres);
+  const source = useMangaSource() as MangaHostWithFilters<WithGenresFilter>;
+  const genres = useSelector((state: AppState) => (state.settings.selectedSource as any).genres);
+
+  const renderItem: ListRenderItem<string> = React.useCallback(
+    (p) => {
+      return <Genre genre={p.item} source={source} />;
+    },
+    [source]
+  );
   return (
     <Flex direction='column'>
       <Category.Header>

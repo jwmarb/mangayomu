@@ -10,7 +10,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 
 const Genres: React.FC<GenresProps> = (props) => {
-  const { genres, buttons } = props;
+  const { genres, buttons, source } = props;
   const mountingStyle = useAnimatedMounting();
   if (buttons)
     return (
@@ -19,7 +19,7 @@ const Genres: React.FC<GenresProps> = (props) => {
           <Category.Header>
             <Flex spacing={1}>
               {genres.map((genre) => (
-                <Genre key={genre} genre={genre} />
+                <Genre key={genre} genre={genre} source={source} />
               ))}
             </Flex>
           </Category.Header>

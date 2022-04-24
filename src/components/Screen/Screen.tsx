@@ -4,7 +4,7 @@ import React from 'react';
 import { useCollapsibleHeader } from 'react-navigation-collapsible';
 
 const Screen: React.FC<ScreenProps> = (props) => {
-  const { scrollable = false, ...rest } = props;
+  const { scrollable = false, collapsible, ...rest } = props;
   if (scrollable)
     if (scrollable === true)
       return (
@@ -12,8 +12,18 @@ const Screen: React.FC<ScreenProps> = (props) => {
           <View {...rest} />
         </ScrollableScreen>
       );
-    else if (scrollable !== false) {
+    else if (!collapsible) {
       const { onScroll, containerPaddingTop, scrollIndicatorInsetTop } = useCollapsibleHeader(scrollable);
+      return (
+        <AnimatedScrollableScreen
+          onScroll={onScroll}
+          contentContainerStyle={{ paddingTop: containerPaddingTop }}
+          scrollIndicatorInsets={{ top: scrollIndicatorInsetTop }}>
+          <View {...rest} />
+        </AnimatedScrollableScreen>
+      );
+    } else {
+      const { onScroll, containerPaddingTop, scrollIndicatorInsetTop } = collapsible;
       return (
         <AnimatedScrollableScreen
           onScroll={onScroll}

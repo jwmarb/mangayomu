@@ -1,4 +1,5 @@
-import { MangaHostInfo } from '@services/scraper/scraper.interfaces';
+import { MangaHostFiltersInfo, MangaHostInfo } from '@services/scraper/scraper.interfaces';
+import { createSchema } from '@utils/MangaFilters';
 
 const MANGASEE_URL = 'https://mangasee123.com/';
 const MANGASEE_GENRES = [
@@ -40,16 +41,50 @@ const MANGASEE_GENRES = [
   'Tragedy',
   'Yaoi',
   'Yuri',
-];
+] as const;
 
-const MANGASEE_SORT = ['A-Z', 'Year Released', '# of Genres'];
+const filters = createSchema(({ createInclusiveExclusiveFilter, createOptionFilter }) => ({
+  Genres: createInclusiveExclusiveFilter({ fields: MANGASEE_GENRES }),
+  'Sort By': createOptionFilter({
+    options: [
+      'Alphabetical A-Z',
+      'Alphabetical Z-A',
+      'Recently Released Chapter',
+      'Year Released - Newest',
+      'Year Released - Oldest',
+      'Most Popular (All Time)',
+      'Most Popular (Monthly)',
+      'Least Popular',
+    ],
+    default: 'Alphabetical A-Z',
+  }),
+  'Official Translation': createOptionFilter({
+    options: ['Any', 'Official Translation Only'],
+    default: 'Any',
+  }),
+  'Scan Status': createOptionFilter({
+    options: ['Any', 'Cancelled', 'Complete', 'Discontinued', 'Hiatus', 'Ongoing'],
+    default: 'Any',
+  }),
+  'Publish Status': createOptionFilter({
+    options: ['Any', 'Cancelled', 'Complete', 'Discontinued', 'Hiatus', 'Ongoing'],
+    default: 'Any',
+  }),
+  Type: createOptionFilter({
+    options: ['Any', 'Doujinshi', 'Manga', 'Manhua', 'Manhwa', 'OEL', 'One-shot'],
+    default: 'Any',
+  }),
+}));
 
-export const MANGASEE_INFO: MangaHostInfo = {
+export type MangaSeeFilter = typeof filters.schema;
+
+export const MANGASEE_INFO: MangaHostFiltersInfo<typeof filters.schema> = {
   host: MANGASEE_URL,
-  genres: MANGASEE_GENRES,
+  genres: MANGASEE_GENRES as any,
   name: 'MangaSee',
   icon: 'https://mangasee123.com/media/favicon.png',
   hasHotMangas: true,
   hasLatestMangas: true,
   hasMangaDirectory: true,
+  filters,
 };

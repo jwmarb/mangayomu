@@ -4,12 +4,7 @@ import { Typography } from '../../Typography';
 import Spacer from '../../Spacer';
 import Flex from '../../Flex';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
-import { useSelector } from 'react-redux';
-import { AppState, useAppDispatch } from '@redux/store';
-import { Image } from 'react-native';
 import IconButton from '../../IconButton';
-import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
-import { Linking } from 'react-native';
 import { StackHeaderProps } from '@react-navigation/stack';
 import Icon from '@components/Icon';
 
