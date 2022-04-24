@@ -11,6 +11,8 @@ const Search: React.FC<SearchProps> = React.forwardRef((props, ref) => {
     additionalButtons,
     setShowSearchBar,
     showSearchBar,
+    onExitSearch = () => void 0,
+    defaultText,
     title,
   } = props;
 
@@ -19,6 +21,7 @@ const Search: React.FC<SearchProps> = React.forwardRef((props, ref) => {
   }
 
   function handleOnHideSearch() {
+    onExitSearch();
     setShowSearchBar(false);
   }
 
@@ -34,6 +37,7 @@ const Search: React.FC<SearchProps> = React.forwardRef((props, ref) => {
             <IconButton icon={<Icon bundle='Feather' name='arrow-left' />} onPress={handleOnHideSearch} />
             <Spacer x={1} />
             <TextField
+              defaultValue={defaultText}
               placeholder='Search for a title'
               ref={ref}
               onChangeText={onChangeText}
