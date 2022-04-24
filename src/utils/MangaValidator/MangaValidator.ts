@@ -1,5 +1,6 @@
 import {
   Manga,
+  WithAltTitles,
   WithAuthors,
   WithDate,
   WithGenres,
@@ -11,6 +12,27 @@ import {
 import { ADULT_GENRES } from '@utils/MangaValidator/MangaValidator.constants';
 
 class MangaValidator {
+  /**
+   * Check if the manga has alternative titles
+   * @param manga The manga
+   * @returns Returns whether or not the manga has alternate titles property
+   */
+  public hasAltTitles(manga: any): manga is WithAltTitles {
+    if ('altTitles' in manga) {
+      const { altTitles } = manga;
+      if (Array.isArray(altTitles)) {
+        return altTitles.length > 0;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Check if the manga has a date
+   * @param manga The manga
+   * @returns Returns whether or not the manga has a date
+   */
   public hasDate(manga: any): manga is WithDate {
     return 'date' in manga;
   }

@@ -14,6 +14,7 @@ import {
   MangaChapter,
   WithDate,
   WithOfficialTranslations,
+  WithAltTitles,
 } from '@services/scraper/scraper.interfaces';
 
 export type MangaSeeManga = Manga &
@@ -22,7 +23,8 @@ export type MangaSeeManga = Manga &
   WithHentai &
   WithYearReleased &
   WithType &
-  WithOfficialTranslations;
+  WithOfficialTranslations &
+  WithAltTitles;
 
 export type MangaSeeMangaMeta = MangaMeta<MangaSeeChapter> & WithGenres & WithYearReleased & WithType & WithStatus;
 
@@ -33,6 +35,11 @@ export interface Directory {
    * Authors of the manga
    */
   a: string[];
+
+  /**
+   * Alternate titles
+   */
+  al: string[];
 
   /**
    * Date of latest chapter

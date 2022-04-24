@@ -119,6 +119,10 @@ export declare interface WithGenres {
   genres: string[];
 }
 
+export declare interface WithAltTitles {
+  altTitles: string[];
+}
+
 /**
  * The status of the manga (Ongoing, Hiatus, etc.)
  */

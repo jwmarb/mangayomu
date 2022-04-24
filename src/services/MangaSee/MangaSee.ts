@@ -67,6 +67,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         yearReleased: x.y,
         source: super.getName(),
         officialTranslation: x.o === 'yes' ? true : false,
+        altTitles: x.al,
       }));
       this.memo = result;
       return result;
