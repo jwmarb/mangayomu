@@ -1,6 +1,7 @@
 import { Category, Flex, Icon, IconButton, Placeholder, Typography, Spacer } from '@components/core';
 import useAPICall from '@hooks/useAPICall';
 import useMountedEffect from '@hooks/useMountedEffect';
+import { useRootNavigation } from '@navigators/Root';
 import {
   keyExtractor,
   renderItem,
@@ -18,11 +19,19 @@ const MangaHostSearch: React.FC<MangaHostSearchProps> = (props) => {
     error,
   } = useAPICall(() => host.search(query), [query], query.length > 0);
 
+  const navigation = useRootNavigation();
+
+  function handleOnShowMore() {
+    if (mangas && mangas.length > 20) navigation.navigate('MangaBrowser', { mangas, source: host.getName() });
+  }
+
   return (
     <Flex direction='column'>
       <Category.Header>
         <Typography variant='subheader'>{host.getName()}</Typography>
-        {mangas && mangas.length > 10 && <IconButton icon={<Icon bundle='Feather' name='arrow-right' />} />}
+        {mangas && mangas.length > 20 && (
+          <IconButton icon={<Icon bundle='Feather' name='arrow-right' />} onPress={handleOnShowMore} />
+        )}
       </Category.Header>
       <Spacer y={2} />
       {loading ? (
