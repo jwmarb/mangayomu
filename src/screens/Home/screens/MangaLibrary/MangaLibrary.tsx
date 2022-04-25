@@ -61,16 +61,6 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     setExpand(false);
   }, [setExpand]);
 
-  const createFilter = React.useCallback(
-    (compareFn: (manga: ReadingMangaInfo & LibraryManga) => boolean) => {
-      return (a: LibraryManga) => {
-        const saved = history[a.manga.link];
-        return compareFn({ ...saved, ...a });
-      };
-    },
-    [history]
-  );
-
   const { query, header } = useSearchBar({
     title: 'Library',
     focusCondition: !expand,
