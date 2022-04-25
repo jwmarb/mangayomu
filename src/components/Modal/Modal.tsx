@@ -10,6 +10,7 @@ import {
 import { GestureContext, ModalProps } from '@components/Modal/Modal.interfaces';
 import { Typography } from '@components/Typography';
 import { Portal } from '@gorhom/portal';
+import pixelToNumber from '@utils/pixelToNumber';
 import React from 'react';
 import {
   BackHandler,
@@ -171,7 +172,13 @@ const Modal: React.FC<ModalProps> = (props) => {
       <PanGestureHandler enabled={visible} onGestureEvent={gestureHandlers}>
         <Panel style={panelStyle}>
           <ModalContainer style={containerStyle}>
-            <ScrollView onScroll={onScroll} scrollEnabled={scrollEnabled} contentContainerStyle={{ minHeight: height }}>
+            <ScrollView
+              onScroll={onScroll}
+              scrollEnabled={scrollEnabled}
+              contentContainerStyle={{
+                minHeight: height,
+                paddingBottom: MAX_PANEL_HEIGHT + pixelToNumber(theme.spacing(12)),
+              }}>
               {children}
             </ScrollView>
           </ModalContainer>
