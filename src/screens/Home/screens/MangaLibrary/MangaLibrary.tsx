@@ -47,8 +47,8 @@ import { useTheme } from 'styled-components/native';
 const Spacing = () => <Spacer y={4} />;
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   const { mangas, navigation, history } = props;
-
   const { ready, Fallback } = useLazyLoading();
+  const [data, setData] = React.useState<LibraryManga[]>([]);
   const theme = useTheme();
   const [expand, setExpand] = React.useState<boolean>(false);
   const [tabIndex, setTabIndex] = React.useState<number>(0);
@@ -102,10 +102,9 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     </>
   );
 
-  const data = React.useMemo(
-    () => mangas.filter(({ manga }) => titleIncludes(query)(manga)).sort(selectedSortOption),
-    [selectedSortOption, query]
-  );
+  React.useEffect(() => {
+    setData(mangas.filter(({ manga }) => titleIncludes(query)(manga)).sort(selectedSortOption));
+  }, [selectedSortOption.toString(), query]);
 
   if (!ready) return Fallback;
 
