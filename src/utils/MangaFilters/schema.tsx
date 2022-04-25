@@ -259,6 +259,7 @@ export function createSchema<T>(object: (filterCreators: FilterCreators) => T) {
 
       const handleOnApplyFilters = React.useCallback(() => {
         onApplyFilter(filter as any);
+        onClose();
       }, [filter]);
       return (
         <Modal visible={show} onClose={onClose}>
