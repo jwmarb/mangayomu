@@ -36,13 +36,15 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
   });
   useStatefulHeader(header);
   const { FilterModal, schema } = mangahost.getFilterSchema();
-  const [filter, setFilter] = React.useState<FilterState>(schema);
   const { ready, Fallback } = useLazyLoading();
+  async function handleOnApplyFilter(state: typeof schema) {
+    const mangas = await mangahost.search(query, state);
+  }
 
   if (ready)
     return (
       <>
-        <FilterModal show={show} onClose={handleOnCloseFilters} setFilterState={setFilter} />
+        <FilterModal show={show} onClose={handleOnCloseFilters} onApplyFilter={handleOnApplyFilter} />
       </>
     );
 
