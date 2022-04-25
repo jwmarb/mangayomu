@@ -42,3 +42,4 @@ export { default as ListItem } from '../List/ListItem';
 export { default as SortTypeItem } from '../SortTypeItem';
 export { Divider } from '../Divider';
 export { default as Accordion } from '../Accordion';
+export { HeaderBuilder } from '../Screen/Header/Header.base';
