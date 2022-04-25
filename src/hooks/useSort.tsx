@@ -40,7 +40,7 @@ export default function useSort<Comparators>(
         ))}
       </List>
     ),
-    selectedSortOption: comparators[sort as keyof typeof comparators],
+    selectedSortOption: (comparators as any)[sort as keyof typeof comparators] as (a: any, b: any) => number,
     sort,
     setSort,
     reverse,
