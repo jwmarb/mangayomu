@@ -43,9 +43,9 @@ const MANGASEE_GENRES = [
   'Yuri',
 ] as const;
 
-const filters = createSchema(({ createInclusiveExclusiveFilter, createOptionFilter }) => ({
+const filters = createSchema(({ createInclusiveExclusiveFilter, createOptionFilter, createSortFilter }) => ({
   Genres: createInclusiveExclusiveFilter({ fields: MANGASEE_GENRES }),
-  'Sort By': createOptionFilter({
+  'Sort By': createSortFilter({
     options: [
       'Alphabetical A-Z',
       'Alphabetical Z-A',

@@ -1,12 +1,19 @@
-import { Typography, Modal, Flex, Button, Accordion, HeaderBuilder } from '@components/core';
+import { Typography, Modal, Flex, Button, Accordion, HeaderBuilder, Container, SortTypeItem } from '@components/core';
 import { binary, StringComparator } from '@utils/Algorithms';
 import InclusiveExclusiveItem from '@utils/MangaFilters/components/InclusiveExclusiveItem';
 import React from 'react';
 import { useWindowDimensions } from 'react-native';
+import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
 
 type InclusiveExclusiveFilter<T> = {
   type: 'inclusive/exclusive';
   fields: readonly T[];
+};
+
+type SortFilter<T> = {
+  type: 'sort';
+  options: readonly T[];
+  default: T;
 };
 
 type OptionFilter<T> = {
@@ -46,6 +53,15 @@ export type FilterSchemaObject<T> = {
   schema: T;
 };
 
+function createSortFilter<T>(obj: Omit<SortFilter<T>, 'type'>) {
+  return {
+    ...obj,
+    type: 'sort' as const,
+    value: obj.default as T,
+    reversed: false,
+  };
+}
+
 function createInclusiveExclusiveFilter<T>(obj: Omit<InclusiveExclusiveFilter<T>, 'type'>) {
   return {
     ...obj,
@@ -63,6 +79,11 @@ function createOptionFilter<T>(obj: Omit<OptionFilter<T>, 'type'>) {
   };
 }
 
+export type MutableSortFilter<T> = SortFilter<Const<T>> & {
+  value: Const<T>;
+  reversed: boolean;
+};
+
 export type MutableInclusiveExclusiveFilter<T> = InclusiveExclusiveFilter<Const<T>> & {
   include: readonly Const<T>[];
   exclude: readonly Const<T>[];
@@ -74,13 +95,55 @@ type FilterCreators = {
     obj: Omit<InclusiveExclusiveFilter<Const<T>>, 'type'>
   ): MutableInclusiveExclusiveFilter<T>;
   createOptionFilter<T>(obj: Omit<OptionFilter<Const<T>>, 'type'>): MutableOptionFilter<T>;
+  createSortFilter<T>(obj: Omit<SortFilter<Const<T>>, 'type'>): MutableSortFilter<T>;
 };
 
 export function createSchema<T>(object: (filterCreators: FilterCreators) => Partial<T>) {
-  const p = object({ createInclusiveExclusiveFilter, createOptionFilter });
+  const p = object({ createInclusiveExclusiveFilter, createOptionFilter, createSortFilter });
   const elements: React.FC<{ setParentState: React.Dispatch<React.SetStateAction<Partial<FilterState>>> }>[] = [];
   for (const [key, value] of Object.entries<any>(p)) {
     switch (value.type) {
+      case 'sort':
+        elements.push(
+          React.memo(({ setParentState }) => {
+            const [state, setState] = React.useState<MutableSortFilter<any>>(value);
+            const [show, setShow] = React.useState<boolean>(false);
+            React.useEffect(() => {
+              setParentState((prev) => ({ ...prev, state }));
+            }, [state]);
+
+            const setReverse = React.useCallback(
+              (rev: (prev: boolean) => boolean) => {
+                setState((prev) => ({ ...prev, reversed: rev(prev.reversed) }));
+              },
+              [setState]
+            );
+
+            const setSort = React.useCallback(
+              (value: string) => {
+                setState((prev) => ({ ...prev, value: value }));
+              },
+              [setState]
+            );
+
+            return (
+              <Accordion title={key} expand={show} onToggle={setShow}>
+                {state.options.map((x) => (
+                  <SortTypeItem
+                    key={x}
+                    selected={x === state.value}
+                    sortBy={x}
+                    setSort={setSort}
+                    reverse={state.reversed}
+                    setReverse={setReverse}
+                  />
+                ))}
+              </Accordion>
+            );
+          })
+        );
+        break;
+
       case 'inclusive/exclusive':
         elements.push(
           React.memo(({ setParentState }) => {
@@ -108,7 +171,11 @@ export function createSchema<T>(object: (filterCreators: FilterCreators) => Part
       case 'option':
         elements.push(
           React.memo(() => {
-            return <Typography>{key}</Typography>;
+            return (
+              <Container verticalPadding={1.5} horizontalPadding={3}>
+                <Typography>{key}</Typography>
+              </Container>
+            );
           })
         );
         break;
