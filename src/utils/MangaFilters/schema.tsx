@@ -54,10 +54,10 @@ type Const<T> = T extends string ? T : T extends number ? T : T extends boolean 
 export type FilterModalProps = {
   show: boolean;
   onClose: () => void;
-  setFilterState: React.Dispatch<React.SetStateAction<Partial<FilterState>>>;
+  onApplyFilter: (state: FilterState) => void;
 };
 
-export type FilterState = Record<string, unknown>;
+export type FilterState = Record<string, Record<string, any>>;
 
 export type FilterSchemaObject<T> = {
   FilterModal: React.FC<FilterModalProps>;
@@ -109,32 +109,45 @@ type FilterCreators = {
   createSortFilter<T>(obj: Omit<SortFilter<Const<T>>, 'type'>): MutableSortFilter<T>;
 };
 
-export function createSchema<T>(object: (filterCreators: FilterCreators) => Partial<T>) {
+export function createSchema<T>(object: (filterCreators: FilterCreators) => T) {
   const p = object({ createInclusiveExclusiveFilter, createOptionFilter, createSortFilter });
-  const elements: React.FC<{ setParentState: React.Dispatch<React.SetStateAction<Partial<FilterState>>> }>[] = [];
+  const elements: React.FC<{
+    setParentState: React.Dispatch<React.SetStateAction<FilterState>>;
+    state: MutableSortFilter<any> | MutableInclusiveExclusiveFilter<any> | MutableOptionFilter<any>;
+  }>[] = [];
+  const objectKeys = Object.keys(p);
   for (const [key, value] of Object.entries<any>(p)) {
     switch (value.type) {
       case 'sort':
         elements.push(
-          React.memo(({ setParentState }) => {
-            const [state, setState] = React.useState<MutableSortFilter<any>>(value);
+          React.memo(({ setParentState, state: parentState }) => {
+            const state = parentState as MutableSortFilter<any>;
             const [show, setShow] = React.useState<boolean>(false);
-            React.useEffect(() => {
-              setParentState((prev) => ({ ...prev, state }));
-            }, [state]);
 
             const setReverse = React.useCallback(
               (rev: (prev: boolean) => boolean) => {
-                setState((prev) => ({ ...prev, reversed: rev(prev.reversed) }));
+                setParentState((prev) => ({
+                  ...prev,
+                  [key]: {
+                    ...prev[key],
+                    reversed: rev(prev[key].reversed),
+                  },
+                }));
               },
-              [setState]
+              [setParentState]
             );
 
             const setSort = React.useCallback(
               (value: string) => {
-                setState((prev) => ({ ...prev, value: value }));
+                setParentState((prev) => ({
+                  ...prev,
+                  [key]: {
+                    ...prev[key],
+                    value: value,
+                  },
+                }));
               },
-              [setState]
+              [setParentState]
             );
 
             return (
@@ -157,22 +170,33 @@ export function createSchema<T>(object: (filterCreators: FilterCreators) => Part
 
       case 'inclusive/exclusive':
         elements.push(
-          React.memo(({ setParentState }) => {
-            const [state, setState] = React.useState<MutableInclusiveExclusiveFilter<any>>(value);
+          React.memo(({ setParentState, state: parentState }) => {
+            const state = parentState as MutableInclusiveExclusiveFilter<any>;
             const [show, setShow] = React.useState<boolean>(false);
-            React.useEffect(() => {
-              setParentState((prev) => ({ ...prev, state }));
-            }, [state]);
             const getStateOfItem = (item: any) => {
               if (binary.search(state.include as string[], item, StringComparator) !== -1) return 'include';
               else if (binary.search(state.exclude as string[], item, StringComparator) !== -1) return 'exclude';
               else return 'none';
             };
 
+            const handleStateChanger = React.useCallback(
+              (fn: (prev: MutableInclusiveExclusiveFilter<any>) => MutableInclusiveExclusiveFilter<any>) => {
+                setParentState((prev) => ({ ...prev, [key]: fn(prev[key] as any) }));
+              },
+              [setParentState, key]
+            );
+
             return (
               <Accordion title={key} expand={show} onToggle={setShow}>
                 {state.fields.map((x, i) => {
-                  return <InclusiveExclusiveItem item={x} state={getStateOfItem(x)} key={i} stateChanger={setState} />;
+                  return (
+                    <InclusiveExclusiveItem
+                      item={x}
+                      state={getStateOfItem(x)}
+                      key={i}
+                      stateChanger={handleStateChanger}
+                    />
+                  );
                 })}
               </Accordion>
             );
@@ -181,11 +205,8 @@ export function createSchema<T>(object: (filterCreators: FilterCreators) => Part
         break;
       case 'option':
         elements.push(
-          React.memo(({ setParentState }) => {
-            const [state, setState] = React.useState<MutableOptionFilter<any>>(value);
-            React.useEffect(() => {
-              setParentState((prev) => ({ ...prev, state }));
-            }, [state]);
+          React.memo(({ setParentState, state: parentState }) => {
+            const state = parentState as MutableOptionFilter<any>;
 
             const menuItems: MenuItemProps[] = React.useMemo(
               () => [
@@ -193,11 +214,17 @@ export function createSchema<T>(object: (filterCreators: FilterCreators) => Part
                 ...state.options.map<MenuItemProps>((x) => ({
                   text: x,
                   onPress: () => {
-                    setState((prev) => ({ ...prev, value: x }));
+                    setParentState((prev) => ({
+                      ...prev,
+                      [key]: {
+                        ...prev[key],
+                        value: x,
+                      },
+                    }));
                   },
                 })),
               ],
-              [state.options, setState]
+              [state.options, setParentState]
             );
 
             return (
@@ -224,18 +251,25 @@ export function createSchema<T>(object: (filterCreators: FilterCreators) => Part
   }
 
   const filterSchemaObject: FilterSchemaObject<T> = {
-    FilterModal: ({ onClose, show, setFilterState }) => {
-      const { height } = useWindowDimensions();
+    FilterModal: ({ onClose, show, onApplyFilter }) => {
+      const [filter, setFilterState] = React.useState<T>(p);
+      const handleOnReset = React.useCallback(() => {
+        setFilterState(p);
+      }, []);
+
+      const handleOnApplyFilters = React.useCallback(() => {
+        onApplyFilter(filter as any);
+      }, [filter]);
       return (
         <Modal visible={show} onClose={onClose}>
           <HeaderBuilder paper horizontalPadding verticalPadding={0}>
             <Flex grow justifyContent='space-between'>
-              <Button title='Reset' />
-              <Button title='Apply' variant='contained' />
+              <Button title='Reset' onPress={handleOnReset} />
+              <Button title='Apply' variant='contained' onPress={handleOnApplyFilters} />
             </Flex>
           </HeaderBuilder>
           {elements.map((Component, i) => (
-            <Component key={i} setParentState={setFilterState} />
+            <Component key={i} setParentState={setFilterState as any} state={(filter as any)[objectKeys[i]] as any} />
           ))}
         </Modal>
       );
