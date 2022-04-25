@@ -144,7 +144,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
 
     if (filters) {
       const withIncludingGenre = (manga: MangaSeeManga) => {
-        if (filters.Genres == null) return true;
+        if (filters.Genres == null || filters.Genres.include.length === 0) return true;
         for (let i = 0; i < filters.Genres.include.length; i++) {
           if (binary.search(manga.genres, filters.Genres.include[i], StringComparator) !== -1) return true;
         }
@@ -159,12 +159,12 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       };
 
       const withScanStatus = (manga: MangaSeeManga) => {
-        if (filters['Scan Status'] == null) return true;
+        if (filters['Scan Status'] == null || filters['Scan Status'].value === 'Any') return true;
         return filters['Scan Status'].value === manga.status.scan;
       };
 
       const withPublishStatus = (manga: MangaSeeManga) => {
-        if (filters['Publish Status'] == null) return true;
+        if (filters['Publish Status'] == null || filters['Publish Status'].value === 'Any') return true;
         return filters['Publish Status'].value === manga.status.publish;
       };
 
@@ -176,14 +176,32 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
 
       const filtered = directory.filter(
         (manga) =>
+          withOfficialTranslation(manga) &&
+          withPublishStatus(manga) &&
+          withScanStatus(manga) &&
           withIncludingGenre(manga) &&
           withExcludingGenre(manga) &&
-          withTitle(manga) &&
-          withScanStatus(manga) &&
-          withOfficialTranslation(manga) &&
-          withPublishStatus(manga)
+          withTitle(manga)
       );
-      return filtered;
+
+      const getSort = () => {
+        switch (filters['Sort By'].value) {
+          case 'Least Popular':
+          case 'Most Popular (All Time)':
+          case 'Most Popular (Monthly)':
+          case 'Recently Released Chapter':
+          case 'Alphabetical A-Z':
+            return (a: MangaSeeManga, b: MangaSeeManga) => a.title.localeCompare(b.title);
+          case 'Alphabetical Z-A':
+            return (a: MangaSeeManga, b: MangaSeeManga) => b.title.localeCompare(a.title);
+          case 'Year Released - Newest':
+            return (a: MangaSeeManga, b: MangaSeeManga) => parseInt(a.yearReleased) - parseInt(b.yearReleased);
+          case 'Year Released - Oldest':
+            return (a: MangaSeeManga, b: MangaSeeManga) => parseInt(b.yearReleased) - parseInt(a.yearReleased);
+        }
+      };
+
+      return filtered.sort(getSort());
     }
     const filtered = directory.filter(withTitle);
     return filtered;
