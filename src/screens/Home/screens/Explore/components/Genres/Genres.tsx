@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { FlatList, ListRenderItem } from 'react-native';
 import { keyExtractor } from '@screens/Home/screens/Explore/components/Genres/Genres.flatlist';
 import { Category } from '@components/core';
-import { useMangaSource } from '@services/scraper';
+import useMangaSource from '@hooks/useMangaSource';
 import { MangaHostWithFilters } from '@services/scraper/scraper.filters';
 import { WithGenresFilter } from '@services/scraper/scraper.interfaces';
 

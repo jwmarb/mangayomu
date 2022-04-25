@@ -1,11 +1,8 @@
-import { Typography, Modal, Flex, Button, Tab, Tabs, Container, Accordion, ListItem, List } from '@components/core';
-import { HeaderBuilder } from '@components/Screen/Header/Header.base';
+import { Typography, Modal, Flex, Button, Accordion, HeaderBuilder } from '@components/core';
 import { binary, StringComparator } from '@utils/Algorithms';
 import InclusiveExclusiveItem from '@utils/MangaFilters/components/InclusiveExclusiveItem';
-import React, { ReactType } from 'react';
+import React from 'react';
 import { useWindowDimensions } from 'react-native';
-import { FlatList, ScrollView } from 'react-native-gesture-handler';
-import Animated, { SequencedTransition } from 'react-native-reanimated';
 
 type InclusiveExclusiveFilter<T> = {
   type: 'inclusive/exclusive';

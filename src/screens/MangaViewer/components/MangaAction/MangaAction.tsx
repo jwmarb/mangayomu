@@ -3,7 +3,7 @@ import useViewingManga from '@hooks/useViewingManga';
 import { ReadingMangaInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import { useAppDispatch } from '@redux/store';
 import { MangaActionProps } from '@screens/MangaViewer/components/MangaAction/MangaAction.interfaces';
-import { useMangaSource } from '@services/scraper';
+import useMangaSource from '@hooks/useMangaSource';
 import React from 'react';
 import { ActivityIndicator } from 'react-native';
 

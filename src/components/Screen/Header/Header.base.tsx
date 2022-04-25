@@ -1,4 +1,3 @@
-import { AppState } from '@redux/store';
 import { SPACE_MULTIPLIER } from '@theme/Spacing';
 import { StatusBar, Image, Linking, View, ViewProps } from 'react-native';
 import styled, { css, DefaultTheme } from 'styled-components/native';
@@ -7,7 +6,7 @@ import IconButton from '../../IconButton';
 import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
 import { HoldItem } from 'react-native-hold-menu';
 import { ThemedStyledProps } from 'styled-components';
-import { useMangaSource } from '@services/scraper';
+import useMangaSource from '@hooks/useMangaSource';
 import { ContainerProps } from '@components/Container/Container.interfaces';
 
 const generateCSS = (props: ThemedStyledProps<ViewProps & React.RefAttributes<View>, DefaultTheme>) => css`

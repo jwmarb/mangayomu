@@ -10,7 +10,7 @@ import { useTheme } from 'styled-components/native';
 
 import { ApplyWindowCorrectionEventHandler } from '@utils/RecyclerListView.interfaces';
 import { layoutProvider, rowRenderer } from './GenericMangaList.recycler';
-import { useMangaSource } from '@services/scraper';
+import useMangaSource from '@hooks/useMangaSource';
 import { MangaHostWithFilters } from '@services/scraper/scraper.filters';
 import { ExclusiveInclusiveFilter, Manga, WithGenresFilter } from '@services/scraper/scraper.interfaces';
 import useAPICall from '@hooks/useAPICall';

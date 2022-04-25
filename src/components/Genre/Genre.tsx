@@ -4,7 +4,7 @@ import { GenreProps } from '@components/Genre/Genre.interfaces';
 import { Typography } from '@components/Typography';
 import { useRootNavigation } from '@navigators/Root';
 import { AppState } from '@redux/store';
-import { useMangaSource } from '@services/scraper';
+import useMangaSource from '@hooks/useMangaSource';
 import MangaHost from '@services/scraper/scraper.abstract';
 import { WithGenresFilter } from '@services/scraper/scraper.interfaces';
 import FilterValidator from '@utils/FilterValidator';

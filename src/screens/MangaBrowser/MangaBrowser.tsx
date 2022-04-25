@@ -4,7 +4,7 @@ import useSearchBar from '@hooks/useSearchBar';
 import useStatefulHeader from '@hooks/useStatefulHeader';
 import { RootStackParamList } from '@navigators/Root/Root.interfaces';
 import { StackScreenProps } from '@react-navigation/stack';
-import { useMangaSource } from '@services/scraper';
+import useMangaSource from '@hooks/useMangaSource';
 import { MangaHostWithFilters } from '@services/scraper/scraper.filters';
 import { FilterState } from '@utils/MangaFilters/schema';
 import React from 'react';

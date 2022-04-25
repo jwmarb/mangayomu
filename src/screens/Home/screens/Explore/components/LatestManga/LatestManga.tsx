@@ -4,7 +4,7 @@ import MangaSkeleton from '@components/Manga/Manga.skeleton';
 import useAPICall from '@hooks/useAPICall';
 import { useRootNavigation } from '@navigators/Root';
 import { keyExtractor, renderItem } from '@screens/Home/screens/Explore/components/HotManga/HotManga.flatlist';
-import { useMangaSource } from '@services/scraper';
+import useMangaSource from '@hooks/useMangaSource';
 import React from 'react';
 
 const HotManga: React.FC = (props) => {
