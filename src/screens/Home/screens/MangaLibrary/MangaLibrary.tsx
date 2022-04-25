@@ -50,7 +50,6 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
 
   const { ready, Fallback } = useLazyLoading();
   const theme = useTheme();
-  const textRef = React.useRef<TextInput>();
   const [expand, setExpand] = React.useState<boolean>(false);
   const [tabIndex, setTabIndex] = React.useState<number>(0);
   const handleOnExpand = React.useCallback(() => {
