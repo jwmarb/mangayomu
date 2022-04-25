@@ -171,7 +171,7 @@ const Modal: React.FC<ModalProps> = (props) => {
       <PanGestureHandler enabled={visible} onGestureEvent={gestureHandlers}>
         <Panel style={panelStyle}>
           <ModalContainer style={containerStyle}>
-            <ScrollView onScroll={onScroll} scrollEnabled={scrollEnabled}>
+            <ScrollView onScroll={onScroll} scrollEnabled={scrollEnabled} contentContainerStyle={{ minHeight: height }}>
               {children}
             </ScrollView>
           </ModalContainer>
