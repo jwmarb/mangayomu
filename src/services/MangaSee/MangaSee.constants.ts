@@ -44,20 +44,6 @@ const MANGASEE_GENRES = [
 ] as const;
 
 const filters = createSchema(({ createInclusiveExclusiveFilter, createOptionFilter, createSortFilter }) => ({
-  Genres: createInclusiveExclusiveFilter({ fields: MANGASEE_GENRES }),
-  'Sort By': createSortFilter({
-    options: [
-      'Alphabetical A-Z',
-      'Alphabetical Z-A',
-      'Recently Released Chapter',
-      'Year Released - Newest',
-      'Year Released - Oldest',
-      'Most Popular (All Time)',
-      'Most Popular (Monthly)',
-      'Least Popular',
-    ],
-    default: 'Alphabetical A-Z',
-  }),
   'Official Translation': createOptionFilter({
     options: ['Any', 'Official Translation Only'],
     default: 'Any',
@@ -74,6 +60,20 @@ const filters = createSchema(({ createInclusiveExclusiveFilter, createOptionFilt
     options: ['Any', 'Doujinshi', 'Manga', 'Manhua', 'Manhwa', 'OEL', 'One-shot'],
     default: 'Any',
   }),
+  'Sort By': createSortFilter({
+    options: [
+      'Alphabetical A-Z',
+      'Alphabetical Z-A',
+      'Recently Released Chapter',
+      'Year Released - Newest',
+      'Year Released - Oldest',
+      'Most Popular (All Time)',
+      'Most Popular (Monthly)',
+      'Least Popular',
+    ],
+    default: 'Alphabetical A-Z',
+  }),
+  Genres: createInclusiveExclusiveFilter({ fields: MANGASEE_GENRES }),
 }));
 
 export type MangaSeeFilter = typeof filters.schema;

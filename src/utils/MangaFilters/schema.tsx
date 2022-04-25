@@ -188,13 +188,15 @@ export function createSchema<T>(object: (filterCreators: FilterCreators) => Part
             }, [state]);
 
             const menuItems: MenuItemProps[] = React.useMemo(
-              () =>
-                state.options.map<MenuItemProps>((x) => ({
+              () => [
+                { text: key, isTitle: true, withSeparator: true },
+                ...state.options.map<MenuItemProps>((x) => ({
                   text: x,
                   onPress: () => {
                     setState((prev) => ({ ...prev, value: x }));
                   },
                 })),
+              ],
               [state.options, setState]
             );
 
