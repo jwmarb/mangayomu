@@ -3,7 +3,7 @@ import React from 'react';
 export interface SortTypeItemProps {
   selected: boolean;
   sortBy: string;
-  setSort: React.Dispatch<React.SetStateAction<string>>;
-  setReverse: React.Dispatch<React.SetStateAction<boolean>>;
+  setSort: (sort: string) => void;
+  setReverse: (reverse: (prev: boolean) => boolean) => void;
   reverse: boolean;
 }
