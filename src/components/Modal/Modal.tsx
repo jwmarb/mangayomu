@@ -18,6 +18,8 @@ import {
   LayoutChangeEvent,
   Modal as DefaultModal,
   NativeEventSubscription,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
   PanResponderGestureState,
   StatusBar,
   StyleSheet,
@@ -31,6 +33,9 @@ import {
   PanGestureHandlerGestureEvent,
   State,
   TouchableWithoutFeedback,
+  ScrollView,
+  NativeViewGestureHandler,
+  NativeViewGestureHandlerPayload,
 } from 'react-native-gesture-handler';
 import Animated, {
   call,
@@ -64,21 +69,34 @@ const Modal: React.FC<ModalProps> = (props) => {
   const statusBarHeight = useSharedValue(0);
   const [hasTouched, setHasTouched] = React.useState<boolean>(false);
   const pointerEvents = React.useMemo(() => (visible ? 'auto' : 'box-none'), [visible]);
+  const [scrollEnabled, setScrollEnabled] = React.useState<boolean>(false);
+  function handleVelocityBehavior(topValue: number) {
+    if (topValue <= MAX_PANEL_HEIGHT) {
+      setScrollEnabled(true);
+    } else setScrollEnabled(false);
+  }
 
   const gestureHandlers = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, GestureContext>({
     onActive: (e, ctx) => {
-      top.value = Math.max(e.translationY + ctx.translateY, MAX_PANEL_HEIGHT);
+      const val = Math.max(e.translationY + ctx.translateY, MAX_PANEL_HEIGHT);
+      top.value = val;
+      runOnJS(handleVelocityBehavior)(val);
     },
     onStart: (e, ctx) => {
       runOnJS(setHasTouched)(true);
       ctx.translateY = top.value;
     },
     onEnd: (e) => {
-      top.value = withDecay({
-        velocity: e.velocityY,
-        deceleration: 0.997,
-        clamp: [MAX_PANEL_HEIGHT, height + MAX_PANEL_HEIGHT],
-      });
+      top.value = withDecay(
+        {
+          velocity: e.velocityY,
+          deceleration: 0.997,
+          clamp: [MAX_PANEL_HEIGHT, height + MAX_PANEL_HEIGHT],
+        },
+        () => {
+          runOnJS(handleVelocityBehavior)(top.value);
+        }
+      );
     },
   });
 
@@ -139,6 +157,11 @@ const Modal: React.FC<ModalProps> = (props) => {
     else statusBarHeight.value = withTiming(0, { duration: 200, easing: Easing.ease });
   }, [top.value]);
 
+  function onScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
+    const { velocity, contentOffset } = e.nativeEvent;
+    if (velocity) setScrollEnabled(!(velocity.y <= 0.5 && contentOffset.y <= 0));
+  }
+
   return (
     <Portal>
       <BackdropContainer style={style} pointerEvents={pointerEvents}>
@@ -147,7 +170,11 @@ const Modal: React.FC<ModalProps> = (props) => {
       <StatusBarFiller style={statusBarStyle} />
       <PanGestureHandler enabled={visible} onGestureEvent={gestureHandlers}>
         <Panel style={panelStyle}>
-          <ModalContainer style={containerStyle}>{children}</ModalContainer>
+          <ModalContainer style={containerStyle}>
+            <ScrollView onScroll={onScroll} scrollEnabled={scrollEnabled}>
+              {children}
+            </ScrollView>
+          </ModalContainer>
         </Panel>
       </PanGestureHandler>
     </Portal>
