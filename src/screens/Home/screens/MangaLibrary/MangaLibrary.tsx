@@ -68,7 +68,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     ),
   });
 
-  const { sortOptions, selectedSortOption } = useSort((_createSort) => {
+  const { sortOptions, selectedSortOption, sort, reverse } = useSort((_createSort) => {
     const createSort = (
       compareFn: (a: ReadingMangaInfo & LibraryManga, b: ReadingMangaInfo & LibraryManga) => number
     ) => {
@@ -90,21 +90,25 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   });
 
   useStatefulHeader(
-    <>
-      {header}
-      <FilterModal
-        sortOptions={sortOptions}
-        onClose={handleOnClose}
-        expand={expand}
-        tabIndex={tabIndex}
-        setTabIndex={setTabIndex}
-      />
-    </>
+    ready ? (
+      <>
+        {header}
+        <FilterModal
+          sortOptions={sortOptions}
+          onClose={handleOnClose}
+          expand={expand}
+          tabIndex={tabIndex}
+          setTabIndex={setTabIndex}
+        />
+      </>
+    ) : (
+      Fallback
+    )
   );
 
   React.useEffect(() => {
     setData(mangas.filter(({ manga }) => titleIncludes(query)(manga)).sort(selectedSortOption));
-  }, [selectedSortOption.toString(), query]);
+  }, [sort, query, reverse]);
 
   if (!ready) return Fallback;
 
