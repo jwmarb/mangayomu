@@ -1,8 +1,19 @@
-import { Typography, Modal, Flex, Button, Accordion, HeaderBuilder, Container, SortTypeItem } from '@components/core';
+import {
+  Typography,
+  Modal,
+  Flex,
+  Button,
+  Accordion,
+  HeaderBuilder,
+  Container,
+  SortTypeItem,
+  Icon,
+} from '@components/core';
 import { binary, StringComparator } from '@utils/Algorithms';
 import InclusiveExclusiveItem from '@utils/MangaFilters/components/InclusiveExclusiveItem';
 import React from 'react';
 import { useWindowDimensions } from 'react-native';
+import { HoldItem } from 'react-native-hold-menu';
 import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
 
 type InclusiveExclusiveFilter<T> = {
@@ -170,11 +181,39 @@ export function createSchema<T>(object: (filterCreators: FilterCreators) => Part
         break;
       case 'option':
         elements.push(
-          React.memo(() => {
+          React.memo(({ setParentState }) => {
+            const [state, setState] = React.useState<MutableOptionFilter<any>>(value);
+            React.useEffect(() => {
+              setParentState((prev) => ({ ...prev, state }));
+            }, [state]);
+
+            const menuItems: MenuItemProps[] = React.useMemo(
+              () =>
+                state.options.map<MenuItemProps>((x) => ({
+                  text: x,
+                  onPress: () => {
+                    setState((prev) => ({ ...prev, value: x }));
+                  },
+                })),
+              [state.options, setState]
+            );
+
             return (
-              <Container verticalPadding={1.5} horizontalPadding={3}>
-                <Typography>{key}</Typography>
-              </Container>
+              <HoldItem activateOn='tap' items={menuItems}>
+                <Flex
+                  justifyContent='space-between'
+                  alignItems='center'
+                  container
+                  verticalPadding={1}
+                  horizontalPadding={3}>
+                  <Typography>{key}</Typography>
+                  <Button
+                    title={state.value}
+                    icon={<Icon bundle='Feather' name='chevron-down' />}
+                    iconPlacement='right'
+                  />
+                </Flex>
+              </HoldItem>
             );
           })
         );
