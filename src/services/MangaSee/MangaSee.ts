@@ -68,6 +68,9 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         source: super.getName(),
         officialTranslation: x.o === 'yes' ? true : false,
         altTitles: x.al,
+        lt: parseInt(x.lt),
+        v: parseInt(x.v),
+        vm: parseInt(x.vm),
       }));
       this.memo = result;
       return result;
@@ -184,20 +187,25 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
           withTitle(manga)
       );
 
+      const createSort = (compareFn: (a: MangaSeeManga, b: MangaSeeManga) => number) => {
+        if (filters['Sort By'].reversed) return (a: MangaSeeManga, b: MangaSeeManga) => -compareFn(a, b);
+        return compareFn;
+      };
+
       const getSort = () => {
         switch (filters['Sort By'].value) {
-          case 'Least Popular':
-          case 'Most Popular (All Time)':
-          case 'Most Popular (Monthly)':
+          case 'Alphabetical':
+            return createSort((a: MangaSeeManga, b: MangaSeeManga) => a.title.localeCompare(b.title));
+          case 'Year Released':
+            return createSort(
+              (a: MangaSeeManga, b: MangaSeeManga) => parseInt(b.yearReleased) - parseInt(a.yearReleased)
+            );
+          case 'Popularity (All Time)':
+            return createSort((a: MangaSeeManga, b: MangaSeeManga) => a.v - b.v);
+          case 'Popularity (Monthly)':
+            return createSort((a: MangaSeeManga, b: MangaSeeManga) => a.vm - b.vm);
           case 'Recently Released Chapter':
-          case 'Alphabetical A-Z':
-            return (a: MangaSeeManga, b: MangaSeeManga) => a.title.localeCompare(b.title);
-          case 'Alphabetical Z-A':
-            return (a: MangaSeeManga, b: MangaSeeManga) => b.title.localeCompare(a.title);
-          case 'Year Released - Newest':
-            return (a: MangaSeeManga, b: MangaSeeManga) => parseInt(a.yearReleased) - parseInt(b.yearReleased);
-          case 'Year Released - Oldest':
-            return (a: MangaSeeManga, b: MangaSeeManga) => parseInt(b.yearReleased) - parseInt(a.yearReleased);
+            return createSort((a: MangaSeeManga, b: MangaSeeManga) => a.lt - b.lt);
         }
       };
 

@@ -24,7 +24,11 @@ export type MangaSeeManga = Manga &
   WithYearReleased &
   WithType &
   WithOfficialTranslations &
-  WithAltTitles;
+  WithAltTitles & {
+    lt: number;
+    v: number;
+    vm: number;
+  };
 
 export type MangaSeeMangaMeta = MangaMeta<MangaSeeChapter> & WithGenres & WithYearReleased & WithType & WithStatus;
 
@@ -90,6 +94,21 @@ export interface Directory {
    * The year the manga was released
    */
   y: string;
+
+  /**
+   * Popularity value of the manga (all time)
+   */
+  v: string;
+
+  /**
+   * Popularity value of the manga (monthly)
+   */
+  vm: string;
+
+  /**
+   * Latest chapter time value
+   */
+  lt: string;
 }
 
 export interface TopTenJSON {
