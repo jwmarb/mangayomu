@@ -62,16 +62,13 @@ const filters = createSchema(({ createInclusiveExclusiveFilter, createOptionFilt
   }),
   'Sort By': createSortFilter({
     options: [
-      'Alphabetical A-Z',
-      'Alphabetical Z-A',
+      'Alphabetical',
+      'Popularity (All Time)',
+      'Popularity (Monthly)',
       'Recently Released Chapter',
-      'Year Released - Newest',
-      'Year Released - Oldest',
-      'Most Popular (All Time)',
-      'Most Popular (Monthly)',
-      'Least Popular',
+      'Year Released',
     ],
-    default: 'Alphabetical A-Z',
+    default: 'Alphabetical',
   }),
   Genres: createInclusiveExclusiveFilter({ fields: MANGASEE_GENRES }),
 }));
