@@ -9,7 +9,7 @@ const Search: React.FC<SearchProps> = React.forwardRef((props, ref) => {
     onChangeText = () => void 0,
     onSubmitEditing = () => void 0,
     additionalButtons,
-    setShowSearchBar,
+    setShowSearchBar = () => void 0,
     showSearchBar,
     onExitSearch = () => void 0,
     defaultText,
