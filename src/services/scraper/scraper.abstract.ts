@@ -37,6 +37,12 @@ abstract class MangaHost {
    * The link to the manga hosting website
    */
   public readonly link: string;
+
+  /**
+   * The current page in the search. This is for pagination
+   */
+  private page: number;
+
   public constructor(info: MangaHostInfo) {
     this.link = url.parse(info.host).hostname ?? '';
     this.genres = info.genres;
@@ -44,6 +50,7 @@ abstract class MangaHost {
     this.name = info.name;
     this.hotMangas = info.hasHotMangas ?? false;
     this.latestMangas = info.hasLatestMangas ?? false;
+    this.page = 1;
 
     MangaHost.availableSources.set(info.name, this);
   }
@@ -55,6 +62,18 @@ abstract class MangaHost {
     }
     const { data } = await axios.get(path.url);
     return cheerio.load(data, { decodeEntities: false });
+  }
+
+  public getPage() {
+    return this.page;
+  }
+
+  public resetPage() {
+    this.page = 1;
+  }
+
+  public addPage() {
+    this.page++;
   }
 
   public getLink() {
