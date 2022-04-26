@@ -23,6 +23,11 @@ type SearchBarOptions = {
   event?: 'onChangeText' | 'onSubmitEditing';
 
   /**
+   * This function is called whenever the user submits a text. This function is overwritten if `event` is set to onSubmitEditing
+   */
+  onSubmitEditing?: (text: string) => void;
+
+  /**
    * The initial query
    */
   initialQuery?: string;
@@ -43,8 +48,13 @@ type SearchBarOptions = {
  * @param options Options to provide for the search bar
  * @returns Returns a generated header with a search bar
  */
-export default function useSearchBar(options: SearchBarOptions) {
-  const defaultOptions: SearchBarOptions = { focusCondition: true, event: 'onChangeText', ...options };
+export default function useSearchBar(options: SearchBarOptions | (() => SearchBarOptions)) {
+  const defaultOptions: SearchBarOptions = {
+    focusCondition: true,
+    event: 'onChangeText',
+    onSubmitEditing: () => void 0,
+    ...(typeof options === 'function' ? options() : options),
+  };
   const [query, setQuery] = React.useState<string>(defaultOptions.initialQuery ?? '');
   const [showSearchBar, setShowSearchBar] = React.useState<boolean>(false);
   const textRef = React.useRef<TextInput>();
@@ -64,6 +74,7 @@ export default function useSearchBar(options: SearchBarOptions) {
         ref={textRef}
         onExitSearch={defaultOptions.onExitSearch}
         setShowSearchBar={setShowSearchBar}
+        onSubmitEditing={defaultOptions.onSubmitEditing}
         showSearchBar={defaultOptions.alwaysShowSearchBar ? true : showSearchBar}
         additionalButtons={defaultOptions.additionalButtons}
         {...(defaultOptions.event === 'onChangeText' ? { onChangeText: setQuery } : { onSubmitEditing: setQuery })}
