@@ -37,28 +37,12 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
   const mangahost = useMangaSource(source) as MangaHostWithFilters<Record<string, unknown>>;
   const { FilterModal, schema } = mangahost.getFilterSchema();
   const [filter, setFilters] = React.useState<typeof schema>(schema);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const scrollRef = React.useRef<TextInput>(null);
   const handleOnExitSearch = React.useCallback(() => {
     navigation.goBack();
   }, [navigation]);
   const [show, setShow] = React.useState<boolean>(false);
-  const handleOnShowFilters = React.useCallback(() => {
-    setShow(true);
-    Keyboard.dismiss();
-  }, [setShow]);
-  function handleOnCloseFilters() {
-    setShow(false);
-  }
-  const handleOnSubmitEditing = React.useCallback(
-    async (text: string) => {
-      if (query !== text) {
-        mangahost.resetPage();
-        const mangas = await mangahost.search(text, filter);
-        setDataProvider((prev) => prev.newInstance(dataProviderFn).cloneWithRows(mangas));
-      }
-    },
-    [filter, mangahost, setDataProvider, query]
-  );
 
   const options: UseCollapsibleOptions = {
     navigationOptions: {
@@ -84,11 +68,39 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
       useNativeDriver: true,
     },
   };
-
   const collapsible = useCollapsibleHeader(options);
 
-  const [loading, setLoading] = React.useState<boolean>(false);
   const { ready, Fallback } = useLazyLoading();
+
+  React.useEffect(() => {
+    return () => {
+      mangahost.resetPage();
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (dataProvider.getSize() === 0) setShowFooter(true);
+  }, [dataProvider.getSize()]);
+
+  const handleOnShowFilters = React.useCallback(() => {
+    setShow(true);
+    Keyboard.dismiss();
+  }, [setShow]);
+
+  function handleOnCloseFilters() {
+    setShow(false);
+  }
+  const handleOnSubmitEditing = React.useCallback(
+    async (text: string) => {
+      if (query !== text) {
+        mangahost.resetPage();
+        const mangas = await mangahost.search(text, filter);
+        setDataProvider((prev) => prev.newInstance(dataProviderFn).cloneWithRows(mangas));
+      }
+    },
+    [filter, mangahost, setDataProvider, query]
+  );
+
   const handleOnApplyFilter = React.useCallback(
     async (state: typeof schema) => {
       mangahost.resetPage();
@@ -121,19 +133,9 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     }
   }, [filter, query, setDataProvider, loading, setLoading]);
 
-  React.useEffect(() => {
-    return () => {
-      mangahost.resetPage();
-    };
-  }, []);
-
   const handleOnItemLayout = React.useCallback(() => {
     setShowFooter(false);
   }, [setShowFooter]);
-
-  React.useEffect(() => {
-    if (dataProvider.getSize() === 0) setShowFooter(true);
-  }, [dataProvider.getSize()]);
 
   if (ready)
     return (
