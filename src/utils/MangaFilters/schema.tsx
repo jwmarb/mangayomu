@@ -10,6 +10,7 @@ import {
   Icon,
 } from '@components/core';
 import { binary, StringComparator } from '@utils/Algorithms';
+import displayMessage from '@utils/displayMessage';
 import InclusiveExclusiveItem from '@utils/MangaFilters/components/InclusiveExclusiveItem';
 import React from 'react';
 import { useWindowDimensions } from 'react-native';
@@ -255,6 +256,7 @@ export function createSchema<T>(object: (filterCreators: FilterCreators) => T) {
       const [filter, setFilterState] = React.useState<T>(p);
       const handleOnReset = React.useCallback(() => {
         setFilterState(p);
+        displayMessage('Filters have been reset');
       }, []);
 
       const handleOnApplyFilters = React.useCallback(() => {
