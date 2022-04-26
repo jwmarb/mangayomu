@@ -1,4 +1,4 @@
-import { Icon, IconButton, RecyclerListViewScreen, Screen, Spacer } from '@components/core';
+import { Button, Flex, Icon, IconButton, RecyclerListViewScreen, Screen, Spacer, Typography } from '@components/core';
 import useLazyLoading from '@hooks/useLazyLoading';
 import useSearchBar from '@hooks/useSearchBar';
 import useStatefulHeader from '@hooks/useStatefulHeader';
@@ -123,7 +123,7 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
         setLoading(false);
       }
     },
-    [query, mangahost, setFilters, setDataProvider]
+    [query, mangahost, setFilters, setDataProvider, setLoading]
   );
 
   const applyWindowCorrection: ApplyWindowCorrectionEventHandler = React.useCallback(
@@ -152,21 +152,18 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     setShowFooter(false);
   }, [setShowFooter]);
 
-  if (loading)
-    return (
-      <View
-        style={{
-          paddingTop: collapsible.containerPaddingTop + pixelToNumber(theme.spacing(3)),
-          paddingBottom: pixelToNumber(theme.spacing(3)),
-        }}>
-        {animate(<MangaItemsLoading />, withAnimatedMounting)}
-      </View>
-    );
-
   if (ready)
     return (
       <>
-        {dataProvider.getSize() > 0 && (
+        {loading ? (
+          <View
+            style={{
+              paddingTop: collapsible.containerPaddingTop + pixelToNumber(theme.spacing(3)),
+              paddingBottom: pixelToNumber(theme.spacing(3)),
+            }}>
+            <MangaItemsLoading />
+          </View>
+        ) : dataProvider.getSize() > 0 ? (
           <RecyclerListViewScreen
             dataProvider={dataProvider}
             collapsible={collapsible}
@@ -184,6 +181,15 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
             layoutProvider={layoutProvider}
             renderFooter={() => (showFooter || loading ? animate(<MangaItemsLoading />, withAnimatedMounting) : null)}
           />
+        ) : (
+          <Flex container horizontalPadding={3} justifyContent='center' alignItems='center' grow direction='column'>
+            <Typography variant='subheader' align='center'>
+              No items found
+            </Typography>
+            <Typography color='textSecondary' align='center'>
+              {mangahost.getName()} does not have the manga you are looking for
+            </Typography>
+          </Flex>
         )}
         <FilterModal show={show} onClose={handleOnCloseFilters} onApplyFilter={handleOnApplyFilter} />
       </>
