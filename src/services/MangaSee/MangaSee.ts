@@ -201,11 +201,11 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
               (a: MangaSeeManga, b: MangaSeeManga) => parseInt(b.yearReleased) - parseInt(a.yearReleased)
             );
           case 'Popularity (All Time)':
-            return createSort((a: MangaSeeManga, b: MangaSeeManga) => a.v - b.v);
+            return createSort((a: MangaSeeManga, b: MangaSeeManga) => b.v - a.v);
           case 'Popularity (Monthly)':
-            return createSort((a: MangaSeeManga, b: MangaSeeManga) => a.vm - b.vm);
+            return createSort((a: MangaSeeManga, b: MangaSeeManga) => b.vm - a.vm);
           case 'Recently Released Chapter':
-            return createSort((a: MangaSeeManga, b: MangaSeeManga) => a.lt - b.lt);
+            return createSort((a: MangaSeeManga, b: MangaSeeManga) => b.lt - a.lt);
         }
       };
 
