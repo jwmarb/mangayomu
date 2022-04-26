@@ -1,4 +1,4 @@
-import { Icon, IconButton, RecyclerListViewScreen } from '@components/core';
+import { Icon, IconButton, RecyclerListViewScreen, Screen, Spacer } from '@components/core';
 import useLazyLoading from '@hooks/useLazyLoading';
 import useSearchBar from '@hooks/useSearchBar';
 import useStatefulHeader from '@hooks/useStatefulHeader';
@@ -18,8 +18,9 @@ import { useTheme } from 'styled-components/native';
 import { MangaItemsLoading } from '@screens/GenericMangaList/GenericMangaList.base';
 import useMountedEffect from '@hooks/useMountedEffect';
 import { TextInput } from 'react-native-gesture-handler';
-import { Keyboard } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import Search from '@screens/Home/screens/MangaLibrary/components/Search';
+import { animate, withAnimatedMounting } from '@utils/Animations';
 
 const dataProviderFn = (r1: Manga, r2: Manga) => r1.title !== r2.title;
 
@@ -93,9 +94,16 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
   const handleOnSubmitEditing = React.useCallback(
     async (text: string) => {
       if (query !== text) {
-        mangahost.resetPage();
-        const mangas = await mangahost.search(text, filter);
-        setDataProvider((prev) => prev.newInstance(dataProviderFn).cloneWithRows(mangas));
+        setLoading(true);
+        try {
+          mangahost.resetPage();
+          const mangas = await mangahost.search(text, filter);
+          setDataProvider((prev) => prev.newInstance(dataProviderFn).cloneWithRows(mangas));
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setLoading(false);
+        }
       }
     },
     [filter, mangahost, setDataProvider, query]
@@ -103,10 +111,17 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
 
   const handleOnApplyFilter = React.useCallback(
     async (state: typeof schema) => {
-      mangahost.resetPage();
-      setFilters(state);
-      const mangas = await mangahost.search(query, state);
-      setDataProvider((prev) => prev.newInstance(dataProviderFn).cloneWithRows(mangas));
+      setLoading(true);
+      try {
+        mangahost.resetPage();
+        setFilters(state);
+        const mangas = await mangahost.search(query, state);
+        setDataProvider((prev) => prev.newInstance(dataProviderFn).cloneWithRows(mangas));
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
     },
     [query, mangahost, setFilters, setDataProvider]
   );
@@ -120,7 +135,7 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
 
   const handleOnEndReached = React.useCallback(async () => {
     if (!loading) {
-      setLoading(true);
+      setShowFooter(true);
       try {
         mangahost.addPage();
         const mangas = await mangahost.search(query, filter);
@@ -128,7 +143,7 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
       } catch (e) {
         console.error(e);
       } finally {
-        setLoading(false);
+        setShowFooter(false);
       }
     }
   }, [filter, query, setDataProvider, loading, setLoading]);
@@ -136,6 +151,17 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
   const handleOnItemLayout = React.useCallback(() => {
     setShowFooter(false);
   }, [setShowFooter]);
+
+  if (loading)
+    return (
+      <View
+        style={{
+          paddingTop: collapsible.containerPaddingTop + pixelToNumber(theme.spacing(3)),
+          paddingBottom: pixelToNumber(theme.spacing(3)),
+        }}>
+        {animate(<MangaItemsLoading />, withAnimatedMounting)}
+      </View>
+    );
 
   if (ready)
     return (
@@ -156,7 +182,7 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
               },
             }}
             layoutProvider={layoutProvider}
-            renderFooter={() => (showFooter || loading ? <MangaItemsLoading /> : null)}
+            renderFooter={() => (showFooter || loading ? animate(<MangaItemsLoading />, withAnimatedMounting) : null)}
           />
         )}
         <FilterModal show={show} onClose={handleOnCloseFilters} onApplyFilter={handleOnApplyFilter} />

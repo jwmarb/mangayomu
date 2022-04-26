@@ -17,6 +17,8 @@ import useAPICall from '@hooks/useAPICall';
 import { MangaItemsLoading } from './GenericMangaList.base';
 import useLazyLoading from '@hooks/useLazyLoading';
 import { animate, withAnimatedMounting } from '@utils/Animations';
+import { Container } from '@components/Container';
+import { View } from 'react-native';
 
 const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMangaList'>> = (props) => {
   if ('mangas' in props.route.params && 'type' in props.route.params) {
@@ -119,9 +121,13 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
     if (ready) {
       if (loading || !mangas)
         return (
-          <Screen scrollable collapsible={collapsible}>
+          <View
+            style={{
+              paddingTop: collapsible.containerPaddingTop + pixelToNumber(theme.spacing(3)),
+              paddingBottom: pixelToNumber(theme.spacing(3)),
+            }}>
             {animate(<MangaItemsLoading />, withAnimatedMounting)}
-          </Screen>
+          </View>
         );
       return (
         <RecyclerListViewScreen
