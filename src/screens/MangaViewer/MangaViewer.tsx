@@ -107,7 +107,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
           <Overview chapters={sorted} currentChapter={userMangaInfo?.currentlyReadingChapter} collapsible={collapsible}>
             <MangaViewerContainer>
               <Flex container horizontalPadding={3} verticalPadding={0}>
-                <MangaCover mangaCoverURI={manga.imageCover} />
+                <MangaCover mangaCoverURI={manga.imageCover} title={manga.title} />
                 <Spacer x={2} />
                 <Flex direction='column' shrink>
                   <Title title={manga.title} isAdult={isAdult} />

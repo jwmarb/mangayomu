@@ -44,7 +44,10 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.4.1",
     "styled-components": "^5.3.5",
-    "url": "^0.11.0"
+    "url": "^0.11.0",
+    "expo-media-library": "~14.0.0",
+    "expo-file-system": "~13.1.4",
+    "expo-clipboard": "~2.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

@@ -108,7 +108,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
 
   React.useEffect(() => {
     setData(mangas.filter(({ manga }) => titleIncludes(query)(manga)).sort(selectedSortOption));
-  }, [sort, query, reverse]);
+  }, [sort, query, reverse, mangas]);
 
   if (!ready) return Fallback;
 
@@ -119,6 +119,8 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
       ItemSeparatorComponent={Spacing}
       numColumns={2}
       renderItem={renderItem}
+      windowSize={3}
+      maxToRenderPerBatch={6}
       data={data}
       keyExtractor={keyExtractor}
     />
