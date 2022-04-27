@@ -51,7 +51,10 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
         <Search
           additionalButtons={React.useMemo(
             () => (
-              <IconButton icon={<Icon bundle='Feather' name='filter' />} onPress={handleOnShowFilters} />
+              <IconButton
+                icon={<Icon bundle='MaterialCommunityIcons' name='filter-outline' />}
+                onPress={handleOnShowFilters}
+              />
             ),
             [handleOnShowFilters]
           )}
