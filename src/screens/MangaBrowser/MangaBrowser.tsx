@@ -49,15 +49,12 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     navigationOptions: {
       header: () => (
         <Search
-          additionalButtons={React.useMemo(
-            () => (
-              <IconButton
-                icon={<Icon bundle='MaterialCommunityIcons' name='filter-outline' />}
-                onPress={handleOnShowFilters}
-              />
-            ),
-            [handleOnShowFilters]
-          )}
+          additionalButtons={
+            <IconButton
+              icon={<Icon bundle='MaterialCommunityIcons' name='filter-outline' />}
+              onPress={handleOnShowFilters}
+            />
+          }
           ref={scrollRef}
           title={source}
           showSearchBar={true}
