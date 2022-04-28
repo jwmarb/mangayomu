@@ -11,7 +11,7 @@ import Animated from 'react-native-reanimated';
 
 const StatusIndicator: React.FC<StatusIndicatorProps> = (props) => {
   const { meta } = props;
-  if (MangaValidator.hasStatus(meta)) {
+  if (meta && MangaValidator.hasStatus(meta)) {
     const { status } = meta;
     const mountingStyle = useAnimatedMounting();
     return (
