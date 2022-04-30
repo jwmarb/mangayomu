@@ -1,8 +1,14 @@
 import { Dispatch } from 'redux';
-import { SettingsReducerAction } from './settingsReducer.interfaces';
+import { SettingsReducerAction, SettingsReducerState } from './settingsReducer.interfaces';
 
 export function finishIntro() {
   return (dispatch: Dispatch<SettingsReducerAction>) => {
     dispatch({ type: 'INTRO_DONE' });
+  };
+}
+
+export function adjustColumns(c: number) {
+  return (dispatch: Dispatch<SettingsReducerAction>) => {
+    dispatch({ type: 'ADJUST_MANGAS_PER_COLUMN', payload: c });
   };
 }
