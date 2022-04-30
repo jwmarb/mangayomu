@@ -1,12 +1,20 @@
 import React from 'react';
 import { List, Icon, ListItem } from '@components/core';
+import { StackScreenProps } from '@react-navigation/stack';
+import { SettingsStackParamList } from '@navigators/Settings/Settings.interfaces';
 
-const Main: React.FC = (props) => {
-  const {} = props;
+const Main: React.FC<StackScreenProps<SettingsStackParamList, 'Main'>> = (props) => {
+  const { navigation } = props;
+  function navigateTo(screenName: keyof SettingsStackParamList) {
+    return () => {
+      navigation.navigate(screenName);
+    };
+  }
   return (
     <List>
       <ListItem adornment={<Icon bundle='MaterialCommunityIcons' name='cog' color='textSecondary' />} title='General' />
       <ListItem
+        onPress={navigateTo('Appearance')}
         adornment={<Icon bundle='MaterialCommunityIcons' name='palette' color='textSecondary' />}
         title='Appearance'
       />
