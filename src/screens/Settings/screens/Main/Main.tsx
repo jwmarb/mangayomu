@@ -17,11 +17,6 @@ const Main: React.FC = (props) => {
       <ListItem adornment={<Icon bundle='Feather' name='book-open' color='textSecondary' />} title='Reader' />
       <ListItem adornment={<Icon bundle='Feather' name='compass' color='textSecondary' />} title='Browse' />
       <ListItem adornment={<Icon bundle='Feather' name='code' color='textSecondary' />} title='Advanced' />
-      <ListItem
-        adornment={<Icon bundle='MaterialCommunityIcons' name='heart-outline' color='secondary' />}
-        title='Love the app?'
-        subtitle='Show some love by donating!'
-      />
     </List>
   );
 };

@@ -37,6 +37,11 @@ const More: React.FC<StackScreenProps<RootStackParamList, 'Home'>> = (props) => 
           onPress={handleOnSettings}
         />
         <ListItem title='About' adornment={<Icon bundle='Feather' name='info' color='primary' size='small' />} />
+        <ListItem
+          adornment={<Icon bundle='MaterialCommunityIcons' name='heart-outline' color='secondary' />}
+          title='Love the app?'
+          subtitle='Show some love by donating!'
+        />
       </List>
     </Screen>
   );
