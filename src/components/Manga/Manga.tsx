@@ -10,18 +10,21 @@ import { MangaBaseContainer } from '@components/Manga/Manga.base';
 import Spacer from '@components/Spacer';
 import { useRootNavigation } from '@navigators/Root';
 import Cover from '@components/Manga/Cover/Cover';
+import { useSelector } from 'react-redux';
+import { AppState } from '@redux/store';
 
 const Manga: React.FC<MangaProps> = (props) => {
   const { title, imageCover, compact = false } = props;
   const navigation = useRootNavigation();
+  const cols = useSelector((state: AppState) => state.settings.mangaCover.perColumn);
   function handleOnPress() {
     navigation.navigate('MangaViewer', { manga: props });
   }
   return (
     <ButtonBase onPress={handleOnPress} opacity>
-      <MangaBaseContainer>
+      <MangaBaseContainer cols={cols}>
         <Flex direction='column'>
-          <Cover uri={imageCover} size={compact ? 'compact' : 'medium'} />
+          <Cover uri={imageCover} />
           <Spacer y={1} />
           <Typography numberOfLines={2}>{title}</Typography>
         </Flex>
