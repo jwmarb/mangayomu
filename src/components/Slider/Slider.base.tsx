@@ -50,7 +50,6 @@ export const SliderContainer = styled.View`
     display: flex;
     flex-direction: row;
     align-items: center;
-    background-color: red;
   `}
 `;
 
