@@ -6,5 +6,6 @@ export interface SliderProps {
   width: number;
   value: number;
   range: [number, number];
+  noFixedIncremental?: boolean;
   onChange: (newValue: number) => void;
 }

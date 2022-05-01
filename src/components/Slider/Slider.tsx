@@ -28,10 +28,11 @@ const Slider: React.FC<SliderProps> = (props) => {
     width,
     onChange,
     range: [min, max],
+    noFixedIncremental = false,
     value,
   } = props;
   const range = Math.abs(max - min);
-  const positionLeft = useSharedValue((width / range) * (value - min));
+  const positionLeft = useSharedValue(Math.min((width / range) * (value - min), width));
   const gestureHandlers = useAnimatedGestureHandler<
     PanGestureHandlerGestureEvent,
     {
@@ -40,13 +41,19 @@ const Slider: React.FC<SliderProps> = (props) => {
   >({
     onActive: (e, ctx) => {
       const translateX = Math.max(Math.min(e.translationX + ctx.translateX, width), 0);
-      const value = Math.round(translateX / width / (width / (range * width)));
+      if (noFixedIncremental) {
+        const value = translateX / width / (width / (range * width));
+        positionLeft.value = value * (width / range);
+        runOnJS(onChange)(parseFloat(value.toFixed(1)) + min);
+      } else {
+        const value = Math.round(translateX / width / (width / (range * width)));
 
-      positionLeft.value = withTiming(value * (width / range), {
-        duration: 100,
-        easing: Easing.linear,
-      });
-      runOnJS(onChange)(value + min);
+        positionLeft.value = withTiming(value * (width / range), {
+          duration: 100,
+          easing: Easing.linear,
+        });
+        runOnJS(onChange)(value + min);
+      }
     },
     onStart: (_, ctx) => {
       ctx.translateX = positionLeft.value;
