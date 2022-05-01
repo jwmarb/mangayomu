@@ -1,13 +1,12 @@
 import Animated from 'react-native-reanimated';
 import styled, { css } from 'styled-components/native';
 
-export const SliderLine = styled.View`
+export const SliderLine = styled.View<{ width: number }>`
   ${(props) => css`
     flex-direction: row;
     display: flex;
-    width: 100%;
+    width: ${props.width}px;
     height: ${props.theme.spacing(1)};
-
     background-color: ${props.theme.palette.action.disabled.get()};
     border-top-left-radius: 1000px;
     border-top-right-radius: 1000px;
@@ -46,12 +45,12 @@ export const SliderCircle = styled.View`
   `}
 `;
 
-export const SliderContainer = styled.View<{ width: number }>`
+export const SliderContainer = styled.View`
   ${(props) => css`
     display: flex;
     flex-direction: row;
-    width: ${props.width}px;
     align-items: center;
+    background-color: red;
   `}
 `;
 

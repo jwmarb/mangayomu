@@ -59,10 +59,10 @@ const Slider: React.FC<SliderProps> = (props) => {
     width: positionLeft.value,
   }));
   return (
-    <SliderContainer width={width}>
+    <SliderContainer>
       {left}
       <Spacer x={2} />
-      <SliderLine>
+      <SliderLine width={width}>
         <SliderFilledLine style={filledStyle} />
       </SliderLine>
       <PanGestureHandler onGestureEvent={gestureHandlers}>
