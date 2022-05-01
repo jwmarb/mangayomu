@@ -2,9 +2,8 @@ import { CategoryListProps } from '@components/Category/CategoryList/CategoryLis
 import Spacer from '@components/Spacer';
 import useAnimatedMounting from '@hooks/useAnimatedMounting';
 import pixelToNumber from '@utils/pixelToNumber';
-import withAnimatedMounting from '@utils/withAnimatedMounting';
 import React from 'react';
-import { FlatList, FlatListProps } from 'react-native';
+import { FlatListProps } from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled, { css } from 'styled-components/native';
 const BaseList = styled.FlatList.attrs((props) => ({
