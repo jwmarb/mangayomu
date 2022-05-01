@@ -6,4 +6,5 @@ export type SettingsStackParamList = {
   Reader: undefined;
   Browse: undefined;
   Advanced: undefined;
+  MangasColumn: undefined;
 };
