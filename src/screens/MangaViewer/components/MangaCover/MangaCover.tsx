@@ -47,7 +47,7 @@ const MangaCover: React.FC<MangaCoverProps> = (props) => {
 
   return (
     <HoldItem items={menuItems}>
-      <Cover uri={mangaCoverURI} />
+      <Cover uri={mangaCoverURI} fixedSize />
     </HoldItem>
   );
 };
