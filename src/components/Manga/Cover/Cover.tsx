@@ -13,10 +13,10 @@ import { useTheme } from 'styled-components/native';
 const { width } = Dimensions.get('window');
 
 const Cover: React.FC<ProcessedMangaCoverProps> = (props) => {
-  const { uri, cols, fixedSize } = props;
+  const { uri, cols, fixedSize, customSize } = props;
   const theme = useTheme();
-  const imageWidth = theme.spacing(calculateCoverWidth(cols));
-  const imageHeight = theme.spacing(calculateCoverHeight(cols));
+  const imageWidth = theme.spacing(calculateCoverWidth(customSize ?? cols));
+  const imageHeight = theme.spacing(calculateCoverHeight(customSize ?? cols));
 
   if (fixedSize)
     return (

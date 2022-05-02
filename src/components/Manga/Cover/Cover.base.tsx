@@ -6,7 +6,10 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import styled, { css } from 'styled-components/native';
 import Animated from 'react-native-reanimated';
 
-export const MangaCoverBase = styled.Image.attrs({ cache: 'force-cache' })<{ imageWidth: string; imageHeight: string }>`
+export const MangaCoverBase = styled(Animated.Image).attrs({ cache: 'force-cache' })<{
+  imageWidth: string;
+  imageHeight: string;
+}>`
   ${(props) => css`
     border-radius: ${props.theme.borderRadius}px;
     width: ${props.imageWidth};
