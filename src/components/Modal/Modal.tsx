@@ -62,7 +62,14 @@ const MAX_PANEL_HEIGHT = StatusBar.currentHeight ?? 0;
 const APPROACHING_TOP = MAX_PANEL_HEIGHT + 20;
 
 const Modal: React.FC<ModalProps> = (props) => {
-  const { onClose, visible, children } = props;
+  const {
+    onClose,
+    visible,
+    children,
+    minimumHeight = height * 0.5,
+    closeThreshold = CLOSE_THRESHOLD,
+    backdrop: backdropEnabled = true,
+  } = props;
   const theme = useTheme();
   const backdrop = useSharedValue(0);
   const top = useSharedValue(height + MAX_PANEL_HEIGHT);
@@ -79,7 +86,7 @@ const Modal: React.FC<ModalProps> = (props) => {
 
   const gestureHandlers = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, GestureContext>({
     onActive: (e, ctx) => {
-      const val = Math.max(e.translationY + ctx.translateY, MAX_PANEL_HEIGHT);
+      const val = Math.min(Math.max(e.translationY + ctx.translateY, MAX_PANEL_HEIGHT), closeThreshold);
       top.value = val;
       runOnJS(handleVelocityBehavior)(val);
     },
@@ -92,7 +99,7 @@ const Modal: React.FC<ModalProps> = (props) => {
         {
           velocity: e.velocityY,
           deceleration: 0.997,
-          clamp: [MAX_PANEL_HEIGHT, height + MAX_PANEL_HEIGHT],
+          clamp: [MAX_PANEL_HEIGHT, closeThreshold],
         },
         () => {
           runOnJS(handleVelocityBehavior)(top.value);
@@ -104,7 +111,7 @@ const Modal: React.FC<ModalProps> = (props) => {
   function effects() {
     if (visible) {
       backdrop.value = withTiming(1, { duration: 200, easing: Easing.ease });
-      top.value = withSpring(height / 1.5);
+      top.value = withSpring(minimumHeight);
     } else {
       backdrop.value = withTiming(0, { duration: 200, easing: Easing.ease });
       setTimeout(() => {
@@ -150,7 +157,7 @@ const Modal: React.FC<ModalProps> = (props) => {
   };
 
   useDerivedValue(() => {
-    if (hasTouched && CLOSE_THRESHOLD <= top.value) runOnJS(handleOnClose)();
+    if (hasTouched && closeThreshold <= top.value) runOnJS(handleOnClose)();
     if (top.value <= APPROACHING_TOP) borderRadius.value = withTiming(0, { duration: 200, easing: Easing.ease });
     else borderRadius.value = withTiming(theme.borderRadius, { duration: 200, easing: Easing.ease });
     if (top.value <= MAX_PANEL_HEIGHT)
@@ -165,9 +172,11 @@ const Modal: React.FC<ModalProps> = (props) => {
 
   return (
     <Portal>
-      <BackdropContainer style={style} pointerEvents={pointerEvents}>
-        <BackdropPressable visible={visible} onPress={handleOnClose} touchSoundDisabled />
-      </BackdropContainer>
+      {backdropEnabled && (
+        <BackdropContainer style={style} pointerEvents={pointerEvents}>
+          <BackdropPressable visible={visible} onPress={handleOnClose} touchSoundDisabled />
+        </BackdropContainer>
+      )}
       <StatusBarFiller style={statusBarStyle} />
       <PanGestureHandler enabled={visible} onGestureEvent={gestureHandlers}>
         <Panel style={panelStyle}>

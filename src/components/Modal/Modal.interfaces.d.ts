@@ -3,6 +3,9 @@ import React from 'react';
 export interface ModalProps {
   visible: boolean;
   onClose: () => void;
+  minimumHeight?: number;
+  closeThreshold?: number;
+  backdrop?: boolean;
 }
 
 export interface BackdropPressableProps {
