@@ -55,13 +55,21 @@ const Button: React.FC<ButtonProps> = (props) => {
           iconPlacement === 'left' ? (
             <>
               {React.cloneElement(icon, { size: 'small', color: iconColor })}
-              <Spacer x={1} />
-              <ButtonText {...buttonTextProps}>{title}</ButtonText>
+              {title.length > 0 && (
+                <>
+                  <Spacer x={1} />
+                  <ButtonText {...buttonTextProps}>{title}</ButtonText>
+                </>
+              )}
             </>
           ) : (
             <>
-              <ButtonText {...buttonTextProps}>{title}</ButtonText>
-              <Spacer x={1} />
+              {title.length > 0 && (
+                <>
+                  <ButtonText {...buttonTextProps}>{title}</ButtonText>
+                  <Spacer x={1} />
+                </>
+              )}
               {React.cloneElement(icon, { size: 'small', color: iconColor })}
             </>
           )
