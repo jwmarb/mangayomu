@@ -44,7 +44,7 @@ const Slider: React.FC<SliderProps> = (props) => {
       if (noFixedIncremental) {
         const value = translateX / width / (width / (range * width));
         positionLeft.value = value * (width / range);
-        runOnJS(onChange)(parseFloat(value.toFixed(1)) + min);
+        runOnJS(onChange)(value + min);
       } else {
         const value = Math.round(translateX / width / (width / (range * width)));
 
