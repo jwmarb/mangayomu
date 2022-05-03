@@ -7,7 +7,7 @@ const { height } = Dimensions.get('window');
 
 export const MangasColumnPreviewContainer = styled.View`
   ${(props) => css`
-    padding: ${props.theme.spacing(2, 3, 24, 3)};
+    padding: ${props.theme.spacing(2, 0, 24, 0)};
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -33,6 +33,6 @@ export const MangaCoverPreviewContainer = styled(Animated.View)`
   ${(props) => css`
     display: flex;
     flex-direction: column;
-    margin: ${props.theme.spacing(2)};
+    margin: ${props.theme.spacing(1)};
   `}
 `;
