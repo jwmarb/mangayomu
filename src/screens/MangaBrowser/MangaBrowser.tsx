@@ -11,7 +11,7 @@ import React from 'react';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { Manga } from '@services/scraper/scraper.interfaces';
 import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-collapsible';
-import { layoutProvider, rowRenderer } from '@screens/GenericMangaList/GenericMangaList.recycler';
+import { rowRenderer } from '@screens/GenericMangaList/GenericMangaList.recycler';
 import { ApplyWindowCorrectionEventHandler } from '@utils/RecyclerListView.interfaces';
 import pixelToNumber from '@utils/pixelToNumber';
 import { useTheme } from 'styled-components/native';
@@ -21,6 +21,9 @@ import { TextInput } from 'react-native-gesture-handler';
 import { Keyboard, View } from 'react-native';
 import Search from '@screens/Home/screens/MangaLibrary/components/Search';
 import { animate, withAnimatedMounting } from '@utils/Animations';
+import { generateNewLayout } from '@screens/Home/screens/MangaLibrary/MangaLibrary.recycler';
+import { useSelector } from 'react-redux';
+import { AppState } from '@redux/store';
 
 const dataProviderFn = (r1: Manga, r2: Manga) => r1.title !== r2.title;
 
@@ -32,7 +35,9 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     },
   } = props;
   const theme = useTheme();
+  const cols = useSelector((state: AppState) => state.settings.mangaCover.perColumn);
   const [dataProvider, setDataProvider] = React.useState(new DataProvider(dataProviderFn).cloneWithRows(mangas));
+  const [layoutProvider, setLayoutProvider] = React.useState(generateNewLayout(cols));
   const [showFooter, setShowFooter] = React.useState<boolean>(true);
   const [query, setQuery] = React.useState<string>(initialQuery);
   const mangahost = useMangaSource(source) as MangaHostWithFilters<Record<string, unknown>>;
