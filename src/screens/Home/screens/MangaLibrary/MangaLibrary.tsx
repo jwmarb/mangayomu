@@ -15,9 +15,11 @@ import {
   Button,
 } from '@components/core';
 import { FlatListScreen } from '@components/core';
+import { calculateCoverHeight, calculateCoverWidth } from '@components/Manga/Cover/Cover.helpers';
 import { HeaderBuilder, MangaSource } from '@components/Screen/Header/Header.base';
 import { TextFieldProps } from '@components/TextField/TextField.interfaces';
 import useLazyLoading from '@hooks/useLazyLoading';
+import useMountedEffect from '@hooks/useMountedEffect';
 import useSearchBar from '@hooks/useSearchBar';
 import useSort from '@hooks/useSort';
 import useStatefulHeader from '@hooks/useStatefulHeader';
@@ -33,23 +35,28 @@ import {
   SetSortContext,
   SortContext,
 } from '@screens/Home/screens/MangaLibrary/MangaLibrary.context';
-import { keyExtractor, renderItem } from '@screens/Home/screens/MangaLibrary/MangaLibrary.flatlist';
+import {
+  dataProviderFn,
+  generateNewLayout,
+  rowRenderer,
+} from '@screens/Home/screens/MangaLibrary/MangaLibrary.recycler';
 import connector, { MangaLibraryProps } from '@screens/Home/screens/MangaLibrary/MangaLibrary.redux';
+import { SPACE_MULTIPLIER } from '@theme/Spacing';
 import { titleIncludes } from '@utils/MangaFilters';
 import pixelToNumber from '@utils/pixelToNumber';
 import React from 'react';
-import { Keyboard, NativeSyntheticEvent, TextInput, TextInputSubmitEditingEventData, View } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-collapsible';
+import { Keyboard } from 'react-native';
+import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 import { useTheme } from 'styled-components/native';
 
-const Spacing = () => <Spacer y={4} />;
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
-  const { mangas, navigation, history } = props;
+  const { mangas, navigation, history, cols } = props;
   const { ready, Fallback } = useLazyLoading();
-  const [data, setData] = React.useState<LibraryManga[]>([]);
-  const theme = useTheme();
+  const [dataProvider, setDataProvider] = React.useState<DataProvider>(
+    new DataProvider(dataProviderFn).cloneWithRows(mangas)
+  );
+  const [layoutProvider, setLayoutProvider] = React.useState<LayoutProvider>(generateNewLayout(cols));
+
   const [expand, setExpand] = React.useState<boolean>(false);
   const [tabIndex, setTabIndex] = React.useState<number>(0);
   const handleOnExpand = React.useCallback(() => {
@@ -106,23 +113,23 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     )
   );
 
-  React.useEffect(() => {
-    setData(mangas.filter(({ manga }) => titleIncludes(query)(manga)).sort(selectedSortOption));
-  }, [sort, query, reverse, mangas]);
+  useMountedEffect(() => {
+    setLayoutProvider(generateNewLayout(cols));
+  }, [cols]);
+
+  useMountedEffect(() => {
+    setDataProvider((prev) => prev.newInstance(dataProviderFn).cloneWithRows(mangas));
+  }, [mangas.length]);
 
   if (!ready) return Fallback;
 
   return (
-    <FlatList
-      contentContainerStyle={{ paddingVertical: pixelToNumber(theme.spacing(3)) }}
-      columnWrapperStyle={{ justifyContent: 'space-around' }}
-      ItemSeparatorComponent={Spacing}
-      numColumns={2}
-      renderItem={renderItem}
-      windowSize={3}
-      maxToRenderPerBatch={6}
-      data={data}
-      keyExtractor={keyExtractor}
+    <RecyclerListView
+      dataProvider={dataProvider}
+      layoutProvider={layoutProvider}
+      rowRenderer={rowRenderer}
+      // forceNonDeterministicRendering
+      scrollViewProps={{ contentContainerStyle: { paddingTop: 24, paddingBottom: 64 } }}
     />
   );
 };

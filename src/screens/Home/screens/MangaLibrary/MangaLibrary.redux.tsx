@@ -9,6 +9,7 @@ const mapStateToProps = (state: AppState, props: BottomTabScreenProps<BottomTabP
     ...props,
     mangas: state.library.mangas,
     history: state.mangas,
+    cols: state.settings.mangaCover.perColumn,
   };
 };
 
