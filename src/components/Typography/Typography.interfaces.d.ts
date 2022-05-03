@@ -9,9 +9,11 @@ export interface TypographyProps {
   italics?: boolean;
   align?: TextStyle['textAlign'];
   variant?: TypographyVariants;
+  fontSize?: number;
 }
 
 export interface TypographySkeletonProps {
   variant?: TypographyVariants;
+  fontSize?: number;
   width: number | string;
 }

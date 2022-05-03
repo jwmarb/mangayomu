@@ -14,5 +14,10 @@ export const Typography = styled.Text<TypographyProps>`
       font-family: ${props.bold ? props.theme.typography.fontFamily.heavy : props.theme.typography.fontFamily.regular};
     `};
     text-align: ${props.align ?? 'left'};
+    ${() =>
+      props.fontSize &&
+      css`
+        font-size: ${props.fontSize}px;
+      `}
   `}
 `;
