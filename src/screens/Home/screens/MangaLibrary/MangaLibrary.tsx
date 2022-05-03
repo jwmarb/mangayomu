@@ -48,6 +48,8 @@ import React from 'react';
 import { Keyboard } from 'react-native';
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 import { useTheme } from 'styled-components/native';
+import LibraryIsEmpty from './components/LibraryIsEmpty';
+import NoItemsFound from './components/NoItemsFound';
 
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   const { mangas, navigation, history, cols } = props;
@@ -118,10 +120,18 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   }, [cols]);
 
   useMountedEffect(() => {
-    setDataProvider((prev) => prev.newInstance(dataProviderFn).cloneWithRows(mangas));
-  }, [mangas.length]);
+    setDataProvider((prev) =>
+      prev
+        .newInstance(dataProviderFn)
+        .cloneWithRows(mangas.filter((x) => titleIncludes(query)(x.manga)).sort(selectedSortOption))
+    );
+  }, [mangas.length, query, sort, reverse]);
 
   if (!ready) return Fallback;
+
+  if (dataProvider.getSize() === 0 && mangas.length === 0) return <LibraryIsEmpty />;
+
+  if (dataProvider.getSize() === 0 && mangas.length > 0) return <NoItemsFound query={query} />;
 
   return (
     <RecyclerListView
