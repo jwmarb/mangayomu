@@ -21,14 +21,15 @@ const MangaSkeletonImage = styled.View<{ cols: number }>`
 
 const MangaSkeleton: React.FC = (props) => {
   const cols = useSelector((state: AppState) => state.settings.mangaCover.perColumn);
+  const fontSize = useSelector((state: AppState) => state.settings.mangaCover.fontSize);
   return (
     <MangaBaseContainer cols={cols}>
       <Flex direction='column'>
         <MangaSkeletonImage cols={cols} />
         <Spacer y={0.5} />
-        <TypographySkeleton width='100%' />
+        <TypographySkeleton width='100%' fontSize={fontSize} />
         <Spacer y={0.5} />
-        <TypographySkeleton width='100%' />
+        <TypographySkeleton width='100%' fontSize={fontSize} />
       </Flex>
     </MangaBaseContainer>
   );
