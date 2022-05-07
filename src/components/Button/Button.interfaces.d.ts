@@ -11,7 +11,7 @@ export interface ButtonProps extends Omit<RNButtonProps, 'onPress'> {
   color?: ButtonColors;
   variant?: ButtonVariants;
   expand?: boolean | number | string;
-  icon?: React.ReactElement<React.ComponentProps<typeof Icon>>;
+  icon?: React.ReactElement<React.ComponentProps<typeof Icon>> | false;
   iconPlacement?: 'left' | 'right';
 }
 
