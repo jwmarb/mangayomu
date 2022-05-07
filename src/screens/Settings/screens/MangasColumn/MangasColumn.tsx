@@ -13,14 +13,13 @@ import {
 } from '@screens/Settings/screens/MangasColumn/MangasColumn.base';
 import { ScrollView } from 'react-native-gesture-handler';
 import { MangaBaseContainer } from '@components/Manga/Manga.base';
-import CoverSlider from '@screens/Settings/screens/MangasColumn/components/CoverSlider/CoverSlider';
+import CustomizationSlider from '@screens/Settings/screens/MangasColumn/components/CustomizationSlider/CustomizationSlider';
 import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-collapsible';
 import { useIsFocused } from '@react-navigation/native';
-import TitleSlider from '@screens/Settings/screens/MangasColumn/components/TitleSlider/TitleSlider';
 import { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { calculateCoverHeight, calculateCoverWidth } from '@components/Manga/Cover/Cover.helpers';
 import { SPACE_MULTIPLIER } from '@theme/Spacing';
-import { adjustColumns as _adjustColumns } from '@redux/reducers/settingsReducer';
+import { adjustColumns as _adjustColumns, adjustTitleSize as _adjustTitleSize } from '@redux/reducers/settingsReducer';
 const { height } = Dimensions.get('window');
 
 const sampleMangas = [
@@ -43,22 +42,31 @@ const sampleMangas = [
 ];
 
 const MangasColumn: React.FC = (props) => {
-  const {} = props;
+  const fontSize = useSelector((state: AppState) => state.settings.mangaCover.fontSize);
   const cols = useSelector((state: AppState) => state.settings.mangaCover.perColumn);
   const dispatch = useAppDispatch();
-  const { adjustColumns } = bindActionCreators({ adjustColumns: _adjustColumns }, dispatch);
+  const { adjustColumns, adjustTitleSize } = bindActionCreators(
+    { adjustColumns: _adjustColumns, adjustTitleSize: _adjustTitleSize },
+    dispatch
+  );
+
   const colValue = useSharedValue(cols);
+  const fontSizeValue = useSharedValue(fontSize);
   const width = useSharedValue(calculateCoverWidth(cols) * SPACE_MULTIPLIER);
   const imageHeight = useSharedValue(calculateCoverHeight(cols) * SPACE_MULTIPLIER);
   React.useEffect(() => {
     return () => {
       adjustColumns(colValue.value);
+      adjustTitleSize(fontSizeValue.value);
     };
   }, []);
   const setWidth = React.useCallback((w: number) => {
     colValue.value = w;
     width.value = calculateCoverWidth(w) * SPACE_MULTIPLIER;
     imageHeight.value = calculateCoverHeight(w) * SPACE_MULTIPLIER;
+  }, []);
+  const setFontSize = React.useCallback((n: number) => {
+    fontSizeValue.value = n;
   }, []);
 
   const f = useIsFocused();
@@ -78,6 +86,9 @@ const MangasColumn: React.FC = (props) => {
     width: width.value,
     height: imageHeight.value,
   }));
+  const textStyle = useAnimatedStyle(() => ({
+    fontSize: fontSizeValue.value,
+  }));
 
   return (
     <>
@@ -90,7 +101,9 @@ const MangasColumn: React.FC = (props) => {
             <MangaCoverPreviewContainer style={style} key={i}>
               <MangaCoverPreview source={{ uri: x.uri }} style={imageStyle} />
               <Spacer y={1} />
-              <Typography numberOfLines={2}>{x.title}</Typography>
+              <Typography style={textStyle} numberOfLines={2}>
+                {x.title}
+              </Typography>
             </MangaCoverPreviewContainer>
           ))}
         </MangasColumnPreviewContainer>
@@ -102,8 +115,24 @@ const MangasColumn: React.FC = (props) => {
         backdrop={false}
         closeThreshold={height * 0.85}>
         <MangasColumnSettingsContainer>
-          <CoverSlider value={cols} setValue={setWidth} />
-          <TitleSlider />
+          <CustomizationSlider
+            value={cols}
+            setValue={setWidth}
+            range={[1, 3]}
+            title='Manga Cover Size'
+            description='Adjust the size of the manga cover'
+            left={<Icon bundle='MaterialCommunityIcons' name='book-minus' size='small' />}
+            right={<Icon bundle='MaterialCommunityIcons' name='book-plus' />}
+          />
+          <CustomizationSlider
+            value={fontSize}
+            setValue={setFontSize}
+            title='Title Size'
+            description='Change the size of the title under the manga cover'
+            range={[8, 32]}
+            left={<Icon bundle='MaterialCommunityIcons' name='format-font-size-decrease' size='small' />}
+            right={<Icon bundle='MaterialCommunityIcons' name='format-font-size-increase' />}
+          />
         </MangasColumnSettingsContainer>
       </Modal>
     </>

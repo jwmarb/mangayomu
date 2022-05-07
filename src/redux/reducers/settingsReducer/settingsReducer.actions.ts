@@ -12,3 +12,9 @@ export function adjustColumns(c: number) {
     dispatch({ type: 'ADJUST_MANGAS_PER_COLUMN', payload: c });
   };
 }
+
+export function adjustTitleSize(c: number) {
+  return (dispatch: Dispatch<SettingsReducerAction>) => {
+    dispatch({ type: 'ADJUST_MANGAS_TITLES_PER_COLUMN', payload: c });
+  };
+}

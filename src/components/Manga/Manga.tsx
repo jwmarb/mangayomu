@@ -17,6 +17,7 @@ const Manga: React.FC<MangaProps> = (props) => {
   const { title, imageCover, compact = false } = props;
   const navigation = useRootNavigation();
   const cols = useSelector((state: AppState) => state.settings.mangaCover.perColumn);
+  const fontSize = useSelector((state: AppState) => state.settings.mangaCover.fontSize);
   function handleOnPress() {
     navigation.navigate('MangaViewer', { manga: props });
   }
@@ -26,7 +27,9 @@ const Manga: React.FC<MangaProps> = (props) => {
         <Flex direction='column'>
           <Cover uri={imageCover} />
           <Spacer y={1} />
-          <Typography numberOfLines={2}>{title}</Typography>
+          <Typography numberOfLines={2} fontSize={fontSize}>
+            {title}
+          </Typography>
         </Flex>
       </MangaBaseContainer>
     </ButtonBase>

@@ -1,4 +1,5 @@
 import MangaSee from '@services/MangaSee';
+import { RFValue } from 'react-native-responsive-fontsize';
 import { SettingsReducerAction, SettingsReducerState } from './settingsReducer.interfaces';
 
 const INITIAL_STATE: SettingsReducerState = {
@@ -6,11 +7,20 @@ const INITIAL_STATE: SettingsReducerState = {
   selectedSource: MangaSee,
   mangaCover: {
     perColumn: 2,
+    fontSize: RFValue(13),
   },
 };
 
 const reducer = (state: SettingsReducerState = INITIAL_STATE, action: SettingsReducerAction): SettingsReducerState => {
   switch (action.type) {
+    case 'ADJUST_MANGAS_TITLES_PER_COLUMN':
+      return {
+        ...state,
+        mangaCover: {
+          ...state.mangaCover,
+          fontSize: action.payload,
+        },
+      };
     case 'ADJUST_MANGAS_PER_COLUMN':
       return {
         ...state,

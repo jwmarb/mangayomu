@@ -1,8 +1,9 @@
 import { TypographyProps } from '@components/Typography/Typography.interfaces';
 import styled, { css } from 'styled-components/native';
 import { Color } from '@theme/core';
+import Animated from 'react-native-reanimated';
 
-export const Typography = styled.Text<TypographyProps>`
+export const Typography = styled(Animated.Text)<TypographyProps>`
   ${(props) => css`
     ${props.theme.typography[props.variant ?? 'body1']};
     color: ${() => {
