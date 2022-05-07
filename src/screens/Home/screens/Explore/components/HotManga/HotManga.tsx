@@ -5,8 +5,9 @@ import { useRootNavigation } from '@navigators/Root';
 import { keyExtractor, renderItem } from '@screens/Home/screens/Explore/components/HotManga/HotManga.flatlist';
 import useMangaSource from '@hooks/useMangaSource';
 import React from 'react';
+import { RefreshableComponent } from '@screens/Home/screens/Explore/Explore.interfaces';
 
-const HotManga: React.FC = (props) => {
+const HotManga: React.ForwardRefRenderFunction<RefreshableComponent, {}> = (props, ref) => {
   const {} = props;
   const source = useMangaSource();
   const {
@@ -23,6 +24,10 @@ const HotManga: React.FC = (props) => {
       navigation.navigate('GenericMangaList', { mangas, type: 'Trending' });
     }
   }
+
+  React.useImperativeHandle(ref, () => ({
+    refresh,
+  }));
 
   return (
     <Flex direction='column'>
@@ -58,4 +63,4 @@ const HotManga: React.FC = (props) => {
   );
 };
 
-export default React.memo(HotManga);
+export default React.memo(React.forwardRef(HotManga));
