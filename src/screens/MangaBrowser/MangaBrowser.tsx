@@ -1,29 +1,22 @@
-import { Button, Flex, Icon, IconButton, RecyclerListViewScreen, Screen, Spacer, Typography } from '@components/core';
+import { Flex, Icon, IconButton, RecyclerListViewScreen, Screen, Spacer, Typography } from '@components/core';
 import useLazyLoading from '@hooks/useLazyLoading';
-import useSearchBar from '@hooks/useSearchBar';
-import useStatefulHeader from '@hooks/useStatefulHeader';
 import { RootStackParamList } from '@navigators/Root/Root.interfaces';
 import { StackScreenProps } from '@react-navigation/stack';
 import useMangaSource from '@hooks/useMangaSource';
 import { MangaHostWithFilters } from '@services/scraper/scraper.filters';
-import { FilterState } from '@utils/MangaFilters/schema';
 import React from 'react';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { Manga } from '@services/scraper/scraper.interfaces';
 import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-collapsible';
-import { rowRenderer } from '@screens/GenericMangaList/GenericMangaList.recycler';
 import { ApplyWindowCorrectionEventHandler } from '@utils/RecyclerListView.interfaces';
 import pixelToNumber from '@utils/pixelToNumber';
 import { useTheme } from 'styled-components/native';
 import { MangaItemsLoading } from '@screens/GenericMangaList/GenericMangaList.base';
-import useMountedEffect from '@hooks/useMountedEffect';
 import { TextInput } from 'react-native-gesture-handler';
 import { Keyboard, View } from 'react-native';
 import Search from '@screens/Home/screens/MangaLibrary/components/Search';
 import { animate, withAnimatedMounting } from '@utils/Animations';
-import { generateNewLayout } from '@screens/Home/screens/MangaLibrary/MangaLibrary.recycler';
-import { useSelector } from 'react-redux';
-import { AppState } from '@redux/store';
+import useMangaLayout from '@hooks/useMangaLayout';
 
 const dataProviderFn = (r1: Manga, r2: Manga) => r1.title !== r2.title;
 
@@ -35,9 +28,8 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     },
   } = props;
   const theme = useTheme();
-  const cols = useSelector((state: AppState) => state.settings.mangaCover.perColumn);
   const [dataProvider, setDataProvider] = React.useState(new DataProvider(dataProviderFn).cloneWithRows(mangas));
-  const [layoutProvider, setLayoutProvider] = React.useState(generateNewLayout(cols));
+  const { layoutProvider, rowRenderer } = useMangaLayout();
   const [showFooter, setShowFooter] = React.useState<boolean>(true);
   const [query, setQuery] = React.useState<string>(initialQuery);
   const mangahost = useMangaSource(source) as MangaHostWithFilters<Record<string, unknown>>;
@@ -175,7 +167,6 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
             applyWindowCorrection={applyWindowCorrection}
             rowRenderer={rowRenderer}
             onItemLayout={handleOnItemLayout}
-            forceNonDeterministicRendering
             onEndReached={handleOnEndReached}
             scrollViewProps={{
               contentContainerStyle: {

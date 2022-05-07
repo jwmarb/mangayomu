@@ -6,32 +6,21 @@ import styled, { css } from 'styled-components/native';
 
 export const MangaItemContainerEven = styled.View`
   ${(props) => css`
-    width: ${Dimensions.get('window').width / 2}px;
     align-items: flex-end;
-    padding: ${props.theme.spacing(1, 3)};
+    padding: ${props.theme.spacing(1)};
   `}
 `;
 
-export const MangaItemContainerOdd = styled.View`
-  ${(props) => css`
-    width: ${Dimensions.get('window').width / 2}px;
-    align-items: flex-start;
-    padding: ${props.theme.spacing(1, 3)};
-  `}
-`;
-
-const ListLoading = new Array(8).fill('').map((_, i) =>
-  i % 2 === 1 ? (
-    <MangaItemContainerOdd key={i}>
-      <Skeleton.MangaComponent />
-    </MangaItemContainerOdd>
-  ) : (
-    <MangaItemContainerEven key={i}>
-      <Skeleton.MangaComponent />
-    </MangaItemContainerEven>
-  )
-);
+const ListLoading = new Array(8).fill('').map((_, i) => (
+  <MangaItemContainerEven key={i}>
+    <Skeleton.MangaComponent />
+  </MangaItemContainerEven>
+));
 
 export const MangaItemsLoading: React.FC = withAnimatedLoading(() => {
-  return <Flex wrap>{ListLoading}</Flex>;
+  return (
+    <Flex wrap justifyContent='center'>
+      {ListLoading}
+    </Flex>
+  );
 });

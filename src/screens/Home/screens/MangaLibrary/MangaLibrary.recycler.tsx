@@ -17,7 +17,7 @@ export const LayoutLibraryMangaType = {
 
 export const dataProviderFn = (r1: LibraryManga, r2: LibraryManga) => r1.manga.title === r2.manga.title;
 
-export const generateNewLayout = (cols: number) => {
+export const generateNewLayout = (cols: number, fontSize: number) => {
   const spacing = SPACE_MULTIPLIER * 2;
   const totalMangasPerRow = width / (calculateCoverWidth(cols) * SPACE_MULTIPLIER + spacing);
   const maxMangasPerRow = Math.floor(totalMangasPerRow);
@@ -39,7 +39,7 @@ export const generateNewLayout = (cols: number) => {
           dim.width = containerWidth;
           break;
       }
-      dim.height = calculateCoverHeight(cols) * SPACE_MULTIPLIER + 80;
+      dim.height = calculateCoverHeight(cols) * SPACE_MULTIPLIER + fontSize * 5;
     }
   );
 };

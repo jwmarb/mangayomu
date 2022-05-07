@@ -193,6 +193,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       };
 
       const getSort = () => {
+        if (filters['Sort By'] == null) return undefined;
         switch (filters['Sort By'].value) {
           case 'Alphabetical':
             return createSort((a: MangaSeeManga, b: MangaSeeManga) => a.title.localeCompare(b.title));

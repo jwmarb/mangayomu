@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '@redux/store';
 
 const Manga: React.FC<MangaProps> = (props) => {
-  const { title, imageCover, compact = false } = props;
+  const { title, imageCover } = props;
   const navigation = useRootNavigation();
   const cols = useSelector((state: AppState) => state.settings.mangaCover.perColumn);
   const fontSize = useSelector((state: AppState) => state.settings.mangaCover.fontSize);

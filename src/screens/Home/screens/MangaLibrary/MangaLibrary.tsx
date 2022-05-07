@@ -52,12 +52,12 @@ import LibraryIsEmpty from './components/LibraryIsEmpty';
 import NoItemsFound from './components/NoItemsFound';
 
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
-  const { mangas, navigation, history, cols } = props;
+  const { mangas, navigation, history, cols, fontSize } = props;
   const { ready, Fallback } = useLazyLoading();
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(
     new DataProvider(dataProviderFn).cloneWithRows(mangas)
   );
-  const [layoutProvider, setLayoutProvider] = React.useState<LayoutProvider>(generateNewLayout(cols));
+  const [layoutProvider, setLayoutProvider] = React.useState<LayoutProvider>(generateNewLayout(cols, fontSize));
 
   const [expand, setExpand] = React.useState<boolean>(false);
   const [tabIndex, setTabIndex] = React.useState<number>(0);
@@ -116,7 +116,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   );
 
   useMountedEffect(() => {
-    setLayoutProvider(generateNewLayout(cols));
+    setLayoutProvider(generateNewLayout(cols, fontSize));
   }, [cols]);
 
   useMountedEffect(() => {
