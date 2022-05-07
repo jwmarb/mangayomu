@@ -39,7 +39,7 @@ export const generateNewLayout = (cols: number, fontSize: number) => {
           dim.width = containerWidth;
           break;
       }
-      dim.height = calculateCoverHeight(cols) * SPACE_MULTIPLIER + fontSize * 4;
+      dim.height = calculateCoverHeight(cols) * SPACE_MULTIPLIER + fontSize * 4 + 8;
     }
   );
 };
