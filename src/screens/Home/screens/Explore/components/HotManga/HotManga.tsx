@@ -1,4 +1,4 @@
-import { Button, Category, Icon, Placeholder, Spacer, Typography } from '@components/core';
+import { Button, Category, Icon, Placeholder, Progress, Spacer, Typography } from '@components/core';
 import Flex from '@components/Flex';
 import useAPICall from '@hooks/useAPICall';
 import { useRootNavigation } from '@navigators/Root';
@@ -30,7 +30,12 @@ const HotManga: React.FC = (props) => {
         <Typography variant='subheader'>
           Trending updates <Icon bundle='MaterialCommunityIcons' name='fire' color='secondary' />
         </Typography>
-        <Button title='View All' onPress={handleOnPress} />
+        <Button
+          title={loading ? '' : 'View All'}
+          onPress={handleOnPress}
+          icon={loading && <Progress />}
+          disabled={loading}
+        />
       </Category.Header>
       <Spacer y={1} />
       {loading ? (

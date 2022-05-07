@@ -1,4 +1,4 @@
-import { Button, Category, Icon, IconButton, Placeholder, Spacer, Typography } from '@components/core';
+import { Button, Category, Icon, IconButton, Placeholder, Progress, Spacer, Typography } from '@components/core';
 import Flex from '@components/Flex';
 import MangaSkeleton from '@components/Manga/Manga.skeleton';
 import useAPICall from '@hooks/useAPICall';
@@ -31,7 +31,12 @@ const HotManga: React.FC = (props) => {
         <Typography variant='subheader'>
           Recently updated <Icon bundle='MaterialCommunityIcons' name='update' color='secondary' />
         </Typography>
-        <Button title='View All' onPress={handleOnPress} />
+        <Button
+          title={loading ? '' : 'View All'}
+          onPress={handleOnPress}
+          disabled={loading}
+          icon={loading && <Progress />}
+        />
       </Category.Header>
       <Spacer y={1} />
       {loading ? (
