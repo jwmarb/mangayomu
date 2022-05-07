@@ -1,6 +1,8 @@
 import { TypographySkeletonProps } from '@components/Typography/Typography.interfaces';
+import { AppState } from '@redux/store';
 import { rem } from '@theme/Typography';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import styled, { css } from 'styled-components/native';
 const TypographySkeletonBase = styled.Text<TypographySkeletonProps>`
   ${(props) => css`
@@ -22,8 +24,9 @@ function lastIndex(width: string | number) {
 
 const TypographySkeleton: React.FC<TypographySkeletonProps> = (props) => {
   const { width } = props;
+  const fontSize = useSelector((state: AppState) => state.settings.mangaCover.fontSize);
   return (
-    <TypographySkeletonBase {...props} numberOfLines={1}>
+    <TypographySkeletonBase {...props} fontSize={fontSize} numberOfLines={1}>
       {placeholder.substring(0, lastIndex(width))}
     </TypographySkeletonBase>
   );
