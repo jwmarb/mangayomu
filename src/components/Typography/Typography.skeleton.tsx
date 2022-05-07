@@ -6,6 +6,7 @@ const TypographySkeletonBase = styled.Text<TypographySkeletonProps>`
   ${(props) => css`
     ${props.theme.typography[props.variant ?? 'body1']};
     background-color: ${props.theme.palette.action.disabledBackground.get()};
+    font-size: ${props.fontSize}px;
     color: transparent;
     border-radius: ${props.theme.borderRadius}px;
     width: ${typeof props.width === 'string' ? props.width : `${props.width}px`};
