@@ -39,6 +39,22 @@ const sampleMangas = [
     uri: 'https://cover.nep.li/cover/Shingeki-No-Kyojin.jpg',
     title: 'Shingeki no Kyojin',
   },
+  {
+    uri: 'https://cover.nep.li/cover/Naruto.jpg',
+    title: 'Naruto',
+  },
+  {
+    uri: 'https://cover.nep.li/cover/Solo-Leveling.jpg',
+    title: 'Solo Leveling',
+  },
+  {
+    uri: 'https://cover.nep.li/cover/Jujutsu-Kaisen.jpg',
+    title: 'Jujutsu Kaisen',
+  },
+  {
+    uri: 'https://cover.nep.li/cover/The-Beginning-After-The-End.jpg',
+    title: 'The Beginning After the End',
+  },
 ];
 
 const MangasColumn: React.FC = (props) => {
