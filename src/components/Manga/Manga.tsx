@@ -22,7 +22,7 @@ const Manga: React.FC<MangaProps> = (props) => {
     navigation.navigate('MangaViewer', { manga: props });
   }
   return (
-    <ButtonBase onPress={handleOnPress} opacity>
+    <ButtonBase onPress={handleOnPress} opacity square>
       <MangaBaseContainer cols={cols}>
         <Flex direction='column'>
           <Cover uri={imageCover} />
