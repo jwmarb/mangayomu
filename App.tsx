@@ -14,6 +14,8 @@ import { HoldMenuProvider } from 'react-native-hold-menu';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import { PortalProvider } from '@gorhom/portal';
+import '@services/MangaPark_v3';
+import '@services/MangaSee';
 
 export default function App() {
   const generated = theme();
