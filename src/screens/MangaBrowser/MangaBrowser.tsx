@@ -32,6 +32,7 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
   const { layoutProvider, rowRenderer } = useMangaLayout();
   const [showFooter, setShowFooter] = React.useState<boolean>(true);
   const [query, setQuery] = React.useState<string>(initialQuery);
+  const [reachedEnd, setReachedEnd] = React.useState<boolean>(false);
   const mangahost = useMangaSource(source) as MangaHostWithFilters<Record<string, unknown>>;
   const { FilterModal, schema } = mangahost.getFilterSchema();
   const [filter, setFilters] = React.useState<typeof schema>(schema);
@@ -41,6 +42,10 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     navigation.goBack();
   }, [navigation]);
   const [show, setShow] = React.useState<boolean>(false);
+  function resetSearchOptions() {
+    mangahost.resetPage();
+    setReachedEnd(false);
+  }
 
   const options: UseCollapsibleOptions = {
     navigationOptions: {
@@ -71,9 +76,7 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
   const { ready, Fallback } = useLazyLoading();
 
   React.useEffect(() => {
-    return () => {
-      mangahost.resetPage();
-    };
+    return resetSearchOptions;
   }, []);
 
   React.useEffect(() => {
@@ -93,7 +96,7 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
       if (query !== text) {
         setLoading(true);
         try {
-          mangahost.resetPage();
+          resetSearchOptions();
           const mangas = await mangahost.search(text, filter);
           setDataProvider((prev) => prev.newInstance(dataProviderFn).cloneWithRows(mangas));
         } catch (e) {
@@ -131,19 +134,23 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
   );
 
   const handleOnEndReached = React.useCallback(async () => {
-    if (!loading) {
+    if (!loading && !reachedEnd) {
       setShowFooter(true);
       try {
         mangahost.addPage();
         const mangas = await mangahost.search(query, filter);
-        setDataProvider((prev) => prev.cloneWithRows(mangas));
+        if (
+          (dataProvider.getAllData() as Manga[])[dataProvider.getSize() - 1]?.title !== mangas[mangas.length - 1].title
+        )
+          setDataProvider((prev) => prev.cloneWithRows([...prev.getAllData(), ...mangas]));
+        else setReachedEnd(true);
       } catch (e) {
         console.error(e);
       } finally {
         setShowFooter(false);
       }
     }
-  }, [filter, query, setDataProvider, loading, setLoading]);
+  }, [filter, query, setDataProvider, dataProvider, loading, setLoading, reachedEnd, setReachedEnd]);
 
   const handleOnItemLayout = React.useCallback(() => {
     setShowFooter(false);
