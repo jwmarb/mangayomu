@@ -123,6 +123,23 @@ export declare interface WithAltTitles {
   altTitles: string[];
 }
 
+export declare interface WithRating {
+  /**
+   * The rating of the manga
+   */
+  rating: {
+    /**
+     * The value of the rating, scaling from 1-10
+     */
+    value: number;
+
+    /**
+     * The number of people that gave the manga a rating
+     */
+    voteCount: number;
+  };
+}
+
 /**
  * The status of the manga (Ongoing, Hiatus, etc.)
  */
@@ -195,6 +212,13 @@ export declare interface MangaMeta<TChapters extends MangaChapter = MangaChapter
      */
     modified: string;
   };
+}
+
+export declare interface MangaMultilingualChapter extends MangaChapter {
+  /**
+   * The language of the chapter. It must be in the format of a language code (e.g. english = en, brazilian portuguese = pt-br)
+   */
+  language: string;
 }
 
 export declare interface MangaChapter {
