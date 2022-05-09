@@ -111,7 +111,9 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
                 <Spacer x={2} />
                 <Flex direction='column' shrink>
                   <Title title={manga.title} isAdult={isAdult} />
-                  <Authors manga={manga} authors={userMangaInfo?.authors} />
+                  {MangaValidator.hasAuthors(userMangaInfo) && (
+                    <Authors manga={manga} authors={userMangaInfo?.authors} />
+                  )}
                   <Spacer y={1} />
                   <Genres genres={userMangaInfo?.genres} source={source} />
                   <Spacer y={1} />

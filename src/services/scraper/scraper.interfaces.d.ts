@@ -1,4 +1,5 @@
 import { FilterSchemaObject } from '@utils/MangaFilters/schema';
+import { ISOLangCode } from '@utils/languageCodes';
 
 /**
  * A manga that has official translations
@@ -185,22 +186,10 @@ export declare interface Manga {
   link: string;
 }
 
-export declare interface MangaMeta<TChapters extends MangaChapter = MangaChapter> extends WithGenres {
+export declare interface WithModificationDate {
   /**
-   * The authors of the manga
+   * The date describing when the manga was published or modified
    */
-  authors: string[];
-
-  /**
-   * The chapters of the manga
-   */
-  chapters: TChapters[];
-
-  /**
-   * The description of the manga, also known as the synopsis
-   */
-  description: string;
-
   date: {
     /**
      * The date that describes when the manga was published
@@ -214,11 +203,23 @@ export declare interface MangaMeta<TChapters extends MangaChapter = MangaChapter
   };
 }
 
+export declare interface MangaMeta<TChapters extends MangaChapter = MangaChapter> extends WithGenres {
+  /**
+   * The chapters of the manga
+   */
+  chapters: TChapters[];
+
+  /**
+   * The description of the manga, also known as the synopsis
+   */
+  description: string;
+}
+
 export declare interface MangaMultilingualChapter extends MangaChapter {
   /**
-   * The language of the chapter. It must be in the format of a language code (e.g. english = en, brazilian portuguese = pt-br)
+   * The language of the chapter. It must be in the format of a language code (e.g. english = en, brazilian portuguese = pt)
    */
-  language: string;
+  language: ISOLangCode;
 }
 
 export declare interface MangaChapter {

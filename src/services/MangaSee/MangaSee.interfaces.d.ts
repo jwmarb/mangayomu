@@ -15,6 +15,8 @@ import {
   WithDate,
   WithOfficialTranslations,
   WithAltTitles,
+  WithAuthors,
+  WithModificationDate,
 } from '@services/scraper/scraper.interfaces';
 
 export type MangaSeeManga = Manga &
@@ -30,7 +32,13 @@ export type MangaSeeManga = Manga &
     vm: number;
   };
 
-export type MangaSeeMangaMeta = MangaMeta<MangaSeeChapter> & WithGenres & WithYearReleased & WithType & WithStatus;
+export type MangaSeeMangaMeta = MangaMeta<MangaSeeChapter> &
+  WithGenres &
+  WithYearReleased &
+  WithType &
+  WithAuthors &
+  WithStatus &
+  WithModificationDate;
 
 export type MangaSeeChapter = MangaChapter;
 

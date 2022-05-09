@@ -1,5 +1,6 @@
 import {
   Manga,
+  MangaMultilingualChapter,
   WithAltTitles,
   WithAuthors,
   WithDate,
@@ -12,6 +13,15 @@ import {
 import { ADULT_GENRES } from '@utils/MangaValidator/MangaValidator.constants';
 
 class MangaValidator {
+  /**
+   * Check if a manga chapter is multilingual
+   * @param chapter The chapter
+   * @returns Returns a boolean indicating whether or not the chapter supports multiple languages
+   */
+  public isMultilingualChapter(chapter: any): chapter is MangaMultilingualChapter {
+    return 'language' in chapter;
+  }
+
   /**
    * Check if the manga has alternative titles
    * @param manga The manga
