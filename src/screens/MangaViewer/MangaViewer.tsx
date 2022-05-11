@@ -33,6 +33,7 @@ const Authors = React.lazy(() => import('@screens/MangaViewer/components/Authors
 const MangaCover = React.lazy(() => import('@screens/MangaViewer/components/MangaCover'));
 const MangaAction = React.lazy(() => import('@screens/MangaViewer/components/MangaAction'));
 const Overview = React.lazy(() => import('@screens/MangaViewer/components/Overview'));
+const MangaRating = React.lazy(() => import('@screens/MangaViewer/components/MangaRating'));
 
 const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   const {
@@ -95,7 +96,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     [userMangaInfo?.chapters, selectedSortOption]
   );
 
-  if (ready)
+  if (ready) {
     return (
       <React.Suspense
         fallback={
@@ -111,13 +112,21 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
                 <Spacer x={2} />
                 <Flex direction='column' shrink>
                   <Title title={manga.title} isAdult={isAdult} />
-                  {MangaValidator.hasAuthors(userMangaInfo) && (
-                    <Authors manga={manga} authors={userMangaInfo?.authors} />
-                  )}
+                  {
+                    <Authors
+                      manga={manga}
+                      authors={userMangaInfo && MangaValidator.hasAuthors(userMangaInfo) ? userMangaInfo.authors : null}
+                    />
+                  }
                   <Spacer y={1} />
                   <Genres genres={userMangaInfo?.genres} source={source} />
                   <Spacer y={1} />
                   <StatusIndicator meta={userMangaInfo} />
+                  <MangaRating
+                    {...(userMangaInfo && MangaValidator.hasRating(userMangaInfo)
+                      ? { rating: { rating: userMangaInfo.rating } }
+                      : { rating: null })}
+                  />
                   <Spacer y={1} />
                   <MangaAction manga={manga} userMangaInfo={userMangaInfo} />
                 </Flex>
@@ -145,6 +154,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
         </AnimatedProvider>
       </React.Suspense>
     );
+  }
   return Fallback;
 };
 

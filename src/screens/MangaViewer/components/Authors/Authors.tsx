@@ -10,16 +10,17 @@ import Animated from 'react-native-reanimated';
 const Authors: React.FC<AuthorsProps> = (props) => {
   const { manga, authors } = props;
   const animatedMount = useAnimatedMounting(!!authors);
-  return MangaValidator.hasAuthors(manga) ? (
+
+  return manga && MangaValidator.hasAuthors(manga) ? (
     <Typography>
       By{' '}
       <Typography color='textSecondary' numberOfLines={1}>
         {manga.authors.join(', ')}
       </Typography>
     </Typography>
-  ) : !authors ? (
+  ) : authors === undefined ? (
     animate(<Skeleton.Typography width='80%' />, withAnimatedLoading)
-  ) : (
+  ) : authors != null ? (
     <Animated.View style={animatedMount}>
       <Typography>
         By{' '}
@@ -28,7 +29,7 @@ const Authors: React.FC<AuthorsProps> = (props) => {
         </Typography>
       </Typography>
     </Animated.View>
-  );
+  ) : null;
 };
 
 export default React.memo(Authors);
