@@ -6,6 +6,7 @@ import {
   WithDate,
   WithGenres,
   WithHentai,
+  WithRating,
   WithStatus,
   WithType,
   WithYearReleased,
@@ -13,6 +14,15 @@ import {
 import { ADULT_GENRES } from '@utils/MangaValidator/MangaValidator.constants';
 
 class MangaValidator {
+  /**
+   * Check if a manga has a community rating
+   * @param manga The manga
+   * @returns Returns a boolean indicating whether or not the manga has a rating
+   */
+  public hasRating(manga: any): manga is WithRating {
+    return 'rating' in manga;
+  }
+
   /**
    * Check if a manga chapter is multilingual
    * @param chapter The chapter
