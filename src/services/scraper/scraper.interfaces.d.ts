@@ -132,7 +132,7 @@ export declare interface WithRating {
     /**
      * The value of the rating, scaling from 1-10, or if not enough votes, then N/A
      */
-    value: string;
+    value: string | number;
 
     /**
      * The number of people that gave the manga a rating
