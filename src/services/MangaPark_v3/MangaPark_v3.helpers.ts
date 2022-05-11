@@ -1,6 +1,20 @@
 import { sub } from 'date-fns';
 
 /**
+ * Parse title
+ * @param title The title extracted from jquery
+ * @returns Returns the parsed title
+ */
+export function extractChapterTitle(title: string) {
+  const p = title.trim();
+
+  return p
+    .substring(p.indexOf(' ') + 1)
+    .trim()
+    .replace(/\s\s+/g, ' ');
+}
+
+/**
  * Parse a string to only show digits
  * @param str The string to show only numbers
  * @returns Returns the string with numbers only
