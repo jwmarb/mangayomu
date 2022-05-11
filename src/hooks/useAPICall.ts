@@ -11,7 +11,7 @@ export default function useAPICall<T>(
   deps: DependencyList = [],
   fetchCondition: boolean = true
 ) {
-  const cancelable = React.useRef(new CancelablePromise<T>(apiCall));
+  const cancelable = React.useRef<CancelablePromise<T>>();
   const [items, setItems] = React.useState<T>();
   const [error, setError] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(fetchCondition);
@@ -19,20 +19,21 @@ export default function useAPICall<T>(
     if (fetchCondition) {
       refresh();
       return () => {
-        cancelable.current.cancel();
+        cancelable.current?.cancel();
       };
     }
-  }, deps);
+  }, [...deps]);
   const refresh = React.useCallback(async () => {
     cancelable.current = new CancelablePromise(apiCall);
     setLoading(true);
-    const response = await cancelable.current.start();
+    const response = await cancelable.current?.start();
+    console.log('fetching');
     try {
-      if (!cancelable.current.isCanceled()) setItems(response);
+      if (!cancelable.current?.isCanceled()) setItems(response);
     } catch (e) {
-      if (!cancelable.current.isCanceled()) setError(e as any);
+      if (!cancelable.current?.isCanceled()) setError(e as any);
     } finally {
-      if (!cancelable.current.isCanceled()) setLoading(false);
+      if (!cancelable.current?.isCanceled()) setLoading(false);
     }
   }, [setLoading, cancelable, setItems, setError, ...deps]);
 
