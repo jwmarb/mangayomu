@@ -1,4 +1,4 @@
-import { Category, Flex, Genre, Skeleton, Typography } from '@components/core';
+import { Category, Flex, Genre, Skeleton, Spacer, Typography } from '@components/core';
 import useAnimatedLoading from '@hooks/useAnimatedLoading';
 import useAnimatedMounting from '@hooks/useAnimatedMounting';
 import { GenresProps } from '@screens/MangaViewer/components/Genres/Genres.interfaces';
@@ -12,31 +12,38 @@ import Animated from 'react-native-reanimated';
 const Genres: React.FC<GenresProps> = (props) => {
   const { genres, buttons, source } = props;
   const mountingStyle = useAnimatedMounting();
+  if (genres && genres.length > 0) return null;
   if (buttons)
     return (
-      <Animated.View style={mountingStyle}>
-        {genres ? (
-          <Category.Header>
-            <Flex spacing={1}>
-              {genres.map((genre) => (
-                <Genre key={genre} genre={genre} source={source} />
-              ))}
-            </Flex>
-          </Category.Header>
-        ) : null}
-      </Animated.View>
+      <>
+        <Spacer y={2} />
+        <Animated.View style={mountingStyle}>
+          {genres ? (
+            <Category.Header>
+              <Flex spacing={1}>
+                {genres.map((genre) => (
+                  <Genre key={genre} genre={genre} source={source} />
+                ))}
+              </Flex>
+            </Category.Header>
+          ) : null}
+        </Animated.View>
+      </>
     );
 
   return (
-    <Animated.View style={mountingStyle}>
-      {genres ? (
-        <Typography color='textSecondary' numberOfLines={2}>
-          {genres.join(' · ')}
-        </Typography>
-      ) : (
-        animate(<Skeleton.Typography width='100%' />, withAnimatedLoading)
-      )}
-    </Animated.View>
+    <>
+      <Spacer y={2} />
+      <Animated.View style={mountingStyle}>
+        {genres ? (
+          <Typography color='textSecondary' numberOfLines={2}>
+            {genres.join(' · ')}
+          </Typography>
+        ) : (
+          animate(<Skeleton.Typography width='100%' />, withAnimatedLoading)
+        )}
+      </Animated.View>
+    </>
   );
   // return !genres
   //   ? buttons
