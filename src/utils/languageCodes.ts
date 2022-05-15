@@ -137,6 +137,10 @@ export const languages = {
     name: 'Cree',
     nativeName: 'ᓀᐦᐃᔭᐍᐏᐣ',
   },
+  sh: {
+    name: 'Croatian',
+    nativeName: 'hrvatski',
+  },
   hr: {
     name: 'Croatian',
     nativeName: 'hrvatski',
@@ -232,6 +236,10 @@ export const languages = {
   hz: {
     name: 'Herero',
     nativeName: 'Otjiherero',
+  },
+  _t: {
+    name: 'Hindi',
+    nativeName: 'हिन्दी, हिंदी',
   },
   hi: {
     name: 'Hindi',

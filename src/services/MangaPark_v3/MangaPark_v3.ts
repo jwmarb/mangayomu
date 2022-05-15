@@ -90,7 +90,6 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
         const { title, dateUpdated } =
           referenceMultilingualChapter[digitsOnly(href.substring(href.lastIndexOf('/') + 1, href.lastIndexOf('-')))];
         const isoCode = href.substring(href.lastIndexOf('-') + 1, href.lastIndexOf('-') + 3);
-
         return {
           name: `${title} (${languages[isoCode as ISOLangCode].name})`,
           language: isoCode,
