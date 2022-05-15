@@ -7,4 +7,5 @@ export interface OverviewProps {
   chapters: ReadingChapterInfo[];
   collapsible: Collapsible;
   language: ISOLangCode;
+  onChangeLanguage: (l: ISOLangCode) => void;
 }

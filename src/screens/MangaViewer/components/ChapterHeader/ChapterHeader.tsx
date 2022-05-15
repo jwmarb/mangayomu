@@ -108,7 +108,9 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
       <ChapterHeaderContainer>
         <ChapterLoadingIndicator style={loadingStyle} />
         <ChapterLoadingIndicatorBackground style={bgStyle} />
-        <Typography variant='subheader'>{numOfChapters ? `Chapters - ${numOfChapters}` : 'Updating...'}</Typography>
+        <Typography variant='subheader'>
+          {numOfChapters != null ? `Chapters - ${numOfChapters}` : 'Updating...'}
+        </Typography>
         <Spacer x={2} />
         <Flex>
           {multilingualChapters && (

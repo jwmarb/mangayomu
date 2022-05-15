@@ -21,11 +21,27 @@ const MangaAction: React.FC<MangaActionProps> = (props) => {
       <Flex fullWidth grow justifyContent='flex-end' direction='column'>
         <Flex alignItems='center'>
           <Button
-            title={userMangaInfo ? userMangaInfo.currentlyReadingChapter?.name ?? 'Read' : ''}
-            icon={userMangaInfo ? <Icon bundle='Feather' name='book' /> : <Progress />}
+            title={
+              userMangaInfo
+                ? userMangaInfo.currentlyReadingChapter?.name ?? userMangaInfo.chapters.length > 0
+                  ? 'Read'
+                  : 'Unavailable'
+                : ''
+            }
+            icon={
+              userMangaInfo ? (
+                userMangaInfo.chapters.length > 0 ? (
+                  <Icon bundle='Feather' name='book' />
+                ) : (
+                  <Icon bundle='Feather' name='lock' />
+                )
+              ) : (
+                <Progress />
+              )
+            }
             variant='contained'
             expand
-            disabled={!userMangaInfo}
+            disabled={!userMangaInfo || (userMangaInfo && userMangaInfo.chapters.length === 0)}
           />
           <Spacer x={1} />
           <Button

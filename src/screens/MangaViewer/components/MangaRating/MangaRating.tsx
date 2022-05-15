@@ -15,12 +15,12 @@ const MangaRating: React.FC<MangaRatingProps> = (props) => {
           <Flex alignItems='center'>
             {new Array(5).fill('').map((x, i) => {
               const star = (i + 1) * 2;
-              if (value - star > 1)
+              if (value - star >= 0)
                 return <Icon key={i} bundle='MaterialCommunityIcons' name='star' color='secondary' />;
-              if (value - star >= 0.5)
+              if (Math.abs(value - star) % 1 !== 0)
                 return <Icon key={i} bundle='MaterialCommunityIcons' name='star-half-full' color='secondary' />;
-              if (value - star < 0.5)
-                return <Icon key={i} bundle='MaterialCommunityIcons' name='star-outline' color='secondary' />;
+              // if (value - star < 0.5)
+              return <Icon key={i} bundle='MaterialCommunityIcons' name='star-outline' color='secondary' />;
             })}
             <Spacer x={1} />
             <Typography>{value} / 10</Typography>

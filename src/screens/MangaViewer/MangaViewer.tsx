@@ -108,6 +108,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
         }>
         <AnimatedProvider style={loadingAnimation}>
           <Overview
+            onChangeLanguage={setLanguage}
             chapters={sorted}
             language={language}
             currentChapter={userMangaInfo?.currentlyReadingChapter}

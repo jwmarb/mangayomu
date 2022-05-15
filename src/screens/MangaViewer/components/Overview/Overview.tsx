@@ -1,3 +1,5 @@
+import { Container } from '@components/Container';
+import { Typography } from '@components/Typography';
 import FloatingActionButton from '@screens/MangaViewer/components/FloatingActionButton/FloatingActionButton';
 import RecyclerListViewScrollView from '@screens/MangaViewer/components/Overview/components/RecyclerListViewScrollView';
 import { OverviewProps } from '@screens/MangaViewer/components/Overview/Overview.interfaces';
@@ -5,24 +7,25 @@ import { createFooter, layout, rowRenderer } from '@screens/MangaViewer/componen
 import { MangaMultilingualChapter } from '@services/scraper/scraper.interfaces';
 import MangaValidator from '@utils/MangaValidator';
 import React from 'react';
-import { Dimensions, LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
+import { Animated, Dimensions, LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { WindowCorrection } from 'recyclerlistview/dist/reactnative/core/ViewabilityTracker';
 const { height } = Dimensions.get('window');
 
 const Overview: React.FC<OverviewProps> = (props) => {
-  const { children, chapters, currentChapter, collapsible, language } = props;
+  const { children, chapters, currentChapter, collapsible, language, onChangeLanguage } = props;
   const { containerPaddingTop } = collapsible;
 
   const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(false);
   const [finished, setFinished] = React.useState<boolean>(false);
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider((r1, r2) => r1 !== r2));
   React.useEffect(() => {
-    if (chapters && chapters.every(MangaValidator.isMultilingualChapter))
+    if (chapters && chapters.every(MangaValidator.isMultilingualChapter)) {
+      onChangeLanguage((chapters as unknown as MangaMultilingualChapter[])[0]?.language ?? 'en');
       setDataProvider((p) =>
         p.cloneWithRows(chapters.filter((x: unknown) => (x as MangaMultilingualChapter).language === language))
       );
-    else if (chapters) setDataProvider((p) => p.cloneWithRows(chapters));
+    } else if (chapters) setDataProvider((p) => p.cloneWithRows(chapters));
   }, [chapters, language]);
   const [layoutHeight, setLayoutHeight] = React.useState<number>(0);
 
@@ -49,6 +52,21 @@ const Overview: React.FC<OverviewProps> = (props) => {
         windowCorrection.windowShift = -layoutHeight;
       },
       [layoutHeight, containerPaddingTop]
+    );
+
+  if (dataProvider.getSize() === 0)
+    return (
+      <Animated.ScrollView
+        contentContainerStyle={{ paddingTop: collapsible.containerPaddingTop }}
+        scrollIndicatorInsets={{ top: collapsible.scrollIndicatorInsetTop }}
+        onScroll={collapsible.onScroll}>
+        <View onLayout={handleOnLayout}>{children}</View>
+        <Container horizontalPadding={3}>
+          <Typography align='center' color='textSecondary'>
+            There are no chapters :(
+          </Typography>
+        </Container>
+      </Animated.ScrollView>
     );
 
   if (chapters == null) {
