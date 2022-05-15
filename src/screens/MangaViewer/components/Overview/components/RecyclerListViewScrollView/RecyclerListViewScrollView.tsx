@@ -18,7 +18,7 @@ const RecyclerListViewScrollView: React.FC<RecyclerListViewScrollViewProps> = Re
   return (
     <Animated.ScrollView
       ref={ref as any}
-      contentContainerStyle={{ paddingTop: containerPaddingTop }}
+      // contentContainerStyle={{ paddingTop: containerPaddingTop }}
       scrollIndicatorInsets={{ top: scrollIndicatorInsetTop }}
       onScroll={onScroll}
       {...rest}>
