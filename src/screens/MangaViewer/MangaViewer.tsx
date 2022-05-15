@@ -184,7 +184,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
             />
             <Modal visible={visible} onClose={handleOnCloseModal}>
               <HeaderBuilder paper removeStatusBarPadding horizontalPadding verticalPadding>
-                <Typography variant='subheader'>Sort Chapters</Typography>
+                <Typography variant='subheader'>Sort chapters</Typography>
               </HeaderBuilder>
               {sortOptions}
             </Modal>

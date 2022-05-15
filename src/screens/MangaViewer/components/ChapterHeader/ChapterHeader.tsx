@@ -1,16 +1,29 @@
-import { Typography, Spacer, Icon, Button, Modal, ListItem, List, Flex, IconButton } from '@components/core';
+import {
+  Typography,
+  Spacer,
+  Icon,
+  Button,
+  Modal,
+  ListItem,
+  List,
+  Flex,
+  IconButton,
+  HeaderBuilder,
+} from '@components/core';
 import {
   ChapterHeaderContainer,
   ChapterLoadingIndicator,
   ChapterLoadingIndicatorBackground,
 } from '@screens/MangaViewer/components/ChapterHeader/ChapterHeader.base';
 import { ChapterHeaderProps } from '@screens/MangaViewer/components/ChapterHeader/ChapterHeader.interfaces';
+import LanguageItem from '@screens/MangaViewer/components/ChapterHeader/components/LanguageItem';
 import LoadingChapters from '@screens/MangaViewer/components/LoadingChapters';
 import { MangaMultilingualChapter } from '@services/scraper/scraper.interfaces';
 import { ISOLangCode, languages } from '@utils/languageCodes';
 import MangaValidator from '@utils/MangaValidator';
 import React from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { HoldItem } from 'react-native-hold-menu';
 import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
 import {
@@ -30,6 +43,7 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
   const { chapters, handleOnOpenModal, loading, refresh, language, onChangeLanguage } = props;
   const opacity = useSharedValue(1);
   const bgOpacity = useSharedValue(0);
+  const [visible, setVisible] = React.useState<boolean>(false);
   const translateX = useSharedValue(-halfWidth);
   React.useEffect(() => {
     if (loading) {
@@ -57,6 +71,10 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
     transform: [{ translateX: translateX.value }],
   }));
 
+  const handleOnPress = () => {
+    setVisible(true);
+  };
+
   const bgStyle = useAnimatedStyle(() => ({
     opacity: bgOpacity.value,
   }));
@@ -73,7 +91,7 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
     return chapters.length;
   }, [chapters, language, multilingualChapters]);
 
-  const menuItems: MenuItemProps[] = React.useMemo(() => {
+  const chapterLanguages = React.useMemo(() => {
     if (chapters == null) return [];
     if (multilingualChapters) {
       const availableLanguages: ISOLangCode[] = Object.keys(
@@ -84,25 +102,17 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
         }, {} as Record<ISOLangCode, ISOLangCode>)
       ).sort() as ISOLangCode[];
 
-      return [
-        {
-          text: 'Available languages',
-          isTitle: true,
-          withSeparator: true,
-        },
-        ...availableLanguages.map(
-          (x): MenuItemProps => ({
-            text: languages[x].name,
-            onPress: () => {
-              console.log(`Filter chapters that contain language: ${x}`);
-              onChangeLanguage(x);
-            },
-          })
-        ),
-      ];
+      return availableLanguages;
     }
     return [];
   }, [multilingualChapters, chapters]);
+
+  const handleOnSelect = React.useCallback(
+    (x: ISOLangCode) => {
+      onChangeLanguage(x);
+    },
+    [onChangeLanguage]
+  );
 
   return (
     <>
@@ -115,21 +125,27 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
         <Spacer x={2} />
         <Flex>
           {multilingualChapters && (
-            <>
-              {loading ? (
-                <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='translate' />} disabled />
-              ) : (
-                <HoldItem activateOn='tap' items={menuItems}>
-                  <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='translate' />} />
-                </HoldItem>
-              )}
-            </>
+            <IconButton
+              icon={<Icon bundle='MaterialCommunityIcons' name='translate' />}
+              onPress={handleOnPress}
+              disabled={loading}
+            />
           )}
           <IconButton icon={<Icon bundle='Feather' name='refresh-cw' />} onPress={refresh} disabled={loading} />
           <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='sort' />} onPress={handleOnOpenModal} />
         </Flex>
       </ChapterHeaderContainer>
       {loading && <LoadingChapters />}
+      <Modal visible={visible} onClose={() => setVisible(false)}>
+        <HeaderBuilder paper removeStatusBarPadding horizontalPadding verticalPadding>
+          <Typography variant='subheader'>Select a language</Typography>
+        </HeaderBuilder>
+        <List>
+          {chapterLanguages.map((x) => (
+            <LanguageItem isoCode={x} onSelect={handleOnSelect} selected={language === x} key={x} />
+          ))}
+        </List>
+      </Modal>
     </>
   );
 };
