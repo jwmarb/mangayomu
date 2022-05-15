@@ -27,7 +27,6 @@ export default function useAPICall<T>(
     cancelable.current = new CancelablePromise(apiCall);
     setLoading(true);
     const response = await cancelable.current?.start();
-    console.log('fetching');
     try {
       if (!cancelable.current?.isCanceled()) setItems(response);
     } catch (e) {
