@@ -18,7 +18,7 @@ import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-co
 import MangaValidator from '@utils/MangaValidator';
 import StatusIndicator from '@screens/MangaViewer/components/StatusIndicator';
 import connector, { MangaViewerProps } from '@screens/MangaViewer/MangaViewer.redux';
-import { MangaViewerContainer } from '@screens/MangaViewer/MangaViewer.base';
+import { MangaViewerContainer, MangaViewerImageBackdrop } from '@screens/MangaViewer/MangaViewer.base';
 import useAnimatedLoading from '@hooks/useAnimatedLoading';
 import { AnimatedProvider } from '@context/AnimatedContext';
 import useLazyLoading from '@hooks/useLazyLoading';
@@ -26,7 +26,9 @@ import useSort from '@hooks/useSort';
 import { MangaChapter, WithDate } from '@services/scraper/scraper.interfaces';
 import { HeaderBuilder } from '@components/Screen/Header/Header.base';
 import { ISOLangCode } from '@utils/languageCodes';
-import { Linking, Share } from 'react-native';
+import { ImageBackground, Linking, Share } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from 'styled-components/native';
 const Genres = React.lazy(() => import('@screens/MangaViewer/components/Genres'));
 const ChapterHeader = React.lazy(() => import('@screens/MangaViewer/components/ChapterHeader'));
 const Title = React.lazy(() => import('@screens/MangaViewer/components/Title'));
@@ -102,7 +104,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     }),
     'Chapter'
   );
-
+  const theme = useTheme();
   const collapsible = useCollapsibleHeader(options);
   const { ready, Fallback } = useLazyLoading();
   const loadingAnimation = useAnimatedLoading();
@@ -139,27 +141,35 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
             currentChapter={userMangaInfo?.currentlyReadingChapter}
             collapsible={collapsible}>
             <MangaViewerContainer>
-              <Flex container horizontalPadding={3} verticalPadding={0}>
-                <MangaCover mangaCoverURI={manga.imageCover} title={manga.title} />
-                <Spacer x={2} />
-                <Flex direction='column' shrink>
-                  <Title title={manga.title} isAdult={isAdult} />
-                  <Authors
-                    manga={manga}
-                    authors={userMangaInfo && MangaValidator.hasAuthors(userMangaInfo) ? userMangaInfo.authors : null}
-                  />
-                  <Genres genres={userMangaInfo?.genres} source={source} />
-                  <Spacer y={1} />
-                  <StatusIndicator meta={userMangaInfo} />
-                  <MangaRating
-                    {...(userMangaInfo && MangaValidator.hasRating(userMangaInfo)
-                      ? { rating: { rating: userMangaInfo.rating } }
-                      : { rating: null })}
-                  />
-                </Flex>
-              </Flex>
-              <MangaAction manga={manga} userMangaInfo={userMangaInfo} />
-
+              <ImageBackground source={{ uri: manga.imageCover }}>
+                <LinearGradient colors={['transparent', theme.palette.background.default.get()]}>
+                  <MangaViewerImageBackdrop paddingTop={collapsible.containerPaddingTop}>
+                    <Flex container horizontalPadding={3} verticalPadding={0}>
+                      <MangaCover mangaCoverURI={manga.imageCover} title={manga.title} />
+                      <Spacer x={2} />
+                      <Flex direction='column' shrink>
+                        <Title title={manga.title} isAdult={isAdult} />
+                        <Authors
+                          manga={manga}
+                          authors={
+                            userMangaInfo && MangaValidator.hasAuthors(userMangaInfo) ? userMangaInfo.authors : null
+                          }
+                        />
+                        <Genres genres={userMangaInfo?.genres} source={source} />
+                        <Spacer y={1} />
+                        <StatusIndicator meta={userMangaInfo} />
+                        <MangaRating
+                          {...(userMangaInfo && MangaValidator.hasRating(userMangaInfo)
+                            ? { rating: { rating: userMangaInfo.rating } }
+                            : { rating: null })}
+                        />
+                      </Flex>
+                    </Flex>
+                    <MangaAction manga={manga} userMangaInfo={userMangaInfo} />
+                  </MangaViewerImageBackdrop>
+                </LinearGradient>
+              </ImageBackground>
+              <Spacer y={2} />
               <Description description={userMangaInfo?.description} />
               <Genres buttons genres={userMangaInfo?.genres} source={source} />
             </MangaViewerContainer>
