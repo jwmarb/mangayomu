@@ -8,4 +8,5 @@ export interface OverviewProps {
   collapsible: Collapsible;
   language: ISOLangCode;
   onChangeLanguage: (l: ISOLangCode) => void;
+  loading: boolean;
 }

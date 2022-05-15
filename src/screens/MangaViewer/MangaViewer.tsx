@@ -26,6 +26,7 @@ import useSort from '@hooks/useSort';
 import { MangaChapter, WithDate } from '@services/scraper/scraper.interfaces';
 import { HeaderBuilder } from '@components/Screen/Header/Header.base';
 import { ISOLangCode } from '@utils/languageCodes';
+import { Linking, Share } from 'react-native';
 const Genres = React.lazy(() => import('@screens/MangaViewer/components/Genres'));
 const ChapterHeader = React.lazy(() => import('@screens/MangaViewer/components/ChapterHeader'));
 const Title = React.lazy(() => import('@screens/MangaViewer/components/Title'));
@@ -57,7 +58,30 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     () => ({
       navigationOptions: {
         header: Header,
-        headerRight: () => <IconButton icon={<Icon bundle='Feather' name='share-2' />} />,
+        headerRight: () => (
+          <>
+            <IconButton
+              icon={<Icon bundle='Feather' name='share-2' />}
+              onPress={async () => {
+                try {
+                  await Share.share({
+                    title: 'Share URL',
+                    message: manga.link,
+                    url: manga.link,
+                  });
+                } catch (e) {
+                  alert(e);
+                }
+              }}
+            />
+            <IconButton
+              icon={<Icon bundle='Feather' name='globe' />}
+              onPress={() => {
+                Linking.openURL(manga.link);
+              }}
+            />
+          </>
+        ),
         headerTitle: '',
       },
       config: {
@@ -108,6 +132,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
         }>
         <AnimatedProvider style={loadingAnimation}>
           <Overview
+            loading={loading}
             onChangeLanguage={setLanguage}
             chapters={sorted}
             language={language}

@@ -7,13 +7,23 @@ import { createFooter, layout, rowRenderer } from '@screens/MangaViewer/componen
 import { MangaMultilingualChapter } from '@services/scraper/scraper.interfaces';
 import MangaValidator from '@utils/MangaValidator';
 import React from 'react';
-import { Animated, Dimensions, LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
+import {
+  Animated,
+  Dimensions,
+  LayoutChangeEvent,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  View,
+  LogBox,
+} from 'react-native';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { WindowCorrection } from 'recyclerlistview/dist/reactnative/core/ViewabilityTracker';
 const { height } = Dimensions.get('window');
 
+LogBox.ignoreLogs(['You have mounted RecyclerListView']);
+
 const Overview: React.FC<OverviewProps> = (props) => {
-  const { children, chapters, currentChapter, collapsible, language, onChangeLanguage } = props;
+  const { children, chapters, currentChapter, collapsible, language, onChangeLanguage, loading } = props;
   const { containerPaddingTop } = collapsible;
 
   const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(false);
@@ -54,21 +64,6 @@ const Overview: React.FC<OverviewProps> = (props) => {
       [layoutHeight, containerPaddingTop]
     );
 
-  if (dataProvider.getSize() === 0)
-    return (
-      <Animated.ScrollView
-        contentContainerStyle={{ paddingTop: collapsible.containerPaddingTop }}
-        scrollIndicatorInsets={{ top: collapsible.scrollIndicatorInsetTop }}
-        onScroll={collapsible.onScroll}>
-        <View onLayout={handleOnLayout}>{children}</View>
-        <Container horizontalPadding={3}>
-          <Typography align='center' color='textSecondary'>
-            There are no chapters :(
-          </Typography>
-        </Container>
-      </Animated.ScrollView>
-    );
-
   if (chapters == null) {
     return (
       <RecyclerListViewScrollView
@@ -81,7 +76,9 @@ const Overview: React.FC<OverviewProps> = (props) => {
 
   return (
     <>
-      <FloatingActionButton isAtBeginning={isAtBeginning} currentChapter={currentChapter} />
+      {dataProvider.getSize() > 0 && (
+        <FloatingActionButton isAtBeginning={isAtBeginning} currentChapter={currentChapter} />
+      )}
       <RecyclerListView
         externalScrollView={RecyclerListViewScrollView as any}
         scrollViewProps={{
@@ -94,7 +91,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
         layoutProvider={layout}
         rowRenderer={rowRenderer}
         applyWindowCorrection={applyWindowCorrection}
-        renderFooter={createFooter(!finished)}
+        renderFooter={createFooter(!finished, chapters.length)}
       />
     </>
   );
