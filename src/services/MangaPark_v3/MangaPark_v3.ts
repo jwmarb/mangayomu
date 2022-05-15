@@ -28,51 +28,73 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
   }
   public async getMeta(manga: Manga): Promise<MangaParkV3MangaMeta> {
     const $ = await super.route({ url: manga.link });
-    const englishChapters = $('div#chap-index').find('div.episode-serial').parent().children('div.episode-item');
-    const englishChapterTitles = englishChapters
-      .map((_, el) => extractChapterTitle($(el).find('span.d-md-none').parent().text()))
+
+    const englishChapters = $('div.d-flex.mt-5:contains("English Chapters")').next().find('div.episode-item');
+
+    const englishChapterAnchorElements = englishChapters
+      .find('div.d-flex.align-items-center > a.ms-3.visited[href^="/comic/"]')
+      .map((_, el) => ({
+        name: $(el).text(),
+        link: 'https://' + super.getLink() + $(el).attr('href'),
+      }))
       .get();
-    const englishChapterPaths = englishChapters.map((_, el) => $(el).find('a').attr('href')).get();
+
     const englishChapterDates = englishChapters.find('i.text-nowrap').map((_, el) => {
       const txt = $(el).text();
       return parseTimestamp(txt);
     });
-    const englishChapterObjects: MangaMultilingualChapter[] = englishChapterPaths.map(
-      (x, i) =>
+
+    const englishChapterObjects: MangaMultilingualChapter[] = englishChapterAnchorElements.map(
+      ({ link, name }, i) =>
         ({
-          link: 'https://' + super.getLink() + x,
-          name: englishChapterTitles[i],
+          link,
+          name,
           index: i,
           date: englishChapterDates[i],
           language: 'en',
         } as MangaMultilingualChapter)
     );
 
-    let memoized: Record<string, string> = {};
-
-    const multilingualChapterObjects: MangaMultilingualChapter[] = $(
-      'div.episode-list > div.scrollable-panel > div#chap-index > div.episode-number'
+    const multilingualEpisodeItemElements = $(
+      'div.align-items-center.d-flex.mt-5.justify-content-between:contains("Multilingual Chapters")'
     )
-      .parent()
-      .children('div.episode-item')
-      .find('div.flex-fill > div > div > a[href^="/comic/"]')
-      .map((i, el) => {
-        const parent = $(el).parent().parent().parent();
-        const href = $(el).attr('href')!;
-        const chapterTitle = extractChapterTitle(parent.siblings('div.align-items-center').children('a').text());
-        const isoCode = href.substring(href.lastIndexOf('-') + 1, href.lastIndexOf('-') + 3);
-        const date = () => {
-          if (memoized[chapterTitle] == null) {
-            const t = parseTimestamp(parent.siblings('div.flex-nowrap').children('i.text-nowrap').text());
-            memoized[chapterTitle] = t;
-            return t;
-          }
-          return memoized[chapterTitle];
-        };
+      .next()
+      .find('div.scrollable-panel > div#chap-index > div.episode-item');
+
+    const multilingualChapterTitles = multilingualEpisodeItemElements
+      .find('div.align-items-center.d-flex:not(.flex-nowrap) > a')
+      .map((_, el) => extractChapterTitle($(el).text()))
+      .get();
+
+    const multilingualChapterDates = multilingualEpisodeItemElements
+      .find('div.flex-nowrap > i.text-nowrap')
+      .map((_, el) => $(el).text())
+      .get();
+
+    const referenceMultilingualChapter: Record<string, { title: string; dateUpdated: string }> =
+      multilingualChapterTitles.reduce((prev, curr, i) => {
+        const chapterNum = curr.substring(curr.lastIndexOf(' ') + 1);
         return {
-          name: `${chapterTitle} (${languages[isoCode as ISOLangCode].name})`,
+          ...prev,
+          [chapterNum]: {
+            title: curr,
+            dateUpdated: multilingualChapterDates[i],
+          },
+        };
+      }, {});
+
+    const multilingualChapterObjects: MangaMultilingualChapter[] = multilingualEpisodeItemElements
+      .find('div.d-flex.flex-fill[style="height: 24px;"] > div > div > a')
+      .map((i, el) => {
+        const href: string = $(el).attr('href')!;
+        const { title, dateUpdated } =
+          referenceMultilingualChapter[digitsOnly(href.substring(href.lastIndexOf('/') + 1, href.lastIndexOf('-')))];
+        const isoCode = href.substring(href.lastIndexOf('-') + 1, href.lastIndexOf('-') + 3);
+
+        return {
+          name: `${title} (${languages[isoCode as ISOLangCode].name})`,
           language: isoCode,
-          date: date(),
+          date: dateUpdated,
           link: 'https://' + super.getLink() + href,
         } as MangaMultilingualChapter;
       })
