@@ -25,6 +25,7 @@ import useLazyLoading from '@hooks/useLazyLoading';
 import useSort from '@hooks/useSort';
 import { MangaChapter, WithDate } from '@services/scraper/scraper.interfaces';
 import { HeaderBuilder } from '@components/Screen/Header/Header.base';
+import { ISOLangCode } from '@utils/languageCodes';
 const Genres = React.lazy(() => import('@screens/MangaViewer/components/Genres'));
 const ChapterHeader = React.lazy(() => import('@screens/MangaViewer/components/ChapterHeader'));
 const Title = React.lazy(() => import('@screens/MangaViewer/components/Title'));
@@ -51,6 +52,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     error,
     refresh,
   } = useAPICall(() => source.getMeta(manga));
+  const [language, setLanguage] = React.useState<ISOLangCode>('en');
   const options: UseCollapsibleOptions = React.useMemo(
     () => ({
       navigationOptions: {
@@ -105,7 +107,11 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
           </Flex>
         }>
         <AnimatedProvider style={loadingAnimation}>
-          <Overview chapters={sorted} currentChapter={userMangaInfo?.currentlyReadingChapter} collapsible={collapsible}>
+          <Overview
+            chapters={sorted}
+            language={language}
+            currentChapter={userMangaInfo?.currentlyReadingChapter}
+            collapsible={collapsible}>
             <MangaViewerContainer>
               <Flex container horizontalPadding={3} verticalPadding={0}>
                 <MangaCover mangaCoverURI={manga.imageCover} title={manga.title} />
@@ -138,6 +144,8 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
               <Genres buttons genres={userMangaInfo?.genres} source={source} />
             </MangaViewerContainer>
             <ChapterHeader
+              onChangeLanguage={setLanguage}
+              language={language}
               refresh={refresh}
               chapters={meta?.chapters}
               sort={sort}

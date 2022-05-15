@@ -2,6 +2,8 @@ import FloatingActionButton from '@screens/MangaViewer/components/FloatingAction
 import RecyclerListViewScrollView from '@screens/MangaViewer/components/Overview/components/RecyclerListViewScrollView';
 import { OverviewProps } from '@screens/MangaViewer/components/Overview/Overview.interfaces';
 import { createFooter, layout, rowRenderer } from '@screens/MangaViewer/components/Overview/Overview.recycler';
+import { MangaMultilingualChapter } from '@services/scraper/scraper.interfaces';
+import MangaValidator from '@utils/MangaValidator';
 import React from 'react';
 import { Dimensions, LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
@@ -9,15 +11,19 @@ import { WindowCorrection } from 'recyclerlistview/dist/reactnative/core/Viewabi
 const { height } = Dimensions.get('window');
 
 const Overview: React.FC<OverviewProps> = (props) => {
-  const { children, chapters, currentChapter, collapsible } = props;
+  const { children, chapters, currentChapter, collapsible, language } = props;
   const { containerPaddingTop } = collapsible;
 
   const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(false);
   const [finished, setFinished] = React.useState<boolean>(false);
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider((r1, r2) => r1 !== r2));
   React.useEffect(() => {
-    if (chapters) setDataProvider((p) => p.cloneWithRows(chapters));
-  }, [chapters]);
+    if (chapters && chapters.every(MangaValidator.isMultilingualChapter))
+      setDataProvider((p) =>
+        p.cloneWithRows(chapters.filter((x: unknown) => (x as MangaMultilingualChapter).language === language))
+      );
+    else if (chapters) setDataProvider((p) => p.cloneWithRows(chapters));
+  }, [chapters, language]);
   const [layoutHeight, setLayoutHeight] = React.useState<number>(0);
 
   const listener = React.useCallback(

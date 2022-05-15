@@ -3,6 +3,7 @@ import { MangaParkV3MangaMeta } from '@services/MangaPark_v3/MangaPark_v3.interf
 import { MangaHostWithFilters } from '@services/scraper/scraper.filters';
 import { Manga, MangaChapter, MangaMultilingualChapter } from '@services/scraper/scraper.interfaces';
 import { binary } from '@utils/Algorithms';
+import { ISOLangCode, languages } from '@utils/languageCodes';
 import { Cheerio, Element } from 'cheerio';
 import { sub } from 'date-fns';
 import { MangaParkV3Filter, MANGAPARKV3_INFO } from './MangaPark_v3.constants';
@@ -56,29 +57,26 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
       .children('div.episode-item')
       .find('div.flex-fill > div > div > a[href^="/comic/"]')
       .map((i, el) => {
+        const parent = $(el).parent().parent().parent();
         const href = $(el).attr('href')!;
-        const chapterTitle = extractChapterTitle($(el).text());
+        const chapterTitle = extractChapterTitle(parent.siblings('div.align-items-center').children('a').text());
         const isoCode = href.substring(href.lastIndexOf('-') + 1, href.lastIndexOf('-') + 3);
-        const date = (() => {
+        const date = () => {
           if (memoized[chapterTitle] == null) {
-            const t = parseTimestamp(
-              $(el).parent().parent().parent().siblings('div.flex-nowrap').children('i.text-nowrap').text()
-            );
+            const t = parseTimestamp(parent.siblings('div.flex-nowrap').children('i.text-nowrap').text());
             memoized[chapterTitle] = t;
             return t;
           }
           return memoized[chapterTitle];
-        })();
+        };
         return {
-          name: chapterTitle,
+          name: `${chapterTitle} (${languages[isoCode as ISOLangCode].name})`,
           language: isoCode,
-          date,
+          date: date(),
           link: 'https://' + super.getLink() + href,
         } as MangaMultilingualChapter;
       })
       .get();
-
-    console.log(memoized);
 
     const genres = $('b.text-muted:contains("Genres:")')
       .siblings('span')
