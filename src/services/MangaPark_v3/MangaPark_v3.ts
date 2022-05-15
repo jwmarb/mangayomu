@@ -93,7 +93,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
         $('div#limit-height-body-descr')
           .children('div.limit-html')
           .html()
-          ?.replace(/<br[^>]*>/gi, '\n') ?? 'Unknown description',
+          ?.replace(/<br[^>]*>/gi, '\n') ?? 'This manga has no description.',
       genres,
       rating: {
         value: !Number.isNaN(ratingValue) ? ratingValue : 'N/A',
