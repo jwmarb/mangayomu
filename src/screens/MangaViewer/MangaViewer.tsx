@@ -148,7 +148,6 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
                     manga={manga}
                     authors={userMangaInfo && MangaValidator.hasAuthors(userMangaInfo) ? userMangaInfo.authors : null}
                   />
-                  <Spacer y={1} />
                   <Genres genres={userMangaInfo?.genres} source={source} />
                   <Spacer y={1} />
                   <StatusIndicator meta={userMangaInfo} />

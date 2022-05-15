@@ -12,11 +12,11 @@ import Animated from 'react-native-reanimated';
 const Genres: React.FC<GenresProps> = (props) => {
   const { genres, buttons, source } = props;
   const mountingStyle = useAnimatedMounting();
-  if (genres && genres.length > 0) return null;
+  if (genres && genres.length === 0) return null;
   if (buttons)
     return (
       <>
-        <Spacer y={2} />
+        <Spacer y={1} />
         <Animated.View style={mountingStyle}>
           {genres ? (
             <Category.Header>
@@ -33,7 +33,7 @@ const Genres: React.FC<GenresProps> = (props) => {
 
   return (
     <>
-      <Spacer y={2} />
+      <Spacer y={1} />
       <Animated.View style={mountingStyle}>
         {genres ? (
           <Typography color='textSecondary' numberOfLines={2}>
