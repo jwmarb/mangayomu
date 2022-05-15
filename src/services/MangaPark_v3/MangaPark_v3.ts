@@ -34,7 +34,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
     const englishChapterAnchorElements = englishChapters
       .find('div.d-flex.align-items-center > a.ms-3.visited[href^="/comic/"]')
       .map((_, el) => ({
-        name: $(el).text(),
+        name: extractChapterTitle($(el).text()),
         link: 'https://' + super.getLink() + $(el).attr('href'),
       }))
       .get();
@@ -68,7 +68,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
 
     const multilingualChapterDates = multilingualEpisodeItemElements
       .find('div.flex-nowrap > i.text-nowrap')
-      .map((_, el) => $(el).text())
+      .map((_, el) => parseTimestamp($(el).text()))
       .get();
 
     const referenceMultilingualChapter: Record<string, { title: string; dateUpdated: string }> =
@@ -108,7 +108,13 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
 
     const ratingValue = parseFloat($('div.rating-display > div > b').text());
 
+    const authors = $('b.text-muted:contains("Authors:")')
+      .next()
+      .map((_, el) => $(el).text().trim())
+      .get();
+
     return {
+      authors: authors.length > 0 ? authors : ['Unknown Author'],
       description:
         $('div#limit-height-body-descr')
           .children('div.limit-html')
@@ -122,7 +128,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
         ),
       },
       status: {
-        publish: $('b.text-muted:contains("Official status:")').siblings().text(),
+        publish: `${$('b.text-muted:contains("Official status:")').siblings().text()} (Status)`,
       },
       chapters: [...englishChapterObjects, ...multilingualChapterObjects],
     };

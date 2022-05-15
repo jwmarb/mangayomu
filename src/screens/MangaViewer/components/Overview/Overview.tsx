@@ -30,8 +30,11 @@ const Overview: React.FC<OverviewProps> = (props) => {
   const [finished, setFinished] = React.useState<boolean>(false);
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider((r1, r2) => r1 !== r2));
   React.useEffect(() => {
-    if (chapters && chapters.every(MangaValidator.isMultilingualChapter)) {
+    if (chapters && chapters.every(MangaValidator.isMultilingualChapter))
       onChangeLanguage((chapters as unknown as MangaMultilingualChapter[])[0]?.language ?? 'en');
+  }, [chapters]);
+  React.useEffect(() => {
+    if (chapters && chapters.every(MangaValidator.isMultilingualChapter)) {
       setDataProvider((p) =>
         p.cloneWithRows(chapters.filter((x: unknown) => (x as MangaMultilingualChapter).language === language))
       );

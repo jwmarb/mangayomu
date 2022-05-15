@@ -17,7 +17,7 @@ const MangaAction: React.FC<MangaActionProps> = (props) => {
   };
 
   return (
-    <Flex grow>
+    <Flex container horizontalPadding={3} verticalPadding={2} grow>
       <Flex fullWidth grow justifyContent='flex-end' direction='column'>
         <Flex alignItems='center'>
           <Button

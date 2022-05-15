@@ -17,7 +17,7 @@ const MangaRating: React.FC<MangaRatingProps> = (props) => {
               const star = (i + 1) * 2;
               if (value - star >= 0)
                 return <Icon key={i} bundle='MaterialCommunityIcons' name='star' color='secondary' />;
-              if (Math.abs(value - star) % 1 !== 0)
+              if (Math.abs(value - star) % 1 !== 0 && Math.abs(value - star) < 1)
                 return <Icon key={i} bundle='MaterialCommunityIcons' name='star-half-full' color='secondary' />;
               // if (value - star < 0.5)
               return <Icon key={i} bundle='MaterialCommunityIcons' name='star-outline' color='secondary' />;

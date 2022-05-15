@@ -157,12 +157,10 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
                       ? { rating: { rating: userMangaInfo.rating } }
                       : { rating: null })}
                   />
-                  <Spacer y={1} />
-                  <MangaAction manga={manga} userMangaInfo={userMangaInfo} />
                 </Flex>
               </Flex>
+              <MangaAction manga={manga} userMangaInfo={userMangaInfo} />
 
-              <Spacer y={2} />
               <Description description={userMangaInfo?.description} />
               <Genres buttons genres={userMangaInfo?.genres} source={source} />
             </MangaViewerContainer>

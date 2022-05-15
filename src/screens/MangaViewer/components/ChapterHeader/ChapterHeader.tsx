@@ -94,6 +94,7 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
           (x): MenuItemProps => ({
             text: languages[x].name,
             onPress: () => {
+              console.log(`Filter chapters that contain language: ${x}`);
               onChangeLanguage(x);
             },
           })
@@ -114,9 +115,15 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
         <Spacer x={2} />
         <Flex>
           {multilingualChapters && (
-            <HoldItem activateOn='tap' items={menuItems}>
-              <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='translate' />} disabled={loading} />
-            </HoldItem>
+            <>
+              {loading ? (
+                <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='translate' />} disabled />
+              ) : (
+                <HoldItem activateOn='tap' items={menuItems}>
+                  <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='translate' />} />
+                </HoldItem>
+              )}
+            </>
           )}
           <IconButton icon={<Icon bundle='Feather' name='refresh-cw' />} onPress={refresh} disabled={loading} />
           <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='sort' />} onPress={handleOnOpenModal} />
