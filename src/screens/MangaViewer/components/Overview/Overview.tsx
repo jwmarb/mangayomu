@@ -40,7 +40,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
       );
     } else if (chapters) setDataProvider((p) => p.cloneWithRows(chapters));
   }, [chapters, language]);
-  const [layoutHeight, setLayoutHeight] = React.useState<number>(0);
+  const [layoutHeight, setLayoutHeight] = React.useState<number>(height / 2);
 
   const listener = React.useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
