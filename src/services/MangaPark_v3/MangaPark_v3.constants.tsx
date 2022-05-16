@@ -118,7 +118,7 @@ const filters = createSchema(
       default: 'All',
     }),
     'Order by': createSortFilter({
-      options: ['Rating', 'Comments', 'Ongoing', 'Completed', 'Hiatus', 'Cancelled'],
+      options: ['Rating', 'Comments', 'Discuss', 'Update', 'Create', 'Name'],
       default: 'Rating',
     }),
     Genres: createInclusiveExclusiveFilter({ fields: MANGAPARKV3_GENRES }),
