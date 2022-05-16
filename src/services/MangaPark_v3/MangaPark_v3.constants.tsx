@@ -1,5 +1,6 @@
 import { MangaHostFiltersInfo } from '@services/scraper/scraper.interfaces';
 import { createSchema } from '@utils/MangaFilters';
+import { Typography } from '@components/Typography';
 
 const MANGAPARKV3_GENRES = [
   '4-Koma',
@@ -98,21 +99,31 @@ const MANGAPARKV3_GENRES = [
   'Parody',
 ] as const;
 
-const filters = createSchema(({ createInclusiveExclusiveFilter, createOptionFilter, createSortFilter }) => ({
-  Type: createInclusiveExclusiveFilter({
-    fields: ['Artbook', 'Cartoon', 'Comic', 'Doujinshi', 'Imageset', 'Manga', 'Manhuwa', 'Manhwa', 'Webtoon'],
-  }),
-  Language: createOptionFilter({ options: ['Any', 'Chinese', 'English', 'Japanese', 'Korean'], default: 'Any' }),
-  Status: createOptionFilter({
-    options: ['All', 'Pending', 'Ongoing', 'Completed', 'Hiatus', 'Cancelled'],
-    default: 'All',
-  }),
-  'Order by': createSortFilter({
-    options: ['Rating', 'Comments', 'Ongoing', 'Completed', 'Hiatus', 'Cancelled'],
-    default: 'Rating',
-  }),
-  Genres: createInclusiveExclusiveFilter({ fields: MANGAPARKV3_GENRES }),
-}));
+const filters = createSchema(
+  ({ createInclusiveExclusiveFilter, createOptionFilter, createSortFilter, createDescription }) => ({
+    description: createDescription(
+      <Typography color='textSecondary'>
+        <Typography bold color='secondary'>
+          NOTE:
+        </Typography>{' '}
+        Filters are ignored if using text search!
+      </Typography>
+    ),
+    Type: createInclusiveExclusiveFilter({
+      fields: ['Artbook', 'Cartoon', 'Comic', 'Doujinshi', 'Imageset', 'Manga', 'Manhuwa', 'Manhwa', 'Webtoon'],
+    }),
+    Language: createOptionFilter({ options: ['Any', 'Chinese', 'English', 'Japanese', 'Korean'], default: 'Any' }),
+    Status: createOptionFilter({
+      options: ['All', 'Pending', 'Ongoing', 'Completed', 'Hiatus', 'Cancelled'],
+      default: 'All',
+    }),
+    'Order by': createSortFilter({
+      options: ['Rating', 'Comments', 'Ongoing', 'Completed', 'Hiatus', 'Cancelled'],
+      default: 'Rating',
+    }),
+    Genres: createInclusiveExclusiveFilter({ fields: MANGAPARKV3_GENRES }),
+  })
+);
 
 export type MangaParkV3Filter = typeof filters.schema;
 
