@@ -1,4 +1,4 @@
-import { digitsOnly, extractChapterTitle, parseTimestamp } from '@services/MangaPark_v3/MangaPark_v3.helpers';
+import { digitsOnly, extractChapterTitle, GENRES, parseTimestamp } from '@services/MangaPark_v3/MangaPark_v3.helpers';
 import { MangaParkV3MangaMeta } from '@services/MangaPark_v3/MangaPark_v3.interfaces';
 import { MangaHostWithFilters } from '@services/scraper/scraper.filters';
 import { Manga, MangaChapter, MangaMultilingualChapter } from '@services/scraper/scraper.interfaces';
@@ -13,7 +13,46 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
     return Promise.resolve([]);
   }
   public async search(query: string, filters?: MangaParkV3Filter): Promise<Manga[]> {
+    if (
+      filters &&
+      (filters.Chapters.value !== filters.Chapters.default ||
+        filters.Genres.include.length > 0 ||
+        filters.Genres.exclude.length > 0 ||
+        filters['Order by'].default !== filters['Order by'].value ||
+        filters['Original Language'].value !== filters['Original Language'].default ||
+        filters.Status.value !== filters.Status.default ||
+        filters.Type.include.length > 0 ||
+        filters.Type.exclude.length > 0)
+    ) {
+      const {
+        Genres: { include, exclude },
+        'Original Language': Language,
+        'Order by': OrderBy,
+      } = filters;
+      const genres: string = `genres=${include.map((x) => GENRES[x]).join(',')}|${exclude
+        .map((x) => GENRES[x])
+        .join(',')}`;
+      const language: string = Language.value === 'Any' ? '' : `&origs=${GENRES[Language.value]}`;
+      const sort: string = `&sort=${OrderBy.value.toLowerCase()}`;
+      const $ = await super.route(`/browse?${genres}${language}${sort}&page=${super.getPage()}`);
+
+      return $('div.col.mt-3.pb-3.d-flex.item.line-b')
+        .map((_, el) => {
+          const image = $(el).find('img.cover.rounded').attr('src')!;
+          const anchorEl = $(el).find('a.fw-bold.text-ellipsis-2');
+          const href = anchorEl.attr('href');
+          const title = anchorEl.text().trim();
+          return {
+            link: 'https://' + super.getLink() + href,
+            imageCover: image,
+            source: super.getName(),
+            title,
+          };
+        })
+        .get();
+    }
     const $ = await super.route(`/search?word=${encodeURIComponent(query)}&page=${super.getPage()}`);
+
     const listElements = $('div#search-list').children();
     return listElements
       .map((_, el) => {
