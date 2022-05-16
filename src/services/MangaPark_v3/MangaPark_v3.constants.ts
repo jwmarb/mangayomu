@@ -99,7 +99,6 @@ const MANGAPARKV3_GENRES = [
 ] as const;
 
 const filters = createSchema(({ createInclusiveExclusiveFilter, createOptionFilter, createSortFilter }) => ({
-  Genres: createInclusiveExclusiveFilter({ fields: MANGAPARKV3_GENRES }),
   Type: createInclusiveExclusiveFilter({
     fields: ['Artbook', 'Cartoon', 'Comic', 'Doujinshi', 'Imageset', 'Manga', 'Manhuwa', 'Manhwa', 'Webtoon'],
   }),
@@ -112,6 +111,7 @@ const filters = createSchema(({ createInclusiveExclusiveFilter, createOptionFilt
     options: ['Rating', 'Comments', 'Ongoing', 'Completed', 'Hiatus', 'Cancelled'],
     default: 'Rating',
   }),
+  Genres: createInclusiveExclusiveFilter({ fields: MANGAPARKV3_GENRES }),
 }));
 
 export type MangaParkV3Filter = typeof filters.schema;
