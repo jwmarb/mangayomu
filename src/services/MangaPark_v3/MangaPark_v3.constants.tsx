@@ -106,15 +106,22 @@ const filters = createSchema(
         <Typography bold color='secondary'>
           NOTE:
         </Typography>{' '}
-        Filters are ignored if using text search!
+        Text search is ignored whenever filters are applied!
       </Typography>
     ),
     Type: createInclusiveExclusiveFilter({
       fields: ['Artbook', 'Cartoon', 'Comic', 'Doujinshi', 'Imageset', 'Manga', 'Manhuwa', 'Manhwa', 'Webtoon'],
     }),
-    Language: createOptionFilter({ options: ['Any', 'Chinese', 'English', 'Japanese', 'Korean'], default: 'Any' }),
+    'Original Language': createOptionFilter({
+      options: ['Any', 'Chinese', 'English', 'Japanese', 'Korean'],
+      default: 'Any',
+    }),
     Status: createOptionFilter({
       options: ['All', 'Pending', 'Ongoing', 'Completed', 'Hiatus', 'Cancelled'],
+      default: 'All',
+    }),
+    Chapters: createOptionFilter({
+      options: ['All', '1 ~ 9', '10 ~ 29', '30 ~ 99', '100 ~ 199', '200+', ' 100+', '50+', '10+', '1+'],
       default: 'All',
     }),
     'Order by': createSortFilter({
