@@ -28,6 +28,11 @@ type SortFilter<T> = {
   default: T;
 };
 
+type Description = {
+  type: 'description';
+  description: JSX.Element;
+};
+
 type OptionFilter<T> = {
   type: 'option';
   options: readonly T[];
@@ -83,6 +88,13 @@ function createInclusiveExclusiveFilter<T>(obj: Omit<InclusiveExclusiveFilter<T>
   };
 }
 
+function createDescription(str: JSX.Element): Description {
+  return {
+    type: 'description',
+    description: str,
+  };
+}
+
 function createOptionFilter<T>(obj: Omit<OptionFilter<T>, 'type'>) {
   return {
     ...obj,
@@ -108,17 +120,30 @@ type FilterCreators = {
   ): MutableInclusiveExclusiveFilter<T>;
   createOptionFilter<T>(obj: Omit<OptionFilter<Const<T>>, 'type'>): MutableOptionFilter<T>;
   createSortFilter<T>(obj: Omit<SortFilter<Const<T>>, 'type'>): MutableSortFilter<T>;
+  createDescription<T>(str: JSX.Element): Description;
 };
 
 export function createSchema<T>(object: (filterCreators: FilterCreators) => T) {
-  const p = object({ createInclusiveExclusiveFilter, createOptionFilter, createSortFilter });
+  const p = object({ createInclusiveExclusiveFilter, createOptionFilter, createSortFilter, createDescription });
   const elements: React.FC<{
     setParentState: React.Dispatch<React.SetStateAction<FilterState>>;
-    state: MutableSortFilter<any> | MutableInclusiveExclusiveFilter<any> | MutableOptionFilter<any>;
+    state: MutableSortFilter<any> | MutableInclusiveExclusiveFilter<any> | MutableOptionFilter<any> | Description;
   }>[] = [];
   const objectKeys = Object.keys(p);
   for (const [key, value] of Object.entries<any>(p)) {
     switch (value.type) {
+      case 'description':
+        elements.push(
+          React.memo(({ state }) => {
+            const p = state as Description;
+            return (
+              <Container verticalPadding={2} horizontalPadding={3}>
+                {p.description}
+              </Container>
+            );
+          })
+        );
+        break;
       case 'sort':
         elements.push(
           React.memo(({ setParentState, state: parentState }) => {
