@@ -1,12 +1,17 @@
 import { ScrollViewWithCollapsible } from '@components/RecyclerListViewScreen/RecyclerListViewScreen.base';
 import { RecyclerListViewScreenProps } from '@components/RecyclerListViewScreen/RecyclerListViewScreen.interfaces';
 import React from 'react';
-import { RecyclerListView } from 'recyclerlistview';
+import { RecyclerListView, RecyclerListViewProps } from 'recyclerlistview';
 
-const RecyclerListViewScreen: React.FC<RecyclerListViewScreenProps> = (props) => {
+const RecyclerListViewScreen: React.ForwardRefRenderFunction<
+  RecyclerListView<RecyclerListViewProps, any>,
+  RecyclerListViewScreenProps
+> = (props, ref) => {
   const { scrollViewProps = {}, listener, collapsible, ...rest } = props;
+
   return (
     <RecyclerListView
+      ref={ref}
       externalScrollView={ScrollViewWithCollapsible as any}
       scrollViewProps={{ ...scrollViewProps, listener, collapsible }}
       {...rest}
@@ -14,4 +19,4 @@ const RecyclerListViewScreen: React.FC<RecyclerListViewScreenProps> = (props) =>
   );
 };
 
-export default RecyclerListViewScreen;
+export default React.forwardRef(RecyclerListViewScreen);
