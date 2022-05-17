@@ -42,6 +42,14 @@ export type MangaSeeMangaMeta = MangaMeta<MangaSeeChapter> &
 
 export type MangaSeeChapter = MangaChapter;
 
+export interface CurChapter {
+  Chapter: string;
+  Type: string;
+  Page: string;
+  Directory: string;
+  Date: string;
+}
+
 export interface Directory {
   /**
    * Authors of the manga

@@ -1,5 +1,6 @@
 import { MANGASEE_INFO, MangaSeeFilter } from '@services/MangaSee/MangaSee.constants';
 import {
+  CurChapter,
   Directory,
   HotUpdateJSON,
   LatestJSON,
@@ -137,8 +138,38 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     };
   }
 
-  getPages(chapter: MangaChapter) {
-    return Promise.resolve([]);
+  async getPages(chapter: MangaChapter) {
+    const $ = await super.route({ url: chapter.link });
+    const html = $.html();
+    const { variable } = processScript(html);
+    const CurChapter = variable<CurChapter>('vm.CurChapter');
+    const IndexName = variable<string>('vm.IndexName');
+    const CurPathName = variable<string>('vm.CurPathName');
+    const numOfPages = parseInt(CurChapter.Page);
+    const PageImage = function (PageString: number) {
+      const s = '000' + PageString;
+      return s.substring(s.length - 3);
+    };
+    const ChapterImage = function (ChapterString: string) {
+      const Chapter = ChapterString.slice(1, -1);
+      const Odd = ChapterString[ChapterString.length - 1];
+      if (Odd === '0') {
+        return Chapter;
+      } else {
+        return Chapter + '.' + Odd;
+      }
+    };
+    const pages: string[] = [];
+
+    for (let i = 1; i <= numOfPages; i++) {
+      pages.push(
+        `https://${CurPathName}/manga/${IndexName}/${
+          CurChapter.Directory === '' ? '' : `${CurChapter.Directory}/`
+        }${ChapterImage(CurChapter.Chapter)}-${PageImage(i)}.png`
+      );
+    }
+
+    return Promise.resolve(pages);
   }
 
   public async search(query: string, filters?: MangaSeeFilter): Promise<MangaSeeManga[]> {
@@ -188,7 +219,8 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       );
 
       const createSort = (compareFn: (a: MangaSeeManga, b: MangaSeeManga) => number) => {
-        if (filters['Sort By'].reversed) return (a: MangaSeeManga, b: MangaSeeManga) => -compareFn(a, b);
+        if (filters['Sort By'] != null && filters['Sort By'].reversed)
+          return (a: MangaSeeManga, b: MangaSeeManga) => -compareFn(a, b);
         return compareFn;
       };
 
