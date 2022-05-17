@@ -67,7 +67,7 @@ export type FilterState = Record<string, Record<string, any>>;
 
 export type FilterSchemaObject<T> = {
   FilterModal: React.FC<FilterModalProps>;
-  schema: T;
+  schema: Partial<T>;
 };
 
 function createSortFilter<T>(obj: Omit<SortFilter<T>, 'type'>) {
@@ -123,7 +123,7 @@ type FilterCreators = {
   createDescription<T>(str: JSX.Element): Description;
 };
 
-export function createSchema<T>(object: (filterCreators: FilterCreators) => T) {
+export function createSchema<T>(object: (filterCreators: FilterCreators) => Partial<T>) {
   const p = object({ createInclusiveExclusiveFilter, createOptionFilter, createSortFilter, createDescription });
   const elements: React.FC<{
     setParentState: React.Dispatch<React.SetStateAction<FilterState>>;
@@ -278,7 +278,7 @@ export function createSchema<T>(object: (filterCreators: FilterCreators) => T) {
 
   const filterSchemaObject: FilterSchemaObject<T> = {
     FilterModal: ({ onClose, show, onApplyFilter }) => {
-      const [filter, setFilterState] = React.useState<T>(p);
+      const [filter, setFilterState] = React.useState<Partial<T>>(p);
       const handleOnReset = React.useCallback(() => {
         setFilterState(p);
         displayMessage('Filters have been reset');
