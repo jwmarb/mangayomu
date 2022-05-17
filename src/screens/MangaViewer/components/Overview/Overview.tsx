@@ -23,7 +23,17 @@ const { height } = Dimensions.get('window');
 LogBox.ignoreLogs(['You have mounted RecyclerListView']);
 
 const Overview: React.FC<OverviewProps> = (props) => {
-  const { children, chapters, currentChapter, collapsible, language, onChangeLanguage, loading } = props;
+  const {
+    children,
+    chapters,
+    currentChapter,
+    collapsible,
+    language,
+    onChangeLanguage,
+    loading,
+    mangaName,
+    sourceName,
+  } = props;
   const { containerPaddingTop } = collapsible;
 
   const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(false);
@@ -36,9 +46,14 @@ const Overview: React.FC<OverviewProps> = (props) => {
   React.useEffect(() => {
     if (chapters && chapters.every(MangaValidator.isMultilingualChapter)) {
       setDataProvider((p) =>
-        p.cloneWithRows(chapters.filter((x: unknown) => (x as MangaMultilingualChapter).language === language))
+        p.cloneWithRows(
+          chapters
+            .filter((x: unknown) => (x as MangaMultilingualChapter).language === language)
+            .map((p) => ({ ...p, mangaName, sourceName }))
+        )
       );
-    } else if (chapters) setDataProvider((p) => p.cloneWithRows(chapters));
+    } else if (chapters)
+      setDataProvider((p) => p.cloneWithRows(chapters.map((p) => ({ ...p, mangaName, sourceName }))));
   }, [chapters, language]);
   const [layoutHeight, setLayoutHeight] = React.useState<number>(height / 2);
 
@@ -94,6 +109,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
         layoutProvider={layout}
         rowRenderer={rowRenderer}
         applyWindowCorrection={applyWindowCorrection}
+        forceNonDeterministicRendering
         renderFooter={createFooter(!finished, chapters.length)}
       />
     </>

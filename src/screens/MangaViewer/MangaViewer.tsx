@@ -134,6 +134,8 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
         }>
         <AnimatedProvider style={loadingAnimation}>
           <Overview
+            mangaName={`${manga.source}/${manga.title}`}
+            sourceName={manga.source}
             loading={loading}
             onChangeLanguage={setLanguage}
             chapters={sorted}

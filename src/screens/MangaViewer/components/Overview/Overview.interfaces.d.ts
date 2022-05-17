@@ -9,4 +9,6 @@ export interface OverviewProps {
   language: ISOLangCode;
   onChangeLanguage: (l: ISOLangCode) => void;
   loading: boolean;
+  mangaName: string;
+  sourceName: string;
 }
