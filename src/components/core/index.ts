@@ -44,3 +44,4 @@ export { Divider } from '../Divider';
 export { default as Accordion } from '../Accordion';
 export { HeaderBuilder } from '../Screen/Header/Header.base';
 export { default as Slider } from '../Slider';
+export { default as FloatingActionButton } from '../FloatingActionButton';
