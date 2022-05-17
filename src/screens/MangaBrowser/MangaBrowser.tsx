@@ -1,4 +1,13 @@
-import { Flex, Icon, IconButton, RecyclerListViewScreen, Screen, Spacer, Typography } from '@components/core';
+import {
+  Flex,
+  FloatingActionButton,
+  Icon,
+  IconButton,
+  RecyclerListViewScreen,
+  Screen,
+  Spacer,
+  Typography,
+} from '@components/core';
 import useLazyLoading from '@hooks/useLazyLoading';
 import { RootStackParamList } from '@navigators/Root/Root.interfaces';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -13,7 +22,7 @@ import pixelToNumber from '@utils/pixelToNumber';
 import { useTheme } from 'styled-components/native';
 import { MangaItemsLoading } from '@screens/GenericMangaList/GenericMangaList.base';
 import { TextInput } from 'react-native-gesture-handler';
-import { Keyboard, View } from 'react-native';
+import { Keyboard, NativeScrollEvent, NativeSyntheticEvent, ScrollView, View } from 'react-native';
 import Search from '@screens/Home/screens/MangaLibrary/components/Search';
 import { animate, withAnimatedMounting } from '@utils/Animations';
 import useMangaLayout from '@hooks/useMangaLayout';
@@ -37,7 +46,9 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
   const { FilterModal, schema } = mangahost.getFilterSchema();
   const [filter, setFilters] = React.useState<typeof schema>(schema);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const scrollRef = React.useRef<TextInput>(null);
+  const textInputRef = React.useRef<TextInput>(null);
+  const scrollRef = React.useRef<React.ElementRef<typeof RecyclerListViewScreen>>(null);
+  const floatingRef = React.useRef<React.ElementRef<typeof FloatingActionButton>>(null);
   const handleOnExitSearch = React.useCallback(() => {
     navigation.goBack();
   }, [navigation]);
@@ -57,7 +68,7 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
               onPress={handleOnShowFilters}
             />
           }
-          ref={scrollRef}
+          ref={textInputRef}
           title={source}
           showSearchBar={true}
           onChangeText={setQuery}
@@ -72,6 +83,13 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     },
   };
   const collapsible = useCollapsibleHeader(options);
+  const onScroll = React.useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (e.nativeEvent.contentOffset.y > 100) floatingRef.current?.expand();
+      else floatingRef.current?.collapse();
+    },
+    [floatingRef.current]
+  );
 
   const { ready, Fallback } = useLazyLoading();
 
@@ -87,6 +105,10 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     setShow(true);
     Keyboard.dismiss();
   }, [setShow]);
+
+  function handleOnScrollToTop() {
+    scrollRef.current?.scrollToTop(true);
+  }
 
   function handleOnCloseFilters() {
     setShow(false);
@@ -168,22 +190,34 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
             <MangaItemsLoading />
           </View>
         ) : dataProvider.getSize() > 0 ? (
-          <RecyclerListViewScreen
-            dataProvider={dataProvider}
-            collapsible={collapsible}
-            applyWindowCorrection={applyWindowCorrection}
-            rowRenderer={rowRenderer}
-            onItemLayout={handleOnItemLayout}
-            onEndReached={handleOnEndReached}
-            scrollViewProps={{
-              contentContainerStyle: {
-                paddingTop: collapsible.containerPaddingTop + pixelToNumber(theme.spacing(3)),
-                paddingBottom: pixelToNumber(theme.spacing(3)),
-              },
-            }}
-            layoutProvider={layoutProvider}
-            renderFooter={() => (showFooter || loading ? animate(<MangaItemsLoading />, withAnimatedMounting) : null)}
-          />
+          <>
+            <FloatingActionButton
+              title='Scroll to top'
+              icon={<Icon bundle='Feather' name='chevron-up' />}
+              ref={floatingRef}
+              onPress={handleOnScrollToTop}
+            />
+            <RecyclerListViewScreen
+              dataProvider={dataProvider}
+              collapsible={collapsible}
+              applyWindowCorrection={applyWindowCorrection}
+              rowRenderer={rowRenderer}
+              onItemLayout={handleOnItemLayout}
+              onEndReached={handleOnEndReached}
+              ref={scrollRef}
+              scrollViewProps={{
+                contentContainerStyle: {
+                  paddingTop: collapsible.containerPaddingTop + pixelToNumber(theme.spacing(3)),
+                  paddingBottom: pixelToNumber(theme.spacing(3)),
+                },
+              }}
+              listener={onScroll}
+              layoutProvider={layoutProvider}
+              renderFooter={() => (
+                <>{showFooter || loading ? animate(<MangaItemsLoading />, withAnimatedMounting) : null}</>
+              )}
+            />
+          </>
         ) : (
           <Flex container horizontalPadding={3} justifyContent='center' alignItems='center' grow direction='column'>
             <Typography variant='subheader' align='center'>
