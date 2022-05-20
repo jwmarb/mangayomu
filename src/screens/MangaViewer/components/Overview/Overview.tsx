@@ -110,6 +110,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
         rowRenderer={rowRenderer}
         applyWindowCorrection={applyWindowCorrection}
         forceNonDeterministicRendering
+        disableRecycling
         renderFooter={createFooter(!finished, chapters.length)}
       />
     </>

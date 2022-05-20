@@ -19,13 +19,17 @@ import * as FileSystem from 'expo-file-system';
 import useMountedEffect from '@hooks/useMountedEffect';
 import useMangaSource from '@hooks/useMangaSource';
 import PageDownloadingProgress from './components/PageDownloadingProgress';
+import Button from '@components/Button';
 
-enum DownloadStatus {
-  DOWNLOADING,
-  ERROR,
-  DOWNLOADED,
-  PAUSED,
-  IDLE,
+export enum DownloadStatus {
+  START_DOWNLOADING = 'Start',
+  RESUME_DOWNLOADING = 'Resume',
+  DOWNLOADING = 'Downloading',
+  ERROR = 'Error',
+  DOWNLOADED = 'Downloaded',
+  PAUSED = 'Paused',
+  CANCELLED = 'Cancelled',
+  IDLE = 'Idle',
 }
 
 const displayChapterInfo = (chapter: any) => {
@@ -50,70 +54,162 @@ const Chapter: React.FC<ChapterProps> = (props) => {
 
   const [downloadStatus, setDownloadStatus] = React.useState<DownloadStatus>(DownloadStatus.IDLE);
   const [pages, setPages] = React.useState<string[]>([]);
-  const [totalProgress, setTotalProgress] = React.useState<number[]>([]);
-  const [error, setError] = React.useState<string>('');
+  const [totalProgress, setTotalProgress] = React.useState<number>(0);
+  const totalProgressRef = React.useRef<number[]>([]);
+  const [errors, setErrors] = React.useState<string[]>([]);
   const source = useMangaSource(chapter.sourceName);
-  const [downloaded, setDownloaded] = React.useState<boolean>(false);
-  const downloadResumableRef = React.useRef<(FileSystem.DownloadResumable | undefined)[]>([]);
+  const downloadResumableRef = React.useRef<
+    {
+      status: DownloadStatus;
+      downloadResumable: FileSystem.DownloadResumable;
+    }[]
+  >([]);
+  const listener = React.useRef<NodeJS.Timer>();
   const style = useAnimatedMounting();
-
-  // async function resumeDownload() {
-  //   if (downloadResumableRef.current) {
-  //     try {
-  //       await downloadResumableRef.current.resumeAsync();
-  //     } catch (e) {
-  //       setDownloadStatus(DownloadStatus.ERROR);
-  //       setError(e as any);
-  //     } finally {
-  //       setDownloadStatus(DownloadStatus.DOWNLOADING);
-  //     }
-  //   }
-  // }
-
-  // async function pauseDownload() {
-  //   if (downloadResumableRef.current) {
-  //     try {
-  //       await downloadResumableRef.current.pauseAsync();
-  //     } catch (e) {
-  //       setDownloadStatus(DownloadStatus.ERROR);
-  //       setError(e as any);
-  //     } finally {
-  //       setDownloadStatus(DownloadStatus.PAUSED);
-  //     }
-  //   }
-  // }
-
-  // async function cancelDownload() {
-  //   if (downloadResumableRef.current) {
-  //     try {
-  //       await downloadResumableRef.current.cancelAsync();
-  //     } catch (e) {
-  //       setDownloadStatus(DownloadStatus.ERROR);
-  //       setError(e as any);
-  //     } finally {
-  //       setDownloadStatus(DownloadStatus.IDLE);
-  //     }
-  //   }
-  // }
-
-  const handleOnProgress = React.useCallback(
-    (progress: number, index: number) => {
-      setTotalProgress((prev) => {
-        const p = [...prev];
-        p[index] = progress;
-        return p;
-      });
-    },
-    [setTotalProgress]
+  const isDownloading = React.useMemo(
+    () => downloadStatus === DownloadStatus.RESUME_DOWNLOADING || downloadStatus === DownloadStatus.START_DOWNLOADING,
+    [downloadStatus]
   );
 
-  // React.useEffect(() => {
-  //   if (totalProgress.length > 0)
-  //     console.log((totalProgress.reduce((prev, curr) => prev + curr), 0) / totalProgress.length);
-  // }, [totalProgress]);
+  async function resumeDownload() {
+    setDownloadStatus(DownloadStatus.RESUME_DOWNLOADING);
+  }
+
+  async function pauseDownload() {
+    setDownloadStatus(DownloadStatus.PAUSED);
+  }
+
+  async function cancelDownload() {
+    setDownloadStatus(DownloadStatus.CANCELLED);
+  }
+
+  useMountedEffect(() => {
+    (async () => {
+      switch (downloadStatus) {
+        case DownloadStatus.CANCELLED:
+          setPages([]);
+          setTotalProgress(0);
+          for (const { downloadResumable } of downloadResumableRef.current) {
+            try {
+              await downloadResumable.cancelAsync();
+            } catch (e) {
+              setDownloadStatus(DownloadStatus.ERROR);
+              setErrors((prev) => [...prev, e as any]);
+            }
+          }
+          downloadResumableRef.current = [];
+          break;
+        case DownloadStatus.PAUSED:
+          clearTimeout(listener.current);
+          for (let i = 0; i < downloadResumableRef.current.length; i++) {
+            if (downloadResumableRef.current[i].status !== DownloadStatus.DOWNLOADED)
+              downloadResumableRef.current[i].status = DownloadStatus.PAUSED;
+          }
+
+          for (let i = 0; i < downloadResumableRef.current.length; i++) {
+            const { downloadResumable } = downloadResumableRef.current[i];
+            if (downloadResumableRef.current[i].status === DownloadStatus.DOWNLOADING)
+              try {
+                await downloadResumable.pauseAsync();
+              } catch (e) {
+                setDownloadStatus(DownloadStatus.ERROR);
+                setErrors((prev) => [...prev, e as any]);
+              } finally {
+                console.log(`Pausing ${downloadResumable.fileUri.substring(downloadResumable.fileUri.length - 6)}`);
+              }
+          }
+          break;
+        case DownloadStatus.RESUME_DOWNLOADING:
+          listener.current = setInterval(
+            () =>
+              setTotalProgress(
+                totalProgressRef.current.reduce((prev, curr) => prev + curr, 0) / totalProgressRef.current.length
+              ),
+            300
+          );
+
+          for (let i = 0; i < downloadResumableRef.current.length; i++) {
+            if (downloadResumableRef.current[i].status !== DownloadStatus.DOWNLOADED)
+              downloadResumableRef.current[i].status = DownloadStatus.DOWNLOADING;
+          }
+
+          for (let i = 0; i < downloadResumableRef.current.length; i++) {
+            const { downloadResumable } = downloadResumableRef.current[i];
+            if (
+              downloadResumableRef.current[i].status !== DownloadStatus.PAUSED &&
+              downloadResumableRef.current[i].status !== DownloadStatus.DOWNLOADED
+            )
+              try {
+                await downloadResumable.resumeAsync();
+              } catch (e) {
+                setDownloadStatus(DownloadStatus.ERROR);
+                setErrors((prev) => [...prev, e as any]);
+              } finally {
+                console.log(
+                  `Resuming download for ${downloadResumable.fileUri.substring(downloadResumable.fileUri.length - 6)}`
+                );
+              }
+          }
+          return () => {
+            clearInterval(listener.current);
+          };
+        case DownloadStatus.START_DOWNLOADING:
+          listener.current = setInterval(
+            () =>
+              setTotalProgress(
+                totalProgressRef.current.reduce((prev, curr) => prev + curr, 0) / totalProgressRef.current.length
+              ),
+            300
+          );
+
+          for (let i = 0; i < downloadResumableRef.current.length; i++) {
+            downloadResumableRef.current[i].status = DownloadStatus.DOWNLOADING;
+          }
+
+          for (let i = 0; i < downloadResumableRef.current.length; i++) {
+            const { downloadResumable } = downloadResumableRef.current[i];
+            if (downloadResumableRef.current[i].status !== DownloadStatus.PAUSED)
+              try {
+                await downloadResumable.downloadAsync();
+              } catch (e) {
+                setDownloadStatus(DownloadStatus.ERROR);
+                setErrors((prev) => [...prev, e as any]);
+              } finally {
+                console.log(
+                  `Starting download for ${downloadResumable.fileUri.substring(downloadResumable.fileUri.length - 6)}`
+                );
+              }
+          }
+
+          return () => {
+            clearInterval(listener.current);
+          };
+      }
+    })();
+  }, [downloadStatus]);
+
+  const handleOnProgress = (progress: number, index: number) => {
+    totalProgressRef.current[index] = progress;
+    if (progress >= 1) downloadResumableRef.current[index].status = DownloadStatus.DOWNLOADED;
+  };
+
+  React.useEffect(() => {
+    return () => {
+      clearTimeout(listener.current);
+    };
+  }, []);
+
+  useMountedEffect(() => {
+    if (totalProgress >= 1) {
+      setDownloadStatus(DownloadStatus.DOWNLOADED);
+      setTotalProgress(0);
+      setPages([]);
+      downloadResumableRef.current = [];
+      clearInterval(listener.current);
+    }
+  }, [totalProgress]);
 
   async function handleOnDownloadChapter() {
-    setDownloadStatus(DownloadStatus.DOWNLOADING);
     try {
       await FileSystem.readDirectoryAsync(dir);
     } catch (e) {
@@ -121,27 +217,23 @@ const Chapter: React.FC<ChapterProps> = (props) => {
     } finally {
       try {
         const p = await source.getPages(chapter);
-        downloadResumableRef.current = p.map(() => undefined);
-        setTotalProgress(p.map(() => 0));
+        downloadResumableRef.current = p.map((x, i) => ({
+          status: DownloadStatus.IDLE,
+          downloadResumable: FileSystem.createDownloadResumable(
+            x,
+            dir + `${i + 1}.png`,
+            {},
+            ({ totalBytesExpectedToWrite, totalBytesWritten }) =>
+              handleOnProgress(totalBytesWritten / totalBytesExpectedToWrite, i)
+          ),
+        }));
+        totalProgressRef.current = p.map(() => 0);
+        setTotalProgress(0);
         setPages(p);
+        setDownloadStatus(DownloadStatus.START_DOWNLOADING);
       } catch (e) {
         console.error(e);
-      } finally {
-        setDownloadStatus(DownloadStatus.IDLE);
       }
-
-      // downloadResumableRef.current = FileSystem.createDownloadResumable(
-      //   chapter.link,
-      //   dir + chapter.name ?? `Chapter ${chapter.index}`,
-      //   {},
-      //   downloadProgressCallback
-      // );
-      // try {
-      //   // await downloadResumableRef.current.downloadAsync();
-      // } catch (e) {
-      //   setDownloadStatus(DownloadStatus.ERROR);
-      //   setError(e as any);
-      // }
     }
   }
 
@@ -156,48 +248,55 @@ const Chapter: React.FC<ChapterProps> = (props) => {
                 {displayChapterInfo(chapter)}
               </Flex>
               <Flex alignItems='center'>
-                {downloadStatus === DownloadStatus.DOWNLOADING && (
+                {pages.length > 0 && (
                   <>
                     <Typography variant='bottomtab' color='secondary'>
-                      {((totalProgress.reduce((prev, curr) => prev + curr, 0) / totalProgress.length) * 100).toFixed(2)}
-                      %
+                      {(totalProgress * 100).toFixed(2)}%
                     </Typography>
                     <Spacer x={1} />
-                    <IconButton icon={<Icon bundle='Feather' name='pause-circle' />} />
-                    <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='close-circle-outline' />} />
+                    {isDownloading && (
+                      <IconButton
+                        icon={<Icon bundle='MaterialCommunityIcons' name='pause-circle-outline' />}
+                        onPress={pauseDownload}
+                      />
+                    )}
+
+                    {downloadStatus === DownloadStatus.PAUSED && (
+                      <IconButton
+                        icon={<Icon bundle='MaterialCommunityIcons' name='play-circle-outline' />}
+                        onPress={resumeDownload}
+                      />
+                    )}
+                    <IconButton
+                      icon={<Icon bundle='MaterialCommunityIcons' name='close-circle-outline' />}
+                      onPress={cancelDownload}
+                    />
                   </>
                 )}
-                <IconButton
-                  icon={
-                    downloadStatus === DownloadStatus.DOWNLOADING ? (
-                      <Progress />
-                    ) : downloaded ? (
-                      <Icon bundle='MaterialCommunityIcons' name='check-circle-outline' />
-                    ) : (
-                      <Icon bundle='Feather' name='download' />
-                    )
-                  }
-                  color={downloaded ? 'secondary' : 'primary'}
-                  onPress={handleOnDownloadChapter}
-                  disabled={downloadStatus === DownloadStatus.DOWNLOADING}
-                />
+                {downloadStatus === DownloadStatus.DOWNLOADED && (
+                  <>
+                    <Icon bundle='MaterialCommunityIcons' name='check-circle-outline' color='secondary' size='small' />
+                    <Spacer x={1.3} />
+                  </>
+                )}
+                {downloadStatus === DownloadStatus.IDLE && (
+                  <IconButton
+                    icon={<Icon bundle='Feather' name='download' />}
+                    color='primary'
+                    onPress={handleOnDownloadChapter}
+                  />
+                )}
+                {isDownloading && (
+                  <>
+                    <Spacer x={1} />
+                    <Progress color='disabled' />
+                    <Spacer x={1.1} />
+                  </>
+                )}
               </Flex>
             </Flex>
           </ChapterContainer>
         </ButtonBase>
-        {pages.length > 0 && (
-          <Flex direction='column'>
-            {pages.map((x, i) => (
-              <PageDownloadingProgress
-                key={i}
-                page={x}
-                fileUri={dir + `${i + 1}.png`}
-                onProgress={handleOnProgress}
-                index={i}
-              />
-            ))}
-          </Flex>
-        )}
       </Animated.View>
     </>
   );
