@@ -83,6 +83,18 @@ const Chapter: React.FC<ChapterProps> = (props) => {
     setDownloadStatus(DownloadStatus.CANCELLED);
   }
 
+  React.useLayoutEffect(() => {
+    (async () => {
+      try {
+        const info = await FileSystem.getInfoAsync(dir);
+
+        setDownloadStatus(info.exists && info.isDirectory ? DownloadStatus.DOWNLOADED : DownloadStatus.IDLE);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  }, []);
+
   useMountedEffect(() => {
     (async () => {
       switch (downloadStatus) {
@@ -114,8 +126,6 @@ const Chapter: React.FC<ChapterProps> = (props) => {
               } catch (e) {
                 setDownloadStatus(DownloadStatus.ERROR);
                 setErrors((prev) => [...prev, e as any]);
-              } finally {
-                console.log(`Pausing ${downloadResumable.fileUri.substring(downloadResumable.fileUri.length - 6)}`);
               }
           }
           break;
@@ -144,10 +154,6 @@ const Chapter: React.FC<ChapterProps> = (props) => {
               } catch (e) {
                 setDownloadStatus(DownloadStatus.ERROR);
                 setErrors((prev) => [...prev, e as any]);
-              } finally {
-                console.log(
-                  `Resuming download for ${downloadResumable.fileUri.substring(downloadResumable.fileUri.length - 6)}`
-                );
               }
           }
           return () => {
@@ -174,10 +180,6 @@ const Chapter: React.FC<ChapterProps> = (props) => {
               } catch (e) {
                 setDownloadStatus(DownloadStatus.ERROR);
                 setErrors((prev) => [...prev, e as any]);
-              } finally {
-                console.log(
-                  `Starting download for ${downloadResumable.fileUri.substring(downloadResumable.fileUri.length - 6)}`
-                );
               }
           }
 
