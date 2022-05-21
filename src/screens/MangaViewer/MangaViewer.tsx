@@ -93,7 +93,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     [userMangaInfo?.inLibrary]
   );
 
-  const { sort, visible, handleOnCloseModal, handleOnOpenModal, sortOptions, selectedSortOption } = useSort(
+  const { sort, reverse, visible, handleOnCloseModal, handleOnOpenModal, sortOptions, selectedSortOption } = useSort(
     (createSort) => ({
       Chapter: createSort((a: MangaChapter, b: MangaChapter) => (a.name && b.name ? a.index - b.index : 0)),
       ...(MangaValidator.hasDate(userMangaInfo?.chapters[0] ?? {})
@@ -119,10 +119,11 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     }
   }, [meta]);
 
-  const sorted = React.useMemo(
-    () => userMangaInfo?.chapters.sort(selectedSortOption as any),
-    [userMangaInfo?.chapters, selectedSortOption]
-  );
+  const [sorted, setSorted] = React.useState(() => (userMangaInfo?.chapters ?? []).sort(selectedSortOption));
+
+  React.useEffect(() => {
+    setSorted(Array.from(userMangaInfo?.chapters ?? []).sort(selectedSortOption));
+  }, [userMangaInfo?.chapters, sort, reverse]);
 
   if (ready) {
     return (

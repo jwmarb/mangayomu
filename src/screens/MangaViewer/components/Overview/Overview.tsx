@@ -1,5 +1,6 @@
 import { Container } from '@components/Container';
 import { Typography } from '@components/Typography';
+import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import FloatingActionButton from '@screens/MangaViewer/components/FloatingActionButton/FloatingActionButton';
 import RecyclerListViewScrollView from '@screens/MangaViewer/components/Overview/components/RecyclerListViewScrollView';
 import { OverviewProps } from '@screens/MangaViewer/components/Overview/Overview.interfaces';
@@ -22,6 +23,8 @@ const { height } = Dimensions.get('window');
 
 LogBox.ignoreLogs(['You have mounted RecyclerListView']);
 
+const dateProviderFn = (r1: ReadingChapterInfo[], r2: ReadingChapterInfo[]) => r1 !== r2;
+
 const Overview: React.FC<OverviewProps> = (props) => {
   const {
     children,
@@ -38,7 +41,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
 
   const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(false);
   const [finished, setFinished] = React.useState<boolean>(false);
-  const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider((r1, r2) => r1 !== r2));
+  const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider(dateProviderFn));
   React.useEffect(() => {
     if (chapters && chapters.every(MangaValidator.isMultilingualChapter))
       onChangeLanguage((chapters as unknown as MangaMultilingualChapter[])[0]?.language ?? 'en');
