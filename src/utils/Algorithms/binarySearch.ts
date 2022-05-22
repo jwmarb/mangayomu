@@ -1,16 +1,33 @@
 import { Comparator } from './Comparator/Comparator.interfaces';
 
 function binarySearch<T, E>(arr: T[], elementToFind: E, comparator: Comparator<T, E>): number {
-  let l = 0;
-  let r = arr.length - 1;
-  while (l <= r) {
-    const m = Math.floor((l + r) / 2);
-    const comparison = comparator(elementToFind, arr[m]);
-    if (comparison === 0) return m;
-    else if (comparison > 0) l = m + 1;
-    else r = m - 1;
+  let l = 0,
+    r = arr.length;
+  let m = -1,
+    c = 0;
+  while (l < r) {
+    m = Math.floor((l + r) / 2);
+    c = comparator(elementToFind, arr[m]);
+    if (c === 0) return m;
+    else if (c > 0) l = m + 1;
+    else r = m;
   }
   return -1;
+}
+
+function suggestIndex<T, E>(arr: T[], elementToFind: E, comparator: Comparator<T, E>): number {
+  let l = 0,
+    r = arr.length;
+  let m = -1,
+    c = 0;
+  while (l < r) {
+    m = Math.floor((l + r) / 2);
+    c = comparator(elementToFind, arr[m]);
+    if (c === 0) return m;
+    else if (c > 0) l = m + 1;
+    else r = m;
+  }
+  return l;
 }
 
 function lowerBound<T, E>(arr: T[], elementToFind: E, comparator: Comparator<T, E>): number {
@@ -57,4 +74,5 @@ export const binary = {
   lowerBound,
   upperBound,
   range,
+  suggest: suggestIndex,
 };
