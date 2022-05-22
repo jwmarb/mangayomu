@@ -2,9 +2,12 @@ import { ChapterContainer } from '@components/Chapter/Chapter.base';
 import Flex from '@components/Flex';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
+import Progress from '@components/Progress';
+import Spacer from '@components/Spacer';
 import { Typography, TypographySkeleton } from '@components/Typography';
 import useAnimatedLoading from '@hooks/useAnimatedLoading';
 import React from 'react';
+import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 const ChapterSkeleton: React.FC = (props) => {
@@ -19,7 +22,10 @@ const ChapterSkeleton: React.FC = (props) => {
             <TypographySkeleton width={120} />
           </Animated.View>
         </Flex>
-        <IconButton icon={<Icon bundle='Feather' name='download' />} disabled />
+        <View>
+          <Progress color='disabled' />
+          <Spacer x={5} />
+        </View>
       </Flex>
     </ChapterContainer>
   );
