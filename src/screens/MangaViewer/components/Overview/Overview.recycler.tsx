@@ -13,13 +13,6 @@ export const layout = new LayoutProvider(
   }
 );
 
-export const rowRenderer: (
-  type: string | number,
-  data: any,
-  index: number,
-  extendedState?: object | undefined
-) => JSX.Element | JSX.Element[] | null = (type, data) => <Chapter chapter={data} />;
-
 export const createFooter = (loading: boolean, chapterLen?: number) => () =>
   loading ? (
     <LoadingChapters />

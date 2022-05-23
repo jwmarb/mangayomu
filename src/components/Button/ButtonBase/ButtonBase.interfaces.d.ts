@@ -5,8 +5,9 @@ export interface ButtonBaseProps {
   color?: ButtonColors;
   round?: boolean;
   variant?: ButtonVariants;
-  disabled?: boolean;
+  disabled?: boolean | null;
   expand?: boolean | string | number;
+  onLongPress?: () => void;
   onPress?: () => void;
   opacity?: boolean;
   square?: boolean;

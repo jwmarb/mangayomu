@@ -18,6 +18,10 @@ export default class DownloadManager {
   private dir: string;
   private source: MangaHost;
 
+  public static getDownloads(): Map<string, DownloadManager> {
+    return this.downloads;
+  }
+
   /**
    * Manage a chapter download
    * @param chapter The chapter
@@ -45,7 +49,7 @@ export default class DownloadManager {
     index: i,
   }: FileSystem.DownloadProgressData & { index: number }) {
     this.progress[i] = totalBytesWritten / totalBytesExpectedToWrite;
-    console.log(`${i} = ${this.progress[i]}`);
+    // console.log(`${i} = ${this.progress[i]}`);
     if (this.progress[i] >= 1) this.downloadResumablePages[i].status = DownloadStatus.DOWNLOADED;
     if (this.getProgress() >= 1) {
       this.setStatus(DownloadStatus.DOWNLOADED);
@@ -68,6 +72,17 @@ export default class DownloadManager {
     }
 
     return true;
+  }
+
+  /**
+   * Queue the chapter for download.
+   */
+  public queue() {
+    switch (this.getStatus()) {
+      case DownloadStatus.IDLE:
+        this.setStatus(DownloadStatus.QUEUED);
+        break;
+    }
   }
 
   /**
@@ -108,7 +123,7 @@ export default class DownloadManager {
             this.downloadResumablePages[i].status === DownloadStatus.IDLE
           )
             try {
-              console.log(`Starting download for page ${i + 1}. Called by download()`);
+              // console.log(`Starting download for page ${i + 1}. Called by download()`);
               this.downloadResumablePages[i].status = DownloadStatus.DOWNLOADING;
               await downloadResumable.downloadAsync();
             } catch (e) {
@@ -156,14 +171,14 @@ export default class DownloadManager {
       for (let i = 0; i < this.downloadResumablePages.length; i++) {
         const { downloadResumable, status } = this.downloadResumablePages[i];
         if (status === DownloadStatus.DOWNLOADED) {
-          console.log(`Page ${i + 1} is already downloaded. Skipping...`);
+          // console.log(`Page ${i + 1} is already downloaded. Skipping...`);
           continue;
         }
         if (this.getStatus() === DownloadStatus.RESUME_DOWNLOADING)
           switch (status) {
             case DownloadStatus.DOWNLOADING:
               try {
-                console.log(`Resuming download for page ${i + 1}`);
+                // console.log(`Resuming download for page ${i + 1}`);
                 await downloadResumable.resumeAsync();
               } catch (e) {
                 this.setStatus(DownloadStatus.ERROR);
@@ -172,7 +187,7 @@ export default class DownloadManager {
               break;
             case DownloadStatus.IDLE:
               try {
-                console.log(`Starting download for page ${i + 1}. Called by resume()`);
+                // console.log(`Starting download for page ${i + 1}. Called by resume()`);
                 this.downloadResumablePages[i].status = DownloadStatus.DOWNLOADING;
                 await downloadResumable.downloadAsync();
               } catch (e) {
@@ -248,14 +263,14 @@ export default class DownloadManager {
   }
 
   public static async initialize() {
-    console.log('Initializing Download Manager');
+    // console.log('Initializing Download Manager');
     try {
       const existingState = (await this.downloadStates.get()) ?? {};
       for (const [key, value] of Object.entries(existingState)) {
         new DownloadManager(undefined, undefined, undefined, value);
       }
     } catch (e) {
-      console.log('Failed to find existing state');
+      // console.log('Failed to find existing state');
     }
   }
 
@@ -292,7 +307,7 @@ export default class DownloadManager {
           existingState.state[i].downloadState.resumeData
         ),
       }));
-      console.log(`Existing download state for ${existingState.chapter.link}`);
+      // console.log(`Existing download state for ${existingState.chapter.link}`);
       DownloadManager.downloads.set(existingState.chapter.link, this);
     } else throw Error('No args passed in constructor of DownloadManager');
   }

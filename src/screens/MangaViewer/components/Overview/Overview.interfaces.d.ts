@@ -11,4 +11,10 @@ export interface OverviewProps {
   loading: boolean;
   mangaName: string;
   sourceName: string;
+  rowRenderer: (
+    type: string | number,
+    data: any,
+    index: number,
+    extendedState?: object | undefined
+  ) => JSX.Element | JSX.Element[] | null;
 }

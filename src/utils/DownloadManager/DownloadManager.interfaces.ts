@@ -11,6 +11,7 @@ export enum DownloadStatus {
   CANCELLED = 'Cancelled',
   IDLE = 'Idle',
   VALIDATING = 'Validating',
+  QUEUED = 'Queued',
 }
 
 export interface SavedChapterDownloadState {

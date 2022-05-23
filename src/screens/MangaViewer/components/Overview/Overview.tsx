@@ -1,10 +1,12 @@
+import { ChapterRef } from '@components/Chapter/Chapter.interfaces';
 import { Container } from '@components/Container';
+import { Chapter } from '@components/core';
 import { Typography } from '@components/Typography';
 import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import FloatingActionButton from '@screens/MangaViewer/components/FloatingActionButton/FloatingActionButton';
 import RecyclerListViewScrollView from '@screens/MangaViewer/components/Overview/components/RecyclerListViewScrollView';
 import { OverviewProps } from '@screens/MangaViewer/components/Overview/Overview.interfaces';
-import { createFooter, layout, rowRenderer } from '@screens/MangaViewer/components/Overview/Overview.recycler';
+import { createFooter, layout } from '@screens/MangaViewer/components/Overview/Overview.recycler';
 import { MangaMultilingualChapter } from '@services/scraper/scraper.interfaces';
 import MangaValidator from '@utils/MangaValidator';
 import React from 'react';
@@ -31,6 +33,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
     chapters,
     currentChapter,
     collapsible,
+    rowRenderer,
     language,
     onChangeLanguage,
     loading,
@@ -38,10 +41,10 @@ const Overview: React.FC<OverviewProps> = (props) => {
     sourceName,
   } = props;
   const { containerPaddingTop } = collapsible;
-
   const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(false);
   const [finished, setFinished] = React.useState<boolean>(false);
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider(dateProviderFn));
+
   React.useEffect(() => {
     if (chapters && chapters.every(MangaValidator.isMultilingualChapter))
       onChangeLanguage((chapters as unknown as MangaMultilingualChapter[])[0]?.language ?? 'en');
@@ -112,7 +115,6 @@ const Overview: React.FC<OverviewProps> = (props) => {
         layoutProvider={layout}
         rowRenderer={rowRenderer}
         applyWindowCorrection={applyWindowCorrection}
-        forceNonDeterministicRendering
         disableRecycling
         renderFooter={createFooter(!finished, chapters.length)}
       />

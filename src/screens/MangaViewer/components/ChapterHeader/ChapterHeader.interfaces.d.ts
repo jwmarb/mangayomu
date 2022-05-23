@@ -10,4 +10,6 @@ export interface ChapterHeaderProps {
   handleOnOpenModal: () => void;
   language: ISOLangCode;
   onChangeLanguage: (lang: ISOLangCode) => void;
+  onSelectAll: (newVal: boolean) => void;
+  selectAll: boolean;
 }

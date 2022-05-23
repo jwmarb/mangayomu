@@ -5,6 +5,7 @@ import FoundationIconNames from 'react-native-vector-icons/glyphmaps/Foundation.
 import FeatherIconNames from 'react-native-vector-icons/glyphmaps/Feather.json';
 import OctIconNames from 'react-native-vector-icons/glyphmaps/Octicons.json';
 import { AppColors } from '@theme/Color/Color.interfaces';
+import { ColorSchemeName } from 'react-native';
 
 export type IconPack = 'FontAwesome5' | 'MaterialCommunityIcons' | 'AntDesign' | 'Foundation' | 'Feather' | 'Octicons';
 
@@ -24,6 +25,7 @@ export type IconProps<T extends IconPack> = {
     ? keyof typeof OctIconNames
     : '';
   color?: AppColors;
+  lockTheme?: ColorSchemeName;
   size?: 'small' | 'large' | 'medium' | 'tab';
 };
 

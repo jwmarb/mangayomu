@@ -1,3 +1,4 @@
+import Checkbox from '@components/Checkbox/Checkbox';
 import {
   Typography,
   Spacer,
@@ -40,7 +41,7 @@ const { width } = Dimensions.get('window');
 const halfWidth = width / 2;
 
 const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
-  const { chapters, handleOnOpenModal, loading, refresh, language, onChangeLanguage } = props;
+  const { chapters, handleOnOpenModal, loading, refresh, language, onChangeLanguage, onSelectAll, selectAll } = props;
   const opacity = useSharedValue(1);
   const bgOpacity = useSharedValue(0);
   const [visible, setVisible] = React.useState<boolean>(false);
@@ -123,7 +124,7 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
           {numOfChapters != null ? `Chapters - ${numOfChapters}` : 'Updating...'}
         </Typography>
         <Spacer x={2} />
-        <Flex>
+        <Flex alignItems='center'>
           {multilingualChapters && (
             <IconButton
               icon={<Icon bundle='MaterialCommunityIcons' name='translate' />}
@@ -133,6 +134,7 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
           )}
           <IconButton icon={<Icon bundle='Feather' name='refresh-cw' />} onPress={refresh} disabled={loading} />
           <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='sort' />} onPress={handleOnOpenModal} />
+          <Checkbox onChange={onSelectAll} checked={selectAll} />
         </Flex>
       </ChapterHeaderContainer>
       {loading && <LoadingChapters />}

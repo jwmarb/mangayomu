@@ -23,6 +23,8 @@ import Button from '@components/Button';
 import { DownloadStatus } from '@utils/DownloadManager/DownloadManager.interfaces';
 import DownloadManager from '@utils/DownloadManager/DownloadManager';
 import ChapterSkeleton from '@components/Chapter/Chapter.skeleton';
+import { useChapterContext } from '@context/ChapterContext';
+import Checkbox from '@components/Checkbox/Checkbox';
 
 const displayChapterInfo = (chapter: any) => {
   if (MangaValidator.hasDate(chapter)) {
@@ -40,16 +42,27 @@ const displayChapterInfo = (chapter: any) => {
 
 const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterProps> = (props, ref) => {
   const { chapter } = props;
+  const [mode, setMode] = useChapterContext();
   const source = useMangaSource(chapter.sourceName);
-  function handleOnPress() {}
+  function handleOnPress() {
+    switch (mode) {
+      case 'normal':
+        console.log(`Normal action for ${chapter.link}`);
+        break;
+      case 'selection':
+        setChecked((prev) => !prev);
+        break;
+    }
+  }
   const dir =
     FileSystem.documentDirectory + `Mangas/${chapter.mangaName}/${chapter.name ?? `Chapter ${chapter.index}`}/`;
 
   const downloadManager = React.useRef<DownloadManager>(DownloadManager.of(chapter, dir, source)).current;
 
   const [downloadStatus, setDownloadStatus] = React.useState<DownloadStatus>(DownloadStatus.VALIDATING);
+  const shouldBlockDownload = React.useRef<boolean>(false);
   const [totalProgress, setTotalProgress] = React.useState<number>(downloadManager.getProgress());
-  const [errors, setErrors] = React.useState<string[]>([]);
+  const [checked, setChecked] = React.useState<boolean>(false);
 
   const listener = React.useRef<NodeJS.Timer>();
   const style = useAnimatedMounting();
@@ -57,6 +70,17 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterProps> = (props
     () => downloadStatus === DownloadStatus.RESUME_DOWNLOADING || downloadStatus === DownloadStatus.START_DOWNLOADING,
     [downloadStatus]
   );
+
+  function handleOnLongPress() {
+    switch (mode) {
+      case 'normal':
+        setMode('selection');
+        break;
+      case 'selection':
+        setMode('normal');
+        break;
+    }
+  }
 
   function resumeDownload() {
     setDownloadStatus(DownloadStatus.RESUME_DOWNLOADING);
@@ -74,20 +98,37 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterProps> = (props
     setDownloadStatus(DownloadStatus.START_DOWNLOADING);
   }
 
+  function queueForDownload() {
+    if (downloadStatus !== DownloadStatus.DOWNLOADED) {
+      downloadManager.queue();
+      setDownloadStatus(DownloadStatus.QUEUED);
+    }
+  }
+
   React.useImperativeHandle(ref, () => ({
+    toggleCheck: () => {
+      setChecked((prev) => !prev);
+    },
+    downloadAsync: async () => {
+      shouldBlockDownload.current = true;
+      setDownloadStatus(DownloadStatus.START_DOWNLOADING);
+      await downloadManager.download();
+    },
     download: startDownload,
     pause: pauseDownload,
     cancel: cancelDownload,
     resume: resumeDownload,
+    queue: queueForDownload,
     getStatus: () => downloadStatus,
+    getURL: () => chapter.link,
   }));
 
   React.useEffect(() => {
     (async () => {
       try {
         const downloaded = await downloadManager.isDownloaded();
-
-        setDownloadStatus(downloaded ? DownloadStatus.DOWNLOADED : downloadManager.getStatus());
+        const initialStatus = downloaded ? DownloadStatus.DOWNLOADED : downloadManager.getStatus();
+        setDownloadStatus(initialStatus);
       } catch (e) {
         console.error(e);
       }
@@ -99,7 +140,7 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterProps> = (props
       case DownloadStatus.RESUME_DOWNLOADING:
       case DownloadStatus.DOWNLOADING:
       case DownloadStatus.START_DOWNLOADING:
-        listener.current = setInterval(async () => setTotalProgress(downloadManager.getProgress()), 100);
+        listener.current = setInterval(async () => setTotalProgress(downloadManager.getProgress()), 500);
         return () => {
           clearInterval(listener.current);
         };
@@ -121,11 +162,12 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterProps> = (props
           await downloadManager.resume();
           break;
         case DownloadStatus.START_DOWNLOADING:
-          await downloadManager.download();
-
-          return () => {
-            clearInterval(listener.current);
-          };
+          if (shouldBlockDownload.current) {
+            await downloadManager.download();
+            return () => {
+              clearInterval(listener.current);
+            };
+          } else shouldBlockDownload.current = false;
       }
     })();
   }, [downloadStatus]);
@@ -149,60 +191,76 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterProps> = (props
   return (
     <>
       <Animated.View style={style}>
-        <ButtonBase square onPress={handleOnPress}>
+        <ButtonBase square onPress={handleOnPress} onLongPress={handleOnLongPress}>
           <ChapterContainer>
             <Flex justifyContent='space-between' alignItems='center'>
               <Flex direction='column'>
                 <Typography bold>{chapter.name}</Typography>
                 {displayChapterInfo(chapter)}
               </Flex>
-              <Flex alignItems='center'>
-                {totalProgress > 0 && totalProgress < 1 && (
-                  <>
-                    <Typography variant='bottomtab' color='secondary'>
-                      {(totalProgress * 100).toFixed(2)}%
-                    </Typography>
-                    <Spacer x={1} />
-                    {isDownloading && (
-                      <IconButton
-                        icon={<Icon bundle='MaterialCommunityIcons' name='pause-circle-outline' />}
-                        onPress={pauseDownload}
-                      />
-                    )}
+              {mode === 'normal' ? (
+                <Flex alignItems='center'>
+                  {totalProgress > 0 && totalProgress < 1 && (
+                    <>
+                      <Typography variant='bottomtab' color='secondary'>
+                        {(totalProgress * 100).toFixed(2)}%
+                      </Typography>
+                      <Spacer x={1} />
+                      {isDownloading && (
+                        <IconButton
+                          icon={<Icon bundle='MaterialCommunityIcons' name='pause-circle-outline' />}
+                          onPress={pauseDownload}
+                        />
+                      )}
 
-                    {downloadStatus === DownloadStatus.PAUSED && (
+                      {downloadStatus === DownloadStatus.PAUSED && (
+                        <IconButton
+                          icon={<Icon bundle='MaterialCommunityIcons' name='play-circle-outline' />}
+                          onPress={resumeDownload}
+                        />
+                      )}
                       <IconButton
-                        icon={<Icon bundle='MaterialCommunityIcons' name='play-circle-outline' />}
-                        onPress={resumeDownload}
+                        icon={<Icon bundle='MaterialCommunityIcons' name='close-circle-outline' />}
+                        onPress={cancelDownload}
                       />
-                    )}
+                    </>
+                  )}
+                  {downloadStatus === DownloadStatus.DOWNLOADED && (
+                    <>
+                      <Icon
+                        bundle='MaterialCommunityIcons'
+                        name='check-circle-outline'
+                        color='secondary'
+                        size='small'
+                      />
+                      <Spacer x={1.3} />
+                    </>
+                  )}
+                  {(downloadStatus === DownloadStatus.IDLE || downloadStatus === DownloadStatus.CANCELLED) && (
                     <IconButton
-                      icon={<Icon bundle='MaterialCommunityIcons' name='close-circle-outline' />}
-                      onPress={cancelDownload}
+                      icon={<Icon bundle='Feather' name='download' />}
+                      color='primary'
+                      onPress={startDownload}
                     />
-                  </>
-                )}
-                {downloadStatus === DownloadStatus.DOWNLOADED && (
-                  <>
-                    <Icon bundle='MaterialCommunityIcons' name='check-circle-outline' color='secondary' size='small' />
-                    <Spacer x={1.3} />
-                  </>
-                )}
-                {(downloadStatus === DownloadStatus.IDLE || downloadStatus === DownloadStatus.CANCELLED) && (
-                  <IconButton
-                    icon={<Icon bundle='Feather' name='download' />}
-                    color='primary'
-                    onPress={startDownload}
-                  />
-                )}
-                {(isDownloading || downloadStatus === DownloadStatus.VALIDATING) && (
-                  <>
-                    <Spacer x={1} />
-                    <Progress color='disabled' />
-                    <Spacer x={1.1} />
-                  </>
-                )}
-              </Flex>
+                  )}
+                  {downloadStatus === DownloadStatus.QUEUED && (
+                    <>
+                      <Typography color='secondary' variant='bottomtab'>
+                        Queued
+                      </Typography>
+                    </>
+                  )}
+                  {(isDownloading || downloadStatus === DownloadStatus.VALIDATING) && (
+                    <>
+                      <Spacer x={1} />
+                      <Progress color='disabled' />
+                      <Spacer x={1.1} />
+                    </>
+                  )}
+                </Flex>
+              ) : (
+                <Checkbox checked={checked} onChange={setChecked} />
+              )}
             </Flex>
           </ChapterContainer>
         </ButtonBase>

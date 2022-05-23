@@ -20,13 +20,17 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = (props) => {
           <Flex alignItems='center'>
             <StatusCircle publish={status.publish} />
             <Spacer x={1} />
-            <Typography variant='body2'>{status.publish}</Typography>
+            <Typography variant='body2' lockTheme='dark'>
+              {status.publish}
+            </Typography>
           </Flex>
           {status.scan && (
             <Flex alignItems='center'>
               <StatusCircle scan={status.scan} />
               <Spacer x={1} />
-              <Typography variant='body2'>{status.scan}</Typography>
+              <Typography variant='body2' lockTheme='dark'>
+                {status.scan}
+              </Typography>
             </Flex>
           )}
         </Flex>

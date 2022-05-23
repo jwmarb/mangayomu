@@ -8,7 +8,7 @@ import {
   ThemedColorValue,
   ThemedPalette,
 } from '@theme/Color/Color.interfaces';
-import { Appearance } from 'react-native';
+import { Appearance, ColorSchemeName } from 'react-native';
 
 export default class Color {
   /**
@@ -47,19 +47,21 @@ export default class Color {
    * Get the contrast text color that would be preferred when this color is used as a background
    * @returns Returns the recommended text color where this color is used as the background
    */
-  public getContrastText(): string {
+  public getContrastText(): Color {
     const mode = Appearance.getColorScheme() ?? 'light';
     const yiq = (this.rgba[mode].red * 299 + this.rgba[mode].green * 587 + this.rgba[mode].blue * 114) / 1000;
 
-    return yiq > 125 ? rgbaToString(textColors.primary.rgba.light) : rgbaToString(textColors.primary.rgba.dark);
+    return yiq > 125
+      ? Color.rgba(textColors.primary.get('light'), textColors.primary.get('light'))
+      : Color.rgba(textColors.primary.get('dark'), textColors.primary.get('dark'));
   }
 
   /**
    * Converts the class to a usable string for styled-components. This method does not need to be called in a styled-components component, but it will need to be called when outside styled-components.
    * @returns Returns the string value
    */
-  public toString(): string {
-    const rgbaFromCurrentTheme = this.rgba[Appearance.getColorScheme() ?? 'light'];
+  public toString(theme?: ColorSchemeName): string {
+    const rgbaFromCurrentTheme = this.rgba[theme ?? Appearance.getColorScheme() ?? 'light'];
     return `rgba(${rgbaFromCurrentTheme.red}, ${rgbaFromCurrentTheme.green}, ${rgbaFromCurrentTheme.blue}, ${rgbaFromCurrentTheme.alpha})`;
   }
 
@@ -78,25 +80,34 @@ export default class Color {
    * Same as toString()
    * @returns Returns the value of the color in string form
    */
-  public get(): string {
-    return this.toString();
+  public get(theme?: ColorSchemeName): string {
+    return this.toString(theme);
+  }
+
+  /**
+   * Get the inverse theme of the color
+   * @returns Returns an RGBA string using the opposite theme color
+   */
+  public getInverse(): string {
+    const rgbaFromCurrentTheme = this.rgba[Appearance.getColorScheme() === 'light' ? 'dark' : 'light'];
+    return `rgba(${rgbaFromCurrentTheme.red}, ${rgbaFromCurrentTheme.green}, ${rgbaFromCurrentTheme.blue}, ${rgbaFromCurrentTheme.alpha})`;
   }
 
   /**
    * Get the color from the color palette
    */
-  public static valueOf(v: AppColors): string {
-    if (v instanceof Color) return v.get();
+  public static valueOf(v: AppColors, theme?: ColorSchemeName): string {
+    if (v instanceof Color) return v.get(theme);
     const palette = Palette();
     switch (v) {
       case 'textPrimary':
-        return palette.text.primary.get();
+        return palette.text.primary.get(theme);
       case 'textSecondary':
-        return palette.text.secondary.get();
+        return palette.text.secondary.get(theme);
       case 'disabled':
-        return palette.text.disabled.get();
+        return palette.text.disabled.get(theme);
       default:
-        return palette[v].main.get();
+        return palette[v].main.get(theme);
     }
   }
 

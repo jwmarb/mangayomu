@@ -11,6 +11,7 @@ import { Color } from '@theme/core';
 const Button: React.FC<ButtonProps> = (props) => {
   const {
     onPress = () => void 0,
+    onLongPress = () => void 0,
     color = 'primary',
     variant = 'text',
     title,
@@ -26,6 +27,7 @@ const Button: React.FC<ButtonProps> = (props) => {
     disabled,
     expand,
     onPress,
+    onLongPress,
     round: false,
     square: false,
   };
@@ -42,9 +44,12 @@ const Button: React.FC<ButtonProps> = (props) => {
 
   const iconColor = React.useMemo(() => {
     if (disabled) return 'disabled';
-    if (color instanceof Color) return Color.rgba(color.getContrastText(), color.getContrastText());
+    if (color instanceof Color) return Color.rgba(color.getContrastText().get(), color.getContrastText().get());
     if (variant === 'contained')
-      return Color.rgba(theme.palette[color].main.getContrastText(), theme.palette[color].main.getContrastText());
+      return Color.rgba(
+        theme.palette[color].main.getContrastText().get(),
+        theme.palette[color].main.getContrastText().get()
+      );
     return color;
   }, [color, disabled, variant]);
 

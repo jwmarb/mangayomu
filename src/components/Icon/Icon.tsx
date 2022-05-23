@@ -13,7 +13,7 @@ import { Color } from '@theme/core';
 import { RFValue } from 'react-native-responsive-fontsize';
 
 export default function Icon<T extends IconPack>(props: IconProps<T>) {
-  const { bundle, name, color = 'textPrimary', size } = props;
+  const { bundle, name, color = 'textPrimary', size, lockTheme } = props;
   const numSize = React.useMemo(() => {
     switch (size) {
       default:
@@ -30,17 +30,17 @@ export default function Icon<T extends IconPack>(props: IconProps<T>) {
 
   switch (bundle) {
     case 'FontAwesome5':
-      return <FontAwesome5Base name={name} color={Color.valueOf(color)} size={numSize} />;
+      return <FontAwesome5Base name={name} color={Color.valueOf(color, lockTheme)} size={numSize} />;
     case 'AntDesign':
-      return <AntDesignBase name={name} color={Color.valueOf(color)} size={numSize} />;
+      return <AntDesignBase name={name} color={Color.valueOf(color, lockTheme)} size={numSize} />;
     case 'MaterialCommunityIcons':
-      return <MaterialCommunityIconsBase name={name} color={Color.valueOf(color)} size={numSize} />;
+      return <MaterialCommunityIconsBase name={name} color={Color.valueOf(color, lockTheme)} size={numSize} />;
     case 'Foundation':
-      return <FoundationBase name={name} color={Color.valueOf(color)} size={numSize} />;
+      return <FoundationBase name={name} color={Color.valueOf(color, lockTheme)} size={numSize} />;
     case 'Feather':
-      return <FeatherBase name={name} color={Color.valueOf(color)} size={numSize} />;
+      return <FeatherBase name={name} color={Color.valueOf(color, lockTheme)} size={numSize} />;
     case 'Octicons':
-      return <OcticonsBase name={name} color={Color.valueOf(color)} size={numSize} />;
+      return <OcticonsBase name={name} color={Color.valueOf(color, lockTheme)} size={numSize} />;
     default:
       return null;
   }

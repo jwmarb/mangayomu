@@ -16,29 +16,39 @@ const MangaRating: React.FC<MangaRatingProps> = (props) => {
             {new Array(5).fill('').map((x, i) => {
               const star = (i + 1) * 2;
               if (value - star >= 0)
-                return <Icon key={i} bundle='MaterialCommunityIcons' name='star' color='secondary' />;
+                return <Icon key={i} bundle='MaterialCommunityIcons' name='star' color='secondary' lockTheme='dark' />;
               if (Math.abs(value - star) % 1 !== 0 && Math.abs(value - star) < 1)
-                return <Icon key={i} bundle='MaterialCommunityIcons' name='star-half-full' color='secondary' />;
+                return (
+                  <Icon
+                    key={i}
+                    bundle='MaterialCommunityIcons'
+                    name='star-half-full'
+                    color='secondary'
+                    lockTheme='dark'
+                  />
+                );
               // if (value - star < 0.5)
-              return <Icon key={i} bundle='MaterialCommunityIcons' name='star-outline' color='secondary' />;
+              return (
+                <Icon key={i} bundle='MaterialCommunityIcons' name='star-outline' color='secondary' lockTheme='dark' />
+              );
             })}
             <Spacer x={1} />
-            <Typography>{value} / 10</Typography>
+            <Typography lockTheme='dark'>{value} / 10</Typography>
           </Flex>
-          <Typography variant='body2' color='textSecondary'>
+          <Typography variant='body2' color='textSecondary' lockTheme='dark'>
             {voteCount} votes
           </Typography>
         </Flex>
       ) : (
         <Flex direction='column' alignItems='center' container>
           <Flex alignItems='center'>
-            <Icon bundle='MaterialCommunityIcons' name='star' color='disabled' />
-            <Icon bundle='MaterialCommunityIcons' name='star' color='disabled' />
-            <Icon bundle='MaterialCommunityIcons' name='star' color='disabled' />
-            <Icon bundle='MaterialCommunityIcons' name='star' color='disabled' />
-            <Icon bundle='MaterialCommunityIcons' name='star' color='disabled' />
+            <Icon bundle='MaterialCommunityIcons' name='star' color='disabled' lockTheme='dark' />
+            <Icon bundle='MaterialCommunityIcons' name='star' color='disabled' lockTheme='dark' />
+            <Icon bundle='MaterialCommunityIcons' name='star' color='disabled' lockTheme='dark' />
+            <Icon bundle='MaterialCommunityIcons' name='star' color='disabled' lockTheme='dark' />
+            <Icon bundle='MaterialCommunityIcons' name='star' color='disabled' lockTheme='dark' />
             <Spacer x={1} />
-            <Typography>N/A</Typography>
+            <Typography lockTheme='dark'>N/A</Typography>
           </Flex>
           <Typography variant='body2' color='textSecondary'>
             {voteCount} votes

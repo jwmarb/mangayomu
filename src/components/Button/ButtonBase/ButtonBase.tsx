@@ -105,17 +105,18 @@ const OpacityBase = styled(TouchableOpacity).attrs<ButtonBaseProps & ButtonProps
 export const ButtonBase: React.FC<ButtonBaseProps & Omit<ButtonProps, 'title'>> = ({
   children,
   onPress,
+  onLongPress,
   opacity,
   ...rest
 }) => {
   return (
     <TouchableContainer {...rest}>
       {opacity ? (
-        <OpacityBase onPress={onPress} {...rest}>
+        <OpacityBase onPress={onPress} onLongPress={onLongPress} {...rest}>
           {children}
         </OpacityBase>
       ) : (
-        <TouchableBase onPress={onPress} {...rest}>
+        <TouchableBase onPress={onPress} onLongPress={onLongPress} {...rest}>
           {children}
         </TouchableBase>
       )}

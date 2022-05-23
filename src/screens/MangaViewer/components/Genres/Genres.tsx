@@ -36,7 +36,7 @@ const Genres: React.FC<GenresProps> = (props) => {
       <Spacer y={1} />
       <Animated.View style={mountingStyle}>
         {genres ? (
-          <Typography color='textSecondary' numberOfLines={2}>
+          <Typography color='textSecondary' numberOfLines={2} lockTheme='dark'>
             {genres.join(' · ')}
           </Typography>
         ) : (

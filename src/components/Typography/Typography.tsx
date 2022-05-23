@@ -7,8 +7,8 @@ export const Typography = styled(Animated.Text)<TypographyProps>`
   ${(props) => css`
     ${props.theme.typography[props.variant ?? 'body1']};
     color: ${() => {
-      if (props.color == null) return props.theme.palette.text.primary.get();
-      return Color.valueOf(props.color);
+      if (props.color == null) return props.theme.palette.text.primary.get(props.lockTheme);
+      return Color.valueOf(props.color, props.lockTheme);
     }};
     ${props.bold != null &&
     css`

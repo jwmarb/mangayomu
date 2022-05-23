@@ -17,11 +17,13 @@ class SortedList<T> {
    * Add an item to the array while persisting its order
    * @param item The item to add to the array
    */
-  public add(item: T | T[]) {
+  public add<K = T>(item: T | K[], mapFn: (el: K, index: number) => T = (el) => el as unknown as T) {
     if (Array.isArray(item)) {
+      let mapped: T;
       for (let i = 0; i < item.length; i++) {
-        const indexToInsert = binary.suggest(this.arr, item[i], this.comparator);
-        this.arr.splice(indexToInsert, 0, item[i]);
+        mapped = mapFn(item[i], i);
+        const indexToInsert = binary.suggest(this.arr, mapped, this.comparator);
+        this.arr.splice(indexToInsert, 0, mapped);
       }
     } else {
       const indexToInsert = binary.suggest(this.arr, item, this.comparator);

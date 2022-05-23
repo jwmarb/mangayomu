@@ -6,13 +6,15 @@ import Icon from '@components/Icon';
 
 export type ButtonVariants = 'contained' | 'outline' | 'text';
 
-export interface ButtonProps extends Omit<RNButtonProps, 'onPress'> {
+export interface ButtonProps extends Omit<RNButtonProps, 'onPress' | 'disabled'> {
   onPress?: () => void;
+  onLongPress?: () => void;
   color?: ButtonColors;
   variant?: ButtonVariants;
   expand?: boolean | number | string;
   icon?: React.ReactElement<React.ComponentProps<typeof Icon>> | false;
   iconPlacement?: 'left' | 'right';
+  disabled?: boolean | null;
 }
 
-export type ButtonTextProps = Omit<Required<ButtonBaseProps>, 'onPress' | 'opacity'>;
+export type ButtonTextProps = Omit<Required<ButtonBaseProps>, 'onPress' | 'opacity' | 'onLongPress'>;

@@ -11,6 +11,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming, Eas
 import useAnimatedMounting from '@hooks/useAnimatedMounting';
 import { LayoutChangeEvent, NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
 import useMountedEffect from '@hooks/useMountedEffect';
+import { useTheme } from 'styled-components/native';
 
 const BUTTON_WIDTH = 56;
 
@@ -19,6 +20,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = (props) => {
   const [textWidth, setTextWidth] = React.useState<number>(0);
   const width = useSharedValue(BUTTON_WIDTH);
   const opacity = useSharedValue(0);
+  const theme = useTheme();
 
   useMountedEffect(() => {
     if (!isAtBeginning) {
@@ -48,10 +50,14 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = (props) => {
         <ButtonBase round onPress={() => {}} color='primary'>
           <FloatingActionButtonBase style={styles}>
             <Flex alignItems='center'>
-              <Icon bundle='MaterialCommunityIcons' name='play' />
+              <Icon bundle='MaterialCommunityIcons' name='play' color={theme.palette.primary.main.getContrastText()} />
               <Spacer x={1} />
               <Animated.View style={mountStyles}>
-                <Typography variant='button' numberOfLines={1} onTextLayout={onTextLayout}>
+                <Typography
+                  variant='button'
+                  numberOfLines={1}
+                  onTextLayout={onTextLayout}
+                  color={theme.palette.primary.main.getContrastText()}>
                   {currentChapter?.name ?? 'Read'}
                 </Typography>
               </Animated.View>

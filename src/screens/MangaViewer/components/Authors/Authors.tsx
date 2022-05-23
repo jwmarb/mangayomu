@@ -22,9 +22,9 @@ const Authors: React.FC<AuthorsProps> = (props) => {
     animate(<Skeleton.Typography width='80%' />, withAnimatedLoading)
   ) : authors != null ? (
     <Animated.View style={animatedMount}>
-      <Typography>
+      <Typography lockTheme='dark'>
         By{' '}
-        <Typography color='textSecondary' numberOfLines={1}>
+        <Typography color='textSecondary' numberOfLines={1} lockTheme='dark'>
           {authors?.join(', ')}
         </Typography>
       </Typography>
