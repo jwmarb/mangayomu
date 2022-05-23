@@ -10,6 +10,7 @@ import {
   Typography,
   SortTypeItem,
   List,
+  Chapter,
 } from '@components/core';
 import useAPICall from '@hooks/useAPICall';
 
@@ -26,9 +27,19 @@ import useSort from '@hooks/useSort';
 import { MangaChapter, WithDate } from '@services/scraper/scraper.interfaces';
 import { HeaderBuilder } from '@components/Screen/Header/Header.base';
 import { ISOLangCode } from '@utils/languageCodes';
-import { ImageBackground, Linking, Share } from 'react-native';
+import { BackHandler, ImageBackground, Linking, Share } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from 'styled-components/native';
+import { ChapterPressableMode, ChapterRef } from '@components/Chapter/Chapter.interfaces';
+import DownloadManager, { DownloadStatus } from '@utils/DownloadManager';
+import SharedMangaViewerRefs, { GRADIENT_COLOR } from './MangaViewer.shared';
+import pLimit from 'p-limit';
+import * as FileSystem from 'expo-file-system';
+import { Constants } from '@theme/core';
+import { ChapterContext } from '@context/ChapterContext';
+import useMountedEffect from '@hooks/useMountedEffect';
+import CancelablePromise from '@utils/CancelablePromise';
+const LanguageModal = React.lazy(() => import('@screens/MangaViewer/components/LanguageModal'));
 const Genres = React.lazy(() => import('@screens/MangaViewer/components/Genres'));
 const ChapterHeader = React.lazy(() => import('@screens/MangaViewer/components/ChapterHeader'));
 const Title = React.lazy(() => import('@screens/MangaViewer/components/Title'));
@@ -38,6 +49,8 @@ const MangaCover = React.lazy(() => import('@screens/MangaViewer/components/Mang
 const MangaAction = React.lazy(() => import('@screens/MangaViewer/components/MangaAction'));
 const Overview = React.lazy(() => import('@screens/MangaViewer/components/Overview'));
 const MangaRating = React.lazy(() => import('@screens/MangaViewer/components/MangaRating'));
+
+const limit = pLimit(5);
 
 const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   const {
@@ -108,6 +121,8 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   const collapsible = useCollapsibleHeader(options);
   const { ready, Fallback } = useLazyLoading();
   const loadingAnimation = useAnimatedLoading();
+  const chaptersOnDisplayRef = React.useRef<Record<string, string>>({}).current;
+
   const isAdult = React.useMemo(
     () => userMangaInfo && MangaValidator.isNSFW(userMangaInfo.genres),
     [userMangaInfo?.genres]
@@ -119,10 +134,107 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     }
   }, [meta]);
 
+  React.useEffect(() => {
+    return () => {
+      SharedMangaViewerRefs.clearRefs();
+    };
+  }, []);
+
   const [sorted, setSorted] = React.useState(() => (userMangaInfo?.chapters ?? []).sort(selectedSortOption));
+  const [mode, setMode] = React.useState<ChapterPressableMode>('normal');
+  const [selectAll, setSelectAll] = React.useState<boolean>(false);
+
+  const rowRenderer: (
+    type: string | number,
+    data: any,
+    index: number,
+    extendedState?: object | undefined
+  ) => JSX.Element | JSX.Element[] | null = React.useCallback(
+    (type, data, i) => <Chapter chapter={data} ref={(r) => SharedMangaViewerRefs.setRef(r, i)} />,
+    []
+  );
 
   React.useEffect(() => {
-    setSorted(Array.from(userMangaInfo?.chapters ?? []).sort(selectedSortOption));
+    if (mode === 'selection') {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+        setMode('normal');
+        setSelectAll(false);
+        return true;
+      });
+      return () => backHandler.remove();
+    }
+  }, [mode]);
+
+  const handleOnSelectAll = React.useCallback((newVal: boolean) => {
+    setSelectAll(newVal);
+    setMode((prev) => {
+      switch (prev) {
+        case 'normal':
+          return 'selection';
+        case 'selection':
+          return 'normal';
+      }
+    });
+  }, []);
+
+  useMountedEffect(() => {
+    if (selectAll) {
+      for (let i = 0; i < sorted.length; i++) {
+        const chapterElement = SharedMangaViewerRefs.getRef(i);
+        if (chapterElement != null) {
+          chapterElement.toggleCheck();
+        }
+      }
+    }
+  }, [selectAll]);
+
+  const handleOnDownloadAll = React.useCallback(async () => {
+    for (let i = 0; i < sorted.length; i++) {
+      const chapterElement = SharedMangaViewerRefs.getRef(i);
+      if (chapterElement != null) {
+        chapterElement.queue();
+      } else {
+        const data =
+          DownloadManager.getDownloads().get(sorted[i].link) ??
+          DownloadManager.of(
+            sorted[i],
+            FileSystem.documentDirectory +
+              `Mangas/${manga.source}/${manga.title}/${sorted[i].name ?? `Chapter ${sorted[i].index}`}/`,
+            source
+          );
+        data.queue();
+      }
+    }
+    await Promise.all(
+      sorted.map((x, i) =>
+        limit(async () => {
+          const chapterEl = SharedMangaViewerRefs.getRef(i);
+          const data = DownloadManager.getDownloads().get(x.link);
+          if (data == null) throw Error(`Unable to find ${x.link} in DownloadManager`);
+          if (chapterEl != null) {
+            console.log(`Starting download for ${x.link} through Element Ref`);
+            await chapterEl.downloadAsync();
+          } else {
+            console.log(
+              `Starting download for ${
+                x.link
+              } through DownloadManager with chaptersRef length = ${SharedMangaViewerRefs.size()} and sorted = ${
+                sorted.length
+              }`
+            );
+            await data.download();
+          }
+        })
+      )
+    );
+  }, [sorted]);
+
+  React.useEffect(() => {
+    const sort = Array.from(userMangaInfo?.chapters ?? []).sort(selectedSortOption);
+    setSorted(sort);
+    for (let i = 0; i < sort.length; i++) {
+      chaptersOnDisplayRef[sort[i].link] = sort[i].link;
+    }
   }, [userMangaInfo?.chapters, sort, reverse]);
 
   if (ready) {
@@ -133,66 +245,66 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
             <Progress />
           </Flex>
         }>
-        <AnimatedProvider style={loadingAnimation}>
-          <Overview
-            mangaName={`${manga.source}/${manga.title}`}
-            sourceName={manga.source}
-            loading={loading}
-            onChangeLanguage={setLanguage}
-            chapters={sorted}
-            language={language}
-            currentChapter={userMangaInfo?.currentlyReadingChapter}
-            collapsible={collapsible}>
-            <MangaViewerContainer>
-              <ImageBackground source={{ uri: manga.imageCover }}>
-                <LinearGradient colors={['transparent', theme.palette.background.default.get()]}>
-                  <MangaViewerImageBackdrop paddingTop={collapsible.containerPaddingTop}>
-                    <Flex container horizontalPadding={3} verticalPadding={0}>
-                      <MangaCover mangaCoverURI={manga.imageCover} title={manga.title} />
-                      <Spacer x={2} />
-                      <Flex direction='column' shrink>
-                        <Title title={manga.title} isAdult={isAdult} />
-                        <Authors
-                          manga={manga}
-                          authors={
-                            userMangaInfo && MangaValidator.hasAuthors(userMangaInfo) ? userMangaInfo.authors : null
-                          }
-                        />
-                        <Genres genres={userMangaInfo?.genres} source={source} />
-                        <Spacer y={1} />
-                        <StatusIndicator meta={userMangaInfo} />
-                        <MangaRating
-                          {...(userMangaInfo && MangaValidator.hasRating(userMangaInfo)
-                            ? { rating: { rating: userMangaInfo.rating } }
-                            : { rating: null })}
-                        />
-                      </Flex>
-                    </Flex>
-                    <MangaAction manga={manga} userMangaInfo={userMangaInfo} />
-                  </MangaViewerImageBackdrop>
-                </LinearGradient>
-              </ImageBackground>
-              <Spacer y={2} />
-              <Description description={userMangaInfo?.description} />
-              <Genres buttons genres={userMangaInfo?.genres} source={source} />
-            </MangaViewerContainer>
-            <ChapterHeader
-              onChangeLanguage={setLanguage}
-              language={language}
-              refresh={refresh}
-              chapters={meta?.chapters}
-              sort={sort}
-              handleOnOpenModal={handleOnOpenModal}
+        <ChapterContext.Provider value={[mode, setMode]}>
+          <AnimatedProvider style={loadingAnimation}>
+            <Overview
+              rowRenderer={rowRenderer}
+              mangaName={`${manga.source}/${manga.title}`}
+              sourceName={manga.source}
               loading={loading}
-            />
-            <Modal visible={visible} onClose={handleOnCloseModal}>
-              <HeaderBuilder paper removeStatusBarPadding horizontalPadding verticalPadding>
-                <Typography variant='subheader'>Sort chapters</Typography>
-              </HeaderBuilder>
-              {sortOptions}
-            </Modal>
-          </Overview>
-        </AnimatedProvider>
+              onChangeLanguage={setLanguage}
+              chapters={sorted}
+              language={language}
+              currentChapter={userMangaInfo?.currentlyReadingChapter}
+              collapsible={collapsible}>
+              <MangaViewerContainer>
+                <ImageBackground source={{ uri: manga.imageCover }}>
+                  <LinearGradient colors={['transparent', GRADIENT_COLOR.get()]}>
+                    <MangaViewerImageBackdrop paddingTop={collapsible.containerPaddingTop}>
+                      <Flex container horizontalPadding={3} verticalPadding={0}>
+                        <MangaCover mangaCoverURI={manga.imageCover} title={manga.title} />
+                        <Spacer x={2} />
+                        <Flex direction='column' shrink>
+                          <Title title={manga.title} isAdult={isAdult} />
+                          <Authors
+                            manga={manga}
+                            authors={
+                              userMangaInfo && MangaValidator.hasAuthors(userMangaInfo) ? userMangaInfo.authors : null
+                            }
+                          />
+                          <Genres genres={userMangaInfo?.genres} source={source} />
+                          <Spacer y={1} />
+                          <StatusIndicator meta={userMangaInfo} />
+                          <MangaRating
+                            {...(userMangaInfo && MangaValidator.hasRating(userMangaInfo)
+                              ? { rating: { rating: userMangaInfo.rating } }
+                              : { rating: null })}
+                          />
+                        </Flex>
+                      </Flex>
+                      <MangaAction manga={manga} userMangaInfo={userMangaInfo} />
+                    </MangaViewerImageBackdrop>
+                  </LinearGradient>
+                </ImageBackground>
+                <Spacer y={2} />
+                <Description description={userMangaInfo?.description} />
+                <Genres buttons genres={userMangaInfo?.genres} source={source} />
+              </MangaViewerContainer>
+              <ChapterHeader
+                selectAll={selectAll}
+                onSelectAll={handleOnDownloadAll}
+                onChangeLanguage={setLanguage}
+                language={language}
+                refresh={refresh}
+                chapters={meta?.chapters}
+                sort={sort}
+                handleOnOpenModal={handleOnOpenModal}
+                loading={loading}
+              />
+              <LanguageModal visible={visible} onCloseModal={handleOnCloseModal} sortOptions={sortOptions} />
+            </Overview>
+          </AnimatedProvider>
+        </ChapterContext.Provider>
       </React.Suspense>
     );
   }
