@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware, Dispatch, AnyAction } from 'redux';
+import { legacy_createStore as createStore, applyMiddleware, Dispatch, AnyAction } from 'redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import reducers from './reducers';
 import thunk from 'redux-thunk';

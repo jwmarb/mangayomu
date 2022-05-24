@@ -80,8 +80,10 @@ export default class DownloadCollection {
       const dl = this.getDownloadableObject(this.queuedChapters[i]);
 
       const { ref } = dl;
-      if (ref != null) ref.queue();
-      else dl.downloadManager.queue();
+      if (!(await dl.downloadManager.isDownloaded())) {
+        if (ref != null) ref.queue();
+        else dl.downloadManager.queue();
+      }
     }
 
     this.shouldDownloadChapters = true;
@@ -102,12 +104,14 @@ export default class DownloadCollection {
           if (this.shouldDownloadChapters) {
             const dl = this.getDownloadableObject(x);
             const { ref } = dl;
-            if (ref != null) {
-              console.log(`Downloading ${x.link} through Ref`);
-              await ref.downloadAsync();
-            } else {
-              console.log(`Downloading ${x.link} through DownloadManager`);
-              await dl.downloadManager.download();
+            if (dl.downloadManager.isQueued()) {
+              if (ref != null) {
+                console.log(`Downloading ${x.link} through Ref`);
+                await ref.downloadAsync();
+              } else {
+                console.log(`Downloading ${x.link} through DownloadManager`);
+                await dl.downloadManager.download();
+              }
             }
           } else console.log(`Skipped ${x.link}`);
         })
@@ -121,9 +125,11 @@ export default class DownloadCollection {
     for (let i = 0; i < this.queuedChapters.length; i++) {
       const dl = this.getDownloadableObject(this.queuedChapters[i]);
       const { ref } = dl;
-      console.log(`Pausing ${this.queuedChapters[i].link}`);
-      if (ref != null) await ref.pauseAsync();
-      else await dl.downloadManager.pause();
+      if (dl.downloadManager.isDownloading()) {
+        console.log(`Pausing ${this.queuedChapters[i].link}`);
+        if (ref != null) await ref.pauseAsync();
+        else await dl.downloadManager.pause();
+      }
     }
   }
 
@@ -136,12 +142,14 @@ export default class DownloadCollection {
           if (this.shouldDownloadChapters) {
             const dl = this.getDownloadableObject(x);
             const { ref } = dl;
-            if (ref != null) {
-              console.log(`Resuming download for ${x.link} through Ref`);
-              await ref.resumeAsync();
-            } else {
-              console.log(`Resuming download for ${x.link} through DownloadManager`);
-              await dl.downloadManager.resume();
+            if (dl.downloadManager.isPaused()) {
+              if (ref != null) {
+                console.log(`Resuming download for ${x.link} through Ref`);
+                await ref.resumeAsync();
+              } else {
+                console.log(`Resuming download for ${x.link} through DownloadManager`);
+                await dl.downloadManager.resume();
+              }
             }
           } else console.log(`Skipped ${x.link}`);
         })

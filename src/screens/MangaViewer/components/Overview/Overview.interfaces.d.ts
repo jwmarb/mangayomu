@@ -1,4 +1,5 @@
 import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
+import { Manga } from '@services/scraper/scraper.interfaces';
 import { ISOLangCode } from '@utils/languageCodes';
 import { Collapsible } from 'react-navigation-collapsible';
 
@@ -9,8 +10,7 @@ export interface OverviewProps {
   language: ISOLangCode;
   onChangeLanguage: (l: ISOLangCode) => void;
   loading: boolean;
-  mangaName: string;
-  sourceName: string;
+  manga: Manga;
   rowRenderer: (
     type: string | number,
     data: any,

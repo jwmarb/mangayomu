@@ -11,6 +11,7 @@ import {
   IconButton,
   HeaderBuilder,
 } from '@components/core';
+import { AppState } from '@redux/store';
 import {
   ChapterHeaderContainer,
   ChapterLoadingIndicator,
@@ -37,11 +38,13 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { useSelector } from 'react-redux';
 const { width } = Dimensions.get('window');
 const halfWidth = width / 2;
 
 const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
-  const { chapters, handleOnOpenModal, loading, refresh, language, onChangeLanguage, onSelectAll, selectAll } = props;
+  const { chapters, handleOnOpenModal, loading, refresh, language, onChangeLanguage, onSelectAll } = props;
+  const checked = useSelector((state: AppState) => !!state.chaptersList.checkAll);
   const opacity = useSharedValue(1);
   const bgOpacity = useSharedValue(0);
   const [visible, setVisible] = React.useState<boolean>(false);
@@ -134,7 +137,7 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
           )}
           <IconButton icon={<Icon bundle='Feather' name='refresh-cw' />} onPress={refresh} disabled={loading} />
           <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='sort' />} onPress={handleOnOpenModal} />
-          <Checkbox onChange={onSelectAll} checked={selectAll} />
+          <Checkbox onChange={onSelectAll} checked={checked} />
         </Flex>
       </ChapterHeaderContainer>
       {loading && <LoadingChapters />}

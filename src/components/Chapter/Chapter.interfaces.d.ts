@@ -1,15 +1,17 @@
 import { DownloadStatus } from '@components/Chapter/Chapter';
 import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
+import { Manga } from '@services/scraper/scraper.interfaces';
 import DownloadManager from '@utils/DownloadManager/DownloadManager';
 
 export type ChapterPressableMode = 'selection' | 'normal';
 
 export interface ChapterProps {
-  chapter: ReadingChapterInfo & { mangaName: string; sourceName: string };
+  manga: Manga;
+  chapter: ReadingChapterInfo;
 }
 
 export interface ChapterRef {
-  toggleCheck: () => void;
+  setChecked: (t: boolean) => void;
   getDownloadManager: () => DownloadManager;
   downloadAsync: () => Promise<void>;
   download: () => void;

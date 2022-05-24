@@ -3,6 +3,7 @@ import { Container } from '@components/Container';
 import { Chapter } from '@components/core';
 import { Typography } from '@components/Typography';
 import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
+import { AppState } from '@redux/store';
 import FloatingActionButton from '@screens/MangaViewer/components/FloatingActionButton/FloatingActionButton';
 import RecyclerListViewScrollView from '@screens/MangaViewer/components/Overview/components/RecyclerListViewScrollView';
 import { OverviewProps } from '@screens/MangaViewer/components/Overview/Overview.interfaces';
@@ -19,27 +20,20 @@ import {
   View,
   LogBox,
 } from 'react-native';
+import { useSelector } from 'react-redux';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { WindowCorrection } from 'recyclerlistview/dist/reactnative/core/ViewabilityTracker';
 const { height } = Dimensions.get('window');
+import Reanimated, { FadeIn, FadeOutRight } from 'react-native-reanimated';
+import DownloadManager from '@utils/DownloadManager';
 
 LogBox.ignoreLogs(['You have mounted RecyclerListView']);
 
-const dateProviderFn = (r1: ReadingChapterInfo[], r2: ReadingChapterInfo[]) => r1 !== r2;
+const dateProviderFn = (r1: ReadingChapterInfo, r2: ReadingChapterInfo) => r1.link !== r2.link;
 
 const Overview: React.FC<OverviewProps> = (props) => {
-  const {
-    children,
-    chapters,
-    currentChapter,
-    collapsible,
-    rowRenderer,
-    language,
-    onChangeLanguage,
-    loading,
-    mangaName,
-    sourceName,
-  } = props;
+  const { children, chapters, currentChapter, collapsible, rowRenderer, manga, language, onChangeLanguage, loading } =
+    props;
   const { containerPaddingTop } = collapsible;
   const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(false);
   const [finished, setFinished] = React.useState<boolean>(false);
@@ -55,12 +49,12 @@ const Overview: React.FC<OverviewProps> = (props) => {
         p.cloneWithRows(
           chapters
             .filter((x: unknown) => (x as MangaMultilingualChapter).language === language)
-            .map((p) => ({ ...p, mangaName, sourceName }))
+            .map((p) => ({ ...p, manga }))
         )
       );
-    } else if (chapters)
-      setDataProvider((p) => p.cloneWithRows(chapters.map((p) => ({ ...p, mangaName, sourceName }))));
+    } else if (chapters) setDataProvider((p) => p.cloneWithRows(chapters.map((p) => ({ ...p, manga }))));
   }, [chapters, language]);
+
   const [layoutHeight, setLayoutHeight] = React.useState<number>(height / 2);
 
   const listener = React.useCallback(
@@ -115,7 +109,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
         layoutProvider={layout}
         rowRenderer={rowRenderer}
         applyWindowCorrection={applyWindowCorrection}
-        disableRecycling
+        // disableRecycling
         renderFooter={createFooter(!finished, chapters.length)}
       />
     </>

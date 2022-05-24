@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components/native';
-import Animated from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOutRight } from 'react-native-reanimated';
 
-export const FloatingActionButtonContainer = styled.View.attrs({
+export const FloatingActionButtonContainer = styled(Animated.View).attrs({
   shadowOffset: {
     shadowColor: '#000',
     width: 0,
@@ -28,7 +28,9 @@ export const FloatingActionButtonBase = styled(Animated.View)`
   `}
 `;
 
-export const FloatingContainer = styled.View.attrs({ pointerEvents: 'box-none' })`
+export const FloatingContainer = styled.View.attrs({
+  pointerEvents: 'box-none',
+})`
   ${(props) => css`
     position: absolute;
     flex-direction: row-reverse;

@@ -1,5 +1,5 @@
 import MangaHost from '@services/scraper/scraper.abstract';
-import { MangaChapter } from '@services/scraper/scraper.interfaces';
+import { Manga, MangaChapter } from '@services/scraper/scraper.interfaces';
 import {
   DownloadStatus,
   RecordDownload,
@@ -11,6 +11,7 @@ import StorageManager from '../StorageManager';
 import { ChapterRef } from '@components/Chapter/Chapter.interfaces';
 import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import { DownloadableObject } from '.';
+import React from 'react';
 
 export default class DownloadManager {
   private static fetchedPages: StorageManager<Record<string, string[]>> = StorageManager.manage('@downloaded');
@@ -24,9 +25,17 @@ export default class DownloadManager {
   private chapter: MangaChapter;
   private dir: string;
   private source: MangaHost;
+  private checked: boolean;
 
   public static getDownloads(): RecordDownload {
     return this.downloads;
+  }
+
+  public static generatePath(chapter: MangaChapter, manga: Manga) {
+    return (
+      FileSystem.documentDirectory +
+      `Mangas/${manga.source}/${manga.title}/${chapter.name ?? `Chapter ${chapter.index}`}/`
+    );
   }
 
   /**
@@ -71,6 +80,14 @@ export default class DownloadManager {
     }
   }
 
+  public getChecked() {
+    return this.checked;
+  }
+
+  public setChecked(bool: boolean) {
+    this.checked = bool;
+  }
+
   public getStatus(): DownloadStatus {
     return this.status;
   }
@@ -85,6 +102,10 @@ export default class DownloadManager {
     return (
       this.getStatus() === DownloadStatus.START_DOWNLOADING || this.getStatus() === DownloadStatus.RESUME_DOWNLOADING
     );
+  }
+
+  public isPaused(): boolean {
+    return this.getStatus() === DownloadStatus.PAUSED;
   }
 
   public isCancelled(): boolean {
@@ -114,7 +135,7 @@ export default class DownloadManager {
   }
 
   /**
-   * Check if there are any missing pages;
+   * Check if there are any missing pages
    */
   public async verifyPages(): Promise<boolean> {
     const state = await DownloadManager.fetchedPages.get();
@@ -130,7 +151,12 @@ export default class DownloadManager {
     return true;
   }
 
+  public getChapter() {
+    return this.chapter;
+  }
+
   public getDownloadableObject() {
+    if (this.chapter == null) console.log(this.chapter);
     return DownloadManager.downloads[this.chapter.link]!;
   }
 
@@ -341,6 +367,7 @@ export default class DownloadManager {
     existingState?: SavedChapterDownloadState,
     ref?: ChapterRef | null
   ) {
+    this.checked = false;
     if (chapter && pathToDownload && source) {
       this.source = source;
       this.dir = pathToDownload;

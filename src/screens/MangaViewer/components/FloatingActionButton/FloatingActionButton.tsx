@@ -12,15 +12,19 @@ import useAnimatedMounting from '@hooks/useAnimatedMounting';
 import { LayoutChangeEvent, NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
 import useMountedEffect from '@hooks/useMountedEffect';
 import { useTheme } from 'styled-components/native';
+import { useSelector } from 'react-redux';
+import { AppState } from '@redux/store';
 
 const BUTTON_WIDTH = 56;
 
 const FloatingActionButton: React.FC<FloatingActionButtonProps> = (props) => {
   const { isAtBeginning, currentChapter } = props;
+  const selectionMode = useSelector((state: AppState) => state.chaptersList.mode);
   const [textWidth, setTextWidth] = React.useState<number>(0);
   const width = useSharedValue(BUTTON_WIDTH);
   const opacity = useSharedValue(0);
   const theme = useTheme();
+  const containerOpacity = useSharedValue(1);
 
   useMountedEffect(() => {
     if (!isAtBeginning) {
@@ -32,8 +36,23 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = (props) => {
     }
   }, [isAtBeginning]);
 
+  React.useEffect(() => {
+    switch (selectionMode) {
+      case 'normal':
+        containerOpacity.value = withSpring(1);
+        break;
+      case 'selection':
+        containerOpacity.value = withSpring(0);
+        break;
+    }
+  }, [selectionMode]);
+
   const styles = useAnimatedStyle(() => ({
     width: width.value,
+  }));
+
+  const containerStyles = useAnimatedStyle(() => ({
+    opacity: containerOpacity.value,
   }));
 
   const mountStyles = useAnimatedStyle(() => ({
@@ -46,7 +65,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = (props) => {
 
   return (
     <FloatingContainer>
-      <FloatingActionButtonContainer>
+      <FloatingActionButtonContainer style={containerStyles}>
         <ButtonBase round onPress={() => {}} color='primary'>
           <FloatingActionButtonBase style={styles}>
             <Flex alignItems='center'>

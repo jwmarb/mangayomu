@@ -11,5 +11,4 @@ export interface ChapterHeaderProps {
   language: ISOLangCode;
   onChangeLanguage: (lang: ISOLangCode) => void;
   onSelectAll: (newVal: boolean) => void;
-  selectAll: boolean;
 }
