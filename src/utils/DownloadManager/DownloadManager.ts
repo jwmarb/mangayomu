@@ -1,15 +1,22 @@
 import MangaHost from '@services/scraper/scraper.abstract';
 import { MangaChapter } from '@services/scraper/scraper.interfaces';
-import { DownloadStatus, SavedChapterDownloadState } from '@utils/DownloadManager/DownloadManager.interfaces';
+import {
+  DownloadStatus,
+  RecordDownload,
+  SavedChapterDownloadState,
+} from '@utils/DownloadManager/DownloadManager.interfaces';
 import * as FileSystem from 'expo-file-system';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import StorageManager from '../StorageManager';
+import { ChapterRef } from '@components/Chapter/Chapter.interfaces';
+import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
+import { DownloadableObject } from '.';
 
 export default class DownloadManager {
   private static fetchedPages: StorageManager<Record<string, string[]>> = StorageManager.manage('@downloaded');
   private static downloadStates: StorageManager<Record<string, SavedChapterDownloadState>> =
     StorageManager.manage('@downloadStates');
-  private static downloads: Map<string, DownloadManager> = new Map();
+  private static downloads: RecordDownload = {};
   private status: DownloadStatus;
   private downloadResumablePages: { downloadResumable: FileSystem.DownloadResumable; status: DownloadStatus }[];
   private progress: number[];
@@ -18,7 +25,7 @@ export default class DownloadManager {
   private dir: string;
   private source: MangaHost;
 
-  public static getDownloads(): Map<string, DownloadManager> {
+  public static getDownloads(): RecordDownload {
     return this.downloads;
   }
 
@@ -29,8 +36,39 @@ export default class DownloadManager {
    * @param source The source that is used to download the pages
    * @returns Returns an instance of DownloadManager
    */
-  public static of(chapter: MangaChapter, pathToDownload: string, source: MangaHost): DownloadManager {
-    return DownloadManager.downloads.get(chapter.link) ?? new DownloadManager(chapter, pathToDownload, source);
+  public static of(
+    chapter: MangaChapter,
+    pathToDownload: string,
+    source: MangaHost,
+    ref?: ChapterRef | null
+  ): DownloadManager {
+    return (
+      DownloadManager.downloads[chapter.link]?.downloadManager ??
+      new DownloadManager(chapter, pathToDownload, source, undefined, ref)
+    );
+  }
+
+  /**
+   * Same as of() method except a ref is addable
+   * @param chapter The chapter
+   * @param pathToDownload The path to download to
+   * @param source The source that is used to download the pages
+   * @param ref The ref of the chapter component
+   */
+  public static setRef(chapter: ReadingChapterInfo, pathToDownload: string, source: MangaHost, ref: ChapterRef | null) {
+    this.downloads[chapter.link] = {
+      ref,
+      downloadManager: this.of(chapter, pathToDownload, source, ref),
+    };
+  }
+
+  public static clearRefs() {
+    for (const key of Object.keys(this.downloads)) {
+      this.downloads[key] = {
+        ref: null,
+        downloadManager: this.downloads[key]!.downloadManager,
+      };
+    }
   }
 
   public getStatus(): DownloadStatus {
@@ -41,6 +79,24 @@ export default class DownloadManager {
   }
   public getProgress(): number {
     return this.progress.reduce((prev, curr) => prev + curr, 0) / this.progress.length;
+  }
+
+  public isDownloading(): boolean {
+    return (
+      this.getStatus() === DownloadStatus.START_DOWNLOADING || this.getStatus() === DownloadStatus.RESUME_DOWNLOADING
+    );
+  }
+
+  public isCancelled(): boolean {
+    return this.getStatus() === DownloadStatus.CANCELLED;
+  }
+
+  public isIdle(): boolean {
+    return this.getStatus() === DownloadStatus.IDLE;
+  }
+
+  public isQueued(): boolean {
+    return this.getStatus() === DownloadStatus.QUEUED;
   }
 
   private async downloadProgressCallback({
@@ -72,6 +128,10 @@ export default class DownloadManager {
     }
 
     return true;
+  }
+
+  public getDownloadableObject() {
+    return DownloadManager.downloads[this.chapter.link]!;
   }
 
   /**
@@ -278,7 +338,8 @@ export default class DownloadManager {
     chapter?: MangaChapter,
     pathToDownload?: string,
     source?: MangaHost,
-    existingState?: SavedChapterDownloadState
+    existingState?: SavedChapterDownloadState,
+    ref?: ChapterRef | null
   ) {
     if (chapter && pathToDownload && source) {
       this.source = source;
@@ -289,7 +350,7 @@ export default class DownloadManager {
       this.downloadResumablePages = [];
       this.pages = [];
 
-      DownloadManager.downloads.set(chapter.link, this);
+      DownloadManager.downloads[chapter.link] = { ref: ref ?? null, downloadManager: this };
     } else if (existingState) {
       this.source = MangaHost.getAvailableSources().get(existingState.sourceName)!;
       this.dir = existingState.dir;
@@ -308,7 +369,7 @@ export default class DownloadManager {
         ),
       }));
       // console.log(`Existing download state for ${existingState.chapter.link}`);
-      DownloadManager.downloads.set(existingState.chapter.link, this);
+      DownloadManager.downloads[existingState.chapter.link] = { ref: ref ?? null, downloadManager: this };
     } else throw Error('No args passed in constructor of DownloadManager');
   }
 }

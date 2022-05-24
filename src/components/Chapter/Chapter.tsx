@@ -60,7 +60,7 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterProps> = (props
   const downloadManager = React.useRef<DownloadManager>(DownloadManager.of(chapter, dir, source)).current;
 
   const [downloadStatus, setDownloadStatus] = React.useState<DownloadStatus>(DownloadStatus.VALIDATING);
-  const shouldBlockDownload = React.useRef<boolean>(false);
+  const shouldBlockAction = React.useRef<boolean>(false);
   const [totalProgress, setTotalProgress] = React.useState<number>(downloadManager.getProgress());
   const [checked, setChecked] = React.useState<boolean>(false);
 
@@ -106,18 +106,34 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterProps> = (props
   }
 
   React.useImperativeHandle(ref, () => ({
+    getDownloadManager: () => downloadManager,
     toggleCheck: () => {
       setChecked((prev) => !prev);
     },
     downloadAsync: async () => {
-      shouldBlockDownload.current = true;
+      shouldBlockAction.current = true;
       setDownloadStatus(DownloadStatus.START_DOWNLOADING);
       await downloadManager.download();
     },
     download: startDownload,
     pause: pauseDownload,
+    pauseAsync: async () => {
+      shouldBlockAction.current = true;
+      setDownloadStatus(DownloadStatus.PAUSED);
+      await downloadManager.pause();
+    },
     cancel: cancelDownload,
+    cancelAsync: async () => {
+      shouldBlockAction.current = true;
+      setDownloadStatus(DownloadStatus.CANCELLED);
+      await downloadManager.cancel();
+    },
     resume: resumeDownload,
+    resumeAsync: async () => {
+      shouldBlockAction.current = true;
+      setDownloadStatus(DownloadStatus.RESUME_DOWNLOADING);
+      await downloadManager.resume();
+    },
     queue: queueForDownload,
     getStatus: () => downloadStatus,
     getURL: () => chapter.link,
@@ -151,23 +167,25 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterProps> = (props
     (async () => {
       switch (downloadStatus) {
         case DownloadStatus.CANCELLED:
-          setTotalProgress(0);
-          await downloadManager.cancel();
+          if (shouldBlockAction.current) await downloadManager.cancel();
+          else shouldBlockAction.current = false;
           break;
         case DownloadStatus.PAUSED:
           clearTimeout(listener.current);
-          await downloadManager.pause();
+          if (!shouldBlockAction.current) await downloadManager.pause();
+          else shouldBlockAction.current = false;
           break;
         case DownloadStatus.RESUME_DOWNLOADING:
-          await downloadManager.resume();
+          if (!shouldBlockAction.current) await downloadManager.resume();
+          else shouldBlockAction.current = false;
           break;
         case DownloadStatus.START_DOWNLOADING:
-          if (shouldBlockDownload.current) {
-            await downloadManager.download();
-            return () => {
-              clearInterval(listener.current);
-            };
-          } else shouldBlockDownload.current = false;
+          if (!shouldBlockAction.current) await downloadManager.download();
+          else shouldBlockAction.current = false;
+
+          return () => {
+            clearInterval(listener.current);
+          };
       }
     })();
   }, [downloadStatus]);

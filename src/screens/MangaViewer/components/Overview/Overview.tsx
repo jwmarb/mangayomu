@@ -83,7 +83,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
   const applyWindowCorrection: (offsetX: number, offsetY: number, windowCorrection: WindowCorrection) => void =
     React.useCallback(
       (offsetX, offsetY, windowCorrection) => {
-        windowCorrection.windowShift = -layoutHeight;
+        windowCorrection.windowShift = -layoutHeight / 2;
       },
       [layoutHeight, containerPaddingTop]
     );

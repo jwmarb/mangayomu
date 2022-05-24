@@ -32,13 +32,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from 'styled-components/native';
 import { ChapterPressableMode, ChapterRef } from '@components/Chapter/Chapter.interfaces';
 import DownloadManager, { DownloadStatus } from '@utils/DownloadManager';
-import SharedMangaViewerRefs, { GRADIENT_COLOR } from './MangaViewer.shared';
+import { GRADIENT_COLOR } from './MangaViewer.shared';
 import pLimit from 'p-limit';
 import * as FileSystem from 'expo-file-system';
 import { Constants } from '@theme/core';
 import { ChapterContext } from '@context/ChapterContext';
 import useMountedEffect from '@hooks/useMountedEffect';
 import CancelablePromise from '@utils/CancelablePromise';
+import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
+import DownloadCollection from '@utils/DownloadCollection';
 const LanguageModal = React.lazy(() => import('@screens/MangaViewer/components/LanguageModal'));
 const Genres = React.lazy(() => import('@screens/MangaViewer/components/Genres'));
 const ChapterHeader = React.lazy(() => import('@screens/MangaViewer/components/ChapterHeader'));
@@ -136,7 +138,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
 
   React.useEffect(() => {
     return () => {
-      SharedMangaViewerRefs.clearRefs();
+      DownloadManager.clearRefs();
     };
   }, []);
 
@@ -146,12 +148,25 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
 
   const rowRenderer: (
     type: string | number,
-    data: any,
+    data: ReadingChapterInfo & { mangaName: string; sourceName: string },
     index: number,
     extendedState?: object | undefined
   ) => JSX.Element | JSX.Element[] | null = React.useCallback(
-    (type, data, i) => <Chapter chapter={data} ref={(r) => SharedMangaViewerRefs.setRef(r, i)} />,
-    []
+    (type, data, i) => (
+      <Chapter
+        chapter={data}
+        ref={(r) =>
+          DownloadManager.setRef(
+            data,
+            FileSystem.documentDirectory +
+              `Mangas/${manga.source}/${manga.title}/${sorted[i].name ?? `Chapter ${sorted[i].index}`}/`,
+            source,
+            r
+          )
+        }
+      />
+    ),
+    [sorted]
   );
 
   React.useEffect(() => {
@@ -180,7 +195,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   useMountedEffect(() => {
     if (selectAll) {
       for (let i = 0; i < sorted.length; i++) {
-        const chapterElement = SharedMangaViewerRefs.getRef(i);
+        const chapterElement = DownloadManager.of(sorted[i]);
         if (chapterElement != null) {
           chapterElement.toggleCheck();
         }
@@ -189,45 +204,20 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   }, [selectAll]);
 
   const handleOnDownloadAll = React.useCallback(async () => {
-    for (let i = 0; i < sorted.length; i++) {
-      const chapterElement = SharedMangaViewerRefs.getRef(i);
-      if (chapterElement != null) {
-        chapterElement.queue();
-      } else {
-        const data =
-          DownloadManager.getDownloads().get(sorted[i].link) ??
-          DownloadManager.of(
-            sorted[i],
-            FileSystem.documentDirectory +
-              `Mangas/${manga.source}/${manga.title}/${sorted[i].name ?? `Chapter ${sorted[i].index}`}/`,
-            source
-          );
-        data.queue();
-      }
-    }
-    await Promise.all(
-      sorted.map((x, i) =>
-        limit(async () => {
-          const chapterEl = SharedMangaViewerRefs.getRef(i);
-          const data = DownloadManager.getDownloads().get(x.link);
-          if (data == null) throw Error(`Unable to find ${x.link} in DownloadManager`);
-          if (chapterEl != null) {
-            console.log(`Starting download for ${x.link} through Element Ref`);
-            await chapterEl.downloadAsync();
-          } else {
-            console.log(
-              `Starting download for ${
-                x.link
-              } through DownloadManager with chaptersRef length = ${SharedMangaViewerRefs.size()} and sorted = ${
-                sorted.length
-              }`
-            );
-            await data.download();
-          }
-        })
-      )
+    const collection = DownloadCollection.of(
+      FileSystem.documentDirectory + `Mangas/${manga.source}/${manga.title}/`,
+      sorted,
+      source
     );
-  }, [sorted]);
+    if (collection.isIdle()) {
+      collection.queueAll();
+      await collection.downloadAll();
+    } else if (collection.isDownloading()) {
+      await collection.pauseAll();
+    } else if (collection.isPaused()) {
+      await collection.resumeAll();
+    }
+  }, [sorted, source]);
 
   React.useEffect(() => {
     const sort = Array.from(userMangaInfo?.chapters ?? []).sort(selectedSortOption);
