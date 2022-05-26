@@ -29,7 +29,7 @@ import DownloadManager from '@utils/DownloadManager';
 
 LogBox.ignoreLogs(['You have mounted RecyclerListView']);
 
-const dateProviderFn = (r1: ReadingChapterInfo, r2: ReadingChapterInfo) => r1.link !== r2.link;
+const dataProviderFn = (r1: ReadingChapterInfo, r2: ReadingChapterInfo) => r1 !== r2;
 
 const Overview: React.FC<OverviewProps> = (props) => {
   const { children, chapters, currentChapter, collapsible, rowRenderer, manga, language, onChangeLanguage, loading } =
@@ -37,7 +37,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
   const { containerPaddingTop } = collapsible;
   const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(false);
   const [finished, setFinished] = React.useState<boolean>(false);
-  const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider(dateProviderFn));
+  const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider(dataProviderFn));
 
   React.useEffect(() => {
     if (chapters && chapters.every(MangaValidator.isMultilingualChapter))
@@ -54,6 +54,8 @@ const Overview: React.FC<OverviewProps> = (props) => {
       );
     } else if (chapters) setDataProvider((p) => p.cloneWithRows(chapters.map((p) => ({ ...p, manga }))));
   }, [chapters, language]);
+
+  const extendedState = useSelector((state: AppState) => state.chaptersList);
 
   const [layoutHeight, setLayoutHeight] = React.useState<number>(height / 2);
 
@@ -110,6 +112,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
         rowRenderer={rowRenderer}
         applyWindowCorrection={applyWindowCorrection}
         // disableRecycling
+        extendedState={extendedState}
         renderFooter={createFooter(!finished, chapters.length)}
       />
     </>

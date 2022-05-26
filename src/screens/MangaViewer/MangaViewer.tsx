@@ -31,16 +31,16 @@ import { BackHandler, ImageBackground, Linking, Share } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from 'styled-components/native';
 import { ChapterPressableMode, ChapterRef } from '@components/Chapter/Chapter.interfaces';
-import DownloadManager, { DownloadStatus } from '@utils/DownloadManager';
 import { ChaptersIterator, GRADIENT_COLOR } from './MangaViewer.shared';
 import pLimit from 'p-limit';
 import * as FileSystem from 'expo-file-system';
 import { Constants } from '@theme/core';
 import { ChapterContext } from '@context/ChapterContext';
 import useMountedEffect from '@hooks/useMountedEffect';
-import CancelablePromise from '@utils/CancelablePromise';
 import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import DownloadCollection from '@utils/DownloadCollection';
+import DownloadManager from '@utils/DownloadManager';
+import { ChapterState } from '@redux/reducers/chaptersListReducer/chaptersListReducer.interfaces';
 const LanguageModal = React.lazy(() => import('@screens/MangaViewer/components/LanguageModal'));
 const Genres = React.lazy(() => import('@screens/MangaViewer/components/Genres'));
 const ChapterHeader = React.lazy(() => import('@screens/MangaViewer/components/ChapterHeader'));
@@ -52,8 +52,6 @@ const MangaAction = React.lazy(() => import('@screens/MangaViewer/components/Man
 const Overview = React.lazy(() => import('@screens/MangaViewer/components/Overview'));
 const MangaRating = React.lazy(() => import('@screens/MangaViewer/components/MangaRating'));
 
-const limit = pLimit(5);
-
 const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   const {
     route: {
@@ -63,10 +61,9 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     viewManga,
     userMangaInfo,
     source,
-    checkAll,
     exitSelectionMode,
-    allListSelectorChecked,
     selectionMode,
+    initializeChapterStates,
   } = props;
   const {
     state: [meta],
@@ -142,7 +139,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     exitSelectionMode();
     return () => {
       exitSelectionMode();
-      DownloadManager.clearRefs();
+      // DownloadManager.clearRefs();
     };
   }, []);
 
@@ -159,7 +156,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
       <Chapter
         manga={data.manga}
         chapter={data}
-        ref={(r) => DownloadManager.setRef(data, DownloadManager.generatePath(sorted[i], manga), source, r)}
+        // ref={(r) => DownloadManager.setRef(data, DownloadManager.generatePath(sorted[i], manga), source, r)}
       />
     ),
     [sorted]
@@ -175,31 +172,26 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     }
   }, [selectionMode]);
 
-  const handleOnSelectAll = React.useCallback((newVal: boolean) => {
-    checkAll(newVal);
-  }, []);
+  // const handleOnSelectAll = React.useCallback((newVal: boolean) => {
+  //   checkAll(newVal);
+  // }, []);
 
-  const handleOnDownloadAll = React.useCallback(async () => {
-    const collection = DownloadCollection.of(
-      FileSystem.documentDirectory + `Mangas/${manga.source}/${manga.title}/`,
-      sorted,
-      source
-    );
-    await collection.pauseAll();
-  }, [sorted, source]);
+  // const handleOnDownloadAll = React.useCallback(async () => {
+  //   const collection = DownloadCollection.of(
+  //     FileSystem.documentDirectory + `Mangas/${manga.source}/${manga.title}/`,
+  //     sorted,
+  //     source
+  //   );
+  //   await collection.pauseAll();
+  // }, [sorted, source]);
 
   React.useEffect(() => {
     const sort = Array.from(userMangaInfo?.chapters ?? []).sort(selectedSortOption);
     chaptersIterator.current.setChapters(sort);
-    setSorted(sort);
+    initializeChapterStates(sort, manga).finally(() => {
+      setSorted(sort);
+    });
   }, [userMangaInfo?.chapters, sort, reverse]);
-
-  useMountedEffect(() => {
-    for (const dl of chaptersIterator.current) {
-      const dlObject = dl.getDownloadableObject();
-      dlObject.downloadManager.setChecked(allListSelectorChecked);
-    }
-  }, [allListSelectorChecked]);
 
   if (ready) {
     return (
@@ -253,7 +245,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
               <Genres buttons genres={userMangaInfo?.genres} source={source} />
             </MangaViewerContainer>
             <ChapterHeader
-              onSelectAll={handleOnSelectAll}
+              onSelectAll={() => {}}
               onChangeLanguage={setLanguage}
               language={language}
               refresh={refresh}

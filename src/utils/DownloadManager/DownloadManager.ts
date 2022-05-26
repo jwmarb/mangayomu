@@ -91,7 +91,7 @@ export default class DownloadManager {
   public getStatus(): DownloadStatus {
     return this.status;
   }
-  private setStatus(status: DownloadStatus) {
+  public setStatus(status: DownloadStatus) {
     this.status = status;
   }
   public getProgress(): number {

@@ -29,32 +29,32 @@ import connector, { ChapterReduxProps } from './Chapter.redux';
 import ChapterTitle from './components/ChapterTitle';
 import ChapterDownloadProgress from './components/ChapterDownloadProgress';
 import ChapterDownloadStatus from './components/ChapterDownloadStatus';
+import { useChapterStateFromRedux } from './Chapter.helpers';
 
 const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterReduxProps> = (props, ref) => {
-  const { chapter, manga, selectionMode, overrideChecked, exitSelectionMode, enterSelectionMode } = props;
+  const {
+    chapter,
+    manga,
+    selectionMode,
+    overrideChecked,
+    exitSelectionMode,
+    enterSelectionMode,
+    checkChapter,
+    setDownloadStatusOfChapter,
+  } = props;
   const source = useMangaSource(manga.source);
-  function handleOnPress() {
-    switch (selectionMode) {
-      case 'normal':
-        console.log(`Normal action for ${chapter.link}`);
-        break;
-      case 'selection':
-        setChecked((prev) => !prev);
-        break;
-    }
+  function handleOnPress() {}
+
+  function handleOnCheck(e: boolean) {
+    checkChapter(e, chapter);
   }
   const dir = DownloadManager.generatePath(chapter, manga);
 
-  const downloadManager = React.useRef<DownloadManager>(DownloadManager.of(chapter, dir, source)).current;
-
-  const [downloadStatus, setDownloadStatus] = React.useState<DownloadStatus>(DownloadStatus.VALIDATING);
   const shouldBlockAction = React.useRef<boolean>(false);
+  const { checked, downloadManager, status: downloadStatus } = useChapterStateFromRedux(chapter);
+  const setDownloadStatus = setDownloadStatusOfChapter(chapter);
   const [totalProgress, setTotalProgress] = React.useState<number>(downloadManager.getProgress());
-  const [checked, setChecked] = React.useState<boolean>(downloadManager.getChecked());
-
-  useMountedEffect(() => {
-    if (overrideChecked !== null) setChecked(overrideChecked);
-  }, [overrideChecked]);
+  // const [checked, setChecked] = React.useState<boolean>(downloadManager.getChecked());
 
   const listener = React.useRef<NodeJS.Timer>();
   const style = useAnimatedMounting();
@@ -66,7 +66,7 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterReduxProps> = (
   function handleOnLongPress() {
     switch (selectionMode) {
       case 'normal':
-        setChecked(true);
+        // setChecked(true);
         enterSelectionMode();
         break;
       case 'selection':
@@ -100,7 +100,7 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterReduxProps> = (
 
   React.useImperativeHandle(ref, () => ({
     getDownloadManager: () => downloadManager,
-    setChecked,
+    // setChecked,
     downloadAsync: async () => {
       shouldBlockAction.current = true;
       setDownloadStatus(DownloadStatus.START_DOWNLOADING);
@@ -129,18 +129,6 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterReduxProps> = (
     getStatus: () => downloadStatus,
     getURL: () => chapter.link,
   }));
-
-  React.useEffect(() => {
-    (async () => {
-      try {
-        const downloaded = await downloadManager.isDownloaded();
-        const initialStatus = downloaded ? DownloadStatus.DOWNLOADED : downloadManager.getStatus();
-        setDownloadStatus(initialStatus);
-      } catch (e) {
-        console.error(e);
-      }
-    })();
-  }, []);
 
   React.useEffect(() => {
     switch (downloadStatus) {
@@ -196,16 +184,16 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterReduxProps> = (
     }
   }, [totalProgress]);
 
-  React.useEffect(() => {
-    downloadManager.setChecked(checked);
-    return () => {
-      downloadManager.setChecked(false);
-    };
-  }, [checked]);
+  // React.useEffect(() => {
+  //   downloadManager.setChecked(checked);
+  //   return () => {
+  //     downloadManager.setChecked(false);
+  //   };
+  // }, [checked]);
 
-  React.useEffect(() => {
-    if (selectionMode === 'normal') setChecked(false);
-  }, [selectionMode]);
+  // React.useEffect(() => {
+  //   if (selectionMode === 'normal') setChecked(false);
+  // }, [selectionMode]);
 
   return (
     <>
@@ -231,7 +219,7 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterReduxProps> = (
                   />
                 </Flex>
               ) : (
-                <Checkbox checked={checked} onChange={setChecked} />
+                <Checkbox checked={checked} onChange={handleOnCheck} />
               )}
             </Flex>
           </ChapterContainer>

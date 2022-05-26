@@ -11,7 +11,7 @@ export interface ChapterProps {
 }
 
 export interface ChapterRef {
-  setChecked: (t: boolean) => void;
+  // setChecked: (t: boolean) => void;
   getDownloadManager: () => DownloadManager;
   downloadAsync: () => Promise<void>;
   download: () => void;
