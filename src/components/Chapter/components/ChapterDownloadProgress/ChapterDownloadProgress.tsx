@@ -10,7 +10,14 @@ import { ChapterDownloadProgressProps } from './ChapterDownloadProgress.interfac
 
 const ChapterDownloadProgress: React.FC<ChapterDownloadProgressProps> = (props) => {
   const { totalProgress, ...rest } = props;
-  if (totalProgress > 0 && totalProgress < 1)
+
+  if (
+    totalProgress >= 0 &&
+    totalProgress < 1 &&
+    (rest.downloadStatus === DownloadStatus.START_DOWNLOADING ||
+      rest.downloadStatus === DownloadStatus.PAUSED ||
+      rest.downloadStatus === DownloadStatus.RESUME_DOWNLOADING)
+  )
     return (
       <>
         <Typography variant='bottomtab' color='secondary'>

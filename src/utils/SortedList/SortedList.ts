@@ -70,7 +70,7 @@ class SortedList<T> {
     this.arr.sort(comparator);
   }
 
-  public [Symbol.iterator](): IterableIterator<T> {
+  public [Symbol.iterator](): Iterator<T> {
     return this.arr.values();
   }
 }

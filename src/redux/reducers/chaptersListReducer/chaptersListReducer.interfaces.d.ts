@@ -8,11 +8,15 @@ export type ChapterState = {
   downloadManager: DownloadManager;
   status: DownloadStatus;
   checked: boolean;
+  totalProgress: number;
+  hasCursor: boolean;
 };
 
 export interface ChaptersListReducerState {
+  checkAll: boolean;
   mode: ChapterPressableMode;
   chapters: Record<string, ChapterState>;
+  validatedMangas: Record<string, null>;
 }
 
 export type ChaptersListReducerAction =
@@ -20,4 +24,13 @@ export type ChaptersListReducerAction =
   | { type: 'ENTER_SELECTION_MODE' }
   | { type: 'SELECT_CHAPTER'; checked: boolean; chapter: ReadingChapterInfo }
   | { type: 'INITIALIZE_CHAPTER_STATES'; chapters: ReadingChapterInfo[]; manga: Manga }
-  | { type: 'SET_DOWNLOAD_STATUS_OF_CHAPTER'; chapter: ReadingChapterInfo; status: DownloadStatus };
+  | { type: 'SET_DOWNLOAD_STATUS_OF_CHAPTER'; chapter: ReadingChapterInfo; status: DownloadStatus }
+  | { type: 'TOGGLE_CHECK_ALL'; checked: boolean }
+  | { type: 'ADD_VALIDATED_MANGA'; manga: Manga }
+  | { type: 'UPDATE_CHAPTER_STATUS'; key: string; status?: DownloadStatus }
+  | { type: 'SET_TOTAL_PROGRESS_OF_CHAPTER'; chapter: ReadingChapterInfo; progress: number }
+  | { type: 'RESUME_DOWNLOAD_OF_SELECTED_CHAPTERS'; keys: string[] }
+  | { type: 'PAUSE_DOWNLOAD_OF_SELECTED_CHAPTERS'; keys: string[] }
+  | { type: 'CANCEL_DOWNLOAD_OF_SELECTED_CHAPTERS'; keys: string[] }
+  | { type: 'QUEUE_ALL_SELECTED'; keys: string[] }
+  | { type: 'VALIDATE_CHAPTER'; chapter: ReadingChapterInfo };

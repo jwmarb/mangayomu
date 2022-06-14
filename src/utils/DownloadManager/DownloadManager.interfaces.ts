@@ -34,4 +34,5 @@ export interface SavedChapterDownloadState {
   dir: string;
   chapter: MangaChapter;
   pages: string[];
+  hasCursor: boolean;
 }

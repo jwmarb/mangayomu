@@ -24,8 +24,6 @@ import { useSelector } from 'react-redux';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { WindowCorrection } from 'recyclerlistview/dist/reactnative/core/ViewabilityTracker';
 const { height } = Dimensions.get('window');
-import Reanimated, { FadeIn, FadeOutRight } from 'react-native-reanimated';
-import DownloadManager from '@utils/DownloadManager';
 
 LogBox.ignoreLogs(['You have mounted RecyclerListView']);
 

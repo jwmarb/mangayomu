@@ -30,8 +30,9 @@ import ChapterTitle from './components/ChapterTitle';
 import ChapterDownloadProgress from './components/ChapterDownloadProgress';
 import ChapterDownloadStatus from './components/ChapterDownloadStatus';
 import { useChapterStateFromRedux } from './Chapter.helpers';
+import { cursors } from '@redux/reducers/chaptersListReducer/chaptersListReducer.actions';
 
-const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterReduxProps> = (props, ref) => {
+const Chapter: React.FC<ChapterReduxProps> = (props) => {
   const {
     chapter,
     manga,
@@ -41,20 +42,39 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterReduxProps> = (
     enterSelectionMode,
     checkChapter,
     setDownloadStatusOfChapter,
+    setTotalProgressOfChapter,
+    downloadAllSelected,
+    pauseAllSelected,
+    cancelAllSelected,
   } = props;
   const source = useMangaSource(manga.source);
-  function handleOnPress() {}
 
   function handleOnCheck(e: boolean) {
     checkChapter(e, chapter);
   }
-  const dir = DownloadManager.generatePath(chapter, manga);
 
-  const shouldBlockAction = React.useRef<boolean>(false);
-  const { checked, downloadManager, status: downloadStatus } = useChapterStateFromRedux(chapter);
+  const {
+    checked,
+    downloadManager,
+    status: downloadStatus,
+    totalProgress,
+    hasCursor,
+  } = useChapterStateFromRedux(chapter);
   const setDownloadStatus = setDownloadStatusOfChapter(chapter);
-  const [totalProgress, setTotalProgress] = React.useState<number>(downloadManager.getProgress());
+  const setTotalProgress = setTotalProgressOfChapter(chapter);
   // const [checked, setChecked] = React.useState<boolean>(downloadManager.getChecked());
+  async function handleOnPress() {
+    switch (selectionMode) {
+      case 'normal':
+        // const availableSpace = await FileSystem.getFreeDiskStorageAsync();
+        // const totalSpace = await FileSystem.getTotalDiskCapacityAsync();
+        console.log(downloadManager.getValidatedStatus());
+        break;
+      case 'selection':
+        checkChapter(!checked, chapter);
+        break;
+    }
+  }
 
   const listener = React.useRef<NodeJS.Timer>();
   const style = useAnimatedMounting();
@@ -75,99 +95,52 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterReduxProps> = (
     }
   }
 
-  const resumeDownload = React.useCallback(() => {
-    setDownloadStatus(DownloadStatus.RESUME_DOWNLOADING);
-  }, []);
-
-  const pauseDownload = React.useCallback(() => {
-    setDownloadStatus(DownloadStatus.PAUSED);
-  }, []);
-
-  const cancelDownload = React.useCallback(() => {
-    setDownloadStatus(DownloadStatus.CANCELLED);
-  }, []);
-
-  const startDownload = React.useCallback(() => {
-    setDownloadStatus(DownloadStatus.START_DOWNLOADING);
-  }, []);
-
-  function queueForDownload() {
-    if (downloadStatus !== DownloadStatus.DOWNLOADED) {
-      downloadManager.queue();
-      setDownloadStatus(DownloadStatus.QUEUED);
-    }
-  }
-
-  React.useImperativeHandle(ref, () => ({
-    getDownloadManager: () => downloadManager,
-    // setChecked,
-    downloadAsync: async () => {
-      shouldBlockAction.current = true;
-      setDownloadStatus(DownloadStatus.START_DOWNLOADING);
-      await downloadManager.download();
-    },
-    download: startDownload,
-    pause: pauseDownload,
-    pauseAsync: async () => {
-      shouldBlockAction.current = true;
-      setDownloadStatus(DownloadStatus.PAUSED);
-      await downloadManager.pause();
-    },
-    cancel: cancelDownload,
-    cancelAsync: async () => {
-      shouldBlockAction.current = true;
-      setDownloadStatus(DownloadStatus.CANCELLED);
-      await downloadManager.cancel();
-    },
-    resume: resumeDownload,
-    resumeAsync: async () => {
-      shouldBlockAction.current = true;
+  const resumeDownload = React.useCallback(async () => {
+    const obj = (await cursors.get()) ?? {};
+    if (hasCursor) await downloadAllSelected(obj[manga.title].chapters, manga);
+    else {
+      console.log(`Resumed ${chapter.link}`);
       setDownloadStatus(DownloadStatus.RESUME_DOWNLOADING);
       await downloadManager.resume();
-    },
-    queue: queueForDownload,
-    getStatus: () => downloadStatus,
-    getURL: () => chapter.link,
-  }));
+    }
+  }, [downloadManager, setDownloadStatus, hasCursor]);
+
+  const pauseDownload = React.useCallback(async () => {
+    if (hasCursor) await pauseAllSelected(manga);
+    else {
+      console.log(`Paused ${chapter.link}`);
+      setDownloadStatus(DownloadStatus.PAUSED);
+      await downloadManager.pause();
+    }
+  }, [downloadManager, setDownloadStatus, hasCursor]);
+
+  const cancelDownload = React.useCallback(async () => {
+    if (hasCursor) {
+      console.log(`Cancelling cursor...`);
+      cancelAllSelected(manga);
+    } else {
+      console.log(`Cancelled ${chapter.link}`);
+      setDownloadStatus(DownloadStatus.CANCELLED);
+      await downloadManager.cancel();
+    }
+  }, [downloadManager, setDownloadStatus, hasCursor]);
+
+  const startDownload = React.useCallback(async () => {
+    setDownloadStatus(DownloadStatus.START_DOWNLOADING);
+    console.log(`Downloading ${chapter.link}`);
+    await downloadManager.download();
+  }, [downloadManager, setDownloadStatus]);
 
   React.useEffect(() => {
     switch (downloadStatus) {
       case DownloadStatus.RESUME_DOWNLOADING:
       case DownloadStatus.DOWNLOADING:
       case DownloadStatus.START_DOWNLOADING:
-        listener.current = setInterval(async () => setTotalProgress(downloadManager.getProgress()), 500);
+        listener.current = setInterval(() => setTotalProgress(downloadManager.getProgress()), 500);
         return () => {
           clearInterval(listener.current);
         };
     }
-  }, [downloadStatus]);
-
-  useMountedEffect(() => {
-    (async () => {
-      switch (downloadStatus) {
-        case DownloadStatus.CANCELLED:
-          setTotalProgress(0);
-          if (shouldBlockAction.current) await downloadManager.cancel();
-          else shouldBlockAction.current = false;
-          break;
-        case DownloadStatus.PAUSED:
-          clearTimeout(listener.current);
-          if (!shouldBlockAction.current) await downloadManager.pause();
-          else shouldBlockAction.current = false;
-          break;
-        case DownloadStatus.RESUME_DOWNLOADING:
-          if (!shouldBlockAction.current) await downloadManager.resume();
-          else shouldBlockAction.current = false;
-          break;
-        case DownloadStatus.START_DOWNLOADING:
-          if (!shouldBlockAction.current) await downloadManager.download();
-          else shouldBlockAction.current = false;
-
-          return () => {
-            clearInterval(listener.current);
-          };
-      }
-    })();
   }, [downloadStatus]);
 
   React.useEffect(() => {
@@ -184,16 +157,11 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterReduxProps> = (
     }
   }, [totalProgress]);
 
-  // React.useEffect(() => {
-  //   downloadManager.setChecked(checked);
-  //   return () => {
-  //     downloadManager.setChecked(false);
-  //   };
-  // }, [checked]);
-
-  // React.useEffect(() => {
-  //   if (selectionMode === 'normal') setChecked(false);
-  // }, [selectionMode]);
+  useMountedEffect(() => {
+    if (hasCursor) {
+      console.log(`A cursor has been assigned to ${chapter.link}`);
+    }
+  }, [hasCursor]);
 
   return (
     <>
@@ -229,4 +197,4 @@ const Chapter: React.ForwardRefRenderFunction<ChapterRef, ChapterReduxProps> = (
   );
 };
 
-export default React.memo(connector(React.forwardRef(Chapter)));
+export default connector(React.memo(Chapter));

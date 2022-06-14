@@ -8,6 +8,7 @@ import libraryMutator from '@redux/middleware/libraryMutator';
 const persistConfig: PersistConfig<AppState> = {
   key: '@root',
   storage: AsyncStorage,
+  blacklist: ['chaptersList'],
 };
 
 const persistReducers = persistReducer(persistConfig, reducers);

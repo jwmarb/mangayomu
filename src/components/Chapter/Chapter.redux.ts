@@ -11,7 +11,7 @@ const mapStateToProps = (state: AppState, props: ChapterProps) => {
   };
 };
 
-const connector = connect(mapStateToProps, chaptersListReducerActions, null, { forwardRef: true });
+const connector = connect(mapStateToProps, chaptersListReducerActions);
 
 export type ChapterReduxProps = ConnectedProps<typeof connector>;
 

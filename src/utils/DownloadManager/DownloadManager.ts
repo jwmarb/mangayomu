@@ -26,7 +26,8 @@ export default class DownloadManager {
   private dir: string;
   private source: MangaHost;
   private checked: boolean;
-
+  private validatedStatus: DownloadStatus;
+  private cursor: boolean;
   public static getDownloads(): RecordDownload {
     return this.downloads;
   }
@@ -34,7 +35,9 @@ export default class DownloadManager {
   public static generatePath(chapter: MangaChapter, manga: Manga) {
     return (
       FileSystem.documentDirectory +
-      `Mangas/${manga.source}/${manga.title}/${chapter.name ?? `Chapter ${chapter.index}`}/`
+      `Mangas/${manga.source}/${encodeURIComponent(manga.title)}/${encodeURIComponent(
+        chapter.name ?? `Chapter ${chapter.index}`
+      )}/`
     );
   }
 
@@ -88,11 +91,28 @@ export default class DownloadManager {
     this.checked = bool;
   }
 
+  public updateCursor() {
+    this.cursor = this.isDownloading();
+  }
+
+  public hasCursor() {
+    return this.cursor;
+  }
+
   public getStatus(): DownloadStatus {
     return this.status;
   }
+  public getValidatedStatus(): DownloadStatus {
+    return this.validatedStatus;
+  }
   public setStatus(status: DownloadStatus) {
     this.status = status;
+    switch (status) {
+      case DownloadStatus.DOWNLOADED:
+      case DownloadStatus.IDLE:
+        this.validatedStatus = status;
+        break;
+    }
   }
   public getProgress(): number {
     return this.progress.reduce((prev, curr) => prev + curr, 0) / this.progress.length;
@@ -131,7 +151,7 @@ export default class DownloadManager {
     if (this.getProgress() >= 1) {
       this.setStatus(DownloadStatus.DOWNLOADED);
       await this.removeFromStorage();
-    }
+    } else await this.addToStorage();
   }
 
   /**
@@ -163,11 +183,24 @@ export default class DownloadManager {
   /**
    * Queue the chapter for download.
    */
-  public queue() {
+  public async queue() {
     switch (this.getStatus()) {
       case DownloadStatus.IDLE:
+      case DownloadStatus.VALIDATING:
         this.setStatus(DownloadStatus.QUEUED);
+        await this.addToStorage();
         break;
+    }
+  }
+
+  /**
+   * Validate the chapter to see if it is downloaded in the file system
+   */
+  public async validate(): Promise<void> {
+    if (this.getValidatedStatus() === DownloadStatus.VALIDATING) {
+      const downloaded = await this.isDownloaded();
+      if (downloaded) this.validatedStatus = DownloadStatus.DOWNLOADED;
+      else this.validatedStatus = DownloadStatus.IDLE;
     }
   }
 
@@ -175,49 +208,48 @@ export default class DownloadManager {
    * Download the pages of the chapter
    */
   public async download() {
-    if (this.getStatus() !== DownloadStatus.START_DOWNLOADING) {
-      try {
-        await FileSystem.readDirectoryAsync(this.dir);
-      } catch (e) {
-        await FileSystem.makeDirectoryAsync(this.dir, { intermediates: true });
-      } finally {
-        const savedState = (await DownloadManager.fetchedPages.get()) ?? {};
-        const p =
-          this.pages.length > 0
-            ? this.pages
-            : savedState[this.chapter.link] ?? (await this.source.getPages(this.chapter));
-        this.pages = p;
-        const existingFiles = await Promise.all(
-          p.map(async (x, i) => {
-            return await FileSystem.getInfoAsync(this.dir + `${i + 1}.png`);
-          })
-        );
-        this.downloadResumablePages = p.map((x, i) => ({
-          status: existingFiles[i].exists ? DownloadStatus.DOWNLOADED : DownloadStatus.IDLE,
-          downloadResumable: FileSystem.createDownloadResumable(x, this.dir + `${i + 1}.png`, {}, (x) =>
-            this.downloadProgressCallback({ index: i, ...x })
-          ),
-        }));
-        this.progress = existingFiles.map((x, i) => (x.exists ? 1 : 0));
-        await DownloadManager.fetchedPages.set({ ...savedState, [this.chapter.link]: this.pages });
-        this.setStatus(DownloadStatus.START_DOWNLOADING);
-        for (let i = 0; i < this.downloadResumablePages.length; i++) {
-          const { downloadResumable, status } = this.downloadResumablePages[i];
+    try {
+      await FileSystem.readDirectoryAsync(this.dir);
+    } catch (e) {
+      await FileSystem.makeDirectoryAsync(this.dir, { intermediates: true });
+    } finally {
+      const savedState = (await DownloadManager.fetchedPages.get()) ?? {};
+      const p =
+        this.pages.length > 0
+          ? this.pages
+          : savedState[this.chapter.link] ?? (await this.source.getPages(this.chapter));
+      this.pages = p;
+      const existingFiles = await Promise.all(
+        p.map(async (x, i) => {
+          return await FileSystem.getInfoAsync(this.dir + `${i + 1}.png`);
+        })
+      );
+      this.downloadResumablePages = p.map((x, i) => ({
+        status: existingFiles[i].exists ? DownloadStatus.DOWNLOADED : DownloadStatus.IDLE,
+        downloadResumable: FileSystem.createDownloadResumable(x, this.dir + `${i + 1}.png`, {}, (x) =>
+          this.downloadProgressCallback({ index: i, ...x })
+        ),
+      }));
+      this.progress = existingFiles.map((x, i) => (x.exists ? 1 : 0));
+      DownloadManager.fetchedPages.set({ ...savedState, [this.chapter.link]: this.pages });
+      this.setStatus(DownloadStatus.START_DOWNLOADING);
+      await this.addToStorage();
+      for (let i = 0; i < this.downloadResumablePages.length; i++) {
+        const { downloadResumable, status } = this.downloadResumablePages[i];
 
-          if (
-            this.getStatus() === DownloadStatus.START_DOWNLOADING &&
-            this.downloadResumablePages[i].status === DownloadStatus.IDLE
-          )
-            try {
-              // console.log(`Starting download for page ${i + 1}. Called by download()`);
-              this.downloadResumablePages[i].status = DownloadStatus.DOWNLOADING;
-              await downloadResumable.downloadAsync();
-            } catch (e) {
-              console.error(e);
-              this.setStatus(DownloadStatus.ERROR);
-            }
-          else continue;
-        }
+        if (
+          this.getStatus() === DownloadStatus.START_DOWNLOADING &&
+          this.downloadResumablePages[i].status === DownloadStatus.IDLE
+        )
+          try {
+            // console.log(`Starting download for page ${i + 1}. Called by download()`);
+            this.downloadResumablePages[i].status = DownloadStatus.DOWNLOADING;
+            await downloadResumable.downloadAsync();
+          } catch (e) {
+            console.error(e);
+            this.setStatus(DownloadStatus.ERROR);
+          }
+        else continue;
       }
     }
   }
@@ -226,63 +258,58 @@ export default class DownloadManager {
    * Pause the download
    */
   public async pause() {
-    if (this.getStatus() !== DownloadStatus.PAUSED) {
-      this.setStatus(DownloadStatus.PAUSED);
-      for (let i = 0; i < this.downloadResumablePages.length; i++) {
-        if (this.downloadResumablePages[i].status === DownloadStatus.DOWNLOADING)
-          this.downloadResumablePages[i].status = DownloadStatus.PAUSED;
-      }
-
-      for (let i = 0; i < this.downloadResumablePages.length; i++) {
-        const { downloadResumable } = this.downloadResumablePages[i];
-        if (this.downloadResumablePages[i].status === DownloadStatus.PAUSED)
-          try {
-            await downloadResumable.pauseAsync();
-          } catch (e) {
-            this.setStatus(DownloadStatus.ERROR);
-            console.error(e);
-          }
-      }
-      await this.addToStorage();
+    this.setStatus(DownloadStatus.PAUSED);
+    for (let i = 0; i < this.downloadResumablePages.length; i++) {
+      if (this.downloadResumablePages[i].status === DownloadStatus.DOWNLOADING)
+        this.downloadResumablePages[i].status = DownloadStatus.PAUSED;
     }
+
+    for (let i = this.downloadResumablePages.length - 1; i >= 0; i--) {
+      const { downloadResumable } = this.downloadResumablePages[i];
+      if (this.downloadResumablePages[i].status === DownloadStatus.PAUSED)
+        try {
+          await downloadResumable.pauseAsync();
+        } catch (e) {
+          this.setStatus(DownloadStatus.ERROR);
+          console.error(e);
+        }
+    }
+    await this.addToStorage();
   }
 
   public async resume() {
-    if (this.getStatus() !== DownloadStatus.RESUME_DOWNLOADING) {
-      this.setStatus(DownloadStatus.RESUME_DOWNLOADING);
-      for (let i = 0; i < this.downloadResumablePages.length; i++) {
-        if (this.downloadResumablePages[i].status === DownloadStatus.PAUSED)
-          this.downloadResumablePages[i].status = DownloadStatus.DOWNLOADING;
+    this.setStatus(DownloadStatus.RESUME_DOWNLOADING);
+    for (let i = 0; i < this.downloadResumablePages.length; i++) {
+      if (this.downloadResumablePages[i].status === DownloadStatus.PAUSED)
+        this.downloadResumablePages[i].status = DownloadStatus.DOWNLOADING;
+    }
+    for (let i = 0; i < this.downloadResumablePages.length; i++) {
+      const { downloadResumable, status } = this.downloadResumablePages[i];
+      if (status === DownloadStatus.DOWNLOADED) {
+        // console.log(`Page ${i + 1} is already downloaded. Skipping...`);
+        continue;
       }
-      for (let i = 0; i < this.downloadResumablePages.length; i++) {
-        const { downloadResumable, status } = this.downloadResumablePages[i];
-        if (status === DownloadStatus.DOWNLOADED) {
-          // console.log(`Page ${i + 1} is already downloaded. Skipping...`);
-          continue;
+      if (this.getStatus() === DownloadStatus.RESUME_DOWNLOADING)
+        switch (status) {
+          case DownloadStatus.DOWNLOADING:
+            try {
+              // console.log(`Resuming download for page ${i + 1}`);
+              await downloadResumable.resumeAsync();
+            } catch (e) {
+              this.setStatus(DownloadStatus.ERROR);
+              console.error(e);
+            }
+            break;
+          case DownloadStatus.IDLE:
+            try {
+              // console.log(`Starting download for page ${i + 1}. Called by resume()`);
+              this.downloadResumablePages[i].status = DownloadStatus.DOWNLOADING;
+              await downloadResumable.downloadAsync();
+            } catch (e) {
+              this.setStatus(DownloadStatus.ERROR);
+              console.error(e);
+            }
         }
-        if (this.getStatus() === DownloadStatus.RESUME_DOWNLOADING)
-          switch (status) {
-            case DownloadStatus.DOWNLOADING:
-              try {
-                // console.log(`Resuming download for page ${i + 1}`);
-                await downloadResumable.resumeAsync();
-              } catch (e) {
-                this.setStatus(DownloadStatus.ERROR);
-                console.error(e);
-              }
-              break;
-            case DownloadStatus.IDLE:
-              try {
-                // console.log(`Starting download for page ${i + 1}. Called by resume()`);
-                this.downloadResumablePages[i].status = DownloadStatus.DOWNLOADING;
-                await downloadResumable.downloadAsync();
-              } catch (e) {
-                this.setStatus(DownloadStatus.ERROR);
-                console.error(e);
-              }
-          }
-      }
-      await this.removeFromStorage();
     }
   }
 
@@ -326,26 +353,25 @@ export default class DownloadManager {
   private async removeFromStorage() {
     const p = (await DownloadManager.downloadStates.get()) ?? {};
     delete p[this.chapter.link];
-    await DownloadManager.downloadStates.set(p);
+    DownloadManager.downloadStates.set(p);
   }
 
   private async addToStorage() {
     const p = (await DownloadManager.downloadStates.get()) ?? {};
-    await DownloadManager.downloadStates.set({
-      ...p,
-      [this.chapter.link]: {
-        chapter: this.chapter,
-        dir: this.dir,
-        pages: this.pages,
-        progress: this.progress,
-        sourceName: this.source.getName(),
-        status: this.getStatus(),
-        state: this.downloadResumablePages.map(({ status, downloadResumable }) => ({
-          status,
-          downloadState: downloadResumable.savable(),
-        })),
-      },
-    });
+    p[this.chapter.link] = {
+      chapter: this.chapter,
+      dir: this.dir,
+      pages: this.pages,
+      progress: this.progress,
+      sourceName: this.source.getName(),
+      status: this.isDownloading() ? DownloadStatus.PAUSED : this.getStatus(),
+      state: this.downloadResumablePages.map(({ status, downloadResumable }) => ({
+        status: status === DownloadStatus.DOWNLOADING ? DownloadStatus.PAUSED : status,
+        downloadState: downloadResumable.savable(),
+      })),
+      hasCursor: this.cursor,
+    };
+    DownloadManager.downloadStates.set(p);
   }
 
   public static async initialize() {
@@ -372,13 +398,16 @@ export default class DownloadManager {
       this.source = source;
       this.dir = pathToDownload;
       this.chapter = chapter;
-      this.status = DownloadStatus.IDLE;
+      this.status = DownloadStatus.VALIDATING;
       this.progress = [];
       this.downloadResumablePages = [];
       this.pages = [];
-
+      this.validatedStatus = DownloadStatus.VALIDATING;
       DownloadManager.downloads[chapter.link] = { ref: ref ?? null, downloadManager: this };
+      this.cursor = false;
     } else if (existingState) {
+      this.cursor = existingState.hasCursor;
+      this.validatedStatus = DownloadStatus.VALIDATING;
       this.source = MangaHost.getAvailableSources().get(existingState.sourceName)!;
       this.dir = existingState.dir;
       this.chapter = existingState.chapter;
@@ -395,7 +424,7 @@ export default class DownloadManager {
           existingState.state[i].downloadState.resumeData
         ),
       }));
-      // console.log(`Existing download state for ${existingState.chapter.link}`);
+
       DownloadManager.downloads[existingState.chapter.link] = { ref: ref ?? null, downloadManager: this };
     } else throw Error('No args passed in constructor of DownloadManager');
   }
