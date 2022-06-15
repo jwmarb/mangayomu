@@ -233,27 +233,47 @@ export default function (
       return { ...state, chapters: copy };
     }
     case 'CANCEL_DOWNLOAD_OF_SELECTED_CHAPTERS': {
-      const copy = state.chapters;
-      for (let i = 0; i < action.keys.length; i++) {
-        switch (copy[action.keys[i]].status) {
-          case DownloadStatus.QUEUED:
-            console.log(`Removed ${action.keys[i]} from queue`);
-            copy[action.keys[i]].downloadManager.setStatus(copy[action.keys[i]].downloadManager.getValidatedStatus());
-            copy[action.keys[i]].status = copy[action.keys[i]].downloadManager.getValidatedStatus();
-            copy[action.keys[i]].totalProgress = 0;
-            break;
-          case DownloadStatus.START_DOWNLOADING:
-          case DownloadStatus.RESUME_DOWNLOADING:
-          case DownloadStatus.PAUSED:
-            console.log(`Cancelled ${action.keys[i]}`);
-            copy[action.keys[i]].downloadManager.setStatus(DownloadStatus.CANCELLED);
-            copy[action.keys[i]].status = DownloadStatus.CANCELLED;
-            copy[action.keys[i]].totalProgress = 0;
-            copy[action.keys[i]].hasCursor = false;
-            break;
-        }
-      }
-      return { ...state, chapters: copy };
+      // const copy = state.chapters;
+      // for (let i = action.keys.length - 1; i >= 0; i--) {
+      //   switch (copy[action.keys[i]].status) {
+      //     case DownloadStatus.QUEUED:
+      //       copy[action.keys[i]].status = copy[action.keys[i]].downloadManager.getValidatedStatus();
+      //       console.log(`Removed ${action.keys[i]} from queue which has status ${copy[action.keys[i]].status}`);
+      //       copy[action.keys[i]].totalProgress = 0;
+      //       copy[action.keys[i]].hasCursor = false;
+      //       break;
+      //     case DownloadStatus.START_DOWNLOADING:
+      //     case DownloadStatus.RESUME_DOWNLOADING:
+      //     case DownloadStatus.PAUSED:
+      //       console.log(`Cancelled ${action.keys[i]}`);
+      //       copy[action.keys[i]].status = DownloadStatus.CANCELLED;
+      //       copy[action.keys[i]].totalProgress = 0;
+      //       copy[action.keys[i]].hasCursor = false;
+      //       break;
+      //   }
+      // }
+      return {
+        ...state,
+        chapters: action.keys.reduce(
+          (prev, curr) => ({
+            ...prev,
+            [curr]: {
+              ...state.chapters[curr],
+              status:
+                state.chapters[curr].status === DownloadStatus.QUEUED
+                  ? state.chapters[curr].downloadManager.getValidatedStatus()
+                  : state.chapters[curr].status === DownloadStatus.RESUME_DOWNLOADING ||
+                    state.chapters[curr].status === DownloadStatus.START_DOWNLOADING ||
+                    state.chapters[curr].status === DownloadStatus.PAUSED
+                  ? DownloadStatus.CANCELLED
+                  : state.chapters[curr].status,
+              totalProgress: 0,
+              hasCursor: false,
+            },
+          }),
+          {} as Record<string, ChapterState>
+        ),
+      };
     }
 
     default:

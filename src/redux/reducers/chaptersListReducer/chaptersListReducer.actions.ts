@@ -133,23 +133,22 @@ export const cancelAllSelected = (manga: Manga) => {
     const keys = Object.keys(obj[manga.title].chapters);
     obj[manga.title].shouldDownload = false;
     cursors.set(obj);
+
     for (let i = keys.length - 1; i >= 0; i--) {
       switch (state[keys[i]].status) {
         case DownloadStatus.QUEUED:
-          dispatch({ type: 'UPDATE_CHAPTER_STATUS', key: keys[i], status: DownloadStatus.IDLE });
+          await state[keys[i]].downloadManager.unqueue();
+
           break;
         case DownloadStatus.START_DOWNLOADING:
         case DownloadStatus.RESUME_DOWNLOADING:
         case DownloadStatus.PAUSED:
-          try {
-            await state[keys[i]].downloadManager.cancel();
-          } finally {
-            dispatch({ type: 'UPDATE_CHAPTER_STATUS', key: keys[i], status: DownloadStatus.CANCELLED });
-          }
+          await state[keys[i]].downloadManager.cancel();
+          dispatch({ type: 'UPDATE_CHAPTER_STATUS', key: keys[i], status: DownloadStatus.CANCELLED });
           break;
       }
     }
-    // dispatch({ type: 'CANCEL_DOWNLOAD_OF_SELECTED_CHAPTERS', keys });
+    dispatch({ type: 'CANCEL_DOWNLOAD_OF_SELECTED_CHAPTERS', keys });
 
     delete obj[manga.title];
     cursors.set(obj);

@@ -193,6 +193,15 @@ export default class DownloadManager {
     }
   }
 
+  public async unqueue() {
+    switch (this.getStatus()) {
+      case DownloadStatus.QUEUED:
+        this.setStatus(this.getValidatedStatus());
+        await this.addToStorage();
+        break;
+    }
+  }
+
   /**
    * Validate the chapter to see if it is downloaded in the file system
    */
