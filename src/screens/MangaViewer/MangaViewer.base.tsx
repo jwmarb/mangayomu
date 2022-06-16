@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components/native';
 
 export const MangaViewerContainer = styled.View`
   ${(props) => css`
-    padding: ${props.theme.spacing(0, 0, 3, 0)};
+    padding: ${props.theme.spacing(0, 0, 1, 0)};
     background-color: ${props.theme.palette.background.default.get()};
   `}
 `;

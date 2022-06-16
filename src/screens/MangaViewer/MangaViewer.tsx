@@ -234,6 +234,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
               </ImageBackground>
               <Spacer y={2} />
               <Description description={userMangaInfo?.description} />
+              <Spacer y={2} />
               <Genres buttons genres={userMangaInfo?.genres} source={source} />
             </MangaViewerContainer>
             <ChapterHeader

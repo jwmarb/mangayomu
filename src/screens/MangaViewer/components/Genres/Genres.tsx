@@ -16,7 +16,6 @@ const Genres: React.FC<GenresProps> = (props) => {
   if (buttons)
     return (
       <>
-        <Spacer y={1} />
         <Animated.View style={mountingStyle}>
           {genres ? (
             <Category.Header>
