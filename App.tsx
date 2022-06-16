@@ -18,6 +18,10 @@ import { LogBox } from 'react-native';
 import '@services/MangaPark_v3';
 import '@services/MangaSee';
 
+LogBox.ignoreLogs([
+  `ViewPropTypes will be removed from React Native. Migrate to ViewPropTypes exported from 'deprecated-react-native-prop-types'.`,
+]);
+
 export default function App() {
   const generated = theme();
   return (
