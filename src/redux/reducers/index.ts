@@ -1,4 +1,4 @@
-import mangalibReducer from '@redux/reducers/mangalibReducer/mangalibReducer';
+import mangalibReducer from './mangalibReducer';
 import { combineReducers } from 'redux';
 import mangaReducer from './mangaReducer';
 import chaptersListReducer from './chaptersListReducer';

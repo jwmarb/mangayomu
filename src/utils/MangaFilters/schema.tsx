@@ -13,7 +13,6 @@ import { binary, StringComparator } from '@utils/Algorithms';
 import displayMessage from '@utils/displayMessage';
 import InclusiveExclusiveItem from '@utils/MangaFilters/components/InclusiveExclusiveItem';
 import React from 'react';
-import { useWindowDimensions } from 'react-native';
 import { HoldItem } from 'react-native-hold-menu';
 import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
 

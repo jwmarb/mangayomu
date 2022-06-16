@@ -14,6 +14,7 @@ import { HoldMenuProvider } from 'react-native-hold-menu';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import { PortalProvider } from '@gorhom/portal';
+import { LogBox } from 'react-native';
 import '@services/MangaPark_v3';
 import '@services/MangaSee';
 
