@@ -50,6 +50,8 @@ import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview
 import { useTheme } from 'styled-components/native';
 import LibraryIsEmpty from './components/LibraryIsEmpty';
 import NoItemsFound from './components/NoItemsFound';
+import PropTypes from 'prop-types';
+(RecyclerListView.propTypes as { externalScrollView: {} }).externalScrollView = PropTypes.object;
 
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   const { mangas, navigation, history, cols, fontSize } = props;

@@ -24,6 +24,8 @@ import { useSelector } from 'react-redux';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { WindowCorrection } from 'recyclerlistview/dist/reactnative/core/ViewabilityTracker';
 const { height } = Dimensions.get('window');
+import PropTypes from 'prop-types';
+(RecyclerListView.propTypes as { externalScrollView: {} }).externalScrollView = PropTypes.object;
 
 LogBox.ignoreLogs(['You have mounted RecyclerListView']);
 

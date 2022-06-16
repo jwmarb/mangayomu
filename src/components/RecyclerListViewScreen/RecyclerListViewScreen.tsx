@@ -2,6 +2,8 @@ import { ScrollViewWithCollapsible } from '@components/RecyclerListViewScreen/Re
 import { RecyclerListViewScreenProps } from '@components/RecyclerListViewScreen/RecyclerListViewScreen.interfaces';
 import React from 'react';
 import { RecyclerListView, RecyclerListViewProps } from 'recyclerlistview';
+import PropTypes from 'prop-types';
+(RecyclerListView.propTypes as { externalScrollView: {} }).externalScrollView = PropTypes.object;
 
 const RecyclerListViewScreen: React.ForwardRefRenderFunction<
   RecyclerListView<RecyclerListViewProps, any>,
