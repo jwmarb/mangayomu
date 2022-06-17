@@ -74,6 +74,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     checkAll,
     initializeChapterStates,
   } = props;
+  const theme = useTheme();
   const {
     state: [meta],
     loading,
@@ -205,7 +206,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
             collapsible={collapsible}>
             <MangaViewerContainer>
               <ImageBackground source={{ uri: manga.imageCover }}>
-                <LinearGradient colors={['transparent', GRADIENT_COLOR.get()]}>
+                <LinearGradient colors={['transparent', '#171717']} start={{ x: 0, y: 0 }} end={{ x: 0, y: 0.7 }}>
                   <MangaViewerImageBackdrop paddingTop={collapsible.containerPaddingTop}>
                     <Flex container horizontalPadding={3} verticalPadding={0}>
                       <MangaCover mangaCoverURI={manga.imageCover} title={manga.title} />
