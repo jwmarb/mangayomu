@@ -271,7 +271,7 @@ export default function (
               hasCursor: false,
             },
           }),
-          {} as Record<string, ChapterState>
+          state.chapters as Record<string, ChapterState>
         ),
       };
     }

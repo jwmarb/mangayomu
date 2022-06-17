@@ -143,7 +143,6 @@ export const cancelAllSelected = (manga: Manga) => {
         case DownloadStatus.RESUME_DOWNLOADING:
         case DownloadStatus.PAUSED:
           await state[keys[i]].downloadManager.cancel();
-          dispatch({ type: 'UPDATE_CHAPTER_STATUS', key: keys[i], status: DownloadStatus.CANCELLED });
           break;
       }
     }
