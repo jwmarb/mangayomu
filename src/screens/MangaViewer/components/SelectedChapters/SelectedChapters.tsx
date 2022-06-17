@@ -1,5 +1,6 @@
 import { Button, Flex, Spacer, Typography } from '@components/core';
 import FloatingModal from '@components/FloatingModal';
+import useMountedEffect from '@hooks/useMountedEffect';
 import { useIsFocused } from '@react-navigation/native';
 import { cursors } from '@redux/reducers/chaptersListReducer/chaptersListReducer.actions';
 import connector, {
@@ -22,13 +23,13 @@ const SelectedChapters: React.FC<SelectedChaptersProps> = (props) => {
     selectionMode,
     totalChapters,
     exitSelectionMode,
-    queueAllSelected,
     pauseAllSelected,
     downloadAllSelected,
     manga,
   } = props;
   const isFocused = useIsFocused();
-  const selectedLength = Object.keys(selectedChapters).length;
+  const selectedValues = Object.values(selectedChapters);
+  const selectedLength = selectedValues.length;
   const pluralized = plural(selectedLength);
   const [status, setStatus] = React.useState<DownloadStatus>(DownloadStatus.IDLE);
   React.useEffect(() => {
@@ -42,18 +43,18 @@ const SelectedChapters: React.FC<SelectedChaptersProps> = (props) => {
       }
     })();
   }, [status]);
-  const menuItems: MenuItemProps[] = [
+  const menuItems = [
     { text: `Actions (${selectedLength} of ${totalChapters})`, isTitle: true, withSeparator: true },
     {
       text: `Download selected`,
       icon: 'download',
-      onPress: () => {
-        if (cursors[manga.title] == null) {
+      onPress: async () => {
+        const p = await cursors.get();
+        if (p && p[manga.title] == null) {
           setStatus(DownloadStatus.START_DOWNLOADING);
         } else console.log(`Already existing cursor. Cancel it first.`);
       },
     },
-
     {
       text: `Verify file integrity`,
       icon: 'file',
@@ -61,7 +62,7 @@ const SelectedChapters: React.FC<SelectedChaptersProps> = (props) => {
         console.log(`Verifying integrity of ${selectedLength} chapter${pluralized}`);
       },
     },
-  ] as MenuItemProps[];
+  ];
   return (
     <FloatingModal visible={selectionMode === 'selection' && isFocused}>
       <Flex alignItems='center' justifyContent='space-between'>
