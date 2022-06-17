@@ -41,6 +41,23 @@ export default function (
         ...state,
         mode: 'selection',
       };
+    case 'SELECT_CHAPTERS': {
+      return {
+        ...state,
+        checkAll: true,
+        mode: 'selection',
+        chapters: action.chapters.reduce((prev, curr) => {
+          const key = getKey(curr);
+          return {
+            ...prev,
+            [key]: {
+              ...state.chapters[key],
+              checked: true,
+            },
+          };
+        }, state.chapters),
+      };
+    }
     case 'SELECT_CHAPTER': {
       const key = getKey(action.chapter);
       return {

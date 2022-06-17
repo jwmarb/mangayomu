@@ -33,4 +33,5 @@ export type ChaptersListReducerAction =
   | { type: 'PAUSE_DOWNLOAD_OF_SELECTED_CHAPTERS'; keys: string[] }
   | { type: 'CANCEL_DOWNLOAD_OF_SELECTED_CHAPTERS'; keys: string[] }
   | { type: 'QUEUE_ALL_SELECTED'; keys: string[] }
-  | { type: 'VALIDATE_CHAPTER'; chapter: ReadingChapterInfo };
+  | { type: 'VALIDATE_CHAPTER'; chapter: ReadingChapterInfo }
+  | { type: 'SELECT_CHAPTERS'; chapters: ReadingChapterInfo[] };

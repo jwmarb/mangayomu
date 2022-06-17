@@ -61,6 +61,15 @@ export default class DownloadManager {
   }
 
   /**
+   * This is only meant to access values and not perform operations. Use of() method to properly perform operations.
+   * @param chapter The chapter
+   * @returns Returns an instance of DownloadManager
+   */
+  public static peek(chapter: MangaChapter): DownloadManager | undefined {
+    return DownloadManager.downloads[chapter.link]?.downloadManager;
+  }
+
+  /**
    * Same as of() method except a ref is addable
    * @param chapter The chapter
    * @param pathToDownload The path to download to

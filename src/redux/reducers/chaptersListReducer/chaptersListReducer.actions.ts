@@ -159,6 +159,12 @@ export const checkAll = (val: boolean) => {
   };
 };
 
+export const checkAllChapters = (chapters: ReadingChapterInfo[]) => {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'SELECT_CHAPTERS', chapters });
+  };
+};
+
 export const setDownloadStatusOfChapter = (chapter: ReadingChapterInfo) => {
   return (dispatch: AppDispatch) => {
     return (status: DownloadStatus) => {

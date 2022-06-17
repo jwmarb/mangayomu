@@ -43,7 +43,18 @@ const { width } = Dimensions.get('window');
 const halfWidth = width / 2;
 
 const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
-  const { chapters, handleOnOpenModal, loading, refresh, language, onChangeLanguage, onSelectAll } = props;
+  const {
+    chapters,
+    handleOnOpenModal,
+    loading,
+    refresh,
+    language,
+    onChangeLanguage,
+    onSelectAll,
+    onSelectDownloadedChapters,
+    onSelectReadChapters,
+    onSelectUnreadChapters,
+  } = props;
   const checked = useSelector((state: AppState) => !!state.chaptersList.checkAll);
   const opacity = useSharedValue(1);
   const bgOpacity = useSharedValue(0);
@@ -118,6 +129,45 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
     [onChangeLanguage]
   );
 
+  const menuItems = React.useMemo(
+    () =>
+      [
+        { text: 'Select...', isTitle: true },
+        {
+          text: 'All Chapters',
+          onPress: () => {
+            onSelectAll(true);
+          },
+        },
+        {
+          text: 'All Downloaded Chapters',
+          onPress: () => {
+            onSelectDownloadedChapters();
+          },
+        },
+        {
+          text: 'All Unread Chapters',
+          onPress: () => {
+            onSelectUnreadChapters();
+          },
+        },
+        {
+          text: 'All Read Chapters',
+          onPress: () => {
+            onSelectReadChapters();
+          },
+        },
+        {
+          text: 'Deselect All',
+          isDestructive: true,
+          onPress: () => {
+            onSelectAll(false);
+          },
+        },
+      ] as MenuItemProps[],
+    []
+  );
+
   return (
     <>
       <ChapterHeaderContainer>
@@ -137,7 +187,9 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
           )}
           <IconButton icon={<Icon bundle='Feather' name='refresh-cw' />} onPress={refresh} disabled={loading} />
           <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='sort' />} onPress={handleOnOpenModal} />
-          <Checkbox onChange={onSelectAll} checked={checked} />
+          <HoldItem items={menuItems}>
+            <Checkbox onChange={onSelectAll} checked={checked} />
+          </HoldItem>
         </Flex>
       </ChapterHeaderContainer>
       {loading && <LoadingChapters />}

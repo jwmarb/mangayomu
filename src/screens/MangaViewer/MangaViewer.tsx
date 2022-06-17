@@ -71,6 +71,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     source,
     exitSelectionMode,
     selectionMode,
+    checkAllChapters,
     checkAll,
     initializeChapterStates,
   } = props;
@@ -170,14 +171,21 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     checkAll(newVal);
   }, []);
 
-  // const handleOnDownloadAll = React.useCallback(async () => {
-  // const collection = DownloadCollection.of(
-  //   FileSystem.documentDirectory + `Mangas/${manga.source}/${manga.title}/`,
-  //   sorted,
-  //   source
-  // );
-  //   await collection.pauseAll();
-  // }, [sorted, source]);
+  const handleOnSelectAllDownloaded = React.useCallback(async () => {
+    const filtered: ReadingChapterInfo[] = [];
+    for (let i = 0; i < sorted.length; i++) {
+      if (await DownloadManager.peek(sorted[i])?.isDownloaded()) filtered.push(sorted[i]);
+    }
+    checkAllChapters(filtered);
+  }, [sorted]);
+
+  const handleOnSelectAllUnread = React.useCallback(async () => {
+    checkAllChapters(sorted.filter((c) => c.dateRead == null));
+  }, [sorted]);
+
+  const handleOnSelectAllRead = React.useCallback(async () => {
+    checkAllChapters(sorted.filter((c) => c.dateRead != null));
+  }, [sorted]);
 
   React.useEffect(() => {
     const sort = Array.from(userMangaInfo?.chapters ?? []).sort(selectedSortOption);
@@ -239,6 +247,9 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
               <Genres buttons genres={userMangaInfo?.genres} source={source} />
             </MangaViewerContainer>
             <ChapterHeader
+              onSelectReadChapters={handleOnSelectAllRead}
+              onSelectUnreadChapters={handleOnSelectAllUnread}
+              onSelectDownloadedChapters={handleOnSelectAllDownloaded}
               onSelectAll={handleOnSelectAll}
               onChangeLanguage={setLanguage}
               language={language}
