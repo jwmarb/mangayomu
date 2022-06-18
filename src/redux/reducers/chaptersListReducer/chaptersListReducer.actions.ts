@@ -96,6 +96,7 @@ export const downloadAllSelected = (selected: Record<string, ChapterState>, mang
     );
 
     if (
+      obj[manga.title] &&
       Object.keys(obj[manga.title].chapters).every(
         (x) => getState().chaptersList.chapters[x].downloadManager.getStatus() === DownloadStatus.DOWNLOADED
       )

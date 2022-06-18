@@ -222,19 +222,21 @@ export default function (
       };
     }
     case 'QUEUE_ALL_SELECTED': {
-      const copy = state.chapters;
-      for (let i = 0; i < action.keys.length; i++) {
-        switch (copy[action.keys[i]].status) {
-          case DownloadStatus.IDLE:
-          case DownloadStatus.CANCELLED:
-          case DownloadStatus.VALIDATING:
-            copy[action.keys[i]].status = copy[action.keys[i]].downloadManager.getStatus();
-        }
-      }
-
       return {
         ...state,
-        chapters: copy,
+        chapters: action.keys.reduce((prev, curr) => {
+          switch (state.chapters[curr].status) {
+            case DownloadStatus.IDLE:
+            case DownloadStatus.CANCELLED:
+            case DownloadStatus.VALIDATING:
+              return {
+                ...prev,
+                [curr]: { ...state.chapters[curr], status: state.chapters[curr].downloadManager.getStatus() },
+              };
+            default:
+              return prev;
+          }
+        }, state.chapters),
       };
     }
     case 'PAUSE_DOWNLOAD_OF_SELECTED_CHAPTERS': {
