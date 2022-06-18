@@ -14,6 +14,7 @@ import ChapterDownloadProgress from './components/ChapterDownloadProgress';
 import ChapterDownloadStatus from './components/ChapterDownloadStatus';
 import { useChapterStateFromRedux } from './Chapter.helpers';
 import { cursors } from '@redux/reducers/chaptersListReducer/chaptersListReducer.actions';
+import Spacer from '@components/Spacer';
 
 const Chapter: React.FC<ChapterReduxProps> = (props) => {
   const {
@@ -167,6 +168,7 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
                   isDownloading={isDownloading}
                   startDownload={startDownload}
                 />
+                <Spacer x={1} />
                 {selectionMode === 'selection' && <Checkbox checked={checked} onChange={handleOnCheck} />}
               </Flex>
             </Flex>
