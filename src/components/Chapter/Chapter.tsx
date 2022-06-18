@@ -153,25 +153,22 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
           <ChapterContainer>
             <Flex justifyContent='space-between' alignItems='center'>
               <ChapterTitle chapter={chapter} />
-              {selectionMode === 'normal' ? (
-                <Flex alignItems='center'>
-                  <ChapterDownloadProgress
-                    totalProgress={totalProgress}
-                    downloadStatus={downloadStatus}
-                    isDownloading={isDownloading}
-                    pauseDownload={pauseDownload}
-                    cancelDownload={cancelDownload}
-                    resumeDownload={resumeDownload}
-                  />
-                  <ChapterDownloadStatus
-                    downloadStatus={downloadStatus}
-                    isDownloading={isDownloading}
-                    startDownload={startDownload}
-                  />
-                </Flex>
-              ) : (
-                <Checkbox checked={checked} onChange={handleOnCheck} />
-              )}
+              <Flex alignItems='center'>
+                <ChapterDownloadProgress
+                  totalProgress={totalProgress}
+                  downloadStatus={downloadStatus}
+                  isDownloading={isDownloading}
+                  pauseDownload={pauseDownload}
+                  cancelDownload={cancelDownload}
+                  resumeDownload={resumeDownload}
+                />
+                <ChapterDownloadStatus
+                  downloadStatus={downloadStatus}
+                  isDownloading={isDownloading}
+                  startDownload={startDownload}
+                />
+                {selectionMode === 'selection' && <Checkbox checked={checked} onChange={handleOnCheck} />}
+              </Flex>
             </Flex>
           </ChapterContainer>
         </ButtonBase>
