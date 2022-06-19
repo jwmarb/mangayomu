@@ -1,14 +1,30 @@
+import Badge from '@components/Badge/Badge';
+import { IconButton, Icon } from '@components/core';
 import { Header } from '@components/Screen';
+import { RootStackParamList } from '@navigators/Root/Root.interfaces';
+import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
 import { Animated } from 'react-native';
 import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-collapsible';
+import DownloadManagerHeader from './components/DownloadManagerHeader';
 
-const DownloadManager: React.FC = (props) => {
-  const {} = props;
+const DownloadManager: React.FC<StackScreenProps<RootStackParamList, 'DownloadManager'>> = (props) => {
+  const { navigation } = props;
+  function handleOnPress() {
+    navigation.navigate('Settings');
+  }
   const options: UseCollapsibleOptions = {
     navigationOptions: {
       header: Header,
-      headerTitle: 'Download Manager',
+      headerTitle: '',
+      headerRight: () => (
+        <>
+          <IconButton icon={<Icon bundle='Feather' name='settings' />} onPress={handleOnPress} />
+          <Badge>
+            <IconButton icon={<Icon bundle='Feather' name='filter' />} onPress={handleOnPress} />
+          </Badge>
+        </>
+      ),
     },
     config: {
       useNativeDriver: true,
@@ -23,6 +39,7 @@ const DownloadManager: React.FC = (props) => {
       onScroll={onScroll}
       contentContainerStyle={{ paddingTop: containerPaddingTop }}
       scrollIndicatorInsets={{ top: scrollIndicatorInsetTop }}
+      ListHeaderComponent={DownloadManagerHeader}
     />
   );
 };
