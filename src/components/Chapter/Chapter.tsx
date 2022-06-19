@@ -31,7 +31,6 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
     pauseAllSelected,
     cancelAllSelected,
   } = props;
-  const source = useMangaSource(manga.source);
 
   function handleOnCheck(e: boolean) {
     checkChapter(e, chapter);
