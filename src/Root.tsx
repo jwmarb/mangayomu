@@ -9,6 +9,7 @@ import GenericMangaList from '@screens/GenericMangaList';
 import Settings from '@screens/Settings';
 import { Header } from '@components/core';
 import MangaBrowser from '@screens/MangaBrowser';
+import DownloadManager from '@screens/DownloadManager';
 
 const Root: React.FC = () => {
   const showIntroduction = useSelector((state: AppState) => state.settings.showIntroduction);
@@ -21,6 +22,7 @@ const Root: React.FC = () => {
       <RootStack.Screen component={Settings} name='Settings' options={{ headerShown: false }} />
       <RootStack.Screen component={GenericMangaList} name='GenericMangaList' />
       <RootStack.Screen component={MangaBrowser} name='MangaBrowser' />
+      <RootStack.Screen component={DownloadManager} name='DownloadManager' />
     </RootStack.Navigator>
   );
 };

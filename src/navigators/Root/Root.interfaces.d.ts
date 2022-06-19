@@ -23,4 +23,5 @@ export type RootStackParamList = {
     mangas: Manga[];
     source: string;
   };
+  DownloadManager: undefined;
 };

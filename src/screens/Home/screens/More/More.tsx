@@ -20,6 +20,9 @@ const More: React.FC<StackScreenProps<RootStackParamList, 'Home'>> = (props) => 
   function handleOnSettings() {
     navigation.navigate('Settings');
   }
+  function handleOnDownloadManager() {
+    navigation.navigate('DownloadManager');
+  }
   return (
     <Screen scrollable>
       <Flex direction='column' container alignItems='center' verticalPadding={0} horizontalPadding={3}>
@@ -35,6 +38,11 @@ const More: React.FC<StackScreenProps<RootStackParamList, 'Home'>> = (props) => 
           title='Settings'
           adornment={<Icon bundle='Feather' name='settings' color='primary' size='small' />}
           onPress={handleOnSettings}
+        />
+        <ListItem
+          title='Download Manager'
+          adornment={<Icon bundle='Feather' name='download' color='primary' size='small' />}
+          onPress={handleOnDownloadManager}
         />
         <ListItem title='About' adornment={<Icon bundle='Feather' name='info' color='primary' size='small' />} />
         <ListItem
