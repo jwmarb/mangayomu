@@ -9,6 +9,7 @@ const INITIAL_STATE: ChaptersListReducerState = {
   mode: 'normal',
   chapters: {},
   validatedMangas: {},
+  mangasInDownloading: {},
 };
 
 export function getKey(c: ReadingChapterInfo) {
@@ -221,9 +222,17 @@ export default function (
         chapters: copy,
       };
     }
+    case 'CURSOR_FINISH_DOWNLOADING':
+      const newState = { ...state };
+      delete newState.mangasInDownloading[action.manga.link];
+      return newState;
     case 'QUEUE_ALL_SELECTED': {
       return {
         ...state,
+        mangasInDownloading: {
+          ...state.mangasInDownloading,
+          [action.manga.link]: action.keys,
+        },
         chapters: action.keys.reduce((prev, curr) => {
           switch (state.chapters[curr].status) {
             case DownloadStatus.IDLE:
@@ -252,27 +261,10 @@ export default function (
       return { ...state, chapters: copy };
     }
     case 'CANCEL_DOWNLOAD_OF_SELECTED_CHAPTERS': {
-      // const copy = state.chapters;
-      // for (let i = action.keys.length - 1; i >= 0; i--) {
-      //   switch (copy[action.keys[i]].status) {
-      //     case DownloadStatus.QUEUED:
-      //       copy[action.keys[i]].status = copy[action.keys[i]].downloadManager.getValidatedStatus();
-      //       console.log(`Removed ${action.keys[i]} from queue which has status ${copy[action.keys[i]].status}`);
-      //       copy[action.keys[i]].totalProgress = 0;
-      //       copy[action.keys[i]].hasCursor = false;
-      //       break;
-      //     case DownloadStatus.START_DOWNLOADING:
-      //     case DownloadStatus.RESUME_DOWNLOADING:
-      //     case DownloadStatus.PAUSED:
-      //       console.log(`Cancelled ${action.keys[i]}`);
-      //       copy[action.keys[i]].status = DownloadStatus.CANCELLED;
-      //       copy[action.keys[i]].totalProgress = 0;
-      //       copy[action.keys[i]].hasCursor = false;
-      //       break;
-      //   }
-      // }
+      const newState = { ...state };
+      delete newState.mangasInDownloading[action.manga.link];
       return {
-        ...state,
+        ...newState,
         chapters: action.keys.reduce(
           (prev, curr) => ({
             ...prev,

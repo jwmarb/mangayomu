@@ -17,6 +17,7 @@ export interface ChaptersListReducerState {
   mode: ChapterPressableMode;
   chapters: Record<string, ChapterState>;
   validatedMangas: Record<string, null>;
+  mangasInDownloading: Record<string, string[]>;
 }
 
 export type ChaptersListReducerAction =
@@ -31,7 +32,8 @@ export type ChaptersListReducerAction =
   | { type: 'SET_TOTAL_PROGRESS_OF_CHAPTER'; chapter: ReadingChapterInfo; progress: number }
   | { type: 'RESUME_DOWNLOAD_OF_SELECTED_CHAPTERS'; keys: string[] }
   | { type: 'PAUSE_DOWNLOAD_OF_SELECTED_CHAPTERS'; keys: string[] }
-  | { type: 'CANCEL_DOWNLOAD_OF_SELECTED_CHAPTERS'; keys: string[] }
-  | { type: 'QUEUE_ALL_SELECTED'; keys: string[] }
+  | { type: 'CANCEL_DOWNLOAD_OF_SELECTED_CHAPTERS'; keys: string[]; manga: Manga }
+  | { type: 'QUEUE_ALL_SELECTED'; keys: string[]; manga: Manga }
   | { type: 'VALIDATE_CHAPTER'; chapter: ReadingChapterInfo }
-  | { type: 'SELECT_CHAPTERS'; chapters: ReadingChapterInfo[] };
+  | { type: 'SELECT_CHAPTERS'; chapters: ReadingChapterInfo[] }
+  | { type: 'CURSOR_FINISH_DOWNLOADING'; manga: Manga };

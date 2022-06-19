@@ -73,7 +73,7 @@ export const downloadAllSelected = (selected: Record<string, ChapterState>, mang
         await getState().chaptersList.chapters[key].downloadManager.queue();
       }
     } finally {
-      dispatch({ type: 'QUEUE_ALL_SELECTED', keys });
+      dispatch({ type: 'QUEUE_ALL_SELECTED', keys, manga });
     }
 
     await Promise.all(
@@ -147,7 +147,7 @@ export const cancelAllSelected = (manga: Manga) => {
           break;
       }
     }
-    dispatch({ type: 'CANCEL_DOWNLOAD_OF_SELECTED_CHAPTERS', keys });
+    dispatch({ type: 'CANCEL_DOWNLOAD_OF_SELECTED_CHAPTERS', keys, manga });
 
     delete obj[manga.title];
     cursors.set(obj);
