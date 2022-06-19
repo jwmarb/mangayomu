@@ -20,7 +20,7 @@ const ListItem: React.FC<ListItemProps> = (props) => {
               <Spacer x={3} />
             </>
           )}
-          <Flex direction='column'>
+          <Flex direction='column' fullWidth>
             <Typography numberOfLines={1} {...typographyProps}>
               {title}
             </Typography>
