@@ -1,11 +1,10 @@
 import {
+  Badge,
   Flex,
   FloatingActionButton,
   Icon,
   IconButton,
   RecyclerListViewScreen,
-  Screen,
-  Spacer,
   Typography,
 } from '@components/core';
 import useLazyLoading from '@hooks/useLazyLoading';
@@ -16,8 +15,6 @@ import { MangaHostWithFilters } from '@services/scraper/scraper.filters';
 import React from 'react';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { Manga } from '@services/scraper/scraper.interfaces';
-import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-collapsible';
-import { ApplyWindowCorrectionEventHandler } from '@utils/RecyclerListView.interfaces';
 import pixelToNumber from '@utils/pixelToNumber';
 import { useTheme } from 'styled-components/native';
 import { MangaItemsLoading } from '@screens/GenericMangaList/GenericMangaList.base';
@@ -26,6 +23,8 @@ import { Keyboard, NativeScrollEvent, NativeSyntheticEvent, ScrollView, View } f
 import Search from '@screens/Home/screens/MangaLibrary/components/Search';
 import { animate, withAnimatedMounting } from '@utils/Animations';
 import useMangaLayout from '@hooks/useMangaLayout';
+import useStatefulHeader from '@hooks/useStatefulHeader';
+import { ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 
 const dataProviderFn = (r1: Manga, r2: Manga) => r1.title !== r2.title;
 
@@ -53,39 +52,20 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     navigation.goBack();
   }, [navigation]);
   const [show, setShow] = React.useState<boolean>(false);
+  const [showBadge, setShowBadge] = React.useState<boolean>(false);
   function resetSearchOptions() {
     mangahost.resetPage();
     setReachedEnd(false);
   }
 
-  const options: UseCollapsibleOptions = {
-    navigationOptions: {
-      header: () => (
-        <Search
-          additionalButtons={
-            <IconButton
-              icon={<Icon bundle='MaterialCommunityIcons' name='filter-outline' />}
-              onPress={handleOnShowFilters}
-            />
-          }
-          ref={textInputRef}
-          title={source}
-          showSearchBar={true}
-          onChangeText={setQuery}
-          defaultText={initialQuery}
-          onExitSearch={handleOnExitSearch}
-          onSubmitEditing={handleOnSubmitEditing}
-        />
-      ),
-    },
-    config: {
-      useNativeDriver: true,
-    },
-  };
-  const collapsible = useCollapsibleHeader(options);
+  React.useEffect(() => {
+    if (filter != schema) setShowBadge(true);
+    else setShowBadge(false);
+  }, [filter]);
+
   const onScroll = React.useCallback(
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      if (e.nativeEvent.contentOffset.y > 100) floatingRef.current?.expand();
+    (rawEvent: ScrollEvent, offsetX: number, offsetY: number) => {
+      if (offsetY > 100) floatingRef.current?.expand();
       else floatingRef.current?.collapse();
     },
     [floatingRef.current]
@@ -148,13 +128,6 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     [query, mangahost, setFilters, setDataProvider, setLoading]
   );
 
-  const applyWindowCorrection: ApplyWindowCorrectionEventHandler = React.useCallback(
-    (offsetX, offsetY, windowCorrection) => {
-      windowCorrection.windowShift = -collapsible.containerPaddingTop;
-    },
-    [collapsible.containerPaddingTop]
-  );
-
   const handleOnEndReached = React.useCallback(async () => {
     if (!loading && !reachedEnd) {
       setShowFooter(true);
@@ -178,13 +151,33 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     setShowFooter(false);
   }, [setShowFooter]);
 
+  useStatefulHeader(
+    <Search
+      additionalButtons={
+        <Badge show={showBadge}>
+          <IconButton
+            icon={<Icon bundle='MaterialCommunityIcons' name='filter-outline' />}
+            onPress={handleOnShowFilters}
+          />
+        </Badge>
+      }
+      ref={textInputRef}
+      title={source}
+      showSearchBar={true}
+      onChangeText={setQuery}
+      defaultText={initialQuery}
+      onExitSearch={handleOnExitSearch}
+      onSubmitEditing={handleOnSubmitEditing}
+    />,
+    [showBadge]
+  );
+
   if (ready)
     return (
       <>
         {loading ? (
           <View
             style={{
-              paddingTop: collapsible.containerPaddingTop + pixelToNumber(theme.spacing(3)),
               paddingBottom: pixelToNumber(theme.spacing(3)),
             }}>
             <MangaItemsLoading />
@@ -197,21 +190,18 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
               ref={floatingRef}
               onPress={handleOnScrollToTop}
             />
-            <RecyclerListViewScreen
+            <RecyclerListView
               dataProvider={dataProvider}
-              collapsible={collapsible}
-              applyWindowCorrection={applyWindowCorrection}
               rowRenderer={rowRenderer}
               onItemLayout={handleOnItemLayout}
               onEndReached={handleOnEndReached}
               ref={scrollRef}
               scrollViewProps={{
                 contentContainerStyle: {
-                  paddingTop: collapsible.containerPaddingTop + pixelToNumber(theme.spacing(3)),
                   paddingBottom: pixelToNumber(theme.spacing(3)),
                 },
               }}
-              listener={onScroll}
+              onScroll={onScroll}
               layoutProvider={layoutProvider}
               renderFooter={() => (
                 <>{showFooter || loading ? animate(<MangaItemsLoading />, withAnimatedMounting) : null}</>
