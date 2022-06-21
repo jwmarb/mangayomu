@@ -6,6 +6,8 @@ import styled, { css } from 'styled-components/native';
 export const BadgeContainer = styled(Animated.View)<{ color: AppColors }>`
   ${(props) => css`
     position: absolute;
+    align-items: center;
+    justify-content: center;
     top: 2px;
     right: 2px;
     background-color: ${() => {

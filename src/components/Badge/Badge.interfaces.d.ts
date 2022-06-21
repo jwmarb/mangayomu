@@ -4,5 +4,5 @@ import React from 'react';
 export interface BadgeProps {
   badge?: React.ReactNode | number;
   color?: AppColors;
-  alwaysActive?: boolean;
+  show?: boolean;
 }
