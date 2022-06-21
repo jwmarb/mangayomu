@@ -70,6 +70,7 @@ const Modal: React.FC<ModalProps> = (props) => {
     closeThreshold = CLOSE_THRESHOLD,
     backdrop: backdropEnabled = true,
   } = props;
+  const scrollRef = React.useRef<ScrollView>(null);
   const theme = useTheme();
   const backdrop = useSharedValue(0);
   const top = useSharedValue(height + MAX_PANEL_HEIGHT);
@@ -154,6 +155,7 @@ const Modal: React.FC<ModalProps> = (props) => {
   const handleOnClose = () => {
     onClose();
     setHasTouched(false);
+    scrollRef.current?.scrollTo({ y: 0, animated: true });
   };
 
   useDerivedValue(() => {
@@ -182,6 +184,7 @@ const Modal: React.FC<ModalProps> = (props) => {
         <Panel style={panelStyle}>
           <ModalContainer style={containerStyle}>
             <ScrollView
+              ref={scrollRef}
               onScroll={onScroll}
               scrollEnabled={scrollEnabled}
               contentContainerStyle={{
