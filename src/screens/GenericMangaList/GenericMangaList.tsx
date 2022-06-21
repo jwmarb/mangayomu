@@ -92,6 +92,7 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
     const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider((r1, r2) => r1 !== r2));
     const { layoutProvider, rowRenderer } = useMangaLayout();
     const [showFooter, setShowFooter] = React.useState<boolean>(true);
+    const [reachedEnd, setReachedEnd] = React.useState<boolean>(false);
     const { ready, Fallback } = useLazyLoading();
     const options: UseCollapsibleOptions = {
       navigationOptions: {
@@ -110,6 +111,26 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
       },
       [collapsible.containerPaddingTop]
     );
+
+    const handleOnEndReached = async () => {
+      if (!loading && !reachedEnd) {
+        setShowFooter(true);
+        try {
+          mangaSource.addPage();
+          const mangas = await mangaSource.search('', { Genres: { include: [genre], exclude: [] } });
+          if (
+            (dataProvider.getAllData() as Manga[])[dataProvider.getSize() - 1]?.title !==
+            mangas[mangas.length - 1].title
+          )
+            setDataProvider((prev) => prev.cloneWithRows([...prev.getAllData(), ...mangas]));
+          else setReachedEnd(true);
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setShowFooter(false);
+        }
+      }
+    };
 
     const handleOnItemLayout = () => {
       setShowFooter(false);
@@ -135,6 +156,7 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
         <RecyclerListViewScreen
           collapsible={collapsible}
           dataProvider={dataProvider}
+          onEndReached={handleOnEndReached}
           layoutProvider={layoutProvider}
           onItemLayout={handleOnItemLayout}
           rowRenderer={rowRenderer}
