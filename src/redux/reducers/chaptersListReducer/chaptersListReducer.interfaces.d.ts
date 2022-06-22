@@ -16,7 +16,6 @@ export interface ChaptersListReducerState {
   checkAll: boolean;
   mode: ChapterPressableMode;
   chapters: Record<string, ChapterState>;
-  validatedMangas: Record<string, null>;
   mangasInDownloading: Record<string, string[]>;
 }
 
@@ -27,7 +26,6 @@ export type ChaptersListReducerAction =
   | { type: 'INITIALIZE_CHAPTER_STATES'; chapters: ReadingChapterInfo[]; manga: Manga }
   | { type: 'SET_DOWNLOAD_STATUS_OF_CHAPTER'; chapter: ReadingChapterInfo; status: DownloadStatus }
   | { type: 'TOGGLE_CHECK_ALL'; checked: boolean }
-  | { type: 'ADD_VALIDATED_MANGA'; manga: Manga }
   | { type: 'UPDATE_CHAPTER_STATUS'; key: string; status?: DownloadStatus }
   | { type: 'SET_TOTAL_PROGRESS_OF_CHAPTER'; chapter: ReadingChapterInfo; progress: number }
   | { type: 'RESUME_DOWNLOAD_OF_SELECTED_CHAPTERS'; keys: string[] }

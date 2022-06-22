@@ -8,7 +8,6 @@ const INITIAL_STATE: ChaptersListReducerState = {
   checkAll: false,
   mode: 'normal',
   chapters: {},
-  validatedMangas: {},
   mangasInDownloading: {},
 };
 
@@ -168,14 +167,7 @@ export default function (
           {}
         ),
       };
-    case 'ADD_VALIDATED_MANGA':
-      return {
-        ...state,
-        validatedMangas: {
-          ...state.validatedMangas,
-          [action.manga.link]: null,
-        },
-      };
+
     case 'UPDATE_CHAPTER_STATUS':
       const chapterState = state.chapters[action.key];
       if (action.status) {

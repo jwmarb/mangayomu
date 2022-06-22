@@ -41,21 +41,14 @@ export const checkChapter = (val: boolean, ch: ReadingChapterInfo) => {
 export const initializeChapterStates = (chapters: ReadingChapterInfo[], manga: Manga) => {
   return async (dispatch: AppDispatch, getState: StateGetter) => {
     dispatch({ type: 'INITIALIZE_CHAPTER_STATES', chapters, manga });
-    if (getState().chaptersList.validatedMangas[manga.link] !== null && chapters.length > 0) {
-      console.log('Validating...');
-      try {
-        for (const x of chapters) {
-          try {
-            await getState().chaptersList.chapters[getKey(x)].downloadManager.validate();
-          } finally {
-            dispatch({ type: 'VALIDATE_CHAPTER', chapter: x });
-          }
+    if (chapters.length > 0)
+      for (const x of chapters) {
+        try {
+          await getState().chaptersList.chapters[getKey(x)].downloadManager.validate();
+        } finally {
+          dispatch({ type: 'VALIDATE_CHAPTER', chapter: x });
         }
-      } finally {
-        console.log(`Validated ${manga.link}`);
-        dispatch({ type: 'ADD_VALIDATED_MANGA', manga });
       }
-    }
   };
 };
 
@@ -89,6 +82,7 @@ export const downloadAllSelected = (selected: Record<string, ChapterState>, mang
                 dispatch({ type: 'UPDATE_CHAPTER_STATUS', key, status: DownloadStatus.RESUME_DOWNLOADING });
 
                 await getState().chaptersList.chapters[key].downloadManager.resume();
+                break;
             }
           }
         })
