@@ -6,7 +6,6 @@ const mapStateToProps = (state: AppState, props: DownloadItemProps) => {
   return {
     ...props,
     manga: state.mangas[props.mangaKey],
-    downloadingChapter: props.downloadingManga.cursorPosition != null ? state.chaptersList.chapters[props.downloadingManga.cursorPosition] : null
   };
 };
 

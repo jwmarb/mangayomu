@@ -1,27 +1,20 @@
 import React from 'react';
-import { Container, Flex, Icon, IconButton, Spacer, Typography } from '@components/core';
-import { useSelector } from 'react-redux';
-import { AppState } from '@redux/store';
+import { Flex, Spacer, Typography } from '@components/core';
+
 import connector, {
   ConnectedDownloadItemProps,
 } from '@screens/DownloadManager/components/DownloadItem/DownloadItem.redux';
 import Cover from '@components/Manga/Cover';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import ButtonBase from '@components/Button/ButtonBase';
 import { useRootNavigation } from '@navigators/Root';
 import { cursors } from '@redux/reducers/chaptersListReducer';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import ExpoStorage from '@utils/ExpoStorage';
 
 const DownloadItem: React.FC<ConnectedDownloadItemProps> = (props) => {
-  const { mangaKey, manga, downloadingManga, downloadingChapter } = props;
+  const { mangaKey, manga, downloadingManga } = props;
   const navigation = useRootNavigation();
   async function handleOnCoverPress() {
-    console.log(
-      `@downloadCursors -> SIZE = ${(
-        (encodeURI(JSON.stringify(cursors.get())).split(/%..|./).length - 1) /
-        1024
-      ).toFixed(2)} KB`
-    );
+    await ExpoStorage.displayOccupiedStorage();
     // const key = 'persist:@root';
     // const val = await AsyncStorage.getItem(key);
     // if (val != null)

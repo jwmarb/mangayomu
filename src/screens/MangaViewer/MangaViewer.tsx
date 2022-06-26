@@ -31,7 +31,7 @@ import { BackHandler, ImageBackground, Linking, Share } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from 'styled-components/native';
 import { ChapterPressableMode, ChapterRef } from '@components/Chapter/Chapter.interfaces';
-import { ChaptersIterator, GRADIENT_COLOR } from './MangaViewer.shared';
+import { GRADIENT_COLOR } from './MangaViewer.shared';
 import pLimit from 'p-limit';
 import * as FileSystem from 'expo-file-system';
 import { Constants } from '@theme/core';
@@ -155,7 +155,6 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   }, []);
 
   const [sorted, setSorted] = React.useState(() => (userMangaInfo?.chapters ?? []).sort(selectedSortOption));
-  const chaptersIterator = React.useRef(new ChaptersIterator(sorted, manga, source));
 
   React.useEffect(() => {
     if (selectionMode === 'selection') {
@@ -189,7 +188,6 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
 
   React.useEffect(() => {
     const sort = Array.from(userMangaInfo?.chapters ?? []).sort(selectedSortOption);
-    chaptersIterator.current.setChapters(sort);
     setSorted(sort);
     initializeChapterStates(sort, manga);
   }, [userMangaInfo?.chapters, sort, reverse]);

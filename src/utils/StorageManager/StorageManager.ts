@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@utils/ExpoStorage';
 import { StringComparator } from '@utils/Algorithms';
 import DownloadManager from '@utils/DownloadManager';
 import SortedList from '@utils/SortedList';

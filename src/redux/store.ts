@@ -5,9 +5,11 @@ import thunk from 'redux-thunk';
 import { useDispatch, useSelector } from 'react-redux';
 import { PersistConfig, persistReducer, persistStore } from 'redux-persist';
 import libraryMutator from '@redux/middleware/libraryMutator';
+import ExpoStorage from '@utils/ExpoStorage';
 const persistConfig: PersistConfig<AppState> = {
-  key: '@root',
-  storage: AsyncStorage,
+  key: 'root',
+  storage: ExpoStorage,
+  blacklist: ['chaptersList'],
 };
 
 const persistReducers = persistReducer(persistConfig, reducers);

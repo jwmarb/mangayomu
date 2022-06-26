@@ -2,10 +2,11 @@ import { AppDispatch, AppState } from '@redux/store';
 import { ReadingChapterInfo } from '../mangaReducer/mangaReducer.interfaces';
 import { ChapterState } from './chaptersListReducer.interfaces';
 import { Manga } from '@services/scraper/scraper.interfaces';
-import { DownloadStatus } from '@utils/DownloadManager';
+import DownloadManager, { DownloadStatus } from '@utils/DownloadManager';
 import { getKey } from './chaptersListReducer';
 import pLimit from 'p-limit';
 import StorageManager from '@utils/StorageManager';
+import MangaHost from '@services/scraper/scraper.abstract';
 
 type StateGetter = () => AppState;
 
@@ -17,7 +18,7 @@ export const cursors: StorageManager<
       shouldDownload: boolean;
     }
   >
-> = StorageManager.manage('@downloadCursors', {});
+> = StorageManager.manage('downloadCursors', {});
 
 export const exitSelectionMode = () => {
   return (dispatch: AppDispatch) => {
@@ -44,14 +45,11 @@ export const initializeChapterStates = (chapters: ReadingChapterInfo[], manga: M
       try {
         for (const x of chapters) {
           await getState().chaptersList.chapters[getKey(x)].downloadManager.validate();
-          // try {
-          // } finally {
-          //   dispatch({ type: 'VALIDATE_CHAPTER', chapter: x });
-          // }
         }
       } catch (e) {
         console.error(e);
       } finally {
+        console.log('Fully initialized validated states');
         dispatch({ type: 'INITIALIZE_FULLY_VALIDATED_STATUS', chapters, manga });
       }
   };

@@ -1,6 +1,8 @@
 import MangaHost from '@services/scraper/scraper.abstract';
 import DownloadManager, { DownloadStatus } from '@utils/DownloadManager';
+import ExpoStorage from '@utils/ExpoStorage';
 import { prev } from 'cheerio/lib/api/traversing';
+import { PersistConfig } from 'redux-persist';
 import { ReadingChapterInfo } from '../mangaReducer/mangaReducer.interfaces';
 import { ChaptersListReducerState, ChaptersListReducerAction, ChapterState } from './chaptersListReducer.interfaces';
 
@@ -9,7 +11,12 @@ const INITIAL_STATE: ChaptersListReducerState = {
   mode: 'normal',
   chapters: {},
   mangasInDownloading: {},
-  downloadStates: {},
+};
+
+export const chaptersListReducerConfig: PersistConfig<ChaptersListReducerState> = {
+  blacklist: ['chapters', 'mode', 'checkAll'],
+  key: 'chaptersList',
+  storage: ExpoStorage,
 };
 
 export function getKey(c: ReadingChapterInfo) {
@@ -91,27 +98,21 @@ export default function (
         }, state.chapters),
       };
     case 'INITIALIZE_CHAPTER_STATES': {
-      const objs: Record<string, ChapterState> = action.chapters.reduce((prev, curr) => {
+      const objs: Record<string, ChapterState> = {};
+      const source = MangaHost.getAvailableSources().get(action.manga.source)!;
+      for (const curr of action.chapters) {
         const key = getKey(curr);
-        const downloadManager = DownloadManager.of(
-          curr,
-          DownloadManager.generatePath(curr, action.manga),
-          MangaHost.getAvailableSources().get(action.manga.source)!
-        );
+        const downloadManager = DownloadManager.of(curr, DownloadManager.generatePath(curr, action.manga), source);
         const INITIAL_STATE: ChapterState = {
-          checked: state.chapters[key]?.checked ?? false,
+          checked: false,
           downloadManager,
           status: downloadManager.getStatus(),
           totalProgress: downloadManager.getProgress(),
-          hasCursor: downloadManager.hasCursor() ?? false,
+          hasCursor: downloadManager.hasCursor(),
           link: curr.link,
         };
-        return {
-          ...prev,
-          [key]: INITIAL_STATE,
-        };
-      }, {});
-
+        objs[key] = INITIAL_STATE;
+      }
       return {
         ...state,
         chapters: objs,
@@ -330,19 +331,7 @@ export default function (
           },
         },
       };
-    case 'DELETE_SAVED_DOWNLOAD_STATE': {
-      const newState = { ...state };
-      delete newState.downloadStates[action.key];
-      return newState;
-    }
-    case 'SET_SAVED_DOWNLOAD_STATE':
-      return {
-        ...state,
-        downloadStates: {
-          ...state.downloadStates,
-          [action.key]: action.downloadState,
-        },
-      };
+
     default:
       return state;
   }

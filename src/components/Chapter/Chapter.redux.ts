@@ -8,6 +8,8 @@ const mapStateToProps = (state: AppState, props: ChapterProps) => {
     ...props,
     selectionMode: state.chaptersList.mode,
     overrideChecked: state.chaptersList.checkAll,
+    mangasInDownloading: state.chaptersList.mangasInDownloading[props.manga.link],
+    allChapters: state.chaptersList.chapters,
   };
 };
 

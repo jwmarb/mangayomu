@@ -6,6 +6,7 @@ import * as Font from 'expo-font';
 import StorageManager from '@utils/StorageManager';
 import DownloadManager from '@utils/DownloadManager';
 import { AppState, View } from 'react-native';
+import ExpoStorage from '@utils/ExpoStorage';
 
 async function asyncLoader() {
   await Font.loadAsync({
@@ -24,6 +25,7 @@ const ResourceLoader: React.FC<ResourceLoaderProps> = (props) => {
     (async () => {
       try {
         await SplashScreen.preventAutoHideAsync();
+        await ExpoStorage.initialize();
         await asyncLoader();
         await StorageManager.initialize();
         await DownloadManager.initialize();

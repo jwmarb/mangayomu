@@ -1,5 +1,6 @@
 import { Button, Flex, Spacer, Typography } from '@components/core';
 import FloatingModal from '@components/FloatingModal';
+import useIsMounted from '@hooks/useIsMounted';
 import useMountedEffect from '@hooks/useMountedEffect';
 import { useIsFocused } from '@react-navigation/native';
 import { cursors } from '@redux/reducers/chaptersListReducer/chaptersListReducer.actions';
@@ -32,6 +33,7 @@ const SelectedChapters: React.FC<SelectedChaptersProps> = (props) => {
   const selectedLength = selectedValues.length;
   const pluralized = plural(selectedLength);
   const [status, setStatus] = React.useState<DownloadStatus>(DownloadStatus.IDLE);
+  const mounted = useIsMounted();
   React.useEffect(() => {
     (async () => {
       switch (status) {
@@ -43,13 +45,14 @@ const SelectedChapters: React.FC<SelectedChaptersProps> = (props) => {
       }
     })();
   }, [status]);
+
   const menuItems = [
     { text: `Actions (${selectedLength} of ${totalChapters})`, isTitle: true, withSeparator: true },
     {
       text: `Download selected`,
       icon: 'download',
       onPress: async () => {
-        const p = await cursors.get();
+        const p = cursors.get();
 
         if (p == null || (p && p[manga.title] == null)) {
           setStatus(DownloadStatus.START_DOWNLOADING);
@@ -64,27 +67,29 @@ const SelectedChapters: React.FC<SelectedChaptersProps> = (props) => {
       },
     },
   ];
-  return (
-    <FloatingModal visible={selectionMode === 'selection' && isFocused}>
-      <Flex alignItems='center' justifyContent='space-between'>
-        <Typography color='textSecondary'>
-          Selected <Typography bold>{selectedLength}</Typography> Chapter{pluralized}
-        </Typography>
-        <Spacer x={2} />
-        <Flex>
-          {selectedLength > 0 ? (
-            <HoldItem activateOn='tap' bottom items={menuItems}>
-              <Button title='Actions' />
-            </HoldItem>
-          ) : (
-            <Button title='Actions' disabled />
-          )}
-          <Spacer x={1} />
-          <Button title='Exit' color='secondary' onPress={exitSelectionMode} />
+  if (isFocused && mounted)
+    return (
+      <FloatingModal visible={selectionMode === 'selection'}>
+        <Flex alignItems='center' justifyContent='space-between'>
+          <Typography color='textSecondary'>
+            Selected <Typography bold>{selectedLength}</Typography> Chapter{pluralized}
+          </Typography>
+          <Spacer x={2} />
+          <Flex>
+            {selectedLength > 0 ? (
+              <HoldItem activateOn='tap' bottom items={menuItems}>
+                <Button title='Actions' />
+              </HoldItem>
+            ) : (
+              <Button title='Actions' disabled />
+            )}
+            <Spacer x={1} />
+            <Button title='Exit' color='secondary' onPress={exitSelectionMode} />
+          </Flex>
         </Flex>
-      </Flex>
-    </FloatingModal>
-  );
+      </FloatingModal>
+    );
+  return null;
 };
 
 export default connector(React.memo(SelectedChapters));

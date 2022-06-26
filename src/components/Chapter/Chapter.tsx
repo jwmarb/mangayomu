@@ -17,6 +17,8 @@ import { cursors } from '@redux/reducers/chaptersListReducer/chaptersListReducer
 import Spacer from '@components/Spacer';
 import StorageManager from '@utils/StorageManager';
 import DownloadManager from '@utils/DownloadManager';
+import { ChapterState } from '@redux/reducers/chaptersListReducer/chaptersListReducer.interfaces';
+import ExpoStorage from '@utils/ExpoStorage';
 
 const Chapter: React.FC<ChapterReduxProps> = (props) => {
   const {
@@ -32,28 +34,32 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
     downloadAllSelected,
     pauseAllSelected,
     cancelAllSelected,
+    mangasInDownloading,
+    allChapters,
   } = props;
 
   function handleOnCheck(e: boolean) {
     checkChapter(e, chapter);
   }
 
-  const {
-    checked,
-    downloadManager,
-    status: downloadStatus,
-    totalProgress,
-    hasCursor,
-  } = useChapterStateFromRedux(chapter);
+  const chapterState = useChapterStateFromRedux(chapter);
+  const { checked, downloadManager, status: downloadStatus, totalProgress, hasCursor } = chapterState;
   const setDownloadStatus = setDownloadStatusOfChapter(chapter);
   const setTotalProgress = setTotalProgressOfChapter(chapter);
+  const mangaCursorChapters = React.useMemo(
+    () =>
+      mangasInDownloading
+        ? mangasInDownloading.chapters.reduce((prev, key) => ({ ...prev, [key]: allChapters[key] }), {})
+        : null,
+    [hasCursor]
+  );
   // const [checked, setChecked] = React.useState<boolean>(downloadManager.getChecked());
   async function handleOnPress() {
     switch (selectionMode) {
       case 'normal':
         // const availableSpace = await FileSystem.getFreeDiskStorageAsync();
         // const totalSpace = await FileSystem.getTotalDiskCapacityAsync();
-        console.log(downloadManager.getStatus(), downloadManager.getProgress());
+        console.log(await ExpoStorage.getAllKeys());
         break;
       case 'selection':
         checkChapter(!checked, chapter);
@@ -81,14 +87,13 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
   }
 
   const resumeDownload = React.useCallback(async () => {
-    const obj = cursors.get();
-    if (hasCursor) await downloadAllSelected(obj[manga.link].chapters, manga);
+    if (hasCursor && mangaCursorChapters) await downloadAllSelected(mangaCursorChapters, manga);
     else {
       console.log(`Resumed ${chapter.link}`);
       setDownloadStatus(DownloadStatus.RESUME_DOWNLOADING);
       await downloadManager.resume();
     }
-  }, [downloadManager, setDownloadStatus, hasCursor]);
+  }, [downloadManager, setDownloadStatus, hasCursor, mangaCursorChapters]);
 
   const pauseDownload = React.useCallback(async () => {
     if (hasCursor) await pauseAllSelected(manga);

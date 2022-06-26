@@ -11,13 +11,13 @@ import { ChapterRef } from '@components/Chapter/Chapter.interfaces';
 import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 
 export default class DownloadManager {
-  private static fetchedPages: StorageManager<Record<string, string[]>> = StorageManager.manage('@downloaded', {});
+  private static fetchedPages: StorageManager<Record<string, string[]>> = StorageManager.manage('downloaded', {});
   private static validatedStatuses: StorageManager<Record<string, DownloadStatus>> = StorageManager.manage(
-    '@validatedStatuses',
+    'validatedStatuses',
     {}
   );
   public static downloadStates: StorageManager<Record<string, SavedChapterDownloadState>> = StorageManager.manage(
-    '@downloadStates',
+    'downloadStates',
     {},
     1
   );
@@ -120,9 +120,10 @@ export default class DownloadManager {
   }
   private setValidatedStatus(status: DownloadStatus) {
     this.validatedStatus = status;
-    // const validated = DownloadManager.validatedStatuses.get();
-    // validated[this.chapter.link] = status;
-    // DownloadManager.validatedStatuses.set(validated);
+    DownloadManager.validatedStatuses.mutate((prev) => {
+      prev[this.chapter.link] = status;
+      return prev;
+    });
   }
   public setStatus(status: DownloadStatus) {
     this.status = status;
@@ -377,7 +378,8 @@ export default class DownloadManager {
         this.getStatus() === DownloadStatus.PAUSED
       )
         return false;
-      return info.exists && info.isDirectory && (await this.verifyPages());
+      return info.exists && info.isDirectory;
+      // && (await this.verifyPages());
     } catch (e) {
       this.setStatus(DownloadStatus.ERROR);
       console.error(e);

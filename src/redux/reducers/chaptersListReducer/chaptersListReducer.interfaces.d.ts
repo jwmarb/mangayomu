@@ -17,7 +17,6 @@ export interface ChaptersListReducerState {
   checkAll: boolean;
   mode: ChapterPressableMode;
   chapters: Record<string, ChapterState>;
-  downloadStates: Record<string, SavedChapterDownloadState>;
   mangasInDownloading: Record<string, DownloadingManga>;
 }
 
@@ -46,6 +45,4 @@ export type ChaptersListReducerAction =
   | { type: 'CURSOR_FINISH_DOWNLOADING'; manga: Manga }
   | { type: 'CURSOR_DOWNLOADING_ITEM'; manga: Manga; key: string }
   | { type: 'CHAPTER_DOWNLOADED'; manga: Manga }
-  | { type: 'INITIALIZE_FULLY_VALIDATED_STATUS'; chapters: ReadingChapterInfo[]; manga: Manga }
-  | { type: 'SET_SAVED_DOWNLOAD_STATE'; downloadState: SavedChapterDownloadState; key: string }
-  | { type: 'DELETE_SAVED_DOWNLOAD_STATE'; key: string };
+  | { type: 'INITIALIZE_FULLY_VALIDATED_STATUS'; chapters: ReadingChapterInfo[]; manga: Manga };
