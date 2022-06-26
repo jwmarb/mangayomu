@@ -50,7 +50,8 @@ const SelectedChapters: React.FC<SelectedChaptersProps> = (props) => {
       icon: 'download',
       onPress: async () => {
         const p = await cursors.get();
-        if (p && p[manga.title] == null) {
+
+        if (p == null || (p && p[manga.title] == null)) {
           setStatus(DownloadStatus.START_DOWNLOADING);
         } else console.log(`Already existing cursor. Cancel it first.`);
       },

@@ -3,13 +3,16 @@ import { IconButton, Icon } from '@components/core';
 import { Header } from '@components/Screen';
 import { RootStackParamList } from '@navigators/Root/Root.interfaces';
 import { StackScreenProps } from '@react-navigation/stack';
+import { renderItem } from '@screens/DownloadManager/DownloadManager.flatlist';
+import connector, { DownloadManagerProps } from '@screens/DownloadManager/DownloadManager.redux';
 import React from 'react';
 import { Animated } from 'react-native';
 import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-collapsible';
 import DownloadManagerHeader from './components/DownloadManagerHeader';
 
-const DownloadManager: React.FC<StackScreenProps<RootStackParamList, 'DownloadManager'>> = (props) => {
-  const { navigation } = props;
+const DownloadManager: React.FC<DownloadManagerProps> = (props) => {
+  const { navigation, cursors, extraState } = props;
+  const cursorEntries = React.useMemo(() => Object.entries(cursors), [cursors]);
   function handleOnPress() {
     navigation.navigate('Settings');
   }
@@ -20,9 +23,7 @@ const DownloadManager: React.FC<StackScreenProps<RootStackParamList, 'DownloadMa
       headerRight: () => (
         <>
           <IconButton icon={<Icon bundle='Feather' name='settings' />} onPress={handleOnPress} />
-          <Badge>
-            <IconButton icon={<Icon bundle='Feather' name='filter' />} onPress={handleOnPress} />
-          </Badge>
+          <IconButton icon={<Icon bundle='Feather' name='more-vertical' />} onPress={handleOnPress} />
         </>
       ),
     },
@@ -34,8 +35,9 @@ const DownloadManager: React.FC<StackScreenProps<RootStackParamList, 'DownloadMa
 
   return (
     <Animated.FlatList
-      data={[]}
-      renderItem={null}
+      extraData={extraState}
+      data={cursorEntries}
+      renderItem={renderItem}
       onScroll={onScroll}
       contentContainerStyle={{ paddingTop: containerPaddingTop }}
       scrollIndicatorInsets={{ top: scrollIndicatorInsetTop }}
@@ -44,4 +46,4 @@ const DownloadManager: React.FC<StackScreenProps<RootStackParamList, 'DownloadMa
   );
 };
 
-export default DownloadManager;
+export default connector(DownloadManager);

@@ -37,6 +37,9 @@ const ResourceLoader: React.FC<ResourceLoaderProps> = (props) => {
             case 'background':
               StorageManager.cleanup();
               break;
+            case 'active':
+              StorageManager.initialize();
+              break;
           }
         });
         return () => {

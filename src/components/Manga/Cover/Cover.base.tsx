@@ -25,18 +25,48 @@ export const MangaCoverBaseContainer = styled.View<{ imageWidth: string; imageHe
   `}
 `;
 
-export const FixedMangaCoverBase = styled.Image.attrs({ cache: 'force-cache' })`
+export const FixedMangaCoverBase = styled.Image.attrs({ cache: 'force-cache' })<{
+  fixedSize: MangaCoverProps['fixedSize'];
+}>`
   ${(props) => css`
     border-radius: ${props.theme.borderRadius}px;
-    width: ${props.theme.spacing(18)};
-    height: ${props.theme.spacing(360 / 13)};
+    ${() => {
+      switch (props.fixedSize) {
+        case true:
+        case 'medium':
+          return css`
+            width: ${props.theme.spacing(18)};
+            height: ${props.theme.spacing(360 / 13)};
+          `;
+        case 'small':
+          return css`
+            width: ${props.theme.spacing(12)};
+            height: ${props.theme.spacing(240 / 13)};
+          `;
+      }
+    }}
   `}
 `;
 
-export const FixedMangaCoverBaseContainer = styled.View`
+export const FixedMangaCoverBaseContainer = styled.View<{
+  fixedSize: MangaCoverProps['fixedSize'];
+}>`
   ${(props) => css`
     border-radius: ${props.theme.borderRadius}px;
-    width: ${props.theme.spacing(18)};
-    height: ${props.theme.spacing(360 / 13)};
+    ${() => {
+      switch (props.fixedSize) {
+        case true:
+        case 'medium':
+          return css`
+            width: ${props.theme.spacing(18)};
+            height: ${props.theme.spacing(360 / 13)};
+          `;
+        case 'small':
+          return css`
+            width: ${props.theme.spacing(12)};
+            height: ${props.theme.spacing(240 / 13)};
+          `;
+      }
+    }}
   `}
 `;

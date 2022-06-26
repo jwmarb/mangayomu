@@ -20,8 +20,8 @@ const Cover: React.FC<ProcessedMangaCoverProps> = (props) => {
 
   if (fixedSize)
     return (
-      <FixedMangaCoverBaseContainer>
-        <FixedMangaCoverBase source={{ uri }} />
+      <FixedMangaCoverBaseContainer fixedSize={fixedSize}>
+        <FixedMangaCoverBase source={{ uri }} fixedSize={fixedSize} />
       </FixedMangaCoverBaseContainer>
     );
 

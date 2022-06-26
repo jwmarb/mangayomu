@@ -1,5 +1,5 @@
 export interface MangaCoverProps {
   uri: string;
-  fixedSize?: boolean;
+  fixedSize?: boolean | 'small' | 'medium';
   customSize?: number;
 }

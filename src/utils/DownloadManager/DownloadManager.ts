@@ -6,17 +6,21 @@ import {
   SavedChapterDownloadState,
 } from '@utils/DownloadManager/DownloadManager.interfaces';
 import * as FileSystem from 'expo-file-system';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import StorageManager from '../StorageManager';
 import { ChapterRef } from '@components/Chapter/Chapter.interfaces';
 import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
-import { DownloadableObject } from '.';
-import React from 'react';
 
 export default class DownloadManager {
-  private static fetchedPages: StorageManager<Record<string, string[]>> = StorageManager.manage('@downloaded');
-  private static downloadStates: StorageManager<Record<string, SavedChapterDownloadState>> =
-    StorageManager.manage('@downloadStates');
+  private static fetchedPages: StorageManager<Record<string, string[]>> = StorageManager.manage('@downloaded', {});
+  private static validatedStatuses: StorageManager<Record<string, DownloadStatus>> = StorageManager.manage(
+    '@validatedStatuses',
+    {}
+  );
+  public static downloadStates: StorageManager<Record<string, SavedChapterDownloadState>> = StorageManager.manage(
+    '@downloadStates',
+    {},
+    1
+  );
   private static downloads: RecordDownload = {};
   private status: DownloadStatus;
   private downloadResumablePages: { downloadResumable: FileSystem.DownloadResumable; status: DownloadStatus }[];
@@ -114,12 +118,18 @@ export default class DownloadManager {
   public getValidatedStatus(): DownloadStatus {
     return this.validatedStatus;
   }
+  private setValidatedStatus(status: DownloadStatus) {
+    this.validatedStatus = status;
+    // const validated = DownloadManager.validatedStatuses.get();
+    // validated[this.chapter.link] = status;
+    // DownloadManager.validatedStatuses.set(validated);
+  }
   public setStatus(status: DownloadStatus) {
     this.status = status;
     switch (status) {
       case DownloadStatus.DOWNLOADED:
       case DownloadStatus.IDLE:
-        this.validatedStatus = status;
+        this.setValidatedStatus(status);
         break;
     }
   }
@@ -159,15 +169,15 @@ export default class DownloadManager {
     if (this.progress[i] >= 1) this.downloadResumablePages[i].status = DownloadStatus.DOWNLOADED;
     if (this.getProgress() >= 1) {
       this.setStatus(DownloadStatus.DOWNLOADED);
-      await this.removeFromStorage();
-    } else await this.addToStorage();
+      this.removeFromStorage();
+    } else this.addToStorage();
   }
 
   /**
    * Check if there are any missing pages
    */
   public async verifyPages(): Promise<boolean> {
-    const state = await DownloadManager.fetchedPages.get();
+    const state = DownloadManager.fetchedPages.get();
     if (state == null) return false;
     const pages = state[this.chapter.link];
     if (pages == null) return false;
@@ -197,7 +207,7 @@ export default class DownloadManager {
       case DownloadStatus.IDLE:
       case DownloadStatus.VALIDATING:
         this.setStatus(DownloadStatus.QUEUED);
-        await this.addToStorage();
+        this.addToStorage();
         break;
     }
   }
@@ -206,7 +216,7 @@ export default class DownloadManager {
     switch (this.getStatus()) {
       case DownloadStatus.QUEUED:
         this.setStatus(this.getValidatedStatus());
-        await this.addToStorage();
+        this.addToStorage();
         break;
     }
   }
@@ -216,9 +226,15 @@ export default class DownloadManager {
    */
   public async validate(): Promise<void> {
     if (this.getValidatedStatus() === DownloadStatus.VALIDATING) {
-      const downloaded = await this.isDownloaded();
-      if (downloaded) this.validatedStatus = DownloadStatus.DOWNLOADED;
-      else this.validatedStatus = DownloadStatus.IDLE;
+      // const downloaded = await this.isDownloaded();
+      // if (downloaded) this.setValidatedStatus(DownloadStatus.DOWNLOADED);
+      // else this.setValidatedStatus(DownloadStatus.IDLE);
+      const validated = DownloadManager.validatedStatuses.get();
+      if (validated[this.chapter.link] == null) {
+        const downloaded = await this.isDownloaded();
+        if (downloaded) this.setValidatedStatus(DownloadStatus.DOWNLOADED);
+        else this.setValidatedStatus(DownloadStatus.IDLE);
+      } else this.validatedStatus = validated[this.chapter.link];
     }
   }
 
@@ -231,7 +247,7 @@ export default class DownloadManager {
     } catch (e) {
       await FileSystem.makeDirectoryAsync(this.dir, { intermediates: true });
     } finally {
-      const savedState = (await DownloadManager.fetchedPages.get()) ?? {};
+      const savedState = DownloadManager.fetchedPages.get();
       const p =
         this.pages.length > 0
           ? this.pages
@@ -251,7 +267,7 @@ export default class DownloadManager {
       this.progress = existingFiles.map((x, i) => (x.exists ? 1 : 0));
       DownloadManager.fetchedPages.set({ ...savedState, [this.chapter.link]: this.pages });
       this.setStatus(DownloadStatus.START_DOWNLOADING);
-      await this.addToStorage();
+      this.addToStorage();
       for (let i = 0; i < this.downloadResumablePages.length; i++) {
         const { downloadResumable, status } = this.downloadResumablePages[i];
 
@@ -292,7 +308,7 @@ export default class DownloadManager {
           console.error(e);
         }
     }
-    await this.addToStorage();
+    this.addToStorage();
   }
 
   public async resume() {
@@ -327,6 +343,7 @@ export default class DownloadManager {
               this.setStatus(DownloadStatus.ERROR);
               console.error(e);
             }
+            break;
         }
     }
   }
@@ -347,7 +364,7 @@ export default class DownloadManager {
       console.error(e);
     } finally {
       this.downloadResumablePages = [];
-      await this.removeFromStorage();
+      this.removeFromStorage();
     }
   }
 
@@ -368,34 +385,37 @@ export default class DownloadManager {
     return false;
   }
 
-  private async removeFromStorage() {
-    const p = (await DownloadManager.downloadStates.get()) ?? {};
-    delete p[this.chapter.link];
-    DownloadManager.downloadStates.set(p);
+  private removeFromStorage() {
+    DownloadManager.downloadStates.mutate((p) => {
+      delete p[this.chapter.link];
+      return { ...p };
+    });
   }
 
-  private async addToStorage() {
-    const p = (await DownloadManager.downloadStates.get()) ?? {};
-    p[this.chapter.link] = {
-      chapter: this.chapter,
-      dir: this.dir,
-      pages: this.pages,
-      progress: this.progress,
-      sourceName: this.source.getName(),
-      status: this.isDownloading() ? DownloadStatus.PAUSED : this.getStatus(),
-      state: this.downloadResumablePages.map(({ status, downloadResumable }) => ({
-        status: status === DownloadStatus.DOWNLOADING ? DownloadStatus.PAUSED : status,
-        downloadState: downloadResumable.savable(),
-      })),
-      hasCursor: this.cursor,
-    };
-    DownloadManager.downloadStates.set(p);
+  private addToStorage() {
+    DownloadManager.downloadStates.mutate((p) => {
+      p[this.chapter.link] = {
+        chapter: this.chapter,
+        dir: this.dir,
+        pages: this.pages,
+        progress: this.progress,
+        sourceName: this.source.getName(),
+        status: this.isDownloading() ? DownloadStatus.PAUSED : this.getStatus(),
+        state: this.downloadResumablePages.map(({ status, downloadResumable }) => ({
+          status: status === DownloadStatus.DOWNLOADING ? DownloadStatus.PAUSED : status,
+          downloadState: downloadResumable.savable(),
+        })),
+        hasCursor: this.cursor,
+      };
+      return { ...p };
+    });
   }
 
   public static async initialize() {
     // console.log('Initializing Download Manager');
     try {
-      const existingState = (await this.downloadStates.get()) ?? {};
+      const existingState = this.downloadStates.get();
+
       for (const [key, value] of Object.entries(existingState)) {
         new DownloadManager(undefined, undefined, undefined, value);
       }

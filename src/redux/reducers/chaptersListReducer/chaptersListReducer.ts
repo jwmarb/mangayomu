@@ -9,10 +9,11 @@ const INITIAL_STATE: ChaptersListReducerState = {
   mode: 'normal',
   chapters: {},
   mangasInDownloading: {},
+  downloadStates: {},
 };
 
 export function getKey(c: ReadingChapterInfo) {
-  return c.name ?? `Chapter ${c.index + 1}`;
+  return c.link;
 }
 
 export default function (
@@ -71,6 +72,24 @@ export default function (
         },
       };
     }
+    case 'INITIALIZE_FULLY_VALIDATED_STATUS':
+      return {
+        ...state,
+        chapters: action.chapters.reduce((prev, curr) => {
+          const key = getKey(curr);
+          if (prev[key].downloadManager.getStatus() === DownloadStatus.VALIDATING) {
+            prev[key].downloadManager.setStatus(prev[key].downloadManager.getValidatedStatus());
+            return {
+              ...prev,
+              [key]: {
+                ...prev[key],
+                status: prev[key].downloadManager.getValidatedStatus(),
+              } as ChapterState,
+            };
+          }
+          return prev;
+        }, state.chapters),
+      };
     case 'INITIALIZE_CHAPTER_STATES': {
       const objs: Record<string, ChapterState> = action.chapters.reduce((prev, curr) => {
         const key = getKey(curr);
@@ -85,6 +104,7 @@ export default function (
           status: downloadManager.getStatus(),
           totalProgress: downloadManager.getProgress(),
           hasCursor: downloadManager.hasCursor() ?? false,
+          link: curr.link,
         };
         return {
           ...prev,
@@ -175,6 +195,12 @@ export default function (
         chapterState.downloadManager.updateCursor();
         return {
           ...state,
+          mangasInDownloading: {
+            ...state.mangasInDownloading,
+            [action.manga.link]: {
+              ...state.mangasInDownloading[action.manga.link],
+            },
+          },
           chapters: {
             ...state.chapters,
             [action.key]: {
@@ -215,7 +241,7 @@ export default function (
       };
     }
     case 'CURSOR_FINISH_DOWNLOADING':
-      const newState = { ...state };
+      const newState: ChaptersListReducerState = { ...state };
       delete newState.mangasInDownloading[action.manga.link];
       return newState;
     case 'QUEUE_ALL_SELECTED': {
@@ -223,7 +249,11 @@ export default function (
         ...state,
         mangasInDownloading: {
           ...state.mangasInDownloading,
-          [action.manga.link]: action.keys,
+          [action.manga.link]: {
+            chapters: state.mangasInDownloading[action.manga.link]?.chapters ?? action.keys,
+            numDownloadCompleted: state.mangasInDownloading[action.manga.link]?.numDownloadCompleted ?? 0,
+            numToDownload: state.mangasInDownloading[action.manga.link]?.numToDownload ?? action.keys.length,
+          },
         },
         chapters: action.keys.reduce((prev, curr) => {
           switch (state.chapters[curr].status) {
@@ -278,7 +308,41 @@ export default function (
         ),
       };
     }
-
+    case 'CURSOR_DOWNLOADING_ITEM':
+      return {
+        ...state,
+        mangasInDownloading: {
+          ...state.mangasInDownloading,
+          [action.manga.link]: {
+            ...state.mangasInDownloading[action.manga.link],
+            cursorPosition: action.key,
+          },
+        },
+      };
+    case 'CHAPTER_DOWNLOADED':
+      return {
+        ...state,
+        mangasInDownloading: {
+          ...state.mangasInDownloading,
+          [action.manga.link]: {
+            ...state.mangasInDownloading[action.manga.link],
+            numDownloadCompleted: state.mangasInDownloading[action.manga.link].numDownloadCompleted + 1,
+          },
+        },
+      };
+    case 'DELETE_SAVED_DOWNLOAD_STATE': {
+      const newState = { ...state };
+      delete newState.downloadStates[action.key];
+      return newState;
+    }
+    case 'SET_SAVED_DOWNLOAD_STATE':
+      return {
+        ...state,
+        downloadStates: {
+          ...state.downloadStates,
+          [action.key]: action.downloadState,
+        },
+      };
     default:
       return state;
   }

@@ -15,6 +15,8 @@ import ChapterDownloadStatus from './components/ChapterDownloadStatus';
 import { useChapterStateFromRedux } from './Chapter.helpers';
 import { cursors } from '@redux/reducers/chaptersListReducer/chaptersListReducer.actions';
 import Spacer from '@components/Spacer';
+import StorageManager from '@utils/StorageManager';
+import DownloadManager from '@utils/DownloadManager';
 
 const Chapter: React.FC<ChapterReduxProps> = (props) => {
   const {
@@ -51,7 +53,7 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
       case 'normal':
         // const availableSpace = await FileSystem.getFreeDiskStorageAsync();
         // const totalSpace = await FileSystem.getTotalDiskCapacityAsync();
-        console.log(downloadManager.getValidatedStatus());
+        console.log(downloadManager.getStatus(), downloadManager.getProgress());
         break;
       case 'selection':
         checkChapter(!checked, chapter);
@@ -79,8 +81,8 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
   }
 
   const resumeDownload = React.useCallback(async () => {
-    const obj = (await cursors.get()) ?? {};
-    if (hasCursor) await downloadAllSelected(obj[manga.title].chapters, manga);
+    const obj = cursors.get();
+    if (hasCursor) await downloadAllSelected(obj[manga.link].chapters, manga);
     else {
       console.log(`Resumed ${chapter.link}`);
       setDownloadStatus(DownloadStatus.RESUME_DOWNLOADING);
@@ -121,6 +123,7 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
       case DownloadStatus.START_DOWNLOADING:
         listener.current = setInterval(() => setTotalProgress(downloadManager.getProgress()), 500);
         return () => {
+          setTotalProgress(downloadManager.getProgress());
           clearInterval(listener.current);
         };
     }
