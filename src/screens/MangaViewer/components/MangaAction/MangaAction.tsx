@@ -10,6 +10,7 @@ import { ActivityIndicator } from 'react-native';
 const MangaAction: React.FC<MangaActionProps> = (props) => {
   const { manga, userMangaInfo } = props;
   const dispatch = useAppDispatch();
+  const chaptersLength = userMangaInfo ? Object.keys(userMangaInfo.chapters).length : 0;
   const handleOnAddToLibrary = () => {
     if (userMangaInfo) {
       dispatch({ type: 'TOGGLE_LIBRARY', payload: manga });
@@ -23,14 +24,14 @@ const MangaAction: React.FC<MangaActionProps> = (props) => {
           <Button
             title={
               userMangaInfo
-                ? userMangaInfo.currentlyReadingChapter?.name ?? userMangaInfo.chapters.length > 0
+                ? userMangaInfo.currentlyReadingChapter?.name ?? chaptersLength > 0
                   ? 'Read'
                   : 'Unavailable'
                 : ''
             }
             icon={
               userMangaInfo ? (
-                userMangaInfo.chapters.length > 0 ? (
+                chaptersLength > 0 ? (
                   <Icon bundle='Feather' name='book' />
                 ) : (
                   <Icon bundle='Feather' name='lock' />
@@ -41,7 +42,7 @@ const MangaAction: React.FC<MangaActionProps> = (props) => {
             }
             variant='contained'
             expand
-            disabled={!userMangaInfo || (userMangaInfo && userMangaInfo.chapters.length === 0)}
+            disabled={!userMangaInfo || (userMangaInfo && chaptersLength === 0)}
           />
           <Spacer x={1} />
           <Button

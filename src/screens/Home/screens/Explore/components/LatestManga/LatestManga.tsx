@@ -7,6 +7,8 @@ import { keyExtractor, renderItem } from '@screens/Home/screens/Explore/componen
 import useMangaSource from '@hooks/useMangaSource';
 import React from 'react';
 import { RefreshableComponent } from '@screens/Home/screens/Explore/Explore.interfaces';
+import { Manga } from '@services/scraper/scraper.interfaces';
+import { AxiosError } from 'axios';
 
 const HotManga: React.ForwardRefRenderFunction<RefreshableComponent, {}> = (props, ref) => {
   const {} = props;
@@ -16,7 +18,7 @@ const HotManga: React.ForwardRefRenderFunction<RefreshableComponent, {}> = (prop
     loading,
     error,
     refresh,
-  } = useAPICall(() => source.listRecentlyUpdatedManga());
+  } = useAPICall<Manga[], AxiosError>(() => source.listRecentlyUpdatedManga());
 
   React.useImperativeHandle(ref, () => ({
     refresh,
@@ -49,7 +51,9 @@ const HotManga: React.ForwardRefRenderFunction<RefreshableComponent, {}> = (prop
           <Placeholder.MangaComponent />
         </Category.Header>
       ) : error ? (
-        <Typography>{error}</Typography>
+        <Typography align='center' color='textSecondary'>
+          {error.message}
+        </Typography>
       ) : (
         <Category.FlatList
           showsHorizontalScrollIndicator={false}

@@ -5,7 +5,6 @@ import DownloadManager, { DownloadStatus, SavedChapterDownloadState } from '@uti
 import { ReadingChapterInfo } from '../mangaReducer/mangaReducer.interfaces';
 
 export type ChapterState = {
-  downloadManager: DownloadManager;
   status: DownloadStatus;
   checked: boolean;
   totalProgress: number;
@@ -21,8 +20,8 @@ export interface ChaptersListReducerState {
 }
 
 export interface DownloadingManga {
-  chapters: string[];
-  cursorPosition?: string;
+  chapters: Record<string, ChapterState>;
+  cursorPosition?: ChapterState;
   numToDownload: number;
   numDownloadCompleted: number;
 }
@@ -32,15 +31,15 @@ export type ChaptersListReducerAction =
   | { type: 'ENTER_SELECTION_MODE' }
   | { type: 'SELECT_CHAPTER'; checked: boolean; chapter: ReadingChapterInfo }
   | { type: 'INITIALIZE_CHAPTER_STATES'; chapters: ReadingChapterInfo[]; manga: Manga }
-  | { type: 'SET_DOWNLOAD_STATUS_OF_CHAPTER'; chapter: ReadingChapterInfo; status: DownloadStatus }
+  | { type: 'SET_DOWNLOAD_STATUS_OF_CHAPTER'; chapter: ReadingChapterInfo; status: DownloadStatus; manga: Manga }
   | { type: 'TOGGLE_CHECK_ALL'; checked: boolean }
-  | { type: 'UPDATE_CHAPTER_STATUS'; key: string; status?: DownloadStatus; manga: Manga }
+  | { type: 'UPDATE_CHAPTER_STATUS'; key: string; status?: DownloadStatus; manga: Manga; chapter: ReadingChapterInfo }
   | { type: 'SET_TOTAL_PROGRESS_OF_CHAPTER'; chapter: ReadingChapterInfo; progress: number }
-  | { type: 'RESUME_DOWNLOAD_OF_SELECTED_CHAPTERS'; keys: string[] }
-  | { type: 'PAUSE_DOWNLOAD_OF_SELECTED_CHAPTERS'; keys: string[] }
-  | { type: 'CANCEL_DOWNLOAD_OF_SELECTED_CHAPTERS'; keys: string[]; manga: Manga }
-  | { type: 'QUEUE_ALL_SELECTED'; keys: string[]; manga: Manga }
-  | { type: 'VALIDATE_CHAPTER'; chapter: ReadingChapterInfo }
+  | { type: 'RESUME_DOWNLOAD_OF_SELECTED_CHAPTERS'; chapters: ReadingChapterInfo[]; manga: Manga }
+  | { type: 'PAUSE_DOWNLOAD_OF_SELECTED_CHAPTERS'; chapters: ReadingChapterInfo[]; manga: Manga }
+  | { type: 'CANCEL_DOWNLOAD_OF_SELECTED_CHAPTERS'; chapters: ReadingChapterInfo[]; manga: Manga }
+  | { type: 'QUEUE_ALL_SELECTED'; chapters: ReadingChapterInfo[]; manga: Manga }
+  | { type: 'VALIDATE_CHAPTER'; chapter: ReadingChapterInfo; manga: Manga }
   | { type: 'SELECT_CHAPTERS'; chapters: ReadingChapterInfo[] }
   | { type: 'CURSOR_FINISH_DOWNLOADING'; manga: Manga }
   | { type: 'CURSOR_DOWNLOADING_ITEM'; manga: Manga; key: string }

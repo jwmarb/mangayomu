@@ -3,20 +3,22 @@ import {
   MangaReducerAction,
   MangaReducerState,
   ReadingChapterInfo,
+  ReadingChapterInfoRecord,
 } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import { MangaChapter } from '@services/scraper/scraper.interfaces';
 
 const INITIAL_STATE: MangaReducerState = {};
 
-function updateChapters(payload: MangaChapter[], state: ReadingChapterInfo[]): ReadingChapterInfo[] {
+function updateChapters(payload: MangaChapter[], state: ReadingChapterInfoRecord): ReadingChapterInfoRecord {
   if (state) {
+    const keys = Object.keys(state);
     /**
      * If the user has already seen this manga but the server returns more chapters, this must mean there are new chapters
      */
-    if (state.length < payload.length) {
-      const oldState = [...state];
-      for (let i = state.length; i < payload.length; i++) {
-        oldState.push({ ...payload[i], indexPage: 0, scrollPosition: 0, pages: null, dateRead: null });
+    if (keys.length < payload.length) {
+      const oldState = { ...state };
+      for (let i = keys.length; i < payload.length; i++) {
+        oldState[payload[i].link] = { ...payload[i], indexPage: 0, scrollPosition: 0, pages: null, dateRead: null };
       }
       return oldState;
     }
@@ -24,7 +26,19 @@ function updateChapters(payload: MangaChapter[], state: ReadingChapterInfo[]): R
     return state;
   }
 
-  return payload.map((chapter) => ({ ...chapter, indexPage: 0, scrollPosition: 0, pages: null, dateRead: null }));
+  return payload.reduce(
+    (prev, chapter) => ({
+      ...prev,
+      [chapter.link]: {
+        ...chapter,
+        indexPage: 0,
+        scrollPosition: 0,
+        pages: null,
+        dateRead: null,
+      },
+    }),
+    {}
+  );
 }
 
 const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerAction): MangaReducerState => {

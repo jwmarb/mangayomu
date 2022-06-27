@@ -1,6 +1,6 @@
 import { Manga, MangaChapter, MangaMeta, MangaPage } from '@services/scraper/scraper.interfaces';
 
-export interface ReadingChapterInfo extends MangaChapter {
+export type ReadingChapterInfo = MangaChapter & {
   /**
    * The scroll position of the reader
    */
@@ -20,13 +20,15 @@ export interface ReadingChapterInfo extends MangaChapter {
    * The time the chapter was last read
    */
   dateRead: string | null;
-}
+};
+
+export type ReadingChapterInfoRecord = Record<string, ReadingChapterInfo>;
 
 export interface ReadingMangaInfo extends MangaMeta, Manga {
   /**
    * The chapters of the manga which include user data with the chapter
    */
-  chapters: ReadingChapterInfo[];
+  chapters: ReadingChapterInfoRecord;
 
   /**
    * Determines whether or not the user has the manga added in their library

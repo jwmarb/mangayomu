@@ -154,7 +154,9 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     };
   }, []);
 
-  const [sorted, setSorted] = React.useState(() => (userMangaInfo?.chapters ?? []).sort(selectedSortOption));
+  const [sorted, setSorted] = React.useState(() =>
+    Object.values(userMangaInfo?.chapters ?? {}).sort(selectedSortOption)
+  );
 
   React.useEffect(() => {
     if (selectionMode === 'selection') {
@@ -187,7 +189,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   }, [sorted]);
 
   React.useEffect(() => {
-    const sort = Array.from(userMangaInfo?.chapters ?? []).sort(selectedSortOption);
+    const sort = Object.values(userMangaInfo?.chapters ?? {}).sort(selectedSortOption);
     setSorted(sort);
     initializeChapterStates(sort, manga);
   }, [userMangaInfo?.chapters, sort, reverse]);

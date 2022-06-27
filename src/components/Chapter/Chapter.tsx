@@ -42,15 +42,12 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
     checkChapter(e, chapter);
   }
 
-  const chapterState = useChapterStateFromRedux(chapter);
+  const chapterState = useChapterStateFromRedux(chapter, manga);
   const { checked, downloadManager, status: downloadStatus, totalProgress, hasCursor } = chapterState;
-  const setDownloadStatus = setDownloadStatusOfChapter(chapter);
+  const setDownloadStatus = setDownloadStatusOfChapter(chapter, manga);
   const setTotalProgress = setTotalProgressOfChapter(chapter);
   const mangaCursorChapters = React.useMemo(
-    () =>
-      mangasInDownloading
-        ? mangasInDownloading.chapters.reduce((prev, key) => ({ ...prev, [key]: allChapters[key] }), {})
-        : null,
+    () => (mangasInDownloading ? mangasInDownloading.chapters : null),
     [hasCursor]
   );
   // const [checked, setChecked] = React.useState<boolean>(downloadManager.getChecked());

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, Spacer, Typography } from '@components/core';
+import { Button, Flex, Spacer, Typography } from '@components/core';
 
 import connector, {
   ConnectedDownloadItemProps,
@@ -14,10 +14,11 @@ const DownloadItem: React.FC<ConnectedDownloadItemProps> = (props) => {
   const { mangaKey, manga, downloadingManga } = props;
   const navigation = useRootNavigation();
   async function handleOnCoverPress() {
+    // navigation.navigate('MangaViewer', { manga });
     await ExpoStorage.displayOccupiedStorage();
     // const key = 'persist:@root';
     // const val = await AsyncStorage.getItem(key);
-    // if (val != null)
+    // if (val != null)g
     //   console.log(`${key}-> SIZE = ${((encodeURI(val).split(/%..|./).length - 1) / 1024).toFixed(2)} KB`);
     // else console.log(`${key} is null`);
   }
@@ -35,6 +36,9 @@ const DownloadItem: React.FC<ConnectedDownloadItemProps> = (props) => {
           <Typography color='textSecondary'>
             Downloaded {downloadingManga.numDownloadCompleted} of {downloadingManga.numToDownload}
           </Typography>
+          <Flex shrink>
+            <Button title='Pause' />
+          </Flex>
         </Flex>
       </Flex>
     </Flex>

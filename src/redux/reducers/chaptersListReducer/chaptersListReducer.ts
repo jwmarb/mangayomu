@@ -84,13 +84,14 @@ export default function (
         ...state,
         chapters: action.chapters.reduce((prev, curr) => {
           const key = getKey(curr);
-          if (prev[key].downloadManager.getStatus() === DownloadStatus.VALIDATING) {
-            prev[key].downloadManager.setStatus(prev[key].downloadManager.getValidatedStatus());
+          const downloadManager = DownloadManager.ofWithManga(curr, action.manga);
+          if (downloadManager.getStatus() === DownloadStatus.VALIDATING) {
+            downloadManager.setStatus(downloadManager.getValidatedStatus());
             return {
               ...prev,
               [key]: {
                 ...prev[key],
-                status: prev[key].downloadManager.getValidatedStatus(),
+                status: downloadManager.getValidatedStatus(),
               } as ChapterState,
             };
           }
@@ -99,13 +100,11 @@ export default function (
       };
     case 'INITIALIZE_CHAPTER_STATES': {
       const objs: Record<string, ChapterState> = {};
-      const source = MangaHost.getAvailableSources().get(action.manga.source)!;
       for (const curr of action.chapters) {
         const key = getKey(curr);
-        const downloadManager = DownloadManager.of(curr, DownloadManager.generatePath(curr, action.manga), source);
+        const downloadManager = DownloadManager.ofWithManga(curr, action.manga);
         const INITIAL_STATE: ChapterState = {
           checked: false,
-          downloadManager,
           status: downloadManager.getStatus(),
           totalProgress: downloadManager.getProgress(),
           hasCursor: downloadManager.hasCursor(),
@@ -138,7 +137,7 @@ export default function (
     }
     case 'SET_DOWNLOAD_STATUS_OF_CHAPTER': {
       const key = getKey(action.chapter);
-      const downloadManager = state.chapters[key].downloadManager;
+      const downloadManager = DownloadManager.ofWithManga(action.chapter, action.manga);
       downloadManager.setStatus(action.status);
       return {
         ...state,
@@ -157,15 +156,16 @@ export default function (
     }
     case 'VALIDATE_CHAPTER': {
       const key = getKey(action.chapter);
-      if (state.chapters[key].downloadManager.getStatus() === DownloadStatus.VALIDATING) {
-        state.chapters[key].downloadManager.setStatus(state.chapters[key].downloadManager.getValidatedStatus());
+      const downloadManager = DownloadManager.ofWithManga(action.chapter, action.manga);
+      if (downloadManager.getStatus() === DownloadStatus.VALIDATING) {
+        downloadManager.setStatus(downloadManager.getValidatedStatus());
         return {
           ...state,
           chapters: {
             ...state.chapters,
             [key]: {
               ...state.chapters[key],
-              status: state.chapters[key].downloadManager.getValidatedStatus(),
+              status: downloadManager.getValidatedStatus(),
             },
           },
         };
@@ -190,10 +190,10 @@ export default function (
       };
 
     case 'UPDATE_CHAPTER_STATUS':
-      const chapterState = state.chapters[action.key];
+      const downloadManager = DownloadManager.ofWithManga(action.chapter, action.manga);
       if (action.status) {
-        chapterState.downloadManager.setStatus(action.status);
-        chapterState.downloadManager.updateCursor();
+        downloadManager.setStatus(action.status);
+        downloadManager.updateCursor();
         return {
           ...state,
           mangasInDownloading: {
@@ -210,7 +210,7 @@ export default function (
                 action.status === DownloadStatus.CANCELLED || action.status === DownloadStatus.IDLE
                   ? 0
                   : state.chapters[action.key].totalProgress,
-              hasCursor: chapterState.downloadManager.hasCursor(),
+              hasCursor: downloadManager.hasCursor(),
               status: action.status,
             },
           },
@@ -222,17 +222,18 @@ export default function (
           ...state.chapters,
           [action.key]: {
             ...state.chapters[action.key],
-            status: chapterState.downloadManager.getStatus(),
+            status: downloadManager.getStatus(),
           },
         },
       };
 
     case 'RESUME_DOWNLOAD_OF_SELECTED_CHAPTERS': {
       const copy = state.chapters;
-      for (let i = 0; i < action.keys.length; i++) {
-        if (copy[action.keys[i]].status === DownloadStatus.PAUSED && Number.isNaN(copy[action.keys[i]].totalProgress)) {
-          copy[action.keys[i]].downloadManager.setStatus(DownloadStatus.QUEUED);
-          copy[action.keys[i]].status = DownloadStatus.QUEUED;
+      for (const chapter of action.chapters) {
+        const key = getKey(chapter);
+        if (copy[key].status === DownloadStatus.PAUSED && Number.isNaN(copy[key].totalProgress)) {
+          DownloadManager.ofWithManga(chapter, action.manga).setStatus(DownloadStatus.QUEUED);
+          copy[key].status = DownloadStatus.QUEUED;
         }
       }
 
@@ -246,39 +247,42 @@ export default function (
       delete newState.mangasInDownloading[action.manga.link];
       return newState;
     case 'QUEUE_ALL_SELECTED': {
+      const chapters = action.chapters.reduce((prev, curr) => {
+        const key = getKey(curr);
+        switch (state.chapters[key].status) {
+          case DownloadStatus.IDLE:
+          case DownloadStatus.CANCELLED:
+          case DownloadStatus.VALIDATING:
+            return {
+              ...prev,
+              [key]: { ...state.chapters[key], status: DownloadManager.ofWithManga(curr, action.manga).getStatus() },
+            };
+          default:
+            return prev;
+        }
+      }, state.chapters);
+
       return {
         ...state,
         mangasInDownloading: {
           ...state.mangasInDownloading,
           [action.manga.link]: {
-            chapters: state.mangasInDownloading[action.manga.link]?.chapters ?? action.keys,
+            chapters: state.mangasInDownloading[action.manga.link]?.chapters ?? chapters,
             numDownloadCompleted: state.mangasInDownloading[action.manga.link]?.numDownloadCompleted ?? 0,
-            numToDownload: state.mangasInDownloading[action.manga.link]?.numToDownload ?? action.keys.length,
+            numToDownload: state.mangasInDownloading[action.manga.link]?.numToDownload ?? action.chapters.length,
           },
         },
-        chapters: action.keys.reduce((prev, curr) => {
-          switch (state.chapters[curr].status) {
-            case DownloadStatus.IDLE:
-            case DownloadStatus.CANCELLED:
-            case DownloadStatus.VALIDATING:
-              return {
-                ...prev,
-                [curr]: { ...state.chapters[curr], status: state.chapters[curr].downloadManager.getStatus() },
-              };
-            default:
-              return prev;
-          }
-        }, state.chapters),
+        chapters,
       };
     }
     case 'PAUSE_DOWNLOAD_OF_SELECTED_CHAPTERS': {
       const copy = state.chapters;
-      for (let i = 0; i < action.keys.length; i++) {
-        switch (copy[action.keys[i]].status) {
+      for (let i = 0; i < action.chapters.length; i++) {
+        switch (copy[getKey(action.chapters[i])].status) {
           case DownloadStatus.START_DOWNLOADING:
           case DownloadStatus.RESUME_DOWNLOADING:
-            copy[action.keys[i]].downloadManager.setStatus(DownloadStatus.PAUSED);
-            copy[action.keys[i]].status = DownloadStatus.PAUSED;
+            DownloadManager.ofWithManga(action.chapters[i], action.manga).setStatus(DownloadStatus.PAUSED);
+            copy[getKey(action.chapters[i])].status = DownloadStatus.PAUSED;
         }
       }
       return { ...state, chapters: copy };
@@ -288,25 +292,25 @@ export default function (
       delete newState.mangasInDownloading[action.manga.link];
       return {
         ...newState,
-        chapters: action.keys.reduce(
-          (prev, curr) => ({
+        chapters: action.chapters.reduce((prev, curr) => {
+          const key = getKey(curr);
+          return {
             ...prev,
-            [curr]: {
-              ...state.chapters[curr],
+            [key]: {
+              ...state.chapters[key],
               status:
-                state.chapters[curr].status === DownloadStatus.QUEUED
-                  ? state.chapters[curr].downloadManager.getValidatedStatus()
-                  : state.chapters[curr].status === DownloadStatus.RESUME_DOWNLOADING ||
-                    state.chapters[curr].status === DownloadStatus.START_DOWNLOADING ||
-                    state.chapters[curr].status === DownloadStatus.PAUSED
+                state.chapters[key].status === DownloadStatus.QUEUED
+                  ? DownloadManager.ofWithManga(curr, action.manga).getValidatedStatus()
+                  : state.chapters[key].status === DownloadStatus.RESUME_DOWNLOADING ||
+                    state.chapters[key].status === DownloadStatus.START_DOWNLOADING ||
+                    state.chapters[key].status === DownloadStatus.PAUSED
                   ? DownloadStatus.CANCELLED
-                  : state.chapters[curr].status,
+                  : state.chapters[key].status,
               totalProgress: 0,
               hasCursor: false,
             },
-          }),
-          state.chapters as Record<string, ChapterState>
-        ),
+          };
+        }, state.chapters as Record<string, ChapterState>),
       };
     }
     case 'CURSOR_DOWNLOADING_ITEM':
@@ -316,7 +320,7 @@ export default function (
           ...state.mangasInDownloading,
           [action.manga.link]: {
             ...state.mangasInDownloading[action.manga.link],
-            cursorPosition: action.key,
+            cursorPosition: state.mangasInDownloading[action.manga.link].chapters[action.key],
           },
         },
       };

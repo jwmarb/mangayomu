@@ -10,7 +10,7 @@ const reducers = combineReducers({
   mangas: mangaReducer,
   settings: settingsReducer,
   library: mangalibReducer,
-  chaptersList: persistReducer(chaptersListReducerConfig, chaptersListReducer),
+  chaptersList: persistReducer(chaptersListReducerConfig, chaptersListReducer) as typeof chaptersListReducer,
 });
 
 export default reducers;

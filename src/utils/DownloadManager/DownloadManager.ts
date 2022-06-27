@@ -65,6 +65,16 @@ export default class DownloadManager {
   }
 
   /**
+   * Same with of() method
+   * @param chapter The chapter
+   * @param manga The manga where the chapter belongs to
+   * @returns Returns an instance of DownloadManager
+   */
+  public static ofWithManga(chapter: MangaChapter, manga: Manga) {
+    return this.of(chapter, this.generatePath(chapter, manga), MangaHost.getAvailableSources().get(manga.source)!);
+  }
+
+  /**
    * This is only meant to access values and not perform operations. Use of() method to properly perform operations.
    * @param chapter The chapter
    * @returns Returns an instance of DownloadManager

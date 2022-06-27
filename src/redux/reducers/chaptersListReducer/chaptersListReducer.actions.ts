@@ -39,12 +39,12 @@ export const checkChapter = (val: boolean, ch: ReadingChapterInfo) => {
 };
 
 export const initializeChapterStates = (chapters: ReadingChapterInfo[], manga: Manga) => {
-  return async (dispatch: AppDispatch, getState: StateGetter) => {
+  return async (dispatch: AppDispatch) => {
     dispatch({ type: 'INITIALIZE_CHAPTER_STATES', chapters, manga });
     if (chapters.length > 0)
       try {
         for (const x of chapters) {
-          await getState().chaptersList.chapters[getKey(x)].downloadManager.validate();
+          await DownloadManager.ofWithManga(x, manga).validate();
         }
       } catch (e) {
         console.error(e);
@@ -65,10 +65,14 @@ export const downloadAllSelected = (selected: Record<string, ChapterState>, mang
     cursors.set(obj);
     try {
       for (const key of keys) {
-        await getState().chaptersList.chapters[key].downloadManager.queue();
+        await DownloadManager.ofWithManga(getState().mangas[manga.link].chapters[key], manga).queue();
       }
     } finally {
-      dispatch({ type: 'QUEUE_ALL_SELECTED', keys, manga });
+      dispatch({
+        type: 'QUEUE_ALL_SELECTED',
+        chapters: keys.map((x) => getState().mangas[manga.link].chapters[x]),
+        manga,
+      });
     }
 
     await Promise.all(
@@ -76,19 +80,32 @@ export const downloadAllSelected = (selected: Record<string, ChapterState>, mang
         limit(async () => {
           if (cursors.get()[manga.link]?.shouldDownload) {
             dispatch({ type: 'CURSOR_DOWNLOADING_ITEM', manga, key });
+            const downloadManager = DownloadManager.ofWithManga(getState().mangas[manga.link].chapters[key], manga);
             try {
               switch (getState().chaptersList.chapters[key].status) {
                 case DownloadStatus.QUEUED:
-                  dispatch({ type: 'UPDATE_CHAPTER_STATUS', key, status: DownloadStatus.START_DOWNLOADING, manga });
-                  await getState().chaptersList.chapters[key].downloadManager.download();
+                  dispatch({
+                    type: 'UPDATE_CHAPTER_STATUS',
+                    key,
+                    status: DownloadStatus.START_DOWNLOADING,
+                    manga,
+                    chapter: getState().mangas[manga.link].chapters[key],
+                  });
+                  await downloadManager.download();
                   break;
                 case DownloadStatus.PAUSED:
-                  dispatch({ type: 'UPDATE_CHAPTER_STATUS', key, status: DownloadStatus.RESUME_DOWNLOADING, manga });
-                  await getState().chaptersList.chapters[key].downloadManager.resume();
+                  dispatch({
+                    type: 'UPDATE_CHAPTER_STATUS',
+                    key,
+                    status: DownloadStatus.RESUME_DOWNLOADING,
+                    manga,
+                    chapter: getState().mangas[manga.link].chapters[key],
+                  });
+                  await downloadManager.resume();
                   break;
               }
             } finally {
-              if (getState().chaptersList.chapters[key].downloadManager.getStatus() === DownloadStatus.DOWNLOADED)
+              if (downloadManager.getStatus() === DownloadStatus.DOWNLOADED)
                 dispatch({ type: 'CHAPTER_DOWNLOADED', manga });
             }
           }
@@ -98,8 +115,8 @@ export const downloadAllSelected = (selected: Record<string, ChapterState>, mang
 
     if (
       obj[manga.link] &&
-      getState().chaptersList.mangasInDownloading[manga.link].chapters.every(
-        (x) => getState().chaptersList.chapters[x].downloadManager.getStatus() === DownloadStatus.DOWNLOADED
+      Object.values(getState().chaptersList.mangasInDownloading[manga.link].chapters).every(
+        (x) => x.status === DownloadStatus.DOWNLOADED
       )
     ) {
       dispatch({ type: 'CURSOR_FINISH_DOWNLOADING', manga });
@@ -111,45 +128,57 @@ export const downloadAllSelected = (selected: Record<string, ChapterState>, mang
 
 export const pauseAllSelected = (manga: Manga) => {
   return async (dispatch: AppDispatch, getState: StateGetter) => {
-    const state = getState().chaptersList.chapters;
     const obj = cursors.get();
-    const keys = getState().chaptersList.mangasInDownloading[manga.link].chapters;
+    const keys = Object.keys(getState().chaptersList.mangasInDownloading[manga.link].chapters);
     obj[manga.link].shouldDownload = false;
     cursors.set(obj);
 
-    for (let i = keys.length - 1; i >= 0; i--) {
+    for (const key of keys) {
+      const downloadManager = DownloadManager.ofWithManga(getState().mangas[manga.link].chapters[key], manga);
+
       if (
-        state[keys[i]].status === DownloadStatus.START_DOWNLOADING ||
-        state[keys[i]].status === DownloadStatus.RESUME_DOWNLOADING
+        getState().chaptersList.mangasInDownloading[manga.link].chapters[key].status ===
+          DownloadStatus.START_DOWNLOADING ||
+        getState().chaptersList.mangasInDownloading[manga.link].chapters[key].status ===
+          DownloadStatus.RESUME_DOWNLOADING
       )
-        await state[keys[i]].downloadManager.pause();
+        await downloadManager.pause();
     }
-    dispatch({ type: 'PAUSE_DOWNLOAD_OF_SELECTED_CHAPTERS', keys });
+    dispatch({
+      type: 'PAUSE_DOWNLOAD_OF_SELECTED_CHAPTERS',
+      chapters: keys.map((x) => getState().mangas[manga.link].chapters[x]),
+      manga,
+    });
   };
 };
 
 export const cancelAllSelected = (manga: Manga) => {
   return async (dispatch: AppDispatch, getState: StateGetter) => {
-    const state = getState().chaptersList.chapters;
+    const state = getState().chaptersList.mangasInDownloading[manga.link].chapters;
     const obj = cursors.get();
-    const keys = getState().chaptersList.mangasInDownloading[manga.link].chapters;
+    const keys = Object.keys(getState().chaptersList.mangasInDownloading[manga.link].chapters);
     obj[manga.link].shouldDownload = false;
     cursors.set(obj);
 
     for (let i = keys.length - 1; i >= 0; i--) {
+      const downloadManager = DownloadManager.ofWithManga(getState().mangas[manga.link].chapters[keys[i]], manga);
       switch (state[keys[i]].status) {
         case DownloadStatus.QUEUED:
-          await state[keys[i]].downloadManager.unqueue();
+          await downloadManager.unqueue();
 
           break;
         case DownloadStatus.START_DOWNLOADING:
         case DownloadStatus.RESUME_DOWNLOADING:
         case DownloadStatus.PAUSED:
-          await state[keys[i]].downloadManager.cancel();
+          await downloadManager.cancel();
           break;
       }
     }
-    dispatch({ type: 'CANCEL_DOWNLOAD_OF_SELECTED_CHAPTERS', keys, manga });
+    dispatch({
+      type: 'CANCEL_DOWNLOAD_OF_SELECTED_CHAPTERS',
+      chapters: keys.map((x) => getState().mangas[manga.link].chapters[x]),
+      manga,
+    });
 
     delete obj[manga.link];
     cursors.set(obj);
@@ -168,10 +197,10 @@ export const checkAllChapters = (chapters: ReadingChapterInfo[]) => {
   };
 };
 
-export const setDownloadStatusOfChapter = (chapter: ReadingChapterInfo) => {
+export const setDownloadStatusOfChapter = (chapter: ReadingChapterInfo, manga: Manga) => {
   return (dispatch: AppDispatch) => {
     return (status: DownloadStatus) => {
-      dispatch({ type: 'SET_DOWNLOAD_STATUS_OF_CHAPTER', chapter, status });
+      dispatch({ type: 'SET_DOWNLOAD_STATUS_OF_CHAPTER', chapter, status, manga });
     };
   };
 };
