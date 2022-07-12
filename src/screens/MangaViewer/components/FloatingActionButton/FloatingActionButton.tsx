@@ -7,7 +7,14 @@ import {
   FloatingActionButtonBase,
 } from './FloatingActionButton.base';
 import { FloatingActionButtonProps } from './FloatingActionButton.interfaces';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming, Easing } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+  Easing,
+  cancelAnimation,
+} from 'react-native-reanimated';
 import useAnimatedMounting from '@hooks/useAnimatedMounting';
 import { LayoutChangeEvent, NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
 import useMountedEffect from '@hooks/useMountedEffect';
@@ -34,6 +41,10 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = (props) => {
       width.value = withTiming(BUTTON_WIDTH, { duration: 500, easing: Easing.ease });
       opacity.value = withSpring(0);
     }
+    return () => {
+      cancelAnimation(width);
+      cancelAnimation(opacity);
+    };
   }, [isAtBeginning]);
 
   React.useEffect(() => {

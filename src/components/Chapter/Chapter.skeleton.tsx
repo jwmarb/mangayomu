@@ -23,7 +23,7 @@ const ChapterSkeleton: React.FC = (props) => {
           </Animated.View>
         </Flex>
         <View>
-          <Progress color='disabled' />
+          <Progress color='disabled' size='small' />
           <Spacer x={5} />
         </View>
       </Flex>

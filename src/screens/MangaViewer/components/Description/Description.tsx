@@ -6,7 +6,7 @@ import { DescriptionProps } from '@screens/MangaViewer/components/Description/De
 import LoadingDescription from '@screens/MangaViewer/components/Description/Description.loading';
 import React from 'react';
 import { NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 const Description: React.FC<DescriptionProps> = (props) => {
   const { description } = props;
@@ -26,7 +26,7 @@ const Description: React.FC<DescriptionProps> = (props) => {
       <Flex justifyContent='space-between' alignItems='center'>
         <Typography variant='subheader'>Description</Typography>
         {showExpand && (
-          <Animated.View style={buttonMount}>
+          <Animated.View entering={FadeIn}>
             <Button
               title={numOfLines == null ? 'Hide' : 'Expand'}
               icon={<Icon bundle='Feather' name={numOfLines == null ? 'chevron-up' : 'chevron-down'} />}
@@ -38,7 +38,7 @@ const Description: React.FC<DescriptionProps> = (props) => {
       </Flex>
       <Spacer y={1} />
       {description ? (
-        <Animated.View style={animatedMount}>
+        <Animated.View entering={FadeIn}>
           <Typography color='textSecondary' onTextLayout={handleOnTextLayout} numberOfLines={numOfLines}>
             {description}
           </Typography>

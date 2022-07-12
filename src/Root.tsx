@@ -10,9 +10,21 @@ import Settings from '@screens/Settings';
 import { Header } from '@components/core';
 import MangaBrowser from '@screens/MangaBrowser';
 import DownloadManager from '@screens/DownloadManager';
+import ChapterDownloads from '@screens/ChapterDownloads';
+import connector, { ConnectedRootProps } from './Root.redux';
 
-const Root: React.FC = () => {
+const Root: React.FC<ConnectedRootProps> = (props) => {
+  const { downloadAll } = props;
   const showIntroduction = useSelector((state: AppState) => state.settings.showIntroduction);
+  const downloads = useSelector((state: AppState) => state.downloading.mangas);
+
+  React.useEffect(() => {
+    const dl = downloadAll();
+    dl.start();
+    return () => {
+      dl.cancel();
+    };
+  }, [downloads]);
 
   return (
     <RootStack.Navigator initialRouteName={showIntroduction ? 'Welcome' : 'Home'}>
@@ -23,8 +35,9 @@ const Root: React.FC = () => {
       <RootStack.Screen component={GenericMangaList} name='GenericMangaList' />
       <RootStack.Screen component={MangaBrowser} name='MangaBrowser' />
       <RootStack.Screen component={DownloadManager} name='DownloadManager' />
+      <RootStack.Screen component={ChapterDownloads} name='ChapterDownloads' />
     </RootStack.Navigator>
   );
 };
 
-export default Root;
+export default connector(Root);

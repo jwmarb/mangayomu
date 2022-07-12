@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { InteractionManager } from 'react-native';
-import { useSharedValue, withSpring, withTiming, useAnimatedStyle } from 'react-native-reanimated';
+import { useSharedValue, withSpring, withTiming, useAnimatedStyle, cancelAnimation } from 'react-native-reanimated';
 import { AnimatedContext } from '@context/AnimatedContext';
 
 export default function useAnimatedMounting(condition: boolean = true) {
@@ -10,6 +10,10 @@ export default function useAnimatedMounting(condition: boolean = true) {
     if (condition) {
       opacity.value = withSpring(1);
       transformY.value = withTiming(0, { duration: 500 });
+      return () => {
+        cancelAnimation(opacity);
+        cancelAnimation(transformY);
+      };
     }
   }, [condition]);
 

@@ -3,16 +3,17 @@ import { Typography } from '@components/Typography';
 import MangaValidator from '@utils/MangaValidator';
 import React from 'react';
 import { ChapterTitleProps } from './ChapterTitle.interfaces';
-import { format } from 'date-fns';
+import { format, formatDistanceToNow, isToday } from 'date-fns';
 import Flex from '@components/Flex';
 
 const displayChapterInfo = (chapter: any) => {
+  const parsed = Date.parse(chapter.date);
   if (MangaValidator.hasDate(chapter)) {
     return (
       <>
         <Spacer y={1} />
         <Typography variant='body2' color='textSecondary'>
-          {format(Date.parse(chapter.date), 'MM/dd/yyyy')}
+          {formatDistanceToNow(parsed, { addSuffix: true })}
         </Typography>
       </>
     );
@@ -24,7 +25,9 @@ const ChapterTitle: React.FC<ChapterTitleProps> = (props) => {
   const { chapter } = props;
   return (
     <Flex direction='column'>
-      <Typography bold>{chapter.name}</Typography>
+      <Typography bold color={Date.parse(chapter.date) <= Date.now() - 8.64e7 ? 'textPrimary' : 'secondary'}>
+        {chapter.name}
+      </Typography>
       {displayChapterInfo(chapter)}
     </Flex>
   );

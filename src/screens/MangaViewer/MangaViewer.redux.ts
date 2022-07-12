@@ -17,6 +17,7 @@ const mapStateToProps = (state: AppState, props: StackScreenProps<RootStackParam
     userMangaInfo: state.mangas[manga.link],
     source: MangaHost.availableSources.get(manga.source)!,
     selectionMode: state.chaptersList.mode,
+    checked: state.chaptersList.checkAll,
   };
 };
 

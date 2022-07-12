@@ -4,18 +4,15 @@ import { StatusIndicatorProps } from '@screens/MangaViewer/components/StatusIndi
 import animate from '@utils/Animations/animate';
 import MangaValidator from '@utils/MangaValidator';
 import withAnimatedLoading from '@utils/Animations/withAnimatedLoading';
-import withAnimatedMounting from '@utils/Animations/withAnimatedMounting';
 import React from 'react';
-import useAnimatedMounting from '@hooks/useAnimatedMounting';
-import Animated from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 const StatusIndicator: React.FC<StatusIndicatorProps> = (props) => {
   const { meta } = props;
   if (meta && MangaValidator.hasStatus(meta)) {
     const { status } = meta;
-    const mountingStyle = useAnimatedMounting();
     return (
-      <Animated.View style={mountingStyle}>
+      <Animated.View entering={FadeIn}>
         <Flex direction='column'>
           <Flex alignItems='center'>
             <StatusCircle publish={status.publish} />
@@ -38,14 +35,18 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = (props) => {
     );
   }
 
-  return animate(
-    <>
-      <Skeleton.Typography width='100%' />
-      <Spacer y={1} />
+  return (
+    <Animated.View exiting={FadeOut}>
+      {animate(
+        <>
+          <Skeleton.Typography width='100%' />
+          <Spacer y={1} />
 
-      <Skeleton.Typography width='100%' />
-    </>,
-    withAnimatedLoading
+          <Skeleton.Typography width='100%' />
+        </>,
+        withAnimatedLoading
+      )}
+    </Animated.View>
   );
 };
 

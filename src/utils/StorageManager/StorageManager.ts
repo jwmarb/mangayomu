@@ -33,12 +33,12 @@ class StorageManager<T> {
 
     if (this.timeout == null) {
       if (this.revisions === -1) {
-        console.log(`Wrote INITIAL revision of ${this.key} AsyncStorage`);
+        // console.log(`Wrote INITIAL revision of ${this.key} AsyncStorage`);
         AsyncStorage.setItem(this.key, JSON.stringify(StorageManager.batchRecord[this.key]));
       } else {
         this.timeout = setTimeout(async () => {
           try {
-            console.log(`Wrote revision #${this.revisions} of ${this.key} AsyncStorage`);
+            // console.log(`Wrote revision #${this.revisions} of ${this.key} AsyncStorage`);
             this.revisions = 0;
             await AsyncStorage.setItem(this.key, JSON.stringify(StorageManager.batchRecord[this.key]));
           } finally {

@@ -9,6 +9,6 @@ import { Manga } from '@services/scraper/scraper.interfaces';
 import MangaHost from '@services/scraper/scraper.abstract';
 
 export function useChapterStateFromRedux(chapter: ReadingChapterInfo, manga: Manga) {
-  const p = useSelector((state: AppState) => state.chaptersList.chapters[getKey(chapter)]);
-  return { ...p, downloadManager: DownloadManager.ofWithManga(chapter, manga) };
+  const selected = useSelector((state: AppState) => state.chaptersList.selected);
+  return { downloadManager: DownloadManager.ofWithManga(chapter, manga), checked: getKey(chapter) in selected };
 }

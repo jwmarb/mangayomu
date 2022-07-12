@@ -17,64 +17,47 @@ import { cursors } from '@redux/reducers/chaptersListReducer/chaptersListReducer
 import Spacer from '@components/Spacer';
 import StorageManager from '@utils/StorageManager';
 import DownloadManager from '@utils/DownloadManager';
-import { ChapterState } from '@redux/reducers/chaptersListReducer/chaptersListReducer.interfaces';
 import ExpoStorage from '@utils/ExpoStorage';
+import { getKey } from '@redux/reducers/chaptersListReducer/chaptersListReducer';
 
 const Chapter: React.FC<ChapterReduxProps> = (props) => {
   const {
     chapter,
     manga,
+    isSelected,
     selectionMode,
-    overrideChecked,
     exitSelectionMode,
     enterSelectionMode,
     checkChapter,
-    setDownloadStatusOfChapter,
-    setTotalProgressOfChapter,
-    downloadAllSelected,
-    pauseAllSelected,
-    cancelAllSelected,
-    mangasInDownloading,
-    allChapters,
+    totalPages,
+    totalProgress,
+    downloadedPages,
+    downloadSelected,
+    cancelAllForSeries,
+    status,
   } = props;
 
   function handleOnCheck(e: boolean) {
     checkChapter(e, chapter);
   }
 
-  const chapterState = useChapterStateFromRedux(chapter, manga);
-  const { checked, downloadManager, status: downloadStatus, totalProgress, hasCursor } = chapterState;
-  const setDownloadStatus = setDownloadStatusOfChapter(chapter, manga);
-  const setTotalProgress = setTotalProgressOfChapter(chapter);
-  const mangaCursorChapters = React.useMemo(
-    () => (mangasInDownloading ? mangasInDownloading.chapters : null),
-    [hasCursor]
-  );
-  // const [checked, setChecked] = React.useState<boolean>(downloadManager.getChecked());
   async function handleOnPress() {
     switch (selectionMode) {
       case 'normal':
-        // const availableSpace = await FileSystem.getFreeDiskStorageAsync();
-        // const totalSpace = await FileSystem.getTotalDiskCapacityAsync();
-        console.log(await ExpoStorage.getAllKeys());
+        // const downloadManager = DownloadManager.ofWithManga(chapter, manga);
+        // await cancelAll();
         break;
       case 'selection':
-        checkChapter(!checked, chapter);
+        checkChapter(!isSelected, chapter);
         break;
     }
   }
 
-  const listener = React.useRef<NodeJS.Timer>();
   const style = useAnimatedMounting();
-  const isDownloading = React.useMemo(
-    () => downloadStatus === DownloadStatus.RESUME_DOWNLOADING || downloadStatus === DownloadStatus.START_DOWNLOADING,
-    [downloadStatus]
-  );
 
   function handleOnLongPress() {
     switch (selectionMode) {
       case 'normal':
-        // setChecked(true);
         enterSelectionMode();
         break;
       case 'selection':
@@ -83,73 +66,9 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
     }
   }
 
-  const resumeDownload = React.useCallback(async () => {
-    if (hasCursor && mangaCursorChapters) await downloadAllSelected(mangaCursorChapters, manga);
-    else {
-      console.log(`Resumed ${chapter.link}`);
-      setDownloadStatus(DownloadStatus.RESUME_DOWNLOADING);
-      await downloadManager.resume();
-    }
-  }, [downloadManager, setDownloadStatus, hasCursor, mangaCursorChapters]);
-
-  const pauseDownload = React.useCallback(async () => {
-    if (hasCursor) await pauseAllSelected(manga);
-    else {
-      console.log(`Paused ${chapter.link}`);
-      setDownloadStatus(DownloadStatus.PAUSED);
-      await downloadManager.pause();
-    }
-  }, [downloadManager, setDownloadStatus, hasCursor]);
-
-  const cancelDownload = React.useCallback(async () => {
-    if (hasCursor) {
-      console.log(`Cancelling cursor...`);
-      cancelAllSelected(manga);
-    } else {
-      console.log(`Cancelled ${chapter.link}`);
-      setDownloadStatus(DownloadStatus.CANCELLED);
-      await downloadManager.cancel();
-    }
-  }, [downloadManager, setDownloadStatus, hasCursor]);
-
-  const startDownload = React.useCallback(async () => {
-    setDownloadStatus(DownloadStatus.START_DOWNLOADING);
-    console.log(`Downloading ${chapter.link}`);
-    await downloadManager.download();
-  }, [downloadManager, setDownloadStatus]);
-
-  React.useEffect(() => {
-    switch (downloadStatus) {
-      case DownloadStatus.RESUME_DOWNLOADING:
-      case DownloadStatus.DOWNLOADING:
-      case DownloadStatus.START_DOWNLOADING:
-        listener.current = setInterval(() => setTotalProgress(downloadManager.getProgress()), 500);
-        return () => {
-          setTotalProgress(downloadManager.getProgress());
-          clearInterval(listener.current);
-        };
-    }
-  }, [downloadStatus]);
-
-  React.useEffect(() => {
-    return () => {
-      clearTimeout(listener.current);
-    };
-  }, []);
-
-  useMountedEffect(() => {
-    if (totalProgress >= 1) {
-      setDownloadStatus(DownloadStatus.DOWNLOADED);
-      setTotalProgress(0);
-      clearInterval(listener.current);
-    }
-  }, [totalProgress]);
-
-  useMountedEffect(() => {
-    if (hasCursor) {
-      console.log(`A cursor has been assigned to ${chapter.link}`);
-    }
-  }, [hasCursor]);
+  const handleOnDownload = React.useCallback(() => {
+    downloadSelected({ [getKey(chapter)]: null }, manga);
+  }, [chapter, manga]);
 
   return (
     <>
@@ -159,21 +78,16 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
             <Flex justifyContent='space-between' alignItems='center'>
               <ChapterTitle chapter={chapter} />
               <Flex alignItems='center'>
-                <ChapterDownloadProgress
-                  totalProgress={totalProgress}
-                  downloadStatus={downloadStatus}
-                  isDownloading={isDownloading}
-                  pauseDownload={pauseDownload}
-                  cancelDownload={cancelDownload}
-                  resumeDownload={resumeDownload}
-                />
+                <ChapterDownloadProgress />
                 <ChapterDownloadStatus
-                  downloadStatus={downloadStatus}
-                  isDownloading={isDownloading}
-                  startDownload={startDownload}
+                  chapterKey={chapter.link}
+                  status={status}
+                  onDownload={handleOnDownload}
+                  progress={totalProgress}
+                  mangaKey={manga.link}
                 />
                 <Spacer x={1} />
-                {selectionMode === 'selection' && <Checkbox checked={checked} onChange={handleOnCheck} />}
+                {selectionMode === 'selection' && <Checkbox checked={isSelected} onChange={handleOnCheck} />}
               </Flex>
             </Flex>
           </ChapterContainer>

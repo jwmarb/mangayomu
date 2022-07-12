@@ -92,7 +92,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     return {
       'Age in Library': createSort((a, b) => Date.parse(a.dateAdded) - Date.parse(b.dateAdded)),
       Alphabetical: createSort((a, b) => a.title.localeCompare(b.title)),
-      'Chapter Count': createSort((a, b) => a.chapters.length - b.chapters.length),
+      'Chapter Count': createSort((a, b) => Object.keys(a.chapters).length - Object.keys(b.chapters).length),
       'Genres Count': createSort((a, b) => a.genres.length - b.genres.length),
       Source: createSort((a, b) => a.source.localeCompare(b.source)),
     };

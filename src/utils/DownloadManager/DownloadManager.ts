@@ -29,7 +29,7 @@ export default class DownloadManager {
   private chapter: MangaChapter;
   private dir: string;
   private source: MangaHost;
-  private checked: boolean;
+  private error: string;
   private validatedStatus: DownloadStatus;
   private cursor: boolean;
   public static getDownloads(): RecordDownload {
@@ -106,12 +106,8 @@ export default class DownloadManager {
     }
   }
 
-  public getChecked() {
-    return this.checked;
-  }
-
-  public setChecked(bool: boolean) {
-    this.checked = bool;
+  public getError(): string {
+    return this.error;
   }
 
   public updateCursor() {
@@ -140,10 +136,20 @@ export default class DownloadManager {
     switch (status) {
       case DownloadStatus.DOWNLOADED:
       case DownloadStatus.IDLE:
+        this.addToStorage();
         this.setValidatedStatus(status);
         break;
     }
   }
+
+  public getDownloadedPages() {
+    return this.progress.reduce((prev, curr) => (curr >= 1 ? prev + 1 : prev), 0);
+  }
+
+  public getTotalPages() {
+    return this.pages.length;
+  }
+
   public getProgress(): number {
     return this.progress.reduce((prev, curr) => prev + curr, 0) / this.progress.length;
   }
@@ -176,7 +182,6 @@ export default class DownloadManager {
     index: i,
   }: FileSystem.DownloadProgressData & { index: number }) {
     this.progress[i] = totalBytesWritten / totalBytesExpectedToWrite;
-    // console.log(`${i} = ${this.progress[i]}`);
     if (this.progress[i] >= 1) this.downloadResumablePages[i].status = DownloadStatus.DOWNLOADED;
     if (this.getProgress() >= 1) {
       this.setStatus(DownloadStatus.DOWNLOADED);
@@ -201,6 +206,18 @@ export default class DownloadManager {
     return true;
   }
 
+  public async validateFileIntegrity() {
+    this.setStatus(DownloadStatus.VALIDATING);
+    this.setValidatedStatus(DownloadStatus.VALIDATING);
+    if ((await this.verifyPages()) && (await this.isDownloaded())) {
+      this.setValidatedStatus(DownloadStatus.DOWNLOADED);
+      this.setStatus(DownloadStatus.DOWNLOADED);
+    } else {
+      this.setValidatedStatus(DownloadStatus.IDLE);
+      this.setStatus(DownloadStatus.IDLE);
+    }
+  }
+
   public getChapter() {
     return this.chapter;
   }
@@ -213,7 +230,7 @@ export default class DownloadManager {
   /**
    * Queue the chapter for download.
    */
-  public async queue() {
+  public queue() {
     switch (this.getStatus()) {
       case DownloadStatus.IDLE:
       case DownloadStatus.VALIDATING:
@@ -223,7 +240,7 @@ export default class DownloadManager {
     }
   }
 
-  public async unqueue() {
+  public unqueue() {
     switch (this.getStatus()) {
       case DownloadStatus.QUEUED:
         this.setStatus(this.getValidatedStatus());
@@ -293,6 +310,7 @@ export default class DownloadManager {
           } catch (e) {
             console.error(e);
             this.setStatus(DownloadStatus.ERROR);
+            this.error = e as any;
           }
         else continue;
       }
@@ -303,7 +321,6 @@ export default class DownloadManager {
    * Pause the download
    */
   public async pause() {
-    this.setStatus(DownloadStatus.PAUSED);
     for (let i = 0; i < this.downloadResumablePages.length; i++) {
       if (this.downloadResumablePages[i].status === DownloadStatus.DOWNLOADING)
         this.downloadResumablePages[i].status = DownloadStatus.PAUSED;
@@ -316,9 +333,11 @@ export default class DownloadManager {
           await downloadResumable.pauseAsync();
         } catch (e) {
           this.setStatus(DownloadStatus.ERROR);
+          this.error = e as any;
           console.error(e);
         }
     }
+    this.setStatus(DownloadStatus.PAUSED);
     this.addToStorage();
   }
 
@@ -342,6 +361,7 @@ export default class DownloadManager {
               await downloadResumable.resumeAsync();
             } catch (e) {
               this.setStatus(DownloadStatus.ERROR);
+              this.error = e as any;
               console.error(e);
             }
             break;
@@ -352,6 +372,7 @@ export default class DownloadManager {
               await downloadResumable.downloadAsync();
             } catch (e) {
               this.setStatus(DownloadStatus.ERROR);
+              this.error = e as any;
               console.error(e);
             }
             break;
@@ -372,6 +393,7 @@ export default class DownloadManager {
       }
     } catch (e) {
       this.setStatus(DownloadStatus.ERROR);
+      this.error = e as any;
       console.error(e);
     } finally {
       this.downloadResumablePages = [];
@@ -392,6 +414,7 @@ export default class DownloadManager {
       // && (await this.verifyPages());
     } catch (e) {
       this.setStatus(DownloadStatus.ERROR);
+      this.error = e as any;
       console.error(e);
     }
     return false;
@@ -443,7 +466,7 @@ export default class DownloadManager {
     existingState?: SavedChapterDownloadState,
     ref?: ChapterRef | null
   ) {
-    this.checked = false;
+    this.error = '';
     if (chapter && pathToDownload && source) {
       this.source = source;
       this.dir = pathToDownload;

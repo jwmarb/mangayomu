@@ -1,7 +1,14 @@
 import { Typography } from '@components/Typography';
 import React from 'react';
 import { View } from 'react-native';
-import { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import {
+  cancelAnimation,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { BadgeContainer } from './Badge.base';
 import { BadgeProps } from './Badge.interfaces';
 
@@ -25,6 +32,9 @@ const Badge: React.FC<BadgeProps> = (props) => {
       if (show) scale.value = withSpring(1);
       else scale.value = withTiming(0, { duration: 300, easing: Easing.ease });
     }
+    return () => {
+      cancelAnimation(scale);
+    };
   }, [badge, show]);
 
   const styles = useAnimatedStyle(() => ({

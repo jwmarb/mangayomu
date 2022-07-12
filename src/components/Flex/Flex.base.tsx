@@ -1,6 +1,6 @@
 import { Container } from '@components/Container';
 import { FlexProps } from '@components/Flex/Flex.interfaces';
-import { ViewProps, View } from 'react-native';
+import { ViewProps, View, Dimensions } from 'react-native';
 import { ThemedStyledProps } from 'styled-components';
 import styled, { css, DefaultTheme } from 'styled-components/native';
 const generateStyles = (
@@ -15,6 +15,12 @@ const generateStyles = (
     props.fullWidth &&
     css`
       width: 100%;
+    `}
+
+    ${() =>
+    props.fullHeight &&
+    css`
+      height: 100%;
     `}
   ${() =>
     props.debug

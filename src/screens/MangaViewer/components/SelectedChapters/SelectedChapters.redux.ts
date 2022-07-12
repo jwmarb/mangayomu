@@ -1,32 +1,24 @@
 import { AppState } from '@redux/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import {
-  checkAll,
-  exitSelectionMode,
-  downloadAllSelected,
-  pauseAllSelected,
-} from '@redux/reducers/chaptersListReducer/chaptersListReducer.actions';
+import { checkAll, exitSelectionMode } from '@redux/reducers/chaptersListReducer/chaptersListReducer.actions';
 import { SelectedChaptersBaseProps } from '@screens/MangaViewer/components/SelectedChapters/SelectedChapters.interfaces';
+import * as mangaDownloadingActions from '@redux/reducers/mangaDownloadingReducer';
 
 const mapStateToProps = (state: AppState, props: React.PropsWithChildren<{}>) => {
-  const chaptersArr = Object.entries(state.chaptersList.chapters);
+  const chaptersArr = Object.entries(state.chaptersList.selected);
   return {
     ...props,
     selectionMode: state.chaptersList.mode,
     totalChapters: chaptersArr.length,
-    selectedChapters: chaptersArr.reduce((prev, [key, value]) => {
-      if (value.checked) return { ...prev, [key]: value };
-      return prev;
-    }, {} as typeof state.chaptersList.chapters),
+    selectedChapters: state.chaptersList.selected,
   };
 };
 
 const connector = connect(mapStateToProps, {
   checkAll,
   exitSelectionMode,
-  downloadAllSelected,
-  pauseAllSelected,
+  ...mangaDownloadingActions,
 });
 
 export type SelectedChaptersProps = ConnectedProps<typeof connector> & SelectedChaptersBaseProps;

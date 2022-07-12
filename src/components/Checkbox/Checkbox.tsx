@@ -5,7 +5,7 @@ import Icon from '@components/Icon';
 import { Typography } from '@components/Typography';
 import useMountedEffect from '@hooks/useMountedEffect';
 import React from 'react';
-import { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { CheckboxProps } from './Checkbox.interfaces';
 import Animated from 'react-native-reanimated';
 import { useTheme } from 'styled-components/native';
@@ -38,6 +38,13 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
       borderColor.value = Constants.GRAY[theme.palette.mode === 'light' ? 8 : 6].get();
       backgroundColor.value = 'transparent';
     }
+    // return () => {
+    //   cancelAnimation(padding);
+    //   cancelAnimation(borderWidth);
+    //   cancelAnimation(backgroundColor);
+    //   cancelAnimation(borderColor);
+    //   cancelAnimation(opacity);
+    // };
   }, [checked]);
 
   const iconStyles = useAnimatedStyle(() => ({

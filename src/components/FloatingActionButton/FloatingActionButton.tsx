@@ -7,6 +7,7 @@ import Animated, {
   Easing,
   withSpring,
   runOnJS,
+  cancelAnimation,
 } from 'react-native-reanimated';
 import Spacer from '@components/Spacer';
 import React from 'react';
@@ -55,6 +56,10 @@ const FloatingActionButton: React.ForwardRefRenderFunction<FloatingActionButtonR
   useMountedEffect(() => {
     if (show) expand();
     else collapse();
+    // return () => {
+    //   cancelAnimation(width);
+    //   cancelAnimation(opacity);
+    // };
   }, [show]);
 
   React.useImperativeHandle(ref, () => ({

@@ -44,6 +44,7 @@ const halfWidth = width / 2;
 
 const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
   const {
+    checked,
     chapters,
     handleOnOpenModal,
     loading,
@@ -55,7 +56,6 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
     onSelectReadChapters,
     onSelectUnreadChapters,
   } = props;
-  const checked = useSelector((state: AppState) => !!state.chaptersList.checkAll);
   const opacity = useSharedValue(1);
   const bgOpacity = useSharedValue(0);
   const [visible, setVisible] = React.useState<boolean>(false);

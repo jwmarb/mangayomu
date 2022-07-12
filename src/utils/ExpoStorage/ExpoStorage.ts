@@ -75,6 +75,13 @@ class ExpoStorage {
       return null;
     }
   }
+
+  /**
+   * Clears the storage
+   */
+  public async clear(): Promise<void> {
+    await Promise.all((await this.getAllKeys()).map((key) => this.removeItem(key)));
+  }
 }
 
 export default new ExpoStorage();

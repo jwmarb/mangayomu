@@ -3,16 +3,20 @@ import { IconButton, Icon } from '@components/core';
 import { Header } from '@components/Screen';
 import { RootStackParamList } from '@navigators/Root/Root.interfaces';
 import { StackScreenProps } from '@react-navigation/stack';
+import { AppState } from '@redux/store';
 import { renderItem } from '@screens/DownloadManager/DownloadManager.flatlist';
 import connector, { DownloadManagerProps } from '@screens/DownloadManager/DownloadManager.redux';
 import React from 'react';
 import { Animated } from 'react-native';
 import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-collapsible';
-import DownloadManagerHeader from './components/DownloadManagerHeader';
+import DownloadManagerEmpty from './components/DownloadManagerEmpty';
 
 const DownloadManager: React.FC<DownloadManagerProps> = (props) => {
   const { navigation, cursors, extraState } = props;
   const cursorEntries = React.useMemo(() => Object.entries(cursors), [cursors]);
+  React.useEffect(() => {
+    console.log('changed');
+  }, [cursors]);
   function handleOnPress() {
     navigation.navigate('Settings');
   }
@@ -33,6 +37,8 @@ const DownloadManager: React.FC<DownloadManagerProps> = (props) => {
   };
   const { onScroll, containerPaddingTop, scrollIndicatorInsetTop } = useCollapsibleHeader(options);
 
+  if (cursorEntries.length === 0) return <DownloadManagerEmpty />;
+
   return (
     <Animated.FlatList
       extraData={extraState}
@@ -41,7 +47,6 @@ const DownloadManager: React.FC<DownloadManagerProps> = (props) => {
       onScroll={onScroll}
       contentContainerStyle={{ paddingTop: containerPaddingTop }}
       scrollIndicatorInsets={{ top: scrollIndicatorInsetTop }}
-      ListHeaderComponent={DownloadManagerHeader}
     />
   );
 };

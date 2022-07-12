@@ -7,7 +7,7 @@ import animate from '@utils/Animations/animate';
 import withAnimatedMounting from '@utils/Animations/withAnimatedMounting';
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
-import Animated from 'react-native-reanimated';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 const Genres: React.FC<GenresProps> = (props) => {
   const { genres, buttons, source } = props;
@@ -16,7 +16,7 @@ const Genres: React.FC<GenresProps> = (props) => {
   if (buttons)
     return (
       <>
-        <Animated.View style={mountingStyle}>
+        <Animated.View entering={FadeIn}>
           {genres ? (
             <Category.Header>
               <Flex spacing={1}>
@@ -33,7 +33,7 @@ const Genres: React.FC<GenresProps> = (props) => {
   return (
     <>
       <Spacer y={1} />
-      <Animated.View style={mountingStyle}>
+      <Animated.View entering={FadeIn}>
         {genres ? (
           <Typography color='textSecondary' numberOfLines={2} lockTheme='dark'>
             {genres.join(' · ')}

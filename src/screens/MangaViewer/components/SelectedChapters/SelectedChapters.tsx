@@ -18,45 +18,21 @@ function plural(n: number) {
 }
 
 const SelectedChapters: React.FC<SelectedChaptersProps> = (props) => {
-  const {
-    selectedChapters,
-    checkAll,
-    selectionMode,
-    totalChapters,
-    exitSelectionMode,
-    pauseAllSelected,
-    downloadAllSelected,
-    manga,
-  } = props;
+  const { selectedChapters, checkAll, selectionMode, totalChapters, exitSelectionMode, manga, downloadSelected } =
+    props;
   const isFocused = useIsFocused();
   const selectedValues = Object.values(selectedChapters);
   const selectedLength = selectedValues.length;
   const pluralized = plural(selectedLength);
-  const [status, setStatus] = React.useState<DownloadStatus>(DownloadStatus.IDLE);
   const mounted = useIsMounted();
-  React.useEffect(() => {
-    (async () => {
-      switch (status) {
-        case DownloadStatus.START_DOWNLOADING:
-          displayMessage(`Downloading ${selectedLength} item${pluralized}`);
-          setStatus(DownloadStatus.IDLE);
-          await downloadAllSelected(selectedChapters, manga);
-          break;
-      }
-    })();
-  }, [status]);
 
   const menuItems = [
     { text: `Actions (${selectedLength} of ${totalChapters})`, isTitle: true, withSeparator: true },
     {
       text: `Download selected`,
       icon: 'download',
-      onPress: async () => {
-        const p = cursors.get();
-
-        if (p == null || (p && p[manga.title] == null)) {
-          setStatus(DownloadStatus.START_DOWNLOADING);
-        } else console.log(`Already existing cursor. Cancel it first.`);
+      onPress: () => {
+        downloadSelected(selectedChapters, manga);
       },
     },
     {

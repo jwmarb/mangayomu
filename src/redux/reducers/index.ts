@@ -3,14 +3,16 @@ import { combineReducers } from 'redux';
 import mangaReducer from './mangaReducer';
 import chaptersListReducer from './chaptersListReducer';
 import settingsReducer from './settingsReducer';
-import { chaptersListReducerConfig } from '@redux/reducers/chaptersListReducer/chaptersListReducer';
-import { persistReducer } from 'redux-persist';
+import mangaDownloadingReducer from '@redux/reducers/mangaDownloadingReducer';
+import mangaCoverReducer from '@redux/reducers/mangaCoverReducer';
 
 const reducers = combineReducers({
   mangas: mangaReducer,
   settings: settingsReducer,
   library: mangalibReducer,
-  chaptersList: persistReducer(chaptersListReducerConfig, chaptersListReducer) as typeof chaptersListReducer,
+  chaptersList: chaptersListReducer,
+  downloading: mangaDownloadingReducer,
+  cachedCovers: mangaCoverReducer,
 });
 
 export default reducers;

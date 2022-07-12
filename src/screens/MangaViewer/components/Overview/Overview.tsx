@@ -55,7 +55,12 @@ const Overview: React.FC<OverviewProps> = (props) => {
     } else if (chapters) setDataProvider((p) => p.cloneWithRows(chapters.map((p) => ({ ...p, manga }))));
   }, [chapters, language]);
 
-  const extendedState = useSelector((state: AppState) => state.chaptersList);
+  const extendedState = useSelector((state: AppState) => ({
+    ...state.chaptersList,
+    ...state.downloading,
+    chapters: state.mangas[manga.link]?.chapters ?? {},
+    metas: state.downloading.metas[manga.link],
+  }));
 
   const [layoutHeight, setLayoutHeight] = React.useState<number>(height / 2);
 

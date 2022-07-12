@@ -5,7 +5,7 @@ import animate from '@utils/Animations/animate';
 import MangaValidator from '@utils/MangaValidator';
 import withAnimatedLoading from '@utils/Animations/withAnimatedLoading';
 import React from 'react';
-import Animated from 'react-native-reanimated';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 const Authors: React.FC<AuthorsProps> = (props) => {
   const { manga, authors } = props;
@@ -19,9 +19,9 @@ const Authors: React.FC<AuthorsProps> = (props) => {
       </Typography>
     </Typography>
   ) : authors === undefined ? (
-    animate(<Skeleton.Typography width='80%' />, withAnimatedLoading)
+    <Animated.View entering={FadeIn}>{animate(<Skeleton.Typography width='80%' />, withAnimatedLoading)}</Animated.View>
   ) : authors != null ? (
-    <Animated.View style={animatedMount}>
+    <Animated.View entering={FadeIn}>
       <Typography lockTheme='dark'>
         By{' '}
         <Typography color='textSecondary' numberOfLines={1} lockTheme='dark'>

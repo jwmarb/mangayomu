@@ -2,7 +2,14 @@ import { FloatingModalBaseContainer, FloatingModalContainer } from '@components/
 import { Typography } from '@components/Typography';
 import { Portal } from '@gorhom/portal';
 import React from 'react';
-import { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import {
+  cancelAnimation,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { FloatingModalProps } from './FloatingModal.interfaces';
 
 const FloatingModal: React.FC<FloatingModalProps> = (props) => {
@@ -18,6 +25,10 @@ const FloatingModal: React.FC<FloatingModalProps> = (props) => {
       opacity.value = withSpring(0);
       bottom.value = withTiming(-100, { duration: 200, easing: Easing.ease });
     }
+    // return () => {
+    //   cancelAnimation(opacity);
+    //   cancelAnimation(bottom);
+    // }
   }, [visible]);
   const baseStyles = useAnimatedStyle(() => ({
     opacity: opacity.value,

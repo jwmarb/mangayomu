@@ -5,7 +5,14 @@ import { HeaderBuilder } from '@components/Screen/Header/Header.base';
 import { Typography } from '@components/Typography';
 import React from 'react';
 import { Dimensions } from 'react-native';
-import Animated, { Easing, useSharedValue, withTiming, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+  withSpring,
+  cancelAnimation,
+} from 'react-native-reanimated';
 import TabButton from './TabButton';
 import { TabButtonContainer, TabContainer, TabContentContainer, TabSelectedIndicator } from './Tabs.base';
 import { TabsContext } from './Tabs.context';
@@ -21,6 +28,10 @@ const Tabs: React.FC<TabsProps> = (props) => {
   React.useLayoutEffect(() => {
     translateX.value = withTiming(tabIndex * widthPerButton, { duration: 100, easing: Easing.linear });
     tabTranslateX.value = withTiming(-width * tabIndex, { duration: 200, easing: Easing.linear });
+    // return () => {
+    //   cancelAnimation(translateX);
+    //   cancelAnimation(tabTranslateX);
+    // };
   }, [tabIndex]);
   const style = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],

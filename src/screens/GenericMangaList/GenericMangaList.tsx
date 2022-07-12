@@ -19,6 +19,8 @@ import { animate, withAnimatedMounting } from '@utils/Animations';
 import { Container } from '@components/Container';
 import { View } from 'react-native';
 import useMangaLayout from '@hooks/useMangaLayout';
+import { useSelector } from 'react-redux';
+import { AppState } from '@redux/store';
 
 const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMangaList'>> = (props) => {
   if ('mangas' in props.route.params && 'type' in props.route.params) {
@@ -53,28 +55,20 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
       [collapsible.containerPaddingTop]
     );
 
-    const { ready } = useLazyLoading();
-
-    if (ready)
-      return (
-        <RecyclerListViewScreen
-          collapsible={collapsible}
-          dataProvider={dataProvider}
-          layoutProvider={layoutProvider}
-          rowRenderer={rowRenderer}
-          applyWindowCorrection={applyWindowCorrection}
-          scrollViewProps={{
-            contentContainerStyle: {
-              paddingTop: collapsible.containerPaddingTop + pixelToNumber(theme.spacing(3)),
-              paddingBottom: pixelToNumber(theme.spacing(3)),
-            },
-          }}
-        />
-      );
     return (
-      <Screen scrollable={options}>
-        <MangaItemsLoading />
-      </Screen>
+      <RecyclerListViewScreen
+        collapsible={collapsible}
+        dataProvider={dataProvider}
+        layoutProvider={layoutProvider}
+        rowRenderer={rowRenderer as any}
+        applyWindowCorrection={applyWindowCorrection}
+        scrollViewProps={{
+          contentContainerStyle: {
+            paddingTop: collapsible.containerPaddingTop + pixelToNumber(theme.spacing(3)),
+            paddingBottom: pixelToNumber(theme.spacing(3)),
+          },
+        }}
+      />
     );
   } else {
     const {
@@ -159,7 +153,7 @@ const GenericMangaList: React.FC<StackScreenProps<RootStackParamList, 'GenericMa
           onEndReached={handleOnEndReached}
           layoutProvider={layoutProvider}
           onItemLayout={handleOnItemLayout}
-          rowRenderer={rowRenderer}
+          rowRenderer={rowRenderer as any}
           applyWindowCorrection={applyWindowCorrection}
           scrollViewProps={{
             contentContainerStyle: {

@@ -6,6 +6,7 @@ import {
   withSequence,
   withTiming,
   Easing,
+  cancelAnimation,
 } from 'react-native-reanimated';
 import { AnimatedContext } from '@context/AnimatedContext';
 
@@ -21,6 +22,9 @@ export default function useAnimatedLoading() {
       ),
       -1
     );
+    return () => {
+      cancelAnimation(opacity);
+    };
   }, []);
   const style = useAnimatedStyle(() => ({
     opacity: opacity.value,

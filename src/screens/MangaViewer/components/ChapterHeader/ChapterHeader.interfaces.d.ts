@@ -4,6 +4,7 @@ import React from 'react';
 
 export interface ChapterHeaderProps {
   chapters?: MangaChapter[];
+  checked: boolean;
   sort: string;
   loading: boolean;
   refresh: () => Promise<void>;

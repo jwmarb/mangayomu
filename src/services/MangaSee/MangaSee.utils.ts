@@ -13,10 +13,14 @@ export function extractDataFromVariable(html: string | null) {
 export function extractDataFromApplicationLDJson<T>(html: string | null): T {
   if (html == null) throw Error('HTML is null');
   const target = /"mainEntity":{((\s|.)*?)}/g;
-  const closing = /}/g;
   const obj = html.match(target);
+
   if (obj == null) throw Error('Invalid regular expression');
-  const parsed = JSON.parse(`{${obj[0]}}`);
+  const parsed = JSON.parse(
+    `{${obj[0].replace(/ ".*" /g, (s) => {
+      return s.replace(/"/g, '\\"');
+    })}}`
+  );
 
   return parsed;
 }

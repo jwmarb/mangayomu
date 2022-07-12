@@ -14,6 +14,7 @@ import Animated, {
   withTiming,
   FadeIn,
   FadeOut,
+  cancelAnimation,
 } from 'react-native-reanimated';
 
 const Accordion: React.FC<AccordionProps> = (props) => {
@@ -30,6 +31,10 @@ const Accordion: React.FC<AccordionProps> = (props) => {
       fadeIn.value = withTiming(0, { duration: 100, easing: Easing.linear });
       rotate.value = withTiming(0, { duration: 100, easing: Easing.linear });
     }
+    // return () => {
+    //   cancelAnimation(fadeIn);
+    //   cancelAnimation(rotate);
+    // };
   }, [expand]);
 
   const style = useAnimatedStyle(() => ({

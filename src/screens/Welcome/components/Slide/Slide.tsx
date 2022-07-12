@@ -1,6 +1,6 @@
 import React from 'react';
 import { InteractionManager } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SlideProps } from './Slide.interfaces';
 
 const Slide: React.FC<SlideProps> = ({ children }) => {
@@ -8,6 +8,9 @@ const Slide: React.FC<SlideProps> = ({ children }) => {
 
   React.useEffect(() => {
     opacity.value = withSpring(1);
+    return () => {
+      cancelAnimation(opacity);
+    };
   }, []);
 
   const styles = useAnimatedStyle(() => ({

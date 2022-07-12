@@ -1,45 +1,42 @@
 import React from 'react';
-import { Button, Flex, Spacer, Typography } from '@components/core';
+import { Flex, Typography } from '@components/core';
 
 import connector, {
   ConnectedDownloadItemProps,
 } from '@screens/DownloadManager/components/DownloadItem/DownloadItem.redux';
-import Cover from '@components/Manga/Cover';
-import ButtonBase from '@components/Button/ButtonBase';
+
 import { useRootNavigation } from '@navigators/Root';
-import { cursors } from '@redux/reducers/chaptersListReducer';
 import ExpoStorage from '@utils/ExpoStorage';
 
+import DownloadItemTitle from '@screens/DownloadManager/components/DownloadItem/components/DownloadItemTitle';
+import DownloadItemCover from '@screens/DownloadManager/components/DownloadItem/components/DownloadItemCover';
+import DownloadItemButton from '@screens/DownloadManager/components/DownloadItem/components/DownloadItemButton';
+
 const DownloadItem: React.FC<ConnectedDownloadItemProps> = (props) => {
-  const { mangaKey, manga, downloadingManga } = props;
+  const { mangaKey, manga, downloadingManga, pauseAllSelected, cancelAllSelected } = props;
   const navigation = useRootNavigation();
-  async function handleOnCoverPress() {
-    // navigation.navigate('MangaViewer', { manga });
-    await ExpoStorage.displayOccupiedStorage();
-    // const key = 'persist:@root';
-    // const val = await AsyncStorage.getItem(key);
-    // if (val != null)g
-    //   console.log(`${key}-> SIZE = ${((encodeURI(val).split(/%..|./).length - 1) / 1024).toFixed(2)} KB`);
-    // else console.log(`${key} is null`);
-  }
+
+  const handleOnCoverPress = React.useCallback(async () => {
+    navigation.navigate('MangaViewer', { manga });
+  }, [manga]);
+
+  const handleOnPress = React.useCallback(() => {
+    navigation.navigate('ChapterDownloads', { mangaKey });
+  }, [mangaKey]);
+
   return (
     <Flex container horizontalPadding={2} justifyContent='space-between' alignItems='center'>
-      <Flex>
-        <ButtonBase opacity onPress={handleOnCoverPress}>
-          <Cover uri={manga.imageCover} fixedSize='small' />
-        </ButtonBase>
-        <Spacer x={2} />
-        <Flex direction='column'>
-          <Typography variant='subheader' numberOfLines={2}>
-            {manga.title}
-          </Typography>
-          <Typography color='textSecondary'>
-            Downloaded {downloadingManga.numDownloadCompleted} of {downloadingManga.numToDownload}
-          </Typography>
-          <Flex shrink>
-            <Button title='Pause' />
+      <Flex justifyContent='space-between'>
+        <Flex shrink>
+          <DownloadItemCover uri={manga.imageCover} onCoverPress={handleOnCoverPress} />
+          <Flex direction='column' shrink>
+            <DownloadItemTitle title={manga.title} onCoverPress={handleOnCoverPress} />
+            <Typography color='textSecondary'>
+              Downloaded {downloadingManga.numDownloadCompleted} of {downloadingManga.numToDownload}
+            </Typography>
           </Flex>
         </Flex>
+        <DownloadItemButton onPress={handleOnPress} />
       </Flex>
     </Flex>
   );

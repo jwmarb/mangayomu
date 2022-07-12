@@ -1,6 +1,7 @@
 import { Flex, Icon, Spacer, Typography } from '@components/core';
 import { MangaRatingProps } from '@screens/MangaViewer/components/MangaRating/MangaRating.interfaces';
 import React from 'react';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 const MangaRating: React.FC<MangaRatingProps> = (props) => {
   const { rating: _rating } = props;
@@ -9,7 +10,7 @@ const MangaRating: React.FC<MangaRatingProps> = (props) => {
     rating: { value, voteCount },
   } = _rating;
   return (
-    <>
+    <Animated.View entering={FadeIn}>
       {typeof value === 'number' ? (
         <Flex direction='column' alignItems='center' container verticalPadding={1} horizontalPadding={0}>
           <Flex alignItems='center'>
@@ -55,7 +56,7 @@ const MangaRating: React.FC<MangaRatingProps> = (props) => {
           </Typography>
         </Flex>
       )}
-    </>
+    </Animated.View>
   );
 };
 

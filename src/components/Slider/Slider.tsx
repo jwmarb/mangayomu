@@ -2,6 +2,7 @@ import { SliderProps } from '@components/Slider/Slider.interfaces';
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import React from 'react';
 import Animated, {
+  cancelAnimation,
   Easing,
   runOnJS,
   useAnimatedGestureHandler,
@@ -65,6 +66,11 @@ const Slider: React.FC<SliderProps> = (props) => {
   const filledStyle = useAnimatedStyle(() => ({
     width: positionLeft.value,
   }));
+  React.useEffect(() => {
+    return () => {
+      cancelAnimation(positionLeft);
+    };
+  }, []);
   return (
     <SliderContainer>
       {left}

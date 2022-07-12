@@ -81,7 +81,9 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
 
   public async getMeta(manga: Manga): Promise<MangaSeeMangaMeta> {
     const $ = await super.route({ url: manga.link });
+
     const html = $.html();
+
     const { mainEntity: data } = extractDataFromApplicationLDJson<MainEntityJSON>(html);
     const { variable, fn } = processScript(html);
     const Chapters = variable<MangaSeeChapterJSON[]>('vm.Chapters');

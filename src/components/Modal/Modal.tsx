@@ -37,9 +37,11 @@ import {
   ScrollView,
   NativeViewGestureHandler,
   NativeViewGestureHandlerPayload,
+  FlatList,
 } from 'react-native-gesture-handler';
 import Animated, {
   call,
+  cancelAnimation,
   Easing,
   runOnJS,
   runOnUI,
@@ -54,6 +56,9 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { RecyclerListView, RecyclerListViewProps } from 'recyclerlistview';
+import { ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
+import { WindowCorrection } from 'recyclerlistview/dist/reactnative/core/ViewabilityTracker';
 import { useTheme } from 'styled-components/native';
 const { height } = Dimensions.get('window');
 
@@ -69,8 +74,11 @@ const Modal: React.FC<ModalProps> = (props) => {
     minimumHeight = height * 0.5,
     closeThreshold = CLOSE_THRESHOLD,
     backdrop: backdropEnabled = true,
+    recyclerListView = false,
+    recyclerListViewProps = {} as RecyclerListViewProps,
   } = props;
   const scrollRef = React.useRef<ScrollView>(null);
+  const recyclerRef = React.useRef<RecyclerListView<any, any>>(null);
   const theme = useTheme();
   const backdrop = useSharedValue(0);
   const top = useSharedValue(height + MAX_PANEL_HEIGHT);
@@ -112,7 +120,7 @@ const Modal: React.FC<ModalProps> = (props) => {
   function effects() {
     if (visible) {
       backdrop.value = withTiming(1, { duration: 200, easing: Easing.ease });
-      top.value = withSpring(minimumHeight);
+      top.value = withTiming(minimumHeight, { duration: 300, easing: Easing.ease });
     } else {
       backdrop.value = withTiming(0, { duration: 200, easing: Easing.ease });
       setTimeout(() => {
@@ -131,8 +139,14 @@ const Modal: React.FC<ModalProps> = (props) => {
       });
       return () => {
         t.remove();
+        // cancelAnimation(backdrop);
+        // cancelAnimation(top);
       };
     }
+    // return () => {
+    //   cancelAnimation(backdrop);
+    //   cancelAnimation(top);
+    // };
   }, [visible]);
 
   const panelStyle = useAnimatedStyle(() => ({
@@ -156,6 +170,7 @@ const Modal: React.FC<ModalProps> = (props) => {
     onClose();
     setHasTouched(false);
     scrollRef.current?.scrollTo({ y: 0, animated: true });
+    recyclerRef.current?.scrollToTop(true);
   };
 
   useDerivedValue(() => {
@@ -183,16 +198,32 @@ const Modal: React.FC<ModalProps> = (props) => {
       <PanGestureHandler enabled={visible} onGestureEvent={gestureHandlers}>
         <Panel style={panelStyle}>
           <ModalContainer style={containerStyle}>
-            <ScrollView
-              ref={scrollRef}
-              onScroll={onScroll}
-              scrollEnabled={scrollEnabled}
-              contentContainerStyle={{
-                minHeight: height,
-                paddingBottom: MAX_PANEL_HEIGHT + pixelToNumber(theme.spacing(12)),
-              }}>
-              {children}
-            </ScrollView>
+            {recyclerListView ? (
+              <RecyclerListView
+                {...recyclerListViewProps}
+                externalScrollView={ScrollView as any}
+                ref={recyclerRef}
+                scrollViewProps={{
+                  onScroll,
+                  scrollEnabled,
+                  contentContainerStyle: {
+                    minHeight: height,
+                    paddingBottom: MAX_PANEL_HEIGHT + pixelToNumber(theme.spacing(12)),
+                  },
+                }}
+              />
+            ) : (
+              <ScrollView
+                ref={scrollRef}
+                onScroll={onScroll}
+                scrollEnabled={scrollEnabled}
+                contentContainerStyle={{
+                  minHeight: height,
+                  paddingBottom: MAX_PANEL_HEIGHT + pixelToNumber(theme.spacing(12)),
+                }}>
+                {children}
+              </ScrollView>
+            )}
           </ModalContainer>
         </Panel>
       </PanGestureHandler>

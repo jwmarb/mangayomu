@@ -1,4 +1,7 @@
 import React from 'react';
+import { FlatListProps } from 'react-native';
+import { ScrollView, FlatList } from 'react-native-gesture-handler';
+import { RecyclerListViewProps } from 'recyclerlistview';
 
 export interface ModalProps {
   visible: boolean;
@@ -6,6 +9,8 @@ export interface ModalProps {
   minimumHeight?: number;
   closeThreshold?: number;
   backdrop?: boolean;
+  recyclerListView?: boolean;
+  recyclerListViewProps?: RecyclerListViewProps;
 }
 
 export interface BackdropPressableProps {

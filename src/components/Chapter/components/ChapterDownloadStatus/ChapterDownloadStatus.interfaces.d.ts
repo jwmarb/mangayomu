@@ -1,7 +1,9 @@
 import { DownloadStatus } from '@utils/DownloadManager';
 
 export interface ChapterDownloadStatusProps {
-  downloadStatus: DownloadStatus;
-  isDownloading: boolean;
-  startDownload: () => void;
+  status: DownloadStatus;
+  onDownload: () => void;
+  progress: number;
+  mangaKey: string;
+  chapterKey: string;
 }

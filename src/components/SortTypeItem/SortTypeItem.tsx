@@ -4,6 +4,7 @@ import { SortTypeItemProps } from '@components/SortTypeItem/SortTypeItem.interfa
 import React from 'react';
 import { View } from 'react-native';
 import Animated, {
+  cancelAnimation,
   Easing,
   useAnimatedStyle,
   useDerivedValue,
@@ -17,6 +18,9 @@ const SortTypeItem: React.FC<SortTypeItemProps> = (props) => {
   useDerivedValue(() => {
     if (reverse) rotate.value = withTiming(180, { duration: 200, easing: Easing.linear });
     else rotate.value = withTiming(0, { duration: 200, easing: Easing.linear });
+    // return () => {
+    //   cancelAnimation(rotate);
+    // };
   }, [reverse]);
 
   const style = useAnimatedStyle(() => ({

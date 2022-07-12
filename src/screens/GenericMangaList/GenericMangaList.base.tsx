@@ -2,9 +2,10 @@ import { Skeleton, Flex } from '@components/core';
 import withAnimatedLoading from '@utils/Animations/withAnimatedLoading';
 import withAnimatedMounting from '@utils/Animations/withAnimatedMounting';
 import { Dimensions } from 'react-native';
+import Animated, { FadeOut } from 'react-native-reanimated';
 import styled, { css } from 'styled-components/native';
 
-export const MangaItemContainerEven = styled.View`
+export const MangaItemContainerEven = styled(Animated.View).attrs({ exiting: FadeOut })`
   ${(props) => css`
     align-items: flex-end;
     padding: ${props.theme.spacing(1)};

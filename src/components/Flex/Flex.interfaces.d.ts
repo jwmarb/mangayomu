@@ -12,6 +12,7 @@ type FlexBaseProps = {
   spacing?: number;
   fullWidth?: boolean;
   wrap?: boolean;
+  fullHeight?: boolean;
 };
 
 export type FlexProps = FlexBaseProps &

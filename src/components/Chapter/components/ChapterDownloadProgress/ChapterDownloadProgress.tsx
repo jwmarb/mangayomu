@@ -9,24 +9,7 @@ import ChapterDownloadActions from '../ChapterDownloadActions';
 import { ChapterDownloadProgressProps } from './ChapterDownloadProgress.interfaces';
 
 const ChapterDownloadProgress: React.FC<ChapterDownloadProgressProps> = (props) => {
-  const { totalProgress, ...rest } = props;
-
-  if (
-    totalProgress >= 0 &&
-    totalProgress < 1 &&
-    (rest.downloadStatus === DownloadStatus.START_DOWNLOADING ||
-      rest.downloadStatus === DownloadStatus.PAUSED ||
-      rest.downloadStatus === DownloadStatus.RESUME_DOWNLOADING)
-  )
-    return (
-      <>
-        <Typography variant='bottomtab' color='secondary'>
-          {(totalProgress * 100).toFixed(2)}%
-        </Typography>
-        <ChapterDownloadActions {...rest} />
-      </>
-    );
-  return null;
+  return <ChapterDownloadActions />;
 };
 
 export default React.memo(ChapterDownloadProgress);
