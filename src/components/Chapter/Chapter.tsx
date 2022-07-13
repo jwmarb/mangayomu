@@ -3,7 +3,7 @@ import Flex from '@components/Flex';
 import React from 'react';
 import { ChapterContainer } from '@components/Chapter/Chapter.base';
 import useAnimatedMounting from '@hooks/useAnimatedMounting';
-import Animated from 'react-native-reanimated';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import useMountedEffect from '@hooks/useMountedEffect';
 import useMangaSource from '@hooks/useMangaSource';
 import { DownloadStatus } from '@utils/DownloadManager/DownloadManager.interfaces';
@@ -53,8 +53,6 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
     }
   }
 
-  const style = useAnimatedMounting();
-
   function handleOnLongPress() {
     switch (selectionMode) {
       case 'normal':
@@ -71,29 +69,27 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
   }, [chapter, manga]);
 
   return (
-    <>
-      <Animated.View style={style}>
-        <ButtonBase square onPress={handleOnPress} onLongPress={handleOnLongPress}>
-          <ChapterContainer>
-            <Flex justifyContent='space-between' alignItems='center'>
-              <ChapterTitle chapter={chapter} />
-              <Flex alignItems='center'>
-                <ChapterDownloadProgress />
-                <ChapterDownloadStatus
-                  chapterKey={chapter.link}
-                  status={status}
-                  onDownload={handleOnDownload}
-                  progress={totalProgress}
-                  mangaKey={manga.link}
-                />
-                <Spacer x={1} />
-                {selectionMode === 'selection' && <Checkbox checked={isSelected} onChange={handleOnCheck} />}
-              </Flex>
+    <Animated.View entering={FadeIn}>
+      <ButtonBase square onPress={handleOnPress} onLongPress={handleOnLongPress}>
+        <ChapterContainer>
+          <Flex justifyContent='space-between' alignItems='center'>
+            <ChapterTitle chapter={chapter} />
+            <Flex alignItems='center'>
+              <ChapterDownloadProgress />
+              <ChapterDownloadStatus
+                chapterKey={chapter.link}
+                status={status}
+                onDownload={handleOnDownload}
+                progress={totalProgress}
+                mangaKey={manga.link}
+              />
+              <Spacer x={1} />
+              {selectionMode === 'selection' && <Checkbox checked={isSelected} onChange={handleOnCheck} />}
             </Flex>
-          </ChapterContainer>
-        </ButtonBase>
-      </Animated.View>
-    </>
+          </Flex>
+        </ChapterContainer>
+      </ButtonBase>
+    </Animated.View>
   );
 };
 
