@@ -17,7 +17,6 @@ export default function (
         ...newState,
       };
     case 'CACHE_URI_TO_BASE64':
-      console.log(`Cached ${action.uri}`);
       return {
         ...state,
         [action.uri]: action.base64,

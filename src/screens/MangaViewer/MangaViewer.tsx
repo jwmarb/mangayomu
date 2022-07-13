@@ -221,10 +221,6 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     }
   }, [userMangaInfo?.chapters, sort, reverse]);
 
-  React.useEffect(() => {
-    console.log(meta);
-  }, [meta]);
-
   if (ready) {
     return (
       <React.Suspense
