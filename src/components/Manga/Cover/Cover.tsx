@@ -27,7 +27,6 @@ const Cover: React.FC<ProcessedMangaCoverProps> = (props) => {
   const imageHeight = theme.spacing(calculateCoverHeight(customSize ?? cols));
 
   async function initialize() {
-    console.log(uri);
     if (base64 === undefined) {
       const fileUri = FileSystem.cacheDirectory + `${uri.replace(/[\\/]|(https?:)/g, '')}`;
       try {
@@ -59,7 +58,12 @@ const Cover: React.FC<ProcessedMangaCoverProps> = (props) => {
 
   return (
     <MangaCoverBaseContainer imageWidth={imageWidth} imageHeight={imageHeight}>
-      <MangaCoverBase source={{ uri }} imageWidth={imageWidth} imageHeight={imageHeight} entering={FadeIn} />
+      <MangaCoverBase
+        source={{ uri: base64 ?? uri }}
+        imageWidth={imageWidth}
+        imageHeight={imageHeight}
+        entering={FadeIn}
+      />
       {/* {base64 != null && (
         <MangaCoverBase source={{ uri: base64 }} imageWidth={imageWidth} imageHeight={imageHeight} entering={FadeIn} />
       )}
