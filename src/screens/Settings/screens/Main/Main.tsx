@@ -22,7 +22,11 @@ const Main: React.FC<StackScreenProps<SettingsStackParamList, 'Main'>> = (props)
         adornment={<Icon bundle='MaterialCommunityIcons' name='bell' color='textSecondary' />}
         title='Notifications'
       />
-      <ListItem adornment={<Icon bundle='Feather' name='book-open' color='textSecondary' />} title='Reader' />
+      <ListItem
+        adornment={<Icon bundle='Feather' name='book-open' color='textSecondary' />}
+        title='Reader'
+        onPress={navigateTo('Reader')}
+      />
       <ListItem adornment={<Icon bundle='Feather' name='compass' color='textSecondary' />} title='Browse' />
       <ListItem adornment={<Icon bundle='Feather' name='code' color='textSecondary' />} title='Advanced' />
     </List>
