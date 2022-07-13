@@ -1,3 +1,4 @@
+import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import MangaHost from '@services/scraper/scraper.abstract';
 import { MangaHostWithFilters } from '@services/scraper/scraper.filters';
 import { ExclusiveInclusiveFilter, Manga } from '@services/scraper/scraper.interfaces';
@@ -25,4 +26,5 @@ export type RootStackParamList = {
   };
   DownloadManager: undefined;
   ChapterDownloads: { mangaKey: string };
+  Reader: { chapter: ReadingChapterInfo };
 };

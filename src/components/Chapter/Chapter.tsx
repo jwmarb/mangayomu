@@ -19,6 +19,7 @@ import StorageManager from '@utils/StorageManager';
 import DownloadManager from '@utils/DownloadManager';
 import ExpoStorage from '@utils/ExpoStorage';
 import { getKey } from '@redux/reducers/chaptersListReducer/chaptersListReducer';
+import { useRootNavigation } from '@navigators/Root';
 
 const Chapter: React.FC<ChapterReduxProps> = (props) => {
   const {
@@ -36,6 +37,7 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
     cancelAllForSeries,
     status,
   } = props;
+  const navigation = useRootNavigation();
 
   function handleOnCheck(e: boolean) {
     checkChapter(e, chapter);
@@ -44,8 +46,7 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
   async function handleOnPress() {
     switch (selectionMode) {
       case 'normal':
-        // const downloadManager = DownloadManager.ofWithManga(chapter, manga);
-        // await cancelAll();
+        navigation.navigate('Reader', { chapter });
         break;
       case 'selection':
         checkChapter(!isSelected, chapter);

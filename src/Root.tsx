@@ -12,6 +12,7 @@ import MangaBrowser from '@screens/MangaBrowser';
 import DownloadManager from '@screens/DownloadManager';
 import ChapterDownloads from '@screens/ChapterDownloads';
 import connector, { ConnectedRootProps } from './Root.redux';
+import Reader from '@screens/Reader';
 
 const Root: React.FC<ConnectedRootProps> = (props) => {
   const { downloadAll } = props;
@@ -36,6 +37,7 @@ const Root: React.FC<ConnectedRootProps> = (props) => {
       <RootStack.Screen component={MangaBrowser} name='MangaBrowser' />
       <RootStack.Screen component={DownloadManager} name='DownloadManager' />
       <RootStack.Screen component={ChapterDownloads} name='ChapterDownloads' />
+      <RootStack.Screen component={Reader} name='Reader' options={{ headerShown: false }} />
     </RootStack.Navigator>
   );
 };
