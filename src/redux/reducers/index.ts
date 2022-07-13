@@ -5,6 +5,7 @@ import chaptersListReducer from './chaptersListReducer';
 import settingsReducer from './settingsReducer';
 import mangaDownloadingReducer from '@redux/reducers/mangaDownloadingReducer';
 import mangaCoverReducer from '@redux/reducers/mangaCoverReducer';
+import readerReducer from '@redux/reducers/readerReducer';
 
 const reducers = combineReducers({
   mangas: mangaReducer,
@@ -13,6 +14,7 @@ const reducers = combineReducers({
   chaptersList: chaptersListReducer,
   downloading: mangaDownloadingReducer,
   cachedCovers: mangaCoverReducer,
+  reader: readerReducer,
 });
 
 export default reducers;

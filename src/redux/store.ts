@@ -9,7 +9,7 @@ import ExpoStorage from '@utils/ExpoStorage';
 const persistConfig: PersistConfig<AppState> = {
   key: 'root',
   storage: ExpoStorage,
-  blacklist: ['chaptersList'],
+  blacklist: ['chaptersList', 'reader'],
 };
 
 const persistReducers = persistReducer(persistConfig, reducers);

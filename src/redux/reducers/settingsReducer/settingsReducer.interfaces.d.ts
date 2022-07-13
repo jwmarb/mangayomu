@@ -7,6 +7,9 @@ export interface SettingsReducerState {
     perColumn: number;
     fontSize: number;
   };
+  reader: {
+    backgroundColor: 'black' | 'white' | 'gray';
+  };
 }
 
 export type SettingsReducerAction =
