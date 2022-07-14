@@ -66,7 +66,7 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
             <Icon
               bundle='MaterialCommunityIcons'
               name='check-bold'
-              size='small'
+              size='checkbox'
               color={theme.palette.background.paper}
             />
           </Animated.View>
