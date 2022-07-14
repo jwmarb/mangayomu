@@ -1,13 +1,22 @@
-import { Button, Icon, List, ListItem, ListSection } from '@components/core';
+import { Button, Checkbox, Icon, List, ListItem, ListSection, Switch } from '@components/core';
 import { ReaderBackgroundColor, ReaderDirection } from '@redux/reducers/settingsReducer/settingsReducer';
+import ItemDropdown from '@screens/Settings/screens/components/ItemDropdown';
+import ItemToggle from '@screens/Settings/screens/components/ItemToggle';
+
 import connector, { ConnectedReaderSettingsScreenProps } from '@screens/Settings/screens/Reader/Reader.redux';
 import React from 'react';
-import { Switch } from 'react-native-gesture-handler';
 import { HoldItem } from 'react-native-hold-menu';
 import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
 
 const Reader: React.FC<ConnectedReaderSettingsScreenProps> = (props) => {
-  const { settings, changeReaderBackground, changeReaderDirection } = props;
+  const {
+    settings,
+    changeReaderBackground,
+    changeReaderDirection,
+    toggleSkipChaptersMarkedRead,
+    toggleKeepDeviceAwake,
+    toggleShowPageNumber,
+  } = props;
   const bgColorOptions: MenuItemProps[] = React.useMemo(
     () =>
       Object.values(ReaderBackgroundColor).map(
@@ -32,20 +41,25 @@ const Reader: React.FC<ConnectedReaderSettingsScreenProps> = (props) => {
       ),
     []
   );
+
   return (
     <>
       <ListSection title='Reader' />
-      <ListItem title='Background color' subtitle={settings.backgroundColor} holdItem={bgColorOptions} />
-      <ListItem
-        holdItem={readerDirectionOptions}
+      <ItemDropdown title='Background color' subtitle={settings.backgroundColor} items={bgColorOptions} />
+      <ItemDropdown
         title='Reading direction'
         subtitle={settings.preferredReadingDirection}
+        items={readerDirectionOptions}
       />
-      <ListItem title='Keep screen awake' />
-      <ListItem title='Show page number' />
-      <ListItem title='Skip chapters marked read' />
+      <ItemToggle title='Keep device awake' enabled={settings.keepDeviceAwake} onChange={toggleKeepDeviceAwake} />
+      <ItemToggle title='Show page number' enabled={settings.showPageNumber} onChange={toggleShowPageNumber} />
+      <ItemToggle
+        title='Skip chapters marked read'
+        enabled={settings.skipChaptersMarkedRead}
+        onChange={toggleSkipChaptersMarkedRead}
+      />
     </>
   );
 };
 
-export default connector(React.memo(Reader));
+export default connector(Reader);
