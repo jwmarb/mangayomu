@@ -84,8 +84,8 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
       compareFn: (a: ReadingMangaInfo & LibraryManga, b: ReadingMangaInfo & LibraryManga) => number
     ) => {
       return _createSort((a: LibraryManga, b: LibraryManga) => {
-        const mangaA = history[a.manga.link];
-        const mangaB = history[b.manga.link];
+        const mangaA = history[a.mangaKey];
+        const mangaB = history[b.mangaKey];
         return compareFn({ ...mangaA, ...a }, { ...mangaB, ...b });
       });
     };
@@ -123,7 +123,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     setDataProvider((prev) =>
       prev
         .newInstance(dataProviderFn)
-        .cloneWithRows(mangas.filter((x) => titleIncludes(query)(x.manga)).sort(selectedSortOption))
+        .cloneWithRows(mangas.filter((x) => titleIncludes(query)(history[x.mangaKey])).sort(selectedSortOption))
     );
   }, [mangas.length, query, sort, reverse]);
 
@@ -139,6 +139,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
       layoutProvider={layoutProvider}
       rowRenderer={rowRenderer}
       // forceNonDeterministicRendering
+      extendedState={history}
       scrollViewProps={{ contentContainerStyle: { paddingTop: 24, paddingBottom: 64 } }}
     />
   );

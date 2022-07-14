@@ -2,6 +2,7 @@ import { Container } from '@components/Container';
 import Manga from '@components/Manga';
 import { calculateCoverWidth, calculateCoverHeight } from '@components/Manga/Cover/Cover.helpers';
 import { LibraryManga } from '@redux/reducers/mangalibReducer/mangalibReducer.interfaces';
+import { MangaReducerState } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import { MangaInLibrary } from '@screens/Home/screens/MangaLibrary/MangaLibrary.base';
 import { SPACE_MULTIPLIER } from '@theme/Spacing';
 import { RowRenderer } from '@utils/RecyclerListView.interfaces';
@@ -15,7 +16,7 @@ export const LayoutLibraryMangaType = {
   INBETWEEN: 2,
 };
 
-export const dataProviderFn = (r1: LibraryManga, r2: LibraryManga) => r1.manga.title === r2.manga.title;
+export const dataProviderFn = (r1: LibraryManga, r2: LibraryManga) => r1.mangaKey === r2.mangaKey;
 
 export const generateNewLayout = (cols: number, fontSize: number) => {
   const spacing = SPACE_MULTIPLIER * 2;
@@ -44,13 +45,18 @@ export const generateNewLayout = (cols: number, fontSize: number) => {
   );
 };
 
-export const rowRenderer: RowRenderer = (type, data: LibraryManga) => {
+export const rowRenderer: any = (
+  type: string | number,
+  data: LibraryManga,
+  index: number,
+  extendedState: MangaReducerState
+) => {
   switch (type) {
     case LayoutLibraryMangaType.FIRST:
-      return <MangaInLibrary manga={data.manga} first />;
+      return <MangaInLibrary manga={extendedState[data.mangaKey]} first />;
 
     default:
     case LayoutLibraryMangaType.INBETWEEN:
-      return <MangaInLibrary manga={data.manga} />;
+      return <MangaInLibrary manga={extendedState[data.mangaKey]} />;
   }
 };

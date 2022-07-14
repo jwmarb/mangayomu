@@ -7,7 +7,7 @@ export interface MangaLibReducerState {
 }
 
 export interface LibraryManga {
-  manga: Manga;
+  mangaKey: string;
   dateAdded: string;
 }
 

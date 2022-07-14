@@ -17,12 +17,12 @@ export default function (
     case 'ADD_TO_LIBRARY':
       return {
         ...state,
-        mangas: [...state.mangas, { manga: action.payload, dateAdded: new Date().toString() }],
+        mangas: [...state.mangas, { mangaKey: action.payload.link, dateAdded: new Date().toString() }],
       };
     case 'REMOVE_FROM_LIBRARY': {
       return {
         ...state,
-        mangas: state.mangas.filter((manga) => manga.manga.link !== action.payload.link),
+        mangas: state.mangas.filter((manga) => manga.mangaKey !== action.payload.link),
       };
     }
     default:
