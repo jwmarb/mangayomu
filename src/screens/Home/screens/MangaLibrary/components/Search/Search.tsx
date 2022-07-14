@@ -48,7 +48,7 @@ const Search: React.FC<SearchProps> = React.forwardRef((props, ref) => {
           <>
             <MangaSource />
             <Spacer x={1} />
-            <Typography variant='subheader'>{title}</Typography>
+            <Typography variant='tabtitle'>{title}</Typography>
           </>
         )}
       </Flex>

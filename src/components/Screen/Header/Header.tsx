@@ -26,7 +26,7 @@ const BottomTabHeader: React.FC<BottomTabHeaderProps> = (props) => {
           <Spacer x={1} />
         </>
       )}
-      <Typography variant='subheader'>{headerTitle}</Typography>
+      <Typography variant='tabtitle'>{headerTitle}</Typography>
       <Flex grow justifyContent='flex-end'>
         {HeaderRightComponent && <HeaderRightComponent />}
       </Flex>
@@ -58,10 +58,10 @@ const Header: React.FC<StackHeaderProps> = (props) => {
       ) : (
         <>
           <IconButton icon={<Icon bundle='Feather' name='arrow-left' />} onPress={handleOnPress} />
-          <Spacer x={1} />
+          <Spacer x={1.5} />
         </>
       )}
-      <Typography variant='subheader'>{headerTitle}</Typography>
+      <Typography variant='tabtitle'>{headerTitle}</Typography>
       <Flex grow justifyContent='flex-end'>
         {HeaderRightComponent && <HeaderRightComponent />}
       </Flex>
