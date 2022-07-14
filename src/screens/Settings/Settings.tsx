@@ -11,9 +11,7 @@ const Settings: React.FC = (props) => {
   return (
     <SettingsStack.Navigator initialRouteName='Main' screenOptions={{ header: Header }}>
       <SettingsStack.Screen component={Main} name='Main' options={{ headerTitle: 'Settings' }} />
-      <SettingsStack.Screen component={Appearance} name='Appearance' options={{ headerTitle: 'Appearance' }} />
       <SettingsStack.Screen component={MangasColumn} name='MangasColumn' options={{ headerTitle: 'Manga Layout' }} />
-      <SettingsStack.Screen component={Reader} name='Reader' options={{ headerTitle: 'Reader' }} />
     </SettingsStack.Navigator>
   );
 };

@@ -3,7 +3,6 @@ export type SettingsStackParamList = {
   General: undefined;
   Appearance: undefined;
   Notifications: undefined;
-  Reader: undefined;
   Browse: undefined;
   Advanced: undefined;
   MangasColumn: undefined;

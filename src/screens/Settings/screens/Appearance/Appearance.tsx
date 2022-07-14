@@ -1,10 +1,10 @@
-import { Icon, List, ListItem } from '@components/core';
+import { Icon, List, ListItem, ListSection } from '@components/core';
 import { SettingsStackParamList } from '@navigators/Settings/Settings.interfaces';
-import { StackScreenProps } from '@react-navigation/stack';
+import { useSettingsNavigation } from '@navigators/Settings/Settings';
 import React from 'react';
 
-const Appearance: React.FC<StackScreenProps<SettingsStackParamList, 'Appearance'>> = (props) => {
-  const { navigation } = props;
+const Appearance: React.FC = () => {
+  const navigation = useSettingsNavigation();
   const navigateTo = (screenName: keyof SettingsStackParamList) => {
     return () => {
       navigation.navigate(screenName);
@@ -12,15 +12,16 @@ const Appearance: React.FC<StackScreenProps<SettingsStackParamList, 'Appearance'
   };
 
   return (
-    <List>
+    <>
+      <ListSection title='Appearance' />
       <ListItem
-        adornment={<Icon bundle='MaterialCommunityIcons' name='book' color='textSecondary' />}
+        adornment={<Icon bundle='MaterialCommunityIcons' name='book-outline' color='primary' />}
         subtitle='Change the way mangas appear on your screen'
-        title='Manga Layout'
+        title='Manga layout'
         onPress={navigateTo('MangasColumn')}
       />
-    </List>
+    </>
   );
 };
 
-export default Appearance;
+export default React.memo(Appearance);

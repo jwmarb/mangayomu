@@ -1,7 +1,9 @@
 import React from 'react';
-import { List, Icon, ListItem } from '@components/core';
+import { List, Icon, ListItem, Typography, Divider, ListSection } from '@components/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import { SettingsStackParamList } from '@navigators/Settings/Settings.interfaces';
+import Reader from '@screens/Settings/screens/Reader';
+import Appearance from '@screens/Settings/screens/Appearance';
 
 const Main: React.FC<StackScreenProps<SettingsStackParamList, 'Main'>> = (props) => {
   const { navigation } = props;
@@ -12,23 +14,17 @@ const Main: React.FC<StackScreenProps<SettingsStackParamList, 'Main'>> = (props)
   }
   return (
     <List>
-      <ListItem adornment={<Icon bundle='MaterialCommunityIcons' name='cog' color='textSecondary' />} title='General' />
       <ListItem
-        onPress={navigateTo('Appearance')}
-        adornment={<Icon bundle='MaterialCommunityIcons' name='palette' color='textSecondary' />}
-        title='Appearance'
+        adornment={<Icon bundle='MaterialCommunityIcons' name='cog-outline' color='primary' />}
+        title='General'
       />
-      <ListItem
-        adornment={<Icon bundle='MaterialCommunityIcons' name='bell' color='textSecondary' />}
-        title='Notifications'
-      />
-      <ListItem
-        adornment={<Icon bundle='Feather' name='book-open' color='textSecondary' />}
-        title='Reader'
-        onPress={navigateTo('Reader')}
-      />
-      <ListItem adornment={<Icon bundle='Feather' name='compass' color='textSecondary' />} title='Browse' />
-      <ListItem adornment={<Icon bundle='Feather' name='code' color='textSecondary' />} title='Advanced' />
+      <Divider />
+      <Appearance />
+      <Divider />
+      <Reader />
+      <Divider />
+      <ListItem adornment={<Icon bundle='Feather' name='compass' color='primary' />} title='Browse' />
+      <ListItem adornment={<Icon bundle='Feather' name='code' color='primary' />} title='Advanced' />
     </List>
   );
 };
