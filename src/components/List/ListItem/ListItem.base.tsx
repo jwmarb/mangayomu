@@ -8,3 +8,9 @@ export const ListItemBase = styled.View`
 export const ListItemSubtitleContainer = styled.View`
   max-width: 90%;
 `;
+
+export const ListAdornmentLeftContainer = styled.View`
+  ${(props) => css`
+    width: ${props.theme.spacing(6.5)};
+  `}
+`;
