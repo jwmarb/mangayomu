@@ -19,30 +19,36 @@ export const cancelAllForSeries = (mangaKey: string) => {
   return async (dispatch: AppDispatch, getState: StateGetter) => {
     if (mangaKey in getState().downloading.mangas) {
       try {
-        for (const key in getState().downloading.mangas[mangaKey]!.chapters) {
+        delete downloadingKeys[mangaKey];
+        const keys = Object.keys(getState().downloading.mangas[mangaKey]!.chapters);
+        for (let i = keys.length - 1; i >= 0; i--) {
+          const key = keys[i];
           const downloadManager = DownloadManager.ofWithManga(
             getState().mangas[mangaKey].chapters[key],
             getState().mangas[mangaKey]
           );
           switch (downloadManager.getStatus()) {
-            //           case DownloadStatus.DOWNLOADING:
-            //             case DownloadStatus.RESUME_DOWNLOADING:
-            //             case DownloadStatus.START_DOWNLOADING:
-            // case DownloadStatus.PAUSED:
-            //   await downloadManager.cancel();
-            //   break;
+            case DownloadStatus.DOWNLOADING:
+            case DownloadStatus.RESUME_DOWNLOADING:
+            case DownloadStatus.START_DOWNLOADING:
+            case DownloadStatus.PAUSED:
+              console.log(`Cancelled ${key}`);
+              await downloadManager.cancel();
+              break;
             case DownloadStatus.QUEUED:
+              console.log(`Unqueued ${key}`);
+
               downloadManager.unqueue();
               break;
           }
         }
-        if (downloadingKeys[mangaKey] != null) {
-          const downloadManager = DownloadManager.ofWithManga(
-            getState().mangas[mangaKey].chapters[downloadingKeys[mangaKey]!],
-            getState().mangas[mangaKey]
-          );
-          await downloadManager.cancel();
-        }
+        // if (downloadingKeys[mangaKey] != null) {
+        //   const downloadManager = DownloadManager.ofWithManga(
+        //     getState().mangas[mangaKey].chapters[downloadingKeys[mangaKey]!],
+        //     getState().mangas[mangaKey]
+        //   );
+        //   await downloadManager.cancel();
+        // }
       } catch (e) {
         console.error(e);
       } finally {
@@ -144,7 +150,9 @@ export const downloadAll = () => {
                               return res();
                             default:
                               clearInterval(interval);
-                              rej1(`Unable to download ${chapterKey} ${downloadManager.getError()}`);
+                              rej1(
+                                `Unable to download ${chapterKey} ${downloadManager.getError()}\nstatus: ${downloadManager.getStatus()}`
+                              );
                               break;
                           }
                         } else rej(`${chapterKey} has been paused before it could even be downloaded`);
