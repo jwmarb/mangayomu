@@ -2,6 +2,13 @@ import MangaSee from '@services/MangaSee';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { SettingsReducerAction, SettingsReducerState } from './settingsReducer.interfaces';
 
+export enum ReaderDirection {
+  LEFT_TO_RIGHT = 'Left to Right',
+  RIGHT_TO_LEFT = 'Right to Left',
+  VERTICAL = 'Vertical',
+  WEBTOON = 'Webtoon',
+}
+
 export enum ReaderBackgroundColor {
   GRAY = 'Gray',
   BLACK = 'Black',
@@ -18,7 +25,7 @@ const INITIAL_STATE: SettingsReducerState = {
   reader: {
     backgroundColor: ReaderBackgroundColor.BLACK,
     keepDeviceAwake: true,
-    preferredReadingDirection: 'Left to right',
+    preferredReadingDirection: ReaderDirection.LEFT_TO_RIGHT,
     showPageNumber: true,
     skipChaptersMarkedRead: true,
   },
@@ -26,6 +33,14 @@ const INITIAL_STATE: SettingsReducerState = {
 
 const reducer = (state: SettingsReducerState = INITIAL_STATE, action: SettingsReducerAction): SettingsReducerState => {
   switch (action.type) {
+    case 'CHANGE_READER_DIRECTION':
+      return {
+        ...state,
+        reader: {
+          ...state.reader,
+          preferredReadingDirection: action.direction,
+        },
+      };
     case 'CHANGE_BACKGROUND_COLOR':
       return {
         ...state,
