@@ -1,7 +1,6 @@
 import Flex from '@components/Flex';
 import Icon from '@components/Icon';
 import ListItem from '@components/List/ListItem';
-import { ArrowUpContainer } from '@components/SortTypeItem/SortTypeItem.base';
 import { SortTypeItemProps } from '@components/SortTypeItem/SortTypeItem.interfaces';
 import React from 'react';
 import { View } from 'react-native';
