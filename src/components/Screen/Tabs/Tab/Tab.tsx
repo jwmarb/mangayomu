@@ -4,9 +4,11 @@ import { TabButtonBase, TabContainer } from '@components/Screen/Tabs/Tabs.base';
 import Spacer from '@components/Spacer';
 import { Typography } from '@components/Typography';
 import React from 'react';
+import { useTheme } from 'styled-components/native';
 
 const Tab: React.FC<TabProps> = (props) => {
   const { tabBarIcon, routeName, routeKey, navigation, isFocused } = props;
+  const theme = useTheme();
   const TabIcon = tabBarIcon as React.FC<Omit<React.ComponentProps<typeof Icon>, 'bundle' | 'name'>>;
   const color = React.useMemo(() => (isFocused ? 'primary' : 'disabled'), [isFocused]);
   const onPress = React.useCallback(() => {
@@ -32,7 +34,7 @@ const Tab: React.FC<TabProps> = (props) => {
         </TabContainer>
       </TabButtonBase>
     ),
-    [isFocused]
+    [isFocused, theme]
   );
 };
 
