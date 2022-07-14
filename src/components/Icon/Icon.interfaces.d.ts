@@ -26,7 +26,7 @@ export type IconProps<T extends IconPack> = {
     : '';
   color?: AppColors;
   lockTheme?: ColorSchemeName;
-  size?: 'small' | 'large' | 'medium' | 'tab';
+  size?: 'small' | 'large' | 'medium' | 'tab' | 'checkbox';
 };
 
 export type IconBaseProps<

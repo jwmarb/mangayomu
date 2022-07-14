@@ -25,6 +25,8 @@ export default function Icon<T extends IconPack>(props: IconProps<T>) {
         return RFValue(14);
       case 'tab':
         return RFValue(16);
+      case 'checkbox':
+        return RFValue(10);
     }
   }, [size]);
 
