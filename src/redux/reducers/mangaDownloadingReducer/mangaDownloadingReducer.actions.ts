@@ -32,12 +32,9 @@ export const cancelAllForSeries = (mangaKey: string) => {
             case DownloadStatus.RESUME_DOWNLOADING:
             case DownloadStatus.START_DOWNLOADING:
             case DownloadStatus.PAUSED:
-              console.log(`Cancelled ${key}`);
               await downloadManager.cancel();
               break;
             case DownloadStatus.QUEUED:
-              console.log(`Unqueued ${key}`);
-
               downloadManager.unqueue();
               break;
           }
