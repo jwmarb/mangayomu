@@ -12,7 +12,17 @@ export const FloatingModalBaseContainer = styled(Animated.View).attrs({
   right: 0;
   bottom: 0;
 `;
-export const FloatingModalContainer = styled(Animated.View)`
+export const FloatingModalContainer = styled(Animated.View).attrs({
+  shadowOffset: {
+    shadowColor: '#000',
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.25,
+  shadowRadius: 3.84,
+
+  elevation: 5,
+})`
   ${(props) => css`
     position: absolute;
     left: 0;
