@@ -13,7 +13,7 @@ import React from 'react';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { SwitchProps } from './Switch.interfaces';
 import { Constants } from '@theme/core';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { TouchableWithoutFeedback } from 'react-native';
 import ButtonBase from '@components/Button/ButtonBase';
 import { Container } from '@components/Container';
 import Flex from '@components/Flex';
@@ -56,19 +56,13 @@ const Switch: React.FC<SwitchProps> = (props) => {
         <SwitchSliderEnabled style={enabledSliderStyle} />
         <SwitchSlider style={disabledSliderStyle} />
         <SwitchCircleBase style={circleStyle}>
-          <ButtonBase round>
+          <ButtonBase round onPress={handleOnPress}>
             <SwitchCirclePadding>
-              {/* <SwitchCircleDebug /> */}
               <SwitchCircle style={disabledSliderStyle} />
               <SwitchCircleEnabled style={enabledSliderStyle} />
             </SwitchCirclePadding>
           </ButtonBase>
         </SwitchCircleBase>
-        {/* <SwitchCircleBase style={enabledSliderStyle}>
-          <ButtonBase round>
-            <SwitchCircleEnabled />
-          </ButtonBase>
-        </SwitchCircleBase> */}
       </SwitchBase>
     </TouchableWithoutFeedback>
   );
