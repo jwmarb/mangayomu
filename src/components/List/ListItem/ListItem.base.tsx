@@ -14,3 +14,14 @@ export const ListAdornmentLeftContainer = styled.View`
     width: ${props.theme.spacing(6.5)};
   `}
 `;
+
+export const ListItemButtonBaseContainer = styled.View`
+  ${(props) => css`
+    padding-vertical: ${props.theme.spacing(2)};
+    padding-horizontal: ${props.theme.spacing(3)};
+    align-items: center;
+    background-color: ${props.theme.palette.background.default.get()};
+    display: flex;
+    flex-direction: row;
+  `}
+`;

@@ -4,6 +4,7 @@ import Flex from '@components/Flex';
 import {
   ListAdornmentLeftContainer,
   ListItemBase,
+  ListItemButtonBaseContainer,
   ListItemSubtitleContainer,
 } from '@components/List/ListItem/ListItem.base';
 import { ListItemProps } from '@components/List/ListItem/ListItem.interfaces';
@@ -18,42 +19,40 @@ const ListItem: React.FC<ListItemProps> = (props) => {
   if (holdItem)
     return (
       <ListItemBase>
-        <ButtonBase expand onPress={() => {}} color='primary' square>
-          <View>
-            <HoldItem items={holdItem} activateOn='tap'>
-              <Flex container verticalPadding={2} horizontalPadding={3} alignItems='center'>
-                <ListAdornmentLeftContainer>
-                  {adornment && adornmentPlacement === 'left' && <>{adornment}</>}
-                </ListAdornmentLeftContainer>
-                <Flex direction='column' grow>
-                  <Typography numberOfLines={1} {...typographyProps}>
-                    {title}
-                  </Typography>
-                  {subtitle && (
-                    <ListItemSubtitleContainer>
-                      <Typography variant='body2' color='textSecondary' {...typographyProps}>
-                        {subtitle}
-                      </Typography>
-                    </ListItemSubtitleContainer>
-                  )}
-                </Flex>
-                {adornment && adornmentPlacement === 'right' && (
-                  <>
-                    <Spacer x={3} />
-                    {adornment}
-                  </>
+        <HoldItem items={holdItem} activateOn='tap'>
+          <ButtonBase expand onPress={() => {}} color='primary' square>
+            <ListItemButtonBaseContainer>
+              <ListAdornmentLeftContainer>
+                {adornment && adornmentPlacement === 'left' && <>{adornment}</>}
+              </ListAdornmentLeftContainer>
+              <Flex direction='column' grow>
+                <Typography numberOfLines={1} {...typographyProps}>
+                  {title}
+                </Typography>
+                {subtitle && (
+                  <ListItemSubtitleContainer>
+                    <Typography variant='body2' color='textSecondary' {...typographyProps}>
+                      {subtitle}
+                    </Typography>
+                  </ListItemSubtitleContainer>
                 )}
               </Flex>
-            </HoldItem>
-          </View>
-        </ButtonBase>
+              {adornment && adornmentPlacement === 'right' && (
+                <>
+                  <Spacer x={3} />
+                  {adornment}
+                </>
+              )}
+            </ListItemButtonBaseContainer>
+          </ButtonBase>
+        </HoldItem>
       </ListItemBase>
     );
   if (onPress)
     return (
       <ListItemBase>
         <ButtonBase expand onPress={onPress} color='primary' square>
-          <Flex container verticalPadding={2} horizontalPadding={3} alignItems='center'>
+          <ListItemButtonBaseContainer>
             <ListAdornmentLeftContainer>
               {adornment && adornmentPlacement === 'left' && <>{adornment}</>}
             </ListAdornmentLeftContainer>
@@ -75,14 +74,14 @@ const ListItem: React.FC<ListItemProps> = (props) => {
                 {adornment}
               </>
             )}
-          </Flex>
+          </ListItemButtonBaseContainer>
         </ButtonBase>
       </ListItemBase>
     );
 
   return (
     <ListItemBase>
-      <Flex container verticalPadding={2} horizontalPadding={3} alignItems='center'>
+      <ListItemButtonBaseContainer>
         <ListAdornmentLeftContainer>
           {adornment && adornmentPlacement === 'left' && <>{adornment}</>}
         </ListAdornmentLeftContainer>
@@ -105,7 +104,7 @@ const ListItem: React.FC<ListItemProps> = (props) => {
             {adornment}
           </>
         )}
-      </Flex>
+      </ListItemButtonBaseContainer>
     </ListItemBase>
   );
 };
