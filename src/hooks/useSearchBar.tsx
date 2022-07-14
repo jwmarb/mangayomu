@@ -41,6 +41,8 @@ type SearchBarOptions = {
    * A callback that is called when the user exits the search
    */
   onExitSearch?: () => void;
+
+  stateSetter?: [string, React.Dispatch<React.SetStateAction<string>>];
 };
 
 /**
@@ -55,7 +57,7 @@ export default function useSearchBar(options: SearchBarOptions | (() => SearchBa
     onSubmitEditing: () => void 0,
     ...(typeof options === 'function' ? options() : options),
   };
-  const [query, setQuery] = React.useState<string>(defaultOptions.initialQuery ?? '');
+  const [query, setQuery] = defaultOptions.stateSetter ?? React.useState<string>(defaultOptions.initialQuery ?? '');
   const [showSearchBar, setShowSearchBar] = React.useState<boolean>(false);
   const textRef = React.useRef<TextInput>();
   React.useEffect(() => {
