@@ -1,6 +1,5 @@
-import { ReaderDirection } from '@redux/reducers/readerReducer/readerReducer.interfaces';
 import MangaHost from '@services/scraper/scraper.abstract';
-import { ReaderBackgroundColor } from './settingsReducer';
+import { ReaderBackgroundColor, ReaderDirection } from './settingsReducer';
 
 export interface SettingsReducerState {
   showIntroduction: boolean;
@@ -25,4 +24,5 @@ export type SettingsReducerAction =
   | { type: 'SELECT_SOURCE'; payload: MangaHost }
   | { type: 'ADJUST_MANGAS_PER_COLUMN'; payload: number }
   | { type: 'ADJUST_MANGAS_TITLES_PER_COLUMN'; payload: number }
-  | { type: 'CHANGE_BACKGROUND_COLOR'; color: ReaderBackgroundColor };
+  | { type: 'CHANGE_BACKGROUND_COLOR'; color: ReaderBackgroundColor }
+  | { type: 'CHANGE_READER_DIRECTION'; direction: ReaderDirection };

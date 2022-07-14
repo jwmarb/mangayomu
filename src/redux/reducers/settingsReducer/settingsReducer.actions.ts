@@ -1,4 +1,4 @@
-import { ReaderBackgroundColor } from '@redux/reducers/settingsReducer/settingsReducer';
+import { ReaderBackgroundColor, ReaderDirection } from '@redux/reducers/settingsReducer/settingsReducer';
 import { AppDispatch } from '@redux/store';
 import { Dispatch } from 'redux';
 import { SettingsReducerAction, SettingsReducerState } from './settingsReducer.interfaces';
@@ -23,7 +23,12 @@ export function adjustTitleSize(c: number) {
 
 export function changeReaderBackground(color: ReaderBackgroundColor) {
   return (dispatch: AppDispatch) => {
-    console.log(`Changed background color to ${color}`);
     dispatch({ type: 'CHANGE_BACKGROUND_COLOR', color });
+  };
+}
+
+export function changeReaderDirection(direction: ReaderDirection) {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'CHANGE_READER_DIRECTION', direction });
   };
 }

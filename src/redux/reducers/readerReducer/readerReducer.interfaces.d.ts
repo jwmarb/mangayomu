@@ -1,5 +1,3 @@
-export type ReaderDirection = 'Left to right' | 'Right to left' | 'Webtoon' | 'Vertical';
-
 export interface ReaderProfile {}
 
 export type ReaderReducerState = {
