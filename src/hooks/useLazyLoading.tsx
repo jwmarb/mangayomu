@@ -2,11 +2,19 @@ import Flex from '@components/Flex';
 import Progress from '@components/Progress';
 import React from 'react';
 import { InteractionManager } from 'react-native';
+import Animated, { FadeInUp, FadeOutDown } from 'react-native-reanimated';
+import styled, { css } from 'styled-components/native';
+
+const Container = styled(Animated.View).attrs({ entering: FadeInUp, exiting: FadeOutDown })`
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+`;
 
 const Fallback = (
-  <Flex grow justifyContent='center' alignItems='center'>
+  <Container>
     <Progress />
-  </Flex>
+  </Container>
 );
 
 /**
