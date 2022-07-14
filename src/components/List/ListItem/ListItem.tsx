@@ -13,7 +13,7 @@ const ListItem: React.FC<ListItemProps> = (props) => {
     return (
       <ListItemBase>
         <ButtonBase expand onPress={onPress} color='primary' square>
-          <Flex container verticalPadding={1.75} horizontalPadding={3} alignItems='center'>
+          <Flex container verticalPadding={2} horizontalPadding={3} alignItems='center'>
             {adornment && adornmentPlacement === 'left' && (
               <>
                 {adornment}
@@ -45,7 +45,7 @@ const ListItem: React.FC<ListItemProps> = (props) => {
 
   return (
     <ListItemBase>
-      <Flex container verticalPadding={1.75} horizontalPadding={3} alignItems='center'>
+      <Flex container verticalPadding={2} horizontalPadding={3} alignItems='center'>
         {adornment && adornmentPlacement === 'left' && (
           <>
             {adornment}
