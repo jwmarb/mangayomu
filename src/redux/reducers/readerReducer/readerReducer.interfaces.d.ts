@@ -1,11 +1,6 @@
 export type ReaderDirection = 'Left to right' | 'Right to left' | 'Webtoon' | 'Vertical';
 
-export interface ReaderProfile {
-  preferredReadingDirection: ReaderDirection;
-  keepDeviceAwake: boolean;
-  showPageNumber: boolean;
-  skipChaptersMarkedRead: boolean;
-}
+export interface ReaderProfile {}
 
 export type ReaderReducerState = {
   scrollPosition: number;

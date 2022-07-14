@@ -1,3 +1,5 @@
+import { ReaderBackgroundColor } from '@redux/reducers/settingsReducer/settingsReducer';
+import { AppDispatch } from '@redux/store';
 import { Dispatch } from 'redux';
 import { SettingsReducerAction, SettingsReducerState } from './settingsReducer.interfaces';
 
@@ -16,5 +18,12 @@ export function adjustColumns(c: number) {
 export function adjustTitleSize(c: number) {
   return (dispatch: Dispatch<SettingsReducerAction>) => {
     dispatch({ type: 'ADJUST_MANGAS_TITLES_PER_COLUMN', payload: c });
+  };
+}
+
+export function changeReaderBackground(color: ReaderBackgroundColor) {
+  return (dispatch: AppDispatch) => {
+    console.log(`Changed background color to ${color}`);
+    dispatch({ type: 'CHANGE_BACKGROUND_COLOR', color });
   };
 }
