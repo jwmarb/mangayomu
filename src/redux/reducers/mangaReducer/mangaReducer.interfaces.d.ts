@@ -48,6 +48,11 @@ export interface ReadingMangaInfo extends MangaMeta, Manga {
   inLibrary: boolean;
 
   /**
+   * The date when the manga was added into the library. It is null if the manga is not in the library
+   */
+  dateAddedInLibrary: string | null;
+
+  /**
    * The current chapter the user is reading
    */
   currentlyReadingChapter: ReadingChapterInfo | null;

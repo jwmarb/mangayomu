@@ -3,6 +3,7 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { StackScreenProps } from '@react-navigation/stack';
 import { AppState } from '@redux/store';
 import { connect, ConnectedProps } from 'react-redux';
+import { searchInLibrary } from '@redux/reducers/mangalibReducer/mangalibReducer.actions';
 
 const mapStateToProps = (state: AppState, props: BottomTabScreenProps<BottomTabParamList, 'Library'>) => {
   return {
@@ -11,10 +12,11 @@ const mapStateToProps = (state: AppState, props: BottomTabScreenProps<BottomTabP
     history: state.mangas,
     cols: state.settings.mangaCover.perColumn,
     fontSize: state.settings.mangaCover.fontSize,
+    query: state.library.search,
   };
 };
 
-const connector = connect(mapStateToProps);
+const connector = connect(mapStateToProps, { searchInLibrary });
 
 export type MangaLibraryProps = ConnectedProps<typeof connector>;
 

@@ -9,7 +9,7 @@ import { injectThemeFromStore } from '@theme/Color/Color.helpers';
 const persistConfig: PersistConfig<AppState> = {
   key: 'root',
   storage: ExpoStorage,
-  blacklist: ['chaptersList', 'reader'],
+  blacklist: ['chaptersList', 'reader', 'library'],
 };
 
 const persistReducers = persistReducer(persistConfig, reducers);

@@ -12,3 +12,9 @@ export const removeFromLibrary = (manga: Manga) => {
     dispatch({ type: 'REMOVE_FROM_LIBRARY', payload: manga });
   };
 };
+
+export const searchInLibrary = (query: string) => {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'SET_SEARCH_QUERY_IN_LIBRARY', query });
+  };
+};

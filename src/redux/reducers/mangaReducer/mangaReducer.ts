@@ -129,11 +129,13 @@ const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerA
         chapters: updateChapters(action.payload.chapters, manga?.chapters ?? []),
         inLibrary: manga?.inLibrary ?? manga?.inLibrary ?? false,
         currentlyReadingChapter: manga?.currentlyReadingChapter ?? null,
+        dateAddedInLibrary: manga?.dateAddedInLibrary ?? null,
       }));
     case 'TOGGLE_LIBRARY':
       return mapMangaToState(state, action.payload, (manga) => ({
         ...manga,
         inLibrary: !manga.inLibrary ?? false,
+        dateAddedInLibrary: !manga.inLibrary ? new Date().toString() : null,
       }));
     // return {
     //   ...state,

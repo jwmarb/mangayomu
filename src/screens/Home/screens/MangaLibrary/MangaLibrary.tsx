@@ -24,7 +24,6 @@ import useSearchBar from '@hooks/useSearchBar';
 import useSort from '@hooks/useSort';
 import useStatefulHeader from '@hooks/useStatefulHeader';
 import { useFocusEffect } from '@react-navigation/native';
-import { LibraryManga } from '@redux/reducers/mangalibReducer/mangalibReducer.interfaces';
 import { ReadingMangaInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import FilterModal from '@screens/Home/screens/MangaLibrary/components/FilterModal';
 import Search from '@screens/Home/screens/MangaLibrary/components/Search';
@@ -54,8 +53,9 @@ import PropTypes from 'prop-types';
 (RecyclerListView.propTypes as { externalScrollView: {} }).externalScrollView = PropTypes.object;
 
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
-  const { mangas, navigation, history, cols, fontSize } = props;
+  const { mangas: recordMangas, navigation, history, cols, fontSize, searchInLibrary, query } = props;
   const { ready, Fallback } = useLazyLoading();
+  const mangas = React.useMemo(() => Object.keys(recordMangas), [recordMangas]);
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(
     new DataProvider(dataProviderFn).cloneWithRows(mangas)
   );
@@ -71,26 +71,25 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     setExpand(false);
   }, [setExpand]);
 
-  const { query, header } = useSearchBar({
+  const { header } = useSearchBar({
     title: 'Library',
     focusCondition: !expand,
     additionalButtons: (
       <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='filter-menu' />} onPress={handleOnExpand} />
     ),
+    stateSetter: [query, searchInLibrary as any],
   });
 
   const { sortOptions, selectedSortOption, sort, reverse } = useSort((_createSort) => {
-    const createSort = (
-      compareFn: (a: ReadingMangaInfo & LibraryManga, b: ReadingMangaInfo & LibraryManga) => number
-    ) => {
-      return _createSort((a: LibraryManga, b: LibraryManga) => {
-        const mangaA = history[a.mangaKey];
-        const mangaB = history[b.mangaKey];
-        return compareFn({ ...mangaA, ...a }, { ...mangaB, ...b });
+    const createSort = (compareFn: (a: ReadingMangaInfo, b: ReadingMangaInfo) => number) => {
+      return _createSort((a: string, b: string) => {
+        const mangaA = history[a];
+        const mangaB = history[b];
+        return compareFn(mangaA, mangaB);
       });
     };
     return {
-      'Age in Library': createSort((a, b) => Date.parse(a.dateAdded) - Date.parse(b.dateAdded)),
+      'Age in Library': createSort((a, b) => Date.parse(a.dateAddedInLibrary!) - Date.parse(b.dateAddedInLibrary!)),
       Alphabetical: createSort((a, b) => a.title.localeCompare(b.title)),
       'Chapter Count': createSort((a, b) => Object.keys(a.chapters).length - Object.keys(b.chapters).length),
       'Genres Count': createSort((a, b) => a.genres.length - b.genres.length),
@@ -123,7 +122,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     setDataProvider((prev) =>
       prev
         .newInstance(dataProviderFn)
-        .cloneWithRows(mangas.filter((x) => titleIncludes(query)(history[x.mangaKey])).sort(selectedSortOption))
+        .cloneWithRows(mangas.filter((x) => titleIncludes(query)(history[x])).sort(selectedSortOption))
     );
   }, [mangas.length, query, sort, reverse]);
 

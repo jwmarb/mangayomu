@@ -47,16 +47,16 @@ export const generateNewLayout = (cols: number, fontSize: number) => {
 
 export const rowRenderer: any = (
   type: string | number,
-  data: LibraryManga,
+  data: string,
   index: number,
   extendedState: MangaReducerState
 ) => {
   switch (type) {
     case LayoutLibraryMangaType.FIRST:
-      return <MangaInLibrary manga={extendedState[data.mangaKey]} first />;
+      return <MangaInLibrary manga={extendedState[data]} first />;
 
     default:
     case LayoutLibraryMangaType.INBETWEEN:
-      return <MangaInLibrary manga={extendedState[data.mangaKey]} />;
+      return <MangaInLibrary manga={extendedState[data]} />;
   }
 };
