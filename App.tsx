@@ -8,10 +8,9 @@ import theme from '@theme/core';
 import ResourceLoader from '@utils/ResourceLoader';
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { NavigationContainer, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { PersistGate } from 'redux-persist/integration/react';
 import { HoldMenuProvider } from 'react-native-hold-menu';
-import FeatherIcon from 'react-native-vector-icons/Feather';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import { PortalProvider } from '@gorhom/portal';
 import { LogBox } from 'react-native';
@@ -24,31 +23,20 @@ LogBox.ignoreLogs([
 ]);
 
 export default function App() {
-  const generated = theme();
   return (
-    <ThemeProvider theme={generated}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <NavigationContainer>
-          <RootSiblingParent>
-            <ResourceLoader
-              onFinishedLoading={
-                <HoldMenuProvider iconComponent={FeatherIcon} theme={generated.palette.mode ?? 'light'}>
-                  <Provider store={store}>
-                    <PersistGate persistor={persistor}>
-                      <NavigationThemeProvider value={generated['@react-navigation']}>
-                        <PortalProvider>
-                          <Root />
-                        </PortalProvider>
-                        <StatusBar translucent />
-                      </NavigationThemeProvider>
-                    </PersistGate>
-                  </Provider>
-                </HoldMenuProvider>
-              }
-            />
-          </RootSiblingParent>
-        </NavigationContainer>
-      </GestureHandlerRootView>
-    </ThemeProvider>
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+        <ResourceLoader
+          onFinishedLoading={
+            <>
+              <PortalProvider>
+                <Root />
+              </PortalProvider>
+              <StatusBar translucent />
+            </>
+          }
+        />
+      </PersistGate>
+    </Provider>
   );
 }

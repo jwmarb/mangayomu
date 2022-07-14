@@ -1,5 +1,5 @@
 import { Button, Checkbox, Icon, List, ListItem, ListSection, Switch } from '@components/core';
-import { ReaderBackgroundColor, ReaderDirection } from '@redux/reducers/settingsReducer/settingsReducer';
+import { ReaderBackgroundColor, ReaderDirection } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 import ItemDropdown from '@screens/Settings/screens/components/ItemDropdown';
 import ItemToggle from '@screens/Settings/screens/components/ItemToggle';
 

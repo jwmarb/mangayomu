@@ -5,9 +5,18 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import StorageManager from '@utils/StorageManager';
 import DownloadManager from '@utils/DownloadManager';
-import { AppState, View } from 'react-native';
+import { Appearance, AppState, useColorScheme, View } from 'react-native';
+import { AppState as StoreState } from '@redux/store';
 import ExpoStorage from '@utils/ExpoStorage';
-
+import { ThemeProvider } from 'styled-components/native';
+import theme, { Color } from '@theme/core';
+import { useSelector } from 'react-redux';
+import { ChangeableTheme } from '@redux/reducers/settingsReducer/settingsReducer.constants';
+import FeatherIcon from 'react-native-vector-icons/Feather';
+import { HoldMenuProvider } from 'react-native-hold-menu';
+import { NavigationContainer, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { RootSiblingParent } from 'react-native-root-siblings';
 async function asyncLoader() {
   await Font.loadAsync({
     Nunito: Nunito_400Regular,
@@ -20,6 +29,18 @@ async function asyncLoader() {
 const ResourceLoader: React.FC<ResourceLoaderProps> = (props) => {
   const { onFinishedLoading: Component } = props;
   const [ready, setReady] = React.useState<boolean>(false);
+  const colorScheme = useColorScheme();
+  const mode = useSelector((state: StoreState) => state.settings.theme);
+  const generated = React.useMemo(() => {
+    switch (mode) {
+      case ChangeableTheme.LIGHT:
+        return theme('light');
+      case ChangeableTheme.DARK:
+        return theme('dark');
+      case ChangeableTheme.SYSTEM_THEME:
+        return theme(colorScheme);
+    }
+  }, [mode, colorScheme]);
 
   React.useEffect(() => {
     (async () => {
@@ -59,7 +80,17 @@ const ResourceLoader: React.FC<ResourceLoaderProps> = (props) => {
 
   return (
     <View style={{ flex: 1 }} onLayout={handleOnLayout}>
-      {Component}
+      <ThemeProvider theme={generated}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <NavigationContainer>
+            <RootSiblingParent>
+              <HoldMenuProvider iconComponent={FeatherIcon} theme={generated.palette.mode ?? 'light'}>
+                <NavigationThemeProvider value={generated['@react-navigation']}>{Component}</NavigationThemeProvider>
+              </HoldMenuProvider>
+            </RootSiblingParent>
+          </NavigationContainer>
+        </GestureHandlerRootView>
+      </ThemeProvider>
     </View>
   );
 };

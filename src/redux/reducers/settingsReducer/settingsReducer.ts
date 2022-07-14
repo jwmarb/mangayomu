@@ -1,21 +1,11 @@
 import MangaSee from '@services/MangaSee';
+import { Appearance } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { ChangeableTheme, ReaderBackgroundColor, ReaderDirection } from './settingsReducer.constants';
 import { SettingsReducerAction, SettingsReducerState } from './settingsReducer.interfaces';
 
-export enum ReaderDirection {
-  LEFT_TO_RIGHT = 'Left to Right',
-  RIGHT_TO_LEFT = 'Right to Left',
-  VERTICAL = 'Vertical',
-  WEBTOON = 'Webtoon',
-}
-
-export enum ReaderBackgroundColor {
-  GRAY = 'Gray',
-  BLACK = 'Black',
-  WHITE = 'White',
-}
-
 const INITIAL_STATE: SettingsReducerState = {
+  theme: ChangeableTheme.SYSTEM_THEME,
   showIntroduction: true,
   selectedSource: MangaSee,
   mangaCover: {
@@ -33,6 +23,11 @@ const INITIAL_STATE: SettingsReducerState = {
 
 const reducer = (state: SettingsReducerState = INITIAL_STATE, action: SettingsReducerAction): SettingsReducerState => {
   switch (action.type) {
+    case 'SWITCH_APP_THEME':
+      return {
+        ...state,
+        theme: action.theme,
+      };
     case 'TOGGLE_READER_SETTING':
       return {
         ...state,

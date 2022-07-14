@@ -1,4 +1,8 @@
-import { ReaderBackgroundColor, ReaderDirection } from '@redux/reducers/settingsReducer/settingsReducer';
+import {
+  ChangeableTheme,
+  ReaderBackgroundColor,
+  ReaderDirection,
+} from '@redux/reducers/settingsReducer/settingsReducer.constants';
 import { AppDispatch } from '@redux/store';
 import { Dispatch } from 'redux';
 import { SettingsReducerAction, SettingsReducerState } from './settingsReducer.interfaces';
@@ -48,5 +52,11 @@ export function toggleShowPageNumber() {
 export function toggleKeepDeviceAwake() {
   return (dispatch: AppDispatch) => {
     dispatch({ type: 'TOGGLE_READER_SETTING', key: 'keepDeviceAwake' });
+  };
+}
+
+export function changeAppTheme(theme: ChangeableTheme) {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'SWITCH_APP_THEME', theme });
   };
 }

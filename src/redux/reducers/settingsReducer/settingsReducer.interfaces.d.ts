@@ -1,7 +1,8 @@
 import MangaHost from '@services/scraper/scraper.abstract';
-import { ReaderBackgroundColor, ReaderDirection } from './settingsReducer';
+import { ReaderBackgroundColor, ReaderDirection, ChangeableTheme } from './settingsReducer.constants';
 
 export interface SettingsReducerState {
+  theme: ChangeableTheme;
   showIntroduction: boolean;
   selectedSource: MangaHost;
   mangaCover: {
@@ -30,4 +31,5 @@ export type SettingsReducerAction =
   | { type: 'ADJUST_MANGAS_TITLES_PER_COLUMN'; payload: number }
   | { type: 'CHANGE_BACKGROUND_COLOR'; color: ReaderBackgroundColor }
   | { type: 'CHANGE_READER_DIRECTION'; direction: ReaderDirection }
-  | { type: 'TOGGLE_READER_SETTING'; key: ReaderSettingsBooleans };
+  | { type: 'TOGGLE_READER_SETTING'; key: ReaderSettingsBooleans }
+  | { type: 'SWITCH_APP_THEME'; theme: ChangeableTheme };

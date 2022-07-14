@@ -1,11 +1,11 @@
 import { legacy_createStore as createStore, applyMiddleware, Dispatch, AnyAction } from 'redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import reducers from './reducers';
 import thunk from 'redux-thunk';
 import { useDispatch, useSelector } from 'react-redux';
 import { PersistConfig, persistReducer, persistStore } from 'redux-persist';
 import libraryMutator from '@redux/middleware/libraryMutator';
 import ExpoStorage from '@utils/ExpoStorage';
+import { injectThemeFromStore } from '@theme/Color/Color.helpers';
 const persistConfig: PersistConfig<AppState> = {
   key: 'root',
   storage: ExpoStorage,
@@ -27,3 +27,5 @@ export type MapStateToProps<ComponentTProps> = (state: AppState, props: Componen
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 
 export const persistor = persistStore(store);
+
+injectThemeFromStore(store);

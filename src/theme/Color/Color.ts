@@ -1,4 +1,11 @@
-import { createSharedColors, hexToRgb, parseRGBA, rgbaToHex, rgbaToString } from '@theme/Color/Color.helpers';
+import {
+  getUserSelectedTheme,
+  createSharedColors,
+  hexToRgb,
+  parseRGBA,
+  rgbaToHex,
+  rgbaToString,
+} from '@theme/Color/Color.helpers';
 import {
   ActionColors,
   AppColors,
@@ -48,7 +55,7 @@ export default class Color {
    * @returns Returns the recommended text color where this color is used as the background
    */
   public getContrastText(): Color {
-    const mode = Appearance.getColorScheme() ?? 'light';
+    const mode = getUserSelectedTheme() ?? 'light';
     const yiq = (this.rgba[mode].red * 299 + this.rgba[mode].green * 587 + this.rgba[mode].blue * 114) / 1000;
 
     return yiq > 125
@@ -61,7 +68,7 @@ export default class Color {
    * @returns Returns the string value
    */
   public toString(theme?: ColorSchemeName): string {
-    const rgbaFromCurrentTheme = this.rgba[theme ?? Appearance.getColorScheme() ?? 'light'];
+    const rgbaFromCurrentTheme = this.rgba[theme ?? getUserSelectedTheme() ?? 'light'];
     return `rgba(${rgbaFromCurrentTheme.red}, ${rgbaFromCurrentTheme.green}, ${rgbaFromCurrentTheme.blue}, ${rgbaFromCurrentTheme.alpha})`;
   }
 
@@ -89,8 +96,16 @@ export default class Color {
    * @returns Returns an RGBA string using the opposite theme color
    */
   public getInverse(): string {
-    const rgbaFromCurrentTheme = this.rgba[Appearance.getColorScheme() === 'light' ? 'dark' : 'light'];
+    const rgbaFromCurrentTheme = this.rgba[getUserSelectedTheme() === 'light' ? 'dark' : 'light'];
     return `rgba(${rgbaFromCurrentTheme.red}, ${rgbaFromCurrentTheme.green}, ${rgbaFromCurrentTheme.blue}, ${rgbaFromCurrentTheme.alpha})`;
+  }
+
+  /**
+   * Get the current theme applied
+   * @returns Returns the selected theme
+   */
+  public static getCurrentTheme() {
+    return getUserSelectedTheme();
   }
 
   /**
@@ -162,7 +177,7 @@ export const status = {
 };
 
 export const Palette = (): ThemedPalette & typeof applicableColors & { status: typeof status } => ({
-  mode: Appearance.getColorScheme(),
+  mode: getUserSelectedTheme(),
   text: textColors,
   background,
   status,

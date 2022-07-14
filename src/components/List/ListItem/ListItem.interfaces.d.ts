@@ -5,7 +5,7 @@ import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/
 export interface ListItemProps {
   title: string;
   subtitle?: string;
-  adornment?: React.ReactElement<any> | false;
+  adornment?: React.ReactNode;
   adornmentPlacement?: 'left' | 'right';
   onPress?: () => void;
   typographyProps?: TypographyProps;

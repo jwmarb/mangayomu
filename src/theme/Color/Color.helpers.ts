@@ -1,5 +1,24 @@
+import { ChangeableTheme } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 import { RGBA } from '@theme/Color/Color.interfaces';
 import { Color } from '@theme/core';
+import { Appearance, ColorSchemeName } from 'react-native';
+let store: any;
+
+export function injectThemeFromStore(_store: any) {
+  store = _store;
+}
+
+export function getUserSelectedTheme(): ColorSchemeName {
+  switch (store.getState().settings.theme) {
+    case ChangeableTheme.LIGHT:
+      return 'light';
+    case ChangeableTheme.DARK:
+      return 'dark';
+    case ChangeableTheme.SYSTEM_THEME:
+    default:
+      return Appearance.getColorScheme();
+  }
+}
 
 /**
  * Convert a hexadecimal to RGB value

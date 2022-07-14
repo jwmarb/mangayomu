@@ -2,14 +2,31 @@ import { Icon, List, ListItem, ListSection } from '@components/core';
 import { SettingsStackParamList } from '@navigators/Settings/Settings.interfaces';
 import { useSettingsNavigation } from '@navigators/Settings/Settings';
 import React from 'react';
+import ItemDropdown from '@screens/Settings/screens/components/ItemDropdown';
+import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
+import connector, { ConnectedAppearanceProps } from '@screens/Settings/screens/Appearance/Appearance.redux';
+import { ChangeableTheme } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 
-const Appearance: React.FC = () => {
+const Appearance: React.FC<ConnectedAppearanceProps> = (props) => {
+  const { changeAppTheme, theme } = props;
   const navigation = useSettingsNavigation();
   const navigateTo = (screenName: keyof SettingsStackParamList) => {
     return () => {
       navigation.navigate(screenName);
     };
   };
+  const themeOptions: MenuItemProps[] = React.useMemo(
+    (): MenuItemProps[] =>
+      Object.values(ChangeableTheme).map(
+        (x): MenuItemProps => ({
+          text: x,
+          onPress: () => {
+            changeAppTheme(x);
+          },
+        })
+      ),
+    []
+  );
 
   return (
     <>
@@ -20,8 +37,14 @@ const Appearance: React.FC = () => {
         title='Manga layout'
         onPress={navigateTo('MangasColumn')}
       />
+      <ItemDropdown
+        title='Theme'
+        items={themeOptions}
+        subtitle={theme}
+        icon={<Icon bundle='MaterialCommunityIcons' name='palette-outline' color='primary' />}
+      />
     </>
   );
 };
 
-export default React.memo(Appearance);
+export default connector(Appearance);
