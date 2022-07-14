@@ -6,11 +6,21 @@ import { Comparator } from '@utils/Algorithms/Comparator/Comparator.interfaces';
  */
 class SortedList<T> {
   private arr: T[];
-  private comparator: Comparator<T>;
+  private comparator?: Comparator<T>;
 
-  public constructor(comparator: Comparator<T>, items?: T[]) {
+  public constructor(comparator?: Comparator<T>, items?: T[]) {
     this.arr = items ? (items.length > 0 ? items.sort(comparator) : []) : [];
     this.comparator = comparator;
+  }
+
+  /**
+   * Remove an item in the array while persisting its order
+   * @param item The item to remove in the array
+   */
+  public remove(item: T) {
+    if (this.comparator == null) throw Error(`A comparator is required in order to perform the operation`);
+    const indexToRemove = binary.suggest(this.arr, item, this.comparator);
+    this.arr.splice(indexToRemove, 1);
   }
 
   /**
@@ -18,6 +28,7 @@ class SortedList<T> {
    * @param item The item to add to the array
    */
   public add<K = T>(item: T | K[], mapFn: (el: K, index: number) => T = (el) => el as unknown as T) {
+    if (this.comparator == null) throw Error(`A comparator is required in order to perform the operation`);
     if (Array.isArray(item)) {
       let mapped: T;
       for (let i = 0; i < item.length; i++) {
@@ -46,6 +57,7 @@ class SortedList<T> {
    * @returns Returns a number indicating the index position of the item
    */
   public indexOf(item: T) {
+    if (this.comparator == null) throw Error(`A comparator is required in order to perform the operation`);
     return binary.search(this.arr, item, this.comparator);
   }
 
