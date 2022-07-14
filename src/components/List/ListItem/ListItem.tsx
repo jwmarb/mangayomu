@@ -8,32 +8,69 @@ import { Typography } from '@components/Typography';
 import React from 'react';
 
 const ListItem: React.FC<ListItemProps> = (props) => {
-  const { title, onPress = () => void 0, typographyProps = {}, adornment, subtitle } = props;
+  const { title, onPress, typographyProps = {}, adornment, subtitle, adornmentPlacement = 'left' } = props;
+  if (onPress)
+    return (
+      <ListItemBase>
+        <ButtonBase expand onPress={onPress} color='primary' square>
+          <Flex container verticalPadding={1.75} horizontalPadding={3} alignItems='center'>
+            {adornment && adornmentPlacement === 'left' && (
+              <>
+                {adornment}
+                <Spacer x={3} />
+              </>
+            )}
+            <Flex direction='column' grow>
+              <Typography numberOfLines={1} {...typographyProps}>
+                {title}
+              </Typography>
+              {subtitle && (
+                <ListItemSubtitleContainer>
+                  <Typography variant='body2' color='textSecondary' {...typographyProps}>
+                    {subtitle}
+                  </Typography>
+                </ListItemSubtitleContainer>
+              )}
+            </Flex>
+            {adornment && adornmentPlacement === 'right' && (
+              <>
+                <Spacer x={3} />
+                {adornment}
+              </>
+            )}
+          </Flex>
+        </ButtonBase>
+      </ListItemBase>
+    );
 
   return (
     <ListItemBase>
-      <ButtonBase expand onPress={onPress} color='primary' square>
-        <Flex container verticalPadding={1.75} horizontalPadding={3} alignItems='center'>
-          {adornment && (
-            <>
-              {adornment}
-              <Spacer x={3} />
-            </>
+      <Flex container verticalPadding={1.75} horizontalPadding={3} alignItems='center'>
+        {adornment && adornmentPlacement === 'left' && (
+          <>
+            {adornment}
+            <Spacer x={3} />
+          </>
+        )}
+        <Flex direction='column' grow>
+          <Typography numberOfLines={1} {...typographyProps}>
+            {title}
+          </Typography>
+          {subtitle && (
+            <ListItemSubtitleContainer>
+              <Typography variant='body2' color='textSecondary' {...typographyProps}>
+                {subtitle}
+              </Typography>
+            </ListItemSubtitleContainer>
           )}
-          <Flex direction='column' fullWidth>
-            <Typography numberOfLines={1} {...typographyProps}>
-              {title}
-            </Typography>
-            {subtitle && (
-              <ListItemSubtitleContainer>
-                <Typography variant='body2' color='textSecondary' {...typographyProps}>
-                  {subtitle}
-                </Typography>
-              </ListItemSubtitleContainer>
-            )}
-          </Flex>
         </Flex>
-      </ButtonBase>
+        {adornment && adornmentPlacement === 'right' && (
+          <>
+            <Spacer x={3} />
+            {adornment}
+          </>
+        )}
+      </Flex>
     </ListItemBase>
   );
 };
