@@ -5,7 +5,7 @@ import Icon from '@components/Icon';
 import { Typography } from '@components/Typography';
 import useMountedEffect from '@hooks/useMountedEffect';
 import React from 'react';
-import { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { cancelAnimation, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { CheckboxProps } from './Checkbox.interfaces';
 import Animated from 'react-native-reanimated';
 import { useTheme } from 'styled-components/native';
@@ -17,7 +17,8 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
     onChange(!checked);
   }
   const theme = useTheme();
-  const opacity = useSharedValue(checked ? 1 : 0);
+  const scale = useSharedValue(1);
+  const checkScale = useSharedValue(checked ? 1 : 0);
   const borderWidth = useSharedValue(checked ? 0 : 2);
   const padding = useSharedValue(checked ? 2 : 0);
   const borderColor = useSharedValue(
@@ -25,14 +26,17 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
   );
   const backgroundColor = useSharedValue(checked ? theme.palette.primary.main.get() : 'transparent');
   useMountedEffect(() => {
+    scale.value = withSpring(1.2, undefined, (finished) => {
+      if (finished) scale.value = withSpring(1);
+    });
     if (checked) {
-      opacity.value = 1;
+      checkScale.value = withSpring(1);
       borderColor.value = theme.palette.primary.main.get();
       backgroundColor.value = theme.palette.primary.main.get();
       borderWidth.value = 0;
       padding.value = 2;
     } else {
-      opacity.value = 0;
+      checkScale.value = withSpring(0);
       borderWidth.value = 2;
       padding.value = 0;
       borderColor.value = Constants.GRAY[theme.palette.mode === 'light' ? 8 : 6].get();
@@ -48,7 +52,7 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
   }, [checked]);
 
   const iconStyles = useAnimatedStyle(() => ({
-    opacity: opacity.value,
+    transform: [{ scale: checkScale.value }],
   }));
 
   const checkboxStyle = useAnimatedStyle(() => ({
@@ -56,6 +60,7 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
     backgroundColor: backgroundColor.value,
     borderWidth: borderWidth.value,
     padding: padding.value,
+    transform: [{ scale: scale.value }],
   }));
 
   return (
