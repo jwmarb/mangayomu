@@ -6,7 +6,7 @@ import * as Font from 'expo-font';
 import StorageManager from '@utils/StorageManager';
 import DownloadManager from '@utils/DownloadManager';
 import { Appearance, AppState, useColorScheme, View } from 'react-native';
-import { AppState as StoreState } from '@redux/store';
+import { AppState as StoreState, useAppDispatch } from '@redux/store';
 import ExpoStorage from '@utils/ExpoStorage';
 import { ThemeProvider } from 'styled-components/native';
 import theme, { Color } from '@theme/core';
@@ -30,6 +30,7 @@ const ResourceLoader: React.FC<ResourceLoaderProps> = (props) => {
   const { onFinishedLoading: Component } = props;
   const [ready, setReady] = React.useState<boolean>(false);
   const colorScheme = useColorScheme();
+  const dispatch = useAppDispatch();
   const mode = useSelector((state: StoreState) => state.settings.theme);
   const generated = React.useMemo(() => {
     switch (mode) {
@@ -50,6 +51,7 @@ const ResourceLoader: React.FC<ResourceLoaderProps> = (props) => {
         await asyncLoader();
         await StorageManager.initialize();
         await DownloadManager.initialize();
+        dispatch({ type: 'REHYDRATE' });
       } catch (e) {
         console.error(e);
       } finally {
