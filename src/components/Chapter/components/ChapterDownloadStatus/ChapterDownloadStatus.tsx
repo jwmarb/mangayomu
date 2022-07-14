@@ -63,6 +63,7 @@ const ChapterDownloadStatus: React.FC<ConnectedChapterDownloadStatusProps> = (pr
         </Typography>
       );
     case DownloadStatus.IDLE:
+    case DownloadStatus.CANCELLED:
       return <IconButton icon={<Icon bundle='Feather' name='download' />} color='primary' onPress={onDownload} />;
     case DownloadStatus.DOWNLOADING:
     case DownloadStatus.START_DOWNLOADING:

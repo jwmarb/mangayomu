@@ -232,6 +232,7 @@ export default class DownloadManager {
    */
   public queue() {
     switch (this.getStatus()) {
+      case DownloadStatus.CANCELLED:
       case DownloadStatus.IDLE:
       case DownloadStatus.VALIDATING:
         this.setStatus(DownloadStatus.QUEUED);
