@@ -33,6 +33,14 @@ const INITIAL_STATE: SettingsReducerState = {
 
 const reducer = (state: SettingsReducerState = INITIAL_STATE, action: SettingsReducerAction): SettingsReducerState => {
   switch (action.type) {
+    case 'TOGGLE_READER_SETTING':
+      return {
+        ...state,
+        reader: {
+          ...state.reader,
+          [action.key]: !state.reader[action.key],
+        },
+      };
     case 'CHANGE_READER_DIRECTION':
       return {
         ...state,

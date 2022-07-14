@@ -32,3 +32,21 @@ export function changeReaderDirection(direction: ReaderDirection) {
     dispatch({ type: 'CHANGE_READER_DIRECTION', direction });
   };
 }
+
+export function toggleSkipChaptersMarkedRead() {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'TOGGLE_READER_SETTING', key: 'skipChaptersMarkedRead' });
+  };
+}
+
+export function toggleShowPageNumber() {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'TOGGLE_READER_SETTING', key: 'showPageNumber' });
+  };
+}
+
+export function toggleKeepDeviceAwake() {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'TOGGLE_READER_SETTING', key: 'keepDeviceAwake' });
+  };
+}

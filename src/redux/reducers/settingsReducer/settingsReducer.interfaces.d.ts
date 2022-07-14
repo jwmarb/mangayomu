@@ -17,6 +17,10 @@ export interface SettingsReducerState {
   };
 }
 
+export type ReaderSettingsBooleans = keyof {
+  [K in keyof SettingsReducerState['reader'] as SettingsReducerState['reader'][K] extends boolean ? K : never]: boolean;
+};
+
 export type SettingsReducerAction =
   | {
       type: 'INTRO_DONE';
@@ -25,4 +29,5 @@ export type SettingsReducerAction =
   | { type: 'ADJUST_MANGAS_PER_COLUMN'; payload: number }
   | { type: 'ADJUST_MANGAS_TITLES_PER_COLUMN'; payload: number }
   | { type: 'CHANGE_BACKGROUND_COLOR'; color: ReaderBackgroundColor }
-  | { type: 'CHANGE_READER_DIRECTION'; direction: ReaderDirection };
+  | { type: 'CHANGE_READER_DIRECTION'; direction: ReaderDirection }
+  | { type: 'TOGGLE_READER_SETTING'; key: ReaderSettingsBooleans };
