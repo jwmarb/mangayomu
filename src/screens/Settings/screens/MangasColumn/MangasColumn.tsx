@@ -9,6 +9,7 @@ import {
   Typography,
   Container,
   Header,
+  List,
   Modal,
   ListSection,
 } from '@components/core';
@@ -38,6 +39,8 @@ const { height } = Dimensions.get('window');
 import connector, { ConnectedMangasColumnProps } from './MangasColumn.redux';
 import ItemDropdown from '@screens/Settings/screens/components/ItemDropdown';
 import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
+import MangaPreview from '@screens/Settings/screens/MangasColumn/components/MangaPreview';
+import { MangaCoverStyles } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 
 const sampleMangas = [
   {
@@ -75,7 +78,8 @@ const sampleMangas = [
 ];
 
 const MangasColumn: React.FC<ConnectedMangasColumnProps> = (props) => {
-  const { cols, fontSize, bold, adjustColumns, adjustTitleSize, toggleBoldTitles } = props;
+  const { cols, fontSize, bold, adjustColumns, adjustTitleSize, coverStyle, toggleBoldTitles, changeCoverStyle } =
+    props;
   const colValue = useSharedValue(cols);
   const fontSizeValue = useSharedValue(fontSize);
   const width = useSharedValue(calculateCoverWidth(cols) * SPACE_MULTIPLIER);
@@ -115,7 +119,16 @@ const MangasColumn: React.FC<ConnectedMangasColumnProps> = (props) => {
   const textStyle = useAnimatedStyle(() => ({
     fontSize: fontSizeValue.value,
   }));
-  const mangaStyles: MenuItemProps[] = React.useMemo((): MenuItemProps[] => [], []);
+  const mangaStyles: MenuItemProps[] = React.useMemo(
+    (): MenuItemProps[] =>
+      Object.values(MangaCoverStyles).map((x) => ({
+        text: x,
+        onPress: () => {
+          changeCoverStyle(x);
+        },
+      })),
+    []
+  );
 
   return (
     <>
@@ -125,13 +138,14 @@ const MangasColumn: React.FC<ConnectedMangasColumnProps> = (props) => {
         scrollIndicatorInsets={{ top: scrollIndicatorInsetTop }}>
         <MangasColumnPreviewContainer>
           {sampleMangas.map((x, i) => (
-            <MangaCoverPreviewContainer style={style} key={i}>
-              <MangaCoverPreview source={{ uri: x.uri }} style={imageStyle} />
-              <Spacer y={1} />
-              <Typography style={textStyle} numberOfLines={2} bold={bold}>
-                {x.title}
-              </Typography>
-            </MangaCoverPreviewContainer>
+            <MangaPreview
+              key={i}
+              style={style}
+              uri={x.uri}
+              title={x.title}
+              textStyle={textStyle}
+              imageStyle={imageStyle}
+            />
           ))}
         </MangasColumnPreviewContainer>
       </Animated.ScrollView>
@@ -142,34 +156,37 @@ const MangasColumn: React.FC<ConnectedMangasColumnProps> = (props) => {
         backdrop={false}
         closeThreshold={height * 0.85}>
         <MangasColumnSettingsContainer>
-          <ListSection title='Manga Covers' />
-          <CustomizationSlider
-            value={cols}
-            setValue={setWidth}
-            range={[1, 3]}
-            title='Manga Cover Size'
-            description='Adjust the size of the manga cover'
-            left={<Icon bundle='MaterialCommunityIcons' name='book-minus' size='small' />}
-            right={<Icon bundle='MaterialCommunityIcons' name='book-plus' />}
-          />
-          <CustomizationSlider
-            value={fontSize}
-            setValue={setFontSize}
-            title='Title Size'
-            description='Change the size of the title under the manga cover'
-            range={[8, 32]}
-            left={<Icon bundle='MaterialCommunityIcons' name='format-font-size-decrease' size='small' />}
-            right={<Icon bundle='MaterialCommunityIcons' name='format-font-size-increase' />}
-          />
-          <Divider />
-          <ListSection title='Text Styling' />
-          <ItemToggle
-            paper
-            enabled={bold}
-            title='Bold'
-            subtitle='Use bold text for the title'
-            onChange={toggleBoldTitles}
-          />
+          <List>
+            <ListSection title='Manga covers' />
+            <ItemDropdown items={mangaStyles} title='Cover style' subtitle={coverStyle} paper />
+            <CustomizationSlider
+              value={cols}
+              setValue={setWidth}
+              range={[1, 3]}
+              title='Manga Cover Size'
+              description='Adjust the size of the manga cover'
+              left={<Icon bundle='MaterialCommunityIcons' name='book-minus' size='small' />}
+              right={<Icon bundle='MaterialCommunityIcons' name='book-plus' />}
+            />
+            <CustomizationSlider
+              value={fontSize}
+              setValue={setFontSize}
+              title='Title Size'
+              description='Change the size of the title under the manga cover'
+              range={[8, 32]}
+              left={<Icon bundle='MaterialCommunityIcons' name='format-font-size-decrease' size='small' />}
+              right={<Icon bundle='MaterialCommunityIcons' name='format-font-size-increase' />}
+            />
+            <Divider />
+            <ListSection title='Text styling' />
+            <ItemToggle
+              paper
+              enabled={bold}
+              title='Bold'
+              subtitle='Use bold text for the title'
+              onChange={toggleBoldTitles}
+            />
+          </List>
         </MangasColumnSettingsContainer>
       </Modal>
     </>

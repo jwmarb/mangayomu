@@ -4,7 +4,9 @@ import {
   FixedMangaCoverBaseContainer,
   FixedMangaCoverBase,
   FixedMangaLoadingCoverBase,
-  MangaCoverLoadingBase,
+  ModernMangaCoverBase,
+  MangaCoverBaseImageBackground,
+  ModernMangaLinearGradient,
 } from '@components/Manga/Cover/Cover.base';
 import { calculateCoverHeight, calculateCoverWidth } from '@components/Manga/Cover/Cover.helpers';
 import connector, { ProcessedMangaCoverProps } from '@components/Manga/Cover/Cover.redux';
@@ -17,9 +19,10 @@ import * as FileSystem from 'expo-file-system';
 import Progress from '@components/Progress';
 import { animate, withAnimatedLoading, withAnimatedMounting } from '@utils/Animations';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
+import { MangaCoverStyles } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 
 const Cover: React.FC<ProcessedMangaCoverProps> = (props) => {
-  const { uri, cols, fixedSize, customSize, base64, cacheMangaCover } = props;
+  const { uri, cols, fixedSize, customSize, base64, cacheMangaCover, coverStyle, children } = props;
   const setBase64 = (b: string | null) => cacheMangaCover(uri, b);
 
   const theme = useTheme();
@@ -56,25 +59,28 @@ const Cover: React.FC<ProcessedMangaCoverProps> = (props) => {
       </FixedMangaCoverBaseContainer>
     );
 
-  return (
-    <MangaCoverBaseContainer imageWidth={imageWidth} imageHeight={imageHeight}>
-      <MangaCoverBase
-        source={{ uri: base64 ?? uri }}
-        imageWidth={imageWidth}
-        imageHeight={imageHeight}
-        entering={FadeIn}
-      />
-      {/* {base64 != null && (
-        <MangaCoverBase source={{ uri: base64 }} imageWidth={imageWidth} imageHeight={imageHeight} entering={FadeIn} />
-      )}
-      {base64 === undefined && (
-        <MangaCoverLoadingBase imageWidth={imageWidth} imageHeight={imageHeight} exiting={FadeOut} />
-      )}
-      {base64 === null && (
-        <MangaCoverBase source={{ uri }} imageWidth={imageWidth} imageHeight={imageHeight} entering={FadeIn} />
-      )} */}
-    </MangaCoverBaseContainer>
-  );
+  switch (coverStyle) {
+    default:
+    case MangaCoverStyles.CLASSIC:
+      return (
+        <MangaCoverBaseContainer imageWidth={imageWidth} imageHeight={imageHeight}>
+          <MangaCoverBase
+            source={{ uri: base64 ?? uri }}
+            imageWidth={imageWidth}
+            imageHeight={imageHeight}
+            entering={FadeIn}
+          />
+        </MangaCoverBaseContainer>
+      );
+    case MangaCoverStyles.MODERN:
+      return (
+        <ModernMangaCoverBase imageWidth={imageWidth} imageHeight={imageHeight} entering={FadeIn}>
+          <MangaCoverBaseImageBackground source={{ uri: base64 ?? uri }}>
+            <ModernMangaLinearGradient>{children}</ModernMangaLinearGradient>
+          </MangaCoverBaseImageBackground>
+        </ModernMangaCoverBase>
+      );
+  }
 };
 
 export default connector(Cover);

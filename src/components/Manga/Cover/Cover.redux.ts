@@ -10,6 +10,7 @@ const mapStateToProps = (state: AppState, props: MangaCoverProps) => {
     ...props,
     cols: state.settings.mangaCover.perColumn,
     base64: state.cachedCovers[props.uri],
+    coverStyle: state.settings.mangaCover.style,
   };
 };
 

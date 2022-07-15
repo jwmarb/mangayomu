@@ -15,7 +15,7 @@ export const MangasColumnPreviewContainer = styled.View`
   `}
 `;
 
-export const MangasColumnSettingsContainer = styled(Flex).attrs({ direction: 'column' })`
+export const MangasColumnSettingsContainer = styled.View`
   ${(props) => css`
     background-color: ${props.theme.palette.background.paper.get()};
     min-height: 100%;
