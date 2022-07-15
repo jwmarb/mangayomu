@@ -16,3 +16,10 @@ export enum ReaderBackgroundColor {
   BLACK = 'Black',
   WHITE = 'White',
 }
+
+export enum MangaCoverStyles {
+  DEFAULT = 'Default',
+  MODERN = 'Modern',
+  MATERIAL_DESIGN = 'Material Design',
+  TACHIYOMI = 'Tachiyomi',
+}

@@ -60,3 +60,9 @@ export function changeAppTheme(theme: ChangeableTheme) {
     dispatch({ type: 'SWITCH_APP_THEME', theme });
   };
 }
+
+export function toggleBoldTitles() {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'TOGGLE_MANGACOVER_SETTING', key: 'bold' });
+  };
+}

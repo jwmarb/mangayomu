@@ -1,7 +1,7 @@
 import MangaSee from '@services/MangaSee';
 import { Appearance } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { ChangeableTheme, ReaderBackgroundColor, ReaderDirection } from './settingsReducer.constants';
+import { ChangeableTheme, MangaCoverStyles, ReaderBackgroundColor, ReaderDirection } from './settingsReducer.constants';
 import { SettingsReducerAction, SettingsReducerState } from './settingsReducer.interfaces';
 
 const INITIAL_STATE: SettingsReducerState = {
@@ -9,8 +9,10 @@ const INITIAL_STATE: SettingsReducerState = {
   showIntroduction: true,
   selectedSource: MangaSee,
   mangaCover: {
+    style: MangaCoverStyles.DEFAULT,
     perColumn: 2,
     fontSize: RFValue(13),
+    bold: false,
   },
   reader: {
     backgroundColor: ReaderBackgroundColor.BLACK,
@@ -23,6 +25,14 @@ const INITIAL_STATE: SettingsReducerState = {
 
 const reducer = (state: SettingsReducerState = INITIAL_STATE, action: SettingsReducerAction): SettingsReducerState => {
   switch (action.type) {
+    case 'TOGGLE_MANGACOVER_SETTING':
+      return {
+        ...state,
+        mangaCover: {
+          ...state.mangaCover,
+          [action.key]: !state.mangaCover[action.key],
+        },
+      };
     case 'SWITCH_APP_THEME':
       return {
         ...state,

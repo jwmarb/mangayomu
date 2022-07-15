@@ -1,5 +1,5 @@
 import MangaHost from '@services/scraper/scraper.abstract';
-import { ReaderBackgroundColor, ReaderDirection, ChangeableTheme } from './settingsReducer.constants';
+import { ReaderBackgroundColor, ReaderDirection, ChangeableTheme, MangaCoverStyles } from './settingsReducer.constants';
 
 export interface SettingsReducerState {
   theme: ChangeableTheme;
@@ -8,6 +8,8 @@ export interface SettingsReducerState {
   mangaCover: {
     perColumn: number;
     fontSize: number;
+    bold: boolean;
+    style: MangaCoverStyles;
   };
   reader: {
     backgroundColor: ReaderBackgroundColor;
@@ -22,6 +24,12 @@ export type ReaderSettingsBooleans = keyof {
   [K in keyof SettingsReducerState['reader'] as SettingsReducerState['reader'][K] extends boolean ? K : never]: boolean;
 };
 
+export type MangaCoverSettingsBooleans = keyof {
+  [K in keyof SettingsReducerState['mangaCover'] as SettingsReducerState['mangaCover'][K] extends boolean
+    ? K
+    : never]: boolean;
+};
+
 export type SettingsReducerAction =
   | {
       type: 'INTRO_DONE';
@@ -32,4 +40,5 @@ export type SettingsReducerAction =
   | { type: 'CHANGE_BACKGROUND_COLOR'; color: ReaderBackgroundColor }
   | { type: 'CHANGE_READER_DIRECTION'; direction: ReaderDirection }
   | { type: 'TOGGLE_READER_SETTING'; key: ReaderSettingsBooleans }
-  | { type: 'SWITCH_APP_THEME'; theme: ChangeableTheme };
+  | { type: 'SWITCH_APP_THEME'; theme: ChangeableTheme }
+  | { type: 'TOGGLE_MANGACOVER_SETTING'; key: MangaCoverSettingsBooleans };
