@@ -6,4 +6,5 @@ export interface ItemDropdownProps {
   items: MenuItemProps[];
   subtitle: string;
   icon?: React.ReactNode;
+  paper?: boolean;
 }
