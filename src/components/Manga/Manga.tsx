@@ -12,13 +12,11 @@ import { useRootNavigation } from '@navigators/Root';
 import Cover from '@components/Manga/Cover/Cover';
 import { useSelector } from 'react-redux';
 import { AppState } from '@redux/store';
+import connector, { ConnectedMangaProps } from '@components/Manga/Manga.redux';
 
-const Manga: React.FC<MangaProps> = (props) => {
-  const { title, imageCover } = props;
+const Manga: React.FC<ConnectedMangaProps> = (props) => {
+  const { title, imageCover, cols, bold, fontSize, coverStyle } = props;
   const navigation = useRootNavigation();
-  const cols = useSelector((state: AppState) => state.settings.mangaCover.perColumn);
-  const bold = useSelector((state: AppState) => state.settings.mangaCover.bold);
-  const fontSize = useSelector((state: AppState) => state.settings.mangaCover.fontSize);
   function handleOnPress() {
     navigation.navigate('MangaViewer', { manga: props });
   }
@@ -37,4 +35,4 @@ const Manga: React.FC<MangaProps> = (props) => {
   );
 };
 
-export default React.memo(Manga);
+export default connector(React.memo(Manga));
