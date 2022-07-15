@@ -26,11 +26,7 @@ const Manga: React.FC<ConnectedMangaProps> = (props) => {
     case MangaCoverStyles.MODERN:
       return (
         <TouchableWithoutFeedback onPress={handleOnPress}>
-          <MangaBaseContainer
-            cols={cols}
-            onLayout={(e) => {
-              console.log(e.nativeEvent.layout.width, e.nativeEvent.layout.height);
-            }}>
+          <MangaBaseContainer cols={cols}>
             <Cover uri={imageCover}>
               <Typography numberOfLines={2} fontSize={fontSize} bold={bold}>
                 {title}

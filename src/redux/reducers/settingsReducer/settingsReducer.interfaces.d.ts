@@ -41,4 +41,5 @@ export type SettingsReducerAction =
   | { type: 'CHANGE_READER_DIRECTION'; direction: ReaderDirection }
   | { type: 'TOGGLE_READER_SETTING'; key: ReaderSettingsBooleans }
   | { type: 'SWITCH_APP_THEME'; theme: ChangeableTheme }
-  | { type: 'TOGGLE_MANGACOVER_SETTING'; key: MangaCoverSettingsBooleans };
+  | { type: 'TOGGLE_MANGACOVER_SETTING'; key: MangaCoverSettingsBooleans }
+  | { type: 'CHANGE_COVER_STYLE'; style: MangaCoverStyles };

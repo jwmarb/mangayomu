@@ -9,7 +9,7 @@ const INITIAL_STATE: SettingsReducerState = {
   showIntroduction: true,
   selectedSource: MangaSee,
   mangaCover: {
-    style: MangaCoverStyles.DEFAULT,
+    style: MangaCoverStyles.CLASSIC,
     perColumn: 2,
     fontSize: RFValue(13),
     bold: false,
@@ -25,6 +25,14 @@ const INITIAL_STATE: SettingsReducerState = {
 
 const reducer = (state: SettingsReducerState = INITIAL_STATE, action: SettingsReducerAction): SettingsReducerState => {
   switch (action.type) {
+    case 'CHANGE_COVER_STYLE':
+      return {
+        ...state,
+        mangaCover: {
+          ...state.mangaCover,
+          style: action.style,
+        },
+      };
     case 'TOGGLE_MANGACOVER_SETTING':
       return {
         ...state,

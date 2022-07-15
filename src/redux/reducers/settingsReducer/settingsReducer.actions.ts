@@ -1,5 +1,6 @@
 import {
   ChangeableTheme,
+  MangaCoverStyles,
   ReaderBackgroundColor,
   ReaderDirection,
 } from '@redux/reducers/settingsReducer/settingsReducer.constants';
@@ -64,5 +65,11 @@ export function changeAppTheme(theme: ChangeableTheme) {
 export function toggleBoldTitles() {
   return (dispatch: AppDispatch) => {
     dispatch({ type: 'TOGGLE_MANGACOVER_SETTING', key: 'bold' });
+  };
+}
+
+export function changeCoverStyle(coverStyle: MangaCoverStyles) {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'CHANGE_COVER_STYLE', style: coverStyle });
   };
 }
