@@ -47,6 +47,7 @@ import {
   ChapterState,
   MangaDownloadingReducerState,
 } from '@redux/reducers/mangaDownloadingReducer/mangaDownloadingReducer.interfaces';
+import { useFocusEffect } from '@react-navigation/native';
 const LanguageModal = React.lazy(() => import('@screens/MangaViewer/components/LanguageModal'));
 const Genres = React.lazy(() => import('@screens/MangaViewer/components/Genres'));
 const ChapterHeader = React.lazy(() => import('@screens/MangaViewer/components/ChapterHeader'));
@@ -67,6 +68,7 @@ const rowRenderer: (
     metas: Record<string, ChapterState> | undefined;
   }
 ) => JSX.Element | JSX.Element[] | null = (type, data, i, extendedState) => {
+  if (data.link in extendedState.chapters === false) return null;
   return (
     <Chapter
       manga={data.manga}
@@ -103,8 +105,9 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     loading,
     error,
     refresh,
-  } = useAPICall(() => source.getMeta(manga));
+  } = useAPICall(() => source.getMeta(manga), [manga]);
   const [language, setLanguage] = React.useState<ISOLangCode>('en');
+
   const options: UseCollapsibleOptions = React.useMemo(
     () => ({
       navigationOptions: {
