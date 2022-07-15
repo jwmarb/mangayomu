@@ -15,13 +15,22 @@ import { View } from 'react-native';
 import { HoldItem } from 'react-native-hold-menu';
 
 const ListItem: React.FC<ListItemProps> = (props) => {
-  const { title, onPress, typographyProps = {}, adornment, subtitle, adornmentPlacement = 'left', holdItem } = props;
+  const {
+    title,
+    onPress,
+    typographyProps = {},
+    adornment,
+    subtitle,
+    adornmentPlacement = 'left',
+    holdItem,
+    paper = false,
+  } = props;
   if (holdItem)
     return (
       <ListItemBase>
         <HoldItem items={holdItem} activateOn='tap'>
           <ButtonBase expand onPress={() => {}} color='primary' square>
-            <ListItemButtonBaseContainer>
+            <ListItemButtonBaseContainer paper={paper}>
               <ListAdornmentLeftContainer>
                 {adornment && adornmentPlacement === 'left' && <>{adornment}</>}
               </ListAdornmentLeftContainer>
@@ -52,7 +61,7 @@ const ListItem: React.FC<ListItemProps> = (props) => {
     return (
       <ListItemBase>
         <ButtonBase expand onPress={onPress} color='primary' square>
-          <ListItemButtonBaseContainer>
+          <ListItemButtonBaseContainer paper={paper}>
             <ListAdornmentLeftContainer>
               {adornment && adornmentPlacement === 'left' && <>{adornment}</>}
             </ListAdornmentLeftContainer>
@@ -81,7 +90,7 @@ const ListItem: React.FC<ListItemProps> = (props) => {
 
   return (
     <ListItemBase>
-      <ListItemButtonBaseContainer>
+      <ListItemButtonBaseContainer paper={paper}>
         <ListAdornmentLeftContainer>
           {adornment && adornmentPlacement === 'left' && <>{adornment}</>}
         </ListAdornmentLeftContainer>

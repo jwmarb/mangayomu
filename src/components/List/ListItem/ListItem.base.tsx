@@ -15,12 +15,14 @@ export const ListAdornmentLeftContainer = styled.View`
   `}
 `;
 
-export const ListItemButtonBaseContainer = styled.View`
+export const ListItemButtonBaseContainer = styled.View<{ paper: boolean }>`
   ${(props) => css`
     padding-vertical: ${props.theme.spacing(2)};
     padding-horizontal: ${props.theme.spacing(3)};
     align-items: center;
-    background-color: ${props.theme.palette.background.default.get()};
+    background-color: ${props.paper
+      ? props.theme.palette.background.paper.get()
+      : props.theme.palette.background.default.get()};
     display: flex;
     flex-direction: row;
   `}

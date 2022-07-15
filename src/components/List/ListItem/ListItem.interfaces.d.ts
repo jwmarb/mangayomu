@@ -10,4 +10,5 @@ export interface ListItemProps {
   onPress?: () => void;
   typographyProps?: TypographyProps;
   holdItem?: MenuItemProps[];
+  paper?: boolean;
 }
