@@ -1,5 +1,17 @@
 import React from 'react';
-import { Slider, Screen, Spacer, Divider, Flex, Icon, Typography, Container, Header, Modal } from '@components/core';
+import {
+  Slider,
+  Screen,
+  Spacer,
+  Divider,
+  Flex,
+  Icon,
+  Typography,
+  Container,
+  Header,
+  Modal,
+  ListSection,
+} from '@components/core';
 import Cover from '@components/Manga/Cover';
 import { useSelector } from 'react-redux';
 import { AppState, useAppDispatch } from '@redux/store';
@@ -9,6 +21,7 @@ import {
   MangaCoverPreview,
   MangaCoverPreviewContainer,
   MangasColumnPreviewContainer,
+  MangasColumnSettingHeader,
   MangasColumnSettingsContainer,
 } from '@screens/Settings/screens/MangasColumn/MangasColumn.base';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -20,7 +33,11 @@ import { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { calculateCoverHeight, calculateCoverWidth } from '@components/Manga/Cover/Cover.helpers';
 import { SPACE_MULTIPLIER } from '@theme/Spacing';
 import { adjustColumns as _adjustColumns, adjustTitleSize as _adjustTitleSize } from '@redux/reducers/settingsReducer';
+import ItemToggle from '@screens/Settings/screens/components/ItemToggle';
 const { height } = Dimensions.get('window');
+import connector, { ConnectedMangasColumnProps } from './MangasColumn.redux';
+import ItemDropdown from '@screens/Settings/screens/components/ItemDropdown';
+import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
 
 const sampleMangas = [
   {
@@ -57,15 +74,8 @@ const sampleMangas = [
   },
 ];
 
-const MangasColumn: React.FC = (props) => {
-  const fontSize = useSelector((state: AppState) => state.settings.mangaCover.fontSize);
-  const cols = useSelector((state: AppState) => state.settings.mangaCover.perColumn);
-  const dispatch = useAppDispatch();
-  const { adjustColumns, adjustTitleSize } = bindActionCreators(
-    { adjustColumns: _adjustColumns, adjustTitleSize: _adjustTitleSize },
-    dispatch
-  );
-
+const MangasColumn: React.FC<ConnectedMangasColumnProps> = (props) => {
+  const { cols, fontSize, bold, adjustColumns, adjustTitleSize, toggleBoldTitles } = props;
   const colValue = useSharedValue(cols);
   const fontSizeValue = useSharedValue(fontSize);
   const width = useSharedValue(calculateCoverWidth(cols) * SPACE_MULTIPLIER);
@@ -105,6 +115,7 @@ const MangasColumn: React.FC = (props) => {
   const textStyle = useAnimatedStyle(() => ({
     fontSize: fontSizeValue.value,
   }));
+  const mangaStyles: MenuItemProps[] = React.useMemo((): MenuItemProps[] => [], []);
 
   return (
     <>
@@ -117,7 +128,7 @@ const MangasColumn: React.FC = (props) => {
             <MangaCoverPreviewContainer style={style} key={i}>
               <MangaCoverPreview source={{ uri: x.uri }} style={imageStyle} />
               <Spacer y={1} />
-              <Typography style={textStyle} numberOfLines={2}>
+              <Typography style={textStyle} numberOfLines={2} bold={bold}>
                 {x.title}
               </Typography>
             </MangaCoverPreviewContainer>
@@ -131,6 +142,7 @@ const MangasColumn: React.FC = (props) => {
         backdrop={false}
         closeThreshold={height * 0.85}>
         <MangasColumnSettingsContainer>
+          <ListSection title='Manga Covers' />
           <CustomizationSlider
             value={cols}
             setValue={setWidth}
@@ -149,10 +161,19 @@ const MangasColumn: React.FC = (props) => {
             left={<Icon bundle='MaterialCommunityIcons' name='format-font-size-decrease' size='small' />}
             right={<Icon bundle='MaterialCommunityIcons' name='format-font-size-increase' />}
           />
+          <Divider />
+          <ListSection title='Text Styling' />
+          <ItemToggle
+            paper
+            enabled={bold}
+            title='Bold'
+            subtitle='Use bold text for the title'
+            onChange={toggleBoldTitles}
+          />
         </MangasColumnSettingsContainer>
       </Modal>
     </>
   );
 };
 
-export default MangasColumn;
+export default connector(MangasColumn);

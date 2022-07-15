@@ -15,11 +15,16 @@ export const MangasColumnPreviewContainer = styled.View`
   `}
 `;
 
-export const MangasColumnSettingsContainer = styled(Flex).attrs({ spacing: 2, direction: 'column' })`
+export const MangasColumnSettingsContainer = styled(Flex).attrs({ direction: 'column' })`
   ${(props) => css`
-    padding: ${props.theme.spacing(2, 3)};
     background-color: ${props.theme.palette.background.paper.get()};
     min-height: 100%;
+  `}
+`;
+
+export const MangasColumnSettingHeader = styled.View`
+  ${(props) => css`
+    padding: ${props.theme.spacing(2, 3)};
   `}
 `;
 
