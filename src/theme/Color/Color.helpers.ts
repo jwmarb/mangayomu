@@ -2,13 +2,14 @@ import { ChangeableTheme } from '@redux/reducers/settingsReducer/settingsReducer
 import { RGBA } from '@theme/Color/Color.interfaces';
 import { Color } from '@theme/core';
 import { Appearance, ColorSchemeName } from 'react-native';
-let store: any;
+let store: any | null;
 
 export function injectThemeFromStore(_store: any) {
   store = _store;
 }
 
 export function getUserSelectedTheme(): ColorSchemeName {
+  if (store == null) return Appearance.getColorScheme();
   switch (store.getState().settings.theme) {
     case ChangeableTheme.LIGHT:
       return 'light';
