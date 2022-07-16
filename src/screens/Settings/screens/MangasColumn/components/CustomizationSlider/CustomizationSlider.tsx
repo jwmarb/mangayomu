@@ -12,7 +12,7 @@ const CoverSlider: React.FC<CustomizationSliderProps> = (props) => {
   const { width } = useWindowDimensions();
 
   return (
-    <Flex direction='column'>
+    <Flex direction='column' container verticalPadding={2} horizontalPadding={3}>
       <Typography>{title}</Typography>
       <Typography variant='body2' color='textSecondary'>
         {description}
