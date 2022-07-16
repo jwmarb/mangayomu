@@ -3,7 +3,6 @@
     "name": "manga-app-improved",
     "slug": "manga-app-improved",
     "version": "1.0.0",
-    "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
