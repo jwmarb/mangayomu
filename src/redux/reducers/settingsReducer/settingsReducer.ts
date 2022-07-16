@@ -3,11 +3,13 @@ import { Appearance } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { ChangeableTheme, MangaCoverStyles, ReaderBackgroundColor, ReaderDirection } from './settingsReducer.constants';
 import { SettingsReducerAction, SettingsReducerState } from './settingsReducer.interfaces';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 const INITIAL_STATE: SettingsReducerState = {
   theme: ChangeableTheme.SYSTEM_THEME,
   showIntroduction: true,
   selectedSource: MangaSee,
+  deviceOrientation: ScreenOrientation.Orientation.UNKNOWN,
   mangaCover: {
     style: MangaCoverStyles.CLASSIC,
     perColumn: 2,
@@ -25,6 +27,11 @@ const INITIAL_STATE: SettingsReducerState = {
 
 const reducer = (state: SettingsReducerState = INITIAL_STATE, action: SettingsReducerAction): SettingsReducerState => {
   switch (action.type) {
+    case 'SET_DEVICE_ORIENTATION':
+      return {
+        ...state,
+        deviceOrientation: action.orientation,
+      };
     case 'CHANGE_COVER_STYLE':
       return {
         ...state,

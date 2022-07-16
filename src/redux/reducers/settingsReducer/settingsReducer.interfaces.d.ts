@@ -1,9 +1,11 @@
 import MangaHost from '@services/scraper/scraper.abstract';
+import { Orientation } from 'expo-screen-orientation';
 import { ReaderBackgroundColor, ReaderDirection, ChangeableTheme, MangaCoverStyles } from './settingsReducer.constants';
 
 export interface SettingsReducerState {
   theme: ChangeableTheme;
   showIntroduction: boolean;
+  deviceOrientation: Orientation;
   selectedSource: MangaHost;
   mangaCover: {
     perColumn: number;
@@ -42,4 +44,5 @@ export type SettingsReducerAction =
   | { type: 'TOGGLE_READER_SETTING'; key: ReaderSettingsBooleans }
   | { type: 'SWITCH_APP_THEME'; theme: ChangeableTheme }
   | { type: 'TOGGLE_MANGACOVER_SETTING'; key: MangaCoverSettingsBooleans }
-  | { type: 'CHANGE_COVER_STYLE'; style: MangaCoverStyles };
+  | { type: 'CHANGE_COVER_STYLE'; style: MangaCoverStyles }
+  | { type: 'SET_DEVICE_ORIENTATION'; orientation: Orientation };

@@ -17,6 +17,7 @@ import { HoldMenuProvider } from 'react-native-hold-menu';
 import { NavigationContainer, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { RootSiblingParent } from 'react-native-root-siblings';
+import * as ScreenOrientation from 'expo-screen-orientation';
 async function asyncLoader() {
   await Font.loadAsync({
     Nunito: Nunito_400Regular,
@@ -67,8 +68,12 @@ const ResourceLoader: React.FC<ResourceLoaderProps> = (props) => {
               break;
           }
         });
+        const deviceOrientationListener = ScreenOrientation.addOrientationChangeListener((orientation) => {
+          dispatch({ type: 'SET_DEVICE_ORIENTATION', orientation: orientation.orientationInfo.orientation });
+        });
         return () => {
           appStateListener.remove();
+          deviceOrientationListener.remove();
         };
       }
     })();
