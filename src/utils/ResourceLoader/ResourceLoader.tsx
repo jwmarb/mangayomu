@@ -56,7 +56,7 @@ const ResourceLoader: React.FC<ResourceLoaderProps> = (props) => {
         console.error(e);
       } finally {
         setReady(true);
-        const subscription = AppState.addEventListener('change', (appState) => {
+        const appStateListener = AppState.addEventListener('change', (appState) => {
           switch (appState) {
             case 'inactive':
             case 'background':
@@ -68,7 +68,7 @@ const ResourceLoader: React.FC<ResourceLoaderProps> = (props) => {
           }
         });
         return () => {
-          subscription.remove();
+          appStateListener.remove();
         };
       }
     })();
