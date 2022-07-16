@@ -1,8 +1,9 @@
 import { Container } from '@components/Container';
 import Manga from '@components/Manga';
 import { calculateCoverWidth, calculateCoverHeight } from '@components/Manga/Cover/Cover.helpers';
-import { LibraryManga } from '@redux/reducers/mangalibReducer/mangalibReducer.interfaces';
 import { MangaReducerState } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
+import { MangaCoverStyles } from '@redux/reducers/settingsReducer/settingsReducer.constants';
+import store from '@redux/store';
 import { MangaInLibrary } from '@screens/Home/screens/MangaLibrary/MangaLibrary.base';
 import { SPACE_MULTIPLIER } from '@theme/Spacing';
 import { RowRenderer } from '@utils/RecyclerListView.interfaces';
@@ -14,33 +15,50 @@ export const LayoutLibraryMangaType = {
   FIRST: 0,
   LAST: 1,
   INBETWEEN: 2,
+  DYNAMIC: 3,
 };
 
-export const dataProviderFn = (r1: LibraryManga, r2: LibraryManga) => r1.mangaKey === r2.mangaKey;
+export const dataProviderFn = (r1: string, r2: string) => r1 === r2;
 
-export const generateNewLayout = (cols: number, fontSize: number) => {
+export const generateNewLayout = (cols: number, fontSize: number, itemCount: number) => {
   const spacing = SPACE_MULTIPLIER * 2;
-  const totalMangasPerRow = width / (calculateCoverWidth(cols) * SPACE_MULTIPLIER + spacing);
+  const containerWidth = calculateCoverWidth(cols) * SPACE_MULTIPLIER + spacing;
+  const totalMangasPerRow = width / containerWidth;
   const maxMangasPerRow = Math.floor(totalMangasPerRow);
+  const isUnevenLayout = itemCount < maxMangasPerRow;
+  console.log();
   return new LayoutProvider(
     (i) => {
-      if (i % maxMangasPerRow === 0) return LayoutLibraryMangaType.FIRST;
-      return LayoutLibraryMangaType.INBETWEEN;
+      if (
+        (itemCount % maxMangasPerRow !== 0 &&
+          i + 1 > Math.floor(itemCount / maxMangasPerRow) * maxMangasPerRow &&
+          i < itemCount) ||
+        itemCount < maxMangasPerRow
+      )
+        return LayoutLibraryMangaType.DYNAMIC;
+      else
+        switch (i % maxMangasPerRow) {
+          case 0:
+            return LayoutLibraryMangaType.FIRST;
+          case maxMangasPerRow - 1:
+            return LayoutLibraryMangaType.LAST;
+          default:
+            return LayoutLibraryMangaType.INBETWEEN;
+        }
     },
     (type, dim) => {
-      const containerWidth = calculateCoverWidth(cols) * SPACE_MULTIPLIER + spacing;
-      const totalMangasPerRow = width / containerWidth;
-      const maxMangasPerRow = Math.floor(totalMangasPerRow);
-      const marginLeft = (width - containerWidth * maxMangasPerRow) / 2;
-      switch (type) {
-        case LayoutLibraryMangaType.FIRST:
-          dim.width = containerWidth + marginLeft;
-          break;
+      if (type === LayoutLibraryMangaType.DYNAMIC) {
+        dim.width = width / (itemCount - Math.floor(itemCount / maxMangasPerRow) * maxMangasPerRow);
+      } else dim.width = Math.round(containerWidth + (width / maxMangasPerRow - width / totalMangasPerRow));
+
+      switch (store.getState().settings.mangaCover.style) {
         default:
-          dim.width = containerWidth;
+        case MangaCoverStyles.CLASSIC:
+          dim.height = calculateCoverHeight(cols) * SPACE_MULTIPLIER + fontSize * 4 + spacing;
           break;
+        case MangaCoverStyles.MODERN:
+          dim.height = calculateCoverHeight(cols) * SPACE_MULTIPLIER + spacing;
       }
-      dim.height = calculateCoverHeight(cols) * SPACE_MULTIPLIER + fontSize * 4 + 8;
     }
   );
 };
@@ -52,6 +70,11 @@ export const rowRenderer: any = (
   extendedState: MangaReducerState
 ) => {
   switch (type) {
+    case LayoutLibraryMangaType.DYNAMIC:
+      return <MangaInLibrary manga={extendedState[data]} dynamic />;
+
+    case LayoutLibraryMangaType.LAST:
+      return <MangaInLibrary manga={extendedState[data]} last />;
     case LayoutLibraryMangaType.FIRST:
       return <MangaInLibrary manga={extendedState[data]} first />;
 

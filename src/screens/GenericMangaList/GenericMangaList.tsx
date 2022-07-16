@@ -32,7 +32,7 @@ const InfiniteMangaList: React.FC<{ genre: string; source: string }> = (props) =
     refresh,
   } = useAPICall(() => mangaSource.search('', { Genres: { include: [genre], exclude: [] } }));
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider((r1, r2) => r1 !== r2));
-  const { layoutProvider, rowRenderer } = useMangaLayout();
+  const { layoutProvider, rowRenderer } = useMangaLayout(dataProvider.getAllData());
   const [showFooter, setShowFooter] = React.useState<boolean>(true);
   const [reachedEnd, setReachedEnd] = React.useState<boolean>(false);
   const { ready, Fallback } = useLazyLoading();
@@ -95,6 +95,7 @@ const InfiniteMangaList: React.FC<{ genre: string; source: string }> = (props) =
       );
     return (
       <RecyclerListViewScreen
+        // forceNonDeterministicRendering
         collapsible={collapsible}
         dataProvider={dataProvider}
         onEndReached={handleOnEndReached}
@@ -131,7 +132,7 @@ const GenericMangaListWithMangas: React.FC<{
     },
   };
 
-  const { layoutProvider, rowRenderer } = useMangaLayout();
+  const { layoutProvider, rowRenderer } = useMangaLayout(mangas);
 
   const theme = useTheme();
 
@@ -151,6 +152,7 @@ const GenericMangaListWithMangas: React.FC<{
       collapsible={collapsible}
       dataProvider={dataProvider}
       layoutProvider={layoutProvider}
+      // forceNonDeterministicRendering
       rowRenderer={rowRenderer as any}
       applyWindowCorrection={applyWindowCorrection}
       scrollViewProps={{

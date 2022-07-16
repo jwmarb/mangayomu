@@ -4,6 +4,7 @@ import { MangaInLibrary } from '@screens/Home/screens/MangaLibrary/MangaLibrary.
 import { Manga } from '@services/scraper/scraper.interfaces';
 import { RowRenderer } from '@utils/RecyclerListView.interfaces';
 import { useSelector } from 'react-redux';
+import { Dimensions } from 'react-native';
 
 const rowRenderer: RowRenderer = (type, data: Manga) => {
   switch (type) {
@@ -13,6 +14,8 @@ const rowRenderer: RowRenderer = (type, data: Manga) => {
     default:
     case LayoutLibraryMangaType.INBETWEEN:
       return <MangaInLibrary manga={data} />;
+    case LayoutLibraryMangaType.LAST:
+      return <MangaInLibrary manga={data} last />;
   }
 };
 
@@ -20,11 +23,11 @@ const rowRenderer: RowRenderer = (type, data: Manga) => {
  * Hook to automatically use a manga layout provider
  * @returns Returns the layout for a list of mangas
  */
-export default function useMangaLayout() {
+export default function useMangaLayout(items: any[]) {
   const cols = useSelector((state: AppState) => state.settings.mangaCover.perColumn);
   const fontSize = useSelector((state: AppState) => state.settings.mangaCover.fontSize);
   return {
-    layoutProvider: generateNewLayout(cols, fontSize),
+    layoutProvider: generateNewLayout(cols, fontSize, items.length),
     rowRenderer,
   };
 }

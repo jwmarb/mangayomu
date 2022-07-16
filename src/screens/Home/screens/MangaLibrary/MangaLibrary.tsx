@@ -59,7 +59,9 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(
     new DataProvider(dataProviderFn).cloneWithRows(mangas)
   );
-  const [layoutProvider, setLayoutProvider] = React.useState<LayoutProvider>(generateNewLayout(cols, fontSize));
+  const [layoutProvider, setLayoutProvider] = React.useState<LayoutProvider>(
+    generateNewLayout(cols, fontSize, mangas.length)
+  );
 
   const [expand, setExpand] = React.useState<boolean>(false);
   const [tabIndex, setTabIndex] = React.useState<number>(0);
@@ -115,8 +117,8 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   );
 
   useMountedEffect(() => {
-    setLayoutProvider(generateNewLayout(cols, fontSize));
-  }, [cols]);
+    setLayoutProvider(generateNewLayout(cols, fontSize, mangas.length));
+  }, [cols, mangas]);
 
   useMountedEffect(() => {
     setDataProvider((prev) =>
