@@ -5,13 +5,17 @@ import { TabButtonBase, TabContainer, TabsContainer } from '@components/Screen/T
 import Spacer from '@components/Spacer';
 import { Typography } from '@components/Typography';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+
 import React from 'react';
+import { AppState } from '@redux/store';
+import { useSelector } from 'react-redux';
 
 const Tabs: React.FC<BottomTabBarProps> = (props) => {
   const { navigation: _navigation, descriptors, state } = props;
+  const deviceOrientation = useSelector((state: AppState) => state.settings.deviceOrientation);
   const navigation = React.useMemo(() => _navigation, []);
   return (
-    <TabsContainer>
+    <TabsContainer deviceOrientation={deviceOrientation}>
       {state.routes.map((route, index) => (
         <Tab
           key={route.key}

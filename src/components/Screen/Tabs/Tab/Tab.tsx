@@ -3,12 +3,25 @@ import { TabProps } from '@components/Screen/Tabs/Tab/Tab.interfaces';
 import { TabButtonBase, TabContainer } from '@components/Screen/Tabs/Tabs.base';
 import Spacer from '@components/Spacer';
 import { Typography } from '@components/Typography';
+import { Orientation } from 'expo-screen-orientation';
 import React from 'react';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  FadeIn,
+  FadeInDown,
+  FadeInUp,
+  FadeOut,
+  FadeOutDown,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { useTheme } from 'styled-components/native';
+import connector, { ConnectedTabProps } from './Tab.redux';
 
-const Tab: React.FC<TabProps> = (props) => {
-  const { tabBarIcon, routeName, routeKey, navigation, isFocused } = props;
+const Tab: React.FC<ConnectedTabProps> = (props) => {
+  const { tabBarIcon, routeName, routeKey, navigation, isFocused, deviceOrientation } = props;
   const theme = useTheme();
   const TabIcon = tabBarIcon as React.FC<Omit<React.ComponentProps<typeof Icon>, 'bundle' | 'name'>>;
   const color = React.useMemo(() => (isFocused ? 'primary' : 'disabled'), [isFocused]);
@@ -35,26 +48,41 @@ const Tab: React.FC<TabProps> = (props) => {
     transform: [{ scale: scale.value }, { rotate: rotation.value + 'deg' }],
   }));
 
-  return React.useMemo(
-    () => (
-      <TabButtonBase onPress={onPress}>
-        <TabContainer>
-          {TabIcon && (
-            <>
-              <Animated.View style={style}>
-                <TabIcon color={color} />
-              </Animated.View>
-              <Spacer y={1} />
-            </>
-          )}
-          <Typography variant='bottomtab' color={color}>
-            {routeName}
-          </Typography>
-        </TabContainer>
-      </TabButtonBase>
-    ),
-    [isFocused, theme]
-  );
+  return React.useMemo(() => {
+    switch (deviceOrientation) {
+      case Orientation.LANDSCAPE_LEFT:
+      case Orientation.LANDSCAPE_RIGHT:
+        return (
+          <TabButtonBase onPress={onPress}>
+            <TabContainer>
+              {TabIcon && (
+                <Animated.View style={style}>
+                  <TabIcon color={color} />
+                </Animated.View>
+              )}
+            </TabContainer>
+          </TabButtonBase>
+        );
+      default:
+        return (
+          <TabButtonBase onPress={onPress}>
+            <TabContainer>
+              {TabIcon && (
+                <>
+                  <Animated.View style={style}>
+                    <TabIcon color={color} />
+                  </Animated.View>
+                  <Spacer y={1} />
+                </>
+              )}
+              <Typography variant='bottomtab' color={color}>
+                {routeName}
+              </Typography>
+            </TabContainer>
+          </TabButtonBase>
+        );
+    }
+  }, [isFocused, theme, deviceOrientation]);
 };
 
-export default Tab;
+export default connector(Tab);
