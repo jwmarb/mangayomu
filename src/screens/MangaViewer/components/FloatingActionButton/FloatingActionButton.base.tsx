@@ -1,17 +1,8 @@
 import styled, { css } from 'styled-components/native';
 import Animated, { FadeIn, FadeOutRight } from 'react-native-reanimated';
+import { shadowDrop } from '@theme/core';
 
-export const FloatingActionButtonContainer = styled(Animated.View).attrs({
-  shadowOffset: {
-    shadowColor: '#000',
-    width: 0,
-    height: 2,
-  },
-  shadowOpacity: 0.25,
-  shadowRadius: 3.84,
-
-  elevation: 5,
-})`
+export const FloatingActionButtonContainer = styled(Animated.View).attrs(shadowDrop)`
   ${(props) => css`
     background-color: ${props.theme.palette.primary.main.get()};
     border-radius: 1000px;

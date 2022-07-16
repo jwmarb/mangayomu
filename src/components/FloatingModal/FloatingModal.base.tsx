@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components/native';
 import Animated, { FadeIn, FadeOut, SlideOutDown, SlideInDown } from 'react-native-reanimated';
+import { shadowDrop } from '@theme/core';
 
 export const FloatingModalBaseContainer = styled(Animated.View).attrs({
   pointerEvents: 'box-none',
@@ -12,17 +13,7 @@ export const FloatingModalBaseContainer = styled(Animated.View).attrs({
   right: 0;
   bottom: 0;
 `;
-export const FloatingModalContainer = styled(Animated.View).attrs({
-  shadowOffset: {
-    shadowColor: '#000',
-    width: 0,
-    height: 2,
-  },
-  shadowOpacity: 0.25,
-  shadowRadius: 3.84,
-
-  elevation: 5,
-})`
+export const FloatingModalContainer = styled(Animated.View).attrs(shadowDrop)`
   ${(props) => css`
     position: absolute;
     left: 0;

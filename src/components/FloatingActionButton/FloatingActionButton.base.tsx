@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components/native';
 import Animated from 'react-native-reanimated';
+import { shadowDrop } from '@theme/core';
 
 export const FloatingActionButtonContainer = styled.View.attrs({ pointerEvents: 'box-none' })`
   position: absolute;
@@ -20,17 +21,7 @@ export const FloatingActionButtonBase = styled(Animated.View)`
   `}
 `;
 
-export const FloatingActionButtonWrapper = styled.View.attrs({
-  shadowOffset: {
-    shadowColor: '#000',
-    width: 0,
-    height: 2,
-  },
-  shadowOpacity: 0.25,
-  shadowRadius: 3.84,
-
-  elevation: 5,
-})`
+export const FloatingActionButtonWrapper = styled.View.attrs(shadowDrop)`
   border-radius: 1000px;
   ${(props) => css`
     background-color: ${props.theme.palette.primary.main.get()};
