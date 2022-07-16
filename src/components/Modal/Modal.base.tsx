@@ -1,4 +1,5 @@
 import { BackdropPressableProps } from '@components/Modal/Modal.interfaces';
+import { BackgroundColors } from '@theme/Color/Color.interfaces';
 import { Dimensions, StatusBar } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
@@ -52,10 +53,13 @@ export const BackdropPressable = styled(TouchableWithoutFeedback)<BackdropPressa
   `}
 `;
 
-export const ModalContainer = styled(Animated.View)`
+export const ModalContainer = styled(Animated.View)<{
+  modalBackgroundColor: keyof BackgroundColors;
+  modalTopColor: keyof BackgroundColors;
+}>`
   ${(props) => css`
     flex-grow: 1;
-    background-color: ${props.theme.palette.background.default.get()};
-    border-top-color: ${props.theme.palette.background.paper.get()};
+    background-color: ${props.theme.palette.background[props.modalBackgroundColor].get()};
+    border-top-color: ${props.theme.palette.background[props.modalTopColor].get()};
   `}
 `;

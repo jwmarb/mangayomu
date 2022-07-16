@@ -21,6 +21,7 @@ import { View } from 'react-native';
 import Flex from '@components/Flex';
 import ButtonBase from '@components/Button/ButtonBase';
 import Spacer from '@components/Spacer';
+import useMountedEffect from '@hooks/useMountedEffect';
 
 const Slider: React.FC<SliderProps> = (props) => {
   const {
@@ -33,6 +34,9 @@ const Slider: React.FC<SliderProps> = (props) => {
     value,
   } = props;
   const range = Math.abs(max - min);
+  useMountedEffect(() => {
+    positionLeft.value = Math.min((width / range) * (value - min), width);
+  }, [width]);
   const positionLeft = useSharedValue(Math.min((width / range) * (value - min), width));
   const gestureHandlers = useAnimatedGestureHandler<
     PanGestureHandlerGestureEvent,

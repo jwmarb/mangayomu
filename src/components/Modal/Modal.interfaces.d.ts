@@ -2,6 +2,7 @@ import React from 'react';
 import { FlatListProps } from 'react-native';
 import { ScrollView, FlatList } from 'react-native-gesture-handler';
 import { RecyclerListViewProps } from 'recyclerlistview';
+import { BackgroundColors } from '@theme/Color/Color.interfaces';
 
 export interface ModalProps {
   visible: boolean;
@@ -11,6 +12,8 @@ export interface ModalProps {
   backdrop?: boolean;
   recyclerListView?: boolean;
   recyclerListViewProps?: RecyclerListViewProps;
+  topColor?: keyof BackgroundColors;
+  backgroundColor?: keyof BackgroundColors;
 }
 
 export interface BackdropPressableProps {

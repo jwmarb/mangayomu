@@ -1,8 +1,6 @@
 import Animated from 'react-native-reanimated';
 import styled, { css } from 'styled-components/native';
 import { Dimensions } from 'react-native';
-const { width } = Dimensions.get('window');
-
 export const TabButtonContainer = styled.View`
   ${(props) => css`
     padding: ${props.theme.spacing(2, 2.4)};
@@ -18,7 +16,7 @@ export const TabContainer = styled(Animated.View)`
 `;
 
 export const TabContentContainer = styled.View`
-  width: ${width}px;
+  width: ${Dimensions.get('window').width}px;
 `;
 
 export const TabSelectedIndicator = styled(Animated.View)<{ numOfChildren: number }>`
@@ -29,6 +27,6 @@ export const TabSelectedIndicator = styled(Animated.View)<{ numOfChildren: numbe
     left: 0;
     right: 0;
     bottom: 0;
-    width: ${width / props.numOfChildren}px;
+    width: ${Dimensions.get('window').width / props.numOfChildren}px;
   `}
 `;

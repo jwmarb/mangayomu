@@ -10,7 +10,9 @@ import {
 import { GestureContext, ModalProps } from '@components/Modal/Modal.interfaces';
 import { Typography } from '@components/Typography';
 import { Portal } from '@gorhom/portal';
+import { AppState } from '@redux/store';
 import pixelToNumber from '@utils/pixelToNumber';
+import { Orientation } from 'expo-screen-orientation';
 import React from 'react';
 import {
   BackHandler,
@@ -24,6 +26,7 @@ import {
   PanResponderGestureState,
   StatusBar,
   StyleSheet,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import {
@@ -56,27 +59,41 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { useSelector } from 'react-redux';
 import { RecyclerListView, RecyclerListViewProps } from 'recyclerlistview';
 import { ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 import { WindowCorrection } from 'recyclerlistview/dist/reactnative/core/ViewabilityTracker';
 import { useTheme } from 'styled-components/native';
-const { height } = Dimensions.get('window');
-
-const CLOSE_THRESHOLD = height - 200;
-const MAX_PANEL_HEIGHT = StatusBar.currentHeight ?? 0;
-const APPROACHING_TOP = MAX_PANEL_HEIGHT + 20;
 
 const Modal: React.FC<ModalProps> = (props) => {
   const {
     onClose,
     visible,
     children,
-    minimumHeight = height * 0.5,
-    closeThreshold = CLOSE_THRESHOLD,
+    minimumHeight: _minimumHeight,
+    closeThreshold: _closeThreshold,
     backdrop: backdropEnabled = true,
     recyclerListView = false,
     recyclerListViewProps = {} as RecyclerListViewProps,
+    backgroundColor = 'default',
+    topColor = 'paper',
   } = props;
+  const deviceOrientation = useSelector((state: AppState) => state.settings.deviceOrientation);
+
+  const { height } = useWindowDimensions();
+  const minimumHeight = React.useMemo(() => {
+    switch (deviceOrientation) {
+      case Orientation.LANDSCAPE_LEFT:
+      case Orientation.LANDSCAPE_RIGHT:
+        return (_minimumHeight ?? height) * 0.7;
+      default:
+        return _minimumHeight ?? height * 0.5;
+    }
+  }, [height, _minimumHeight, deviceOrientation]);
+  const CLOSE_THRESHOLD = height * 0.8;
+  const closeThreshold = CLOSE_THRESHOLD;
+  const MAX_PANEL_HEIGHT = StatusBar.currentHeight ?? 0;
+  const APPROACHING_TOP = MAX_PANEL_HEIGHT + 20;
   const scrollRef = React.useRef<ScrollView>(null);
   const recyclerRef = React.useRef<RecyclerListView<any, any>>(null);
   const theme = useTheme();
@@ -147,7 +164,7 @@ const Modal: React.FC<ModalProps> = (props) => {
     //   cancelAnimation(backdrop);
     //   cancelAnimation(top);
     // };
-  }, [visible]);
+  }, [visible, deviceOrientation]);
 
   const panelStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: top.value }],
@@ -197,7 +214,7 @@ const Modal: React.FC<ModalProps> = (props) => {
       <StatusBarFiller style={statusBarStyle} />
       <PanGestureHandler enabled={visible} onGestureEvent={gestureHandlers}>
         <Panel style={panelStyle}>
-          <ModalContainer style={containerStyle}>
+          <ModalContainer modalBackgroundColor={backgroundColor} modalTopColor={topColor} style={containerStyle}>
             {recyclerListView ? (
               <RecyclerListView
                 {...recyclerListViewProps}
@@ -218,6 +235,7 @@ const Modal: React.FC<ModalProps> = (props) => {
                 onScroll={onScroll}
                 scrollEnabled={scrollEnabled}
                 contentContainerStyle={{
+                  backgroundColor: theme.palette.background[backgroundColor].get(),
                   minHeight: height,
                   paddingBottom: MAX_PANEL_HEIGHT + pixelToNumber(theme.spacing(12)),
                 }}>

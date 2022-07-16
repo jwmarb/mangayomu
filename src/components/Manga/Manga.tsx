@@ -15,6 +15,7 @@ import { AppState } from '@redux/store';
 import connector, { ConnectedMangaProps } from '@components/Manga/Manga.redux';
 import { MangaCoverStyles } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { Constants } from '@theme/core';
 
 const Manga: React.FC<ConnectedMangaProps> = (props) => {
   const { title, imageCover, cols, bold, fontSize, coverStyle } = props;
@@ -28,7 +29,7 @@ const Manga: React.FC<ConnectedMangaProps> = (props) => {
         <TouchableWithoutFeedback onPress={handleOnPress}>
           <MangaBaseContainer cols={cols}>
             <Cover uri={imageCover}>
-              <Typography numberOfLines={2} fontSize={fontSize} bold={bold}>
+              <Typography numberOfLines={2} fontSize={fontSize} bold={bold} color={Constants.GRAY[1]}>
                 {title}
               </Typography>
             </Cover>

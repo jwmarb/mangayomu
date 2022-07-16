@@ -4,7 +4,7 @@ import Flex from '@components/Flex';
 import { HeaderBuilder } from '@components/Screen/Header/Header.base';
 import { Typography } from '@components/Typography';
 import React from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, useWindowDimensions } from 'react-native';
 import Animated, {
   Easing,
   useSharedValue,
@@ -17,9 +17,9 @@ import TabButton from './TabButton';
 import { TabButtonContainer, TabContainer, TabContentContainer, TabSelectedIndicator } from './Tabs.base';
 import { TabsContext } from './Tabs.context';
 import { TabsProps } from './Tabs.interfaces';
-const { width } = Dimensions.get('window');
 
 const Tabs: React.FC<TabsProps> = (props) => {
+  const { width } = useWindowDimensions();
   const { tabIndex, onTabChange, children } = props;
   const [tabs, setTabs] = React.useState<Set<string>>(new Set());
   const translateX = useSharedValue(0);

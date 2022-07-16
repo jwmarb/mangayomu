@@ -27,7 +27,7 @@ const MangaPreview: React.FC<ConnectedMangaPreviewProps> = (props) => {
               <LinearGradient
                 colors={['transparent', Constants.GRAY[12].get()]}
                 style={{ height: '100%', justifyContent: 'flex-end', padding: 8 }}>
-                <Typography style={textStyle} numberOfLines={2} bold={bold}>
+                <Typography style={textStyle} numberOfLines={2} bold={bold} color={Constants.GRAY[1]}>
                   {title}
                 </Typography>
               </LinearGradient>

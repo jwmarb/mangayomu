@@ -35,7 +35,6 @@ import { calculateCoverHeight, calculateCoverWidth } from '@components/Manga/Cov
 import { SPACE_MULTIPLIER } from '@theme/Spacing';
 import { adjustColumns as _adjustColumns, adjustTitleSize as _adjustTitleSize } from '@redux/reducers/settingsReducer';
 import ItemToggle from '@screens/Settings/screens/components/ItemToggle';
-const { height } = Dimensions.get('window');
 import connector, { ConnectedMangasColumnProps } from './MangasColumn.redux';
 import ItemDropdown from '@screens/Settings/screens/components/ItemDropdown';
 import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
@@ -80,6 +79,7 @@ const sampleMangas = [
 const MangasColumn: React.FC<ConnectedMangasColumnProps> = (props) => {
   const { cols, fontSize, bold, adjustColumns, adjustTitleSize, coverStyle, toggleBoldTitles, changeCoverStyle } =
     props;
+  const { height } = useWindowDimensions();
   const colValue = useSharedValue(cols);
   const fontSizeValue = useSharedValue(fontSize);
   const width = useSharedValue(calculateCoverWidth(cols) * SPACE_MULTIPLIER);
@@ -150,6 +150,7 @@ const MangasColumn: React.FC<ConnectedMangasColumnProps> = (props) => {
         </MangasColumnPreviewContainer>
       </Animated.ScrollView>
       <Modal
+        backgroundColor='paper'
         visible={f}
         onClose={() => {}}
         minimumHeight={height * 0.85}
