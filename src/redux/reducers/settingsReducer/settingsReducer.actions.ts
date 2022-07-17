@@ -5,6 +5,7 @@ import {
   ReaderDirection,
 } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 import { AppDispatch } from '@redux/store';
+import { FontFamily } from '@theme/Typography';
 import { Dispatch } from 'redux';
 import { SettingsReducerAction, SettingsReducerState } from './settingsReducer.interfaces';
 
@@ -71,5 +72,11 @@ export function toggleBoldTitles() {
 export function changeCoverStyle(coverStyle: MangaCoverStyles) {
   return (dispatch: AppDispatch) => {
     dispatch({ type: 'CHANGE_COVER_STYLE', style: coverStyle });
+  };
+}
+
+export function changeFont(fontFamily: FontFamily) {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'CHANGE_FONT', fontFamily });
   };
 }

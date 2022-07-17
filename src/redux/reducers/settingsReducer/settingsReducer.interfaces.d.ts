@@ -1,4 +1,5 @@
 import MangaHost from '@services/scraper/scraper.abstract';
+import { FontFamily } from '@theme/Typography';
 import { Orientation } from 'expo-screen-orientation';
 import { ReaderBackgroundColor, ReaderDirection, ChangeableTheme, MangaCoverStyles } from './settingsReducer.constants';
 
@@ -7,6 +8,13 @@ export interface SettingsReducerState {
   showIntroduction: boolean;
   deviceOrientation: Orientation;
   selectedSource: MangaHost;
+  fontFamily: {
+    __selectedFont: FontFamily;
+    light: string;
+    regular: string;
+    heavy: string;
+    semi: string;
+  };
   mangaCover: {
     perColumn: number;
     fontSize: number;
@@ -45,4 +53,5 @@ export type SettingsReducerAction =
   | { type: 'SWITCH_APP_THEME'; theme: ChangeableTheme }
   | { type: 'TOGGLE_MANGACOVER_SETTING'; key: MangaCoverSettingsBooleans }
   | { type: 'CHANGE_COVER_STYLE'; style: MangaCoverStyles }
-  | { type: 'SET_DEVICE_ORIENTATION'; orientation: Orientation };
+  | { type: 'SET_DEVICE_ORIENTATION'; orientation: Orientation }
+  | { type: 'CHANGE_FONT'; fontFamily: FontFamily };

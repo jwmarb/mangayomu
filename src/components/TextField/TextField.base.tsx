@@ -13,7 +13,7 @@ export const TextFieldBase = styled.TextInput.attrs((props) => ({
   placeholderTextColor: props.theme.palette.text.disabled.get(),
 }))`
   ${(props) => css`
-    ${props.theme.typography.body1}
+    ${props.theme.typography().body1}
     background-color: ${props.theme.palette.background.paper.get()};
     height: 100%;
     flex-grow: 1;

@@ -12,12 +12,14 @@ import {
   List,
   Modal,
   ListSection,
+  ListItem,
+  Button,
 } from '@components/core';
 import Cover from '@components/Manga/Cover';
 import { useSelector } from 'react-redux';
 import { AppState, useAppDispatch } from '@redux/store';
 import { bindActionCreators } from 'redux';
-import { Animated, Dimensions, useWindowDimensions } from 'react-native';
+import { Animated, Dimensions, useWindowDimensions, View } from 'react-native';
 import {
   MangaCoverPreview,
   MangaCoverPreviewContainer,
@@ -30,7 +32,7 @@ import { MangaBaseContainer } from '@components/Manga/Manga.base';
 import CustomizationSlider from '@screens/Settings/screens/MangasColumn/components/CustomizationSlider/CustomizationSlider';
 import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-collapsible';
 import { useIsFocused } from '@react-navigation/native';
-import { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { onChange, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { calculateCoverHeight, calculateCoverWidth } from '@components/Manga/Cover/Cover.helpers';
 import { SPACE_MULTIPLIER } from '@theme/Spacing';
 import { adjustColumns as _adjustColumns, adjustTitleSize as _adjustTitleSize } from '@redux/reducers/settingsReducer';
@@ -40,6 +42,9 @@ import ItemDropdown from '@screens/Settings/screens/components/ItemDropdown';
 import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
 import MangaPreview from '@screens/Settings/screens/MangasColumn/components/MangaPreview';
 import { MangaCoverStyles } from '@redux/reducers/settingsReducer/settingsReducer.constants';
+import { Menu, MenuOption, MenuTrigger, renderers, MenuOptions } from 'react-native-popup-menu';
+import { useTheme } from 'styled-components/native';
+import { FontFamily } from '@theme/Typography';
 
 const sampleMangas = [
   {
@@ -80,6 +85,7 @@ const MangasColumn: React.FC<ConnectedMangasColumnProps> = (props) => {
   const { cols, fontSize, bold, adjustColumns, adjustTitleSize, coverStyle, toggleBoldTitles, changeCoverStyle } =
     props;
   const { height } = useWindowDimensions();
+
   const colValue = useSharedValue(cols);
   const fontSizeValue = useSharedValue(fontSize);
   const width = useSharedValue(calculateCoverWidth(cols) * SPACE_MULTIPLIER);

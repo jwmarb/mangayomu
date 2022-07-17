@@ -15,7 +15,7 @@ export const ButtonContainer = styled.View<Pick<ButtonProps, 'expand'>>`
 
 export const ButtonText = styled.Text.attrs({ numberOfLines: 1 })<ButtonTextProps>`
   ${(props) => css`
-    ${props.theme.typography.button};
+    ${props.theme.typography().button};
     text-align: ${props.expand ? 'center' : 'left'};
     color: ${() => {
       if (props.disabled) return props.theme.palette.action.disabled.get();

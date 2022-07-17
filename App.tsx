@@ -12,7 +12,7 @@ import { PortalProvider } from '@gorhom/portal';
 import { LogBox } from 'react-native';
 import '@services/MangaPark_v3';
 import '@services/MangaSee';
-
+import { MenuProvider } from 'react-native-popup-menu';
 LogBox.ignoreLogs([
   `ViewPropTypes will be removed from React Native. Migrate to ViewPropTypes exported from 'deprecated-react-native-prop-types'.`,
 ]);
@@ -23,12 +23,12 @@ export default function App() {
       <PersistGate persistor={persistor}>
         <ResourceLoader
           onFinishedLoading={
-            <>
+            <MenuProvider>
               <PortalProvider>
                 <Root />
               </PortalProvider>
               <StatusBar translucent />
-            </>
+            </MenuProvider>
           }
         />
       </PersistGate>

@@ -4,13 +4,19 @@ import spacing from '@theme/Spacing';
 import { ColorSchemeName, useColorScheme } from 'react-native';
 import { DefaultTheme } from 'styled-components';
 import { TypographyTheme } from '@theme/Typography/typography.interfaces';
-import { typographyTheme } from '@theme/Typography';
+import { FontFamily, typographyTheme } from '@theme/Typography';
 import { Theme as NavigationTheme, DefaultTheme as DefaultNavigationTheme } from '@react-navigation/native';
 import { ChangeableTheme } from '@redux/reducers/settingsReducer/settingsReducer.constants';
+import { MenuOptionsCustomStyle } from 'react-native-popup-menu';
+const ButtonBase = React.lazy(() => import('@components/Button/ButtonBase'));
+const Flex = React.lazy(() => import('@components/Flex'));
+import { RFValue } from 'react-native-responsive-fontsize';
+import React from 'react';
 
 declare module 'styled-components' {
   export interface DefaultTheme {
     palette: ThemedPalette & typeof applicableColors;
+    menuOptionsStyle: MenuOptionsCustomStyle;
     spacing: typeof spacing;
     borderRadius: number;
     typography: TypographyTheme;
@@ -27,6 +33,36 @@ const theme = (mode: ColorSchemeName): DefaultTheme => {
   };
   return {
     ...generated,
+    menuOptionsStyle: {
+      optionText: {
+        color: generated.palette.text.primary.get(),
+        fontSize: RFValue(13),
+      },
+      OptionTouchableComponent: (props: React.PropsWithChildren<{}>) => {
+        const { children, ...rest } = props;
+        return (
+          <React.Suspense fallback={null}>
+            <ButtonBase square {...rest}>
+              <Flex container horizontalPadding={3} verticalPadding={1.5}>
+                {children}
+              </Flex>
+            </ButtonBase>
+          </React.Suspense>
+        );
+      },
+      optionsContainer: {
+        backgroundColor: generated.palette.background.default.get(),
+        borderWidth: 1,
+        borderColor: generated.palette.divider.get(),
+        borderRadius: generated.borderRadius,
+      },
+      optionsWrapper: {
+        backgroundColor: generated.palette.background.default.get(),
+        borderWidth: 1,
+        borderColor: generated.palette.divider.get(),
+        borderRadius: generated.borderRadius,
+      },
+    },
     '@react-navigation': {
       colors: {
         ...DefaultNavigationTheme.colors,

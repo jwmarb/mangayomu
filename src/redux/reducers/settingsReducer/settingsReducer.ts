@@ -4,11 +4,20 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { ChangeableTheme, MangaCoverStyles, ReaderBackgroundColor, ReaderDirection } from './settingsReducer.constants';
 import { SettingsReducerAction, SettingsReducerState } from './settingsReducer.interfaces';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import { FontFamily } from '@theme/Typography';
+import displayMessage from '@utils/displayMessage';
 
 const INITIAL_STATE: SettingsReducerState = {
   theme: ChangeableTheme.SYSTEM_THEME,
   showIntroduction: true,
   selectedSource: MangaSee,
+  fontFamily: {
+    __selectedFont: FontFamily.NUNITO,
+    light: 'Nunito-light',
+    regular: 'Nunito',
+    heavy: 'Nunito-heavy',
+    semi: 'Nunito-semi',
+  },
   deviceOrientation: ScreenOrientation.Orientation.UNKNOWN,
   mangaCover: {
     style: MangaCoverStyles.CLASSIC,
@@ -27,6 +36,18 @@ const INITIAL_STATE: SettingsReducerState = {
 
 const reducer = (state: SettingsReducerState = INITIAL_STATE, action: SettingsReducerAction): SettingsReducerState => {
   switch (action.type) {
+    case 'CHANGE_FONT':
+      displayMessage(`Set font to ${action.fontFamily}`);
+      return {
+        ...state,
+        fontFamily: {
+          __selectedFont: action.fontFamily,
+          light: `${action.fontFamily}-light`,
+          regular: action.fontFamily,
+          semi: `${action.fontFamily}-semi`,
+          heavy: `${action.fontFamily}-heavy`,
+        },
+      };
     case 'SET_DEVICE_ORIENTATION':
       return {
         ...state,

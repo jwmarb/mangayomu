@@ -7,6 +7,7 @@ import libraryMutator from '@redux/middleware/libraryMutator';
 import ExpoStorage from '@utils/ExpoStorage';
 import { injectThemeFromStore } from '@theme/Color/Color.helpers';
 import { injectStore } from '@components/Manga/Cover/Cover.helpers';
+import { injectStoreForTypography } from '@theme/Typography';
 const persistConfig: PersistConfig<AppState> = {
   key: 'root',
   storage: ExpoStorage,
@@ -31,3 +32,4 @@ export const persistor = persistStore(store);
 
 injectThemeFromStore(store);
 injectStore(store);
+injectStoreForTypography(store);
