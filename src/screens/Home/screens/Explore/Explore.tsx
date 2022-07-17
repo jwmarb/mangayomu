@@ -9,6 +9,7 @@ import { withAnimatedMounting } from '@utils/Animations';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { RefreshControl } from 'react-native';
+import Spacer from '@components/Spacer';
 
 const Explore: React.FC = (props) => {
   const source = useMangaSource();
@@ -33,9 +34,10 @@ const Explore: React.FC = (props) => {
         {source?.getGenres().length > 0 && <Genres />}
         {source?.hasHotMangas() && <HotManga ref={hotMangaRef} />}
         {source?.hasLatestMangas() && <LatestManga ref={latestMangaRef} />}
+        <Spacer y={20} />
       </Flex>
     </Screen>
   );
 };
 
-export default withAnimatedMounting(Explore);
+export default Explore;
