@@ -9,7 +9,6 @@ import { SPACE_MULTIPLIER } from '@theme/Spacing';
 import { RowRenderer } from '@utils/RecyclerListView.interfaces';
 import { Dimensions } from 'react-native';
 import { LayoutProvider } from 'recyclerlistview';
-const { width } = Dimensions.get('window');
 
 export const LayoutLibraryMangaType = {
   FIRST: 0,
@@ -21,12 +20,12 @@ export const LayoutLibraryMangaType = {
 export const dataProviderFn = (r1: string, r2: string) => r1 === r2;
 
 export const generateNewLayout = (cols: number, fontSize: number, itemCount: number) => {
+  const { width } = Dimensions.get('window');
   const spacing = SPACE_MULTIPLIER * 2;
   const containerWidth = calculateCoverWidth(cols) * SPACE_MULTIPLIER + spacing;
   const totalMangasPerRow = width / containerWidth;
   const maxMangasPerRow = Math.floor(totalMangasPerRow);
-  const isUnevenLayout = itemCount < maxMangasPerRow;
-  console.log();
+
   return new LayoutProvider(
     (i) => {
       if (

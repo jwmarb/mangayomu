@@ -53,7 +53,7 @@ import PropTypes from 'prop-types';
 (RecyclerListView.propTypes as { externalScrollView: {} }).externalScrollView = PropTypes.object;
 
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
-  const { mangas: recordMangas, navigation, history, cols, fontSize, searchInLibrary, query } = props;
+  const { mangas: recordMangas, navigation, history, cols, fontSize, searchInLibrary, query, orientation } = props;
   const { ready, Fallback } = useLazyLoading();
   const mangas = React.useMemo(() => Object.keys(recordMangas), [recordMangas]);
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(
@@ -118,7 +118,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
 
   useMountedEffect(() => {
     setLayoutProvider(generateNewLayout(cols, fontSize, mangas.length));
-  }, [cols, mangas]);
+  }, [cols, mangas, orientation, fontSize]);
 
   useMountedEffect(() => {
     setDataProvider((prev) =>

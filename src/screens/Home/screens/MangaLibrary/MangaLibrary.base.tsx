@@ -8,7 +8,6 @@ import React from 'react';
 import { Dimensions } from 'react-native';
 import { useSelector } from 'react-redux';
 import styled, { css } from 'styled-components/native';
-const { width } = Dimensions.get('window');
 import { MangaCoverStyles } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 export type MangaInLibraryProps = {
   manga: IManga;
@@ -38,6 +37,7 @@ export const MangaInLibraryContainer = styled.View<
   }
 >`
   ${(props) => {
+    const { width } = Dimensions.get('window');
     const spacing = SPACE_MULTIPLIER * 2;
     const containerWidth = calculateCoverWidth(props.cols) * SPACE_MULTIPLIER + spacing;
     const totalMangasPerRow = width / containerWidth;
@@ -67,7 +67,7 @@ export const MangaInLibraryContainer = styled.View<
             return calculateCoverHeight(props.cols) * SPACE_MULTIPLIER + spacing;
         }
       }}px;
-     
+
       ${() => {
         if (props.first) {
           if (maxMangasPerRow === 1 || props.dynamic) return;
