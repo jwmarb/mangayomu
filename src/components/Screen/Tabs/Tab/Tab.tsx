@@ -1,6 +1,5 @@
 import Icon from '@components/Icon';
-import { TabProps } from '@components/Screen/Tabs/Tab/Tab.interfaces';
-import { TabButtonBase, TabContainer } from '@components/Screen/Tabs/Tabs.base';
+import { TabWrapper, TabButtonBase, TabContainer } from '@components/Screen/Tabs/Tab/Tab.base';
 import Spacer from '@components/Spacer';
 import { Typography } from '@components/Typography';
 import { Orientation } from 'expo-screen-orientation';
@@ -53,33 +52,37 @@ const Tab: React.FC<ConnectedTabProps> = (props) => {
       case Orientation.LANDSCAPE_LEFT:
       case Orientation.LANDSCAPE_RIGHT:
         return (
-          <TabButtonBase onPress={onPress}>
-            <TabContainer>
-              {TabIcon && (
-                <Animated.View style={style}>
-                  <TabIcon color={color} />
-                </Animated.View>
-              )}
-            </TabContainer>
-          </TabButtonBase>
-        );
-      default:
-        return (
-          <TabButtonBase onPress={onPress}>
-            <TabContainer>
-              {TabIcon && (
-                <>
+          <TabWrapper>
+            <TabButtonBase onPress={onPress}>
+              <TabContainer>
+                {TabIcon && (
                   <Animated.View style={style}>
                     <TabIcon color={color} />
                   </Animated.View>
-                  <Spacer y={1} />
-                </>
-              )}
-              <Typography variant='bottomtab' color={color}>
-                {routeName}
-              </Typography>
-            </TabContainer>
-          </TabButtonBase>
+                )}
+              </TabContainer>
+            </TabButtonBase>
+          </TabWrapper>
+        );
+      default:
+        return (
+          <TabWrapper>
+            <TabButtonBase onPress={onPress}>
+              <TabContainer>
+                {TabIcon && (
+                  <>
+                    <Animated.View style={style}>
+                      <TabIcon color={color} />
+                    </Animated.View>
+                    <Spacer y={1} />
+                  </>
+                )}
+                <Typography variant='bottomtab' color={color}>
+                  {routeName}
+                </Typography>
+              </TabContainer>
+            </TabButtonBase>
+          </TabWrapper>
         );
     }
   }, [isFocused, theme, deviceOrientation]);
