@@ -6,6 +6,7 @@ import Root from './src/Root';
 import { ThemeProvider } from 'styled-components/native';
 import theme from '@theme/core';
 import ResourceLoader from '@utils/ResourceLoader';
+import ExpoStatusBar from '@utils/ExpoStatusBar';
 import 'react-native-gesture-handler';
 import { PersistGate } from 'redux-persist/integration/react';
 import { PortalProvider } from '@gorhom/portal';
@@ -27,7 +28,7 @@ export default function App() {
               <PortalProvider>
                 <Root />
               </PortalProvider>
-              <StatusBar translucent />
+              <ExpoStatusBar />
             </MenuProvider>
           }
         />
