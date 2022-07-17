@@ -18,10 +18,10 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { Constants } from '@theme/core';
 
 const Manga: React.FC<ConnectedMangaProps> = (props) => {
-  const { title, imageCover, cols, bold, fontSize, coverStyle } = props;
+  const { title, imageCover, cols, bold, fontSize, coverStyle, link, source } = props;
   const navigation = useRootNavigation();
   function handleOnPress() {
-    navigation.navigate('MangaViewer', { manga: props });
+    navigation.navigate('MangaViewer', { manga: { imageCover, title, link, source } });
   }
   switch (coverStyle) {
     case MangaCoverStyles.MODERN:

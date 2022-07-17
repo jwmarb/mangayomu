@@ -226,12 +226,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
 
   if (ready) {
     return (
-      <React.Suspense
-        fallback={
-          <Flex grow alignItems='center' justifyContent='center'>
-            <Progress />
-          </Flex>
-        }>
+      <React.Suspense fallback={null}>
         <AnimatedProvider style={loadingAnimation}>
           <Overview
             rowRenderer={rowRenderer as any}
