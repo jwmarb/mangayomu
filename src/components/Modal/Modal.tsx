@@ -80,7 +80,7 @@ const Modal: React.FC<ModalProps> = (props) => {
   } = props;
   const deviceOrientation = useSelector((state: AppState) => state.settings.deviceOrientation);
 
-  const { height } = useWindowDimensions();
+  const { height, width } = useWindowDimensions();
   const minimumHeight = React.useMemo(() => {
     switch (deviceOrientation) {
       case Orientation.LANDSCAPE_LEFT:
@@ -98,7 +98,17 @@ const Modal: React.FC<ModalProps> = (props) => {
   const recyclerRef = React.useRef<RecyclerListView<any, any>>(null);
   const theme = useTheme();
   const backdrop = useSharedValue(0);
-  const top = useSharedValue(height + MAX_PANEL_HEIGHT);
+  const top = useSharedValue(
+    (() => {
+      switch (deviceOrientation) {
+        case Orientation.LANDSCAPE_LEFT:
+        case Orientation.LANDSCAPE_RIGHT:
+          return width + MAX_PANEL_HEIGHT + 300;
+        default:
+          return height + MAX_PANEL_HEIGHT + 300;
+      }
+    })()
+  );
   const borderRadius = useSharedValue(theme.borderRadius);
   const statusBarHeight = useSharedValue(0);
   const [hasTouched, setHasTouched] = React.useState<boolean>(false);
@@ -141,7 +151,14 @@ const Modal: React.FC<ModalProps> = (props) => {
     } else {
       backdrop.value = withTiming(0, { duration: 200, easing: Easing.ease });
       setTimeout(() => {
-        top.value = withTiming(height + MAX_PANEL_HEIGHT, { duration: 200, easing: Easing.ease });
+        switch (deviceOrientation) {
+          case Orientation.LANDSCAPE_LEFT:
+          case Orientation.LANDSCAPE_RIGHT:
+            top.value = withTiming(width + MAX_PANEL_HEIGHT + 300, { duration: 200, easing: Easing.ease });
+            break;
+          default:
+            top.value = withTiming(height + MAX_PANEL_HEIGHT + 300, { duration: 200, easing: Easing.ease });
+        }
       }, 100);
     }
   }
