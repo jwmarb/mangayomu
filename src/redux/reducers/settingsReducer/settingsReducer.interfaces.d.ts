@@ -1,6 +1,7 @@
 import MangaHost from '@services/scraper/scraper.abstract';
 import { FontFamily } from '@theme/Typography';
 import { Orientation } from 'expo-screen-orientation';
+import { StatusBarStyle } from 'expo-status-bar';
 import { ReaderBackgroundColor, ReaderDirection, ChangeableTheme, MangaCoverStyles } from './settingsReducer.constants';
 
 export interface SettingsReducerState {
@@ -8,6 +9,7 @@ export interface SettingsReducerState {
   showIntroduction: boolean;
   deviceOrientation: Orientation;
   selectedSource: MangaHost;
+  statusBarStyle: StatusBarStyle;
   fontFamily: {
     __selectedFont: FontFamily;
     light: string;

@@ -6,11 +6,13 @@ import { SettingsReducerAction, SettingsReducerState } from './settingsReducer.i
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { FontFamily } from '@theme/Typography';
 import displayMessage from '@utils/displayMessage';
+import { StatusBar } from 'expo-status-bar';
 
 const INITIAL_STATE: SettingsReducerState = {
   theme: ChangeableTheme.SYSTEM_THEME,
   showIntroduction: true,
   selectedSource: MangaSee,
+  statusBarStyle: 'auto',
   fontFamily: {
     __selectedFont: FontFamily.NUNITO,
     light: 'Nunito-light',
@@ -72,6 +74,16 @@ const reducer = (state: SettingsReducerState = INITIAL_STATE, action: SettingsRe
     case 'SWITCH_APP_THEME':
       return {
         ...state,
+        statusBarStyle: (() => {
+          switch (action.theme) {
+            case ChangeableTheme.DARK:
+              return 'light';
+            case ChangeableTheme.LIGHT:
+              return 'dark';
+            case ChangeableTheme.SYSTEM_THEME:
+              return 'auto';
+          }
+        })(),
         theme: action.theme,
       };
     case 'TOGGLE_READER_SETTING':
