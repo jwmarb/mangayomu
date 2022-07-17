@@ -8,7 +8,7 @@ const Screen: React.FC<ScreenProps> = (props) => {
   if (scrollable)
     if (scrollable === true)
       return (
-        <ScrollableScreen {...scrollViewProps}>
+        <ScrollableScreen {...(scrollViewProps as any)}>
           <View {...rest} />
         </ScrollableScreen>
       );
