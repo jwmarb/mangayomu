@@ -122,9 +122,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
 
   useMountedEffect(() => {
     setDataProvider((prev) =>
-      prev
-        .newInstance(dataProviderFn)
-        .cloneWithRows(mangas.filter((x) => titleIncludes(query)(history[x])).sort(selectedSortOption))
+      prev.cloneWithRows(mangas.filter((x) => titleIncludes(query)(history[x])).sort(selectedSortOption))
     );
   }, [mangas.length, query, sort, reverse]);
 
@@ -140,7 +138,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
       layoutProvider={layoutProvider}
       rowRenderer={rowRenderer}
       // forceNonDeterministicRendering
-      extendedState={history}
+      extendedState={{ ...history, query }}
       scrollViewProps={{ contentContainerStyle: { paddingTop: 24, paddingBottom: 64 } }}
     />
   );
