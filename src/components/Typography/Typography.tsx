@@ -2,10 +2,11 @@ import { TypographyProps } from '@components/Typography/Typography.interfaces';
 import styled, { css } from 'styled-components/native';
 import { Color } from '@theme/core';
 import Animated from 'react-native-reanimated';
+import { TextProps } from 'react-native';
 import { useSelector } from 'react-redux';
 import { AppState } from '@redux/store';
 
-export const Typography: React.FC<TypographyProps> = (props) => {
+export const Typography: React.FC<TypographyProps & TextProps> = (props) => {
   const { fontFamily: _fontFamily, ...rest } = props;
   const fontFamily = useSelector((state: AppState) => state.settings.fontFamily.__selectedFont);
   return <TypographyBase fontFamily={_fontFamily ?? fontFamily} {...rest} />;
