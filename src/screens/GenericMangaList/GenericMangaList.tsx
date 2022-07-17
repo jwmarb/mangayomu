@@ -4,7 +4,7 @@ import { RootStackParamList } from '@navigators/Root/Root.interfaces';
 import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
 import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-collapsible';
-import { DataProvider } from 'recyclerlistview';
+import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import pixelToNumber from '@utils/pixelToNumber';
 import { useTheme } from 'styled-components/native';
 
@@ -17,10 +17,11 @@ import { MangaItemsLoading } from './GenericMangaList.base';
 import useLazyLoading from '@hooks/useLazyLoading';
 import { animate, withAnimatedMounting } from '@utils/Animations';
 import { Container } from '@components/Container';
-import { View } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 import useMangaLayout from '@hooks/useMangaLayout';
 import { useSelector } from 'react-redux';
 import { AppState } from '@redux/store';
+import useMountedEffect from '@hooks/useMountedEffect';
 
 const InfiniteMangaList: React.FC<{ genre: string; source: string }> = (props) => {
   const { genre, source } = props;
@@ -32,6 +33,7 @@ const InfiniteMangaList: React.FC<{ genre: string; source: string }> = (props) =
     refresh,
   } = useAPICall(() => mangaSource.search('', { Genres: { include: [genre], exclude: [] } }));
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider((r1, r2) => r1 !== r2));
+  const orientation = useSelector((state: AppState) => state.settings.deviceOrientation);
   const { layoutProvider, rowRenderer } = useMangaLayout(dataProvider.getAllData());
   const [showFooter, setShowFooter] = React.useState<boolean>(true);
   const [reachedEnd, setReachedEnd] = React.useState<boolean>(false);
@@ -46,7 +48,7 @@ const InfiniteMangaList: React.FC<{ genre: string; source: string }> = (props) =
     },
   };
   const collapsible = useCollapsibleHeader(options);
-
+  const { width } = useWindowDimensions();
   const applyWindowCorrection: ApplyWindowCorrectionEventHandler = React.useCallback(
     (offsetX, offsetY, windowCorrection) => {
       windowCorrection.windowShift = -collapsible.containerPaddingTop;
@@ -95,7 +97,8 @@ const InfiniteMangaList: React.FC<{ genre: string; source: string }> = (props) =
       );
     return (
       <RecyclerListViewScreen
-        // forceNonDeterministicRendering
+        canChangeSize
+        extendedState={{ orientation, width, itemCount: dataProvider.getSize() }}
         collapsible={collapsible}
         dataProvider={dataProvider}
         onEndReached={handleOnEndReached}
@@ -133,6 +136,9 @@ const GenericMangaListWithMangas: React.FC<{
   };
 
   const { layoutProvider, rowRenderer } = useMangaLayout(mangas);
+  const ref = React.useRef<RecyclerListView<any, any>>(null);
+  const orientation = useSelector((state: AppState) => state.settings.deviceOrientation);
+  const { width } = useWindowDimensions();
 
   const theme = useTheme();
 
@@ -149,10 +155,12 @@ const GenericMangaListWithMangas: React.FC<{
 
   return (
     <RecyclerListViewScreen
+      ref={ref}
       collapsible={collapsible}
+      canChangeSize
+      extendedState={{ orientation, width, itemCount: dataProvider.getSize() }}
       dataProvider={dataProvider}
       layoutProvider={layoutProvider}
-      // forceNonDeterministicRendering
       rowRenderer={rowRenderer as any}
       applyWindowCorrection={applyWindowCorrection}
       scrollViewProps={{

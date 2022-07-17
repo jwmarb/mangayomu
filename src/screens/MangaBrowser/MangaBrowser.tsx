@@ -19,12 +19,14 @@ import pixelToNumber from '@utils/pixelToNumber';
 import { useTheme } from 'styled-components/native';
 import { MangaItemsLoading } from '@screens/GenericMangaList/GenericMangaList.base';
 import { TextInput } from 'react-native-gesture-handler';
-import { Keyboard, NativeScrollEvent, NativeSyntheticEvent, ScrollView, View } from 'react-native';
+import { Keyboard, NativeScrollEvent, NativeSyntheticEvent, ScrollView, useWindowDimensions, View } from 'react-native';
 import Search from '@screens/Home/screens/MangaLibrary/components/Search';
 import { animate, withAnimatedMounting } from '@utils/Animations';
 import useMangaLayout from '@hooks/useMangaLayout';
 import useStatefulHeader from '@hooks/useStatefulHeader';
 import { ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
+import { useSelector } from 'react-redux';
+import { AppState } from '@redux/store';
 
 const dataProviderFn = (r1: Manga, r2: Manga) => r1.title !== r2.title;
 
@@ -36,8 +38,9 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     },
   } = props;
   const theme = useTheme();
+  const { width } = useWindowDimensions();
   const [dataProvider, setDataProvider] = React.useState(new DataProvider(dataProviderFn).cloneWithRows(mangas));
-  const { layoutProvider, rowRenderer } = useMangaLayout();
+  const { layoutProvider, rowRenderer } = useMangaLayout(mangas);
   const [showFooter, setShowFooter] = React.useState<boolean>(true);
   const [query, setQuery] = React.useState<string>(initialQuery);
   const [reachedEnd, setReachedEnd] = React.useState<boolean>(false);
@@ -57,6 +60,7 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     mangahost.resetPage();
     setReachedEnd(false);
   }
+  const orientation = useSelector((state: AppState) => state.settings.deviceOrientation);
 
   React.useEffect(() => {
     if (filter != schema) setShowBadge(true);
@@ -192,9 +196,10 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
             />
             <RecyclerListView
               dataProvider={dataProvider}
-              rowRenderer={rowRenderer}
+              rowRenderer={rowRenderer as any}
               onItemLayout={handleOnItemLayout}
               onEndReached={handleOnEndReached}
+              extendedState={{ orientation, width, itemCount: dataProvider.getSize() }}
               ref={scrollRef}
               scrollViewProps={{
                 contentContainerStyle: {

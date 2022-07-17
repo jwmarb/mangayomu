@@ -23,7 +23,7 @@ import useMountedEffect from '@hooks/useMountedEffect';
 import useSearchBar from '@hooks/useSearchBar';
 import useSort from '@hooks/useSort';
 import useStatefulHeader from '@hooks/useStatefulHeader';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { ReadingMangaInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import FilterModal from '@screens/Home/screens/MangaLibrary/components/FilterModal';
 import Search from '@screens/Home/screens/MangaLibrary/components/Search';
@@ -44,7 +44,7 @@ import { SPACE_MULTIPLIER } from '@theme/Spacing';
 import { titleIncludes } from '@utils/MangaFilters';
 import pixelToNumber from '@utils/pixelToNumber';
 import React from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, useWindowDimensions } from 'react-native';
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 import { useTheme } from 'styled-components/native';
 import LibraryIsEmpty from './components/LibraryIsEmpty';
@@ -54,14 +54,13 @@ import PropTypes from 'prop-types';
 
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   const { mangas: recordMangas, navigation, history, cols, fontSize, searchInLibrary, query, orientation } = props;
-  const { ready, Fallback } = useLazyLoading();
   const mangas = React.useMemo(() => Object.keys(recordMangas), [recordMangas]);
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(
     new DataProvider(dataProviderFn).cloneWithRows(mangas)
   );
-  const [layoutProvider, setLayoutProvider] = React.useState<LayoutProvider>(
-    generateNewLayout(cols, fontSize, mangas.length)
-  );
+  const { width } = useWindowDimensions();
+
+  const layoutProvider = generateNewLayout(cols, fontSize, dataProvider.getSize());
 
   const [expand, setExpand] = React.useState<boolean>(false);
   const [tabIndex, setTabIndex] = React.useState<number>(0);
@@ -100,48 +99,46 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   });
 
   useStatefulHeader(
-    ready ? (
-      <>
-        {header}
-        <FilterModal
-          sortOptions={sortOptions}
-          onClose={handleOnClose}
-          expand={expand}
-          tabIndex={tabIndex}
-          setTabIndex={setTabIndex}
-        />
-      </>
-    ) : (
-      Fallback
-    )
+    <>
+    {header}
+    <FilterModal
+      sortOptions={sortOptions}
+      onClose={handleOnClose}
+      expand={expand}
+      tabIndex={tabIndex}
+      setTabIndex={setTabIndex}
+    />
+  </>
   );
-
-  useMountedEffect(() => {
-    setLayoutProvider(generateNewLayout(cols, fontSize, mangas.length));
-  }, [cols, mangas, orientation, fontSize]);
-
   useMountedEffect(() => {
     setDataProvider((prev) =>
       prev.cloneWithRows(mangas.filter((x) => titleIncludes(query)(history[x])).sort(selectedSortOption))
     );
   }, [mangas.length, query, sort, reverse]);
 
-  if (!ready) return Fallback;
-
   if (dataProvider.getSize() === 0 && mangas.length === 0) return <LibraryIsEmpty />;
 
   if (dataProvider.getSize() === 0 && mangas.length > 0) return <NoItemsFound query={query} />;
 
+
   return (
     <RecyclerListView
       dataProvider={dataProvider}
+      canChangeSize
       layoutProvider={layoutProvider}
       rowRenderer={rowRenderer}
-      // forceNonDeterministicRendering
-      extendedState={{ ...history, query }}
+      extendedState={{ ...history, query, width, orientation, itemCount: dataProvider.getSize() }}
       scrollViewProps={{ contentContainerStyle: { paddingTop: 24, paddingBottom: 64 } }}
     />
   );
 };
 
-export default connector(MangaLibrary);
+const MangaLibraryScreen: React.FC<MangaLibraryProps> = (props) => {
+  const focused = useIsFocused();
+  const { ready, Fallback } = useLazyLoading();
+
+  if (focused && ready) return <MangaLibrary {...props} />
+  return Fallback;
+}
+
+export default connector(MangaLibraryScreen);

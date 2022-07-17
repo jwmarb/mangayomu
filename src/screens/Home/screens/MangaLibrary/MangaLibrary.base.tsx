@@ -5,15 +5,19 @@ import { AppState } from '@redux/store';
 import { Manga as IManga } from '@services/scraper/scraper.interfaces';
 import { SPACE_MULTIPLIER } from '@theme/Spacing';
 import React from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, useWindowDimensions } from 'react-native';
 import { useSelector } from 'react-redux';
 import styled, { css } from 'styled-components/native';
 import { MangaCoverStyles } from '@redux/reducers/settingsReducer/settingsReducer.constants';
+import { Orientation } from 'expo-screen-orientation';
 export type MangaInLibraryProps = {
   manga: IManga;
   first?: boolean;
   last?: boolean;
   dynamic?: boolean;
+  orientation: Orientation;
+  width: number;
+  itemCount: number;
 };
 
 export const MangaContainer = styled.View`
@@ -37,7 +41,7 @@ export const MangaInLibraryContainer = styled.View<
   }
 >`
   ${(props) => {
-    const { width } = Dimensions.get('window');
+    const { width, itemCount } = props;
     const spacing = SPACE_MULTIPLIER * 2;
     const containerWidth = calculateCoverWidth(props.cols) * SPACE_MULTIPLIER + spacing;
     const totalMangasPerRow = width / containerWidth;
@@ -57,7 +61,9 @@ export const MangaInLibraryContainer = styled.View<
     // }
     const test = width / maxMangasPerRow - width / totalMangasPerRow;
     return css`
-      width: ${props.dynamic ? '100%' : `${containerWidth + test}px`};
+      width: ${props.dynamic
+        ? `${Math.floor(width / (itemCount - Math.floor(itemCount / maxMangasPerRow) * maxMangasPerRow))}px`
+        : `${Math.floor(containerWidth + test)}px`};
       height: ${() => {
         switch (props.type) {
           case MangaCoverStyles.CLASSIC:
@@ -99,13 +105,25 @@ export const MangaInLibraryContainer = styled.View<
   }}
 `;
 
-export const MangaInLibrary: React.FC<MangaInLibraryProps> = React.memo(({ manga, first, last, dynamic }) => {
-  const cols = useSelector((state: AppState) => state.settings.mangaCover.perColumn);
-  const fontSize = useSelector((state: AppState) => state.settings.mangaCover.fontSize);
-  const type = useSelector((state: AppState) => state.settings.mangaCover.style);
-  return (
-    <MangaInLibraryContainer cols={cols} first={first} last={last} dynamic={dynamic} fontSize={fontSize} type={type}>
-      <Manga {...manga} />
-    </MangaInLibraryContainer>
-  );
-});
+export const MangaInLibrary: React.FC<MangaInLibraryProps> = React.memo(
+  ({ manga, first, last, dynamic, width, orientation, itemCount }) => {
+    const cols = useSelector((state: AppState) => state.settings.mangaCover.perColumn);
+    const fontSize = useSelector((state: AppState) => state.settings.mangaCover.fontSize);
+    const type = useSelector((state: AppState) => state.settings.mangaCover.style);
+
+    return (
+      <MangaInLibraryContainer
+        itemCount={itemCount}
+        orientation={orientation}
+        cols={cols}
+        first={first}
+        last={last}
+        dynamic={dynamic}
+        fontSize={fontSize}
+        type={type}
+        width={width}>
+        <Manga {...manga} />
+      </MangaInLibraryContainer>
+    );
+  }
+);

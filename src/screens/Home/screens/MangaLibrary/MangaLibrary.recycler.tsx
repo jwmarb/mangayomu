@@ -7,6 +7,7 @@ import store from '@redux/store';
 import { MangaInLibrary } from '@screens/Home/screens/MangaLibrary/MangaLibrary.base';
 import { SPACE_MULTIPLIER } from '@theme/Spacing';
 import { RowRenderer } from '@utils/RecyclerListView.interfaces';
+import { Orientation } from 'expo-screen-orientation';
 import { Dimensions } from 'react-native';
 import { LayoutProvider } from 'recyclerlistview';
 
@@ -47,9 +48,9 @@ export const generateNewLayout = (cols: number, fontSize: number, itemCount: num
     },
     (type, dim) => {
       if (type === LayoutLibraryMangaType.DYNAMIC) {
-        dim.width = width / (itemCount - Math.floor(itemCount / maxMangasPerRow) * maxMangasPerRow);
-      } else dim.width = Math.round(containerWidth + (width / maxMangasPerRow - width / totalMangasPerRow));
-
+        dim.width = Math.floor(width / (itemCount - Math.floor(itemCount / maxMangasPerRow) * maxMangasPerRow));
+      } else dim.width = Math.floor(containerWidth + (width / maxMangasPerRow - width / totalMangasPerRow));
+      
       switch (store.getState().settings.mangaCover.style) {
         default:
         case MangaCoverStyles.CLASSIC:
@@ -66,19 +67,47 @@ export const rowRenderer: any = (
   type: string | number,
   data: string,
   index: number,
-  extendedState: MangaReducerState
+  extendedState: MangaReducerState & { width: number; orientation: Orientation; itemCount: number }
 ) => {
   switch (type) {
     case LayoutLibraryMangaType.DYNAMIC:
-      return <MangaInLibrary manga={extendedState[data]} dynamic />;
+      return (
+        <MangaInLibrary
+          manga={extendedState[data]}
+          dynamic
+          width={extendedState.width}
+          orientation={extendedState.orientation}
+          itemCount={extendedState.itemCount}
+        />
+      );
 
     case LayoutLibraryMangaType.LAST:
-      return <MangaInLibrary manga={extendedState[data]} last />;
+      return (
+        <MangaInLibrary
+          manga={extendedState[data]}
+          last
+          width={extendedState.width}
+          orientation={extendedState.orientation}itemCount={extendedState.itemCount}
+        />
+      );
     case LayoutLibraryMangaType.FIRST:
-      return <MangaInLibrary manga={extendedState[data]} first />;
+      return (
+        <MangaInLibrary
+          manga={extendedState[data]}
+          first
+          width={extendedState.width}
+          orientation={extendedState.orientation}itemCount={extendedState.itemCount}
+        />
+      );
 
     default:
     case LayoutLibraryMangaType.INBETWEEN:
-      return <MangaInLibrary manga={extendedState[data]} />;
+      return (
+        <MangaInLibrary
+          manga={extendedState[data]}
+          width={extendedState.width}
+          orientation={extendedState.orientation}itemCount={extendedState.itemCount}
+        />
+      );
   }
 };
