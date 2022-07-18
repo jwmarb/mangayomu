@@ -177,8 +177,6 @@ const ChapterHeader: React.FC<ConnectedChapterHeaderProps> = (props) => {
     setOpened(false);
   }
 
-  console.log(numOfSelectedChapters);
-
   return (
     <>
       <ChapterHeaderContainer>
