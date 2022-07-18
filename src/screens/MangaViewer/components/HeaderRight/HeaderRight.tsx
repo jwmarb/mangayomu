@@ -7,7 +7,7 @@ import { HeaderRightProps } from './HeaderRight.interfaces';
 import connector, { ConnectedHeaderRightProps } from './HeaderRight.redux';
 
 const HeaderRight: React.FC<ConnectedHeaderRightProps> = (props) => {
-  const { manga, downloadSelected, chapters } = props;
+  const { manga, downloadSelected, chapters, isDownloading, cancelAllForSeries } = props;
   const [opened, setOpened] = React.useState<boolean>(false);
   const handleOnDownloadAll = () => {
     const allChapters = Object.keys(chapters).reduce(
@@ -31,6 +31,9 @@ const HeaderRight: React.FC<ConnectedHeaderRightProps> = (props) => {
     switch (option) {
       case 0:
         handleOnDownloadAll();
+        break;
+      case 1:
+        cancelAllForSeries(manga.link);
         break;
     }
     handleOnClose();
@@ -64,6 +67,15 @@ const HeaderRight: React.FC<ConnectedHeaderRightProps> = (props) => {
         <MenuOptions customStyles={theme.menuOptionsStyle}>
           <MenuTitle>Quick Actions</MenuTitle>
           <MenuOption text='Download all chapters' icon={<Icon bundle='Feather' name='download' />} value={0} />
+
+          {isDownloading && (
+            <MenuOption
+              text='Cancel all downloads'
+              icon={<Icon bundle='MaterialCommunityIcons' name='cancel' />}
+              value={1}
+              color='secondary'
+            />
+          )}
         </MenuOptions>
       </Menu>
     </>
