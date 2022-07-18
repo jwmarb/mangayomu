@@ -7,7 +7,7 @@ import { AppState } from '@redux/store';
 import FloatingActionButton from '@screens/MangaViewer/components/FloatingActionButton/FloatingActionButton';
 import RecyclerListViewScrollView from '@screens/MangaViewer/components/Overview/components/RecyclerListViewScrollView';
 import { OverviewProps } from '@screens/MangaViewer/components/Overview/Overview.interfaces';
-import { createFooter, layout } from '@screens/MangaViewer/components/Overview/Overview.recycler';
+import { createFooter } from '@screens/MangaViewer/components/Overview/Overview.recycler';
 import { MangaMultilingualChapter } from '@services/scraper/scraper.interfaces';
 import MangaValidator from '@utils/MangaValidator';
 import React from 'react';
@@ -19,9 +19,10 @@ import {
   NativeSyntheticEvent,
   View,
   LogBox,
+  useWindowDimensions,
 } from 'react-native';
 import { useSelector } from 'react-redux';
-import { DataProvider, RecyclerListView } from 'recyclerlistview';
+import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 import { WindowCorrection } from 'recyclerlistview/dist/reactnative/core/ViewabilityTracker';
 const { height } = Dimensions.get('window');
 import PropTypes from 'prop-types';
@@ -36,9 +37,27 @@ const Overview: React.FC<OverviewProps> = (props) => {
     props;
   const { containerPaddingTop } = collapsible;
   const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(false);
+  const { width } = useWindowDimensions();
   const [finished, setFinished] = React.useState<boolean>(false);
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider(dataProviderFn));
+  const extendedState = useSelector((state: AppState) => ({
+    ...state.chaptersList,
+    ...state.downloading,
+    chapters: state.mangas[manga.link]?.chapters ?? {},
+    metas: state.downloading.metas[manga.link],
+    orientation: state.settings.deviceOrientation,
+  }));
 
+  const layout = React.useMemo(
+    () =>
+      new LayoutProvider(
+        (index) => 0,
+        (type, dim) => {
+          (dim.height = 70.0952377319336), (dim.width = width);
+        }
+      ),
+    [width]
+  );
   React.useEffect(() => {
     if (chapters && chapters.every(MangaValidator.isMultilingualChapter))
       onChangeLanguage((chapters as unknown as MangaMultilingualChapter[])[0]?.language ?? 'en');
@@ -54,13 +73,6 @@ const Overview: React.FC<OverviewProps> = (props) => {
       );
     } else if (chapters) setDataProvider((p) => p.cloneWithRows(chapters.map((p) => ({ ...p, manga }))));
   }, [chapters, language]);
-
-  const extendedState = useSelector((state: AppState) => ({
-    ...state.chaptersList,
-    ...state.downloading,
-    chapters: state.mangas[manga.link]?.chapters ?? {},
-    metas: state.downloading.metas[manga.link],
-  }));
 
   const [layoutHeight, setLayoutHeight] = React.useState<number>(height / 2);
 
@@ -114,9 +126,10 @@ const Overview: React.FC<OverviewProps> = (props) => {
         }}
         dataProvider={dataProvider}
         layoutProvider={layout}
+        renderAheadOffset={10000}
         rowRenderer={rowRenderer}
         applyWindowCorrection={applyWindowCorrection}
-        // disableRecycling
+        canChangeSize
         extendedState={extendedState}
         renderFooter={createFooter(!finished, chapters.length)}
       />
