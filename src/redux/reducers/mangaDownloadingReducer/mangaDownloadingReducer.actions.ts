@@ -15,6 +15,40 @@ export const downloadSelected = (selected: ChaptersListReducerState['selected'],
   };
 };
 
+export const cancelDownload = (mangaKey: string, chapterKey: string) => {
+  return async (dispatch: AppDispatch, getState: StateGetter) => {
+    if (mangaKey in getState().downloading.mangas) {
+      if (
+        mangaKey in getState().downloading.mangas &&
+        getState().downloading.mangas[mangaKey]!.chaptersToDownload.length <= 1 &&
+        getState().downloading.mangas[mangaKey]!.chaptersToDownload[0] === chapterKey
+      )
+        delete downloadingKeys[mangaKey];
+      try {
+        const downloadManager = DownloadManager.ofWithManga(
+          getState().mangas[mangaKey].chapters[chapterKey],
+          getState().mangas[mangaKey]
+        );
+        switch (downloadManager.getStatus()) {
+          case DownloadStatus.DOWNLOADING:
+          case DownloadStatus.RESUME_DOWNLOADING:
+          case DownloadStatus.START_DOWNLOADING:
+          case DownloadStatus.PAUSED:
+            await downloadManager.cancel();
+            break;
+          case DownloadStatus.QUEUED:
+            downloadManager.unqueue();
+            break;
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        dispatch({ type: 'CANCEL_DOWNLOAD', mangaKey, chapterKey });
+      }
+    }
+  };
+};
+
 export const cancelAllForSeries = (mangaKey: string) => {
   return async (dispatch: AppDispatch, getState: StateGetter) => {
     if (mangaKey in getState().downloading.mangas) {

@@ -14,6 +14,25 @@ export default function (
   action: MangaDownloadingReducerAction
 ): MangaDownloadingReducerState {
   switch (action.type) {
+    case 'CANCEL_DOWNLOAD': {
+      const newState: MangaDownloadingReducerState = {
+        ...state,
+        metas: { ...state.metas },
+        mangas: {
+          ...state.mangas,
+        },
+      };
+      delete newState.mangas[action.mangaKey]!.chapters[action.chapterKey];
+      delete newState.metas[action.mangaKey]![action.chapterKey];
+      const chapterKeys = Object.keys(newState.mangas[action.mangaKey]!.chapters);
+      newState.mangas[action.mangaKey]!.chaptersToDownload = chapterKeys;
+      if (chapterKeys.length === 0) {
+        delete newState.mangas[action.mangaKey];
+        delete newState.metas[action.mangaKey];
+      }
+      return newState;
+    }
+
     case 'CANCEL_ALL_FOR_SERIES': {
       const newState: MangaDownloadingReducerState = {
         ...state,

@@ -40,4 +40,5 @@ export type MangaDownloadingReducerAction =
       chapterKey: string;
       mangaKey: string;
     }
-  | { type: 'CANCEL_ALL_FOR_SERIES'; mangaKey: string; chapters: string[] };
+  | { type: 'CANCEL_ALL_FOR_SERIES'; mangaKey: string; chapters: string[] }
+  | { type: 'CANCEL_DOWNLOAD'; mangaKey: string; chapterKey: string };

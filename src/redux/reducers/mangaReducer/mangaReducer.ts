@@ -72,6 +72,15 @@ const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerA
       }
       return newState;
     }
+    case 'CANCEL_DOWNLOAD': {
+      const newState = { ...state };
+      const downloadManager = DownloadManager.ofWithManga(
+        newState[action.mangaKey].chapters[action.chapterKey],
+        newState[action.mangaKey]
+      );
+      newState[action.mangaKey].chapters[action.chapterKey].status = downloadManager.getStatus();
+      return newState;
+    }
     case 'CANCEL_ALL_FOR_SERIES': {
       const newState = { ...state };
       for (const chapterKey of action.chapters) {
