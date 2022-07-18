@@ -11,6 +11,7 @@ import {
   IconButton,
   HeaderBuilder,
   MenuOption,
+  MenuTitle,
 } from '@components/core';
 import { AppState } from '@redux/store';
 import {
@@ -19,6 +20,9 @@ import {
   ChapterLoadingIndicatorBackground,
 } from '@screens/MangaViewer/components/ChapterHeader/ChapterHeader.base';
 import { ChapterHeaderProps } from '@screens/MangaViewer/components/ChapterHeader/ChapterHeader.interfaces';
+import connector, {
+  ConnectedChapterHeaderProps,
+} from '@screens/MangaViewer/components/ChapterHeader/components/ChapterHeader.redux';
 import LanguageItem from '@screens/MangaViewer/components/ChapterHeader/components/LanguageItem';
 import LoadingChapters from '@screens/MangaViewer/components/LoadingChapters';
 import { MangaMultilingualChapter } from '@services/scraper/scraper.interfaces';
@@ -44,7 +48,7 @@ import {
 import { useSelector } from 'react-redux';
 import { useTheme } from 'styled-components/native';
 
-const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
+const ChapterHeader: React.FC<ConnectedChapterHeaderProps> = (props) => {
   const {
     checked,
     chapters,
@@ -57,6 +61,7 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
     onSelectDownloadedChapters,
     onSelectReadChapters,
     onSelectUnreadChapters,
+    numOfSelectedChapters,
   } = props;
   const opacity = useSharedValue(1);
   const bgOpacity = useSharedValue(0);
@@ -172,6 +177,8 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
     setOpened(false);
   }
 
+  console.log(numOfSelectedChapters);
+
   return (
     <>
       <ChapterHeaderContainer>
@@ -200,11 +207,12 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
               <Checkbox onChange={onSelectAll} checked={checked} onLongPress={handleOnLongPress} useGestureHandler />
             </MenuTrigger>
             <MenuOptions customStyles={theme.menuOptionsStyle}>
+              <MenuTitle>Select...</MenuTitle>
               <MenuOption text='All chapters' value={0} />
               <MenuOption text='All downloaded chapters' value={1} />
               <MenuOption text='All unread chapters' value={2} />
               <MenuOption text='All read chapters' value={3} />
-              <MenuOption text='Deselect all' value={4} color='secondary' />
+              {numOfSelectedChapters > 0 && <MenuOption text='Deselect all' value={4} color='secondary' />}
             </MenuOptions>
           </Menu>
         </Flex>
@@ -224,4 +232,4 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
   );
 };
 
-export default React.memo(ChapterHeader);
+export default connector(React.memo(ChapterHeader));
