@@ -3,12 +3,12 @@ import { Chapter, Typography, Container, Spacer } from '@components/core';
 import { Dimensions } from 'react-native';
 import animate from '@utils/Animations/animate';
 import withAnimatedLoading from '@utils/Animations/withAnimatedLoading';
-const { width } = Dimensions.get('window');
 import LoadingChapters from '@screens/MangaViewer/components/LoadingChapters';
 
 export const layout = new LayoutProvider(
   (index) => 0,
   (type, dim) => {
+    const { width } = Dimensions.get('window');
     (dim.height = 70.0952377319336), (dim.width = width);
   }
 );
