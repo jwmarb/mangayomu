@@ -48,6 +48,7 @@ import {
   MangaDownloadingReducerState,
 } from '@redux/reducers/mangaDownloadingReducer/mangaDownloadingReducer.interfaces';
 import { useFocusEffect } from '@react-navigation/native';
+import HeaderRight from '@screens/MangaViewer/components/HeaderRight';
 const LanguageModal = React.lazy(() => import('@screens/MangaViewer/components/LanguageModal'));
 const Genres = React.lazy(() => import('@screens/MangaViewer/components/Genres'));
 const ChapterHeader = React.lazy(() => import('@screens/MangaViewer/components/ChapterHeader'));
@@ -113,30 +114,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     () => ({
       navigationOptions: {
         header: Header,
-        headerRight: () => (
-          <>
-            <IconButton
-              icon={<Icon bundle='Feather' name='share-2' />}
-              onPress={async () => {
-                try {
-                  await Share.share({
-                    title: 'Share URL',
-                    message: manga.link,
-                    url: manga.link,
-                  });
-                } catch (e) {
-                  alert(e);
-                }
-              }}
-            />
-            <IconButton
-              icon={<Icon bundle='Feather' name='globe' />}
-              onPress={() => {
-                Linking.openURL(manga.link);
-              }}
-            />
-          </>
-        ),
+        headerRight: () => <HeaderRight manga={manga} />,
         headerTitle: '',
       },
       config: {
