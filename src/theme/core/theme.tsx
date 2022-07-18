@@ -38,6 +38,7 @@ const theme = (mode: ColorSchemeName): DefaultTheme => {
         color: generated.palette.text.primary.get(),
         fontSize: RFValue(13),
       },
+
       OptionTouchableComponent: (props: React.PropsWithChildren<{}>) => {
         const { children, ...rest } = props;
         return (
@@ -54,9 +55,13 @@ const theme = (mode: ColorSchemeName): DefaultTheme => {
         backgroundColor: generated.palette.background.default.get(),
         borderWidth: 1,
         borderColor: generated.palette.divider.get(),
+        maxWidth: 300,
+        width: 'auto',
         borderRadius: generated.borderRadius,
       },
       optionsWrapper: {
+        maxWidth: 300,
+        width: 'auto',
         backgroundColor: generated.palette.background.default.get(),
         borderWidth: 1,
         borderColor: generated.palette.divider.get(),
