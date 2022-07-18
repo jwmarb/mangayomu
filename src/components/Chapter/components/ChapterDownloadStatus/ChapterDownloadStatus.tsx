@@ -15,45 +15,50 @@ import connector, {
   ConnectedChapterDownloadStatusProps,
 } from '@components/Chapter/components/ChapterDownloadStatus/ChapterDownloadStatus.redux';
 import { View } from 'react-native';
+import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
+import MenuOption from '@components/MenuOption';
+import MenuTitle from '@components/MenuTitle';
 
 const ChapterDownloadStatus: React.FC<ConnectedChapterDownloadStatusProps> = (props) => {
-  const { status, onDownload, progress, cancelAllForSeries, mangaKey, validateFileIntegrity, chapterKey } = props;
+  const { status, onDownload, progress, cancelDownload, mangaKey, validateFileIntegrity, chapterKey } = props;
   const theme = useTheme();
-  const downloadActions = React.useMemo(
-    (): MenuItemProps[] => [
-      { isTitle: true, text: 'Actions' },
-      {
-        text: 'Cancel',
-        onPress: async (mangaKey: string) => {
-          await cancelAllForSeries(mangaKey);
-        },
-      } as any,
-    ],
-    [cancelAllForSeries]
-  );
+  const [open, setOpen] = React.useState<boolean>(false);
+  function handleOnOpen() {
+    setOpen(true);
+  }
+  function handleOnClose() {
+    setOpen(false);
+  }
 
-  const downloadedActions = React.useMemo(
-    (): MenuItemProps[] => [
-      { text: 'Actions', isTitle: true },
-      {
-        text: 'Validate file integrity',
-        icon: 'file',
-        onPress: (mangaKey: string, chapterKey: string) => {
-          validateFileIntegrity(mangaKey, chapterKey);
-        },
-      } as any,
-    ],
-    []
-  );
+  async function handleOnSelect(option: number) {
+    switch (option) {
+      case 0:
+        await cancelDownload(mangaKey, chapterKey);
+        break;
+      case 1:
+        validateFileIntegrity(mangaKey, chapterKey);
+        break;
+    }
+    handleOnClose();
+  }
 
   switch (status) {
     case DownloadStatus.DOWNLOADED:
       return (
         <>
-          <HoldItem items={downloadedActions} actionParams={{ 'Validate file integrity': [mangaKey, chapterKey] }}>
-            <Icon bundle='MaterialCommunityIcons' name='check-circle-outline' color='secondary' size='small' />
-          </HoldItem>
-          <Spacer x={1.3} />
+          <Menu onSelect={handleOnSelect} opened={open} onBackdropPress={handleOnClose} onClose={handleOnClose}>
+            <MenuTrigger>
+              <IconButton
+                onPress={handleOnOpen}
+                icon={<Icon bundle='MaterialCommunityIcons' name='check-circle-outline' />}
+                color='secondary'
+              />
+            </MenuTrigger>
+            <MenuOptions customStyles={theme.menuOptionsStyle}>
+              <MenuTitle>Actions</MenuTitle>
+              <MenuOption text='Validate file integrity' value={1} icon={<Icon bundle='Feather' name='file' />} />
+            </MenuOptions>
+          </Menu>
         </>
       );
     case DownloadStatus.ERROR:
@@ -69,31 +74,43 @@ const ChapterDownloadStatus: React.FC<ConnectedChapterDownloadStatusProps> = (pr
     case DownloadStatus.START_DOWNLOADING:
     case DownloadStatus.RESUME_DOWNLOADING:
       return (
-        <HoldItem items={downloadActions} activateOn='tap' actionParams={{ Cancel: [mangaKey] }}>
-          <IconButton
-            icon={
-              <CircularProgress
-                value={progress}
-                activeStrokeColor={theme.palette.primary.main.get()}
-                progressValueColor={theme.palette.primary.main.get()}
-                inActiveStrokeColor={theme.palette.action.disabledBackground.get()}
-                maxValue={100}
-                duration={500}
-                radius={RFValue(14)}
-                valueSuffix='%'
-                activeStrokeWidth={3}
-                inActiveStrokeWidth={3}
-              />
-            }
-          />
-        </HoldItem>
+        <Menu onSelect={handleOnSelect} opened={open} onBackdropPress={handleOnClose} onClose={handleOnClose}>
+          <MenuTrigger>
+            <IconButton
+              onPress={handleOnOpen}
+              icon={
+                <CircularProgress
+                  value={progress}
+                  activeStrokeColor={theme.palette.primary.main.get()}
+                  progressValueColor={theme.palette.primary.main.get()}
+                  inActiveStrokeColor={theme.palette.action.disabledBackground.get()}
+                  maxValue={100}
+                  duration={500}
+                  radius={RFValue(14)}
+                  valueSuffix='%'
+                  activeStrokeWidth={3}
+                  inActiveStrokeWidth={3}
+                />
+              }
+            />
+          </MenuTrigger>
+          <MenuOptions customStyles={theme.menuOptionsStyle}>
+            <MenuOption text='Cancel' color='secondary' value={0} />
+          </MenuOptions>
+        </Menu>
       );
     case DownloadStatus.QUEUED:
       return (
         <>
-          <HoldItem items={downloadActions} activateOn='tap' actionParams={{ Cancel: [mangaKey] }}>
-            <Progress native color='disabled' />
-          </HoldItem>
+          <Menu onSelect={handleOnSelect} opened={open} onBackdropPress={handleOnClose} onClose={handleOnClose}>
+            <MenuTrigger onPress={handleOnOpen}>
+              <Progress native color='disabled' />
+            </MenuTrigger>
+            <MenuOptions customStyles={theme.menuOptionsStyle}>
+              <MenuOption text='Cancel' color='secondary' value={0} />
+            </MenuOptions>
+          </Menu>
+
           <Spacer x={0.8} />
         </>
       );
