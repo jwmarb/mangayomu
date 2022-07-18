@@ -22,7 +22,7 @@ import {
 import { ChapterHeaderProps } from '@screens/MangaViewer/components/ChapterHeader/ChapterHeader.interfaces';
 import connector, {
   ConnectedChapterHeaderProps,
-} from '@screens/MangaViewer/components/ChapterHeader/components/ChapterHeader.redux';
+} from '@screens/MangaViewer/components/ChapterHeader/ChapterHeader.redux';
 import LanguageItem from '@screens/MangaViewer/components/ChapterHeader/components/LanguageItem';
 import LoadingChapters from '@screens/MangaViewer/components/LoadingChapters';
 import { MangaMultilingualChapter } from '@services/scraper/scraper.interfaces';
