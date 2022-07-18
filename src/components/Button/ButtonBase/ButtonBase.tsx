@@ -1,7 +1,7 @@
 import { ButtonBaseProps } from './ButtonBase.interfaces';
 import { Color, Constants } from '@theme/core';
-import { Platform, TouchableOpacityProps, TouchableNativeFeedbackProps, TouchableOpacity } from 'react-native';
-import { TouchableNativeFeedback } from 'react-native-gesture-handler';
+import { Platform, TouchableOpacityProps, TouchableNativeFeedbackProps, TouchableOpacity, TouchableNativeFeedback } from 'react-native';
+// import {  } from 'react-native-gesture-handler';
 import styled, { css } from 'styled-components/native';
 import { ButtonProps } from '@components/Button/Button.interfaces';
 
