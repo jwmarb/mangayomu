@@ -286,7 +286,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
               loading={loading}
             />
             <LanguageModal visible={visible} onCloseModal={handleOnCloseModal} sortOptions={sortOptions} />
-            <SelectedChapters manga={manga} />
+            <SelectedChapters numOfChapters={meta?.chapters.length ?? 0} manga={manga} />
           </Overview>
         </AnimatedProvider>
       </React.Suspense>

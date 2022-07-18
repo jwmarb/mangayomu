@@ -4,4 +4,5 @@ import DownloadCollection from '@utils/DownloadCollection';
 
 export interface SelectedChaptersBaseProps {
   manga: Manga;
+  numOfChapters: number;
 }

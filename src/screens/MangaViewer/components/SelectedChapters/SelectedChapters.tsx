@@ -1,4 +1,4 @@
-import { Button, Flex, Spacer, Typography } from '@components/core';
+import { Button, Divider, Flex, Icon, MenuTitle, Spacer, Typography, MenuOption } from '@components/core';
 import FloatingModal from '@components/FloatingModal';
 import useIsMounted from '@hooks/useIsMounted';
 import useMountedEffect from '@hooks/useMountedEffect';
@@ -8,54 +8,71 @@ import connector, {
   SelectedChaptersProps,
 } from '@screens/MangaViewer/components/SelectedChapters/SelectedChapters.redux';
 import displayMessage from '@utils/displayMessage';
-import { DownloadStatus } from '@utils/DownloadManager';
+import DownloadManager, { DownloadStatus } from '@utils/DownloadManager';
 import React from 'react';
 import { HoldItem } from 'react-native-hold-menu';
 import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
+import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
+import { useTheme } from 'styled-components/native';
 
 function plural(n: number) {
   return n !== 1 ? 's' : '';
 }
 
 const SelectedChapters: React.FC<SelectedChaptersProps> = (props) => {
-  const { selectedChapters, checkAll, selectionMode, totalChapters, exitSelectionMode, manga, downloadSelected } =
-    props;
-  const isFocused = useIsFocused();
-  const selectedValues = Object.values(selectedChapters);
-  const selectedLength = selectedValues.length;
-  const pluralized = plural(selectedLength);
-  const mounted = useIsMounted();
+  const {
+    selectedChapters,
+    checkAll,
+    selectionMode,
+    numOfChapters,
+    exitSelectionMode,
+    manga,
+    downloadSelected,
+    numOfSelected,
+    isDownloadingManga,
+  } = props;
 
-  const menuItems = [
-    { text: `Actions (${selectedLength} of ${totalChapters})`, isTitle: true, withSeparator: true },
-    {
-      text: `Download selected`,
-      icon: 'download',
-      onPress: () => {
-        downloadSelected(selectedChapters, manga);
-      },
-    },
-    {
-      text: `Verify file integrity`,
-      icon: 'file',
-      onPress: () => {
-        console.log(`Verifying integrity of ${selectedLength} chapter${pluralized}`);
-      },
-    },
-  ];
+  const isFocused = useIsFocused();
+  const pluralized = plural(numOfSelected);
+  const mounted = useIsMounted();
+  const theme = useTheme();
+  const ref = React.useRef<Menu>(null);
+
+  const handleOnDownloadAllSelected = () => {
+    downloadSelected(selectedChapters, manga);
+  };
+
+  function handleOnPress() {
+    ref.current?.open();
+  }
   if (isFocused && mounted)
     return (
       <FloatingModal visible={selectionMode === 'selection'}>
         <Flex alignItems='center' justifyContent='space-between'>
           <Typography color='textSecondary'>
-            Selected <Typography bold>{selectedLength}</Typography> Chapter{pluralized}
+            Selected <Typography bold>{numOfSelected}</Typography> Chapter{pluralized}
           </Typography>
           <Spacer x={2} />
           <Flex>
-            {selectedLength > 0 ? (
-              <HoldItem activateOn='tap' bottom items={menuItems}>
-                <Button title='Actions' />
-              </HoldItem>
+            {numOfSelected > 0 ? (
+              <Menu ref={ref}>
+                <MenuTrigger>
+                  <Button title='Actions' onPress={handleOnPress} />
+                </MenuTrigger>
+                <MenuOptions customStyles={theme.menuOptionsStyle}>
+                  <MenuTitle>
+                    Actions ({numOfSelected} of {numOfChapters})
+                  </MenuTitle>
+
+                  <MenuOption
+                    onPress={handleOnDownloadAllSelected}
+                    text='Download selected'
+                    icon={<Icon bundle='Feather' name='download' />}
+                  />
+                  <Divider />
+                  <MenuOption text='Verify file integrity' icon={<Icon bundle='Feather' name='file' />} />
+                </MenuOptions>
+              </Menu>
             ) : (
               <Button title='Actions' disabled />
             )}
