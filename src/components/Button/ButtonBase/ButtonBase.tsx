@@ -1,9 +1,49 @@
 import { ButtonBaseProps } from './ButtonBase.interfaces';
 import { Color, Constants } from '@theme/core';
-import { Platform, TouchableOpacityProps, TouchableNativeFeedbackProps, TouchableOpacity, TouchableNativeFeedback } from 'react-native';
-// import {  } from 'react-native-gesture-handler';
+import {
+  Platform,
+  TouchableOpacityProps,
+  TouchableNativeFeedbackProps,
+  TouchableOpacity,
+  TouchableNativeFeedback,
+} from 'react-native';
+import {
+  TouchableNativeFeedback as GestureTouchableNativeFeedback,
+  TouchableOpacity as GestureTouchableOpacity,
+} from 'react-native-gesture-handler';
 import styled, { css } from 'styled-components/native';
 import { ButtonProps } from '@components/Button/Button.interfaces';
+
+const GestureTouchableBase = styled(
+  Platform.OS === 'ios' ? GestureTouchableOpacity : GestureTouchableNativeFeedback
+).attrs<ButtonBaseProps & ButtonProps>((props) => {
+  const { round = false } = props;
+  if (Platform.OS === 'ios') {
+    return {
+      activeOpacity: 0.5,
+    } as TouchableOpacityProps;
+  }
+
+  if (props.color == null)
+    return {
+      background: GestureTouchableNativeFeedback.Ripple(
+        Constants.GRAY[props.theme.palette.mode === 'light' ? 6 : 8].get(),
+        round
+      ),
+    } as TouchableNativeFeedbackProps;
+
+  if (props.color instanceof Color)
+    return {
+      background: GestureTouchableNativeFeedback.Ripple(props.color.get(), round),
+    } as TouchableNativeFeedbackProps;
+
+  return {
+    background: GestureTouchableNativeFeedback.Ripple(
+      props.theme.palette[props.color][props.theme.palette.mode ?? 'light'].get(),
+      round
+    ),
+  } as TouchableNativeFeedbackProps;
+})``;
 
 const TouchableBase = styled(Platform.OS === 'ios' ? TouchableOpacity : TouchableNativeFeedback).attrs<
   ButtonBaseProps & ButtonProps
@@ -102,13 +142,35 @@ const OpacityBase = styled(TouchableOpacity).attrs<ButtonBaseProps & ButtonProps
   } as TouchableOpacityProps;
 })``;
 
+const GestureOpacityBase = styled(GestureTouchableOpacity).attrs<ButtonBaseProps & ButtonProps>(() => {
+  return {
+    activeOpacity: 0.5,
+  } as TouchableOpacityProps;
+})``;
+
 export const ButtonBase: React.FC<ButtonBaseProps & Omit<ButtonProps, 'title'>> = ({
   children,
   onPress,
   onLongPress,
   opacity,
+  useGestureHandler,
   ...rest
 }) => {
+  if (useGestureHandler) {
+    return (
+      <TouchableContainer {...rest}>
+        {opacity ? (
+          <GestureOpacityBase onPress={onPress} onLongPress={onLongPress} {...rest}>
+            {children}
+          </GestureOpacityBase>
+        ) : (
+          <GestureTouchableBase onPress={onPress} onLongPress={onLongPress} {...rest}>
+            {children}
+          </GestureTouchableBase>
+        )}
+      </TouchableContainer>
+    );
+  }
   return (
     <TouchableContainer {...rest}>
       {opacity ? (

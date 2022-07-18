@@ -12,7 +12,7 @@ import { useTheme } from 'styled-components/native';
 import { Constants } from '@theme/core';
 
 const Checkbox: React.FC<CheckboxProps> = (props) => {
-  const { checked, onChange = () => void 0 } = props;
+  const { checked, onChange = () => void 0, onLongPress, useGestureHandler } = props;
   function handleOnPress() {
     onChange(!checked);
   }
@@ -64,7 +64,7 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
   }));
 
   return (
-    <ButtonBase onPress={handleOnPress} round>
+    <ButtonBase onPress={handleOnPress} round onLongPress={onLongPress} useGestureHandler={useGestureHandler}>
       <CheckboxContainer>
         <CheckboxBorder style={checkboxStyle}>
           <Animated.View style={iconStyles}>

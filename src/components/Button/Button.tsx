@@ -30,6 +30,7 @@ const Button: React.FC<ButtonProps> = (props) => {
     onLongPress,
     round: false,
     square: false,
+    useGestureHandler: false,
   };
   const buttonTextProps: ButtonTextProps = {
     color,
@@ -38,6 +39,7 @@ const Button: React.FC<ButtonProps> = (props) => {
     expand,
     round: false,
     square: false,
+    useGestureHandler: false,
   };
 
   const theme = useTheme();

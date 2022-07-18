@@ -10,6 +10,7 @@ import {
   Flex,
   IconButton,
   HeaderBuilder,
+  MenuOption,
 } from '@components/core';
 import { AppState } from '@redux/store';
 import {
@@ -28,6 +29,7 @@ import { Dimensions, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { HoldItem } from 'react-native-hold-menu';
 import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
+import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import {
   Easing,
   useAnimatedStyle,
@@ -39,6 +41,7 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
+import { useTheme } from 'styled-components/native';
 const { width } = Dimensions.get('window');
 const halfWidth = width / 2;
 
@@ -129,44 +132,21 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
     [onChangeLanguage]
   );
 
-  const menuItems = React.useMemo(
-    () =>
-      [
-        { text: 'Select...', isTitle: true },
-        {
-          text: 'All Chapters',
-          onPress: () => {
-            onSelectAll(true);
-          },
-        },
-        {
-          text: 'All Downloaded Chapters',
-          onPress: () => {
-            onSelectDownloadedChapters();
-          },
-        },
-        {
-          text: 'All Unread Chapters',
-          onPress: () => {
-            onSelectUnreadChapters();
-          },
-        },
-        {
-          text: 'All Read Chapters',
-          onPress: () => {
-            onSelectReadChapters();
-          },
-        },
-        {
-          text: 'Deselect All',
-          isDestructive: true,
-          onPress: () => {
-            onSelectAll(false);
-          },
-        },
-      ] as MenuItemProps[],
-    []
-  );
+  const handleOnSelectAll = React.useCallback(() => {
+    onSelectAll(true);
+  }, [onSelectAll]);
+
+  const handleOnDeselectAll = React.useCallback(() => {
+    onSelectAll(false);
+  }, [onSelectAll]);
+
+  const ref = React.useRef<Menu>(null);
+
+  const theme = useTheme();
+
+  function handleOnLongPress() {
+    ref.current?.open();
+  }
 
   return (
     <>
@@ -187,9 +167,18 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
           )}
           <IconButton icon={<Icon bundle='Feather' name='refresh-cw' />} onPress={refresh} disabled={loading} />
           <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='sort' />} onPress={handleOnOpenModal} />
-          <HoldItem items={menuItems}>
-            <Checkbox onChange={onSelectAll} checked={checked} />
-          </HoldItem>
+          <Menu ref={ref}>
+            <MenuTrigger>
+              <Checkbox onChange={onSelectAll} checked={checked} onLongPress={handleOnLongPress} useGestureHandler />
+            </MenuTrigger>
+            <MenuOptions customStyles={theme.menuOptionsStyle}>
+              <MenuOption text='All chapters' onPress={handleOnSelectAll} />
+              <MenuOption text='All downloaded chapters' onPress={onSelectDownloadedChapters} />
+              <MenuOption text='All unread chapters' onPress={onSelectUnreadChapters} />
+              <MenuOption text='All read chapters' onPress={onSelectReadChapters} />
+              <MenuOption text='Deselect all' onPress={handleOnDeselectAll} />
+            </MenuOptions>
+          </Menu>
         </Flex>
       </ChapterHeaderContainer>
       {loading && <LoadingChapters />}

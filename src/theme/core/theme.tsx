@@ -43,7 +43,7 @@ const theme = (mode: ColorSchemeName): DefaultTheme => {
         const { children, ...rest } = props;
         return (
           <React.Suspense fallback={null}>
-            <ButtonBase square {...rest}>
+            <ButtonBase square useGestureHandler {...rest}>
               <Flex container horizontalPadding={3} verticalPadding={1.5}>
                 {children}
               </Flex>

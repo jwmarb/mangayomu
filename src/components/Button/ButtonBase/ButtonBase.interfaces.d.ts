@@ -11,4 +11,5 @@ export interface ButtonBaseProps {
   onPress?: () => void;
   opacity?: boolean;
   square?: boolean;
+  useGestureHandler?: boolean;
 }

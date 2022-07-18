@@ -38,9 +38,9 @@ const SelectedChapters: React.FC<SelectedChaptersProps> = (props) => {
   const theme = useTheme();
   const ref = React.useRef<Menu>(null);
 
-  const handleOnDownloadAllSelected = () => {
+  const handleOnDownloadAllSelected = React.useCallback(() => {
     downloadSelected(selectedChapters, manga);
-  };
+  }, []);
 
   function handleOnPress() {
     ref.current?.open();
