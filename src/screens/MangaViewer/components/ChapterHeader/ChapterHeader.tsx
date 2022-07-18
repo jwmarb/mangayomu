@@ -25,12 +25,13 @@ import { MangaMultilingualChapter } from '@services/scraper/scraper.interfaces';
 import { ISOLangCode, languages } from '@utils/languageCodes';
 import MangaValidator from '@utils/MangaValidator';
 import React from 'react';
-import { Dimensions, View } from 'react-native';
+import { Dimensions, useWindowDimensions, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { HoldItem } from 'react-native-hold-menu';
 import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
 import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import {
+  cancelAnimation,
   Easing,
   useAnimatedStyle,
   useDerivedValue,
@@ -42,8 +43,6 @@ import {
 } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import { useTheme } from 'styled-components/native';
-const { width } = Dimensions.get('window');
-const halfWidth = width / 2;
 
 const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
   const {
@@ -61,6 +60,9 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
   } = props;
   const opacity = useSharedValue(1);
   const bgOpacity = useSharedValue(0);
+  const { width } = useWindowDimensions();
+  const halfWidth = React.useMemo(() => width / 2, [width]);
+
   const [opened, setOpened] = React.useState<boolean>(false);
   const [visible, setVisible] = React.useState<boolean>(false);
   const translateX = useSharedValue(-halfWidth);
@@ -76,10 +78,16 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
         -1
       );
     } else {
+      cancelAnimation(translateX);
       bgOpacity.value = withTiming(0, { duration: 100, easing: Easing.ease });
       opacity.value = withTiming(0, { duration: 100, easing: Easing.ease });
     }
-  }, [loading]);
+    return () => {
+      cancelAnimation(opacity);
+      cancelAnimation(bgOpacity);
+      cancelAnimation(translateX);
+    };
+  }, [loading, width]);
 
   useDerivedValue(() => {
     if (opacity.value === 0) translateX.value = -halfWidth;
