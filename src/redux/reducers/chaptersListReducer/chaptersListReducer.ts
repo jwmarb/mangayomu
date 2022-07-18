@@ -24,6 +24,7 @@ export default function (
         checkAll: false,
         mode: 'normal',
         selected: {},
+        numOfSelected: 0,
       };
     case 'ENTER_SELECTION_MODE':
       return {
