@@ -13,7 +13,9 @@ const displayChapterInfo = (chapter: any) => {
       <>
         <Spacer y={1} />
         <Typography variant='body2' color='textSecondary'>
-          {formatDistanceToNow(parsed, { addSuffix: true })}
+          {Date.now() - 6.048e8 < parsed
+            ? formatDistanceToNow(parsed, { addSuffix: true })
+            : format(parsed, 'MMMM dd, yyyy')}
         </Typography>
       </>
     );
