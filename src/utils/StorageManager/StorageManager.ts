@@ -20,7 +20,7 @@ class StorageManager<T> {
   public static async cleanup() {
     console.log(`Cleanup called. Saving [${Object.keys(this.batchRecord)}] to Async Storage`);
 
-    await AsyncStorage.multiSet(Object.values(this.batchRecord).map(([key, val]) => [key, JSON.stringify(val)]));
+    await AsyncStorage.multiSet(Object.entries(this.batchRecord).map(([key, val]) => [key, JSON.stringify(val)]));
   }
 
   private key: string;
