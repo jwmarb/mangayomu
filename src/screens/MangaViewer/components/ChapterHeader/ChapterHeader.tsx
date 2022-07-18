@@ -61,6 +61,7 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
   } = props;
   const opacity = useSharedValue(1);
   const bgOpacity = useSharedValue(0);
+  const [opened, setOpened] = React.useState<boolean>(false);
   const [visible, setVisible] = React.useState<boolean>(false);
   const translateX = useSharedValue(-halfWidth);
   React.useEffect(() => {
@@ -132,20 +133,35 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
     [onChangeLanguage]
   );
 
-  const handleOnSelectAll = React.useCallback(() => {
-    onSelectAll(true);
-  }, [onSelectAll]);
-
-  const handleOnDeselectAll = React.useCallback(() => {
-    onSelectAll(false);
-  }, [onSelectAll]);
-
-  const ref = React.useRef<Menu>(null);
+  function handleOnSelectMenuOption(text: string | number) {
+    switch (text) {
+      case 0:
+        onSelectAll(true);
+        break;
+      case 1:
+        onSelectDownloadedChapters();
+        break;
+      case 2:
+        onSelectUnreadChapters();
+        break;
+      case 3:
+        onSelectReadChapters();
+        break;
+      case 4:
+        onSelectAll(false);
+        break;
+    }
+    handleOnExit();
+  }
 
   const theme = useTheme();
 
   function handleOnLongPress() {
-    ref.current?.open();
+    setOpened(true);
+  }
+
+  function handleOnExit() {
+    setOpened(false);
   }
 
   return (
@@ -167,16 +183,20 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = (props) => {
           )}
           <IconButton icon={<Icon bundle='Feather' name='refresh-cw' />} onPress={refresh} disabled={loading} />
           <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='sort' />} onPress={handleOnOpenModal} />
-          <Menu ref={ref}>
+          <Menu
+            opened={opened}
+            onBackdropPress={handleOnExit}
+            onClose={handleOnExit}
+            onSelect={handleOnSelectMenuOption}>
             <MenuTrigger>
               <Checkbox onChange={onSelectAll} checked={checked} onLongPress={handleOnLongPress} useGestureHandler />
             </MenuTrigger>
             <MenuOptions customStyles={theme.menuOptionsStyle}>
-              <MenuOption text='All chapters' onPress={handleOnSelectAll} />
-              <MenuOption text='All downloaded chapters' onPress={onSelectDownloadedChapters} />
-              <MenuOption text='All unread chapters' onPress={onSelectUnreadChapters} />
-              <MenuOption text='All read chapters' onPress={onSelectReadChapters} />
-              <MenuOption text='Deselect all' onPress={handleOnDeselectAll} />
+              <MenuOption text='All chapters' value={0} />
+              <MenuOption text='All downloaded chapters' value={1} />
+              <MenuOption text='All unread chapters' value={2} />
+              <MenuOption text='All read chapters' value={3} />
+              <MenuOption text='Deselect all' value={4} color='secondary' />
             </MenuOptions>
           </Menu>
         </Flex>

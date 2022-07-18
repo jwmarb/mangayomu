@@ -6,17 +6,17 @@ import Spacer from '@components/Spacer';
 import Flex from '@components/Flex';
 
 const MenuOption: React.FC<MenuOptionProps> = (props) => {
-  const { text, icon, onPress } = props;
+  const { text, icon, onPress, color, value, ...rest } = props;
   return (
-    <BaseMenuOption onSelect={onPress}>
+    <BaseMenuOption onSelect={onPress} value={value ?? text} {...rest}>
       <Flex alignItems='center'>
         {icon && (
           <>
-            {React.cloneElement(icon, { size: 'small' })}
+            {React.cloneElement(icon, { size: 'small', color })}
             <Spacer x={3} />
           </>
         )}
-        <Typography>{text}</Typography>
+        <Typography color={color}>{text}</Typography>
       </Flex>
     </BaseMenuOption>
   );
