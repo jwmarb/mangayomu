@@ -126,7 +126,6 @@ const Overview: React.FC<OverviewProps> = (props) => {
         }}
         dataProvider={dataProvider}
         layoutProvider={layout}
-        renderAheadOffset={10000}
         rowRenderer={rowRenderer}
         applyWindowCorrection={applyWindowCorrection}
         canChangeSize
