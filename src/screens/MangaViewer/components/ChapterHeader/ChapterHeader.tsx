@@ -62,6 +62,8 @@ const ChapterHeader: React.FC<ConnectedChapterHeaderProps> = (props) => {
     onSelectReadChapters,
     onSelectUnreadChapters,
     numOfSelectedChapters,
+    hideFloatingModal,
+    selectionMode,
   } = props;
   const opacity = useSharedValue(1);
   const bgOpacity = useSharedValue(0);
@@ -70,6 +72,13 @@ const ChapterHeader: React.FC<ConnectedChapterHeaderProps> = (props) => {
 
   const [opened, setOpened] = React.useState<boolean>(false);
   const [visible, setVisible] = React.useState<boolean>(false);
+  React.useEffect(() => {
+    switch (selectionMode) {
+      case 'selection':
+        setVisible(false);
+        break;
+    }
+  }, [selectionMode]);
   const translateX = useSharedValue(-halfWidth);
   React.useEffect(() => {
     if (loading) {
@@ -103,8 +112,14 @@ const ChapterHeader: React.FC<ConnectedChapterHeaderProps> = (props) => {
     transform: [{ translateX: translateX.value }],
   }));
 
-  const handleOnPress = () => {
+  const handleOnOpen = () => {
+    hideFloatingModal(true);
     setVisible(true);
+  };
+
+  const handleOnClose = () => {
+    setVisible(false);
+    hideFloatingModal(false);
   };
 
   const bgStyle = useAnimatedStyle(() => ({
@@ -190,7 +205,7 @@ const ChapterHeader: React.FC<ConnectedChapterHeaderProps> = (props) => {
           {multilingualChapters && (
             <IconButton
               icon={<Icon bundle='MaterialCommunityIcons' name='translate' />}
-              onPress={handleOnPress}
+              onPress={handleOnOpen}
               disabled={loading}
             />
           )}
@@ -216,7 +231,7 @@ const ChapterHeader: React.FC<ConnectedChapterHeaderProps> = (props) => {
         </Flex>
       </ChapterHeaderContainer>
       {loading && <LoadingChapters />}
-      <Modal visible={visible} onClose={() => setVisible(false)}>
+      <Modal visible={visible} onClose={handleOnClose}>
         <HeaderBuilder paper removeStatusBarPadding horizontalPadding verticalPadding>
           <Typography variant='subheader'>Select a language</Typography>
         </HeaderBuilder>

@@ -11,7 +11,7 @@ const mapStateToProps = (state: AppState, props: SelectedChaptersBaseProps) => {
     selectionMode: state.chaptersList.mode,
     numOfSelected: state.chaptersList.numOfSelected,
     selectedChapters: state.chaptersList.selected,
-    isDownloadingManga: props.manga.link in state.downloading.mangas,
+    hidden: state.chaptersList.hideFloatingModal,
   };
 };
 

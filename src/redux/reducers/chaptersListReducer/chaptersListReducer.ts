@@ -5,6 +5,7 @@ const INITIAL_STATE: ChaptersListReducerState = {
   checkAll: false,
   totalChapters: 0,
   numOfSelected: 0,
+  hideFloatingModal: false,
   mode: 'normal',
   selected: {},
 };
@@ -18,10 +19,16 @@ export default function (
   action: ChaptersListReducerAction
 ): ChaptersListReducerState {
   switch (action.type) {
+    case 'SHOULD_HIDE_FLOATING_MODAL':
+      return {
+        ...state,
+        hideFloatingModal: action.payload,
+      };
     case 'EXIT_SELECTION_MODE':
       return {
         ...state,
         checkAll: false,
+        hideFloatingModal: false,
         mode: 'normal',
         selected: {},
         numOfSelected: 0,

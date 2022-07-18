@@ -7,6 +7,7 @@ import { ReadingChapterInfo } from '../mangaReducer/mangaReducer.interfaces';
 export interface ChaptersListReducerState {
   checkAll: boolean;
   mode: ChapterPressableMode;
+  hideFloatingModal: boolean;
   selected: Record<string, null>;
   numOfSelected: number;
   totalChapters: number;
@@ -20,4 +21,5 @@ export type ChaptersListReducerAction =
   | { type: 'SET_DOWNLOAD_STATUS_OF_CHAPTER'; chapter: ReadingChapterInfo; status: DownloadStatus; manga: Manga }
   | { type: 'TOGGLE_CHECK_ALL'; checked: boolean; chapters: ReadingChapterInfo[] }
   | { type: 'SET_TOTAL_PROGRESS_OF_CHAPTER'; chapter: ReadingChapterInfo; progress: number }
-  | { type: 'SELECT_CHAPTERS'; chapters: ReadingChapterInfo[] };
+  | { type: 'SELECT_CHAPTERS'; chapters: ReadingChapterInfo[] }
+  | { type: 'SHOULD_HIDE_FLOATING_MODAL'; payload: boolean };

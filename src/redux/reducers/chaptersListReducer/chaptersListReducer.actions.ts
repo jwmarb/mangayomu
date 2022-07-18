@@ -19,6 +19,12 @@ export const cursors: StorageManager<
   >
 > = StorageManager.manage('downloadCursors', {});
 
+export const hideFloatingModal = (payload: boolean) => {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'SHOULD_HIDE_FLOATING_MODAL', payload });
+  };
+};
+
 export const exitSelectionMode = () => {
   return (dispatch: AppDispatch) => {
     dispatch({ type: 'EXIT_SELECTION_MODE' });

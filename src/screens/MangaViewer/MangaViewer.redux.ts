@@ -5,6 +5,7 @@ import * as mangaReducerActions from '@redux/reducers/mangaReducer/mangaReducer.
 import * as chaptersListReducerActions from '@redux/reducers/chaptersListReducer/chaptersListReducer.actions';
 import { connect, ConnectedProps } from 'react-redux';
 import MangaHost from '@services/scraper/scraper.abstract';
+import { exitSelectionMode } from '@redux/reducers/chaptersListReducer';
 
 const mapStateToProps = (state: AppState, props: StackScreenProps<RootStackParamList, 'MangaViewer'>) => {
   const {

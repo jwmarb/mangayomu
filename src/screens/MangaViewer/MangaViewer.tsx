@@ -98,6 +98,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     checkAllChapters,
     checkAll,
     initializeChapters,
+    hideFloatingModal,
   } = props;
   const theme = useTheme();
   const {
@@ -145,7 +146,15 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     [userMangaInfo?.inLibrary]
   );
 
-  const { sort, reverse, visible, handleOnCloseModal, handleOnOpenModal, sortOptions, selectedSortOption } = useSort(
+  const {
+    sort,
+    reverse,
+    visible,
+    handleOnCloseModal: _handleOnCloseModal,
+    handleOnOpenModal: _handleOnOpenModal,
+    sortOptions,
+    selectedSortOption,
+  } = useSort(
     (createSort) => ({
       Chapter: createSort((a: MangaChapter, b: MangaChapter) => (a.name && b.name ? a.index - b.index : 0)),
       ...(MangaValidator.hasDate(userMangaInfo?.chapters[0] ?? {})
@@ -156,6 +165,14 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     }),
     'Chapter'
   );
+  const handleOnOpenModal = React.useCallback(() => {
+    _handleOnOpenModal();
+    hideFloatingModal(true);
+  }, [_handleOnOpenModal, hideFloatingModal]);
+  const handleOnCloseModal = React.useCallback(() => {
+    _handleOnCloseModal();
+    hideFloatingModal(false);
+  }, [_handleOnCloseModal, hideFloatingModal]);
   const collapsible = useCollapsibleHeader(options);
   const { ready, Fallback } = useLazyLoading();
   const loadingAnimation = useAnimatedLoading();

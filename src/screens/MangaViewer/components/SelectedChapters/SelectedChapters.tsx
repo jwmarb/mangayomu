@@ -29,7 +29,7 @@ const SelectedChapters: React.FC<SelectedChaptersProps> = (props) => {
     manga,
     downloadSelected,
     numOfSelected,
-    isDownloadingManga,
+    hidden,
   } = props;
 
   const isFocused = useIsFocused();
@@ -47,7 +47,7 @@ const SelectedChapters: React.FC<SelectedChaptersProps> = (props) => {
   }
   if (isFocused && mounted)
     return (
-      <FloatingModal visible={selectionMode === 'selection'}>
+      <FloatingModal visible={selectionMode === 'selection' && !hidden}>
         <Flex alignItems='center' justifyContent='space-between'>
           <Typography color='textSecondary'>
             Selected <Typography bold>{numOfSelected}</Typography> Chapter{pluralized}
