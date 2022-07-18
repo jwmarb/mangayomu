@@ -110,6 +110,7 @@ export const downloadAll = () => {
               case DownloadStatus.START_DOWNLOADING:
               case DownloadStatus.RESUME_DOWNLOADING:
               case DownloadStatus.DOWNLOADING:
+                // console.log(`pausing ${chapterKey}`);
                 if (mangaKey in downloadingKeys) await downloadManager.pause();
                 break;
             }
@@ -162,7 +163,13 @@ export const downloadAll = () => {
 
                           downloadingKeys[mangaKey] = chapterKey;
 
+                          // console.log(`${chapterKey}: ${downloadManager.getStatus()}`);
+
                           switch (downloadManager.getStatus()) {
+                            case DownloadStatus.START_DOWNLOADING:
+                            case DownloadStatus.RESUME_DOWNLOADING:
+                            case DownloadStatus.DOWNLOADING:
+                            // console.log(`${chapterKey} is not paused... what?`);
                             case DownloadStatus.PAUSED:
                               if (isNotCanceled()) {
                                 downloadManager.resume().then(callback);
@@ -179,6 +186,7 @@ export const downloadAll = () => {
                               dispatch({ type: 'CHAPTER_DOWNLOAD_COMPLETE', mangaKey, chapterKey });
                               downloadingKeys[mangaKey] = null;
                               return res();
+
                             default:
                               clearInterval(interval);
                               rej1(
