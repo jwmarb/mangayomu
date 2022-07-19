@@ -100,22 +100,22 @@ export const downloadAll = () => {
     return {
       cancel: async () => {
         canceled = true;
-        for (const [mangaKey, chapterKey] of Object.entries(downloadingKeys)) {
-          if (chapterKey) {
-            const downloadManager = DownloadManager.ofWithManga(
-              getState().mangas[mangaKey].chapters[chapterKey],
-              getState().mangas[mangaKey]
-            );
-            switch (downloadManager.getStatus()) {
-              case DownloadStatus.START_DOWNLOADING:
-              case DownloadStatus.RESUME_DOWNLOADING:
-              case DownloadStatus.DOWNLOADING:
-                // console.log(`pausing ${chapterKey}`);
-                if (mangaKey in downloadingKeys) await downloadManager.pause();
-                break;
-            }
-          }
-        }
+        // for (const [mangaKey, chapterKey] of Object.entries(downloadingKeys)) {
+        //   if (chapterKey) {
+        //     const downloadManager = DownloadManager.ofWithManga(
+        //       getState().mangas[mangaKey].chapters[chapterKey],
+        //       getState().mangas[mangaKey]
+        //     );
+        //     switch (downloadManager.getStatus()) {
+        //       case DownloadStatus.START_DOWNLOADING:
+        //       case DownloadStatus.RESUME_DOWNLOADING:
+        //       case DownloadStatus.DOWNLOADING:
+        //         // console.log(`pausing ${chapterKey}`);
+        //         if (mangaKey in downloadingKeys) await downloadManager.pause();
+        //         break;
+        //     }
+        //   }
+        // }
       },
       start: () =>
         new Promise<void>((res1, rej1) => {
@@ -126,9 +126,22 @@ export const downloadAll = () => {
                 downloadingKeys[mangaKey] = null;
 
                 for (const chapterKey in getState().downloading.mangas[mangaKey]?.chapters) {
+                  const downloadManager = DownloadManager.ofWithManga(
+                    getState().mangas[mangaKey].chapters[chapterKey],
+                    getState().mangas[mangaKey]
+                  );
+
                   function isNotCanceled() {
                     if (canceled || mangaKey in downloadingKeys === false) {
                       if (limit.pendingCount > 0) limit.clearQueue();
+                      switch (downloadManager.getStatus()) {
+                        case DownloadStatus.DOWNLOADING:
+                        case DownloadStatus.START_DOWNLOADING:
+                        case DownloadStatus.RESUME_DOWNLOADING:
+                          downloadManager.pause();
+                          console.log(`${chapterKey} has been paused`);
+                          break;
+                      }
                       return false;
                     }
                     return true;
@@ -137,11 +150,6 @@ export const downloadAll = () => {
                     () =>
                       new Promise<void>((res, rej) => {
                         if (isNotCanceled()) {
-                          const downloadManager = DownloadManager.ofWithManga(
-                            getState().mangas[mangaKey].chapters[chapterKey],
-                            getState().mangas[mangaKey]
-                          );
-
                           if (isNotCanceled())
                             dispatch({ type: 'CHAPTER_DOWNLOAD_LISTENER', mangaKey, chapterKey, downloadManager });
 
@@ -153,7 +161,7 @@ export const downloadAll = () => {
 
                           const callback = () => {
                             clearInterval(interval);
-                            if (isNotCanceled()) {
+                            if (isNotCanceled() && downloadManager.getStatus() === DownloadStatus.DOWNLOADED) {
                               dispatch({ type: 'CHAPTER_DOWNLOAD_COMPLETE', mangaKey, chapterKey });
                               downloadingKeys[mangaKey] = null;
 
@@ -170,6 +178,12 @@ export const downloadAll = () => {
                             case DownloadStatus.RESUME_DOWNLOADING:
                             case DownloadStatus.DOWNLOADING:
                             // console.log(`${chapterKey} is not paused... what?`);
+                            // if (isNotCanceled()) {
+                            //   downloadManager.pause().then(() => {
+                            //     rej(`Paused ${chapterKey}`);
+                            //   });
+                            // } else clearInterval(interval);
+                            // break;
                             case DownloadStatus.PAUSED:
                               if (isNotCanceled()) {
                                 downloadManager.resume().then(callback);
