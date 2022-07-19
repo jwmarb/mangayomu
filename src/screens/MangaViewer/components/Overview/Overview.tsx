@@ -132,7 +132,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
         layoutProvider={layout}
         rowRenderer={rowRenderer}
         canChangeSize
-        // forceNonDeterministicRendering
+        forceNonDeterministicRendering
         applyWindowCorrection={applyWindowCorrection}
         extendedState={{
           chaptersList,

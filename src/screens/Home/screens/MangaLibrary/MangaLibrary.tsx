@@ -134,6 +134,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     <RecyclerListView
       dataProvider={dataProvider}
       canChangeSize
+      forceNonDeterministicRendering
       layoutProvider={layoutProvider}
       rowRenderer={rowRenderer}
       extendedState={{ ...history, query, width, orientation, cols, fontSize, type }}
