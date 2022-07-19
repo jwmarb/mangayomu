@@ -68,11 +68,7 @@ export const MangaInLibraryContainer = styled.View<
             return calculateCoverHeight(props.cols) * SPACE_MULTIPLIER + spacing;
         }
       }}px;
-      background-color: ${() => {
-        if (props.first) return 'red';
-        if (props.last) return 'blue';
-        return 'purple';
-      }}
+
       /* padding-top: ${props.theme.spacing(1)}; */
       /* padding-bottom: ${props.theme.spacing(1)}; */
       align-items: center;
