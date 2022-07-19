@@ -34,9 +34,11 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
     totalProgress,
     downloadedPages,
     downloadSelected,
+    width,
     cancelAllForSeries,
     status,
   } = props;
+
   const navigation = useRootNavigation();
 
   function handleOnCheck(e: boolean) {
@@ -74,7 +76,7 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
   return (
     <Animated.View entering={FadeIn}>
       <ButtonBase square onPress={handleOnPress} onLongPress={handleOnLongPress}>
-        <ChapterContainer>
+        <ChapterContainer width={width}>
           <Flex justifyContent='space-between' alignItems='center'>
             <ChapterTitle chapter={chapter} />
             <Flex alignItems='center'>

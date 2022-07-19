@@ -38,25 +38,24 @@ const Overview: React.FC<OverviewProps> = (props) => {
   const { containerPaddingTop } = collapsible;
   const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(false);
   const { width } = useWindowDimensions();
+  const ref = React.useRef<RecyclerListView<any, any>>(null);
   const [finished, setFinished] = React.useState<boolean>(false);
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider(dataProviderFn));
-  const extendedState = useSelector((state: AppState) => ({
-    ...state.chaptersList,
-    ...state.downloading,
-    chapters: state.mangas[manga.link]?.chapters ?? {},
-    metas: state.downloading.metas[manga.link],
-    orientation: state.settings.deviceOrientation,
-  }));
+  const deviceOrientation = useSelector((state: AppState) => state.settings.deviceOrientation);
+  const chaptersList = useSelector((state: AppState) => state.chaptersList);
+  const mangas = useSelector((state: AppState) => state.downloading.mangas);
+  const chaptersInManga = useSelector((state: AppState) => state.mangas[manga.link]?.chapters ?? {});
+  const metas = useSelector((state: AppState) => state.downloading.metas[manga.link]);
 
   const layout = React.useMemo(
     () =>
       new LayoutProvider(
         (index) => 0,
         (type, dim) => {
-          (dim.height = 70.0952377319336), (dim.width = width);
+          (dim.height = 76), (dim.width = width);
         }
       ),
-    [width]
+    [width, deviceOrientation]
   );
   React.useEffect(() => {
     if (chapters && chapters.every(MangaValidator.isMultilingualChapter))
@@ -89,6 +88,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
 
   const handleOnLayout = React.useCallback(
     (e: LayoutChangeEvent) => {
+      console.log(e.nativeEvent.layout.height + containerPaddingTop);
       setLayoutHeight(e.nativeEvent.layout.height + containerPaddingTop);
     },
     [setLayoutHeight, containerPaddingTop]
@@ -100,6 +100,10 @@ const Overview: React.FC<OverviewProps> = (props) => {
       },
       [layoutHeight, containerPaddingTop]
     );
+
+  // React.useEffect(() => {
+  //   setTimeout(() => ref.current?.forceRerender(), 0);
+  // }, [width, deviceOrientation]);
 
   if (chapters == null) {
     return (
@@ -127,9 +131,17 @@ const Overview: React.FC<OverviewProps> = (props) => {
         dataProvider={dataProvider}
         layoutProvider={layout}
         rowRenderer={rowRenderer}
-        applyWindowCorrection={applyWindowCorrection}
         canChangeSize
-        extendedState={extendedState}
+        // forceNonDeterministicRendering
+        applyWindowCorrection={applyWindowCorrection}
+        extendedState={{
+          chaptersList,
+          mangas,
+          chaptersInManga,
+          metas,
+          deviceOrientation,
+          width,
+        }}
         renderFooter={createFooter(!finished, chapters.length)}
       />
     </>

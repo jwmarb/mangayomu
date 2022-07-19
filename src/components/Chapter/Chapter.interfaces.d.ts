@@ -8,6 +8,7 @@ export type ChapterPressableMode = 'selection' | 'normal';
 export interface ChapterProps {
   manga: Manga;
   chapter: ReadingChapterInfo;
+  width: number;
 }
 
 export interface ChapterRef {

@@ -53,14 +53,24 @@ import PropTypes from 'prop-types';
 (RecyclerListView.propTypes as { externalScrollView: {} }).externalScrollView = PropTypes.object;
 
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
-  const { mangas: recordMangas, navigation, history, cols, fontSize, searchInLibrary, query, orientation } = props;
+  const {
+    mangas: recordMangas,
+    navigation,
+    history,
+    cols,
+    fontSize,
+    searchInLibrary,
+    query,
+    orientation,
+    type,
+  } = props;
   const mangas = React.useMemo(() => Object.keys(recordMangas), [recordMangas]);
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(
     new DataProvider(dataProviderFn).cloneWithRows(mangas)
   );
   const { width } = useWindowDimensions();
 
-  const layoutProvider = generateNewLayout(cols, fontSize, dataProvider.getSize());
+  const layoutProvider = generateNewLayout(cols, fontSize, width);
 
   const [expand, setExpand] = React.useState<boolean>(false);
   const [tabIndex, setTabIndex] = React.useState<number>(0);
@@ -100,15 +110,15 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
 
   useStatefulHeader(
     <>
-    {header}
-    <FilterModal
-      sortOptions={sortOptions}
-      onClose={handleOnClose}
-      expand={expand}
-      tabIndex={tabIndex}
-      setTabIndex={setTabIndex}
-    />
-  </>
+      {header}
+      <FilterModal
+        sortOptions={sortOptions}
+        onClose={handleOnClose}
+        expand={expand}
+        tabIndex={tabIndex}
+        setTabIndex={setTabIndex}
+      />
+    </>
   );
   useMountedEffect(() => {
     setDataProvider((prev) =>
@@ -120,14 +130,13 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
 
   if (dataProvider.getSize() === 0 && mangas.length > 0) return <NoItemsFound query={query} />;
 
-
   return (
     <RecyclerListView
       dataProvider={dataProvider}
       canChangeSize
       layoutProvider={layoutProvider}
       rowRenderer={rowRenderer}
-      extendedState={{ ...history, query, width, orientation, itemCount: dataProvider.getSize() }}
+      extendedState={{ ...history, query, width, orientation, cols, fontSize, type }}
       scrollViewProps={{ contentContainerStyle: { paddingTop: 24, paddingBottom: 64 } }}
     />
   );
@@ -137,8 +146,8 @@ const MangaLibraryScreen: React.FC<MangaLibraryProps> = (props) => {
   const focused = useIsFocused();
   const { ready, Fallback } = useLazyLoading();
 
-  if (focused && ready) return <MangaLibrary {...props} />
+  if (focused && ready) return <MangaLibrary {...props} />;
   return Fallback;
-}
+};
 
 export default connector(MangaLibraryScreen);

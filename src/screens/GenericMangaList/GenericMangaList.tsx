@@ -22,6 +22,8 @@ import useMangaLayout from '@hooks/useMangaLayout';
 import { useSelector } from 'react-redux';
 import { AppState } from '@redux/store';
 import useMountedEffect from '@hooks/useMountedEffect';
+import { Orientation } from 'expo-screen-orientation';
+import { LayoutMangaExtendedState } from '@screens/Home/screens/MangaLibrary/MangaLibrary.recycler';
 
 const InfiniteMangaList: React.FC<{ genre: string; source: string }> = (props) => {
   const { genre, source } = props;
@@ -34,7 +36,7 @@ const InfiniteMangaList: React.FC<{ genre: string; source: string }> = (props) =
   } = useAPICall(() => mangaSource.search('', { Genres: { include: [genre], exclude: [] } }));
   const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider((r1, r2) => r1 !== r2));
   const orientation = useSelector((state: AppState) => state.settings.deviceOrientation);
-  const { layoutProvider, rowRenderer } = useMangaLayout(dataProvider.getAllData());
+  const { layoutProvider, rowRenderer, extendedState } = useMangaLayout();
   const [showFooter, setShowFooter] = React.useState<boolean>(true);
   const [reachedEnd, setReachedEnd] = React.useState<boolean>(false);
   const { ready, Fallback } = useLazyLoading();
@@ -98,7 +100,9 @@ const InfiniteMangaList: React.FC<{ genre: string; source: string }> = (props) =
     return (
       <RecyclerListViewScreen
         canChangeSize
-        extendedState={{ orientation, width, itemCount: dataProvider.getSize() }}
+        // forceNonDeterministicRendering
+        renderAheadOffset={1000}
+        extendedState={extendedState}
         collapsible={collapsible}
         dataProvider={dataProvider}
         onEndReached={handleOnEndReached}
@@ -135,11 +139,8 @@ const GenericMangaListWithMangas: React.FC<{
     },
   };
 
-  const { layoutProvider, rowRenderer } = useMangaLayout(mangas);
+  const { layoutProvider, rowRenderer, extendedState } = useMangaLayout();
   const ref = React.useRef<RecyclerListView<any, any>>(null);
-  const orientation = useSelector((state: AppState) => state.settings.deviceOrientation);
-  const { width } = useWindowDimensions();
-
   const theme = useTheme();
 
   const dataProvider = React.useRef(new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(mangas)).current; // may be an anti-pattern, but this screen does not need to rerender since it is required to initialize this anyways
@@ -157,8 +158,10 @@ const GenericMangaListWithMangas: React.FC<{
     <RecyclerListViewScreen
       ref={ref}
       collapsible={collapsible}
+      renderAheadOffset={1000}
       canChangeSize
-      extendedState={{ orientation, width, itemCount: dataProvider.getSize() }}
+      forceNonDeterministicRendering
+      extendedState={extendedState}
       dataProvider={dataProvider}
       layoutProvider={layoutProvider}
       rowRenderer={rowRenderer as any}

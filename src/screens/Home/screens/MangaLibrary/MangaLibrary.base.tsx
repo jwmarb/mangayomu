@@ -1,6 +1,6 @@
 import Manga from '@components/Manga';
 import { calculateCoverHeight, calculateCoverWidth } from '@components/Manga/Cover/Cover.helpers';
-import { LayoutLibraryMangaType } from './MangaLibrary.recycler';
+import { LayoutLibraryMangaType, LayoutMangaExtendedState } from './MangaLibrary.recycler';
 import { AppState } from '@redux/store';
 import { Manga as IManga } from '@services/scraper/scraper.interfaces';
 import { SPACE_MULTIPLIER } from '@theme/Spacing';
@@ -15,10 +15,7 @@ export type MangaInLibraryProps = {
   first?: boolean;
   last?: boolean;
   dynamic?: boolean;
-  orientation: Orientation;
-  width: number;
-  itemCount: number;
-};
+} & LayoutMangaExtendedState;
 
 export const MangaContainer = styled.View`
   ${(props) => css`
@@ -41,7 +38,7 @@ export const MangaInLibraryContainer = styled.View<
   }
 >`
   ${(props) => {
-    const { width, itemCount } = props;
+    const { width = Dimensions.get('window').width } = props;
     const spacing = SPACE_MULTIPLIER * 2;
     const containerWidth = calculateCoverWidth(props.cols) * SPACE_MULTIPLIER + spacing;
     const totalMangasPerRow = width / containerWidth;
@@ -61,9 +58,7 @@ export const MangaInLibraryContainer = styled.View<
     // }
     const test = width / maxMangasPerRow - width / totalMangasPerRow;
     return css`
-      width: ${props.dynamic
-        ? `${Math.floor(width / (itemCount - Math.floor(itemCount / maxMangasPerRow) * maxMangasPerRow))}px`
-        : `${Math.floor(containerWidth + test)}px`};
+      width: ${containerWidth + test}px;
       height: ${() => {
         switch (props.type) {
           case MangaCoverStyles.CLASSIC:
@@ -73,23 +68,10 @@ export const MangaInLibraryContainer = styled.View<
             return calculateCoverHeight(props.cols) * SPACE_MULTIPLIER + spacing;
         }
       }}px;
-
-      ${() => {
-        if (props.first) {
-          if (maxMangasPerRow === 1 || props.dynamic) return;
-          else
-            return css`
-              padding-left: ${test}px;
-            `;
-        }
-        if (props.last)
-          return css`
-            padding-right: ${test}px;
-          `;
-
-        return css`
-          padding-horizontal: ${test / 2}px;
-        `;
+      background-color: ${() => {
+        if (props.first) return 'red';
+        if (props.last) return 'blue';
+        return 'purple';
       }}
       /* padding-top: ${props.theme.spacing(1)}; */
       /* padding-bottom: ${props.theme.spacing(1)}; */
@@ -106,14 +88,9 @@ export const MangaInLibraryContainer = styled.View<
 `;
 
 export const MangaInLibrary: React.FC<MangaInLibraryProps> = React.memo(
-  ({ manga, first, last, dynamic, width, orientation, itemCount }) => {
-    const cols = useSelector((state: AppState) => state.settings.mangaCover.perColumn);
-    const fontSize = useSelector((state: AppState) => state.settings.mangaCover.fontSize);
-    const type = useSelector((state: AppState) => state.settings.mangaCover.style);
-
+  ({ manga, first, last, dynamic, width, orientation, cols, fontSize, type }) => {
     return (
       <MangaInLibraryContainer
-        itemCount={itemCount}
         orientation={orientation}
         cols={cols}
         first={first}

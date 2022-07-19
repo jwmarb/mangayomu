@@ -1,19 +1,19 @@
 import { AppState } from '@redux/store';
-import { generateNewLayout, LayoutLibraryMangaType } from '@screens/Home/screens/MangaLibrary/MangaLibrary.recycler';
+import {
+  generateNewLayout,
+  LayoutLibraryMangaType,
+  LayoutMangaExtendedState,
+} from '@screens/Home/screens/MangaLibrary/MangaLibrary.recycler';
 import { MangaInLibrary } from '@screens/Home/screens/MangaLibrary/MangaLibrary.base';
 import { Manga } from '@services/scraper/scraper.interfaces';
 import { RowRenderer } from '@utils/RecyclerListView.interfaces';
 import { useSelector } from 'react-redux';
-import { Dimensions } from 'react-native';
+import { Dimensions, useWindowDimensions } from 'react-native';
 import { Orientation } from 'expo-screen-orientation';
 import React from 'react';
+import { MangaCoverStyles } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 
-const rowRenderer = (
-  type: string | number,
-  data: Manga,
-  i: number,
-  extendedState: { width: number; orientation: Orientation; itemCount: number }
-) => {
+const rowRenderer = (type: string | number, data: Manga, i: number, extendedState: LayoutMangaExtendedState) => {
   switch (type) {
     case LayoutLibraryMangaType.DYNAMIC:
       return (
@@ -22,7 +22,9 @@ const rowRenderer = (
           dynamic
           width={extendedState.width}
           orientation={extendedState.orientation}
-          itemCount={extendedState.itemCount}
+          fontSize={extendedState.fontSize}
+          cols={extendedState.cols}
+          type={extendedState.type}
         />
       );
 
@@ -33,7 +35,9 @@ const rowRenderer = (
           first
           width={extendedState.width}
           orientation={extendedState.orientation}
-          itemCount={extendedState.itemCount}
+          fontSize={extendedState.fontSize}
+          cols={extendedState.cols}
+          type={extendedState.type}
         />
       );
 
@@ -44,7 +48,9 @@ const rowRenderer = (
           manga={data}
           width={extendedState.width}
           orientation={extendedState.orientation}
-          itemCount={extendedState.itemCount}
+          fontSize={extendedState.fontSize}
+          cols={extendedState.cols}
+          type={extendedState.type}
         />
       );
     case LayoutLibraryMangaType.LAST:
@@ -54,7 +60,9 @@ const rowRenderer = (
           last
           width={extendedState.width}
           orientation={extendedState.orientation}
-          itemCount={extendedState.itemCount}
+          fontSize={extendedState.fontSize}
+          cols={extendedState.cols}
+          type={extendedState.type}
         />
       );
   }
@@ -64,15 +72,21 @@ const rowRenderer = (
  * Hook to automatically use a manga layout provider
  * @returns Returns the layout for a list of mangas
  */
-export default function useMangaLayout(items: any[]) {
+export default function useMangaLayout() {
   const cols = useSelector((state: AppState) => state.settings.mangaCover.perColumn);
   const fontSize = useSelector((state: AppState) => state.settings.mangaCover.fontSize);
   const deviceOrientation = useSelector((state: AppState) => state.settings.deviceOrientation);
+  const { width } = useWindowDimensions();
+  const type = useSelector((state: AppState) => state.settings.mangaCover.style);
   return {
-    layoutProvider: React.useMemo(
-      () => generateNewLayout(cols, fontSize, items.length),
-      [cols, fontSize, items.length, deviceOrientation]
-    ),
+    layoutProvider: generateNewLayout(cols, fontSize, width),
     rowRenderer,
+    extendedState: {
+      cols,
+      fontSize,
+      orientation: deviceOrientation,
+      width,
+      type,
+    } as LayoutMangaExtendedState,
   };
 }

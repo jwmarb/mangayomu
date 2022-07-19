@@ -14,6 +14,7 @@ const mapStateToProps = (state: AppState, props: BottomTabScreenProps<BottomTabP
     fontSize: state.settings.mangaCover.fontSize,
     query: state.library.search,
     orientation: state.settings.deviceOrientation,
+    type: state.settings.mangaCover.style,
   };
 };
 

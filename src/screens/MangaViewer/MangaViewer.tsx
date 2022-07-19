@@ -64,19 +64,22 @@ const rowRenderer: (
   type: string | number,
   data: ReadingChapterInfo & { manga: Manga },
   index: number,
-  extendedState: ChaptersListReducerState & {
-    chapters: ReadingChapterInfoRecord;
+  extendedState: {
+    chaptersList: ChaptersListReducerState;
+    chaptersInManga: ReadingChapterInfoRecord;
     metas: Record<string, ChapterState> | undefined;
+    width: number;
   }
 ) => JSX.Element | JSX.Element[] | null = (type, data, i, extendedState) => {
-  if (data.link in extendedState.chapters === false) return null;
+  if (data.link in extendedState.chaptersInManga === false) return null;
   return (
     <Chapter
+      width={extendedState.width}
       manga={data.manga}
-      chapter={extendedState.chapters[data.link]}
-      status={extendedState.chapters[data.link]?.status ?? DownloadStatus.VALIDATING}
-      isSelected={getKey(data) in extendedState.selected}
-      selectionMode={extendedState.mode}
+      chapter={extendedState.chaptersInManga[data.link]}
+      status={extendedState.chaptersInManga[data.link]?.status ?? DownloadStatus.VALIDATING}
+      isSelected={getKey(data) in extendedState.chaptersList.selected}
+      selectionMode={extendedState.chaptersList.mode}
       totalPages={extendedState.metas ? extendedState.metas[data.link]?.totalPages ?? 0 : 0}
       totalProgress={extendedState.metas ? extendedState.metas[data.link]?.totalProgress ?? 0 : 0}
       downloadedPages={extendedState.metas ? extendedState.metas[data.link]?.downloadedPages ?? 0 : 0}
