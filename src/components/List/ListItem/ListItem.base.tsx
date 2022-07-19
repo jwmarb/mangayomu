@@ -11,7 +11,7 @@ export const ListItemSubtitleContainer = styled.View`
 
 export const ListAdornmentLeftContainer = styled.View`
   ${(props) => css`
-    width: ${props.theme.spacing(6.5)};
+    width: ${props.theme.spacing(7.25)};
   `}
 `;
 

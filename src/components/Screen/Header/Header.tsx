@@ -58,7 +58,7 @@ const Header: React.FC<StackHeaderProps> = (props) => {
       ) : (
         <>
           <IconButton icon={<Icon bundle='Feather' name='arrow-left' />} onPress={handleOnPress} />
-          <Spacer x={1.5} />
+          <Spacer x={2} />
         </>
       )}
       <Typography variant='tabtitle'>{headerTitle}</Typography>

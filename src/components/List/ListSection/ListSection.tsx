@@ -8,7 +8,7 @@ const ListSection: React.FC<ListSectionProps> = (props) => {
   const { title } = props;
   return (
     <Flex container verticalPadding={2} horizontalPadding={3}>
-      <Spacer x={6.5} />
+      <Spacer x={7.25} />
       <Typography variant='body2' color='primary' bold>
         {title}
       </Typography>

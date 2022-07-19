@@ -17,6 +17,7 @@ import { TouchableWithoutFeedback } from 'react-native';
 import ButtonBase from '@components/Button/ButtonBase';
 import { Container } from '@components/Container';
 import Flex from '@components/Flex';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 const Switch: React.FC<SwitchProps> = (props) => {
   const { enabled, onChange = () => void 0 } = props;
@@ -27,11 +28,11 @@ const Switch: React.FC<SwitchProps> = (props) => {
     if (enabled) {
       opacityDisabled.value = withTiming(0, { duration: 100 });
       opacityEnabled.value = withTiming(1, { duration: 100 });
-      translateX.value = withTiming(12, { duration: 100, easing: Easing.ease });
+      translateX.value = withTiming(RFValue(9), { duration: 100, easing: Easing.ease });
     } else {
       opacityEnabled.value = withTiming(0, { duration: 100 });
       opacityDisabled.value = withTiming(1, { duration: 100 });
-      translateX.value = withTiming(-12, { duration: 100, easing: Easing.ease });
+      translateX.value = withTiming(RFValue(-9), { duration: 100, easing: Easing.ease });
     }
   }, [enabled]);
 

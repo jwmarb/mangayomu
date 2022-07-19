@@ -45,6 +45,7 @@ import { MangaCoverStyles } from '@redux/reducers/settingsReducer/settingsReduce
 import { Menu, MenuOption, MenuTrigger, renderers, MenuOptions } from 'react-native-popup-menu';
 import { useTheme } from 'styled-components/native';
 import { FontFamily } from '@theme/Typography';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 const sampleMangas = [
   {
@@ -180,7 +181,7 @@ const MangasColumn: React.FC<ConnectedMangasColumnProps> = (props) => {
               setValue={setFontSize}
               title='Title Size'
               description='Change the size of the title under the manga cover'
-              range={[8, 32]}
+              range={[RFValue(8), RFValue(32)]}
               left={<Icon bundle='MaterialCommunityIcons' name='format-font-size-decrease' size='small' />}
               right={<Icon bundle='MaterialCommunityIcons' name='format-font-size-increase' />}
             />

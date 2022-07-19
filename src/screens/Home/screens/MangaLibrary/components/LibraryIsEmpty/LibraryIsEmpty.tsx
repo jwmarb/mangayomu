@@ -1,9 +1,11 @@
 import { Flex, Spacer, Typography } from '@components/core';
+import { LibraryIsEmptyContainer } from '@screens/Home/screens/MangaLibrary/components/LibraryIsEmpty/LibraryIsEmpty.base';
 import React from 'react';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 const LibraryIsEmpty: React.FC = (props) => {
   return (
-    <Flex container grow verticalPadding={3} justifyContent='center' alignItems='center' horizontalPadding={3}>
+    <LibraryIsEmptyContainer>
       <Flex shrink direction='column'>
         <Typography variant='header' align='center'>
           Your library is empty :(
@@ -13,7 +15,7 @@ const LibraryIsEmpty: React.FC = (props) => {
           To save a manga and receive updates, add it to your library here
         </Typography>
       </Flex>
-    </Flex>
+    </LibraryIsEmptyContainer>
   );
 };
 

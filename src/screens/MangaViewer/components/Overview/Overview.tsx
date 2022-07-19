@@ -26,6 +26,7 @@ import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview
 import { WindowCorrection } from 'recyclerlistview/dist/reactnative/core/ViewabilityTracker';
 const { height } = Dimensions.get('window');
 import PropTypes from 'prop-types';
+import { RFValue } from 'react-native-responsive-fontsize';
 (RecyclerListView.propTypes as { externalScrollView: {} }).externalScrollView = PropTypes.object;
 
 LogBox.ignoreLogs(['You have mounted RecyclerListView']);
@@ -52,7 +53,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
       new LayoutProvider(
         (index) => 0,
         (type, dim) => {
-          (dim.height = 76), (dim.width = width);
+          (dim.height = RFValue(47.5)), (dim.width = width);
         }
       ),
     [width, deviceOrientation]

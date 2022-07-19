@@ -1,3 +1,5 @@
+import { RFValue } from 'react-native-responsive-fontsize';
+
 export function calculateCoverWidth(cols: number): number {
   return cols * 0.002 * 13 * 400;
 }

@@ -10,6 +10,7 @@ import { CheckboxProps } from './Checkbox.interfaces';
 import Animated from 'react-native-reanimated';
 import { useTheme } from 'styled-components/native';
 import { Constants } from '@theme/core';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 const Checkbox: React.FC<CheckboxProps> = (props) => {
   const { checked, onChange = () => void 0, onLongPress, useGestureHandler } = props;
@@ -18,9 +19,9 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
   }
   const theme = useTheme();
   const scale = useSharedValue(1);
-  const checkScale = useSharedValue(checked ? 1 : 0);
-  const borderWidth = useSharedValue(checked ? 0 : 2);
-  const padding = useSharedValue(checked ? 2 : 0);
+  const checkScale = useSharedValue(checked ? RFValue(1) : 0);
+  const borderWidth = useSharedValue(checked ? 0 : RFValue(1.5));
+  const padding = useSharedValue(checked ? RFValue(1.5) : 0);
   const borderColor = useSharedValue(
     checked ? 'transparent' : Constants.GRAY[theme.palette.mode === 'light' ? 8 : 6].get()
   );
@@ -34,10 +35,10 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
       borderColor.value = theme.palette.primary.main.get();
       backgroundColor.value = theme.palette.primary.main.get();
       borderWidth.value = 0;
-      padding.value = 2;
+      padding.value = RFValue(1.5);
     } else {
       checkScale.value = withSpring(0);
-      borderWidth.value = 2;
+      borderWidth.value = RFValue(1.5);
       padding.value = 0;
       borderColor.value = Constants.GRAY[theme.palette.mode === 'light' ? 8 : 6].get();
       backgroundColor.value = 'transparent';

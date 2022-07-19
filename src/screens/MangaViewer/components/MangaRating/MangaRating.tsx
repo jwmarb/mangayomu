@@ -12,7 +12,7 @@ const MangaRating: React.FC<MangaRatingProps> = (props) => {
   return (
     <Animated.View entering={FadeIn}>
       {typeof value === 'number' ? (
-        <Flex direction='column' alignItems='center' container verticalPadding={1} horizontalPadding={0}>
+        <Flex direction='column' container verticalPadding={1} horizontalPadding={0}>
           <Flex alignItems='center'>
             {new Array(5).fill('').map((x, i) => {
               const star = (i + 1) * 2;
@@ -41,7 +41,7 @@ const MangaRating: React.FC<MangaRatingProps> = (props) => {
           </Typography>
         </Flex>
       ) : (
-        <Flex direction='column' alignItems='center' container>
+        <Flex direction='column' container>
           <Flex alignItems='center'>
             <Icon bundle='MaterialCommunityIcons' name='star' color='disabled' lockTheme='dark' />
             <Icon bundle='MaterialCommunityIcons' name='star' color='disabled' lockTheme='dark' />

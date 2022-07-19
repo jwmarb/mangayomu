@@ -1,4 +1,6 @@
+import { rem } from '@theme/Typography';
 import { Animated } from 'react-native';
+import { RFValue } from 'react-native-responsive-fontsize';
 import styled, { css } from 'styled-components/native';
 
 export const MangaViewerContainer = styled.View`
@@ -11,6 +13,6 @@ export const MangaViewerContainer = styled.View`
 export const MangaViewerImageBackdrop = styled.View<{ paddingTop: number }>`
   ${(props) => css`
     background-color: rgba(0, 0, 0, 0.2);
-    padding: ${props.theme.spacing(3 + props.paddingTop / 8, 0, 0, 0)};
+    padding: ${RFValue(24) + props.paddingTop}px 0 0 0;
   `}
 `;

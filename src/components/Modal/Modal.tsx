@@ -59,6 +59,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { RFValue } from 'react-native-responsive-fontsize';
 import { useSelector } from 'react-redux';
 import { RecyclerListView, RecyclerListViewProps } from 'recyclerlistview';
 import { ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
@@ -154,10 +155,10 @@ const Modal: React.FC<ModalProps> = (props) => {
         switch (deviceOrientation) {
           case Orientation.LANDSCAPE_LEFT:
           case Orientation.LANDSCAPE_RIGHT:
-            top.value = withTiming(width + MAX_PANEL_HEIGHT + 300, { duration: 200, easing: Easing.ease });
+            top.value = withTiming(RFValue(width * 0.7 + MAX_PANEL_HEIGHT), { duration: 200, easing: Easing.ease });
             break;
           default:
-            top.value = withTiming(height + MAX_PANEL_HEIGHT + 300, { duration: 200, easing: Easing.ease });
+            top.value = withTiming(RFValue(height * 0.7 + MAX_PANEL_HEIGHT), { duration: 200, easing: Easing.ease });
         }
       }, 100);
     }

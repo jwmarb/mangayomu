@@ -1,7 +1,9 @@
+import { RFValue } from 'react-native-responsive-fontsize';
+
 /**
  * A space multiplier. Default is 8
  */
-export const SPACE_MULTIPLIER = 8;
+export const SPACE_MULTIPLIER = RFValue(5);
 
 /**
  * Automatically apply theme spacing to keep spacing consistency throughout the designing the application.

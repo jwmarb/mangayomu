@@ -1,3 +1,4 @@
+import { rem } from '@theme/Typography';
 import Animated from 'react-native-reanimated';
 import styled, { css } from 'styled-components/native';
 
@@ -57,8 +58,8 @@ export const SliderCircleBaseContainer = styled(Animated.View)`
   ${(props) => css`
     position: absolute;
     left: 0;
-    top: -8px;
+    top: ${rem(-3)};
     bottom: 0;
-    margin-left: ${props.theme.spacing(1.75)};
+    margin-left: ${props.theme.spacing(2.5)};
   `}
 `;

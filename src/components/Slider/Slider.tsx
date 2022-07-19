@@ -22,6 +22,8 @@ import Flex from '@components/Flex';
 import ButtonBase from '@components/Button/ButtonBase';
 import Spacer from '@components/Spacer';
 import useMountedEffect from '@hooks/useMountedEffect';
+import { useSelector } from 'react-redux';
+import { AppState } from '@redux/store';
 
 const Slider: React.FC<SliderProps> = (props) => {
   const {
@@ -34,9 +36,10 @@ const Slider: React.FC<SliderProps> = (props) => {
     value,
   } = props;
   const range = Math.abs(max - min);
+  const deviceOrientation = useSelector((state: AppState) => state.settings.deviceOrientation);
   useMountedEffect(() => {
     positionLeft.value = Math.min((width / range) * (value - min), width);
-  }, [width]);
+  }, [width, deviceOrientation]);
   const positionLeft = useSharedValue(Math.min((width / range) * (value - min), width));
   const gestureHandlers = useAnimatedGestureHandler<
     PanGestureHandlerGestureEvent,
