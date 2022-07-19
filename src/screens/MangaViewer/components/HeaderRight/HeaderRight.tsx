@@ -7,10 +7,10 @@ import { HeaderRightProps } from './HeaderRight.interfaces';
 import connector, { ConnectedHeaderRightProps } from './HeaderRight.redux';
 
 const HeaderRight: React.FC<ConnectedHeaderRightProps> = (props) => {
-  const { manga, downloadSelected, chapters, isDownloading, cancelAllForSeries } = props;
+  const { manga, downloadSelected, chapters, isDownloading, cancelAllForSeries, validateManga } = props;
   const [opened, setOpened] = React.useState<boolean>(false);
   const handleOnDownloadAll = () => {
-    const allChapters = Object.keys(chapters).reduce(
+    const allChapters = Object.keys(chapters ?? {}).reduce(
       (prev, curr) => ({
         ...prev,
         [curr]: null,
@@ -27,13 +27,17 @@ const HeaderRight: React.FC<ConnectedHeaderRightProps> = (props) => {
     setOpened(false);
   };
   const theme = useTheme();
-  const handleOnSelect = (option: number) => {
+  const handleOnSelect = async (option: number) => {
     switch (option) {
       case 0:
         handleOnDownloadAll();
         break;
       case 1:
         cancelAllForSeries(manga.link);
+        break;
+      case 2:
+        handleOnClose();
+        await validateManga(manga.link);
         break;
     }
     handleOnClose();
@@ -67,7 +71,7 @@ const HeaderRight: React.FC<ConnectedHeaderRightProps> = (props) => {
         <MenuOptions customStyles={theme.menuOptionsStyle}>
           <MenuTitle>Quick Actions</MenuTitle>
           <MenuOption text='Download all chapters' icon={<Icon bundle='Feather' name='download' />} value={0} />
-
+          <MenuOption text='Validate file integrity' icon={<Icon bundle='Feather' name='file' />} value={2} />
           {isDownloading && (
             <MenuOption
               text='Cancel all downloads'
