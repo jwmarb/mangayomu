@@ -114,6 +114,7 @@ const ResourceLoader: React.FC<ResourceLoaderProps> = (props) => {
         await StorageManager.initialize();
         await DownloadManager.initialize();
         dispatch({ type: 'REHYDRATE' });
+        dispatch({ type: 'SET_DEVICE_ORIENTATION', orientation: await ScreenOrientation.getOrientationAsync() });
       } catch (e) {
         console.error(e);
       } finally {
