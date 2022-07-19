@@ -235,6 +235,7 @@ export default class DownloadManager {
       case DownloadStatus.CANCELLED:
       case DownloadStatus.IDLE:
       case DownloadStatus.VALIDATING:
+      case DownloadStatus.ERROR:
         this.setStatus(DownloadStatus.QUEUED);
         this.addToStorage();
         break;
@@ -343,11 +344,12 @@ export default class DownloadManager {
   }
 
   public async resume() {
-    this.setStatus(DownloadStatus.RESUME_DOWNLOADING);
     for (let i = 0; i < this.downloadResumablePages.length; i++) {
       if (this.downloadResumablePages[i].status === DownloadStatus.PAUSED)
         this.downloadResumablePages[i].status = DownloadStatus.DOWNLOADING;
     }
+    this.setStatus(DownloadStatus.RESUME_DOWNLOADING);
+
     for (let i = 0; i < this.downloadResumablePages.length; i++) {
       const { downloadResumable, status } = this.downloadResumablePages[i];
       if (status === DownloadStatus.DOWNLOADED) {
@@ -358,7 +360,7 @@ export default class DownloadManager {
         switch (status) {
           case DownloadStatus.DOWNLOADING:
             try {
-              // console.log(`Resuming download for page ${i + 1}`);
+              console.log(`Resuming download for page ${i + 1}`);
               await downloadResumable.resumeAsync();
             } catch (e) {
               this.setStatus(DownloadStatus.ERROR);

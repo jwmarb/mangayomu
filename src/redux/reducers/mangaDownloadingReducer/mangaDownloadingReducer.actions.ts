@@ -100,119 +100,144 @@ export const downloadAll = () => {
     return {
       cancel: async () => {
         canceled = true;
-        // for (const [mangaKey, chapterKey] of Object.entries(downloadingKeys)) {
-        //   if (chapterKey) {
-        //     const downloadManager = DownloadManager.ofWithManga(
-        //       getState().mangas[mangaKey].chapters[chapterKey],
-        //       getState().mangas[mangaKey]
-        //     );
-        //     switch (downloadManager.getStatus()) {
-        //       case DownloadStatus.START_DOWNLOADING:
-        //       case DownloadStatus.RESUME_DOWNLOADING:
-        //       case DownloadStatus.DOWNLOADING:
-        //         // console.log(`pausing ${chapterKey}`);
-        //         if (mangaKey in downloadingKeys) await downloadManager.pause();
-        //         break;
-        //     }
-        //   }
-        // }
+        for (const [mangaKey, chapterKey] of Object.entries(downloadingKeys)) {
+          if (chapterKey) {
+            const downloadManager = DownloadManager.ofWithManga(
+              getState().mangas[mangaKey].chapters[chapterKey],
+              getState().mangas[mangaKey]
+            );
+            switch (downloadManager.getStatus()) {
+              case DownloadStatus.START_DOWNLOADING:
+              case DownloadStatus.RESUME_DOWNLOADING:
+              case DownloadStatus.DOWNLOADING:
+                console.log(`${chapterKey} -> !!! PAUSED !!!`);
+                if (mangaKey in downloadingKeys) await downloadManager.pause();
+
+                break;
+            }
+          }
+        }
       },
       start: () =>
         new Promise<void>((res1, rej1) => {
           Promise.all(
             Object.keys(getState().downloading.mangas).map((mangaKey) => {
-              {
-                const limit = pLimit(1);
-                downloadingKeys[mangaKey] = null;
+              const limit = pLimit(1);
+              downloadingKeys[mangaKey] = null;
 
+              new Promise(() => {
                 for (const chapterKey in getState().downloading.mangas[mangaKey]?.chapters) {
                   const downloadManager = DownloadManager.ofWithManga(
                     getState().mangas[mangaKey].chapters[chapterKey],
                     getState().mangas[mangaKey]
                   );
-
-                  function isNotCanceled() {
-                    if (canceled || mangaKey in downloadingKeys === false) {
-                      if (limit.pendingCount > 0) limit.clearQueue();
-                      switch (downloadManager.getStatus()) {
-                        case DownloadStatus.DOWNLOADING:
-                        case DownloadStatus.START_DOWNLOADING:
-                        case DownloadStatus.RESUME_DOWNLOADING:
-                          downloadManager.pause();
-                          console.log(`${chapterKey} has been paused`);
-                          break;
-                      }
-                      return false;
-                    }
-                    return true;
-                  }
                   limit(
                     () =>
                       new Promise<void>((res, rej) => {
-                        if (isNotCanceled()) {
-                          if (isNotCanceled())
-                            dispatch({ type: 'CHAPTER_DOWNLOAD_LISTENER', mangaKey, chapterKey, downloadManager });
-
-                          const interval = setInterval(() => {
-                            if (isNotCanceled())
-                              dispatch({ type: 'CHAPTER_DOWNLOAD_LISTENER', mangaKey, chapterKey, downloadManager });
-                            else clearInterval(interval);
-                          }, 500);
-
-                          const callback = () => {
-                            clearInterval(interval);
-                            if (isNotCanceled() && downloadManager.getStatus() === DownloadStatus.DOWNLOADED) {
-                              dispatch({ type: 'CHAPTER_DOWNLOAD_COMPLETE', mangaKey, chapterKey });
-                              downloadingKeys[mangaKey] = null;
-
-                              return res();
-                            } else return rej(`${chapterKey} has been paused`);
-                          };
-
-                          downloadingKeys[mangaKey] = chapterKey;
-
-                          // console.log(`${chapterKey}: ${downloadManager.getStatus()}`);
-
+                        if (downloadingKeys[mangaKey] === null && !canceled)
                           switch (downloadManager.getStatus()) {
                             case DownloadStatus.START_DOWNLOADING:
+                              canceled = true;
+                              console.log(`${chapterKey} -> SKIPPING BUT HAS STATUS START_DOWNLOADING`);
+                              setTimeout(() => dispatch({ type: 'RERUN_DOWNLOADS' }), 1000);
+                              res1();
+                              break;
                             case DownloadStatus.RESUME_DOWNLOADING:
-                            case DownloadStatus.DOWNLOADING:
-                            // console.log(`${chapterKey} is not paused... what?`);
-                            // if (isNotCanceled()) {
-                            //   downloadManager.pause().then(() => {
-                            //     rej(`Paused ${chapterKey}`);
-                            //   });
-                            // } else clearInterval(interval);
-                            // break;
-                            case DownloadStatus.PAUSED:
-                              if (isNotCanceled()) {
-                                downloadManager.resume().then(callback);
-                              } else clearInterval(interval);
+                              canceled = true;
+                              console.log(`${chapterKey} -> SKIPPING BUT HAS STATUS RESUME_DOWNLOADING`);
+                              setTimeout(() => dispatch({ type: 'RERUN_DOWNLOADS' }), 1000);
+                              res1();
                               break;
-                            case DownloadStatus.QUEUED:
-                              if (isNotCanceled()) {
-                                downloadManager.download().then(callback);
-                              } else clearInterval(interval);
-
+                            case DownloadStatus.QUEUED: {
+                              console.log(`${chapterKey} -> START DOWNLOAD`);
+                              downloadingKeys[mangaKey] = chapterKey;
+                              const interval = setInterval(() => {
+                                if (!canceled)
+                                  dispatch({
+                                    type: 'CHAPTER_DOWNLOAD_LISTENER',
+                                    mangaKey,
+                                    chapterKey,
+                                    downloadManager,
+                                  });
+                                else {
+                                  clearInterval(interval);
+                                  if (downloadManager.getStatus() === DownloadStatus.START_DOWNLOADING) {
+                                    dispatch({ type: 'RERUN_DOWNLOADS' });
+                                    downloadManager.pause();
+                                  }
+                                }
+                              }, 500);
+                              downloadManager.download().then(() => {
+                                downloadingKeys[mangaKey] = null;
+                                clearInterval(interval);
+                                if (!canceled && downloadManager.getProgress() >= 1) {
+                                  console.log(`${chapterKey} -> DOWNLOAD COMPLETE`);
+                                  dispatch({ type: 'CHAPTER_DOWNLOAD_COMPLETE', mangaKey, chapterKey });
+                                  return res1();
+                                } else {
+                                  console.log(
+                                    `${chapterKey} -> CALLBACK: Called before it downloaded. This must have been paused. Progress was at ${downloadManager.getProgress()}`
+                                  );
+                                  return rej1();
+                                }
+                              });
                               break;
+                            }
+                            case DownloadStatus.PAUSED: {
+                              console.log(`${chapterKey} -> RESUME DOWNLOAD`);
+                              downloadingKeys[mangaKey] = chapterKey;
+                              const interval = setInterval(() => {
+                                if (!canceled)
+                                  dispatch({
+                                    type: 'CHAPTER_DOWNLOAD_LISTENER',
+                                    mangaKey,
+                                    chapterKey,
+                                    downloadManager,
+                                  });
+                                else {
+                                  clearInterval(interval);
+                                  if (downloadManager.getStatus() === DownloadStatus.RESUME_DOWNLOADING)
+                                    downloadManager.pause();
+                                }
+                              }, 500);
+                              downloadManager.resume().then(() => {
+                                downloadingKeys[mangaKey] = null;
+                                clearInterval(interval);
+                                if (!canceled) {
+                                  console.log(`${chapterKey} -> DOWNLOAD COMPLETE > Resumed`);
+                                  dispatch({ type: 'CHAPTER_DOWNLOAD_COMPLETE', mangaKey, chapterKey });
+                                  return res1();
+                                } else {
+                                  console.log(
+                                    `${chapterKey} -> CALLBACK: Called while it has been resumed for downloading. This must have been paused. canceled = ${canceled}`
+                                  );
+                                  return rej1();
+                                }
+                              });
+                              break;
+                            }
                             case DownloadStatus.DOWNLOADED:
-                              clearInterval(interval);
+                              console.log(`${chapterKey} -> SKIPPED`);
+                              // clearInterval(interval);
                               dispatch({ type: 'CHAPTER_DOWNLOAD_COMPLETE', mangaKey, chapterKey });
-                              downloadingKeys[mangaKey] = null;
+                              // downloadingKeys[mangaKey] = null;
                               return res();
-
+                            case DownloadStatus.IDLE:
+                              console.log(`${chapterKey} -> IDLE, not even queued. Skipping...`);
+                              return res();
                             default:
-                              clearInterval(interval);
-                              rej1(
-                                `Unable to download ${chapterKey} ${downloadManager.getError()}\nstatus: ${downloadManager.getStatus()}`
+                              return rej1(
+                                `Unable to download ${chapterKey} ${downloadManager.getError()}\nstatus: ${downloadManager.getStatus()}\ndownloadingKeys[mangaKey] = ${
+                                  downloadingKeys[mangaKey]
+                                }`
                               );
-                              break;
                           }
-                        } else rej(`${chapterKey} has been paused before it could even be downloaded`);
                       })
                   );
                 }
-              }
+              }).finally(() => {
+                console.log('reached end');
+              });
             })
           ).finally(res1);
         }),

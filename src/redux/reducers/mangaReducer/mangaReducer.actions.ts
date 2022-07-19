@@ -25,6 +25,7 @@ export const validateManga = (mangaKey: string) => {
     } catch (e) {
       console.error(e);
     } finally {
+      console.log(`Fully validated ${mangaKey}`);
       dispatch({ type: 'VALIDATE_WHOLE_MANGA_FILE_INTEGRITY', mangaKey, stage: 'finish' });
     }
   };

@@ -20,7 +20,17 @@ import MenuOption from '@components/MenuOption';
 import MenuTitle from '@components/MenuTitle';
 
 const ChapterDownloadStatus: React.FC<ConnectedChapterDownloadStatusProps> = (props) => {
-  const { status, onDownload, progress, cancelDownload, mangaKey, validateFileIntegrity, chapterKey } = props;
+  const {
+    status,
+    onDownload,
+    progress,
+    cancelDownload,
+    mangaKey,
+    validateFileIntegrity,
+    chapterKey,
+    downloadManager,
+    manga,
+  } = props;
   const theme = useTheme();
   const [open, setOpen] = React.useState<boolean>(false);
   function handleOnOpen() {
@@ -31,15 +41,24 @@ const ChapterDownloadStatus: React.FC<ConnectedChapterDownloadStatusProps> = (pr
   }
 
   async function handleOnSelect(option: number) {
+    handleOnClose();
+
     switch (option) {
       case 0:
         await cancelDownload(mangaKey, chapterKey);
         break;
       case 1:
         validateFileIntegrity(mangaKey, chapterKey);
+
+        break;
+      case 2:
+        onDownload();
+        break;
+      case 3:
+        alert(downloadManager.getError());
+        console.log(downloadManager.getError());
         break;
     }
-    handleOnClose();
   }
 
   switch (status) {
@@ -63,9 +82,19 @@ const ChapterDownloadStatus: React.FC<ConnectedChapterDownloadStatusProps> = (pr
       );
     case DownloadStatus.ERROR:
       return (
-        <Typography color='secondary' bold>
-          Error
-        </Typography>
+        <Menu onSelect={handleOnSelect} opened={open} onBackdropPress={handleOnClose} onClose={handleOnClose}>
+          <MenuTrigger>
+            <IconButton
+              icon={<Icon bundle='MaterialCommunityIcons' name='exclamation' />}
+              color='secondary'
+              onPress={handleOnOpen}
+            />
+          </MenuTrigger>
+          <MenuOptions customStyles={theme.menuOptionsStyle}>
+            <MenuOption text='Restart download' value={2} />
+            <MenuOption text='Display error' value={3} />
+          </MenuOptions>
+        </Menu>
       );
     case DownloadStatus.IDLE:
     case DownloadStatus.CANCELLED:

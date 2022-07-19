@@ -14,6 +14,13 @@ export default function (
   action: MangaDownloadingReducerAction
 ): MangaDownloadingReducerState {
   switch (action.type) {
+    case 'RERUN_DOWNLOADS':
+      return {
+        ...state,
+        mangas: {
+          ...state.mangas,
+        },
+      };
     case 'CANCEL_DOWNLOAD': {
       const newState: MangaDownloadingReducerState = {
         ...state,
@@ -22,14 +29,17 @@ export default function (
           ...state.mangas,
         },
       };
-      delete newState.mangas[action.mangaKey]!.chapters[action.chapterKey];
-      delete newState.metas[action.mangaKey]![action.chapterKey];
-      const chapterKeys = Object.keys(newState.mangas[action.mangaKey]!.chapters);
-      newState.mangas[action.mangaKey]!.chaptersToDownload = chapterKeys;
-      if (chapterKeys.length === 0) {
-        delete newState.mangas[action.mangaKey];
-        delete newState.metas[action.mangaKey];
+      if (action.mangaKey in newState.mangas) {
+        delete newState.mangas[action.mangaKey]!.chapters[action.chapterKey];
+        delete newState.metas[action.mangaKey]![action.chapterKey];
+        const chapterKeys = Object.keys(newState.mangas[action.mangaKey]!.chapters);
+        newState.mangas[action.mangaKey]!.chaptersToDownload = chapterKeys;
+        if (chapterKeys.length === 0) {
+          delete newState.mangas[action.mangaKey];
+          delete newState.metas[action.mangaKey];
+        }
       }
+
       return newState;
     }
 
@@ -46,16 +56,31 @@ export default function (
       return newState;
     }
     case 'CHAPTER_DOWNLOAD_LISTENER': {
-      const newState: MangaDownloadingReducerState = {
+      // const newState: MangaDownloadingReducerState = {
+      //   ...state,
+      //   metas: { ...state.metas },
+      // };
+      // newState.metas[action.mangaKey]![action.chapterKey] = {
+      //   totalPages: action.downloadManager.getTotalPages(),
+      //   totalProgress: isNaN(action.downloadManager.getProgress()) ? 0 : action.downloadManager.getProgress() * 100,
+      //   downloadedPages: action.downloadManager.getDownloadedPages(),
+      // };
+      return {
         ...state,
-        metas: { ...state.metas },
+        metas: {
+          ...state.metas,
+          [action.mangaKey]: {
+            ...state.metas[action.mangaKey],
+            [action.chapterKey]: {
+              totalPages: action.downloadManager.getTotalPages(),
+              totalProgress: isNaN(action.downloadManager.getProgress())
+                ? 0
+                : action.downloadManager.getProgress() * 100,
+              downloadedPages: action.downloadManager.getDownloadedPages(),
+            },
+          },
+        },
       };
-      newState.metas[action.mangaKey]![action.chapterKey] = {
-        totalPages: action.downloadManager.getTotalPages(),
-        totalProgress: isNaN(action.downloadManager.getProgress()) ? 0 : action.downloadManager.getProgress() * 100,
-        downloadedPages: action.downloadManager.getDownloadedPages(),
-      };
-      return newState;
     }
     case 'CHAPTER_DOWNLOAD_COMPLETE': {
       const newState: MangaDownloadingReducerState = {

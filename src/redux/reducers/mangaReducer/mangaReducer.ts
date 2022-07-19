@@ -55,44 +55,109 @@ function updateChapters(payload: MangaChapter[], state: ReadingChapterInfoRecord
 const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerAction): MangaReducerState => {
   switch (action.type) {
     case 'VALIDATE_WHOLE_MANGA_FILE_INTEGRITY': {
-      const newState = { ...state };
+      // const newState = { ...state };
       switch (action.stage) {
         case 'prepare':
-          for (const key in newState[action.mangaKey].chapters) {
-            newState[action.mangaKey].chapters[key].validatedStatus = DownloadStatus.VALIDATING;
-            newState[action.mangaKey].chapters[key].status = DownloadStatus.VALIDATING;
-          }
-          break;
+          // for (const key in newState[action.mangaKey].chapters) {
+          //   newState[action.mangaKey].chapters[key].validatedStatus = DownloadStatus.VALIDATING;
+          //   newState[action.mangaKey].chapters[key].status = DownloadStatus.VALIDATING;
+          // }
+          return {
+            ...state,
+            [action.mangaKey]: {
+              ...state[action.mangaKey],
+              chapters: Object.entries(state[action.mangaKey].chapters).reduce(
+                (prev, [key, val]) => ({
+                  ...prev,
+                  [key]: {
+                    ...val,
+                    validatedStatus: DownloadStatus.VALIDATING,
+                    status: DownloadStatus.VALIDATING,
+                  },
+                }),
+                {}
+              ),
+            },
+          };
+        // break;
         case 'finish':
-          for (const key in newState[action.mangaKey].chapters) {
-            const downloadManager = DownloadManager.ofWithManga(
-              newState[action.mangaKey].chapters[key],
-              newState[action.mangaKey]
-            );
-            newState[action.mangaKey].chapters[key].validatedStatus = downloadManager.getValidatedStatus();
-            newState[action.mangaKey].chapters[key].status = downloadManager.getStatus();
-          }
-          break;
+          return {
+            ...state,
+            [action.mangaKey]: {
+              ...state[action.mangaKey],
+              chapters: Object.entries(state[action.mangaKey].chapters).reduce((prev, [key, val]) => {
+                const downloadManager = DownloadManager.ofWithManga(
+                  state[action.mangaKey].chapters[key],
+                  state[action.mangaKey]
+                );
+                return {
+                  ...prev,
+                  [key]: {
+                    ...val,
+                    validatedStatus: downloadManager.getValidatedStatus(),
+                    status: downloadManager.getStatus(),
+                  },
+                };
+              }, {}),
+            },
+          };
+        // for (const key in newState[action.mangaKey].chapters) {
+        //   const downloadManager = DownloadManager.ofWithManga(
+        //     newState[action.mangaKey].chapters[key],
+        //     newState[action.mangaKey]
+        //   );
+        //   newState[action.mangaKey].chapters[key].validatedStatus = downloadManager.getValidatedStatus();
+        //   newState[action.mangaKey].chapters[key].status = downloadManager.getStatus();
+        // }
+        // break;
       }
-      return newState;
+      // return newState;
     }
     case 'VALIDATE_FILE_INTEGRITY': {
-      const newState = { ...state };
+      // const newState = { ...state };
       switch (action.stage) {
         case 'prepare':
-          newState[action.mangaKey].chapters[action.chapterKey].validatedStatus = DownloadStatus.VALIDATING;
-          newState[action.mangaKey].chapters[action.chapterKey].status = DownloadStatus.VALIDATING;
-          break;
+          return {
+            ...state,
+            [action.mangaKey]: {
+              ...state[action.mangaKey],
+              chapters: {
+                ...state[action.mangaKey].chapters,
+                [action.chapterKey]: {
+                  ...state[action.mangaKey].chapters[action.chapterKey],
+                  validatedStatus: DownloadStatus.VALIDATING,
+                  status: DownloadStatus.VALIDATING,
+                },
+              },
+            },
+          };
+        // newState[action.mangaKey].chapters[action.chapterKey].validatedStatus = DownloadStatus.VALIDATING;
+        // newState[action.mangaKey].chapters[action.chapterKey].status = DownloadStatus.VALIDATING;
+        // break;
         case 'finish':
           const downloadManager = DownloadManager.ofWithManga(
-            newState[action.mangaKey].chapters[action.chapterKey],
-            newState[action.mangaKey]
+            state[action.mangaKey].chapters[action.chapterKey],
+            state[action.mangaKey]
           );
-          newState[action.mangaKey].chapters[action.chapterKey].validatedStatus = downloadManager.getValidatedStatus();
-          newState[action.mangaKey].chapters[action.chapterKey].status = downloadManager.getStatus();
-          break;
+          return {
+            ...state,
+            [action.mangaKey]: {
+              ...state[action.mangaKey],
+              chapters: {
+                ...state[action.mangaKey].chapters,
+                [action.chapterKey]: {
+                  ...state[action.mangaKey].chapters[action.chapterKey],
+                  validatedStatus: downloadManager.getValidatedStatus(),
+                  status: downloadManager.getStatus(),
+                },
+              },
+            },
+          };
+        // newState[action.mangaKey].chapters[action.chapterKey].validatedStatus = downloadManager.getValidatedStatus();
+        // newState[action.mangaKey].chapters[action.chapterKey].status = downloadManager.getStatus();
+        // break;
       }
-      return newState;
+      // return newState;
     }
     case 'CANCEL_DOWNLOAD': {
       const newState = { ...state };
