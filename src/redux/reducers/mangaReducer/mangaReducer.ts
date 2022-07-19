@@ -54,6 +54,28 @@ function updateChapters(payload: MangaChapter[], state: ReadingChapterInfoRecord
 
 const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerAction): MangaReducerState => {
   switch (action.type) {
+    case 'VALIDATE_WHOLE_MANGA_FILE_INTEGRITY': {
+      const newState = { ...state };
+      switch (action.stage) {
+        case 'prepare':
+          for (const key in newState[action.mangaKey].chapters) {
+            newState[action.mangaKey].chapters[key].validatedStatus = DownloadStatus.VALIDATING;
+            newState[action.mangaKey].chapters[key].status = DownloadStatus.VALIDATING;
+          }
+          break;
+        case 'finish':
+          for (const key in newState[action.mangaKey].chapters) {
+            const downloadManager = DownloadManager.ofWithManga(
+              newState[action.mangaKey].chapters[key],
+              newState[action.mangaKey]
+            );
+            newState[action.mangaKey].chapters[key].validatedStatus = downloadManager.getValidatedStatus();
+            newState[action.mangaKey].chapters[key].status = downloadManager.getStatus();
+          }
+          break;
+      }
+      return newState;
+    }
     case 'VALIDATE_FILE_INTEGRITY': {
       const newState = { ...state };
       switch (action.stage) {
