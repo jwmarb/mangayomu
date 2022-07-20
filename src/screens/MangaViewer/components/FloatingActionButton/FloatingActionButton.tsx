@@ -20,6 +20,7 @@ import Animated, {
   FadeOut,
   FadeInRight,
   runOnJS,
+  runOnUI,
 } from 'react-native-reanimated';
 import useAnimatedMounting from '@hooks/useAnimatedMounting';
 import { LayoutChangeEvent, NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
@@ -54,18 +55,21 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = (props) => {
   function onFinish(finished?: boolean) {
     if (finished) setPositionAbsolute(true);
   }
-
-  React.useEffect(() => {
+  function animate(isAtBeginning: boolean, btnWidth: number, txtWidth: number) {
     if (!isAtBeginning) {
-      setPositionAbsolute(false);
-      width.value = withTiming(buttonWidth.current + textWidth.current, { duration: 500, easing: Easing.ease });
+      runOnJS(setPositionAbsolute)(false);
+      width.value = withTiming(btnWidth + txtWidth, { duration: 500, easing: Easing.ease });
       textOpacity.value = withTiming(1, { duration: 500, easing: Easing.ease });
     } else {
-      width.value = withTiming(buttonWidth.current, { duration: 500, easing: Easing.ease });
+      width.value = withTiming(btnWidth, { duration: 500, easing: Easing.ease });
       textOpacity.value = withTiming(0, { duration: 500, easing: Easing.ease }, (finished) => {
         runOnJS(onFinish)(finished);
       });
     }
+  }
+
+  React.useEffect(() => {
+    runOnUI(animate)(isAtBeginning, buttonWidth.current, textWidth.current);
     return () => {
       cancelAnimation(width);
       cancelAnimation(textOpacity);
