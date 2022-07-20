@@ -1,5 +1,5 @@
 import { ContainerProps } from '@components/Container/Container.interfaces';
-import { FlexStyle } from 'react-native';
+import { FlexStyle, ViewProps } from 'react-native';
 
 type FlexBaseProps = {
   justifyContent?: FlexStyle['justifyContent'];
@@ -13,7 +13,7 @@ type FlexBaseProps = {
   fullWidth?: boolean;
   wrap?: boolean | FlexStyle['flexWrap'];
   fullHeight?: boolean;
-};
+} & ViewProps;
 
 export type FlexProps = FlexBaseProps &
   (

@@ -7,7 +7,7 @@ const Flex: React.FC<FlexProps> = (props) => {
   const { spacing, container } = props;
   if (spacing != null)
     return (
-      <FlexBase {...props}>
+      <FlexBase {...(props as any)}>
         {React.Children.map(props.children, (child, index) => {
           if (React.isValidElement(child)) {
             switch (index) {
@@ -40,7 +40,7 @@ const Flex: React.FC<FlexProps> = (props) => {
       </FlexBase>
     );
   if (container) return <FlexContainerBase {...props} />;
-  return <FlexBase {...props} />;
+  return <FlexBase {...(props as any)} />;
 };
 
 export default Flex;
