@@ -12,8 +12,8 @@ import {
 import { Color } from '@theme/core';
 import { RFValue } from 'react-native-responsive-fontsize';
 
-export default function Icon<T extends IconPack>(props: IconProps<T>) {
-  const { bundle, name, color = 'textPrimary', size, lockTheme } = props;
+export default function Icon<T extends IconPack>(props: React.PropsWithChildren<IconProps<T>>) {
+  const { bundle, name, color = 'textPrimary', size, lockTheme, children } = props;
   const numSize = React.useMemo(() => {
     switch (size) {
       default:
@@ -32,17 +32,41 @@ export default function Icon<T extends IconPack>(props: IconProps<T>) {
 
   switch (bundle) {
     case 'FontAwesome5':
-      return <FontAwesome5Base name={name} color={Color.valueOf(color, lockTheme)} size={numSize} />;
+      return (
+        <FontAwesome5Base name={name} color={Color.valueOf(color, lockTheme)} size={numSize}>
+          {children}
+        </FontAwesome5Base>
+      );
     case 'AntDesign':
-      return <AntDesignBase name={name} color={Color.valueOf(color, lockTheme)} size={numSize} />;
+      return (
+        <AntDesignBase name={name} color={Color.valueOf(color, lockTheme)} size={numSize}>
+          {children}
+        </AntDesignBase>
+      );
     case 'MaterialCommunityIcons':
-      return <MaterialCommunityIconsBase name={name} color={Color.valueOf(color, lockTheme)} size={numSize} />;
+      return (
+        <MaterialCommunityIconsBase name={name} color={Color.valueOf(color, lockTheme)} size={numSize}>
+          {children}
+        </MaterialCommunityIconsBase>
+      );
     case 'Foundation':
-      return <FoundationBase name={name} color={Color.valueOf(color, lockTheme)} size={numSize} />;
+      return (
+        <FoundationBase name={name} color={Color.valueOf(color, lockTheme)} size={numSize}>
+          {children}
+        </FoundationBase>
+      );
     case 'Feather':
-      return <FeatherBase name={name} color={Color.valueOf(color, lockTheme)} size={numSize} />;
+      return (
+        <FeatherBase name={name} color={Color.valueOf(color, lockTheme)} size={numSize}>
+          {children}
+        </FeatherBase>
+      );
     case 'Octicons':
-      return <OcticonsBase name={name} color={Color.valueOf(color, lockTheme)} size={numSize} />;
+      return (
+        <OcticonsBase name={name} color={Color.valueOf(color, lockTheme)} size={numSize}>
+          {children}
+        </OcticonsBase>
+      );
     default:
       return null;
   }
