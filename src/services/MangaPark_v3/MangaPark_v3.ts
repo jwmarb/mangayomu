@@ -146,6 +146,8 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
       .map((_, el) => $(el).text().trim())
       .get();
 
+    const p = $('div.mask').attr('style');
+
     return {
       authors: authors.length > 0 ? authors : ['Unknown Author'],
       description:
@@ -155,7 +157,11 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
           ?.replace(/<br[^>]*>/gi, '\n') ?? 'This manga has no description.',
       genres,
       rating: {
-        value: !Number.isNaN(ratingValue) ? ratingValue : 'N/A',
+        value: !Number.isNaN(ratingValue)
+          ? ratingValue
+          : p && p !== 'width: 0%'
+          ? parseFloat(p.replace(/\D/g, '')) * 0.1
+          : 'N/A',
         voteCount: parseInt(
           $('div.rating-display > div > div > div.rate-star').siblings('small').text().replace(/\D/g, '')
         ),
