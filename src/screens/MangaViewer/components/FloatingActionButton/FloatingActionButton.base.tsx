@@ -1,6 +1,10 @@
 import styled, { css } from 'styled-components/native';
-import Animated, { FadeIn, FadeOutRight } from 'react-native-reanimated';
-import { shadowDrop } from '@theme/core';
+import Animated, { FadeIn, FadeOutRight, FadingTransition } from 'react-native-reanimated';
+import { rem, shadowDrop } from '@theme/core';
+
+export const FloatingActionButtonContainerLayoutGetter = styled.View.attrs({ pointerEvents: 'none' })`
+  opacity: 0;
+`;
 
 export const FloatingActionButtonContainer = styled(Animated.View).attrs(shadowDrop)`
   ${(props) => css`
@@ -13,9 +17,16 @@ export const FloatingActionButtonContainer = styled(Animated.View).attrs(shadowD
 
 export const FloatingActionButtonBase = styled(Animated.View)`
   ${(props) => css`
-    padding: ${props.theme.spacing(2)};
-    width: 56px;
-    height: 56px;
+    padding: ${props.theme.spacing(2.75)};
+  `}
+`;
+
+export const FloatingActionTextContainer = styled(Animated.View)<{ positionAbsolute: boolean }>`
+  ${(props) => css`
+    ${() => (props.positionAbsolute ? 'position: absolute' : '')};
+    padding: ${props.theme.spacing(0, 0, 0, 2)};
+    align-items: center;
+    justify-content: center;
   `}
 `;
 
