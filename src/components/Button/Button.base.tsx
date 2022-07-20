@@ -8,7 +8,7 @@ export const ButtonContainer = styled.View<Pick<ButtonProps, 'expand'>>`
     flex-grow: 1;
     align-items: center;
     flex-direction: row;
-    padding: ${props.theme.spacing(1.5, 2)};
+    padding: ${props.theme.spacing(2, 2.5)};
     justify-content: center;
   `}
 `;
