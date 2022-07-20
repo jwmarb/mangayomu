@@ -6,6 +6,8 @@ import Reader from '@screens/Settings/screens/Reader';
 import Appearance from '@screens/Settings/screens/Appearance';
 import { ScrollView } from 'react-native-gesture-handler';
 import axios from 'axios';
+import Cache from '@screens/Settings/screens/Cache';
+import { MainWrapper } from '@screens/Settings/screens/Main/Main.base';
 
 const Main: React.FC<StackScreenProps<SettingsStackParamList, 'Main'>> = (props) => {
   const { navigation } = props;
@@ -16,19 +18,17 @@ const Main: React.FC<StackScreenProps<SettingsStackParamList, 'Main'>> = (props)
   }
   return (
     <ScrollView>
-      <List>
-        <ListItem
-          adornment={<Icon bundle='MaterialCommunityIcons' name='cog-outline' color='primary' />}
-          title='General'
-        />
-        <Divider />
-        <Appearance />
-        <Divider />
-        <Reader />
-        <Divider />
-        <ListItem adornment={<Icon bundle='Feather' name='compass' color='primary' />} title='Browse' />
-        <ListItem adornment={<Icon bundle='Feather' name='code' color='primary' />} title='Advanced' />
-      </List>
+      <MainWrapper>
+        <List>
+          <ListItem adornment={<Icon bundle='Feather' name='compass' color='primary' />} title='Browse' />
+          <ListItem adornment={<Icon bundle='Feather' name='code' color='primary' />} title='Advanced' />
+          <Appearance />
+          <Divider />
+          <Reader />
+          <Divider />
+          <Cache />
+        </List>
+      </MainWrapper>
     </ScrollView>
   );
 };

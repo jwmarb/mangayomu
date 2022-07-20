@@ -9,6 +9,18 @@ import { FontFamily } from '@theme/Typography';
 import { Dispatch } from 'redux';
 import { SettingsReducerAction, SettingsReducerState } from './settingsReducer.interfaces';
 
+export function setMaxCacheSize(bytes: number) {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'SET_MAX_CACHE_SIZE', bytes });
+  };
+}
+
+export function toggleCache() {
+  return (dispatch: Dispatch<SettingsReducerAction>) => {
+    dispatch({ type: 'TOGGLE_CACHE' });
+  };
+}
+
 export function finishIntro() {
   return (dispatch: Dispatch<SettingsReducerAction>) => {
     dispatch({ type: 'INTRO_DONE' });

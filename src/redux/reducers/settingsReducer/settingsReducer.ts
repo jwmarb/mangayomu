@@ -13,6 +13,10 @@ const INITIAL_STATE: SettingsReducerState = {
   showIntroduction: true,
   selectedSource: MangaSee,
   statusBarStyle: 'auto',
+  cache: {
+    maxSize: 1.28e8,
+    enabled: true,
+  },
   fontFamily: {
     __selectedFont: FontFamily.NUNITO,
     light: 'Nunito-light',
@@ -38,6 +42,22 @@ const INITIAL_STATE: SettingsReducerState = {
 
 const reducer = (state: SettingsReducerState = INITIAL_STATE, action: SettingsReducerAction): SettingsReducerState => {
   switch (action.type) {
+    case 'SET_MAX_CACHE_SIZE':
+      return {
+        ...state,
+        cache: {
+          ...state.cache,
+          maxSize: action.bytes,
+        },
+      };
+    case 'TOGGLE_CACHE':
+      return {
+        ...state,
+        cache: {
+          ...state.cache,
+          enabled: !state.cache.enabled,
+        },
+      };
     case 'CHANGE_FONT':
       displayMessage(`Set font to ${action.fontFamily}`);
       return {

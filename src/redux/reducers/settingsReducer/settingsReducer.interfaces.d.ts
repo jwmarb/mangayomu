@@ -10,6 +10,10 @@ export interface SettingsReducerState {
   deviceOrientation: Orientation;
   selectedSource: MangaHost;
   statusBarStyle: StatusBarStyle;
+  cache: {
+    maxSize: number;
+    enabled: boolean;
+  };
   fontFamily: {
     __selectedFont: FontFamily;
     light: string;
@@ -56,4 +60,6 @@ export type SettingsReducerAction =
   | { type: 'TOGGLE_MANGACOVER_SETTING'; key: MangaCoverSettingsBooleans }
   | { type: 'CHANGE_COVER_STYLE'; style: MangaCoverStyles }
   | { type: 'SET_DEVICE_ORIENTATION'; orientation: Orientation }
-  | { type: 'CHANGE_FONT'; fontFamily: FontFamily };
+  | { type: 'CHANGE_FONT'; fontFamily: FontFamily }
+  | { type: 'TOGGLE_CACHE' }
+  | { type: 'SET_MAX_CACHE_SIZE'; bytes: number };
