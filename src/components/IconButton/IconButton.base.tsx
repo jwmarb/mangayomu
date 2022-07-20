@@ -3,9 +3,9 @@ import styled, { css } from 'styled-components/native';
 
 export const IconButtonBaseContainer = styled.View`
   ${(props) => css`
-    width: ${rem(25)};
+    width: ${rem(35)};
     align-items: center;
     justify-content: center;
-    height: ${rem(25)};
+    height: ${rem(35)};
   `}
 `;
