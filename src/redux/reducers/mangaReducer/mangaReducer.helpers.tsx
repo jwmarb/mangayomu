@@ -6,7 +6,7 @@ type RecursivePartial<T> = {
   [K in keyof T]?: T[K] extends object ? RecursivePartial<T[K]> : T[K];
 };
 
-export const orderedChaptersComparator: Comparator<MangaChapter, MangaChapter> = (a, b) => a.index - b.index;
+export const orderedChaptersComparator: Comparator<MangaChapter, MangaChapter> = (a, b) => b.index - a.index;
 
 /**
  *
