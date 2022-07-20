@@ -1,9 +1,12 @@
 import { MangaReducerState, ReadingMangaInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
-import { Manga, MangaMeta } from '@services/scraper/scraper.interfaces';
+import { Manga, MangaChapter, MangaMeta } from '@services/scraper/scraper.interfaces';
+import { Comparator } from '@utils/Algorithms/Comparator/Comparator.interfaces';
 
 type RecursivePartial<T> = {
   [K in keyof T]?: T[K] extends object ? RecursivePartial<T[K]> : T[K];
 };
+
+export const orderedChaptersComparator: Comparator<MangaChapter, MangaChapter> = (a, b) => a.index - b.index;
 
 /**
  *

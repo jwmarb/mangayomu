@@ -1,6 +1,7 @@
 import { ChaptersListReducerState } from '@redux/reducers/chaptersListReducer/chaptersListReducer.interfaces';
 import { Manga, MangaChapter, MangaMeta, MangaPage } from '@services/scraper/scraper.interfaces';
 import DownloadManager, { DownloadStatus } from '@utils/DownloadManager';
+import SortedList from '@utils/SortedList';
 
 export type ReadingChapterInfo = MangaChapter & {
   /**
@@ -41,6 +42,11 @@ export interface ReadingMangaInfo extends MangaMeta, Manga {
    * The chapters of the manga which include user data with the chapter
    */
   chapters: ReadingChapterInfoRecord;
+
+  /**
+   * A list of chapters in an ascending order. This variable is meant to know which chapter is next or previous of the currently reading chapter.
+   */
+  orderedChapters: SortedList<MangaChapter>;
 
   /**
    * Determines whether or not the user has the manga added in their library
@@ -84,4 +90,5 @@ export type MangaReducerAction =
   | { type: 'VALIDATE_FILE_INTEGRITY'; mangaKey: string; chapterKey: string; stage: 'prepare' | 'finish' }
   | { type: 'VALIDATE_FILE_INTEGRITIES'; mangaKey: string; chapterKeys: string[]; stage: 'prepare' | 'finish' }
   | { type: 'VALIDATE_WHOLE_MANGA_FILE_INTEGRITY'; mangaKey: string; stage: 'prepare' | 'finish' }
-  | { type: 'CANCEL_DOWNLOAD'; mangaKey: string; chapterKey: string };
+  | { type: 'CANCEL_DOWNLOAD'; mangaKey: string; chapterKey: string }
+  | { type: 'REHYDRATE' };

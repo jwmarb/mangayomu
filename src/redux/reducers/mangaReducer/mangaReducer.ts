@@ -1,4 +1,4 @@
-import { mapMangaToState } from '@redux/reducers/mangaReducer/mangaReducer.helpers';
+import { mapMangaToState, orderedChaptersComparator } from '@redux/reducers/mangaReducer/mangaReducer.helpers';
 import {
   MangaReducerAction,
   MangaReducerState,
@@ -7,10 +7,23 @@ import {
 } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import { MangaChapter } from '@services/scraper/scraper.interfaces';
 import DownloadManager, { DownloadStatus } from '@utils/DownloadManager';
+import SortedList from '@utils/SortedList';
 
 const INITIAL_STATE: MangaReducerState = {};
 
-function updateChapters(payload: MangaChapter[], state: ReadingChapterInfoRecord): ReadingChapterInfoRecord {
+function updateOrderOfChapters(payload: MangaChapter[], orderedChapters?: SortedList<MangaChapter>) {
+  if (orderedChapters) {
+    /**
+     * If the user has already seen this manga but the server returns more chapters, this must mean there are new chapters
+     */
+    if (orderedChapters.size() < payload.length) orderedChapters.add(payload);
+    return orderedChapters;
+  }
+
+  return new SortedList<MangaChapter>(orderedChaptersComparator, payload);
+}
+
+function updateChapters(payload: MangaChapter[], state?: ReadingChapterInfoRecord): ReadingChapterInfoRecord {
   if (state) {
     const keys = Object.keys(state);
     /**
@@ -53,6 +66,15 @@ function updateChapters(payload: MangaChapter[], state: ReadingChapterInfoRecord
 
 const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerAction): MangaReducerState => {
   switch (action.type) {
+    case 'REHYDRATE': {
+      for (const mangaKey in state) {
+        state[mangaKey].orderedChapters = SortedList.rehydrate(
+          state[mangaKey].orderedChapters as any,
+          orderedChaptersComparator
+        );
+      }
+      return state;
+    }
     case 'VALIDATE_FILE_INTEGRITIES': {
       const newState = {
         ...state,
@@ -263,10 +285,11 @@ const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerA
     case 'VIEW_MANGA':
       return mapMangaToState(state, action.payload, (manga) => ({
         ...action.payload,
-        chapters: updateChapters(action.payload.chapters, manga?.chapters ?? []),
+        chapters: updateChapters(action.payload.chapters, manga?.chapters),
         inLibrary: manga?.inLibrary ?? manga?.inLibrary ?? false,
         currentlyReadingChapter: manga?.currentlyReadingChapter ?? null,
         dateAddedInLibrary: manga?.dateAddedInLibrary ?? null,
+        orderedChapters: updateOrderOfChapters(action.payload.chapters, manga?.orderedChapters),
       }));
     case 'TOGGLE_LIBRARY':
       return mapMangaToState(state, action.payload, (manga) => ({
