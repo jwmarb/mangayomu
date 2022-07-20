@@ -53,7 +53,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
       new LayoutProvider(
         (index) => 0,
         (type, dim) => {
-          (dim.height = RFValue(47.5)), (dim.width = width);
+          (dim.height = RFValue(60)), (dim.width = width);
         }
       ),
     [width, deviceOrientation]
@@ -96,7 +96,8 @@ const Overview: React.FC<OverviewProps> = (props) => {
   const applyWindowCorrection: (offsetX: number, offsetY: number, windowCorrection: WindowCorrection) => void =
     React.useCallback(
       (offsetX, offsetY, windowCorrection) => {
-        windowCorrection.windowShift = -layoutHeight / 2;
+        // console.log(offsetY);
+        windowCorrection.startCorrection = -layoutHeight;
       },
       [layoutHeight, containerPaddingTop]
     );
