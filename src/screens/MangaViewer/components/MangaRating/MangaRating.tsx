@@ -41,7 +41,7 @@ const MangaRating: React.FC<MangaRatingProps> = (props) => {
               );
             })}
             <Spacer x={1} />
-            <Typography lockTheme='dark'>{value} / 10</Typography>
+            <Typography lockTheme='dark'>{value.toFixed(1)} / 10</Typography>
             <Spacer x={1} />
             <Typography variant='body2' color='textSecondary' lockTheme='dark'>
               ({voteCount} votes)
