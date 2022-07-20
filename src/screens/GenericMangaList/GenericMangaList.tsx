@@ -100,7 +100,7 @@ const InfiniteMangaList: React.FC<{ genre: string; source: string }> = (props) =
     return (
       <RecyclerListViewScreen
         canChangeSize
-        // forceNonDeterministicRendering
+        forceNonDeterministicRendering
         renderAheadOffset={1000}
         extendedState={extendedState}
         collapsible={collapsible}
