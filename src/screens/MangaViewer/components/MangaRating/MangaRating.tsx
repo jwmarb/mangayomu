@@ -18,7 +18,6 @@ const MangaRating: React.FC<MangaRatingProps> = (props) => {
           <Flex alignItems='center'>
             {new Array(5).fill('').map((x, i) => {
               const star = (i + 1) * 2;
-              console.log(value, ((2 - (star - value)) / 2) * 100 + '%');
               if (value - star >= 0)
                 return <Icon key={i} bundle='MaterialCommunityIcons' name='star' color='secondary' lockTheme='dark' />;
               if (Math.abs(value - star) % 1 !== 0 && Math.abs(value - star) < 1)
@@ -33,14 +32,8 @@ const MangaRating: React.FC<MangaRatingProps> = (props) => {
                 );
               // if (value - star < 0.5)
               return (
-                <View>
-                  <Icon
-                    key={i}
-                    bundle='MaterialCommunityIcons'
-                    name='star-outline'
-                    color='secondary'
-                    lockTheme='dark'
-                  />
+                <View key={i}>
+                  <Icon bundle='MaterialCommunityIcons' name='star-outline' color='secondary' lockTheme='dark' />
                   <StarContainer width={((2 - (star - value)) / 2) * 100}>
                     <Icon bundle='MaterialCommunityIcons' name='star' color='secondary' lockTheme='dark' />
                   </StarContainer>

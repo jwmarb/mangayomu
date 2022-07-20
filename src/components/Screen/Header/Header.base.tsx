@@ -21,10 +21,10 @@ export const HeaderBuilder = styled.View<ContainerProps & { paper?: boolean; rem
     ${props.removeStatusBarPadding ? 'min-' : ''}height: ${() => {
       if (!props.removeStatusBarPadding)
         return StatusBar.currentHeight
-          ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 8)
-          : props.theme.spacing(8);
+          ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 10)
+          : props.theme.spacing(10);
 
-      return props.theme.spacing(8);
+      return props.theme.spacing(10);
     }};
     background-color: ${props.paper
       ? props.theme.palette.background.paper.get()
@@ -61,8 +61,8 @@ export const HeaderBaseContainer = styled.View`
   ${generateCSS}
   ${(props) => css`
     height: ${StatusBar.currentHeight
-      ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 8)
-      : props.theme.spacing(8)};
+      ? props.theme.spacing(StatusBar.currentHeight / SPACE_MULTIPLIER + 10)
+      : props.theme.spacing(10)};
     background-color: ${props.theme.palette.background.paper.get()};
     padding-horizontal: ${props.theme.spacing(3)};
     padding-bottom: ${props.theme.spacing(2)};
