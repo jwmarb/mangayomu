@@ -39,8 +39,6 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
     status,
   } = props;
 
-  const navigation = useRootNavigation();
-
   function handleOnCheck(e: boolean) {
     checkChapter(e, chapter);
   }
