@@ -7,9 +7,10 @@ export const ChapterContainer = styled.View<{ width: number }>`
 
     return css`
       padding: ${props.theme.spacing(1, 3)};
-      min-height: ${rem(50)};
+      height: ${rem(60)};
       width: ${width ?? Dimensions.get('window').width}px;
       background-color: ${props.theme.palette.background.default.get()};
+      justify-content: center;
     `;
   }}
 `;
