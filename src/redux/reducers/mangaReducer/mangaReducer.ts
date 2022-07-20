@@ -35,21 +35,20 @@ function updateChapters(payload: MangaChapter[], state: ReadingChapterInfoRecord
     return state;
   }
 
-  return payload.reduce(
-    (prev, chapter): ReadingChapterInfoRecord => ({
-      ...prev,
-      [chapter.link]: {
-        ...chapter,
-        indexPage: 0,
-        scrollPosition: 0,
-        pages: null,
-        dateRead: null,
-        validatedStatus: DownloadStatus.VALIDATING,
-        status: DownloadStatus.VALIDATING,
-      },
-    }),
-    {}
-  );
+  const obj: ReadingChapterInfoRecord = {};
+  for (const chapter of payload) {
+    obj[chapter.link] = {
+      ...chapter,
+      indexPage: 0,
+      scrollPosition: 0,
+      pages: null,
+      dateRead: null,
+      validatedStatus: DownloadStatus.VALIDATING,
+      status: DownloadStatus.VALIDATING,
+    };
+  }
+
+  return obj;
 }
 
 const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerAction): MangaReducerState => {
