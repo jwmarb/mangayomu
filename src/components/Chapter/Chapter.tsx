@@ -43,12 +43,14 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
     checkChapter(e, chapter);
   }
 
+  const navigation = useRootNavigation();
+
   async function handleOnPress() {
     switch (selectionMode) {
       case 'normal':
-        const downloadManager = DownloadManager.ofWithManga(chapter, manga);
-        console.log(downloadManager.getStatus());
-        // navigation.navigate('Reader', { chapterKey: chapter.link, mangaKey: manga.link });
+        // const downloadManager = DownloadManager.ofWithManga(chapter, manga);
+        // console.log(downloadManager.getStatus());
+        navigation.navigate('Reader', { chapterKey: chapter.link, mangaKey: manga.link });
         break;
       case 'selection':
         checkChapter(!isSelected, chapter);
