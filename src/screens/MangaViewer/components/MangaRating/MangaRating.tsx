@@ -1,6 +1,8 @@
 import { Flex, Icon, Spacer, Typography } from '@components/core';
+import { StarContainer } from '@screens/MangaViewer/components/MangaRating/MangaRating.base';
 import { MangaRatingProps } from '@screens/MangaViewer/components/MangaRating/MangaRating.interfaces';
 import React from 'react';
+import { View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
 const MangaRating: React.FC<MangaRatingProps> = (props) => {
@@ -16,6 +18,7 @@ const MangaRating: React.FC<MangaRatingProps> = (props) => {
           <Flex alignItems='center'>
             {new Array(5).fill('').map((x, i) => {
               const star = (i + 1) * 2;
+              console.log(value, ((2 - (star - value)) / 2) * 100 + '%');
               if (value - star >= 0)
                 return <Icon key={i} bundle='MaterialCommunityIcons' name='star' color='secondary' lockTheme='dark' />;
               if (Math.abs(value - star) % 1 !== 0 && Math.abs(value - star) < 1)
@@ -30,15 +33,27 @@ const MangaRating: React.FC<MangaRatingProps> = (props) => {
                 );
               // if (value - star < 0.5)
               return (
-                <Icon key={i} bundle='MaterialCommunityIcons' name='star-outline' color='secondary' lockTheme='dark' />
+                <View>
+                  <Icon
+                    key={i}
+                    bundle='MaterialCommunityIcons'
+                    name='star-outline'
+                    color='secondary'
+                    lockTheme='dark'
+                  />
+                  <StarContainer width={((2 - (star - value)) / 2) * 100}>
+                    <Icon bundle='MaterialCommunityIcons' name='star' color='secondary' lockTheme='dark' />
+                  </StarContainer>
+                </View>
               );
             })}
             <Spacer x={1} />
             <Typography lockTheme='dark'>{value} / 10</Typography>
+            <Spacer x={1} />
+            <Typography variant='body2' color='textSecondary' lockTheme='dark'>
+              ({voteCount} votes)
+            </Typography>
           </Flex>
-          <Typography variant='body2' color='textSecondary' lockTheme='dark'>
-            {voteCount} votes
-          </Typography>
         </Flex>
       ) : (
         <Flex direction='column' container>
@@ -50,10 +65,11 @@ const MangaRating: React.FC<MangaRatingProps> = (props) => {
             <Icon bundle='MaterialCommunityIcons' name='star' color='disabled' lockTheme='dark' />
             <Spacer x={1} />
             <Typography lockTheme='dark'>N/A</Typography>
+            <Spacer x={1} />
+            <Typography variant='body2' color='textSecondary'>
+              ({voteCount} votes)
+            </Typography>
           </Flex>
-          <Typography variant='body2' color='textSecondary'>
-            {voteCount} votes
-          </Typography>
         </Flex>
       )}
     </Animated.View>
