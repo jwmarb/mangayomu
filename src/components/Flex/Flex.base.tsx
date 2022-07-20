@@ -6,11 +6,21 @@ import styled, { css, DefaultTheme } from 'styled-components/native';
 const generateStyles = (
   props: ThemedStyledProps<ViewProps & React.RefAttributes<View> & Partial<FlexProps>, DefaultTheme>
 ) => css`
-  ${() =>
-    props.wrap &&
-    css`
-      flex-wrap: wrap;
-    `}
+  ${() => {
+    if (props.wrap) {
+      switch (typeof props.wrap) {
+        case 'string':
+          return css`
+            flex-wrap: ${props.wrap};
+          `;
+        default:
+        case 'boolean':
+          return css`
+            flex-wrap: wrap;
+          `;
+      }
+    }
+  }}
   ${() =>
     props.fullWidth &&
     css`

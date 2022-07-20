@@ -11,7 +11,7 @@ type FlexBaseProps = {
   debug?: boolean;
   spacing?: number;
   fullWidth?: boolean;
-  wrap?: boolean;
+  wrap?: boolean | FlexStyle['flexWrap'];
   fullHeight?: boolean;
 };
 
