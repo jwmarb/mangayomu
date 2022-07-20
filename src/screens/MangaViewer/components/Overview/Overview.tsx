@@ -37,7 +37,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
   const { children, chapters, currentChapter, collapsible, rowRenderer, manga, language, onChangeLanguage, loading } =
     props;
   const { containerPaddingTop } = collapsible;
-  const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(false);
+  const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(true);
   const { width } = useWindowDimensions();
   const ref = React.useRef<RecyclerListView<any, any>>(null);
   const [finished, setFinished] = React.useState<boolean>(false);
@@ -89,7 +89,6 @@ const Overview: React.FC<OverviewProps> = (props) => {
 
   const handleOnLayout = React.useCallback(
     (e: LayoutChangeEvent) => {
-      console.log(e.nativeEvent.layout.height + containerPaddingTop);
       setLayoutHeight(e.nativeEvent.layout.height + containerPaddingTop);
     },
     [setLayoutHeight, containerPaddingTop]
