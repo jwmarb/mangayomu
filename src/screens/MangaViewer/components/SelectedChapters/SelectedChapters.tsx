@@ -30,6 +30,7 @@ const SelectedChapters: React.FC<SelectedChaptersProps> = (props) => {
     downloadSelected,
     numOfSelected,
     hidden,
+    validateChapters,
   } = props;
 
   const isFocused = useIsFocused();
@@ -40,7 +41,10 @@ const SelectedChapters: React.FC<SelectedChaptersProps> = (props) => {
 
   const handleOnDownloadAllSelected = React.useCallback(() => {
     downloadSelected(selectedChapters, manga);
-  }, []);
+  }, [selectedChapters, manga]);
+  const handleOnVerifySelected = React.useCallback(() => {
+    validateChapters(selectedChapters, manga.link);
+  }, [selectedChapters, manga.link]);
 
   function handleOnPress() {
     ref.current?.open();
@@ -70,7 +74,11 @@ const SelectedChapters: React.FC<SelectedChaptersProps> = (props) => {
                     icon={<Icon bundle='Feather' name='download' />}
                   />
                   <Divider />
-                  <MenuOption text='Verify file integrity' icon={<Icon bundle='Feather' name='file' />} />
+                  <MenuOption
+                    text='Verify file integrity'
+                    icon={<Icon bundle='Feather' name='file' />}
+                    onPress={handleOnVerifySelected}
+                  />
                 </MenuOptions>
               </Menu>
             ) : (

@@ -7,8 +7,28 @@ import { HeaderRightProps } from './HeaderRight.interfaces';
 import connector, { ConnectedHeaderRightProps } from './HeaderRight.redux';
 
 const HeaderRight: React.FC<ConnectedHeaderRightProps> = (props) => {
-  const { manga, downloadSelected, chapters, isDownloading, cancelAllForSeries, validateManga } = props;
+  const { manga, downloadSelected, chapters, isDownloading, cancelAllForSeries, validateManga, prepareForValidation } =
+    props;
   const [opened, setOpened] = React.useState<boolean>(false);
+  const [option, setOption] = React.useState<number | null>(null);
+  React.useEffect(() => {
+    if (option != null) {
+      handleOnClose();
+
+      switch (option) {
+        case 0:
+          handleOnDownloadAll();
+          break;
+        case 1:
+          cancelAllForSeries(manga.link);
+          break;
+        case 2:
+          // prepareForValidation(manga.link);
+          validateManga(manga.link);
+          break;
+      }
+    }
+  }, [option]);
   const handleOnDownloadAll = () => {
     const allChapters = Object.keys(chapters ?? {}).reduce(
       (prev, curr) => ({
@@ -25,23 +45,10 @@ const HeaderRight: React.FC<ConnectedHeaderRightProps> = (props) => {
 
   const handleOnClose = () => {
     setOpened(false);
+    setOption(null);
   };
   const theme = useTheme();
-  const handleOnSelect = async (option: number) => {
-    switch (option) {
-      case 0:
-        handleOnDownloadAll();
-        break;
-      case 1:
-        cancelAllForSeries(manga.link);
-        break;
-      case 2:
-        handleOnClose();
-        await validateManga(manga.link);
-        break;
-    }
-    handleOnClose();
-  };
+
   return (
     <>
       <IconButton
@@ -64,7 +71,7 @@ const HeaderRight: React.FC<ConnectedHeaderRightProps> = (props) => {
           Linking.openURL(manga.link);
         }}
       />
-      <Menu onBackdropPress={handleOnClose} onClose={handleOnClose} opened={opened} onSelect={handleOnSelect}>
+      <Menu onBackdropPress={handleOnClose} onClose={handleOnClose} opened={opened} onSelect={setOption}>
         <MenuTrigger>
           <IconButton onPress={handleOnOpen} icon={<Icon bundle='Feather' name='more-vertical' />} />
         </MenuTrigger>

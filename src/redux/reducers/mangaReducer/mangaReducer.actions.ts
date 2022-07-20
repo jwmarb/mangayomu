@@ -3,6 +3,7 @@ import { Dispatch } from 'redux';
 import { MangaReducerAction } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import { AppDispatch, AppState } from '@redux/store';
 import DownloadManager from '@utils/DownloadManager';
+import pLimit from 'p-limit';
 
 export function viewManga(meta: MangaMeta & Manga) {
   return (dispatch: Dispatch<MangaReducerAction>) => {
@@ -10,9 +11,38 @@ export function viewManga(meta: MangaMeta & Manga) {
   };
 }
 
+export const validateChapters = (chapters: Record<string, null>, mangaKey: string) => {
+  return async (dispatch: AppDispatch, getState: () => AppState) => {
+    const chapterKeys = Object.keys(chapters);
+    dispatch({ type: 'VALIDATE_FILE_INTEGRITIES', mangaKey, chapterKeys, stage: 'prepare' });
+    const limit = pLimit(1);
+    try {
+      for (const key of chapterKeys) {
+        // console.log(`${key} -> VERIFYING... INITIATED BY USER`);
+        const downloadManager = DownloadManager.ofWithManga(
+          getState().mangas[mangaKey].chapters[key],
+          getState().mangas[mangaKey]
+        );
+        await limit(() => downloadManager.validateFileIntegrity());
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      dispatch({ type: 'VALIDATE_FILE_INTEGRITIES', mangaKey, chapterKeys, stage: 'finish' });
+    }
+  };
+};
+
+export const prepareForValidation = (mangaKey: string) => {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'VALIDATE_WHOLE_MANGA_FILE_INTEGRITY', mangaKey, stage: 'prepare' });
+  };
+};
+
 export const validateManga = (mangaKey: string) => {
   return async (dispatch: AppDispatch, getState: () => AppState) => {
     dispatch({ type: 'VALIDATE_WHOLE_MANGA_FILE_INTEGRITY', mangaKey, stage: 'prepare' });
+    const limit = pLimit(1);
 
     try {
       for (const key in getState().mangas[mangaKey].chapters) {
@@ -20,7 +50,9 @@ export const validateManga = (mangaKey: string) => {
           getState().mangas[mangaKey].chapters[key],
           getState().mangas[mangaKey]
         );
-        await downloadManager.validateFileIntegrity();
+        // console.log(`${key} -> VERIFYING... INITIATED BY USER`);
+
+        await limit(() => downloadManager.validateFileIntegrity());
       }
     } catch (e) {
       console.error(e);
