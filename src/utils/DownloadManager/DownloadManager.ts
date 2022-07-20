@@ -207,11 +207,15 @@ export default class DownloadManager {
   }
 
   public async validateFileIntegrity() {
+    const tempStatus = this.getStatus();
     this.setStatus(DownloadStatus.VALIDATING);
     this.setValidatedStatus(DownloadStatus.VALIDATING);
     if ((await this.verifyPages()) && (await this.isDownloaded())) {
       this.setValidatedStatus(DownloadStatus.DOWNLOADED);
       this.setStatus(DownloadStatus.DOWNLOADED);
+    } else if (tempStatus !== DownloadStatus.DOWNLOADED) {
+      this.setValidatedStatus(DownloadStatus.IDLE);
+      this.setStatus(tempStatus);
     } else {
       this.setValidatedStatus(DownloadStatus.IDLE);
       this.setStatus(DownloadStatus.IDLE);
