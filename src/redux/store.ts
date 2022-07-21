@@ -6,11 +6,13 @@ import { PersistConfig, persistReducer, persistStore } from 'redux-persist';
 import libraryMutator from '@redux/middleware/libraryMutator';
 import ExpoStorage from '@utils/ExpoStorage';
 import { injectThemeFromStore } from '@theme/Color/Color.helpers';
+import sortedListTransformer from './transformers/sortedListTransformer';
 import { injectStoreForTypography } from '@theme/Typography';
 const persistConfig: PersistConfig<AppState> = {
   key: 'root',
   storage: ExpoStorage,
   blacklist: ['chaptersList', 'reader', 'library'],
+  transforms: [sortedListTransformer],
 };
 
 const persistReducers = persistReducer(persistConfig, reducers);

@@ -90,5 +90,4 @@ export type MangaReducerAction =
   | { type: 'VALIDATE_FILE_INTEGRITY'; mangaKey: string; chapterKey: string; stage: 'prepare' | 'finish' }
   | { type: 'VALIDATE_FILE_INTEGRITIES'; mangaKey: string; chapterKeys: string[]; stage: 'prepare' | 'finish' }
   | { type: 'VALIDATE_WHOLE_MANGA_FILE_INTEGRITY'; mangaKey: string; stage: 'prepare' | 'finish' }
-  | { type: 'CANCEL_DOWNLOAD'; mangaKey: string; chapterKey: string }
-  | { type: 'REHYDRATE' };
+  | { type: 'CANCEL_DOWNLOAD'; mangaKey: string; chapterKey: string };

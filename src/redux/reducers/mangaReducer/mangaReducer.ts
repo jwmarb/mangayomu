@@ -13,6 +13,13 @@ const INITIAL_STATE: MangaReducerState = {};
 
 function updateOrderOfChapters(payload: MangaChapter[], orderedChapters?: SortedList<MangaChapter>) {
   if (orderedChapters) {
+    if (orderedChapters instanceof SortedList === false) {
+      console.log(`rehydrating... ${Array.isArray(orderedChapters)}`);
+      orderedChapters = SortedList.rehydrate(orderedChapters as any, orderedChaptersComparator);
+    } else {
+      console.log(`did not rehydrate`);
+    }
+
     /**
      * If the user has already seen this manga but the server returns more chapters, this must mean there are new chapters
      */
@@ -66,15 +73,6 @@ function updateChapters(payload: MangaChapter[], state?: ReadingChapterInfoRecor
 
 const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerAction): MangaReducerState => {
   switch (action.type) {
-    case 'REHYDRATE': {
-      for (const mangaKey in state) {
-        state[mangaKey].orderedChapters = SortedList.rehydrate(
-          state[mangaKey].orderedChapters as any,
-          orderedChaptersComparator
-        );
-      }
-      return state;
-    }
     case 'VALIDATE_FILE_INTEGRITIES': {
       const newState = {
         ...state,
