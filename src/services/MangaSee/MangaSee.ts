@@ -17,6 +17,17 @@ import { titleIncludes } from '@utils/MangaFilters';
 
 class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   private memo: MangaSeeManga[] | null = null;
+  private imageURLBase: string | null = null;
+  private getImageCover(html: string | null, indexName: string) {
+    if (this.imageURLBase == null) {
+      if (html == null) throw Error('HTML cannot be null to get image cover');
+      const linkURL = html.match(/https:\/\/.*\/{{Result.i}}.jpg/g);
+      if (linkURL == null) throw Error('Image URL base is null');
+      this.imageURLBase = linkURL[0];
+    }
+
+    return this.imageURLBase.replace(/{{Result\.i}}/g, indexName);
+  }
   public async listRecentlyUpdatedManga(): Promise<Manga[]> {
     const $ = await super.route('/');
     const html = $('body').html();
@@ -27,7 +38,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       LatestJSON.map((x) => ({
         link: `https://${super.getLink()}/manga/${x.IndexName}`,
         title: x.SeriesName,
-        imageCover: `https://cover.nep.li/cover/${x.IndexName}.jpg`,
+        imageCover: this.getImageCover(html, x.IndexName),
         source: super.getName(),
       }))
     );
@@ -42,7 +53,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       HotUpdateJSON.map((x) => ({
         link: `https://${super.getLink()}/manga/${x.IndexName}`,
         title: x.SeriesName,
-        imageCover: `https://cover.nep.li/cover/${x.IndexName}.jpg`,
+        imageCover: this.getImageCover(html, x.IndexName),
         source: super.getName(),
       }))
     );
@@ -57,7 +68,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       const result = Directory.map((x) => ({
         title: x.s,
         link: `https://${super.getLink()}/manga/${x.i}`,
-        imageCover: `https://cover.nep.li/cover/${x.i}.jpg`,
+        imageCover: this.getImageCover(html, x.i),
         status: {
           scan: x.ss,
           publish: x.ps,
