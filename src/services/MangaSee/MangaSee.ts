@@ -16,7 +16,6 @@ import { binary, StringComparator } from '@utils/Algorithms';
 import { titleIncludes } from '@utils/MangaFilters';
 
 class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
-  private memo: MangaSeeManga[] | null = null;
   private imageURLBase: string | null = null;
   private getImageCover(html: string | null, indexName: string) {
     if (this.imageURLBase == null) {
@@ -60,34 +59,30 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   }
 
   public async listMangas(): Promise<MangaSeeManga[]> {
-    if (this.memo == null) {
-      const $ = await super.route('/search');
-      const html = $('body').html();
-      const { variable } = processScript(html);
-      const Directory = variable<Directory[]>('vm.Directory');
-      const result = Directory.map((x) => ({
-        title: x.s,
-        link: `https://${super.getLink()}/manga/${x.i}`,
-        imageCover: this.getImageCover(html, x.i),
-        status: {
-          scan: x.ss,
-          publish: x.ps,
-        },
-        isHentai: x.h,
-        type: x.t,
-        genres: x.g,
-        yearReleased: x.y,
-        source: super.getName(),
-        officialTranslation: x.o === 'yes' ? true : false,
-        altTitles: x.al,
-        lt: parseInt(x.lt),
-        v: parseInt(x.v),
-        vm: parseInt(x.vm),
-      }));
-      this.memo = result;
-      return result;
-    }
-    return this.memo;
+    const $ = await super.route('/search');
+    const html = $('body').html();
+    const { variable } = processScript(html);
+    const Directory = variable<Directory[]>('vm.Directory');
+    const result = Directory.map((x) => ({
+      title: x.s,
+      link: `https://${super.getLink()}/manga/${x.i}`,
+      imageCover: this.getImageCover(html, x.i),
+      status: {
+        scan: x.ss,
+        publish: x.ps,
+      },
+      isHentai: x.h,
+      type: x.t,
+      genres: x.g,
+      yearReleased: x.y,
+      source: super.getName(),
+      officialTranslation: x.o === 'yes' ? true : false,
+      altTitles: x.al,
+      lt: parseInt(x.lt),
+      v: parseInt(x.v),
+      vm: parseInt(x.vm),
+    }));
+    return result;
   }
 
   public async getMeta(manga: Manga): Promise<MangaSeeMangaMeta> {
