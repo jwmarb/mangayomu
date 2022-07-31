@@ -7,6 +7,12 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { FontFamily } from '@theme/Typography';
 import displayMessage from '@utils/displayMessage';
 import { StatusBar } from 'expo-status-bar';
+import { INITIAL_READER_SETTING_PROFILE_STATE } from '@redux/reducers/readerSettingProfileReducer/readerSettingProfileReducer';
+import {
+  ImageScaling,
+  ReaderScreenOrientation,
+  ZoomStartPosition,
+} from '@redux/reducers/readerSettingProfileReducer/readerSettingProfileReducer.constants';
 
 const INITIAL_STATE: SettingsReducerState = {
   theme: ChangeableTheme.SYSTEM_THEME,
@@ -34,14 +40,52 @@ const INITIAL_STATE: SettingsReducerState = {
   reader: {
     backgroundColor: ReaderBackgroundColor.BLACK,
     keepDeviceAwake: true,
-    preferredReadingDirection: ReaderDirection.LEFT_TO_RIGHT,
     showPageNumber: true,
     skipChaptersMarkedRead: true,
+    _global: {
+      imageScaling: ImageScaling.SMART_FIT,
+      orientation: ReaderScreenOrientation.FREE,
+      readingDirection: ReaderDirection.RIGHT_TO_LEFT,
+      zoomStartPosition: ZoomStartPosition.AUTO,
+    },
   },
 };
 
 const reducer = (state: SettingsReducerState = INITIAL_STATE, action: SettingsReducerAction): SettingsReducerState => {
   switch (action.type) {
+    case 'SET_READER_ZOOM_START_POSITION':
+      return {
+        ...state,
+        reader: {
+          ...state.reader,
+          _global: {
+            ...state.reader._global,
+            zoomStartPosition: action.zoomStartPosition,
+          },
+        },
+      };
+    case 'SET_READER_IMAGE_SCALING':
+      return {
+        ...state,
+        reader: {
+          ...state.reader,
+          _global: {
+            ...state.reader._global,
+            imageScaling: action.imageScaling,
+          },
+        },
+      };
+    case 'SET_READER_SCREEN_ORIENTATION':
+      return {
+        ...state,
+        reader: {
+          ...state.reader,
+          _global: {
+            ...state.reader._global,
+            orientation: action.orientation,
+          },
+        },
+      };
     case 'SET_MAX_CACHE_SIZE':
       return {
         ...state,
@@ -119,7 +163,10 @@ const reducer = (state: SettingsReducerState = INITIAL_STATE, action: SettingsRe
         ...state,
         reader: {
           ...state.reader,
-          preferredReadingDirection: action.direction,
+          _global: {
+            ...state.reader._global,
+            readingDirection: action.direction,
+          },
         },
       };
     case 'CHANGE_BACKGROUND_COLOR':

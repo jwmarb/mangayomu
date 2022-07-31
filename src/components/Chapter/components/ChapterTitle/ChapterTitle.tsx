@@ -24,12 +24,28 @@ const displayChapterInfo = (chapter: any) => {
 };
 
 const ChapterTitle: React.FC<ChapterTitleProps> = (props) => {
-  const { chapter } = props;
+  const { chapter, isCurrentlyBeingRead } = props;
   return (
     <Flex direction='column'>
-      <Typography bold color={Date.parse(chapter.date) <= Date.now() - 8.64e7 ? 'textPrimary' : 'secondary'}>
-        {chapter.name}
-      </Typography>
+      <Flex alignItems='center'>
+        <Typography
+          bold
+          color={
+            chapter.dateRead == null
+              ? Date.parse(chapter.date) <= Date.now() - 8.64e7
+                ? 'textPrimary'
+                : 'secondary'
+              : 'disabled'
+          }>
+          {chapter.name}
+        </Typography>
+        <Spacer x={2} />
+        {chapter.dateRead != null && isCurrentlyBeingRead && (
+          <Typography variant='body2' color='primary'>
+            ({chapter.indexPage + 1} / {chapter.totalPages})
+          </Typography>
+        )}
+      </Flex>
       {displayChapterInfo(chapter)}
     </Flex>
   );

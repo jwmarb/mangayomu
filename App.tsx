@@ -10,7 +10,7 @@ import ExpoStatusBar from '@utils/ExpoStatusBar';
 import 'react-native-gesture-handler';
 import { PersistGate } from 'redux-persist/integration/react';
 import { PortalProvider } from '@gorhom/portal';
-import { LogBox } from 'react-native';
+import { LogBox, View, Text, SafeAreaView } from 'react-native';
 import '@services/MangaPark_v3';
 import '@services/MangaSee';
 import { MenuProvider } from 'react-native-popup-menu';
@@ -21,7 +21,7 @@ LogBox.ignoreLogs([
 export default function App() {
   return (
     <Provider store={store}>
-      <PersistGate persistor={persistor}>
+      <PersistGate persistor={persistor} loading={<Text>Loading...</Text>}>
         <ResourceLoader
           onFinishedLoading={
             <MenuProvider>

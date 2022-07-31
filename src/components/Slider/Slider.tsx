@@ -36,10 +36,21 @@ const Slider: React.FC<SliderProps> = (props) => {
     value,
   } = props;
   const range = Math.abs(max - min);
+  const shouldUpdate = React.useRef<boolean>(true);
+  function enableUpdater() {
+    shouldUpdate.current = true;
+  }
+  function disableUpdater() {
+    shouldUpdate.current = false;
+  }
   const deviceOrientation = useSelector((state: AppState) => state.settings.deviceOrientation);
   useMountedEffect(() => {
-    positionLeft.value = Math.min((width / range) * (value - min), width);
-  }, [width, deviceOrientation]);
+    if (shouldUpdate.current)
+      positionLeft.value = withTiming(Math.min((width / range) * (value - min), width), {
+        duration: 100,
+        easing: Easing.ease,
+      });
+  }, [width, deviceOrientation, range, value]);
   const positionLeft = useSharedValue(Math.min((width / range) * (value - min), width));
   const gestureHandlers = useAnimatedGestureHandler<
     PanGestureHandlerGestureEvent,
@@ -49,6 +60,7 @@ const Slider: React.FC<SliderProps> = (props) => {
   >({
     onActive: (e, ctx) => {
       const translateX = Math.max(Math.min(e.translationX + ctx.translateX, width), 0);
+      runOnJS(disableUpdater)();
       if (noFixedIncremental) {
         const value = translateX / width / (width / (range * width));
         positionLeft.value = value * (width / range);
@@ -56,15 +68,15 @@ const Slider: React.FC<SliderProps> = (props) => {
       } else {
         const value = Math.round(translateX / width / (width / (range * width)));
 
-        positionLeft.value = withTiming(value * (width / range), {
-          duration: 100,
-          easing: Easing.linear,
-        });
-        runOnJS(onChange)(value + min);
+        if (positionLeft.value !== value * (width / range)) runOnJS(onChange)(value + min);
+        positionLeft.value = value * (width / range);
       }
     },
     onStart: (_, ctx) => {
       ctx.translateX = positionLeft.value;
+    },
+    onEnd: () => {
+      runOnJS(enableUpdater)();
     },
   });
   const style = useAnimatedStyle(() => ({

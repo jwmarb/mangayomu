@@ -8,8 +8,10 @@ import {
   StatusBarFiller,
 } from '@components/Modal/Modal.base';
 import { GestureContext, ModalProps } from '@components/Modal/Modal.interfaces';
+import connector, { ConnectedModalProps } from '@components/Modal/Modal.redux';
 import { Typography } from '@components/Typography';
 import { Portal } from '@gorhom/portal';
+import useMountedEffect from '@hooks/useMountedEffect';
 import { AppState } from '@redux/store';
 import pixelToNumber from '@utils/pixelToNumber';
 import { Orientation } from 'expo-screen-orientation';
@@ -66,10 +68,11 @@ import { ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollcompon
 import { WindowCorrection } from 'recyclerlistview/dist/reactnative/core/ViewabilityTracker';
 import { useTheme } from 'styled-components/native';
 
-const Modal: React.FC<ModalProps> = (props) => {
+const Modal: React.FC<ConnectedModalProps> = (props) => {
   const {
     onClose,
     visible,
+    disablePanning,
     children,
     minimumHeight: _minimumHeight,
     closeThreshold: _closeThreshold,
@@ -78,6 +81,7 @@ const Modal: React.FC<ModalProps> = (props) => {
     recyclerListViewProps = {} as RecyclerListViewProps,
     backgroundColor = 'default',
     topColor = 'paper',
+    statusBarHidden,
   } = props;
   const deviceOrientation = useSelector((state: AppState) => state.settings.deviceOrientation);
 
@@ -86,14 +90,14 @@ const Modal: React.FC<ModalProps> = (props) => {
     switch (deviceOrientation) {
       case Orientation.LANDSCAPE_LEFT:
       case Orientation.LANDSCAPE_RIGHT:
-        return (_minimumHeight ?? height) * 0.7;
+        return (_minimumHeight ?? height) * (disablePanning ? 1 : 0.7);
       default:
         return _minimumHeight ?? height * 0.5;
     }
-  }, [height, _minimumHeight, deviceOrientation]);
+  }, [height, _minimumHeight, deviceOrientation, disablePanning]);
   const CLOSE_THRESHOLD = height * 0.8;
   const closeThreshold = CLOSE_THRESHOLD;
-  const MAX_PANEL_HEIGHT = StatusBar.currentHeight ?? 0;
+  const MAX_PANEL_HEIGHT = statusBarHidden ? 0 : StatusBar.currentHeight ?? 0;
   const APPROACHING_TOP = MAX_PANEL_HEIGHT + 20;
   const scrollRef = React.useRef<ScrollView>(null);
   const recyclerRef = React.useRef<RecyclerListView<any, any>>(null);
@@ -218,8 +222,8 @@ const Modal: React.FC<ModalProps> = (props) => {
   }, [top.value]);
 
   function onScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
-    const { velocity, contentOffset } = e.nativeEvent;
-    if (velocity) setScrollEnabled(!(velocity.y <= 0.5 && contentOffset.y <= 0));
+    const { contentOffset } = e.nativeEvent;
+    setScrollEnabled(contentOffset.y > 0);
   }
 
   return (
@@ -230,28 +234,30 @@ const Modal: React.FC<ModalProps> = (props) => {
         </BackdropContainer>
       )}
       <StatusBarFiller style={statusBarStyle} />
-      <PanGestureHandler enabled={visible} onGestureEvent={gestureHandlers}>
+      {disablePanning ? (
         <Panel style={panelStyle}>
           <ModalContainer modalBackgroundColor={backgroundColor} modalTopColor={topColor} style={containerStyle}>
-            {recyclerListView ? (
-              <RecyclerListView
-                {...recyclerListViewProps}
-                externalScrollView={ScrollView as any}
-                ref={recyclerRef}
-                scrollViewProps={{
-                  onScroll,
-                  scrollEnabled,
-                  contentContainerStyle: {
-                    minHeight: height,
-                    paddingBottom: MAX_PANEL_HEIGHT + pixelToNumber(theme.spacing(12)),
-                  },
-                }}
-              />
-            ) : (
+            <ScrollView
+              scrollEnabled={scrollEnabled}
+              ref={scrollRef}
+              onMomentumScrollEnd={onScroll}
+              contentContainerStyle={{
+                backgroundColor: theme.palette.background[backgroundColor].get(),
+                minHeight: height,
+                paddingBottom: MAX_PANEL_HEIGHT + pixelToNumber(theme.spacing(12)),
+              }}>
+              {children}
+            </ScrollView>
+          </ModalContainer>
+        </Panel>
+      ) : (
+        <PanGestureHandler enabled={visible} onGestureEvent={gestureHandlers}>
+          <Panel style={panelStyle}>
+            <ModalContainer modalBackgroundColor={backgroundColor} modalTopColor={topColor} style={containerStyle}>
               <ScrollView
-                ref={scrollRef}
-                onScroll={onScroll}
                 scrollEnabled={scrollEnabled}
+                ref={scrollRef}
+                onMomentumScrollEnd={onScroll}
                 contentContainerStyle={{
                   backgroundColor: theme.palette.background[backgroundColor].get(),
                   minHeight: height,
@@ -259,12 +265,12 @@ const Modal: React.FC<ModalProps> = (props) => {
                 }}>
                 {children}
               </ScrollView>
-            )}
-          </ModalContainer>
-        </Panel>
-      </PanGestureHandler>
+            </ModalContainer>
+          </Panel>
+        </PanGestureHandler>
+      )}
     </Portal>
   );
 };
 
-export default Modal;
+export default connector(Modal);

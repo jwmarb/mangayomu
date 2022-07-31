@@ -36,6 +36,7 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
     downloadSelected,
     width,
     cancelAllForSeries,
+    isCurrentlyBeingRead,
     status,
   } = props;
 
@@ -78,7 +79,7 @@ const Chapter: React.FC<ChapterReduxProps> = (props) => {
       <ButtonBase square onPress={handleOnPress} onLongPress={handleOnLongPress}>
         <ChapterContainer width={width}>
           <Flex justifyContent='space-between' alignItems='center'>
-            <ChapterTitle chapter={chapter} />
+            <ChapterTitle chapter={chapter} isCurrentlyBeingRead={isCurrentlyBeingRead} />
             <Flex alignItems='center'>
               <ChapterDownloadProgress />
               <ChapterDownloadStatus

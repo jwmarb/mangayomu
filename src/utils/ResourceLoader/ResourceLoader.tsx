@@ -113,7 +113,6 @@ const ResourceLoader: React.FC<ResourceLoaderProps> = (props) => {
         await loadFonts();
         await StorageManager.initialize();
         await DownloadManager.initialize();
-        dispatch({ type: 'REHYDRATE' });
         dispatch({ type: 'SET_DEVICE_ORIENTATION', orientation: await ScreenOrientation.getOrientationAsync() });
       } catch (e) {
         console.error(e);
@@ -151,7 +150,7 @@ const ResourceLoader: React.FC<ResourceLoaderProps> = (props) => {
     <View style={{ flex: 1 }} onLayout={handleOnLayout}>
       <ThemeProvider theme={generated}>
         <GestureHandlerRootView style={{ flex: 1 }}>
-          <NavigationContainer>
+          <NavigationContainer theme={generated['@react-navigation']}>
             <RootSiblingParent>
               <HoldMenuProvider iconComponent={FeatherIcon} theme={generated.palette.mode ?? 'light'}>
                 <NavigationThemeProvider value={generated['@react-navigation']}>{Component}</NavigationThemeProvider>

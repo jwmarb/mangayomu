@@ -79,3 +79,15 @@ export const validateFileIntegrity = (mangaKey: string, chapterKey: string) => {
     }
   };
 };
+
+export const toggleLibrary = (manga: Manga) => {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'TOGGLE_LIBRARY', payload: manga });
+  };
+};
+
+export const setIndexPage = (mangaKey: string, chapterKey: string, indexPage: number) => {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'SET_INDEX_PAGE', mangaKey, chapterKey, indexPage });
+  };
+};

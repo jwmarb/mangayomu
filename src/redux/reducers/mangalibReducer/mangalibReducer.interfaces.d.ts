@@ -12,5 +12,4 @@ export type MangaLibReducerAction =
       payload: Manga;
     }
   | { type: 'REMOVE_FROM_LIBRARY'; payload: Manga }
-  | { type: 'SET_SEARCH_QUERY_IN_LIBRARY'; query: string }
-  | { type: 'REHYDRATE' };
+  | { type: 'SET_SEARCH_QUERY_IN_LIBRARY'; query: string };

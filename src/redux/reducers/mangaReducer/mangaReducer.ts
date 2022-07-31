@@ -13,12 +13,12 @@ const INITIAL_STATE: MangaReducerState = {};
 
 function updateOrderOfChapters(payload: MangaChapter[], orderedChapters?: SortedList<MangaChapter>) {
   if (orderedChapters) {
-    if (orderedChapters instanceof SortedList === false) {
-      console.log(`rehydrating... ${Array.isArray(orderedChapters)}`);
-      orderedChapters = SortedList.rehydrate(orderedChapters as any, orderedChaptersComparator);
-    } else {
-      console.log(`did not rehydrate`);
-    }
+    // if (orderedChapters instanceof SortedList === false) {
+    //   console.log(`rehydrating... ${Array.isArray(orderedChapters)}`);
+    //   orderedChapters = SortedList.rehydrate(orderedChapters as any, orderedChaptersComparator);
+    // } else {
+    //   console.log(`did not rehydrate`);
+    // }
 
     /**
      * If the user has already seen this manga but the server returns more chapters, this must mean there are new chapters
@@ -42,8 +42,8 @@ function updateChapters(payload: MangaChapter[], state?: ReadingChapterInfoRecor
         oldState[payload[i].link] = {
           ...payload[i],
           indexPage: 0,
+          totalPages: 0,
           scrollPosition: 0,
-          pages: null,
           dateRead: null,
           validatedStatus: DownloadStatus.VALIDATING,
           status: DownloadStatus.VALIDATING,
@@ -60,8 +60,8 @@ function updateChapters(payload: MangaChapter[], state?: ReadingChapterInfoRecor
     obj[chapter.link] = {
       ...chapter,
       indexPage: 0,
+      totalPages: 0,
       scrollPosition: 0,
-      pages: null,
       dateRead: null,
       validatedStatus: DownloadStatus.VALIDATING,
       status: DownloadStatus.VALIDATING,
@@ -73,6 +73,30 @@ function updateChapters(payload: MangaChapter[], state?: ReadingChapterInfoRecor
 
 const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerAction): MangaReducerState => {
   switch (action.type) {
+    case 'APPEND_PAGES': {
+      state[action.manga.link].chapters[action.chapter.link].totalPages = action.numOfPages;
+      return state;
+    }
+    case 'SET_INDEX_PAGE': {
+      state[action.mangaKey].chapters[action.chapterKey].indexPage = action.indexPage;
+      state[action.mangaKey].currentlyReadingChapter = action.chapterKey;
+      return state;
+    }
+    case 'OPEN_READER':
+      return {
+        ...state,
+        [action.manga.link]: {
+          ...state[action.manga.link],
+          chapters: {
+            ...state[action.manga.link].chapters,
+            [action.chapter.link]: {
+              ...state[action.manga.link].chapters[action.chapter.link],
+              dateRead: new Date().toString(),
+            },
+          },
+          currentlyReadingChapter: action.chapter.link,
+        },
+      };
     case 'VALIDATE_FILE_INTEGRITIES': {
       const newState = {
         ...state,
@@ -115,23 +139,6 @@ const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerA
             newState[action.mangaKey].chapters[key].status = DownloadStatus.VALIDATING;
           }
           return newState;
-          // return {
-          //   ...state,
-          //   [action.mangaKey]: {
-          //     ...state[action.mangaKey],
-          //     chapters: Object.entries(state[action.mangaKey].chapters).reduce(
-          //       (prev, [key, val]) => ({
-          //         ...prev,
-          //         [key]: {
-          //           ...val,
-          //           validatedStatus: DownloadStatus.VALIDATING,
-          //           status: DownloadStatus.VALIDATING,
-          //         },
-          //       }),
-          //       {}
-          //     ),
-          //   },
-          // };
         }
         case 'finish': {
           const newState = {

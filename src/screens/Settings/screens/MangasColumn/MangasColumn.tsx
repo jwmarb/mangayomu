@@ -46,6 +46,7 @@ import { Menu, MenuOption, MenuTrigger, renderers, MenuOptions } from 'react-nat
 import { useTheme } from 'styled-components/native';
 import { FontFamily } from '@theme/Typography';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { ItemDropdownMenu } from '@screens/Settings/screens/components/ItemDropdown/ItemDropdown.interfaces';
 
 const sampleMangas = [
   {
@@ -126,15 +127,16 @@ const MangasColumn: React.FC<ConnectedMangasColumnProps> = (props) => {
   const textStyle = useAnimatedStyle(() => ({
     fontSize: fontSizeValue.value,
   }));
-  const mangaStyles: MenuItemProps[] = React.useMemo(
-    (): MenuItemProps[] =>
+  const mangaStyles: ItemDropdownMenu[] = React.useMemo(
+    (): ItemDropdownMenu[] =>
       Object.values(MangaCoverStyles).map((x) => ({
         text: x,
+        isSelected: x === coverStyle,
         onPress: () => {
           changeCoverStyle(x);
         },
       })),
-    []
+    [coverStyle]
   );
 
   return (

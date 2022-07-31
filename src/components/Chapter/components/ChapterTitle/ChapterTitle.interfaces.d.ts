@@ -2,4 +2,5 @@ import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.in
 
 export interface ChapterTitleProps {
   chapter: ReadingChapterInfo;
+  isCurrentlyBeingRead: boolean;
 }

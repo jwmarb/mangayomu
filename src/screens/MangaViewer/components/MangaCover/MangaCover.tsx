@@ -36,7 +36,7 @@ const MangaCover: React.FC<MangaCoverProps> = (props) => {
       icon: 'link',
       onPress: async () => {
         try {
-          Clipboard.setString(mangaCoverURI);
+          await Clipboard.setStringAsync(mangaCoverURI);
           displayMessage('Copied to clipboard.');
         } catch (e) {
           displayMessage(e as any);

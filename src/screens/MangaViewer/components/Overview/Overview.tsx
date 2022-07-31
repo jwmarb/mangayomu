@@ -34,8 +34,18 @@ LogBox.ignoreLogs(['You have mounted RecyclerListView']);
 const dataProviderFn = (r1: ReadingChapterInfo, r2: ReadingChapterInfo) => r1 !== r2;
 
 const Overview: React.FC<OverviewProps> = (props) => {
-  const { children, chapters, currentChapter, collapsible, rowRenderer, manga, language, onChangeLanguage, loading } =
-    props;
+  const {
+    children,
+    chapters,
+    currentChapter,
+    collapsible,
+    rowRenderer,
+    manga,
+    language,
+    onChangeLanguage,
+    loading,
+    onRead,
+  } = props;
   const { containerPaddingTop } = collapsible;
   const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(true);
   const { width } = useWindowDimensions();
@@ -47,6 +57,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
   const mangas = useSelector((state: AppState) => state.downloading.mangas);
   const chaptersInManga = useSelector((state: AppState) => state.mangas[manga.link]?.chapters ?? {});
   const metas = useSelector((state: AppState) => state.downloading.metas[manga.link]);
+  const mangaOfChapters = useSelector((state: AppState) => state.mangas[manga.link]);
 
   const layout = React.useMemo(
     () =>
@@ -119,7 +130,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
   return (
     <>
       {dataProvider.getSize() > 0 && (
-        <FloatingActionButton isAtBeginning={isAtBeginning} currentChapter={currentChapter} />
+        <FloatingActionButton onRead={onRead} isAtBeginning={isAtBeginning} currentChapter={currentChapter} />
       )}
       <RecyclerListView
         externalScrollView={RecyclerListViewScrollView as any}
@@ -142,6 +153,7 @@ const Overview: React.FC<OverviewProps> = (props) => {
           metas,
           deviceOrientation,
           width,
+          manga: mangaOfChapters,
         }}
         renderFooter={createFooter(!finished, chapters.length)}
       />

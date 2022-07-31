@@ -41,8 +41,9 @@ export const SliderCircle = styled.View`
     border-bottom-right-radius: 1000px;
     border-bottom-left-radius: 1000px;
     background-color: ${props.theme.palette.primary.main.get()};
+    /* background-color: rgba(255, 0, 0, 0.5); */
     padding: ${props.theme.spacing(1.5)};
-    margin: ${props.theme.spacing(1)};
+    margin: ${props.theme.spacing(2.75)};
   `}
 `;
 
@@ -60,6 +61,6 @@ export const SliderCircleBaseContainer = styled(Animated.View)`
     left: 0;
     top: ${rem(-3)};
     bottom: 0;
-    margin-left: ${props.theme.spacing(2.5)};
+    margin-left: ${props.theme.spacing(4.75)};
   `}
 `;

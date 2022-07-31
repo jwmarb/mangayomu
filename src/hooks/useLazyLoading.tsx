@@ -11,7 +11,7 @@ const Container = styled(Animated.View).attrs({ entering: FadeInUp, exiting: Fad
   align-items: center;
 `;
 
-const Fallback = (
+export const Fallback = (
   <Container>
     <Progress />
   </Container>

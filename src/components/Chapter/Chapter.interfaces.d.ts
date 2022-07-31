@@ -9,6 +9,7 @@ export interface ChapterProps {
   manga: Manga;
   chapter: ReadingChapterInfo;
   width: number;
+  isCurrentlyBeingRead: boolean;
 }
 
 export interface ChapterRef {

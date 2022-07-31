@@ -8,6 +8,9 @@ import { HoldItem } from 'react-native-hold-menu';
 import { ThemedStyledProps } from 'styled-components';
 import useMangaSource from '@hooks/useMangaSource';
 import { ContainerProps } from '@components/Container/Container.interfaces';
+import ExpoStorage from '@utils/ExpoStorage';
+import { useSelector } from 'react-redux';
+import { AppState } from '@redux/store';
 
 const generateCSS = (props: ThemedStyledProps<ViewProps & React.RefAttributes<View>, DefaultTheme>) => css`
   display: flex;
@@ -74,6 +77,7 @@ export const HeaderBaseContainer = styled.View`
 
 export const MangaSource: React.FC = () => {
   const mangaSource = useMangaSource();
+  const lib = useSelector((state: AppState) => state.mangas);
   const menuItems: MenuItemProps[] = React.useMemo(
     () => [
       {
@@ -102,8 +106,11 @@ export const MangaSource: React.FC = () => {
     [mangaSource]
   );
   return (
-    <HoldItem activateOn='tap' hapticFeedback='Heavy' items={menuItems}>
-      <IconButton icon={<Image source={{ uri: mangaSource.getIcon() }} style={{ width: 24, height: 24 }} />} />
-    </HoldItem>
+    <IconButton
+      icon={<Image source={{ uri: mangaSource.getIcon() }} style={{ width: 24, height: 24 }} />}
+      onPress={async () => {
+        console.log(Object.keys(lib));
+      }}
+    />
   );
 };

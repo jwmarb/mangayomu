@@ -37,7 +37,12 @@ import * as FileSystem from 'expo-file-system';
 import { Constants } from '@theme/core';
 import { ChapterContext } from '@context/ChapterContext';
 import useMountedEffect from '@hooks/useMountedEffect';
-import { ReadingChapterInfo, ReadingChapterInfoRecord } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
+import {
+  MangaReducerState,
+  ReadingChapterInfo,
+  ReadingChapterInfoRecord,
+  ReadingMangaInfo,
+} from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import DownloadCollection from '@utils/DownloadCollection';
 import DownloadManager, { DownloadStatus } from '@utils/DownloadManager';
 import { ChaptersListReducerState } from '@redux/reducers/chaptersListReducer/chaptersListReducer.interfaces';
@@ -47,8 +52,10 @@ import {
   ChapterState,
   MangaDownloadingReducerState,
 } from '@redux/reducers/mangaDownloadingReducer/mangaDownloadingReducer.interfaces';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import HeaderRight from '@screens/MangaViewer/components/HeaderRight';
+import onlyDisplayOnFocus from '@utils/onlyDisplayOnFocus';
+import { PortalHost } from '@gorhom/portal';
 const LanguageModal = React.lazy(() => import('@screens/MangaViewer/components/LanguageModal'));
 const Genres = React.lazy(() => import('@screens/MangaViewer/components/Genres'));
 const ChapterHeader = React.lazy(() => import('@screens/MangaViewer/components/ChapterHeader'));
@@ -69,11 +76,13 @@ const rowRenderer: (
     chaptersInManga: ReadingChapterInfoRecord;
     metas: Record<string, ChapterState> | undefined;
     width: number;
+    manga: ReadingMangaInfo;
   }
 ) => JSX.Element | JSX.Element[] | null = (type, data, i, extendedState) => {
   if (data.link in extendedState.chaptersInManga === false) return null;
   return (
     <Chapter
+      isCurrentlyBeingRead={extendedState.manga.currentlyReadingChapter === data.link}
       width={extendedState.width}
       manga={data.manga}
       chapter={extendedState.chaptersInManga[data.link]}
@@ -112,6 +121,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     refresh,
   } = useAPICall(() => source.getMeta(manga), [manga]);
   const [language, setLanguage] = React.useState<ISOLangCode>('en');
+  const isFocused = useIsFocused();
 
   const options: UseCollapsibleOptions = React.useMemo(
     () => ({
@@ -137,14 +147,14 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     selectedSortOption,
   } = useSort(
     (createSort) => ({
-      Chapter: createSort((a: MangaChapter, b: MangaChapter) => (a.name && b.name ? a.index - b.index : 0)),
-      ...(MangaValidator.hasDate(userMangaInfo?.chapters[0] ?? {})
+      'Chapter number': createSort((a: MangaChapter, b: MangaChapter) => (a.name && b.name ? a.index - b.index : 0)),
+      ...(MangaValidator.hasDate(userMangaInfo?.orderedChapters.get(0) ?? {})
         ? {
             'Date Released': createSort((a: WithDate, b: WithDate) => Date.parse(a.date) - Date.parse(b.date)),
           }
         : {}),
     }),
-    'Chapter'
+    'Chapter number'
   );
   const handleOnOpenModal = React.useCallback(() => {
     _handleOnOpenModal();
@@ -157,7 +167,6 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   const collapsible = useCollapsibleHeader(options);
   const { ready, Fallback } = useLazyLoading();
   const loadingAnimation = useAnimatedLoading();
-
   const isAdult = React.useMemo(
     () => userMangaInfo && MangaValidator.isNSFW(userMangaInfo.genres),
     [userMangaInfo?.genres]
@@ -214,6 +223,21 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     checkAllChapters(sorted.filter((c) => c.dateRead != null));
   }, [sorted]);
 
+  const handleOnRead = React.useCallback(() => {
+    if (userMangaInfo) {
+      if (userMangaInfo.currentlyReadingChapter)
+        navigation.navigate('Reader', {
+          chapterKey: userMangaInfo.chapters[userMangaInfo.currentlyReadingChapter].link,
+          mangaKey: userMangaInfo.link,
+        });
+      else
+        navigation.navigate('Reader', {
+          chapterKey: userMangaInfo.orderedChapters.get(0).link,
+          mangaKey: userMangaInfo.link,
+        });
+    }
+  }, [userMangaInfo]);
+
   React.useEffect(() => {
     if (userMangaInfo) {
       const sort = Object.values(userMangaInfo.chapters).sort(selectedSortOption);
@@ -222,18 +246,25 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     }
   }, [userMangaInfo?.chapters, sort, reverse]);
 
-  if (ready) {
-    return (
-      <React.Suspense fallback={null}>
+  return (
+    <React.Suspense fallback={null}>
+      {ready && isFocused ? (
         <AnimatedProvider style={loadingAnimation}>
           <Overview
+            onRead={handleOnRead}
             rowRenderer={rowRenderer as any}
             manga={manga}
             loading={loading}
             onChangeLanguage={setLanguage}
             chapters={sorted}
             language={language}
-            currentChapter={userMangaInfo?.currentlyReadingChapter}
+            currentChapter={
+              userMangaInfo
+                ? userMangaInfo.currentlyReadingChapter
+                  ? userMangaInfo.chapters[userMangaInfo.currentlyReadingChapter]
+                  : null
+                : null
+            }
             collapsible={collapsible}>
             <MangaViewerContainer>
               <ImageBackground source={{ uri: manga.imageCover }}>
@@ -260,7 +291,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
                         />
                       </Flex>
                     </Flex>
-                    <MangaAction manga={manga} userMangaInfo={userMangaInfo} />
+                    <MangaAction manga={manga} userMangaInfo={userMangaInfo} onRead={handleOnRead} />
                   </MangaViewerImageBackdrop>
                 </LinearGradient>
               </ImageBackground>
@@ -287,10 +318,11 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
             <SelectedChapters numOfChapters={meta?.chapters.length ?? 0} manga={manga} />
           </Overview>
         </AnimatedProvider>
-      </React.Suspense>
-    );
-  }
-  return Fallback;
+      ) : (
+        Fallback
+      )}
+    </React.Suspense>
+  );
 };
 
 export default connector(MangaViewer);

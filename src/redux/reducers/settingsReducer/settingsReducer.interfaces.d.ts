@@ -3,6 +3,12 @@ import { FontFamily } from '@theme/Typography';
 import { Orientation } from 'expo-screen-orientation';
 import { StatusBarStyle } from 'expo-status-bar';
 import { ReaderBackgroundColor, ReaderDirection, ChangeableTheme, MangaCoverStyles } from './settingsReducer.constants';
+import { ReaderSettingProfile } from '@redux/reducers/readerSettingProfileReducer/readerSettingProfileReducer.interfaces';
+import {
+  ImageScaling,
+  ReaderScreenOrientation,
+  ZoomStartPosition,
+} from '@redux/reducers/readerSettingProfileReducer/readerSettingProfileReducer.constants';
 
 export interface SettingsReducerState {
   theme: ChangeableTheme;
@@ -29,10 +35,10 @@ export interface SettingsReducerState {
   };
   reader: {
     backgroundColor: ReaderBackgroundColor;
-    preferredReadingDirection: ReaderDirection;
     keepDeviceAwake: boolean;
     showPageNumber: boolean;
     skipChaptersMarkedRead: boolean;
+    _global: ReaderSettingProfile;
   };
 }
 
@@ -62,4 +68,7 @@ export type SettingsReducerAction =
   | { type: 'SET_DEVICE_ORIENTATION'; orientation: Orientation }
   | { type: 'CHANGE_FONT'; fontFamily: FontFamily }
   | { type: 'TOGGLE_CACHE' }
-  | { type: 'SET_MAX_CACHE_SIZE'; bytes: number };
+  | { type: 'SET_MAX_CACHE_SIZE'; bytes: number }
+  | { type: 'SET_READER_SCREEN_ORIENTATION'; orientation: ReaderScreenOrientation }
+  | { type: 'SET_READER_IMAGE_SCALING'; imageScaling: ImageScaling }
+  | { type: 'SET_READER_ZOOM_START_POSITION'; zoomStartPosition: ZoomStartPosition };

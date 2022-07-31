@@ -14,10 +14,6 @@ export default function (
   action: MangaLibReducerAction
 ): MangaLibReducerState {
   switch (action.type) {
-    case 'REHYDRATE':
-      return {
-        ...state,
-      };
     case 'SET_SEARCH_QUERY_IN_LIBRARY':
       return {
         ...state,

@@ -39,8 +39,8 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-native": "0.68.2",
+    "react-native-anchor-point": "^1.0.6",
     "react-native-circular-progress-indicator": "^4.3.0",
-    "react-native-gesture-handler": "~2.2.1",
     "react-native-hold-menu": "^0.1.2",
     "react-native-popup-menu": "^0.15.12",
     "react-native-reanimated": "~2.8.0",
@@ -60,7 +60,9 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.4.1",
     "styled-components": "^5.3.5",
-    "url": "^0.11.0"
+    "url": "^0.11.0",
+    "react-native-gesture-handler": "~2.2.1",
+    "expo-updates": "~0.13.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

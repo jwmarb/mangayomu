@@ -1,10 +1,11 @@
 {
   "expo": {
-    "name": "manga-app-improved",
-    "slug": "manga-app-improved",
+    "name": "MangaYomu",
+    "slug": "manga-yomu",
     "version": "1.0.0",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
+    "privacy": "unlisted",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -16,6 +17,9 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
+    },
+    "androidStatusBar": {
+      "translucent": true
     },
     "android": {
       "adaptiveIcon": {

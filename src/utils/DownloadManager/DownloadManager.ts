@@ -272,6 +272,16 @@ export default class DownloadManager {
     }
   }
 
+  public async getDownloadedURIs() {
+    try {
+      const files = await FileSystem.readDirectoryAsync(this.dir);
+      return Promise.all(files.map((x) => FileSystem.getInfoAsync(this.dir + x)));
+    } catch (e) {
+      await FileSystem.makeDirectoryAsync(this.dir, { intermediates: true });
+      return [];
+    }
+  }
+
   /**
    * Download the pages of the chapter
    */

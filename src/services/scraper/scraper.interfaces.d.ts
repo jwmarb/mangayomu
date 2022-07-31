@@ -11,14 +11,6 @@ export interface WithOfficialTranslations {
   officialTranslation: boolean;
 }
 
-export interface MangaPage {
-  uri: string;
-  dimensions: {
-    width: number;
-    height: number;
-  };
-}
-
 /**
  * A manga with an author
  */

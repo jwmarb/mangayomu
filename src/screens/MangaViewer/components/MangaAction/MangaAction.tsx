@@ -6,9 +6,10 @@ import { MangaActionProps } from '@screens/MangaViewer/components/MangaAction/Ma
 import useMangaSource from '@hooks/useMangaSource';
 import React from 'react';
 import { ActivityIndicator } from 'react-native';
+import { useRootNavigation } from '@navigators/Root';
 
 const MangaAction: React.FC<MangaActionProps> = (props) => {
-  const { manga, userMangaInfo } = props;
+  const { manga, userMangaInfo, onRead } = props;
   const dispatch = useAppDispatch();
   const chaptersLength = userMangaInfo ? Object.keys(userMangaInfo.chapters).length : 0;
   const handleOnAddToLibrary = () => {
@@ -22,9 +23,13 @@ const MangaAction: React.FC<MangaActionProps> = (props) => {
       <Flex fullWidth grow justifyContent='flex-end' direction='column'>
         <Flex alignItems='center'>
           <Button
+            onPress={onRead}
             title={
               userMangaInfo
-                ? userMangaInfo.currentlyReadingChapter?.name ?? chaptersLength > 0
+                ? userMangaInfo.currentlyReadingChapter != null
+                  ? userMangaInfo.chapters[userMangaInfo.currentlyReadingChapter].name ??
+                    `Chapter ${userMangaInfo.chapters[userMangaInfo.currentlyReadingChapter].index + 1}`
+                  : chaptersLength > 0
                   ? 'Read'
                   : 'Unavailable'
                 : ''

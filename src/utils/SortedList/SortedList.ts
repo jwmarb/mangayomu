@@ -8,9 +8,19 @@ class SortedList<T> {
   private arr: T[];
   private comparator?: Comparator<T>;
 
-  public constructor(comparator?: Comparator<T>, items?: T[]) {
-    this.arr = items ? (items.length > 0 ? items.sort(comparator) : []) : [];
+  public constructor(comparator?: Comparator<T>, items?: T[], alreadySorted?: boolean) {
+    this.arr = items ? (items.length > 0 ? (alreadySorted ? items : items.sort(comparator)) : []) : [];
     this.comparator = comparator;
+  }
+
+  /**
+   * Replenish SortedList methods of a JSONified SortedList object
+   * @param jsonObj The SortedList that has been converted to a JSON object
+   * @param comparator A comparator used for binary operations
+   * @returns Returns an instance of SortedList
+   */
+  public static rehydrate<T>(jsonArr: any[], comparator: Comparator<T>) {
+    return new SortedList<T>(comparator, jsonArr, true);
   }
 
   /**
@@ -84,6 +94,14 @@ class SortedList<T> {
 
   public [Symbol.iterator](): Iterator<T> {
     return this.arr.values();
+  }
+
+  /**
+   * Get the size of the list
+   * @returns Returns the size of the list
+   */
+  public size(): number {
+    return this.arr.length;
   }
 }
 

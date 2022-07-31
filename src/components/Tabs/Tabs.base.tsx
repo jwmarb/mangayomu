@@ -1,6 +1,8 @@
 import Animated from 'react-native-reanimated';
 import styled, { css } from 'styled-components/native';
 import { Dimensions } from 'react-native';
+import { ScreenDimension } from '@utils/extra';
+import { ScrollView } from 'react-native-gesture-handler';
 export const TabButtonContainer = styled.View`
   ${(props) => css`
     padding: ${props.theme.spacing(2, 2.4)};
@@ -15,11 +17,13 @@ export const TabContainer = styled(Animated.View)`
   top: 0;
 `;
 
-export const TabContentContainer = styled.View`
-  width: ${Dimensions.get('window').width}px;
+export const TabContentContainer = styled.View<ScreenDimension>`
+  ${(props) => css`
+    width: ${props.width}px;
+  `}
 `;
 
-export const TabSelectedIndicator = styled(Animated.View)<{ numOfChildren: number }>`
+export const TabSelectedIndicator = styled(Animated.View)<{ numOfChildren: number } & ScreenDimension>`
   ${(props) => css`
     background-color: ${props.theme.palette.primary.main.get()};
     height: 2px;
@@ -27,6 +31,6 @@ export const TabSelectedIndicator = styled(Animated.View)<{ numOfChildren: numbe
     left: 0;
     right: 0;
     bottom: 0;
-    width: ${Dimensions.get('window').width / props.numOfChildren}px;
+    width: ${props.width / props.numOfChildren}px;
   `}
 `;

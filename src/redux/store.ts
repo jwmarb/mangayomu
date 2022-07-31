@@ -5,13 +5,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { PersistConfig, persistReducer, persistStore } from 'redux-persist';
 import libraryMutator from '@redux/middleware/libraryMutator';
 import ExpoStorage from '@utils/ExpoStorage';
+// import ExpoStorage from '@react-native-async-storage/async-storage';
 import { injectThemeFromStore } from '@theme/Color/Color.helpers';
 import sortedListTransformer from './transformers/sortedListTransformer';
 import { injectStoreForTypography } from '@theme/Typography';
 const persistConfig: PersistConfig<AppState> = {
   key: 'root',
   storage: ExpoStorage,
-  blacklist: ['chaptersList', 'reader', 'library'],
+  blacklist: ['chaptersList', 'reader'],
   transforms: [sortedListTransformer],
 };
 

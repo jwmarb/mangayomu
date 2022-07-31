@@ -11,6 +11,7 @@ export interface OverviewProps {
   onChangeLanguage: (l: ISOLangCode) => void;
   loading: boolean;
   manga: Manga;
+  onRead: () => void;
   rowRenderer: (
     type: string | number,
     data: any,

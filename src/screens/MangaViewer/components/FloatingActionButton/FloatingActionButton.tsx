@@ -23,18 +23,18 @@ import Animated, {
   runOnUI,
 } from 'react-native-reanimated';
 import useAnimatedMounting from '@hooks/useAnimatedMounting';
-import { LayoutChangeEvent, NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
+import { LayoutChangeEvent, NativeSyntheticEvent, TextLayoutEventData, useWindowDimensions } from 'react-native';
 import useMountedEffect from '@hooks/useMountedEffect';
 import { useTheme } from 'styled-components/native';
 import { useSelector } from 'react-redux';
 import { AppState } from '@redux/store';
 import { RFValue } from 'react-native-responsive-fontsize';
-
-const BUTTON_WIDTH = RFValue(41);
+import { Portal } from '@gorhom/portal';
 
 const FloatingActionButton: React.FC<FloatingActionButtonProps> = (props) => {
-  const { isAtBeginning, currentChapter } = props;
+  const { isAtBeginning, currentChapter, onRead } = props;
   const [positionAbsolute, setPositionAbsolute] = React.useState<boolean>(true);
+  const { width: _width, height } = useWindowDimensions();
   const selectionMode = useSelector((state: AppState) => state.chaptersList.mode);
   const textWidth = React.useRef<number>(0);
   const buttonWidth = React.useRef<number>(0);
@@ -103,32 +103,34 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = (props) => {
   }));
 
   return (
-    <FloatingContainer>
-      <FloatingActionButtonContainer style={containerStyles}>
-        <ButtonBase round onPress={() => {}} color='primary'>
-          <FloatingActionButtonBase style={baseStyle}>
+    <Portal>
+      <FloatingContainer width={_width} height={height}>
+        <FloatingActionButtonContainer style={containerStyles}>
+          <ButtonBase round onPress={onRead} color='primary'>
+            <FloatingActionButtonBase style={baseStyle}>
+              <Flex alignItems='center'>
+                <Icon bundle='Feather' name='book' color={theme.palette.primary.main.getContrastText()} />
+                <FloatingActionTextContainer
+                  style={textContainerStyle}
+                  positionAbsolute={positionAbsolute}
+                  onLayout={handleOnTextContainerLayout}>
+                  <Typography variant='button' numberOfLines={1} color={theme.palette.primary.main.getContrastText()}>
+                    {currentChapter?.name ?? 'Read'}
+                  </Typography>
+                </FloatingActionTextContainer>
+              </Flex>
+            </FloatingActionButtonBase>
+          </ButtonBase>
+        </FloatingActionButtonContainer>
+        <FloatingActionButtonContainerLayoutGetter>
+          <FloatingActionButtonBase onLayout={handleOnButtonContainerLayout}>
             <Flex alignItems='center'>
               <Icon bundle='Feather' name='book' color={theme.palette.primary.main.getContrastText()} />
-              <FloatingActionTextContainer
-                style={textContainerStyle}
-                positionAbsolute={positionAbsolute}
-                onLayout={handleOnTextContainerLayout}>
-                <Typography variant='button' numberOfLines={1} color={theme.palette.primary.main.getContrastText()}>
-                  {currentChapter?.name ?? 'Read'}
-                </Typography>
-              </FloatingActionTextContainer>
             </Flex>
           </FloatingActionButtonBase>
-        </ButtonBase>
-      </FloatingActionButtonContainer>
-      <FloatingActionButtonContainerLayoutGetter>
-        <FloatingActionButtonBase onLayout={handleOnButtonContainerLayout}>
-          <Flex alignItems='center'>
-            <Icon bundle='Feather' name='book' color={theme.palette.primary.main.getContrastText()} />
-          </Flex>
-        </FloatingActionButtonBase>
-      </FloatingActionButtonContainerLayoutGetter>
-    </FloatingContainer>
+        </FloatingActionButtonContainerLayoutGetter>
+      </FloatingContainer>
+    </Portal>
   );
 };
 

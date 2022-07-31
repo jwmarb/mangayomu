@@ -7,6 +7,9 @@ import {
   toggleSkipChaptersMarkedRead,
   toggleKeepDeviceAwake,
   toggleShowPageNumber,
+  setReaderScreenOrientation,
+  setReaderScreenImageScaling,
+  setReaderScreenZoomStartPosition,
 } from '@redux/reducers/settingsReducer';
 import { StackScreenProps } from '@react-navigation/stack';
 import { SettingsStackParamList } from '@navigators/Settings/Settings.interfaces';
@@ -22,6 +25,9 @@ const connector = connect(mapStateToProps, {
   toggleSkipChaptersMarkedRead,
   toggleKeepDeviceAwake,
   toggleShowPageNumber,
+  setReaderScreenOrientation,
+  setReaderScreenImageScaling,
+  setReaderScreenZoomStartPosition,
 });
 
 export type ConnectedReaderSettingsScreenProps = ConnectedProps<typeof connector>;

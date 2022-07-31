@@ -1,4 +1,9 @@
 import {
+  ImageScaling,
+  ReaderScreenOrientation,
+  ZoomStartPosition,
+} from '@redux/reducers/readerSettingProfileReducer/readerSettingProfileReducer.constants';
+import {
   ChangeableTheme,
   MangaCoverStyles,
   ReaderBackgroundColor,
@@ -90,5 +95,23 @@ export function changeCoverStyle(coverStyle: MangaCoverStyles) {
 export function changeFont(fontFamily: FontFamily) {
   return (dispatch: AppDispatch) => {
     dispatch({ type: 'CHANGE_FONT', fontFamily });
+  };
+}
+
+export function setReaderScreenOrientation(orientation: ReaderScreenOrientation) {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'SET_READER_SCREEN_ORIENTATION', orientation });
+  };
+}
+
+export function setReaderScreenImageScaling(imageScaling: ImageScaling) {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'SET_READER_IMAGE_SCALING', imageScaling });
+  };
+}
+
+export function setReaderScreenZoomStartPosition(zoomStartPosition: ZoomStartPosition) {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'SET_READER_ZOOM_START_POSITION', zoomStartPosition });
   };
 }

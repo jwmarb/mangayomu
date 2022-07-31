@@ -1,5 +1,6 @@
 import { ChaptersListReducerState } from '@redux/reducers/chaptersListReducer/chaptersListReducer.interfaces';
-import { Manga, MangaChapter, MangaMeta, MangaPage } from '@services/scraper/scraper.interfaces';
+import { MangaPage } from '@redux/reducers/readerReducer/readerReducer.interfaces';
+import { Manga, MangaChapter, MangaMeta } from '@services/scraper/scraper.interfaces';
 import DownloadManager, { DownloadStatus } from '@utils/DownloadManager';
 import SortedList from '@utils/SortedList';
 
@@ -10,14 +11,14 @@ export type ReadingChapterInfo = MangaChapter & {
   scrollPosition: number;
 
   /**
-   * An array of manga pages. Can be null if the user has not read the chapter yet
-   */
-  pages: MangaPage[] | null;
-
-  /**
    * The index of the current page the user is on
    */
   indexPage: number;
+
+  /**
+   * The total number of pages in the chapter
+   */
+  totalPages: number;
 
   /**
    * The time the chapter was last read
@@ -59,9 +60,9 @@ export interface ReadingMangaInfo extends MangaMeta, Manga {
   dateAddedInLibrary: string | null;
 
   /**
-   * The current chapter the user is reading
+   * The current chapter key the user is reading
    */
-  currentlyReadingChapter: ReadingChapterInfo | null;
+  currentlyReadingChapter: string | null;
 }
 
 export type MangaReducerState = Record<string, ReadingMangaInfo>;
@@ -90,4 +91,15 @@ export type MangaReducerAction =
   | { type: 'VALIDATE_FILE_INTEGRITY'; mangaKey: string; chapterKey: string; stage: 'prepare' | 'finish' }
   | { type: 'VALIDATE_FILE_INTEGRITIES'; mangaKey: string; chapterKeys: string[]; stage: 'prepare' | 'finish' }
   | { type: 'VALIDATE_WHOLE_MANGA_FILE_INTEGRITY'; mangaKey: string; stage: 'prepare' | 'finish' }
-  | { type: 'CANCEL_DOWNLOAD'; mangaKey: string; chapterKey: string };
+  | { type: 'CANCEL_DOWNLOAD'; mangaKey: string; chapterKey: string }
+  | { type: 'OPEN_READER'; manga: Manga; chapter: ReadingChapterInfo }
+  | { type: 'SET_INDEX_PAGE'; mangaKey: string; chapterKey: string; indexPage: number }
+  | {
+      type: 'APPEND_PAGES';
+      pages: MangaPage[];
+      numOfPages: number;
+      chapter: MangaChapter;
+      manga: Manga;
+      appendLocation: 'start' | 'end' | null;
+      initialIndexPage: number;
+    };

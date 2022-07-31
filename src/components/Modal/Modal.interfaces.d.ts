@@ -14,6 +14,7 @@ export interface ModalProps {
   recyclerListViewProps?: RecyclerListViewProps;
   topColor?: keyof BackgroundColors;
   backgroundColor?: keyof BackgroundColors;
+  disablePanning?: boolean;
 }
 
 export interface BackdropPressableProps {
