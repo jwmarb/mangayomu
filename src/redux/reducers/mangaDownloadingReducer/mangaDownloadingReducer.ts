@@ -7,6 +7,7 @@ import DownloadManager, { DownloadStatus } from '@utils/DownloadManager';
 const INITIAL_STATE: MangaDownloadingReducerState = {
   mangas: {},
   metas: {},
+  downloadingKeys: {},
 };
 
 export default function (
@@ -14,6 +15,18 @@ export default function (
   action: MangaDownloadingReducerAction
 ): MangaDownloadingReducerState {
   switch (action.type) {
+    case 'DELETE_DOWNLOADING_KEY':
+      const newState = { ...state, downloadingKeys: { ...state.downloadingKeys } };
+      delete state.downloadingKeys[action.mangaKey];
+      return newState;
+    case 'SET_DOWNLOADING_KEY':
+      return {
+        ...state,
+        downloadingKeys: {
+          ...state.downloadingKeys,
+          [action.mangaKey]: action.key,
+        },
+      };
     case 'RERUN_DOWNLOADS':
       return {
         ...state,

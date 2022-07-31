@@ -5,7 +5,6 @@ import CancelablePromise from '@utils/CancelablePromise';
 import DownloadManager, { DownloadStatus } from '@utils/DownloadManager';
 import StorageManager from '@utils/StorageManager';
 import pLimit from 'p-limit';
-const downloadingKeys: Record<string, string | null> = {};
 
 export type StateGetter = () => AppState;
 
@@ -23,7 +22,7 @@ export const cancelDownload = (mangaKey: string, chapterKey: string) => {
         getState().downloading.mangas[mangaKey]!.chaptersToDownload.length <= 1 &&
         getState().downloading.mangas[mangaKey]!.chaptersToDownload[0] === chapterKey
       )
-        delete downloadingKeys[mangaKey];
+        dispatch({ type: 'DELETE_DOWNLOADING_KEY', mangaKey });
       try {
         const downloadManager = DownloadManager.ofWithManga(
           getState().mangas[mangaKey].chapters[chapterKey],
@@ -53,7 +52,7 @@ export const cancelAllForSeries = (mangaKey: string) => {
   return async (dispatch: AppDispatch, getState: StateGetter) => {
     if (mangaKey in getState().downloading.mangas) {
       try {
-        delete downloadingKeys[mangaKey];
+        dispatch({ type: 'DELETE_DOWNLOADING_KEY', mangaKey });
         const keys = Object.keys(getState().downloading.mangas[mangaKey]!.chapters);
         for (let i = keys.length - 1; i >= 0; i--) {
           const key = keys[i];
@@ -100,7 +99,7 @@ export const downloadAll = () => {
     return {
       cancel: async () => {
         canceled = true;
-        for (const [mangaKey, chapterKey] of Object.entries(downloadingKeys)) {
+        for (const [mangaKey, chapterKey] of Object.entries(getState().downloading.downloadingKeys)) {
           if (chapterKey) {
             const downloadManager = DownloadManager.ofWithManga(
               getState().mangas[mangaKey].chapters[chapterKey],
@@ -111,7 +110,7 @@ export const downloadAll = () => {
               case DownloadStatus.RESUME_DOWNLOADING:
               case DownloadStatus.DOWNLOADING:
                 console.log(`${chapterKey} -> !!! PAUSED !!!`);
-                if (mangaKey in downloadingKeys) await downloadManager.pause();
+                if (mangaKey in getState().downloading.downloadingKeys) await downloadManager.pause();
 
                 break;
             }
@@ -123,7 +122,7 @@ export const downloadAll = () => {
           Promise.all(
             Object.keys(getState().downloading.mangas).map((mangaKey) => {
               const limit = pLimit(1);
-              downloadingKeys[mangaKey] = null;
+              dispatch({ type: 'SET_DOWNLOADING_KEY', mangaKey, key: null });
 
               new Promise(() => {
                 for (const chapterKey in getState().downloading.mangas[mangaKey]?.chapters) {
@@ -134,7 +133,7 @@ export const downloadAll = () => {
                   limit(
                     () =>
                       new Promise<void>((res, rej) => {
-                        if (downloadingKeys[mangaKey] === null && !canceled)
+                        if (getState().downloading.downloadingKeys[mangaKey] === null && !canceled)
                           switch (downloadManager.getStatus()) {
                             case DownloadStatus.START_DOWNLOADING:
                               canceled = true;
@@ -150,7 +149,7 @@ export const downloadAll = () => {
                               break;
                             case DownloadStatus.QUEUED: {
                               console.log(`${chapterKey} -> START DOWNLOAD`);
-                              downloadingKeys[mangaKey] = chapterKey;
+                              dispatch({ type: 'SET_DOWNLOADING_KEY', mangaKey, key: chapterKey });
                               const interval = setInterval(() => {
                                 if (!canceled)
                                   dispatch({
@@ -168,7 +167,8 @@ export const downloadAll = () => {
                                 }
                               }, 500);
                               downloadManager.download().then(() => {
-                                downloadingKeys[mangaKey] = null;
+                                dispatch({ type: 'SET_DOWNLOADING_KEY', mangaKey, key: null });
+
                                 clearInterval(interval);
                                 if (!canceled && downloadManager.getProgress() >= 1) {
                                   console.log(`${chapterKey} -> DOWNLOAD COMPLETE`);
@@ -185,7 +185,8 @@ export const downloadAll = () => {
                             }
                             case DownloadStatus.PAUSED: {
                               console.log(`${chapterKey} -> RESUME DOWNLOAD`);
-                              downloadingKeys[mangaKey] = chapterKey;
+                              dispatch({ type: 'SET_DOWNLOADING_KEY', mangaKey, key: chapterKey });
+
                               const interval = setInterval(() => {
                                 if (!canceled)
                                   dispatch({
@@ -201,7 +202,8 @@ export const downloadAll = () => {
                                 }
                               }, 500);
                               downloadManager.resume().then(() => {
-                                downloadingKeys[mangaKey] = null;
+                                dispatch({ type: 'SET_DOWNLOADING_KEY', mangaKey, key: null });
+
                                 clearInterval(interval);
                                 if (!canceled) {
                                   console.log(`${chapterKey} -> DOWNLOAD COMPLETE > Resumed`);
@@ -228,7 +230,7 @@ export const downloadAll = () => {
                             default:
                               return rej1(
                                 `Unable to download ${chapterKey} ${downloadManager.getError()}\nstatus: ${downloadManager.getStatus()}\ndownloadingKeys[mangaKey] = ${
-                                  downloadingKeys[mangaKey]
+                                  getState().downloading.downloadingKeys[mangaKey]
                                 }`
                               );
                           }

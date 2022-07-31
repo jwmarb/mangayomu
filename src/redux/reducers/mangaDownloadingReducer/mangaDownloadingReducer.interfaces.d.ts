@@ -3,14 +3,14 @@ import { ReadingChapterInfoRecord } from '@redux/reducers/mangaReducer/mangaRedu
 import { Manga } from '@services/scraper/scraper.interfaces';
 import DownloadManager from '@utils/DownloadManager';
 
+export interface MangaDownloadingState {
+  chapters: Record<string, null>;
+  chaptersToDownload: string[]; // keys
+}
+
 export interface MangaDownloadingReducerState {
   mangas: {
-    [mangaKey: string]:
-      | {
-          chapters: Record<string, null>;
-          chaptersToDownload: string[]; // keys
-        }
-      | undefined;
+    [mangaKey: string]: MangaDownloadingState | undefined;
   };
   metas: {
     [mangaKey: string]:
@@ -18,6 +18,9 @@ export interface MangaDownloadingReducerState {
           [chapterKey: string]: ChapterState;
         }
       | undefined;
+  };
+  downloadingKeys: {
+    [mangaKey: string]: string | null;
   };
 }
 export type ChapterState = {
@@ -42,4 +45,6 @@ export type MangaDownloadingReducerAction =
     }
   | { type: 'CANCEL_ALL_FOR_SERIES'; mangaKey: string; chapters: string[] }
   | { type: 'CANCEL_DOWNLOAD'; mangaKey: string; chapterKey: string }
-  | { type: 'RERUN_DOWNLOADS' };
+  | { type: 'RERUN_DOWNLOADS' }
+  | { type: 'SET_DOWNLOADING_KEY'; mangaKey: string; key: string | null }
+  | { type: 'DELETE_DOWNLOADING_KEY'; mangaKey: string };
