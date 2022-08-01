@@ -6,7 +6,7 @@ export enum ImageScaling {
 }
 
 export enum ZoomStartPosition {
-  AUTO = 'Automatic',
+  AUTOMATIC = 'Automatic',
   LEFT = 'Left',
   RIGHT = 'Right',
   CENTER = 'Center',
