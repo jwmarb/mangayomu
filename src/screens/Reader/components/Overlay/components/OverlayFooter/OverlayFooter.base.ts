@@ -11,6 +11,6 @@ export const OverlayFooterContainer = styled(Animated.View).attrs({
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-evenly;
   `}
 `;

@@ -91,11 +91,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
                 offset={indexOffset}
               />
             )}
-            <OverlayFooter
-              manga={manga}
-              orientation={readerSetting.orientation}
-              setOrientationForSeries={setOrientationForSeries}
-            />
+            <OverlayFooter manga={manga} />
           </Flex>
         )}
       </OverlayFooterWrapper>

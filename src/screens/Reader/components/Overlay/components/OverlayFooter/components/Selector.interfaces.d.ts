@@ -1,6 +1,6 @@
 import { Manga } from '@services/scraper/scraper.interfaces';
 
-export interface ScreenOrientationSelectorProps {
+export interface SelectorProps {
   manga: Manga;
   onOpen: () => void;
 }
