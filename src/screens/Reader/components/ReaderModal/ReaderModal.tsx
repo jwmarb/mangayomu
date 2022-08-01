@@ -28,6 +28,7 @@ const ReaderModal: React.FC<ConnectedReaderModalProps> = (props) => {
     Haptics.selectionAsync();
   }, [visible]);
   const handleOnSave = async () => {
+    onClose();
     if (page) {
       try {
         const fileName = await convertToURI(
@@ -51,7 +52,6 @@ const ReaderModal: React.FC<ConnectedReaderModalProps> = (props) => {
         displayMessage(e as any);
       }
     }
-    onClose();
   };
   const handleOnCopyImageLink = async () => {
     if (page) {
