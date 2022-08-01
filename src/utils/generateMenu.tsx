@@ -31,7 +31,7 @@ export default function generateMenu<T extends Record<string, V>, V>(
   const p = {
     Menu: React.useCallback(
       ({ children }) => (
-        <Menu opened={opened} onClose={handleOnClose} onSelect={handleOnSelect}>
+        <Menu opened={opened} onClose={handleOnClose} onSelect={handleOnSelect} onBackdropPress={handleOnClose}>
           <MenuTrigger>{children}</MenuTrigger>
           <MenuOptions customStyles={theme.menuOptionsStyle}>
             {Object.entries(object).map(([k, x]) => (
