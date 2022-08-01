@@ -3,8 +3,11 @@ import { OverlayPageSliderProps } from './OverlayPageSlider.interfaces';
 import { OverlayPageSliderContainer, OverlayPageSliderBackground } from './OverlayPageSlider.base';
 import { Icon, IconButton, Slider, Typography } from '@components/core';
 import { useWindowDimensions } from 'react-native';
-const OverlayPageSlider: React.FC<OverlayPageSliderProps> = (props) => {
-  const { flatListRef, page, totalPages, offset } = props;
+import connector, {
+  ConnectedOverlayPageSliderProps,
+} from '@screens/Reader/components/Overlay/components/OverlayPageSlider/OverlayPageSlider.redux';
+const OverlayPageSlider: React.FC<ConnectedOverlayPageSliderProps> = (props) => {
+  const { flatListRef, page, totalPages, offset, showPageNumber } = props;
   const { width, height } = useWindowDimensions();
   const handleOnBeginning = () => {
     if (page === 1) {
@@ -24,7 +27,7 @@ const OverlayPageSlider: React.FC<OverlayPageSliderProps> = (props) => {
     flatListRef.current?.scrollToIndex({ animated: true, index: index + offset - 1 });
   };
   return (
-    <OverlayPageSliderContainer>
+    <OverlayPageSliderContainer showPageNumber={showPageNumber}>
       <OverlayPageSliderBackground>
         <Slider
           width={width * 0.6}
@@ -39,4 +42,4 @@ const OverlayPageSlider: React.FC<OverlayPageSliderProps> = (props) => {
   );
 };
 
-export default React.memo(OverlayPageSlider);
+export default connector(React.memo(OverlayPageSlider));
