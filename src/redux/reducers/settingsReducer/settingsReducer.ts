@@ -46,8 +46,11 @@ const INITIAL_STATE: SettingsReducerState = {
       imageScaling: ImageScaling.SMART_FIT,
       orientation: ReaderScreenOrientation.FREE,
       readingDirection: ReaderDirection.RIGHT_TO_LEFT,
-      zoomStartPosition: ZoomStartPosition.AUTO,
+      zoomStartPosition: ZoomStartPosition.AUTOMATIC,
     },
+  },
+  advanced: {
+    useRecyclerListView: false,
   },
 };
 

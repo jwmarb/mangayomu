@@ -43,6 +43,9 @@ export interface SettingsReducerState {
     skipChaptersMarkedRead: boolean;
     _global: GlobalReadingSettingProfile;
   };
+  advanced: {
+    useRecyclerListView: boolean;
+  };
 }
 
 export type ReaderSettingsBooleans = keyof {
