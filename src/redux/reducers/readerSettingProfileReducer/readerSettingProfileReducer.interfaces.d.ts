@@ -15,6 +15,13 @@ export type ReaderSettingProfile = {
   zoomStartPosition: ZoomStartPosition | OverloadedSetting;
 };
 
+export type GlobalReadingSettingProfile = {
+  readingDirection: ReaderDirection;
+  orientation: ReaderScreenOrientation;
+  imageScaling: ImageScaling;
+  zoomStartPosition: ZoomStartPosition;
+};
+
 export type ReaderSettingProfileReducerAction =
   | {
       type: 'SET_DEVICE_ORIENTATION_FOR_SERIES';
