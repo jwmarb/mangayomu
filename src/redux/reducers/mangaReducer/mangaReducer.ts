@@ -23,7 +23,8 @@ function updateOrderOfChapters(payload: MangaChapter[], orderedChapters?: Sorted
     /**
      * If the user has already seen this manga but the server returns more chapters, this must mean there are new chapters
      */
-    if (orderedChapters.size() < payload.length) orderedChapters.add(payload);
+    if (orderedChapters.size() < payload.length)
+      return new SortedList<MangaChapter>(orderedChaptersComparator, payload);
     return orderedChapters;
   }
 
@@ -31,42 +32,31 @@ function updateOrderOfChapters(payload: MangaChapter[], orderedChapters?: Sorted
 }
 
 function updateChapters(payload: MangaChapter[], state?: ReadingChapterInfoRecord): ReadingChapterInfoRecord {
-  if (state) {
-    const keys = Object.keys(state);
-    /**
-     * If the user has already seen this manga but the server returns more chapters, this must mean there are new chapters
-     */
-    if (keys.length < payload.length) {
-      const oldState = { ...state };
-      for (let i = keys.length; i < payload.length; i++) {
-        oldState[payload[i].link] = {
-          ...payload[i],
-          indexPage: 0,
-          totalPages: 0,
-          scrollPosition: 0,
-          dateRead: null,
-          validatedStatus: DownloadStatus.VALIDATING,
-          status: DownloadStatus.VALIDATING,
-        };
-      }
-      return oldState;
-    }
-
-    return state;
-  }
-
   const obj: ReadingChapterInfoRecord = {};
-  for (const chapter of payload) {
-    obj[chapter.link] = {
-      ...chapter,
-      indexPage: 0,
-      totalPages: 0,
-      scrollPosition: 0,
-      dateRead: null,
-      validatedStatus: DownloadStatus.VALIDATING,
-      status: DownloadStatus.VALIDATING,
-    };
-  }
+  if (state)
+    for (const chapter of payload) {
+      obj[chapter.link] = {
+        ...chapter,
+        indexPage: state[chapter.link].indexPage ?? 0,
+        totalPages: state[chapter.link].totalPages ?? 0,
+        scrollPosition: state[chapter.link].scrollPosition ?? 0,
+        dateRead: state[chapter.link].dateRead ?? null,
+        validatedStatus: state[chapter.link].validatedStatus ?? DownloadStatus.VALIDATING,
+        status: state[chapter.link].status ?? DownloadStatus.VALIDATING,
+      };
+    }
+  else
+    for (const chapter of payload) {
+      obj[chapter.link] = {
+        ...chapter,
+        indexPage: 0,
+        totalPages: 0,
+        scrollPosition: 0,
+        dateRead: null,
+        validatedStatus: DownloadStatus.VALIDATING,
+        status: DownloadStatus.VALIDATING,
+      };
+    }
 
   return obj;
 }
