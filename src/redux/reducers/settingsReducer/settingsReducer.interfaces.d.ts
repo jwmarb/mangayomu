@@ -3,7 +3,10 @@ import { FontFamily } from '@theme/Typography';
 import { Orientation } from 'expo-screen-orientation';
 import { StatusBarStyle } from 'expo-status-bar';
 import { ReaderBackgroundColor, ReaderDirection, ChangeableTheme, MangaCoverStyles } from './settingsReducer.constants';
-import { ReaderSettingProfile } from '@redux/reducers/readerSettingProfileReducer/readerSettingProfileReducer.interfaces';
+import {
+  ReaderSettingProfile,
+  GlobalReadingSettingProfile,
+} from '@redux/reducers/readerSettingProfileReducer/readerSettingProfileReducer.interfaces';
 import {
   ImageScaling,
   ReaderScreenOrientation,
@@ -38,7 +41,7 @@ export interface SettingsReducerState {
     keepDeviceAwake: boolean;
     showPageNumber: boolean;
     skipChaptersMarkedRead: boolean;
-    _global: ReaderSettingProfile;
+    _global: GlobalReadingSettingProfile;
   };
 }
 
