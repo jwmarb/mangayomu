@@ -6,30 +6,22 @@ import { connect, ConnectedProps } from 'react-redux';
 import * as readerReducerActions from '@redux/reducers/readerReducer';
 import { ReaderDirection } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 import { OverloadedSetting } from '@redux/reducers/readerSettingProfileReducer/readerSettingProfileReducer.constants';
+import { getOrUseGlobalSetting } from '@screens/Reader/components/Overlay/components/OverlayFooter/components/Selector.helpers';
 
 const mapStateToProps = (state: AppState, props: StackScreenProps<RootStackParamList, 'Reader'>) => {
   return {
     ...props,
     deviceOrientation: state.settings.deviceOrientation,
     readerSettingsForSeries: state.readerSetting[props.route.params.mangaKey],
-    readerOrientation:
-      state.readerSetting[props.route.params.mangaKey] != null &&
-      state.readerSetting[props.route.params.mangaKey].orientation !== OverloadedSetting.AUTO
-        ? state.readerSetting[props.route.params.mangaKey].orientation
-        : state.settings.reader._global.orientation,
+    readerOrientation: getOrUseGlobalSetting(state, props.route.params.mangaKey, 'orientation'),
     backgroundColor: state.settings.reader.backgroundColor,
     source: MangaHost.availableSources.get(state.mangas[props.route.params.mangaKey].source)!,
     chapter: state.mangas[props.route.params.mangaKey].chapters[props.route.params.chapterKey],
     manga: state.mangas[props.route.params.mangaKey],
     data: state.reader.data,
     showModal: state.reader.showModal,
-    readerDirection: ((
-      props.route.params.mangaKey in state.readerSetting
-        ? state.readerSetting[props.route.params.mangaKey].readingDirection === OverloadedSetting.AUTO
-        : true
-    )
-      ? state.settings.reader._global.readingDirection
-      : state.readerSetting[props.route.params.mangaKey].readingDirection) as ReaderDirection,
+    keepScreenAwake: state.settings.reader.keepDeviceAwake,
+    readerDirection: getOrUseGlobalSetting(state, props.route.params.mangaKey, 'readingDirection'),
     error: state.reader.error,
     index: state.reader.index,
     loadingContent: state.reader.loadingContent,
