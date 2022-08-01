@@ -15,6 +15,12 @@ export type Page = {
   isOfFirstChapter?: boolean;
 };
 
+export type SavePageInfo = {
+  chapter: MangaChapter;
+  manga: Manga;
+  uri: string;
+};
+
 export type TransitionPage = { type: 'CHAPTER_TRANSITION'; previous: string; next: string; extendedStateKey: string };
 export type NoMoreChaptersPage = { type: 'NO_MORE_CHAPTERS' };
 export type MangaPage =
@@ -30,7 +36,7 @@ export type ReaderReducerState = {
   maintainScrollPositionIndex: number;
   showOverlay: boolean;
   showModal: boolean;
-  modalPageURI: string | null;
+  modalPageURI: SavePageInfo | null;
   data: MangaPage[];
   chapterInView: ReadingChapterInfo | null;
   numberOfPages: Record<string, number>;
@@ -73,6 +79,6 @@ export type ReaderReducerAction =
   | { type: 'SHOW_OVERLAY' }
   | { type: 'SET_READER_INDEX'; index: number }
   | { type: 'SET_READER_MODAL_VISIBILITY'; show: false }
-  | { type: 'SET_READER_MODAL_VISIBILITY'; show: true; uri: string }
+  | { type: 'SET_READER_MODAL_VISIBILITY'; show: true; page: SavePageInfo }
   | { type: 'SHOULD_TRACK_INDEX'; payload: boolean }
   | { type: 'SET_DEVICE_ORIENTATION_FOR_SERIES'; mangaKey: string; orientation: ReaderScreenOrientation };

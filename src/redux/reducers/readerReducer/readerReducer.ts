@@ -57,7 +57,7 @@ export default function (state: ReaderReducerState = INITIAL_STATE, action: Read
         return {
           ...state,
           showModal: true,
-          modalPageURI: action.uri,
+          modalPageURI: action.page,
         };
       return {
         ...state,

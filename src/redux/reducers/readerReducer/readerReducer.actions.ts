@@ -1,6 +1,6 @@
 import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import { getImageDimensions } from '@redux/reducers/readerReducer/readerReducer.helpers';
-import { MangaPage, Page } from '@redux/reducers/readerReducer/readerReducer.interfaces';
+import { MangaPage, Page, SavePageInfo } from '@redux/reducers/readerReducer/readerReducer.interfaces';
 import { ReaderDirection } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 import { AppState, AppDispatch } from '@redux/store';
 import { Manga, MangaChapter } from '@services/scraper/scraper.interfaces';
@@ -112,9 +112,9 @@ export const setReaderIndex = (index?: number) => {
   };
 };
 
-export const openReaderModal = (uri: string) => {
+export const openReaderModal = (page: SavePageInfo) => {
   return (dispatch: AppDispatch) => {
-    dispatch({ type: 'SET_READER_MODAL_VISIBILITY', show: true, uri });
+    dispatch({ type: 'SET_READER_MODAL_VISIBILITY', show: true, page });
   };
 };
 
