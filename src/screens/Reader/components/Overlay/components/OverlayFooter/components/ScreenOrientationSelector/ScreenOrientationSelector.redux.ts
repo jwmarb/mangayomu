@@ -6,7 +6,7 @@ import { connect, ConnectedProps } from 'react-redux';
 
 const mapStateToProps = (state: AppState, props: SelectorProps) => ({
   ...props,
-  orientation: getOrUseGlobalSetting(state, props.manga, 'orientation'),
+  orientation: getOrUseGlobalSetting(state, props.manga.link, 'orientation'),
 });
 
 const connector = connect(mapStateToProps);
