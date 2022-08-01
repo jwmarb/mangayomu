@@ -10,26 +10,7 @@ const mapStateToProps = (state: AppState, props: StackScreenProps<RootStackParam
   return {
     ...props,
     manga: state.mangas[props.route.params.mangaKey],
-    state: state.chaptersList.mangasInDownloading[props.route.params.mangaKey],
-    chapters:
-      (state.chaptersList.mangasInDownloading[props.route.params.mangaKey]?.chaptersCollection.reduce(
-        (prev, x): DownloadingChapterProps[] => {
-          if (
-            DownloadManager.ofWithManga(
-              state.mangas[props.route.params.mangaKey].chapters[x.link],
-              state.mangas[props.route.params.mangaKey]
-            ).getStatus() === DownloadStatus.DOWNLOADED
-          )
-            return prev;
-          prev.push({
-            manga: state.mangas[props.route.params.mangaKey],
-            chapter: state.mangas[props.route.params.mangaKey].chapters[x.link],
-            downloadState: state.chaptersList.mangasInDownloading[props.route.params.mangaKey].chapters[x.link],
-          });
-          return prev;
-        },
-        [] as DownloadingChapterProps[]
-      ) as DownloadingChapterProps[]) ?? [],
+    chaptersToDownload: state.downloading.mangas[props.route.params.mangaKey]?.chaptersToDownload,
   };
 };
 

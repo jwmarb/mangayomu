@@ -1,17 +1,15 @@
 import { Flex, Header, RecyclerListViewScreen, Spacer, Typography } from '@components/core';
 import { ChapterDownloadsEmptyContainer } from '@screens/ChapterDownloads/ChapterDownloads.base';
-import { layoutProvider, rowRenderer } from '@screens/ChapterDownloads/ChapterDownloads.recycler';
+import { keyExtractor } from './ChapterDownloads.flatlist';
 import connector, { ConnectedChapterDownloadsProps } from '@screens/ChapterDownloads/ChapterDownloads.redux';
+import DownloadingChapter from '@screens/ChapterDownloads/components/DownloadingChapter';
 import React from 'react';
-import { Dimensions, View } from 'react-native';
+import { Dimensions, ListRenderItem, View, Animated } from 'react-native';
 import { useCollapsibleHeader, UseCollapsibleOptions } from 'react-navigation-collapsible';
 import { DataProvider, LayoutProvider } from 'recyclerlistview';
 
 const ChapterDownloads: React.FC<ConnectedChapterDownloadsProps> = (props) => {
-  const { state, manga, chapters } = props;
-  const [dataProvider, setDataProvider] = React.useState(
-    new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(chapters)
-  );
+  const { manga, chaptersToDownload } = props;
 
   const options: UseCollapsibleOptions = {
     navigationOptions: {
@@ -23,9 +21,16 @@ const ChapterDownloads: React.FC<ConnectedChapterDownloadsProps> = (props) => {
     },
   };
 
+  const renderItem: ListRenderItem<string> = React.useCallback(
+    ({ item }) => {
+      return <DownloadingChapter mangaKey={manga.link} chapterKey={item} />;
+    },
+    [manga]
+  );
+
   const collapsible = useCollapsibleHeader(options);
 
-  if (dataProvider.getSize() === 0)
+  if (chaptersToDownload == null || (chaptersToDownload && chaptersToDownload.length === 0))
     return (
       <ChapterDownloadsEmptyContainer paddingTop={collapsible.containerPaddingTop}>
         <Typography variant='header' align='center'>
@@ -39,11 +44,13 @@ const ChapterDownloads: React.FC<ConnectedChapterDownloadsProps> = (props) => {
     );
 
   return (
-    <RecyclerListViewScreen
-      collapsible={collapsible}
-      dataProvider={dataProvider}
-      layoutProvider={layoutProvider}
-      rowRenderer={rowRenderer}
+    <Animated.FlatList
+      onScroll={collapsible.onScroll}
+      scrollIndicatorInsets={{ top: collapsible.scrollIndicatorInsetTop }}
+      contentContainerStyle={{ paddingTop: collapsible.containerPaddingTop }}
+      data={chaptersToDownload}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
     />
   );
 };
