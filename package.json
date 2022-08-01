@@ -62,7 +62,8 @@
     "styled-components": "^5.3.5",
     "url": "^0.11.0",
     "react-native-gesture-handler": "~2.2.1",
-    "expo-updates": "~0.13.3"
+    "expo-updates": "~0.13.3",
+    "expo-haptics": "~11.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
