@@ -29,24 +29,27 @@ export default function generateMenu<T extends Record<string, V>, V>(
     [handleOnClose]
   );
   const p = {
-    Menu: (({ children }) => {
-      const theme = useTheme();
-      return (
-        <Menu ref={ref} onSelect={handleOnSelect} onClose={handleOnClose} onBackdropPress={handleOnClose}>
-          <MenuTrigger>{children}</MenuTrigger>
-          <MenuOptions customStyles={theme.menuOptionsStyle}>
-            {Object.entries(object).map(([k, x]) => (
-              <MenuOption
-                key={x as any}
-                color={x === selectOption ? 'primary' : 'textPrimary'}
-                text={x + ''}
-                icon={options.icons ? options.icons[k] : undefined}
-              />
-            ))}
-          </MenuOptions>
-        </Menu>
-      );
-    }) as React.FC,
+    Menu: React.useCallback(
+      ({ children }) => {
+        const theme = useTheme();
+        return (
+          <Menu ref={ref} onSelect={handleOnSelect} onClose={handleOnClose} onBackdropPress={handleOnClose}>
+            <MenuTrigger>{children}</MenuTrigger>
+            <MenuOptions customStyles={theme.menuOptionsStyle}>
+              {Object.entries(object).map(([k, x]) => (
+                <MenuOption
+                  key={x as any}
+                  color={x === selectOption ? 'primary' : 'textPrimary'}
+                  text={x + ''}
+                  icon={options.icons ? options.icons[k] : undefined}
+                />
+              ))}
+            </MenuOptions>
+          </Menu>
+        );
+      },
+      [object, selectOption, options, handleOnSelect, handleOnClose]
+    ) as React.FC,
     onOpen: React.useCallback(() => ref.current?.open(), []),
     onClose: handleOnClose,
   };
