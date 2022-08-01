@@ -27,6 +27,7 @@ import useStatefulHeader from '@hooks/useStatefulHeader';
 import { ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 import { useSelector } from 'react-redux';
 import { AppState } from '@redux/store';
+import { ApplyWindowCorrectionEventHandler } from '@utils/RecyclerListView.interfaces';
 
 const dataProviderFn = (r1: Manga, r2: Manga) => r1.title !== r2.title;
 
@@ -38,9 +39,8 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     },
   } = props;
   const theme = useTheme();
-  const { width } = useWindowDimensions();
   const [dataProvider, setDataProvider] = React.useState(new DataProvider(dataProviderFn).cloneWithRows(mangas));
-  const { layoutProvider, rowRenderer } = useMangaLayout(mangas);
+  const { layoutProvider, rowRenderer, extendedState } = useMangaLayout();
   const [showFooter, setShowFooter] = React.useState<boolean>(true);
   const [query, setQuery] = React.useState<string>(initialQuery);
   const [reachedEnd, setReachedEnd] = React.useState<boolean>(false);
@@ -60,7 +60,6 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     mangahost.resetPage();
     setReachedEnd(false);
   }
-  const orientation = useSelector((state: AppState) => state.settings.deviceOrientation);
 
   React.useEffect(() => {
     if (filter != schema) setShowBadge(true);
@@ -155,6 +154,10 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     setShowFooter(false);
   }, [setShowFooter]);
 
+  const applyWindowCorrection: ApplyWindowCorrectionEventHandler = (_, __, windowCorrection) => {
+    windowCorrection.startCorrection = -pixelToNumber(theme.spacing(3));
+  };
+
   useStatefulHeader(
     <Search
       additionalButtons={
@@ -199,7 +202,7 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
               rowRenderer={rowRenderer as any}
               onItemLayout={handleOnItemLayout}
               onEndReached={handleOnEndReached}
-              extendedState={{ orientation, width, itemCount: dataProvider.getSize() }}
+              extendedState={extendedState}
               ref={scrollRef}
               scrollViewProps={{
                 contentContainerStyle: {
@@ -207,7 +210,11 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
                 },
               }}
               onScroll={onScroll}
+              applyWindowCorrection={applyWindowCorrection}
               layoutProvider={layoutProvider}
+              forceNonDeterministicRendering
+              canChangeSize
+              renderAheadOffset={2000}
               renderFooter={() => (
                 <>{showFooter || loading ? animate(<MangaItemsLoading />, withAnimatedMounting) : null}</>
               )}
