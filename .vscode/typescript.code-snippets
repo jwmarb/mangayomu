@@ -1,0 +1,23 @@
+{
+  "Access redux state for component": {
+    "prefix": "redux",
+    "body": [
+      "import { AppState } from '@redux/store';",
+      "import { connect, ConnectedProps } from 'react-redux';",
+      "import React from 'react';",
+      "",
+      "const mapStateToProps = (state: AppState, props: React.PropsWithChildren<{}>) => ({",
+      "  ...props,",
+      "",
+      "});",
+      "",
+      "const connector = connect(mapStateToProps);",
+      "",
+      "export type Connected${TM_FILENAME/(.redux.ts)//}Props = ConnectedProps<typeof connector>;",
+      "",
+      "export default connector;",
+      ""
+    ],
+    "description": "Access redux state for component"
+  }
+}
