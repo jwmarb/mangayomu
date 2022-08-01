@@ -11,26 +11,25 @@ import ScreenOrientationSelector from '@screens/Reader/components/Overlay/compon
 const OverlayFooter: React.FC<OverlayFooterProps> = (props) => {
   const { manga, orientation, setOrientationForSeries } = props;
 
-  const [Menu, onOpen] = generateMenu({ ...OverloadedSetting, ...ReaderScreenOrientation }, orientation, {
-    onSelect: (selected) => setOrientationForSeries(manga.link, selected),
-    icons: {
-      AUTO: <Icon bundle='MaterialCommunityIcons' name='earth' />,
-      FREE: <Icon bundle='MaterialCommunityIcons' name='screen-rotation' />,
-      LANDSCAPE: <Icon bundle='MaterialCommunityIcons' name='phone-rotate-landscape' />,
-      PORTRAIT: <Icon bundle='MaterialCommunityIcons' name='phone-rotate-portrait' />,
-    },
-  });
+  const [ScreenOrientationMenu, onOpen] = generateMenu(
+    { ...OverloadedSetting, ...ReaderScreenOrientation },
+    orientation,
+    {
+      onSelect: (selected) => setOrientationForSeries(manga.link, selected),
+      icons: {
+        AUTO: <Icon bundle='MaterialCommunityIcons' name='earth' />,
+        FREE: <Icon bundle='MaterialCommunityIcons' name='screen-rotation' />,
+        LANDSCAPE: <Icon bundle='MaterialCommunityIcons' name='phone-rotate-landscape' />,
+        PORTRAIT: <Icon bundle='MaterialCommunityIcons' name='phone-rotate-portrait' />,
+      },
+    }
+  );
 
   return (
     <OverlayFooterContainer>
-      <Menu>
+      <ScreenOrientationMenu>
         <ScreenOrientationSelector manga={manga} onOpen={onOpen} />
-      </Menu>
-
-      <Flex>
-        <IconButton icon={<Icon bundle='Feather' name='chevron-left' />} />
-        <IconButton icon={<Icon bundle='Feather' name='chevron-right' />} />
-      </Flex>
+      </ScreenOrientationMenu>
     </OverlayFooterContainer>
   );
 };
