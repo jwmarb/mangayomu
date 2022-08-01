@@ -61,7 +61,9 @@ const Header: React.FC<StackHeaderProps> = (props) => {
           <Spacer x={2} />
         </>
       )}
-      <Typography variant='tabtitle'>{headerTitle}</Typography>
+      <Typography variant='tabtitle' numberOfLines={1}>
+        {headerTitle}
+      </Typography>
       <Flex grow justifyContent='flex-end'>
         {HeaderRightComponent && <HeaderRightComponent />}
       </Flex>
