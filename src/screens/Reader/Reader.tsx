@@ -57,6 +57,7 @@ import ReaderSettingsModal from '@screens/Reader/components/ReaderSettingsModal'
 import { ReaderScreenOrientation } from '@redux/reducers/readerSettingProfileReducer/readerSettingProfileReducer.constants';
 import * as Orientation from 'expo-screen-orientation';
 import DownloadManager from '@utils/DownloadManager';
+import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 
 const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const {
@@ -87,6 +88,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     openReaderModal,
     closeReaderModal,
     shouldTrackIndex,
+    keepScreenAwake,
   } = props;
 
   const { width, height } = useWindowDimensions();
@@ -105,6 +107,14 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
         break;
     }
   };
+
+  React.useEffect(() => {
+    if (keepScreenAwake) activateKeepAwake();
+    else deactivateKeepAwake();
+    return () => {
+      deactivateKeepAwake();
+    };
+  }, [keepScreenAwake]);
 
   React.useLayoutEffect(() => {
     switch (readerOrientation) {
