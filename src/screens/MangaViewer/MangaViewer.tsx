@@ -150,7 +150,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
       'Chapter number': createSort((a: MangaChapter, b: MangaChapter) => (a.name && b.name ? a.index - b.index : 0)),
       ...(MangaValidator.hasDate(userMangaInfo?.orderedChapters.get(0) ?? {})
         ? {
-            'Date Released': createSort((a: WithDate, b: WithDate) => Date.parse(a.date) - Date.parse(b.date)),
+            'Date released': createSort((a: WithDate, b: WithDate) => Date.parse(a.date) - Date.parse(b.date)),
           }
         : {}),
     }),
