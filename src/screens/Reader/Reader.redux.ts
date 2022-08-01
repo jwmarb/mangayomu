@@ -14,7 +14,7 @@ const mapStateToProps = (state: AppState, props: StackScreenProps<RootStackParam
     readerSettingsForSeries: state.readerSetting[props.route.params.mangaKey],
     readerOrientation:
       state.readerSetting[props.route.params.mangaKey] != null &&
-      state.readerSetting[props.route.params.mangaKey].orientation === OverloadedSetting.AUTO
+      state.readerSetting[props.route.params.mangaKey].orientation !== OverloadedSetting.AUTO
         ? state.readerSetting[props.route.params.mangaKey].orientation
         : state.settings.reader._global.orientation,
     backgroundColor: state.settings.reader.backgroundColor,
