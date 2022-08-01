@@ -13,7 +13,7 @@ import DownloadManagerEmpty from './components/DownloadManagerEmpty';
 
 const DownloadManager: React.FC<DownloadManagerProps> = (props) => {
   const { navigation, cursors, extraState } = props;
-  const cursorEntries = React.useMemo(() => Object.entries(cursors), [cursors]);
+  const cursorEntries = React.useMemo(() => Object.keys(cursors), [cursors]);
   React.useEffect(() => {
     console.log('changed');
   }, [cursors]);

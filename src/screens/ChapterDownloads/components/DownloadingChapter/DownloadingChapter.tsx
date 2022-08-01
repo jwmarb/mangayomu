@@ -6,7 +6,10 @@ import Flex from '@components/Flex';
 import Spacer from '@components/Spacer';
 import DownloadManager, { DownloadStatus } from '@utils/DownloadManager';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { AnimatedDownloadingChapterBar } from '@screens/ChapterDownloads/components/DownloadingChapter/DownloadingChapter.base';
+import {
+  AnimatedDownloadingChapterBar,
+  EmptyDownloadingChapterBar,
+} from '@screens/ChapterDownloads/components/DownloadingChapter/DownloadingChapter.base';
 import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
 import connector, {
@@ -14,52 +17,53 @@ import connector, {
 } from '@screens/ChapterDownloads/components/DownloadingChapter/DownloadingChapter.redux';
 
 const DownloadingChapter: React.FC<ConnectedDownloadingChapterProps> = (props) => {
-  const { manga, chapter, downloadState, downloadAllSelected, pauseAllSelected, cancelAllSelected, mangaCursor } =
-    props;
-  const downloadManager = DownloadManager.ofWithManga(chapter, manga);
-  const [progress, setProgress] = React.useState<number>(
-    Number.isNaN(downloadManager.getProgress()) ? 0 : downloadManager.getProgress() * 100
-  );
-  const width = useSharedValue(progress);
-  async function handleOnPausePress() {
-    await pauseAllSelected(manga);
-  }
-  async function handleOnCancelPress() {
-    await cancelAllSelected(manga);
-  }
+  const { chapterDownloadingState, chapter, downloadedPages, totalPages } = props;
 
-  async function handleOnDownloadPress() {
-    if (mangaCursor) await downloadAllSelected(mangaCursor.chapters, manga);
-  }
+  const width = useSharedValue(0);
 
-  // React.useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     if (!Number.isNaN(downloadManager.getProgress())) {
-  //       setProgress(downloadManager.getProgress() * 100);
-  //       width.value = withTiming(downloadManager.getProgress() * 100, { duration: 500, easing: Easing.ease });
-  //       if (downloadManager.getProgress() >= 1) clearInterval(interval);
-  //     }
-  //   }, 500);
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, []);
+  React.useEffect(() => {
+    width.value = withTiming(chapterDownloadingState ? chapterDownloadingState.totalProgress : 0, {
+      duration: 50,
+      easing: Easing.linear,
+    });
+  }, [chapterDownloadingState?.totalProgress]);
 
-  const progressBarStyle = useAnimatedStyle(() => ({
+  const progressStyle = useAnimatedStyle(() => ({
     width: width.value + '%',
   }));
-  // const counter = React.useRef(0);
-
-  // React.useEffect(() => {
-  //   console.log(`${chapter.name}: ${counter.current}`);
-  //   counter.current++;
-  // });
 
   return (
-    <Typography>
-      {chapter.name} {downloadState.totalProgress}
-    </Typography>
+    <Flex container verticalPadding={1} horizontalPadding={3} justifyContent='space-between' alignItems='center'>
+      <Flex direction='column' grow>
+        <Flex alignItems='center'>
+          <Typography>{chapter.name ?? `Chapter ${chapter.index + 1}`}</Typography>
+          <Spacer x={1} />
+          {totalPages !== 0 && (
+            <Typography color='textSecondary' variant='body2'>
+              {downloadedPages} / {totalPages}
+            </Typography>
+          )}
+        </Flex>
+        <Spacer y={1} />
+        {totalPages !== 0 && (
+          <Flex direction='column'>
+            <AnimatedDownloadingChapterBar style={progressStyle} />
+            <EmptyDownloadingChapterBar />
+          </Flex>
+        )}
+      </Flex>
+      <Flex>
+        <Spacer x={2} />
+        <IconButton icon={<Icon bundle='Feather' name='more-vertical' />} />
+      </Flex>
+    </Flex>
   );
+
+  // return (
+  //   <Typography>
+  //     {chapter.name} {downloadState.totalProgress}
+  //   </Typography>
+  // );
 
   // switch (downloadManager.getStatus()) {
   //   case DownloadStatus.DOWNLOADED:

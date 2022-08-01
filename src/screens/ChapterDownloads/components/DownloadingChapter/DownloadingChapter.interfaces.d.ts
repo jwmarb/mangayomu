@@ -3,7 +3,6 @@ import { ReadingChapterInfo, ReadingMangaInfo } from '@redux/reducers/mangaReduc
 import { Manga } from '@services/scraper/scraper.interfaces';
 
 export interface DownloadingChapterProps {
-  manga: ReadingMangaInfo;
-  chapter: ReadingChapterInfo;
-  downloadState: ChapterState;
+  mangaKey: string;
+  chapterKey: string;
 }

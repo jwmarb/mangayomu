@@ -1,7 +1,7 @@
-import { DownloadingManga } from '@redux/reducers/chaptersListReducer/chaptersListReducer.interfaces';
+import { MangaDownloadingState } from '@redux/reducers/mangaDownloadingReducer/mangaDownloadingReducer.interfaces';
 import DownloadItem from '@screens/DownloadManager/components/DownloadItem';
 import { ListRenderItem } from 'react-native';
 
-export const renderItem: ListRenderItem<[string, DownloadingManga]> = ({ item }) => {
-  return <DownloadItem mangaKey={item[0]} downloadingManga={item[1]} />;
+export const renderItem: ListRenderItem<string> = ({ item }) => {
+  return <DownloadItem mangaKey={item} />;
 };

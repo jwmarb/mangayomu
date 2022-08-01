@@ -1,6 +1,5 @@
-import { DownloadingManga } from '@redux/reducers/chaptersListReducer/chaptersListReducer.interfaces';
+import { MangaDownloadingState } from '@redux/reducers/mangaDownloadingReducer/mangaDownloadingReducer.interfaces';
 
 export interface DownloadItemProps {
   mangaKey: string;
-  downloadingManga: DownloadingManga;
 }

@@ -6,7 +6,7 @@ import { connect, ConnectedProps } from 'react-redux';
 const mapStateToProps = (state: AppState, props: StackScreenProps<RootStackParamList, 'DownloadManager'>) => {
   return {
     ...props,
-    cursors: state.chaptersList.mangasInDownloading,
+    cursors: state.downloading.mangas,
     extraState: state.mangas,
   };
 };
