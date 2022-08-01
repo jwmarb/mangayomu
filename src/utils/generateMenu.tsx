@@ -1,4 +1,5 @@
 import Icon from '@components/Icon';
+import IconButton from '@components/IconButton';
 import MenuOption from '@components/MenuOption';
 import React from 'react';
 import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
@@ -16,10 +17,10 @@ export default function generateMenu<T extends Record<string, V>, V>(
   selectOption: V,
   options: GenerateMenuOptions<V, T>
 ): [React.FC<{}>, () => void, () => void] {
-  const [opened, setOpened] = React.useState<boolean>(false);
+  const ref = React.useRef<Menu>(null);
   const handleOnClose = React.useCallback(() => {
-    setOpened(false);
-  }, [setOpened]);
+    ref.current?.close();
+  }, []);
   const handleOnSelect = React.useCallback(
     (val: V) => {
       options.onSelect(val);
@@ -27,11 +28,11 @@ export default function generateMenu<T extends Record<string, V>, V>(
     },
     [handleOnClose]
   );
-  const theme = useTheme();
   const p = {
-    Menu: React.useCallback(
-      ({ children }) => (
-        <Menu opened={opened} onClose={handleOnClose} onSelect={handleOnSelect} onBackdropPress={handleOnClose}>
+    Menu: (({ children }) => {
+      const theme = useTheme();
+      return (
+        <Menu ref={ref} onSelect={handleOnSelect} onClose={handleOnClose} onBackdropPress={handleOnClose}>
           <MenuTrigger>{children}</MenuTrigger>
           <MenuOptions customStyles={theme.menuOptionsStyle}>
             {Object.entries(object).map(([k, x]) => (
@@ -44,10 +45,9 @@ export default function generateMenu<T extends Record<string, V>, V>(
             ))}
           </MenuOptions>
         </Menu>
-      ),
-      [handleOnSelect, handleOnClose, opened, theme.menuOptionsStyle, object, options.icons]
-    ) as React.FC,
-    onOpen: React.useCallback(() => setOpened(true), [setOpened]),
+      );
+    }) as React.FC,
+    onOpen: React.useCallback(() => ref.current?.open(), []),
     onClose: handleOnClose,
   };
   return [p.Menu, p.onOpen, p.onClose];
