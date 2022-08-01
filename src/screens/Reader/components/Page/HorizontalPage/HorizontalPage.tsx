@@ -65,6 +65,7 @@ const HorizontalPage: React.FC<ConnectedPageProps> = (props) => {
     isOfFirstChapter,
     toggleOverlay,
     openReaderModal,
+    chapter,
     imageScaling,
     zoomStartPosition,
   } = props;
@@ -300,7 +301,7 @@ const HorizontalPage: React.FC<ConnectedPageProps> = (props) => {
   };
 
   const handleOnLongPress = () => {
-    runOnJS(openReaderModal)(uri);
+    runOnJS(openReaderModal)({ chapter, manga, uri });
   };
 
   const doubleTapGesture = React.useMemo(

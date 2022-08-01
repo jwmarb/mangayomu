@@ -57,6 +57,7 @@ const WebtoonPage: React.FC<ConnectedPageProps> = (props) => {
   const {
     uri,
     manga,
+    chapter,
     readerDirection,
     width: imageWidth,
     height: imageHeight,
@@ -159,7 +160,7 @@ const WebtoonPage: React.FC<ConnectedPageProps> = (props) => {
   };
 
   const handleOnLongPress = () => {
-    runOnJS(openReaderModal)(uri);
+    runOnJS(openReaderModal)({ chapter, manga, uri });
   };
 
   const doubleTapGesture = React.useMemo(

@@ -9,9 +9,11 @@ import {
 } from '@redux/reducers/readerReducer';
 import { OverloadedSetting } from '@redux/reducers/readerSettingProfileReducer/readerSettingProfileReducer.constants';
 import { ReaderDirection } from '@redux/reducers/settingsReducer/settingsReducer.constants';
+import { SavePageInfo } from '@redux/reducers/readerReducer/readerReducer.interfaces';
 
 const mapStateToProps = (state: AppState, props: PageProps) => ({
   manga: state.mangas[props.manga.link],
+  chapter: props.chapter,
   uri: props.uri,
   isOfFirstChapter: props.isOfFirstChapter,
   width: props.width,

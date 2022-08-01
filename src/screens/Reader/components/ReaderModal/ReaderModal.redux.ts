@@ -6,7 +6,10 @@ import { ReaderModalProps } from '@screens/Reader/components/ReaderModal/ReaderM
 const mapStateToProps = (state: AppState, props: ReaderModalProps) => ({
   ...props,
   visible: state.reader.showModal,
-  uri: state.reader.modalPageURI,
+  page: state.reader.modalPageURI,
+  pageNumber: state.reader.chapterInView
+    ? state.reader.index - state.reader.chapterPositionOffset[state.reader.chapterInView.link]
+    : 0,
 });
 
 const connector = connect(mapStateToProps, { onClose: closeReaderModal });
