@@ -23,7 +23,7 @@ const Switch: React.FC<SwitchProps> = (props) => {
   const { enabled, onChange = () => void 0 } = props;
   const opacityDisabled = useSharedValue(0);
   const opacityEnabled = useSharedValue(1);
-  const translateX = useSharedValue(0);
+  const translateX = useSharedValue(enabled ? RFValue(9) : RFValue(-9));
   React.useEffect(() => {
     if (enabled) {
       opacityDisabled.value = withTiming(0, { duration: 100 });
