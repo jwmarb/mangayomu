@@ -23,7 +23,10 @@ export default function (
     case 'ADD_TO_LIBRARY':
       return {
         ...state,
-        [action.payload.link]: null,
+        mangas: {
+          ...state.mangas,
+          [action.payload.link]: null,
+        },
       };
     case 'REMOVE_FROM_LIBRARY': {
       const newState = { ...state, mangas: { ...state.mangas } };
