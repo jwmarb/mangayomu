@@ -34,7 +34,7 @@ const ListItem: React.FC<ListItemProps> = (props) => {
               <ListAdornmentLeftContainer>
                 {adornment && adornmentPlacement === 'left' && <>{adornment}</>}
               </ListAdornmentLeftContainer>
-              <Flex direction='column' grow>
+              <Flex direction='column' shrink>
                 <Typography numberOfLines={1} {...typographyProps}>
                   {title}
                 </Typography>
@@ -47,10 +47,10 @@ const ListItem: React.FC<ListItemProps> = (props) => {
                 )}
               </Flex>
               {adornment && adornmentPlacement === 'right' && (
-                <>
+                <Flex grow justifyContent='flex-end'>
                   <Spacer x={3} />
                   {adornment}
-                </>
+                </Flex>
               )}
             </ListItemButtonBaseContainer>
           </ButtonBase>
@@ -65,7 +65,7 @@ const ListItem: React.FC<ListItemProps> = (props) => {
             <ListAdornmentLeftContainer>
               {adornment && adornmentPlacement === 'left' && <>{adornment}</>}
             </ListAdornmentLeftContainer>
-            <Flex direction='column' grow>
+            <Flex direction='column' shrink>
               <Typography numberOfLines={1} {...typographyProps}>
                 {title}
               </Typography>
@@ -78,10 +78,10 @@ const ListItem: React.FC<ListItemProps> = (props) => {
               )}
             </Flex>
             {adornment && adornmentPlacement === 'right' && (
-              <>
+              <Flex grow justifyContent='flex-end'>
                 <Spacer x={3} />
                 {adornment}
-              </>
+              </Flex>
             )}
           </ListItemButtonBaseContainer>
         </ButtonBase>
@@ -95,7 +95,7 @@ const ListItem: React.FC<ListItemProps> = (props) => {
           {adornment && adornmentPlacement === 'left' && <>{adornment}</>}
         </ListAdornmentLeftContainer>
 
-        <Flex direction='column' grow>
+        <Flex direction='column' shrink>
           <Typography numberOfLines={1} {...typographyProps}>
             {title}
           </Typography>
@@ -108,10 +108,10 @@ const ListItem: React.FC<ListItemProps> = (props) => {
           )}
         </Flex>
         {adornment && adornmentPlacement === 'right' && (
-          <>
+          <Flex grow justifyContent='flex-end'>
             <Spacer x={3} />
             {adornment}
-          </>
+          </Flex>
         )}
       </ListItemButtonBaseContainer>
     </ListItemBase>
