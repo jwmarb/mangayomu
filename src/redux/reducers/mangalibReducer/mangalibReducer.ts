@@ -21,11 +21,14 @@ export default function (
       };
 
     case 'ADD_TO_LIBRARY':
-      state.mangas[action.payload.link] = null;
-      return state;
+      return {
+        ...state,
+        [action.payload.link]: null,
+      };
     case 'REMOVE_FROM_LIBRARY': {
-      delete state.mangas[action.payload.link];
-      return state;
+      const newState = { ...state, mangas: { ...state.mangas } };
+      delete newState.mangas[action.payload.link];
+      return newState;
     }
     default:
       return state;
