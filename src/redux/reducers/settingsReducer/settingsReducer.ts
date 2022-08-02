@@ -56,6 +56,14 @@ const INITIAL_STATE: SettingsReducerState = {
 
 const reducer = (state: SettingsReducerState = INITIAL_STATE, action: SettingsReducerAction): SettingsReducerState => {
   switch (action.type) {
+    case 'TOGGLE_ADVANCED_SETTING':
+      return {
+        ...state,
+        advanced: {
+          ...state.advanced,
+          [action.key]: !state.advanced[action.key],
+        },
+      };
     case 'SET_READER_ZOOM_START_POSITION':
       return {
         ...state,

@@ -58,6 +58,12 @@ export type MangaCoverSettingsBooleans = keyof {
     : never]: boolean;
 };
 
+export type AdvancedSettingsBooleans = keyof {
+  [K in keyof SettingsReducerState['advanced'] as SettingsReducerState['advanded'][K] extends boolean
+    ? K
+    : never]: boolean;
+};
+
 export type SettingsReducerAction =
   | {
       type: 'INTRO_DONE';
@@ -77,4 +83,5 @@ export type SettingsReducerAction =
   | { type: 'SET_MAX_CACHE_SIZE'; bytes: number }
   | { type: 'SET_READER_SCREEN_ORIENTATION'; orientation: ReaderScreenOrientation }
   | { type: 'SET_READER_IMAGE_SCALING'; imageScaling: ImageScaling }
-  | { type: 'SET_READER_ZOOM_START_POSITION'; zoomStartPosition: ZoomStartPosition };
+  | { type: 'SET_READER_ZOOM_START_POSITION'; zoomStartPosition: ZoomStartPosition }
+  | { type: 'TOGGLE_ADVANCED_SETTING'; key: AdvancedSettingsBooleans };

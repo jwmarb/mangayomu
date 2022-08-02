@@ -12,7 +12,7 @@ import {
 import { AppDispatch } from '@redux/store';
 import { FontFamily } from '@theme/Typography';
 import { Dispatch } from 'redux';
-import { SettingsReducerAction, SettingsReducerState } from './settingsReducer.interfaces';
+import { AdvancedSettingsBooleans, SettingsReducerAction, SettingsReducerState } from './settingsReducer.interfaces';
 
 export function setMaxCacheSize(bytes: number) {
   return (dispatch: AppDispatch) => {
@@ -113,5 +113,11 @@ export function setReaderScreenImageScaling(imageScaling: ImageScaling) {
 export function setReaderScreenZoomStartPosition(zoomStartPosition: ZoomStartPosition) {
   return (dispatch: AppDispatch) => {
     dispatch({ type: 'SET_READER_ZOOM_START_POSITION', zoomStartPosition });
+  };
+}
+
+export function toggleAdvancedSetting(key: AdvancedSettingsBooleans) {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'TOGGLE_ADVANCED_SETTING', key });
   };
 }

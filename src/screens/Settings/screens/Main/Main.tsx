@@ -20,13 +20,17 @@ const Main: React.FC<StackScreenProps<SettingsStackParamList, 'Main'>> = (props)
     <ScrollView>
       <MainWrapper>
         <List>
-          <ListItem adornment={<Icon bundle='Feather' name='compass' color='primary' />} title='Browse' />
-          <ListItem adornment={<Icon bundle='Feather' name='code' color='primary' />} title='Advanced' />
           <Appearance />
           <Divider />
           <Reader />
           <Divider />
           <Cache />
+          <Divider />
+          <ListItem
+            adornment={<Icon bundle='Feather' name='code' color='primary' />}
+            title='Advanced'
+            onPress={navigateTo('Advanced')}
+          />
         </List>
       </MainWrapper>
     </ScrollView>
