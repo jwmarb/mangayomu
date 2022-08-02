@@ -50,35 +50,35 @@ import { ItemDropdownMenu } from '@screens/Settings/screens/components/ItemDropd
 
 const sampleMangas = [
   {
-    uri: 'https://cover.nep.li/cover/One-Piece.jpg',
+    uri: 'https://temp.compsci88.com/cover/One-Piece.jpg',
     title: 'One Piece',
   },
   {
-    uri: 'https://cover.nep.li/cover/Boruto.jpg',
+    uri: 'https://temp.compsci88.com/cover/Boruto.jpg',
     title: 'Boruto - Naruto Next Generations',
   },
   {
-    uri: 'https://cover.nep.li/cover/Bleach.jpg',
+    uri: 'https://temp.compsci88.com/cover/Bleach.jpg',
     title: 'Bleach',
   },
   {
-    uri: 'https://cover.nep.li/cover/Shingeki-No-Kyojin.jpg',
+    uri: 'https://temp.compsci88.com/cover/Shingeki-No-Kyojin.jpg',
     title: 'Shingeki no Kyojin',
   },
   {
-    uri: 'https://cover.nep.li/cover/Naruto.jpg',
+    uri: 'https://temp.compsci88.com/cover/Naruto.jpg',
     title: 'Naruto',
   },
   {
-    uri: 'https://cover.nep.li/cover/Solo-Leveling.jpg',
+    uri: 'https://temp.compsci88.com/cover/Solo-Leveling.jpg',
     title: 'Solo Leveling',
   },
   {
-    uri: 'https://cover.nep.li/cover/Jujutsu-Kaisen.jpg',
+    uri: 'https://temp.compsci88.com/cover/Jujutsu-Kaisen.jpg',
     title: 'Jujutsu Kaisen',
   },
   {
-    uri: 'https://cover.nep.li/cover/The-Beginning-After-The-End.jpg',
+    uri: 'https://temp.compsci88.com/cover/The-Beginning-After-The-End.jpg',
     title: 'The Beginning After the End',
   },
 ];
