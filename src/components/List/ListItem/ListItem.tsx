@@ -24,6 +24,7 @@ const ListItem: React.FC<ListItemProps> = (props) => {
     adornmentPlacement = 'left',
     holdItem,
     paper = false,
+    titleSiblingComponent,
   } = props;
   if (holdItem)
     return (
@@ -37,9 +38,12 @@ const ListItem: React.FC<ListItemProps> = (props) => {
               <Flex
                 direction='column'
                 {...(adornment && adornmentPlacement === 'right' ? { shrink: true } : { grow: true })}>
-                <Typography numberOfLines={1} {...typographyProps}>
-                  {title}
-                </Typography>
+                <Flex alignItems='center'>
+                  <Typography numberOfLines={1} {...typographyProps}>
+                    {title}
+                  </Typography>
+                  {titleSiblingComponent}
+                </Flex>
                 {subtitle && (
                   <ListItemSubtitleContainer>
                     <Typography variant='body2' color='textSecondary' {...typographyProps}>
@@ -70,9 +74,12 @@ const ListItem: React.FC<ListItemProps> = (props) => {
             <Flex
               direction='column'
               {...(adornment && adornmentPlacement === 'right' ? { shrink: true } : { grow: true })}>
-              <Typography numberOfLines={1} {...typographyProps}>
-                {title}
-              </Typography>
+              <Flex alignItems='center'>
+                <Typography numberOfLines={1} {...typographyProps}>
+                  {title}
+                </Typography>
+                {titleSiblingComponent}
+              </Flex>
               {subtitle && (
                 <ListItemSubtitleContainer>
                   <Typography variant='body2' color='textSecondary' {...typographyProps}>
@@ -100,9 +107,12 @@ const ListItem: React.FC<ListItemProps> = (props) => {
         </ListAdornmentLeftContainer>
 
         <Flex direction='column' {...(adornment && adornmentPlacement === 'right' ? { shrink: true } : { grow: true })}>
-          <Typography numberOfLines={1} {...typographyProps}>
-            {title}
-          </Typography>
+          <Flex alignItems='center'>
+            <Typography numberOfLines={1} {...typographyProps}>
+              {title}
+            </Typography>
+            {titleSiblingComponent}
+          </Flex>
           {subtitle && (
             <ListItemSubtitleContainer>
               <Typography variant='body2' color='textSecondary' {...typographyProps}>

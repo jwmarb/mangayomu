@@ -11,4 +11,5 @@ export interface ListItemProps {
   typographyProps?: TypographyProps;
   holdItem?: MenuItemProps[];
   paper?: boolean;
+  titleSiblingComponent?: React.ReactNode;
 }
