@@ -15,11 +15,16 @@ import Icon from '@components/Icon';
 import connector, {
   ConnectedDownloadingChapterProps,
 } from '@screens/ChapterDownloads/components/DownloadingChapter/DownloadingChapter.redux';
+import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
+import { useTheme } from 'styled-components/native';
+import MenuOption from '@components/MenuOption';
+import useStatefulHeader from '@hooks/useStatefulHeader';
 
 const DownloadingChapter: React.FC<ConnectedDownloadingChapterProps> = (props) => {
-  const { chapterDownloadingState, chapter, downloadedPages, totalPages } = props;
+  const { chapterDownloadingState, chapter, downloadedPages, totalPages, cancelDownload, mangaKey, chapterKey } = props;
 
   const width = useSharedValue(0);
+  const [visible, setVisible] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     width.value = withTiming(chapterDownloadingState ? chapterDownloadingState.totalProgress : 0, {
@@ -31,6 +36,15 @@ const DownloadingChapter: React.FC<ConnectedDownloadingChapterProps> = (props) =
   const progressStyle = useAnimatedStyle(() => ({
     width: width.value + '%',
   }));
+  const theme = useTheme();
+
+  const handleOnSelect = async (option: string) => {
+    switch (option) {
+      case 'Cancel':
+        await cancelDownload(mangaKey, chapterKey);
+        break;
+    }
+  };
 
   return (
     <Flex container verticalPadding={1} horizontalPadding={3} justifyContent='space-between' alignItems='center'>
@@ -54,7 +68,18 @@ const DownloadingChapter: React.FC<ConnectedDownloadingChapterProps> = (props) =
       </Flex>
       <Flex>
         <Spacer x={2} />
-        <IconButton icon={<Icon bundle='Feather' name='more-vertical' />} />
+        <Menu
+          opened={visible}
+          onClose={() => setVisible(false)}
+          onSelect={handleOnSelect}
+          onBackdropPress={() => setVisible(false)}>
+          <MenuTrigger>
+            <IconButton icon={<Icon bundle='Feather' name='more-vertical' />} onPress={() => setVisible(true)} />
+          </MenuTrigger>
+          <MenuOptions customStyles={theme.menuOptionsStyle}>
+            <MenuOption text='Cancel' />
+          </MenuOptions>
+        </Menu>
       </Flex>
     </Flex>
   );

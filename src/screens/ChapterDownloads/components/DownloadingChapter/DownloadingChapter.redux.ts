@@ -3,6 +3,7 @@ import { AppState } from '@redux/store';
 import { DownloadingChapterProps } from '@screens/ChapterDownloads/components/DownloadingChapter/DownloadingChapter.interfaces';
 import DownloadManager from '@utils/DownloadManager';
 import { connect, ConnectedProps } from 'react-redux';
+import { cancelDownload } from '@redux/reducers/mangaDownloadingReducer';
 
 const mapStateToProps = (state: AppState, props: DownloadingChapterProps) => {
   const downloadManager = DownloadManager.ofWithManga(
@@ -20,7 +21,7 @@ const mapStateToProps = (state: AppState, props: DownloadingChapterProps) => {
   };
 };
 
-const connector = connect(mapStateToProps, chaptersListReducerActions);
+const connector = connect(mapStateToProps, { cancelDownload });
 
 export type ConnectedDownloadingChapterProps = ConnectedProps<typeof connector>;
 
