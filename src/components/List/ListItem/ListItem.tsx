@@ -34,7 +34,9 @@ const ListItem: React.FC<ListItemProps> = (props) => {
               <ListAdornmentLeftContainer>
                 {adornment && adornmentPlacement === 'left' && <>{adornment}</>}
               </ListAdornmentLeftContainer>
-              <Flex direction='column' shrink>
+              <Flex
+                direction='column'
+                {...(adornment && adornmentPlacement === 'right' ? { shrink: true } : { grow: true })}>
                 <Typography numberOfLines={1} {...typographyProps}>
                   {title}
                 </Typography>
@@ -47,7 +49,7 @@ const ListItem: React.FC<ListItemProps> = (props) => {
                 )}
               </Flex>
               {adornment && adornmentPlacement === 'right' && (
-                <Flex grow justifyContent='flex-end'>
+                <Flex justifyContent='flex-end'>
                   <Spacer x={3} />
                   {adornment}
                 </Flex>
@@ -65,7 +67,9 @@ const ListItem: React.FC<ListItemProps> = (props) => {
             <ListAdornmentLeftContainer>
               {adornment && adornmentPlacement === 'left' && <>{adornment}</>}
             </ListAdornmentLeftContainer>
-            <Flex direction='column' shrink>
+            <Flex
+              direction='column'
+              {...(adornment && adornmentPlacement === 'right' ? { shrink: true } : { grow: true })}>
               <Typography numberOfLines={1} {...typographyProps}>
                 {title}
               </Typography>
@@ -78,7 +82,7 @@ const ListItem: React.FC<ListItemProps> = (props) => {
               )}
             </Flex>
             {adornment && adornmentPlacement === 'right' && (
-              <Flex grow justifyContent='flex-end'>
+              <Flex justifyContent='flex-end' grow>
                 <Spacer x={3} />
                 {adornment}
               </Flex>
@@ -95,7 +99,7 @@ const ListItem: React.FC<ListItemProps> = (props) => {
           {adornment && adornmentPlacement === 'left' && <>{adornment}</>}
         </ListAdornmentLeftContainer>
 
-        <Flex direction='column' shrink>
+        <Flex direction='column' {...(adornment && adornmentPlacement === 'right' ? { shrink: true } : { grow: true })}>
           <Typography numberOfLines={1} {...typographyProps}>
             {title}
           </Typography>
@@ -108,7 +112,7 @@ const ListItem: React.FC<ListItemProps> = (props) => {
           )}
         </Flex>
         {adornment && adornmentPlacement === 'right' && (
-          <Flex grow justifyContent='flex-end'>
+          <Flex justifyContent='flex-end'>
             <Spacer x={3} />
             {adornment}
           </Flex>
