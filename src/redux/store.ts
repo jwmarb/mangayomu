@@ -12,7 +12,7 @@ import { injectStoreForTypography } from '@theme/Typography';
 const persistConfig: PersistConfig<AppState> = {
   key: 'root',
   storage: ExpoStorage,
-  blacklist: ['chaptersList', 'reader'],
+  blacklist: ['chaptersList', 'reader', 'library'],
   transforms: [sortedListTransformer],
 };
 
