@@ -55,12 +55,23 @@ export const SliderContainer = styled.View`
   `}
 `;
 
-export const SliderCircleBaseContainer = styled(Animated.View)`
-  ${(props) => css`
-    position: absolute;
-    left: 0;
-    top: ${rem(-3)};
-    bottom: 0;
-    margin-left: ${props.theme.spacing(4.75)};
-  `}
+export const SliderCircleBaseContainer = styled(Animated.View)<{ readerSlider: boolean }>`
+  ${(props) => {
+    if (props.readerSlider)
+      return css`
+        position: absolute;
+        left: 0;
+        top: ${rem(-3)};
+        bottom: 0;
+        margin-left: ${props.theme.spacing(4.75)};
+      `;
+
+    return css`
+      position: absolute;
+      left: 0;
+      top: ${rem(-10)};
+      bottom: 0;
+      margin-left: ${props.theme.spacing(0.5)};
+    `;
+  }}
 `;

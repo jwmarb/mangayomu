@@ -33,6 +33,7 @@ const Slider: React.FC<SliderProps> = (props) => {
     onChange,
     range: [min, max],
     noFixedIncremental = false,
+    readerSlider = false,
     value,
   } = props;
   const range = Math.abs(max - min);
@@ -98,7 +99,7 @@ const Slider: React.FC<SliderProps> = (props) => {
         <SliderFilledLine style={filledStyle} />
       </SliderLine>
       <PanGestureHandler onGestureEvent={gestureHandlers}>
-        <SliderCircleBaseContainer style={style}>
+        <SliderCircleBaseContainer readerSlider={readerSlider} style={style}>
           <ButtonBase onPress={() => {}} round color='primary'>
             <SliderCircle />
           </ButtonBase>

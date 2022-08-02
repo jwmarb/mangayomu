@@ -8,4 +8,5 @@ export interface SliderProps {
   range: [number, number];
   noFixedIncremental?: boolean;
   onChange: (newValue: number) => void;
+  readerSlider?: boolean;
 }
