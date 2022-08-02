@@ -3,7 +3,7 @@ import {
   generateNewLayout,
   LayoutLibraryMangaType,
   LayoutMangaExtendedState,
-} from '@screens/Home/screens/MangaLibrary/MangaLibrary.recycler';
+} from '@screens/Home/screens/MangaLibrary/components/MangaLibraryRLV/MangaLibraryRLV.recycler';
 import { MangaInLibrary } from '@screens/Home/screens/MangaLibrary/MangaLibrary.base';
 import { Manga } from '@services/scraper/scraper.interfaces';
 import { RowRenderer } from '@utils/RecyclerListView.interfaces';

@@ -15,6 +15,7 @@ const mapStateToProps = (state: AppState, props: BottomTabScreenProps<BottomTabP
     query: state.library.search,
     orientation: state.settings.deviceOrientation,
     type: state.settings.mangaCover.style,
+    useRecyclerListView: state.settings.advanced.useRecyclerListView,
   };
 };
 

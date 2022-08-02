@@ -38,7 +38,7 @@ import {
   dataProviderFn,
   generateNewLayout,
   rowRenderer,
-} from '@screens/Home/screens/MangaLibrary/MangaLibrary.recycler';
+} from '@screens/Home/screens/MangaLibrary/components/MangaLibraryRLV/MangaLibraryRLV.recycler';
 import connector, { MangaLibraryProps } from '@screens/Home/screens/MangaLibrary/MangaLibrary.redux';
 import { SPACE_MULTIPLIER } from '@theme/Spacing';
 import { titleIncludes } from '@utils/MangaFilters';
@@ -50,97 +50,13 @@ import { useTheme } from 'styled-components/native';
 import LibraryIsEmpty from './components/LibraryIsEmpty';
 import NoItemsFound from './components/NoItemsFound';
 import PropTypes from 'prop-types';
-(RecyclerListView.propTypes as { externalScrollView: {} }).externalScrollView = PropTypes.object;
+import MangaLibraryRLV from '@screens/Home/screens/MangaLibrary/components/MangaLibraryRLV';
+import MangaLibraryFlatList from '@screens/Home/screens/MangaLibrary/components/MangaLibraryFlatList/MangaLibraryFlatList';
 
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
-  const {
-    mangas: recordMangas,
-    navigation,
-    history,
-    cols,
-    fontSize,
-    searchInLibrary,
-    query,
-    orientation,
-    type,
-  } = props;
-  const mangas = React.useMemo(() => Object.keys(recordMangas), [recordMangas]);
-  const [dataProvider, setDataProvider] = React.useState<DataProvider>(
-    new DataProvider(dataProviderFn).cloneWithRows(mangas)
-  );
-  const { width } = useWindowDimensions();
+  if (props.useRecyclerListView) return <MangaLibraryRLV {...props} />;
 
-  const layoutProvider = generateNewLayout(cols, fontSize, width);
-
-  const [expand, setExpand] = React.useState<boolean>(false);
-  const [tabIndex, setTabIndex] = React.useState<number>(0);
-  const handleOnExpand = React.useCallback(() => {
-    Keyboard.dismiss();
-    setExpand(true);
-  }, [setExpand]);
-  const handleOnClose = React.useCallback(() => {
-    setExpand(false);
-  }, [setExpand]);
-
-  const { header } = useSearchBar({
-    title: 'Library',
-    focusCondition: !expand,
-    additionalButtons: (
-      <IconButton icon={<Icon bundle='MaterialCommunityIcons' name='filter-menu' />} onPress={handleOnExpand} />
-    ),
-    stateSetter: [query, searchInLibrary as any],
-  });
-
-  const { sortOptions, selectedSortOption, sort, reverse } = useSort((_createSort) => {
-    const createSort = (compareFn: (a: ReadingMangaInfo, b: ReadingMangaInfo) => number) => {
-      return _createSort((a: string, b: string) => {
-        const mangaA = history[a];
-        const mangaB = history[b];
-        return compareFn(mangaA, mangaB);
-      });
-    };
-    return {
-      'Age in Library': createSort((a, b) => Date.parse(a.dateAddedInLibrary!) - Date.parse(b.dateAddedInLibrary!)),
-      Alphabetical: createSort((a, b) => a.title.localeCompare(b.title)),
-      'Chapter Count': createSort((a, b) => Object.keys(a.chapters).length - Object.keys(b.chapters).length),
-      'Genres Count': createSort((a, b) => a.genres.length - b.genres.length),
-      Source: createSort((a, b) => a.source.localeCompare(b.source)),
-    };
-  });
-
-  useStatefulHeader(
-    <>
-      {header}
-      <FilterModal
-        sortOptions={sortOptions}
-        onClose={handleOnClose}
-        expand={expand}
-        tabIndex={tabIndex}
-        setTabIndex={setTabIndex}
-      />
-    </>
-  );
-  useMountedEffect(() => {
-    setDataProvider((prev) =>
-      prev.cloneWithRows(mangas.filter((x) => titleIncludes(query)(history[x])).sort(selectedSortOption))
-    );
-  }, [mangas.length, query, sort, reverse]);
-
-  if (dataProvider.getSize() === 0 && mangas.length === 0) return <LibraryIsEmpty />;
-
-  if (dataProvider.getSize() === 0 && mangas.length > 0) return <NoItemsFound query={query} />;
-
-  return (
-    <RecyclerListView
-      dataProvider={dataProvider}
-      canChangeSize
-      forceNonDeterministicRendering
-      layoutProvider={layoutProvider}
-      rowRenderer={rowRenderer}
-      extendedState={{ ...history, query, width, orientation, cols, fontSize, type }}
-      scrollViewProps={{ contentContainerStyle: { paddingTop: 24, paddingBottom: 64 } }}
-    />
-  );
+  return <MangaLibraryFlatList {...props} />;
 };
 
 const MangaLibraryScreen: React.FC<MangaLibraryProps> = (props) => {

@@ -16,6 +16,7 @@ import { TypographySkeleton } from '@components/Typography';
 import { ChapterSkeleton } from '@components/Chapter';
 export { default as MenuTitle } from '../MenuTitle';
 export { default as MenuOption } from '../MenuOption';
+export { default as MangaList } from '../MangaList';
 export const Skeleton = {
   MangaComponent: MangaSkeleton,
   Typography: TypographySkeleton,

@@ -1,6 +1,9 @@
 import Manga from '@components/Manga';
 import { calculateCoverHeight, calculateCoverWidth } from '@components/Manga/Cover/Cover.helpers';
-import { LayoutLibraryMangaType, LayoutMangaExtendedState } from './MangaLibrary.recycler';
+import {
+  LayoutLibraryMangaType,
+  LayoutMangaExtendedState,
+} from './components/MangaLibraryRLV/MangaLibraryRLV.recycler';
 import { AppState } from '@redux/store';
 import { Manga as IManga } from '@services/scraper/scraper.interfaces';
 import { SPACE_MULTIPLIER } from '@theme/Spacing';

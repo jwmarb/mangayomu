@@ -66,13 +66,13 @@ export const rowRenderer: any = (
   type: string | number,
   data: string,
   index: number,
-  extendedState: MangaReducerState & LayoutMangaExtendedState
+  extendedState: { history: MangaReducerState } & LayoutMangaExtendedState
 ) => {
   switch (type) {
     case LayoutLibraryMangaType.DYNAMIC:
       return (
         <MangaInLibrary
-          manga={extendedState[data]}
+          manga={extendedState.history[data]}
           dynamic
           width={extendedState.width}
           orientation={extendedState.orientation}
@@ -85,7 +85,7 @@ export const rowRenderer: any = (
     case LayoutLibraryMangaType.LAST:
       return (
         <MangaInLibrary
-          manga={extendedState[data]}
+          manga={extendedState.history[data]}
           last
           width={extendedState.width}
           orientation={extendedState.orientation}
@@ -97,7 +97,7 @@ export const rowRenderer: any = (
     case LayoutLibraryMangaType.FIRST:
       return (
         <MangaInLibrary
-          manga={extendedState[data]}
+          manga={extendedState.history[data]}
           first
           width={extendedState.width}
           orientation={extendedState.orientation}
@@ -111,7 +111,7 @@ export const rowRenderer: any = (
     case LayoutLibraryMangaType.INBETWEEN:
       return (
         <MangaInLibrary
-          manga={extendedState[data]}
+          manga={extendedState.history[data]}
           width={extendedState.width}
           orientation={extendedState.orientation}
           fontSize={extendedState.fontSize}
