@@ -30,6 +30,7 @@ const OverlayPageSlider: React.FC<ConnectedOverlayPageSliderProps> = (props) => 
     <OverlayPageSliderContainer showPageNumber={showPageNumber}>
       <OverlayPageSliderBackground>
         <Slider
+          readerSlider
           width={width * 0.6}
           value={page}
           range={[1, totalPages]}
