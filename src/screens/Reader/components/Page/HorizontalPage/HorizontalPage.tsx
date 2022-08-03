@@ -197,7 +197,7 @@ const HorizontalPage: React.FC<ConnectedPageProps> = (props) => {
       case ImageScaling.FIT_HEIGHT:
         if (isPortrait())
           switch (zoomStartPosition) {
-            case ZoomStartPosition.AUTO: {
+            case ZoomStartPosition.AUTOMATIC: {
               switch (readerDirection) {
                 case ReaderDirection.RIGHT_TO_LEFT:
                   return -(imageWidth * maxScale - _width) / 2;
@@ -218,7 +218,7 @@ const HorizontalPage: React.FC<ConnectedPageProps> = (props) => {
       case ImageScaling.SMART_FIT:
         if (canSmartFit())
           switch (zoomStartPosition) {
-            case ZoomStartPosition.AUTO: {
+            case ZoomStartPosition.AUTOMATIC: {
               if (isPortrait())
                 switch (readerDirection) {
                   case ReaderDirection.RIGHT_TO_LEFT:
