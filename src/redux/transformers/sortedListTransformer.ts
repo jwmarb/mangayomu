@@ -2,7 +2,6 @@
 
 import { orderedChaptersComparator } from '@redux/reducers/mangaReducer/mangaReducer.helpers';
 import { MangaReducerState } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
-import { AppState } from '@redux/store';
 import SortedList from '@utils/SortedList';
 import { createTransform } from 'redux-persist';
 

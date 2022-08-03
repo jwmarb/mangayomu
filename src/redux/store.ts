@@ -9,11 +9,12 @@ import ExpoStorage from '@utils/ExpoStorage';
 import { injectThemeFromStore } from '@theme/Color/Color.helpers';
 import sortedListTransformer from './transformers/sortedListTransformer';
 import { injectStoreForTypography } from '@theme/Typography';
+import historyTransformer from '@redux/transformers/historyTransformer';
 const persistConfig: PersistConfig<AppState> = {
   key: 'root',
   storage: ExpoStorage,
   blacklist: ['chaptersList', 'reader', 'library'],
-  transforms: [sortedListTransformer],
+  transforms: [sortedListTransformer, historyTransformer],
 };
 
 const persistReducers = persistReducer(persistConfig, reducers);

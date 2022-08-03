@@ -7,6 +7,7 @@ import mangaDownloadingReducer from '@redux/reducers/mangaDownloadingReducer';
 import mangaCoverReducer from '@redux/reducers/mangaCoverReducer';
 import readerReducer from '@redux/reducers/readerReducer';
 import readerSettingProfileReducer from '@redux/reducers/readerSettingProfileReducer';
+import mangaHistoryReducer from '@redux/reducers/mangaHistoryReducer/mangaHistoryReducer';
 
 const reducers = combineReducers({
   mangas: mangaReducer,
@@ -17,6 +18,7 @@ const reducers = combineReducers({
   cachedCovers: mangaCoverReducer,
   reader: readerReducer,
   readerSetting: readerSettingProfileReducer,
+  history: mangaHistoryReducer,
 });
 
 export default reducers;

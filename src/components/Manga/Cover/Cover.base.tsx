@@ -84,8 +84,8 @@ export const FixedMangaLoadingCoverBase = styled(Animated.View)<{
           `;
         case 'small':
           return css`
-            width: ${props.theme.spacing(12)};
-            height: ${props.theme.spacing(240 / 13)};
+            width: ${props.theme.spacing(8)};
+            height: ${props.theme.spacing(160 / 13)};
           `;
       }
     }}
@@ -107,8 +107,8 @@ export const FixedMangaCoverBase = styled(Animated.Image).attrs({ cache: 'force-
           `;
         case 'small':
           return css`
-            width: ${props.theme.spacing(12)};
-            height: ${props.theme.spacing(240 / 13)};
+            width: ${props.theme.spacing(8)};
+            height: ${props.theme.spacing(160 / 13)};
           `;
       }
     }}
@@ -130,8 +130,8 @@ export const FixedMangaCoverBaseContainer = styled.View<{
           `;
         case 'small':
           return css`
-            width: ${props.theme.spacing(12)};
-            height: ${props.theme.spacing(240 / 13)};
+            width: ${props.theme.spacing(8)};
+            height: ${props.theme.spacing(160 / 13)};
           `;
       }
     }}
