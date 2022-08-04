@@ -33,15 +33,17 @@ const HistoryItem: React.FC<ConnectedHistoryItemProps> = (props) => {
         <Cover uri={manga.imageCover} fixedSize='small' />
       </ButtonBase>
       <Spacer x={1} />
-      <ButtonBase opacity onPress={handleOnPress}>
-        <Flex direction='column' shrink>
-          <Typography numberOfLines={2}>{manga.title}</Typography>
-          <Spacer y={1} />
-          <Typography variant='body2' color='textSecondary' numberOfLines={1}>
-            {chapter.name ?? `Chapter ${chapter.index + 1}`} - {format(dateRead, 'h:mm a')}
-          </Typography>
-        </Flex>
-      </ButtonBase>
+      <Flex shrink>
+        <ButtonBase opacity onPress={handleOnPress}>
+          <Flex direction='column'>
+            <Typography numberOfLines={2}>{manga.title}</Typography>
+            <Spacer y={1} />
+            <Typography variant='body2' color='textSecondary' numberOfLines={1}>
+              {chapter.name ?? `Chapter ${chapter.index + 1}`} - {format(dateRead, 'h:mm a')}
+            </Typography>
+          </Flex>
+        </ButtonBase>
+      </Flex>
       <Spacer x={1} />
       <Flex grow justifyContent='flex-end'>
         <IconButton icon={<Icon bundle='Feather' name='trash-2' />} onPress={handleOnDelete} />
