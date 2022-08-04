@@ -56,7 +56,7 @@ export default function (
         }
         return newState;
       } else {
-        newState.sectionListData[newState.sectionListData.length - 1] = {
+        newState.sectionListData.push({
           date: Date.now(),
           data: new SortedList(mangaHistoryComparator, [
             {
@@ -66,7 +66,7 @@ export default function (
               sectionIndex: newState.sectionListData.length - 1,
             },
           ]),
-        };
+        });
         return newState;
       }
     }
