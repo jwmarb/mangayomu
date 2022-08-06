@@ -19,10 +19,13 @@ const History: React.FC = (props) => {
   const {} = props;
   const { height } = useWindowDimensions();
   const sectionList = useSelector((state: AppState) => state.history.sectionListData);
-  const sectionData = React.useMemo(
-    () => sectionList.map((x) => ({ title: dateFormatter(x.date), data: x.data.toArray() })),
-    [sectionList.length]
-  );
+  const sectionData = React.useMemo(() => {
+    const reverseMap = [];
+    for (let i = sectionList.length - 1; i >= 0; i--) {
+      reverseMap.push({ title: dateFormatter(sectionList[i].date), data: sectionList[i].data.toArray() });
+    }
+    return reverseMap;
+  }, [sectionList.length]);
   const theme = useTheme();
 
   return (
