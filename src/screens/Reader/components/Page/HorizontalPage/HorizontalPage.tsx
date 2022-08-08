@@ -81,7 +81,7 @@ const HorizontalPage: React.FC<ConnectedPageProps> = (props) => {
     return deviceOrientation === Orientation.LANDSCAPE_LEFT || deviceOrientation === Orientation.LANDSCAPE_RIGHT;
   }
   function shouldEnablePan() {
-    return maxScale >= 1 && imageScaling === ImageScaling.SMART_FIT;
+    return canSmartFit() && imageScaling === ImageScaling.SMART_FIT;
   }
   function canSmartFit() {
     return imageWidth / imageHeight >= 1;
