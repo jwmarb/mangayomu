@@ -27,11 +27,27 @@ const TransitioningPage: React.FC<ConnectedTransitioningPageProps> = (props) => 
     if (currentChapterInView && !hasAlreadyFetched && shouldFetch) {
       if (currentChapterInView.link === nextChapter.link) {
         console.log(`fetching chapter for ${previousChapter.name}`);
-        fetchChapter(previousChapter, extendedStateKey, 'start');
+        (async () => {
+          const fetcher = fetchChapter(previousChapter, extendedStateKey, 'start');
+          if (fetcher) {
+            fetcher.start();
+            return () => {
+              fetcher.cancel();
+            };
+          }
+        })();
       }
       if (currentChapterInView.link === previousChapter.link) {
         console.log(`fetching chapter for ${nextChapter.name}`);
-        fetchChapter(nextChapter, extendedStateKey, 'end');
+        (async () => {
+          const fetcher = fetchChapter(nextChapter, extendedStateKey, 'end');
+          if (fetcher) {
+            fetcher.start();
+            return () => {
+              fetcher.cancel();
+            };
+          }
+        })();
       }
     }
   }, [shouldFetch]);

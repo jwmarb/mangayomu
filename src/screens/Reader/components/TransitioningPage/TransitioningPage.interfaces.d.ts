@@ -10,5 +10,8 @@ export interface TransitioningPageProps {
     pagesToFetchFrom: ReadingChapterInfo,
     extendedStateKey?: string,
     appendLocation?: 'start' | 'end' | null
-  ) => Promise<void>;
+  ) => {
+    cancel: () => void;
+    start: () => Promise<void>;
+  };
 }

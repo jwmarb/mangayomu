@@ -274,37 +274,53 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   // }, [data]);
 
   const fetchChapter = React.useCallback(
-    async (
+    (
       pagesToFetchFrom: ReadingChapterInfo,
       extendedStateKey?: string,
       appendLocation: 'start' | 'end' | null = null
     ) => {
-      const downloadManager = DownloadManager.ofWithManga(pagesToFetchFrom, manga);
-      setReaderLoading(true, extendedStateKey);
-      const uris = await downloadManager.getDownloadedURIs();
-      if (uris.length === 0 || uris.some((uri) => !uri.exists))
-        try {
-          const pages = await source.getPages(pagesToFetchFrom);
-          await transformPages(pages, pagesToFetchFrom, manga, appendLocation);
-        } catch (e) {
-          setReaderError(e);
-        } finally {
-          setReaderLoading(false, extendedStateKey);
-        }
-      else {
-        try {
-          await transformPages(
-            uris.map((x) => x.uri),
-            pagesToFetchFrom,
-            manga,
-            appendLocation
-          );
-        } catch (e) {
-          setReaderError(e);
-        } finally {
-          setReaderLoading(false, extendedStateKey);
-        }
-      }
+      let canceled: boolean = false;
+      let transformer: ReturnType<typeof transformPages> | undefined;
+      return {
+        cancel: () => {
+          canceled = true;
+          transformer?.cancel();
+        },
+        start: async () => {
+          const downloadManager = DownloadManager.ofWithManga(pagesToFetchFrom, manga);
+          setReaderLoading(true, extendedStateKey);
+          const uris = await downloadManager.getDownloadedURIs();
+          if (uris.length === 0 || uris.some((uri) => !uri.exists))
+            try {
+              const pages = await source.getPages(pagesToFetchFrom);
+              if (!canceled) {
+                transformer = transformPages(pages, pagesToFetchFrom, manga, appendLocation);
+                await transformer.start();
+              }
+            } catch (e) {
+              setReaderError(e);
+            } finally {
+              setReaderLoading(false, extendedStateKey);
+            }
+          else {
+            try {
+              if (!canceled) {
+                transformer = transformPages(
+                  uris.map((x) => x.uri),
+                  pagesToFetchFrom,
+                  manga,
+                  appendLocation
+                );
+                await transformer.start();
+              }
+            } catch (e) {
+              setReaderError(e);
+            } finally {
+              setReaderLoading(false, extendedStateKey);
+            }
+          }
+        },
+      };
     },
     [manga]
   );
@@ -317,7 +333,11 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     };
   }, []);
   React.useEffect(() => {
-    fetchChapter(chapter);
+    const fetcher = fetchChapter(chapter);
+    fetcher.start();
+    return () => {
+      fetcher.cancel();
+    };
   }, []);
 
   const renderItem: ListRenderItem<MangaPage> = React.useCallback(

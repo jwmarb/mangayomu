@@ -27,33 +27,44 @@ export const transformPages = (
   manga: Manga,
   appendLocation: 'start' | 'end' | null = null
 ) => {
-  return async (dispatch: AppDispatch, getState: StateGetter) => {
-    const orderedChapters = getState().mangas[manga.link].orderedChapters;
-    const index = orderedChapters.indexOf(chapter);
-    const previousChapter = orderedChapters.get(index - 1);
-    const nextChapter = orderedChapters.get(index + 1);
-    const hasPreviousChapter = previousChapter != null;
-    const hasNextChapter = nextChapter != null;
-    if (appendLocation === 'start') dispatch({ type: 'RESET_SCROLL_POSITION_INDEX' });
-    const p: MangaPage[] = await Promise.all(pages.map(getImageDimensions(chapter)));
-    if (p[0].type === 'PAGE') {
-      p[0].isFirstPage = true;
-      if (index === 0) p[0].isOfFirstChapter = true;
-    }
-    if (p[p.length - 1].type === 'PAGE') (p[p.length - 1] as Page).isLastPage = true;
-    if (hasPreviousChapter) p.unshift({ type: 'PREVIOUS_CHAPTER', key: previousChapter.link });
-    if (hasNextChapter) p.push({ type: 'NEXT_CHAPTER', key: nextChapter.link });
-    else p.push({ type: 'NO_MORE_CHAPTERS' });
-    dispatch({
-      type: 'APPEND_PAGES',
-      pages: p,
-      chapter,
-      manga,
-      appendLocation,
-      numOfPages: pages.length,
-      initialIndexPage: index === 0 ? chapter.indexPage : chapter.indexPage + 1,
-    });
-    if (getState().reader.isMounted) dispatch({ type: 'OPEN_READER', manga, chapter });
+  return (dispatch: AppDispatch, getState: StateGetter) => {
+    let canceled: boolean = false;
+    return {
+      cancel: () => {
+        canceled = true;
+      },
+      start: async () => {
+        dispatch({ type: 'SET_NUMBER_OF_PAGES', manga, chapter, numOfPages: pages.length });
+        const orderedChapters = getState().mangas[manga.link].orderedChapters;
+        const index = orderedChapters.indexOf(chapter);
+        const previousChapter = orderedChapters.get(index - 1);
+        const nextChapter = orderedChapters.get(index + 1);
+        const hasPreviousChapter = previousChapter != null;
+        const hasNextChapter = nextChapter != null;
+        if (appendLocation === 'start') dispatch({ type: 'RESET_SCROLL_POSITION_INDEX' });
+        const p: MangaPage[] = await Promise.all(pages.map(getImageDimensions(chapter)));
+        if (!canceled) {
+          if (p[0].type === 'PAGE') {
+            p[0].isFirstPage = true;
+            if (index === 0) p[0].isOfFirstChapter = true;
+          }
+          if (p[p.length - 1].type === 'PAGE') (p[p.length - 1] as Page).isLastPage = true;
+          if (hasPreviousChapter) p.unshift({ type: 'PREVIOUS_CHAPTER', key: previousChapter.link });
+          if (hasNextChapter) p.push({ type: 'NEXT_CHAPTER', key: nextChapter.link });
+          else p.push({ type: 'NO_MORE_CHAPTERS' });
+          dispatch({
+            type: 'APPEND_PAGES',
+            pages: p,
+            chapter,
+            manga,
+            appendLocation,
+            numOfPages: pages.length,
+            initialIndexPage: index === 0 ? chapter.indexPage : chapter.indexPage + 1,
+          });
+          if (getState().reader.isMounted) dispatch({ type: 'OPEN_READER', manga, chapter });
+        }
+      },
+    };
   };
 };
 
