@@ -95,11 +95,8 @@ export type MangaReducerAction =
   | { type: 'OPEN_READER'; manga: Manga; chapter: ReadingChapterInfo }
   | { type: 'SET_INDEX_PAGE'; mangaKey: string; chapterKey: string; indexPage: number }
   | {
-      type: 'APPEND_PAGES';
-      pages: MangaPage[];
+      type: 'SET_NUMBER_OF_PAGES';
       numOfPages: number;
       chapter: MangaChapter;
       manga: Manga;
-      appendLocation: 'start' | 'end' | null;
-      initialIndexPage: number;
     };

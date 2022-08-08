@@ -88,6 +88,6 @@ export const toggleLibrary = (manga: Manga) => {
 
 export const setIndexPage = (mangaKey: string, chapterKey: string, indexPage: number) => {
   return (dispatch: AppDispatch) => {
-    dispatch({ type: 'SET_INDEX_PAGE', mangaKey, chapterKey, indexPage });
+    if (!Number.isNaN(indexPage)) dispatch({ type: 'SET_INDEX_PAGE', mangaKey, chapterKey, indexPage });
   };
 };

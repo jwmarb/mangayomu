@@ -63,7 +63,7 @@ function updateChapters(payload: MangaChapter[], state?: ReadingChapterInfoRecor
 
 const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerAction): MangaReducerState => {
   switch (action.type) {
-    case 'APPEND_PAGES': {
+    case 'SET_NUMBER_OF_PAGES': {
       state[action.manga.link].chapters[action.chapter.link].totalPages = action.numOfPages;
       return state;
     }
