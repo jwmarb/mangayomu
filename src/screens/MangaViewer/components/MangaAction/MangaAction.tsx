@@ -27,7 +27,7 @@ const MangaAction: React.FC<MangaActionProps> = (props) => {
             title={
               userMangaInfo
                 ? userMangaInfo.currentlyReadingChapter != null
-                  ? userMangaInfo.chapters[userMangaInfo.currentlyReadingChapter].name ??
+                  ? userMangaInfo.chapters[userMangaInfo.currentlyReadingChapter]?.name ??
                     `Chapter ${userMangaInfo.chapters[userMangaInfo.currentlyReadingChapter].index + 1}`
                   : chaptersLength > 0
                   ? 'Read'

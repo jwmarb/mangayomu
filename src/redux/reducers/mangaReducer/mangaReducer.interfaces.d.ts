@@ -99,4 +99,5 @@ export type MangaReducerAction =
       numOfPages: number;
       chapter: MangaChapter;
       manga: Manga;
-    };
+    }
+  | { type: 'SIMULATE_NEW_CHAPTERS' };

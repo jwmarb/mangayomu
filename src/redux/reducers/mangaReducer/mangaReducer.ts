@@ -37,12 +37,12 @@ function updateChapters(payload: MangaChapter[], state?: ReadingChapterInfoRecor
     for (const chapter of payload) {
       obj[chapter.link] = {
         ...chapter,
-        indexPage: state[chapter.link].indexPage ?? 0,
-        totalPages: state[chapter.link].totalPages ?? 0,
-        scrollPosition: state[chapter.link].scrollPosition ?? 0,
-        dateRead: state[chapter.link].dateRead ?? null,
-        validatedStatus: state[chapter.link].validatedStatus ?? DownloadStatus.VALIDATING,
-        status: state[chapter.link].status ?? DownloadStatus.VALIDATING,
+        indexPage: state[chapter.link]?.indexPage ?? 0,
+        totalPages: state[chapter.link]?.totalPages ?? 0,
+        scrollPosition: state[chapter.link]?.scrollPosition ?? 0,
+        dateRead: state[chapter.link]?.dateRead ?? null,
+        validatedStatus: state[chapter.link]?.validatedStatus ?? DownloadStatus.VALIDATING,
+        status: state[chapter.link]?.status ?? DownloadStatus.VALIDATING,
       };
     }
   else
@@ -63,6 +63,15 @@ function updateChapters(payload: MangaChapter[], state?: ReadingChapterInfoRecor
 
 const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerAction): MangaReducerState => {
   switch (action.type) {
+    case 'SIMULATE_NEW_CHAPTERS': {
+      const newState = { ...state };
+      for (const manga in newState) {
+        const latestChapter = newState[manga].orderedChapters.get(newState[manga].orderedChapters.size() - 1);
+        delete newState[manga].chapters[latestChapter.link];
+        newState[manga].orderedChapters.remove(latestChapter);
+      }
+      return newState;
+    }
     case 'SET_NUMBER_OF_PAGES': {
       state[action.manga.link].chapters[action.chapter.link].totalPages = action.numOfPages;
       return state;

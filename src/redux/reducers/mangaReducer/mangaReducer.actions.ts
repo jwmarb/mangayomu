@@ -91,3 +91,9 @@ export const setIndexPage = (mangaKey: string, chapterKey: string, indexPage: nu
     if (!Number.isNaN(indexPage)) dispatch({ type: 'SET_INDEX_PAGE', mangaKey, chapterKey, indexPage });
   };
 };
+
+export const simulateNewChapters = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'SIMULATE_NEW_CHAPTERS' });
+  };
+};
