@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components/native';
-import Animated from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { rem, shadowDrop } from '@theme/core';
 import { ScreenDimension } from '@utils/extra';
 
@@ -7,7 +7,10 @@ export const FloatingActionButtonContainerLayoutGetter = styled.View.attrs({ poi
   opacity: 0;
 `;
 
-export const FloatingActionButtonContainer = styled(Animated.View).attrs(shadowDrop)`
+export const FloatingActionButtonContainer = styled(Animated.View).attrs({
+  ...shadowDrop,
+  exiting: FadeOut,
+})`
   ${(props) => css`
     background-color: ${props.theme.palette.primary.main.get()};
     border-radius: 1000px;
