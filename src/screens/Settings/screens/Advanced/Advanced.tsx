@@ -6,9 +6,12 @@ import React from 'react';
 import ItemToggle from '@screens/Settings/screens/components/ItemToggle';
 
 const Advanced: React.FC<ConnectedAdvancedProps> = (props) => {
-  const { useRecyclerListView, toggleAdvancedSetting } = props;
+  const { useRecyclerListView, toggleAdvancedSetting, debugging } = props;
   const toggleRecyclerListView = React.useCallback(() => {
     toggleAdvancedSetting('useRecyclerListView');
+  }, [toggleAdvancedSetting]);
+  const toggleDebugging = React.useCallback(() => {
+    toggleAdvancedSetting('enableDebugging');
   }, [toggleAdvancedSetting]);
   return (
     <List>
@@ -18,6 +21,12 @@ const Advanced: React.FC<ConnectedAdvancedProps> = (props) => {
         adornmentPlacement='right'
         onPress={toggleRecyclerListView}
         adornment={<Switch enabled={useRecyclerListView} onChange={toggleRecyclerListView} />}
+      />
+      <ListItem
+        title='Enable debugging'
+        adornmentPlacement='right'
+        onPress={toggleDebugging}
+        adornment={<Switch enabled={debugging} onChange={toggleDebugging} />}
       />
     </List>
   );

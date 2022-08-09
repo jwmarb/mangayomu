@@ -7,6 +7,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 const mapStateToProps = (state: AppState, props: StackScreenProps<SettingsStackParamList, 'Advanced'>) => ({
   ...props,
   useRecyclerListView: state.settings.advanced.useRecyclerListView,
+  debugging: state.settings.advanced.enableDebugging,
 });
 
 const connector = connect(mapStateToProps, { toggleAdvancedSetting });

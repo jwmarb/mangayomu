@@ -45,6 +45,7 @@ export interface SettingsReducerState {
   };
   advanced: {
     useRecyclerListView: boolean;
+    enableDebugging: boolean;
   };
 }
 
