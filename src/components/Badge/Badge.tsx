@@ -1,4 +1,5 @@
 import { Typography } from '@components/Typography';
+import { Color } from '@theme/core';
 import React from 'react';
 import { View } from 'react-native';
 import {
@@ -9,12 +10,13 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { useTheme } from 'styled-components/native';
 import { BadgeContainer } from './Badge.base';
 import { BadgeProps } from './Badge.interfaces';
 
 const Badge: React.FC<BadgeProps> = (props) => {
   const { children, color = 'secondary', badge, show } = props;
-  const scale = useSharedValue(0);
+  const scale = useSharedValue(show === undefined ? (typeof badge === 'number' && badge === 0 ? 0 : 1) : show ? 1 : 0);
 
   React.useEffect(() => {
     if (show === undefined)
@@ -44,7 +46,9 @@ const Badge: React.FC<BadgeProps> = (props) => {
   return (
     <View>
       <BadgeContainer color={color} style={styles}>
-        <Typography variant='bottomtab'>{badge}</Typography>
+        <Typography variant='bottomtab' color={Color.getContrastText(color)}>
+          {badge}
+        </Typography>
       </BadgeContainer>
       {children}
     </View>
