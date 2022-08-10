@@ -126,6 +126,21 @@ export default class Color {
     }
   }
 
+  public static getContrastText(v: AppColors): Color {
+    if (v instanceof Color) return v.getContrastText();
+    const palette = Palette();
+    switch (v) {
+      case 'textPrimary':
+        return palette.text.primary.getContrastText();
+      case 'textSecondary':
+        return palette.text.secondary.getContrastText();
+      case 'disabled':
+        return palette.text.disabled.getContrastText();
+      default:
+        return palette[v].main.getContrastText();
+    }
+  }
+
   public static hex(lightThemeHex: string, darkThemeHex: string): Color {
     return new Color({ light: lightThemeHex, dark: darkThemeHex });
   }
