@@ -4,6 +4,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { AppState } from '@redux/store';
 import { connect, ConnectedProps } from 'react-redux';
 import { searchInLibrary } from '@redux/reducers/mangalibReducer/mangalibReducer.actions';
+import { appendNewChapters } from '@redux/reducers/mangaReducer';
 
 const mapStateToProps = (state: AppState, props: BottomTabScreenProps<BottomTabParamList, 'Library'>) => {
   return {
@@ -19,7 +20,7 @@ const mapStateToProps = (state: AppState, props: BottomTabScreenProps<BottomTabP
   };
 };
 
-const connector = connect(mapStateToProps, { searchInLibrary });
+const connector = connect(mapStateToProps, { searchInLibrary, appendNewChapters });
 
 export type MangaLibraryProps = ConnectedProps<typeof connector>;
 

@@ -63,6 +63,11 @@ export interface ReadingMangaInfo extends MangaMeta, Manga {
    * The current chapter key the user is reading
    */
   currentlyReadingChapter: string | null;
+
+  /**
+   * New chapters on update. Resets whenever the user views the manga
+   */
+  newChapters: number;
 }
 
 export type MangaReducerState = Record<string, ReadingMangaInfo>;
@@ -100,4 +105,5 @@ export type MangaReducerAction =
       chapter: MangaChapter;
       manga: Manga;
     }
-  | { type: 'SIMULATE_NEW_CHAPTERS' };
+  | { type: 'SIMULATE_NEW_CHAPTERS' }
+  | { type: 'CHAPTER_UPDATES'; payload: Manga & MangaMeta };

@@ -15,10 +15,11 @@ import { AppState } from '@redux/store';
 import connector, { ConnectedMangaProps } from '@components/Manga/Manga.redux';
 import { MangaCoverStyles } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { Constants } from '@theme/core';
+import { Color, Constants } from '@theme/core';
+import Badge from '@components/Badge';
 
 const Manga: React.FC<ConnectedMangaProps> = (props) => {
-  const { title, imageCover, cols, bold, fontSize, coverStyle, link, source } = props;
+  const { title, imageCover, cols, bold, fontSize, coverStyle, link, source, newChapters } = props;
   const navigation = useRootNavigation();
   function handleOnPress() {
     navigation.navigate('MangaViewer', { manga: { imageCover, title, link, source } });
@@ -28,28 +29,32 @@ const Manga: React.FC<ConnectedMangaProps> = (props) => {
       return (
         <TouchableWithoutFeedback onPress={handleOnPress}>
           <MangaBaseContainer cols={cols}>
-            <Cover uri={imageCover}>
-              <Typography numberOfLines={2} fontSize={fontSize} bold={bold} color={Constants.GRAY[1]}>
-                {title}
-              </Typography>
-            </Cover>
+            <Badge badge={newChapters} show={newChapters != null && newChapters !== 0}>
+              <Cover uri={imageCover}>
+                <Typography numberOfLines={2} fontSize={fontSize} bold={bold} color={Constants.GRAY[1]}>
+                  {title}
+                </Typography>
+              </Cover>
+            </Badge>
           </MangaBaseContainer>
         </TouchableWithoutFeedback>
       );
     case MangaCoverStyles.CLASSIC:
     default:
       return (
-        <ButtonBase onPress={handleOnPress} opacity square>
-          <MangaBaseContainer cols={cols}>
-            <Flex direction='column'>
-              <Cover uri={imageCover} />
-              <Spacer y={1} />
-              <Typography numberOfLines={2} fontSize={fontSize} bold={bold}>
-                {title}
-              </Typography>
-            </Flex>
-          </MangaBaseContainer>
-        </ButtonBase>
+        <Badge badge={newChapters} show={newChapters != null && newChapters !== 0}>
+          <ButtonBase onPress={handleOnPress} opacity square>
+            <MangaBaseContainer cols={cols}>
+              <Flex direction='column'>
+                <Cover uri={imageCover} />
+                <Spacer y={1} />
+                <Typography numberOfLines={2} fontSize={fontSize} bold={bold}>
+                  {title}
+                </Typography>
+              </Flex>
+            </MangaBaseContainer>
+          </ButtonBase>
+        </Badge>
       );
   }
 };

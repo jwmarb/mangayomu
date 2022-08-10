@@ -97,3 +97,9 @@ export const simulateNewChapters = () => {
     dispatch({ type: 'SIMULATE_NEW_CHAPTERS' });
   };
 };
+
+export const appendNewChapters = (payload: Manga & MangaMeta) => {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'CHAPTER_UPDATES', payload });
+  };
+};

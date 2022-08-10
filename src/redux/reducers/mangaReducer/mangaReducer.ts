@@ -63,6 +63,19 @@ function updateChapters(payload: MangaChapter[], state?: ReadingChapterInfoRecor
 
 const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerAction): MangaReducerState => {
   switch (action.type) {
+    case 'CHAPTER_UPDATES': {
+      return mapMangaToState(state, action.payload, (manga) => {
+        return {
+          ...action.payload,
+          chapters: updateChapters(action.payload.chapters, manga?.chapters),
+          inLibrary: manga?.inLibrary ?? false,
+          currentlyReadingChapter: manga?.currentlyReadingChapter ?? null,
+          dateAddedInLibrary: manga?.dateAddedInLibrary ?? null,
+          orderedChapters: updateOrderOfChapters(action.payload.chapters, manga?.orderedChapters),
+          newChapters: manga ? action.payload.chapters.length - manga.orderedChapters.size() : 0,
+        };
+      });
+    }
     case 'SIMULATE_NEW_CHAPTERS': {
       const newState = { ...state };
       for (const manga in newState) {
@@ -294,6 +307,7 @@ const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerA
         currentlyReadingChapter: manga?.currentlyReadingChapter ?? null,
         dateAddedInLibrary: manga?.dateAddedInLibrary ?? null,
         orderedChapters: updateOrderOfChapters(action.payload.chapters, manga?.orderedChapters),
+        newChapters: 0,
       }));
     case 'TOGGLE_LIBRARY':
       return mapMangaToState(state, action.payload, (manga) => ({

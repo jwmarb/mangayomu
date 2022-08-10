@@ -44,7 +44,7 @@ import { SPACE_MULTIPLIER } from '@theme/Spacing';
 import { titleIncludes } from '@utils/MangaFilters';
 import pixelToNumber from '@utils/pixelToNumber';
 import React from 'react';
-import { FlatList, Keyboard, useWindowDimensions } from 'react-native';
+import { FlatList, Keyboard, RefreshControl, useWindowDimensions } from 'react-native';
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 import { useTheme } from 'styled-components/native';
 import LibraryIsEmpty from '../../components/LibraryIsEmpty';
@@ -52,6 +52,10 @@ import NoItemsFound from '../../components/NoItemsFound';
 import PropTypes from 'prop-types';
 import { renderItem, keyExtractor } from './MangaLibraryFlatList.flatlist';
 import { Orientation } from 'expo-screen-orientation';
+import displayMessage from '@utils/displayMessage';
+import MangaHost from '@services/scraper/scraper.abstract';
+import pLimit from 'p-limit';
+const limit = pLimit(1);
 
 const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   const {
@@ -63,10 +67,25 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     searchInLibrary,
     query,
     orientation,
+    appendNewChapters,
     type,
   } = props;
   const mangas = React.useMemo(() => Object.keys(recordMangas), [recordMangas]);
   const [mangaList, setMangaList] = React.useState<string[]>(mangas);
+  const [refreshing, setRefreshing] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    if (refreshing) {
+      displayMessage('Fetching updates...');
+      setRefreshing(false);
+      for (const mangaKey in recordMangas) {
+        limit(async () => {
+          const meta = await MangaHost.availableSources.get(history[mangaKey].source)!.getMeta(history[mangaKey]);
+          appendNewChapters({ ...history[mangaKey], ...meta });
+        });
+      }
+    }
+  }, [refreshing]);
 
   const { width, height } = useWindowDimensions();
   const numOfColumnsPortrait = React.useMemo(() => {
@@ -94,6 +113,9 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   }, [cols]);
   const [expand, setExpand] = React.useState<boolean>(false);
   const [tabIndex, setTabIndex] = React.useState<number>(0);
+  const handleOnRefresh = () => {
+    setRefreshing(true);
+  };
   const handleOnExpand = React.useCallback(() => {
     Keyboard.dismiss();
     setExpand(true);
@@ -120,11 +142,12 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
       });
     };
     return {
-      'Age in Library': createSort((a, b) => Date.parse(a.dateAddedInLibrary!) - Date.parse(b.dateAddedInLibrary!)),
+      'Age in library': createSort((a, b) => Date.parse(a.dateAddedInLibrary!) - Date.parse(b.dateAddedInLibrary!)),
       Alphabetical: createSort((a, b) => a.title.localeCompare(b.title)),
-      'Chapter Count': createSort((a, b) => Object.keys(a.chapters).length - Object.keys(b.chapters).length),
-      'Genres Count': createSort((a, b) => a.genres.length - b.genres.length),
+      'Chapter count': createSort((a, b) => Object.keys(a.chapters).length - Object.keys(b.chapters).length),
+      'Genres count': createSort((a, b) => a.genres.length - b.genres.length),
       Source: createSort((a, b) => a.source.localeCompare(b.source)),
+      'Number of updates': createSort((a, b) => a.newChapters - b.newChapters),
     };
   });
 
@@ -159,6 +182,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
           : numOfColumnsLandscape
       }
       data={mangaList}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleOnRefresh} />}
       contentContainerStyle={{
         paddingTop: pixelToNumber(theme.spacing(2)),
         paddingBottom: pixelToNumber(theme.spacing(24)),
