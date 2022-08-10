@@ -28,7 +28,7 @@ const Advanced: React.FC<ConnectedAdvancedProps> = (props) => {
         onPress={toggleDebugging}
         adornment={<Switch enabled={debugging} onChange={toggleDebugging} />}
       />
-      {/* <ListItem title='SImulate new chapters' onPress={simulateNewChapters} /> */}
+      {/* <ListItem title='Simulate new chapters' onPress={simulateNewChapters} /> */}
     </List>
   );
 };
