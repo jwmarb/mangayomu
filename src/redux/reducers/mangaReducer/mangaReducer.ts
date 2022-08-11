@@ -71,7 +71,7 @@ const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerA
           inLibrary: manga?.inLibrary ?? false,
           currentlyReadingChapter: manga?.currentlyReadingChapter ?? null,
           dateAddedInLibrary: manga?.dateAddedInLibrary ?? null,
-          orderedChapters: updateOrderOfChapters(action.payload.chapters, manga?.orderedChapters),
+          orderedChapters: manga?.orderedChapters ?? action.payload.chapters,
           newChapters: manga ? action.payload.chapters.length - manga.orderedChapters.size() : 0,
         };
       });
