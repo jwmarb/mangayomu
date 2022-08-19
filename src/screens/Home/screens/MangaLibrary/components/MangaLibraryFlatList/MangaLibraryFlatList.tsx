@@ -69,6 +69,10 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     orientation,
     appendNewChapters,
     type,
+    sort: initialSort,
+    setSortMethod,
+    reversed: initialReversed,
+    toggleReverseSort,
   } = props;
   const mangas = React.useMemo(() => Object.keys(recordMangas), [recordMangas]);
   const [mangaList, setMangaList] = React.useState<string[]>(mangas);
@@ -133,23 +137,29 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     stateSetter: [query, searchInLibrary as any],
   });
   const theme = useTheme();
-  const { sortOptions, selectedSortOption, sort, reverse } = useSort((_createSort) => {
-    const createSort = (compareFn: (a: ReadingMangaInfo, b: ReadingMangaInfo) => number) => {
-      return _createSort((a: string, b: string) => {
-        const mangaA = history[a];
-        const mangaB = history[b];
-        return compareFn(mangaA, mangaB);
-      });
-    };
-    return {
-      'Age in library': createSort((a, b) => Date.parse(a.dateAddedInLibrary!) - Date.parse(b.dateAddedInLibrary!)),
-      Alphabetical: createSort((a, b) => a.title.localeCompare(b.title)),
-      'Chapter count': createSort((a, b) => Object.keys(a.chapters).length - Object.keys(b.chapters).length),
-      'Genres count': createSort((a, b) => a.genres.length - b.genres.length),
-      Source: createSort((a, b) => a.source.localeCompare(b.source)),
-      'Number of updates': createSort((a, b) => a.newChapters - b.newChapters),
-    };
-  });
+  const { sortOptions, selectedSortOption, reverse, sort } = useSort(
+    (_createSort) => {
+      const createSort = (compareFn: (a: ReadingMangaInfo, b: ReadingMangaInfo) => number) => {
+        return _createSort((a: string, b: string) => {
+          const mangaA = history[a];
+          const mangaB = history[b];
+          return compareFn(mangaA, mangaB);
+        });
+      };
+      return {
+        'Age in library': createSort((a, b) => Date.parse(a.dateAddedInLibrary!) - Date.parse(b.dateAddedInLibrary!)),
+        Alphabetical: createSort((a, b) => a.title.localeCompare(b.title)),
+        'Chapter count': createSort((a, b) => Object.keys(a.chapters).length - Object.keys(b.chapters).length),
+        'Genres count': createSort((a, b) => a.genres.length - b.genres.length),
+        Source: createSort((a, b) => a.source.localeCompare(b.source)),
+        'Number of updates': createSort((a, b) => a.newChapters - b.newChapters),
+      };
+    },
+    initialSort,
+    setSortMethod,
+    initialReversed,
+    toggleReverseSort
+  );
 
   useStatefulHeader(
     <>

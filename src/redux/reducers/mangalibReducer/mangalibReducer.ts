@@ -7,6 +7,8 @@ import { StringComparator } from '@utils/Algorithms';
 const INITIAL_STATE: MangaLibReducerState = {
   search: '',
   mangas: {},
+  sort: 'Alphabetical',
+  reversed: false,
 };
 
 export default function (
@@ -14,6 +16,16 @@ export default function (
   action: MangaLibReducerAction
 ): MangaLibReducerState {
   switch (action.type) {
+    case 'TOGGLE_REVERSE_SORT':
+      return {
+        ...state,
+        reversed: !state.reversed,
+      };
+    case 'SET_SORT_METHOD':
+      return {
+        ...state,
+        sort: action.sort,
+      };
     case 'SET_SEARCH_QUERY_IN_LIBRARY':
       return {
         ...state,

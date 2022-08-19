@@ -5,10 +5,14 @@ import { Comparator } from '@utils/Algorithms/Comparator/Comparator.interfaces';
 
 export default function useSort<Comparators>(
   c: (sortCreator: typeof createSort) => Comparators,
-  initialSort?: keyof Comparators
+  initialSort?: keyof Comparators,
+  stateSetter?: (newState: keyof Comparators) => void,
+  initialReverse?: boolean,
+  reverseSetter?: (newState: boolean) => void
 ) {
   const [sort, setSort] = React.useState<keyof typeof comparators>(initialSort ?? ('Alphabetical' as any));
-  const [reverse, setReverse] = React.useState<boolean>(false);
+
+  const [reverse, setReverse] = React.useState<boolean>(initialReverse ?? false);
   function createSort<T>(compareFn: Comparator<T>): Comparator<T> {
     return (a: T, b: T) => {
       if (reverse) return -compareFn(a, b);
@@ -17,6 +21,10 @@ export default function useSort<Comparators>(
   }
   const comparators = c(createSort);
   const [visible, setVisible] = React.useState<boolean>(false);
+  React.useEffect(() => {
+    if (stateSetter) stateSetter(sort);
+    if (reverseSetter) reverseSetter(reverse);
+  }, [sort, reverse]);
 
   return {
     visible,
