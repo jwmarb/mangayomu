@@ -101,6 +101,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   const mangas = React.useMemo(() => Object.keys(recordMangas), [recordMangas]);
   const [mangaList, setMangaList] = React.useState<string[]>(mangas.sort(selectedSortOption));
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
+  const isFocused = useIsFocused();
 
   React.useEffect(() => {
     if (refreshing) {
@@ -116,7 +117,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
       } catch (e) {
         console.error(e);
       } finally {
-        setMangaList((mangas) => mangas.sort(selectedSortOption));
+        if (isFocused) setMangaList((mangas) => mangas.sort(selectedSortOption));
       }
     }
   }, [refreshing]);
