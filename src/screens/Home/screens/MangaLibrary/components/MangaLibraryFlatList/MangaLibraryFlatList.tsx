@@ -74,19 +74,49 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     reversed: initialReversed,
     toggleReverseSort,
   } = props;
+  const { sortOptions, selectedSortOption, reverse, sort } = useSort(
+    (_createSort) => {
+      const createSort = (compareFn: (a: ReadingMangaInfo, b: ReadingMangaInfo) => number) => {
+        return _createSort((a: string, b: string) => {
+          const mangaA = history[a];
+          const mangaB = history[b];
+          return compareFn(mangaA, mangaB);
+        });
+      };
+      return {
+        'Age in library': createSort((a, b) => Date.parse(a.dateAddedInLibrary!) - Date.parse(b.dateAddedInLibrary!)),
+        Alphabetical: createSort((a, b) => a.title.localeCompare(b.title)),
+        'Chapter count': createSort((a, b) => Object.keys(a.chapters).length - Object.keys(b.chapters).length),
+        'Genres count': createSort((a, b) => a.genres.length - b.genres.length),
+        Source: createSort((a, b) => a.source.localeCompare(b.source)),
+        'Number of updates': createSort((a, b) => a.newChapters - b.newChapters),
+      };
+    },
+    initialSort,
+    setSortMethod,
+    initialReversed,
+    toggleReverseSort
+  );
+
   const mangas = React.useMemo(() => Object.keys(recordMangas), [recordMangas]);
-  const [mangaList, setMangaList] = React.useState<string[]>(mangas);
+  const [mangaList, setMangaList] = React.useState<string[]>(mangas.sort(selectedSortOption));
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (refreshing) {
       displayMessage('Fetching updates...');
       setRefreshing(false);
-      for (const mangaKey in recordMangas) {
-        limit(async () => {
-          const meta = await MangaHost.availableSources.get(history[mangaKey].source)!.getMeta(history[mangaKey]);
-          appendNewChapters({ ...history[mangaKey], ...meta });
-        });
+      try {
+        for (const mangaKey in recordMangas) {
+          limit(async () => {
+            const meta = await MangaHost.availableSources.get(history[mangaKey].source)!.getMeta(history[mangaKey]);
+            appendNewChapters({ ...history[mangaKey], ...meta });
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setMangaList((mangas) => mangas.sort(selectedSortOption));
       }
     }
   }, [refreshing]);
@@ -137,29 +167,6 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     stateSetter: [query, searchInLibrary as any],
   });
   const theme = useTheme();
-  const { sortOptions, selectedSortOption, reverse, sort } = useSort(
-    (_createSort) => {
-      const createSort = (compareFn: (a: ReadingMangaInfo, b: ReadingMangaInfo) => number) => {
-        return _createSort((a: string, b: string) => {
-          const mangaA = history[a];
-          const mangaB = history[b];
-          return compareFn(mangaA, mangaB);
-        });
-      };
-      return {
-        'Age in library': createSort((a, b) => Date.parse(a.dateAddedInLibrary!) - Date.parse(b.dateAddedInLibrary!)),
-        Alphabetical: createSort((a, b) => a.title.localeCompare(b.title)),
-        'Chapter count': createSort((a, b) => Object.keys(a.chapters).length - Object.keys(b.chapters).length),
-        'Genres count': createSort((a, b) => a.genres.length - b.genres.length),
-        Source: createSort((a, b) => a.source.localeCompare(b.source)),
-        'Number of updates': createSort((a, b) => a.newChapters - b.newChapters),
-      };
-    },
-    initialSort,
-    setSortMethod,
-    initialReversed,
-    toggleReverseSort
-  );
 
   useStatefulHeader(
     <>
