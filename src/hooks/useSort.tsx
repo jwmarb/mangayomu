@@ -2,6 +2,7 @@ import SortTypeItem from '@components/SortTypeItem';
 import List from '@components/List';
 import React from 'react';
 import { Comparator } from '@utils/Algorithms/Comparator/Comparator.interfaces';
+import useMountedEffect from '@hooks/useMountedEffect';
 
 export default function useSort<Comparators>(
   c: (sortCreator: typeof createSort) => Comparators,
@@ -21,7 +22,7 @@ export default function useSort<Comparators>(
   }
   const comparators = c(createSort);
   const [visible, setVisible] = React.useState<boolean>(false);
-  React.useEffect(() => {
+  useMountedEffect(() => {
     if (stateSetter) stateSetter(sort);
     if (reverseSetter) reverseSetter(reverse);
   }, [sort, reverse]);
