@@ -51,6 +51,7 @@ const INITIAL_STATE: SettingsReducerState = {
   },
   advanced: {
     useRecyclerListView: false,
+    enableDebugging: false,
   },
 };
 
