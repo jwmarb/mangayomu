@@ -70,6 +70,14 @@ export declare interface MangaHostInfo {
    * Whether or not the manga host has a manga directory like MangaSee
    */
   hasMangaDirectory: boolean;
+
+  /**
+   * The version of the source made by the creator. Should follow semantic versioning
+   * 1.x.x = major version that introduces incompatible API changes
+   * x.1.x = minor version that adds new functionality that is compatible with previous versions
+   * x.x.1 = patch version that fixes bugs
+   */
+  version: string;
 }
 
 /**

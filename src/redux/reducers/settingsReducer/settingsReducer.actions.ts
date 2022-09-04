@@ -10,6 +10,7 @@ import {
   ReaderDirection,
 } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 import { AppDispatch } from '@redux/store';
+import MangaHost from '@services/scraper/scraper.abstract';
 import { FontFamily } from '@theme/Typography';
 import { Dispatch } from 'redux';
 import { AdvancedSettingsBooleans, SettingsReducerAction, SettingsReducerState } from './settingsReducer.interfaces';
@@ -119,5 +120,11 @@ export function setReaderScreenZoomStartPosition(zoomStartPosition: ZoomStartPos
 export function toggleAdvancedSetting(key: AdvancedSettingsBooleans) {
   return (dispatch: AppDispatch) => {
     dispatch({ type: 'TOGGLE_ADVANCED_SETTING', key });
+  };
+}
+
+export function setSource(payload: MangaHost) {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'SELECT_SOURCE', payload });
   };
 }

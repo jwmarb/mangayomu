@@ -78,6 +78,7 @@ export type MangaSeeFilter = typeof filters.schema;
 export const MANGASEE_INFO: MangaHostFiltersInfo<typeof filters.schema> = {
   host: MANGASEE_URL,
   genres: MANGASEE_GENRES as any,
+  version: '1.0.0',
   name: 'MangaSee',
   icon: 'https://mangasee123.com/media/favicon.png',
   hasHotMangas: true,

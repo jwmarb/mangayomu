@@ -1,6 +1,6 @@
 import { SPACE_MULTIPLIER } from '@theme/Spacing';
 import { StatusBar, Image, Linking, View, ViewProps } from 'react-native';
-import styled, { css, DefaultTheme } from 'styled-components/native';
+import styled, { css, DefaultTheme, useTheme } from 'styled-components/native';
 import React from 'react';
 import IconButton from '../../IconButton';
 import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
@@ -11,6 +11,11 @@ import { ContainerProps } from '@components/Container/Container.interfaces';
 import ExpoStorage from '@utils/ExpoStorage';
 import { useSelector } from 'react-redux';
 import { AppState } from '@redux/store';
+import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
+import MenuOption from '@components/MenuOption';
+import MenuTitle from '@components/MenuTitle';
+import Icon from '@components/Icon';
+import { useRootNavigation } from '@navigators/Root';
 
 const generateCSS = (props: ThemedStyledProps<ViewProps & React.RefAttributes<View>, DefaultTheme>) => css`
   display: flex;
@@ -77,7 +82,8 @@ export const HeaderBaseContainer = styled.View`
 
 export const MangaSource: React.FC = () => {
   const mangaSource = useMangaSource();
-  const lib = useSelector((state: AppState) => state.mangas);
+  const navigation = useRootNavigation();
+  const [open, setOpen] = React.useState<boolean>(false);
   const menuItems: MenuItemProps[] = React.useMemo(
     () => [
       {
@@ -105,12 +111,40 @@ export const MangaSource: React.FC = () => {
     ],
     [mangaSource]
   );
+  function handleOnOpen() {
+    setOpen(true);
+  }
+  function handleOnClose() {
+    setOpen(false);
+  }
+  async function handleOnSelect(optionValue: number) {
+    handleOnClose();
+    switch (optionValue) {
+      case 0:
+        navigation.navigate('SourceSelector');
+        break;
+      case 1:
+        await Linking.openURL('https://' + mangaSource.getLink());
+        break;
+      case 2:
+        break;
+    }
+  }
+  const theme = useTheme();
   return (
-    <IconButton
-      icon={<Image source={{ uri: mangaSource.getIcon() }} style={{ width: 24, height: 24 }} />}
-      onPress={async () => {
-        console.log(Object.keys(lib));
-      }}
-    />
+    <Menu opened={open} onClose={handleOnClose} onBackdropPress={handleOnClose} onSelect={handleOnSelect}>
+      <MenuTrigger>
+        <IconButton
+          icon={<Image source={{ uri: mangaSource.getIcon() }} style={{ width: 24, height: 24 }} />}
+          onPress={handleOnOpen}
+        />
+      </MenuTrigger>
+      <MenuOptions customStyles={theme.menuOptionsStyle}>
+        <MenuTitle>{mangaSource.getName()}</MenuTitle>
+        <MenuOption text='Change Source' icon={<Icon bundle='Feather' name='book' />} value={0} />
+        <MenuOption text='View Website' icon={<Icon bundle='Feather' name='globe' />} value={1} />
+        <MenuOption text='Report Source' color='secondary' icon={<Icon bundle='Feather' name='flag' />} />
+      </MenuOptions>
+    </Menu>
   );
 };

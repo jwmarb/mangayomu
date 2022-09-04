@@ -43,6 +43,8 @@ abstract class MangaHost {
    */
   private page: number;
 
+  private readonly version: string;
+
   public constructor(info: MangaHostInfo) {
     this.link = url.parse(info.host).hostname ?? '';
     this.genres = info.genres;
@@ -51,8 +53,18 @@ abstract class MangaHost {
     this.hotMangas = info.hasHotMangas ?? false;
     this.latestMangas = info.hasLatestMangas ?? false;
     this.page = 1;
+    if (info.version == null) this.version = '1.0.0';
+    else this.version = info.version;
 
     MangaHost.availableSources.set(info.name, this);
+  }
+
+  /**
+   * Get the version of the source
+   * @returns Returns the version
+   */
+  public getVersion() {
+    return this.version;
   }
 
   protected async route(path: string | { url: string }): Promise<cheerio.CheerioAPI> {

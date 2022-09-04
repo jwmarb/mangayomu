@@ -13,6 +13,7 @@ import DownloadManager from '@screens/DownloadManager';
 import ChapterDownloads from '@screens/ChapterDownloads';
 import connector, { ConnectedRootProps } from './Root.redux';
 import Reader from '@screens/Reader';
+import SourceSelector from '@screens/SourceSelector';
 
 const Root: React.FC<ConnectedRootProps> = (props) => {
   const { downloadAll } = props;
@@ -38,6 +39,7 @@ const Root: React.FC<ConnectedRootProps> = (props) => {
       <RootStack.Screen component={DownloadManager} name='DownloadManager' />
       <RootStack.Screen component={ChapterDownloads} name='ChapterDownloads' />
       <RootStack.Screen component={Reader} name='Reader' options={{ headerShown: false }} />
+      <RootStack.Screen component={SourceSelector} name='SourceSelector' />
     </RootStack.Navigator>
   );
 };

@@ -27,4 +27,5 @@ export type RootStackParamList = {
   DownloadManager: undefined;
   ChapterDownloads: { mangaKey: string };
   Reader: { chapterKey: string; mangaKey: string };
+  SourceSelector: undefined;
 };
