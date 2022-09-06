@@ -18,7 +18,7 @@ const HotManga: React.ForwardRefRenderFunction<RefreshableComponent, {}> = (prop
     loading,
     error,
     refresh,
-  } = useAPICall<Manga[], AxiosError>(() => source.listRecentlyUpdatedManga());
+  } = useAPICall<Manga[], AxiosError>(() => source.listRecentlyUpdatedManga(), [source]);
 
   React.useImperativeHandle(ref, () => ({
     refresh,

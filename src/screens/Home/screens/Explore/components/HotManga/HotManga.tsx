@@ -17,7 +17,7 @@ const HotManga: React.ForwardRefRenderFunction<RefreshableComponent, {}> = (prop
     loading,
     error,
     refresh,
-  } = useAPICall<Manga[], AxiosError>(() => source.listHotMangas());
+  } = useAPICall<Manga[], AxiosError>(() => source.listHotMangas(), [source]);
 
   const navigation = useRootNavigation();
 
