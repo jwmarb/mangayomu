@@ -1,16 +1,95 @@
-import { digitsOnly, extractChapterTitle, GENRES, parseTimestamp } from '@services/MangaPark_v3/MangaPark_v3.helpers';
-import { MangaParkV3MangaMeta } from '@services/MangaPark_v3/MangaPark_v3.interfaces';
+import {
+  digitsOnly,
+  extractChapterTitle,
+  GENRES,
+  getV3URL,
+  getV5URL,
+  parseTimestamp,
+} from '@services/MangaPark_v3/MangaPark_v3.helpers';
+import {
+  MangaParkV3HotMangas,
+  MangaParkV3MangaMeta,
+  MangaParkV3NextDataMeta,
+  MangaParkV3NextDataReader,
+} from '@services/MangaPark_v3/MangaPark_v3.interfaces';
 import { MangaHostWithFilters } from '@services/scraper/scraper.filters';
 import { Manga, MangaChapter, MangaMultilingualChapter } from '@services/scraper/scraper.interfaces';
 import { binary } from '@utils/Algorithms';
 import { ISOLangCode, languages } from '@utils/languageCodes';
+import axios from 'axios';
 import { Cheerio, Element } from 'cheerio';
 import { sub } from 'date-fns';
 import { MangaParkV3Filter, MANGAPARKV3_INFO } from './MangaPark_v3.constants';
 
 class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
-  public getPages(chapter: MangaChapter): Promise<string[]> {
-    return Promise.resolve([]);
+  public async getPages(chapter: MangaChapter): Promise<string[]> {
+    const _$ = await super.route({ url: chapter.link });
+    const $ = await super.route(_$('a.btn.btn-outline-info.btn-block').attr('href')!);
+    const html = $('script#__NEXT_DATA__').html();
+    if (html == null) throw Error('HTML is null');
+    const meta: MangaParkV3NextDataReader = JSON.parse(html);
+    const { httpLis, wordLis } = meta.props.pageProps.dehydratedState.queries[0].state.data.data.imageSet;
+    const images: string[] = [];
+    for (let i = 0; i < httpLis.length; i++) {
+      images.push(httpLis[i] + '?' + wordLis[i]);
+    }
+    return images;
+  }
+  public async listRecentlyUpdatedManga(): Promise<Manga[]> {
+    const {
+      data: { data },
+    } = await axios.post<MangaParkV3HotMangas>(
+      'https://api.mangapark.net/apo/?csr=1',
+      {
+        query:
+          'query get_content_browse_latest($select: ComicLatestSelect) {\n  get_content_browse_latest(select: $select) {\n    items {\n      comic {\n        data {\n          name\n          urlPath\n          imageCoverUrl\n        }\n      }\n    }\n  }\n}\n',
+        variables: {
+          select: {
+            where: 'release',
+            limit: 100,
+          },
+        },
+        operationName: 'get_content_browse_latest',
+      },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+
+    return data.get_content_browse_latest.items.map(
+      ({ comic: { data } }): Manga => ({
+        imageCover: data.imageCoverUrl,
+        link: 'https://' + super.getLink() + getV3URL(data.urlPath),
+        source: super.getName(),
+        title: data.name,
+      })
+    );
+  }
+  public async listHotMangas(): Promise<Manga[]> {
+    const {
+      data: { data },
+    } = await axios.post<MangaParkV3HotMangas>(
+      'https://api.mangapark.net/apo/?csr=1',
+      {
+        query:
+          'query get_content_browse_latest($select: ComicLatestSelect) {\n  get_content_browse_latest(select: $select) {\n    items {\n      comic {\n        data {\n          name\n          urlPath\n          imageCoverUrl\n        }\n      }\n    }\n  }\n}\n',
+        variables: {
+          select: {
+            where: 'popular',
+            limit: 100,
+          },
+        },
+        operationName: 'get_content_browse_latest',
+      },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+
+    return data.get_content_browse_latest.items.map(
+      ({ comic: { data } }): Manga => ({
+        imageCover: data.imageCoverUrl,
+        link: 'https://' + super.getLink() + getV3URL(data.urlPath),
+        source: super.getName(),
+        title: data.name,
+      })
+    );
   }
   public async search(query: string, filters?: MangaParkV3Filter): Promise<Manga[]> {
     if (
@@ -62,6 +141,11 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
   }
   public async getMeta(manga: Manga): Promise<MangaParkV3MangaMeta> {
     const $ = await super.route({ url: manga.link });
+    const _$ = await super.route({ url: getV5URL(manga.link) });
+    const html = _$('script#__NEXT_DATA__').html();
+    if (html == null) throw Error('Unknown page');
+    const parsedData: MangaParkV3NextDataMeta = JSON.parse(html);
+    const [data] = parsedData.props.pageProps.dehydratedState.queries;
 
     const englishChapters = $('div.d-flex.mt-5:contains("English Chapters")').next().find('div.episode-item');
 
@@ -133,41 +217,24 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
       })
       .get();
 
-    const genres = $('b.text-muted:contains("Genres:")')
-      .siblings('span')
-      .text()
-      .trim()
-      .split(/\n\s+,\s+/);
+    const genres = data.state.data.data.genres.map((x) => x[0].toUpperCase() + x.substring(1));
 
-    const ratingValue = parseFloat($('div.rating-display > div > b').text());
+    const ratingValue = data.state.data.data.stat_score_bay;
 
-    const authors = $('b.text-muted:contains("Authors:")')
-      .next()
-      .map((_, el) => $(el).text().trim())
-      .get();
-
-    const p = $('div.mask').attr('style');
+    const authors = data.state.data.data.authors;
 
     return {
-      authors: authors.length > 0 ? authors : ['Unknown Author'],
-      description:
-        $('div#limit-height-body-descr')
-          .children('div.limit-html')
-          .html()
-          ?.replace(/<br[^>]*>/gi, '\n') ?? 'This manga has no description.',
+      authors,
+      description: data.state.data.data.summary.text,
       genres,
       rating: {
-        value: !Number.isNaN(ratingValue)
-          ? ratingValue
-          : p && p !== 'width: 0%'
-          ? parseFloat(p.replace(/\D/g, '')) * 0.1
-          : 'N/A',
-        voteCount: parseInt(
-          $('div.rating-display > div > div > div.rate-star').siblings('small').text().replace(/\D/g, '')
-        ),
+        value: ratingValue || 'N/A',
+        voteCount: data.state.data.data.stat_count_vote,
       },
       status: {
-        publish: `${$('b.text-muted:contains("Official status:")').siblings().text()} (Status)`,
+        publish: `${
+          data.state.data.data.originalStatus[0].toUpperCase() + data.state.data.data.originalStatus.substring(1)
+        } (Status)`,
       },
       chapters: [...englishChapterObjects, ...multilingualChapterObjects],
     };

@@ -29,7 +29,7 @@ export type MangaParkV3HotMangas = {
   };
 };
 
-export type MangaParkV3NextData = {
+export type MangaParkV3NextDataMeta = {
   props: {
     pageProps: {
       dehydratedState: {
@@ -45,6 +45,28 @@ export type MangaParkV3NextData = {
                 };
                 stat_score_bay: number;
                 stat_count_vote: number;
+                genres: string[];
+              };
+            };
+          };
+        }[];
+      };
+    };
+  };
+};
+
+export type MangaParkV3NextDataReader = {
+  props: {
+    pageProps: {
+      dehydratedState: {
+        queries: {
+          state: {
+            data: {
+              data: {
+                imageSet: {
+                  httpLis: string[];
+                  wordLis: string[];
+                };
               };
             };
           };

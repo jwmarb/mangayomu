@@ -137,11 +137,11 @@ export type MangaParkV3Filter = typeof filters.schema;
 export const MANGAPARKV3_INFO: MangaHostFiltersInfo<MangaParkV3Filter> = {
   filters,
   genres: MANGAPARKV3_GENRES as any,
-  hasHotMangas: false,
-  hasLatestMangas: false,
+  hasHotMangas: true,
+  hasLatestMangas: true,
   hasMangaDirectory: false,
   host: 'https://mangapark.net/',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'MangaPark v3',
   icon: 'https://styles.amarkcdn.com/img/mpark/favicon.ico?v1',
 };
