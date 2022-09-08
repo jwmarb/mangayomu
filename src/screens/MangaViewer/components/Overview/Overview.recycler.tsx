@@ -8,7 +8,7 @@ import LoadingChapters from '@screens/MangaViewer/components/LoadingChapters';
 export const createFooter = (loading: boolean, chapterLen?: number) => () =>
   loading ? (
     <LoadingChapters />
-  ) : chapterLen ? (
+  ) : chapterLen != null ? (
     chapterLen > 0 ? (
       <Spacer y={16} /> // extra padding for UX reasons
     ) : (
