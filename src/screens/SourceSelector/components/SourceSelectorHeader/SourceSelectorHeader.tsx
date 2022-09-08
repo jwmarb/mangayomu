@@ -33,6 +33,11 @@ const SourceSelectorHeader: React.FC = (props) => {
   return (
     <>
       <Flex container verticalPadding={2} horizontalPadding={3} direction='column'>
+        <Typography align='center' color='textSecondary'>
+          Change your current source here. Whatever you have selected as your main source will be displayed in the home
+          page.
+        </Typography>
+        <Spacer y={2} />
         <Typography variant='header'>Current Source</Typography>
         <Spacer y={2} />
         <Flex justifyContent='space-between'>
