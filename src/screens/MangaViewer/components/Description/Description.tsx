@@ -9,7 +9,7 @@ import { NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
 const Description: React.FC<DescriptionProps> = (props) => {
-  const { description } = props;
+  const { description, loading } = props;
   const [showExpand, setShowExpand] = React.useState<boolean>(false);
   const [numOfLines, setNumOfLines] = React.useState<number | undefined>(5);
   function handleOnTextLayout(e: NativeSyntheticEvent<TextLayoutEventData>) {
@@ -35,10 +35,10 @@ const Description: React.FC<DescriptionProps> = (props) => {
         )}
       </Flex>
       <Spacer y={1} />
-      {description ? (
+      {!loading ? (
         <Animated.View entering={FadeIn}>
           <Typography color='textSecondary' onTextLayout={handleOnTextLayout} numberOfLines={numOfLines}>
-            {description}
+            {description ?? 'This manga has no description'}
           </Typography>
         </Animated.View>
       ) : (
