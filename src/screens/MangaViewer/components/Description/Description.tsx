@@ -19,8 +19,6 @@ const Description: React.FC<DescriptionProps> = (props) => {
     if (numOfLines == null) setNumOfLines(5);
     else setNumOfLines(undefined);
   }
-  const animatedMount = useAnimatedMounting(!!description);
-  const buttonMount = useAnimatedMounting(showExpand);
   return (
     <Flex container direction='column' verticalPadding={0} horizontalPadding={3}>
       <Flex justifyContent='space-between' alignItems='center'>
