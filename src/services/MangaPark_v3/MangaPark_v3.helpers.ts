@@ -180,3 +180,25 @@ export function parseTimestamp(txt: string) {
 
   throw Error('Invalid date parsed: ' + txt);
 }
+
+/**
+ * Get v3 URL of MangaPark
+ * @param urlPath The path of the manga. The API gives V5 path
+ * @returns Returns the V3 version of the url path
+ */
+export function getV3URL(urlPath: string): string {
+  const underscoreIndex = urlPath.indexOf('_');
+  const newUrlPath = urlPath.replace('/title/', '/comic/');
+  return newUrlPath.substring(0, underscoreIndex) + '/' + newUrlPath.substring(underscoreIndex + 1);
+}
+
+/**
+ * Inverse of getV3URL
+ * @param urlPath The path of the manga.
+ * @returns Returns the V5 version of the URL path
+ */
+export function getV5URL(urlPath: string): string {
+  const lastSlashIndex = urlPath.lastIndexOf('/');
+  const newUrlPath = urlPath.replace('/comic/', '/title/');
+  return newUrlPath.substring(0, lastSlashIndex) + '_' + newUrlPath.substring(lastSlashIndex + 1);
+}
