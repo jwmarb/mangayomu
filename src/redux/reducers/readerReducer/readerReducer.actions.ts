@@ -1,23 +1,32 @@
+import { orderedChaptersComparator } from '@redux/reducers/mangaReducer/mangaReducer.helpers';
 import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 import { getImageDimensions } from '@redux/reducers/readerReducer/readerReducer.helpers';
 import { MangaPage, Page, SavePageInfo } from '@redux/reducers/readerReducer/readerReducer.interfaces';
 import { ReaderDirection } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 import { AppState, AppDispatch } from '@redux/store';
-import { Manga, MangaChapter } from '@services/scraper/scraper.interfaces';
+import { Manga, MangaChapter, MangaMultilingualChapter } from '@services/scraper/scraper.interfaces';
+import { ISOLangCode } from '@utils/languageCodes';
+import MangaValidator from '@utils/MangaValidator';
 import SortedList from '@utils/SortedList';
 import { Dimensions, Image, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 
 type StateGetter = () => AppState;
+let chapterLang: ISOLangCode | null = null;
+let orderedChapters: SortedList<MangaChapter> | null;
 
 export const exitReader = () => {
   return (dispatch: AppDispatch) => {
     dispatch({ type: 'EXIT_READER' });
+    chapterLang = null;
+    orderedChapters = null;
   };
 };
 
 export const openReader = (manga: Manga, chapter: ReadingChapterInfo) => {
   return (dispatch: AppDispatch) => {
     dispatch({ type: 'OPEN_READER', manga, chapter });
+    if (MangaValidator.isMultilingualChapter(chapter)) chapterLang = chapter.language;
+    else chapterLang = null;
   };
 };
 
@@ -35,7 +44,17 @@ export const transformPages = (
       },
       start: async () => {
         dispatch({ type: 'SET_NUMBER_OF_PAGES', manga, chapter, numOfPages: pages.length });
-        const orderedChapters = getState().mangas[manga.link].orderedChapters;
+        if (MangaValidator.isMultilingualChapter(chapter)) {
+          if (orderedChapters == null) {
+            const newArray: MangaChapter[] = [];
+            for (let i = 0; i < getState().mangas[manga.link].orderedChapters.size(); i++) {
+              const itemChapter = getState().mangas[manga.link].orderedChapters.get(i) as MangaMultilingualChapter;
+              if (itemChapter.language === chapter.language) newArray.push(itemChapter);
+            }
+            orderedChapters = SortedList.rehydrate(newArray, orderedChaptersComparator);
+          }
+        } else orderedChapters = getState().mangas[manga.link].orderedChapters;
+
         const index = orderedChapters.indexOf(chapter);
         const previousChapter = orderedChapters.get(index - 1);
         const nextChapter = orderedChapters.get(index + 1);
