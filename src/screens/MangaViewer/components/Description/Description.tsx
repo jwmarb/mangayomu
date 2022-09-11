@@ -35,7 +35,7 @@ const Description: React.FC<DescriptionProps> = (props) => {
         )}
       </Flex>
       <Spacer y={1} />
-      {!loading ? (
+      {!loading || description ? (
         <Animated.View entering={FadeIn}>
           <Typography color='textSecondary' onTextLayout={handleOnTextLayout} numberOfLines={numOfLines}>
             {description ?? 'This manga has no description'}
