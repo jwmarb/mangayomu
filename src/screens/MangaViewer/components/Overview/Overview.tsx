@@ -33,7 +33,7 @@ LogBox.ignoreLogs(['You have mounted RecyclerListView']);
 
 const dataProviderFn = (r1: ReadingChapterInfo, r2: ReadingChapterInfo) => r1 !== r2;
 
-const Overview: React.FC<OverviewProps> = (props) => {
+const Overview: React.FC<React.PropsWithChildren<OverviewProps>> = (props) => {
   const {
     children,
     chapters,
