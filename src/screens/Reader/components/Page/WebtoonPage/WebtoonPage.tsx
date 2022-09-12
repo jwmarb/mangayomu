@@ -184,9 +184,10 @@ const WebtoonPage: React.FC<ConnectedPageProps> = (props) => {
 
         .onUpdate(
           pinchHandler((event, context) => {
+            console.log(maxScale, event.velocity + context.startScale + event.scale - context.scale);
             scale.value = Math.min(
               Math.max(maxScale, event.velocity + context.startScale + event.scale - context.scale),
-              2
+              maxScale * 4
             );
           })
         ),
@@ -285,7 +286,7 @@ const WebtoonPage: React.FC<ConnectedPageProps> = (props) => {
   return (
     <GestureDetector gesture={tapGestures}>
       <PageContainer imageHeight={imageHeight * maxScale} width={_width} height={_height}>
-        <Animated.Image source={{ uri }} style={imageStyles} />
+        <Animated.Image progressiveRenderingEnabled resizeMethod='resize' source={{ uri }} style={imageStyles} />
       </PageContainer>
     </GestureDetector>
   );

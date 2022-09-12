@@ -327,7 +327,7 @@ const HorizontalPage: React.FC<ConnectedPageProps> = (props) => {
           pinchHandler((event, context) => {
             scale.value = Math.min(
               Math.max(maxScale, event.velocity + context.startScale + event.scale - context.scale),
-              2
+              maxScale * 4
             );
           })
         ),
@@ -794,7 +794,7 @@ const HorizontalPage: React.FC<ConnectedPageProps> = (props) => {
   return (
     <GestureDetector gesture={tapGestures}>
       <PageContainer width={_width} height={_height}>
-        <Animated.Image source={{ uri }} style={imageStyles} />
+        <Animated.Image progressiveRenderingEnabled resizeMethod='resize' source={{ uri }} style={imageStyles} />
       </PageContainer>
     </GestureDetector>
   );
