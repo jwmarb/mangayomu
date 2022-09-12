@@ -51,10 +51,15 @@ export const transformPages = (
               const itemChapter = getState().mangas[manga.link].orderedChapters.get(i) as MangaMultilingualChapter;
               if (itemChapter.language === chapter.language) newArray.push(itemChapter);
             }
-            orderedChapters = new SortedList(
-              (a, b) => (a.name && b.name ? a.name.localeCompare(b.name) : b.index - a.index),
-              newArray
-            );
+            orderedChapters = new SortedList<MangaChapter>((b, a) => {
+              if (a.name && b.name) {
+                const aName = a.name.match(/(0|[1-9]\d*)(\.\d+)?/g);
+                const bName = b.name.match(/(0|[1-9]\d*)(\.\d+)?/g);
+                if (aName != null && bName != null) return parseFloat(bName[0]) - parseFloat(aName[0]);
+              }
+              if (a.index != null && b.index != null) return b.index - a.index;
+              throw Error(`Chapter cannot be sorted due to undefined name and index`);
+            }, newArray);
           }
         } else orderedChapters = getState().mangas[manga.link].orderedChapters;
 
