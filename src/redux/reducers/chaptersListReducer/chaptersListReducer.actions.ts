@@ -1,6 +1,6 @@
 import { AppDispatch, AppState } from '@redux/store';
 import { ReadingChapterInfo } from '../mangaReducer/mangaReducer.interfaces';
-import { Manga } from '@services/scraper/scraper.interfaces';
+import { Manga, MangaChapter } from '@services/scraper/scraper.interfaces';
 import DownloadManager, { DownloadStatus } from '@utils/DownloadManager';
 import { getKey } from './chaptersListReducer';
 import pLimit from 'p-limit';
@@ -43,7 +43,7 @@ export const checkChapter = (val: boolean, ch: ReadingChapterInfo) => {
   };
 };
 
-export const initializeChapters = (chapters: ReadingChapterInfo[], manga: Manga) => {
+export const initializeChapters = (chapters: MangaChapter[], manga: Manga) => {
   return async (dispatch: AppDispatch, getState: StateGetter) => {
     dispatch({ type: 'INITIALIZE_STATE', totalChapters: chapters.length });
     try {

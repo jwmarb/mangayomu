@@ -51,7 +51,10 @@ export const transformPages = (
               const itemChapter = getState().mangas[manga.link].orderedChapters.get(i) as MangaMultilingualChapter;
               if (itemChapter.language === chapter.language) newArray.push(itemChapter);
             }
-            orderedChapters = SortedList.rehydrate(newArray, orderedChaptersComparator);
+            orderedChapters = new SortedList(
+              (a, b) => (a.name && b.name ? a.name.localeCompare(b.name) : b.index - a.index),
+              newArray
+            );
           }
         } else orderedChapters = getState().mangas[manga.link].orderedChapters;
 

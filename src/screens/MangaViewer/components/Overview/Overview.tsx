@@ -27,31 +27,18 @@ import { WindowCorrection } from 'recyclerlistview/dist/reactnative/core/Viewabi
 const { height } = Dimensions.get('window');
 import PropTypes from 'prop-types';
 import { RFValue } from 'react-native-responsive-fontsize';
+import useIsMounted from '@hooks/useIsMounted';
 (RecyclerListView.propTypes as { externalScrollView: {} }).externalScrollView = PropTypes.object;
 
 LogBox.ignoreLogs(['You have mounted RecyclerListView']);
 
-const dataProviderFn = (r1: ReadingChapterInfo, r2: ReadingChapterInfo) => r1 !== r2;
-
 const Overview: React.FC<React.PropsWithChildren<OverviewProps>> = (props) => {
-  const {
-    children,
-    chapters,
-    currentChapter,
-    collapsible,
-    rowRenderer,
-    manga,
-    language,
-    onChangeLanguage,
-    loading,
-    onRead,
-  } = props;
+  const { children, currentChapter, chapters, collapsible, rowRenderer, manga, dataProvider, loading, onRead } = props;
   const { containerPaddingTop } = collapsible;
   const [isAtBeginning, setIsAtBeginning] = React.useState<boolean>(true);
   const { width } = useWindowDimensions();
   const ref = React.useRef<RecyclerListView<any, any>>(null);
   const [finished, setFinished] = React.useState<boolean>(false);
-  const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider(dataProviderFn));
   const deviceOrientation = useSelector((state: AppState) => state.settings.deviceOrientation);
   const chaptersList = useSelector((state: AppState) => state.chaptersList);
   const mangas = useSelector((state: AppState) => state.downloading.mangas);
@@ -69,21 +56,6 @@ const Overview: React.FC<React.PropsWithChildren<OverviewProps>> = (props) => {
       ),
     [width, deviceOrientation]
   );
-  React.useEffect(() => {
-    if (chapters && chapters.every(MangaValidator.isMultilingualChapter))
-      onChangeLanguage((chapters as unknown as MangaMultilingualChapter[])[0]?.language ?? 'en');
-  }, [chapters]);
-  React.useEffect(() => {
-    if (chapters && chapters.every(MangaValidator.isMultilingualChapter)) {
-      setDataProvider((p) =>
-        p.cloneWithRows(
-          chapters
-            .filter((x: unknown) => (x as MangaMultilingualChapter).language === language)
-            .map((p) => ({ ...p, manga }))
-        )
-      );
-    } else if (chapters) setDataProvider((p) => p.cloneWithRows(chapters.map((p) => ({ ...p, manga }))));
-  }, [chapters, language]);
 
   const [layoutHeight, setLayoutHeight] = React.useState<number>(height / 2);
 

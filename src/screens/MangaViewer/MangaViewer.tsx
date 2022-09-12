@@ -24,9 +24,9 @@ import useAnimatedLoading from '@hooks/useAnimatedLoading';
 import { AnimatedProvider } from '@context/AnimatedContext';
 import useLazyLoading from '@hooks/useLazyLoading';
 import useSort from '@hooks/useSort';
-import { Manga, MangaChapter, WithDate } from '@services/scraper/scraper.interfaces';
+import { Manga, MangaChapter, MangaMultilingualChapter, WithDate } from '@services/scraper/scraper.interfaces';
 import { HeaderBuilder } from '@components/Screen/Header/Header.base';
-import { ISOLangCode } from '@utils/languageCodes';
+import { ISOLangCode, languages } from '@utils/languageCodes';
 import { BackHandler, ImageBackground, Linking, Share } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from 'styled-components/native';
@@ -56,6 +56,8 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import HeaderRight from '@screens/MangaViewer/components/HeaderRight';
 import onlyDisplayOnFocus from '@utils/onlyDisplayOnFocus';
 import { PortalHost } from '@gorhom/portal';
+import { DataProvider } from 'recyclerlistview';
+import displayMessage from '@utils/displayMessage';
 const LanguageModal = React.lazy(() => import('@screens/MangaViewer/components/LanguageModal'));
 const Genres = React.lazy(() => import('@screens/MangaViewer/components/Genres'));
 const ChapterHeader = React.lazy(() => import('@screens/MangaViewer/components/ChapterHeader'));
@@ -66,6 +68,16 @@ const MangaCover = React.lazy(() => import('@screens/MangaViewer/components/Mang
 const MangaAction = React.lazy(() => import('@screens/MangaViewer/components/MangaAction'));
 const Overview = React.lazy(() => import('@screens/MangaViewer/components/Overview'));
 const MangaRating = React.lazy(() => import('@screens/MangaViewer/components/MangaRating'));
+
+function compareChapter(a: MangaChapter, b: MangaChapter) {
+  if (a.name && b.name) {
+    const aName = a.name.match(/(0|[1-9]\d*)(\.\d+)?/g);
+    const bName = b.name.match(/(0|[1-9]\d*)(\.\d+)?/g);
+    if (aName != null && bName != null) return parseFloat(bName[0]) - parseFloat(aName[0]);
+  }
+  if (a.index != null && b.index != null) return b.index - a.index;
+  throw Error(`Chapter cannot be sorted due to undefined name and index`);
+}
 
 const rowRenderer: (
   type: string | number,
@@ -95,6 +107,7 @@ const rowRenderer: (
     />
   );
 };
+const dataProviderFn = (r1: ReadingChapterInfo, r2: ReadingChapterInfo) => r1 !== r2;
 
 const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   const {
@@ -122,6 +135,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     refresh,
   } = useAPICall(() => source.getMeta(manga), [manga, isFocused]);
   const [language, setLanguage] = React.useState<ISOLangCode>('en');
+  const [dataProvider, setDataProvider] = React.useState<DataProvider>(new DataProvider(dataProviderFn));
 
   const options: UseCollapsibleOptions = React.useMemo(
     () => ({
@@ -147,7 +161,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     selectedSortOption,
   } = useSort(
     (createSort) => ({
-      'Chapter number': createSort((a: MangaChapter, b: MangaChapter) => (a.name && b.name ? a.index - b.index : 0)),
+      'Chapter number': createSort(compareChapter),
       ...(MangaValidator.hasDate(userMangaInfo?.orderedChapters.get(0) ?? {})
         ? {
             'Date released': createSort((a: WithDate, b: WithDate) => Date.parse(a.date) - Date.parse(b.date)),
@@ -167,6 +181,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   const collapsible = useCollapsibleHeader(options);
   const { ready, Fallback } = useLazyLoading();
   const loadingAnimation = useAnimatedLoading();
+  const sorted = React.useRef<MangaChapter[]>([]);
   const isAdult = React.useMemo(
     () => userMangaInfo && MangaValidator.isNSFW(userMangaInfo.genres),
     [userMangaInfo?.genres]
@@ -186,10 +201,6 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     };
   }, []);
 
-  const [sorted, setSorted] = React.useState(() =>
-    Object.values(userMangaInfo?.chapters ?? {}).sort(selectedSortOption)
-  );
-
   React.useEffect(() => {
     if (selectionMode === 'selection') {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -202,26 +213,33 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
 
   const handleOnSelectAll = React.useCallback(
     (newVal: boolean) => {
-      checkAll(newVal, sorted);
+      checkAll(newVal, dataProvider.getAllData());
+      if (newVal && sorted.current.every(MangaValidator.isMultilingualChapter))
+        displayMessage(
+          `Selected all ${
+            languages[(dataProvider.getDataForIndex(0) as MangaMultilingualChapter).language].name
+          } chapters`
+        );
     },
-    [sorted]
+    [dataProvider]
   );
 
   const handleOnSelectAllDownloaded = React.useCallback(async () => {
     const filtered: ReadingChapterInfo[] = [];
-    for (let i = 0; i < sorted.length; i++) {
-      if (await DownloadManager.peek(sorted[i])?.isDownloaded()) filtered.push(sorted[i]);
+    for (let i = 0; i < dataProvider.getAllData().length; i++) {
+      if (await DownloadManager.peek(dataProvider.getAllData()[i])?.isDownloaded())
+        filtered.push(dataProvider.getAllData()[i]);
     }
     checkAllChapters(filtered);
-  }, [sorted]);
+  }, [dataProvider]);
 
   const handleOnSelectAllUnread = React.useCallback(async () => {
-    checkAllChapters(sorted.filter((c) => c.dateRead == null));
-  }, [sorted]);
+    checkAllChapters(dataProvider.getAllData().filter((c) => c.dateRead == null));
+  }, [dataProvider]);
 
   const handleOnSelectAllRead = React.useCallback(async () => {
-    checkAllChapters(sorted.filter((c) => c.dateRead != null));
-  }, [sorted]);
+    checkAllChapters(dataProvider.getAllData().filter((c) => c.dateRead != null));
+  }, [dataProvider]);
 
   const handleOnRead = React.useCallback(() => {
     if (userMangaInfo) {
@@ -241,10 +259,47 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   React.useEffect(() => {
     if (userMangaInfo) {
       const sort = Object.values(userMangaInfo.chapters).sort(selectedSortOption);
-      setSorted(sort);
-      initializeChapters(sort, userMangaInfo);
+      if (sort && sort.every(MangaValidator.isMultilingualChapter)) {
+        setLanguage((prev) => {
+          if (prev !== 'en') return prev;
+          return userMangaInfo.currentlyReadingChapter
+            ? (userMangaInfo.chapters[userMangaInfo.currentlyReadingChapter] as unknown as MangaMultilingualChapter)
+                .language
+            : (sort as unknown as MangaMultilingualChapter[])[0]?.language ?? 'en';
+        });
+        setDataProvider((p) =>
+          p.cloneWithRows(
+            sort
+              .filter((x: unknown) => (x as MangaMultilingualChapter).language === language)
+              .map((p) => ({ ...p, manga }))
+          )
+        );
+      } else setDataProvider((p) => p.cloneWithRows(sort.map((p) => ({ ...p, manga }))));
+      sorted.current = sort;
+      initializeChapters(userMangaInfo.orderedChapters.toArray(), userMangaInfo);
     }
   }, [userMangaInfo?.chapters, sort, reverse]);
+
+  // React.useEffect(() => {
+  //   if (sorted && sorted.every(MangaValidator.isMultilingualChapter)) {
+  //     setLanguage((prev) => {
+  //       if (prev !== 'en') return prev;
+  //       return (sorted as unknown as MangaMultilingualChapter[])[0]?.language ?? 'en';
+  //     });
+  //   }
+  // } , [sorted])
+
+  React.useEffect(() => {
+    if (sorted && sorted.current.every(MangaValidator.isMultilingualChapter)) {
+      setDataProvider((p) =>
+        p.cloneWithRows(
+          sorted.current
+            .filter((x: unknown) => (x as MangaMultilingualChapter).language === language)
+            .map((p) => ({ ...p, manga }))
+        )
+      );
+    } else if (sorted) setDataProvider((p) => p.cloneWithRows(sorted.current.map((p) => ({ ...p, manga }))));
+  }, [language]);
 
   return (
     <React.Suspense fallback={null}>
@@ -254,10 +309,9 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
             onRead={handleOnRead}
             rowRenderer={rowRenderer as any}
             manga={manga}
+            chapters={userMangaInfo?.orderedChapters.toArray()}
             loading={loading}
-            onChangeLanguage={setLanguage}
-            chapters={sorted}
-            language={language}
+            dataProvider={dataProvider}
             currentChapter={
               userMangaInfo
                 ? userMangaInfo.currentlyReadingChapter
