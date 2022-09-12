@@ -383,9 +383,12 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
         switch ((_page.item as MangaPage).type) {
           case 'PAGE': {
             const page = _page as Omit<ViewToken, 'item'> & { item: IPage };
+            const { nextChapterTransitioningKey } = page.item;
             if ((!page.item.isOfFirstChapter && page.item.isFirstPage != null) || page.item.isLastPage != null) {
               setCurrentlyReadingChapter(page.item.chapter);
             }
+            if (nextChapterTransitioningKey != null && !page.item.isFirstPage)
+              transitioningPageShouldFetch(nextChapterTransitioningKey);
             break;
           }
           case 'CHAPTER_TRANSITION': {
@@ -535,7 +538,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
         ref={flatListRef}
         initialScrollIndex={initialScrollIndex !== -1 ? initialScrollIndex : undefined}
         getItemLayout={getItemLayout}
-        windowSize={7}
+        windowSize={17}
         maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
         pagingEnabled={readerDirection !== ReaderDirection.WEBTOON}
         maxToRenderPerBatch={1}

@@ -69,7 +69,7 @@ export const transformPages = (
         const hasPreviousChapter = previousChapter != null;
         const hasNextChapter = nextChapter != null;
         if (appendLocation === 'start') dispatch({ type: 'RESET_SCROLL_POSITION_INDEX' });
-        const p: MangaPage[] = await Promise.all(pages.map(getImageDimensions(chapter)));
+        const p: MangaPage[] = await Promise.all(pages.map(getImageDimensions(chapter, nextChapter)));
         if (!canceled) {
           if (p[0].type === 'PAGE') {
             p[0].isFirstPage = true;

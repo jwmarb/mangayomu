@@ -13,6 +13,7 @@ export type Page = {
   chapter: ReadingChapterInfo;
   isLastPage?: boolean;
   isOfFirstChapter?: boolean;
+  nextChapterTransitioningKey?: string;
 };
 
 export type SavePageInfo = {
