@@ -113,15 +113,15 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     initializeChapters,
     hideFloatingModal,
   } = props;
+  const isFocused = useIsFocused();
   const theme = useTheme();
   const {
     state: [meta],
     loading,
     error,
     refresh,
-  } = useAPICall(() => source.getMeta(manga), [manga]);
+  } = useAPICall(() => source.getMeta(manga), [manga, isFocused]);
   const [language, setLanguage] = React.useState<ISOLangCode>('en');
-  const isFocused = useIsFocused();
 
   const options: UseCollapsibleOptions = React.useMemo(
     () => ({
