@@ -148,16 +148,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
         }, 500);
       }).finally(() => {
         clearInterval(interval);
-        // if (readerDirection === ReaderDirection.WEBTOON) {
-        //   const item = data[index];
-        //   flatListRef.current?.scrollToOffset({
-        //     animated: false,
-        //     offset:
-        //       scrollPositionRef.current -
-        //       height / 2 +
-        //       (item.type === 'PAGE' ? item.height * (width / item.width) * 0.5 : height / 2),
-        //   });
-        // }
+
         shouldTrackIndex(true);
       });
 
@@ -168,15 +159,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   }, [readerDirection]);
 
   React.useLayoutEffect(() => {
-    // const savedIndex = index;
-    // flatListRef.current?.scrollToIndex({ animated: false, index });
-    // const p = setInterval(() => {
-    //   if (savedIndex !== index) flatListRef.current?.scrollToIndex({ animated: false, index: savedIndex });
-    //   else clearInterval(p);
-    // }, 1);
-    // return () => {
-    //   clearInterval(p);
-    // };
     let interval: NodeJS.Timer | undefined;
     const orientationListener = Orientation.addOrientationChangeListener((orientation) => {
       const { width, height } = Dimensions.get('window');
@@ -225,24 +207,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   React.useLayoutEffect(() => {
     if (maintainScrollPositionOffset != null && maintainScrollIndex >= 0) {
       const maintained = scrollPositionRef.current + maintainScrollPositionOffset[readerDirection];
-      // const saved = maintainScrollIndex;
-      // setTimeout(
-      //   () =>
-      //     flatListRef.current?.scrollToIndex({
-      //       animated: false,
-      //       index: saved,
-      //     }),
-      //   0
-      // );
-
-      // setTimeout(
-      //   () =>
-      //     flatListRef.current?.scrollToIndex({
-      //       animated: true,
-      //       index: maintainScrollIndex,
-      //     }),
-      //   1000
-      // );
       shouldTrackIndex(false);
       let p: NodeJS.Timer | undefined;
 
@@ -522,6 +486,9 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     return (
       <ReaderWrapper>
         <Typography align='center'>There was an error loading this chapter</Typography>
+        <Typography variant='body2' color='textSecondary' numberOfLines={2}>
+          {JSON.stringify(error)}
+        </Typography>
         <Spacer y={1} />
         <Flex justifyContent='center'>
           <Button title='Retry' onPress={() => fetchChapter(chapter)} />
@@ -534,7 +501,10 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       <ReaderSettingsModal />
       <ReaderModal manga={manga} />
       <FlatList
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         scrollEnabled={maintainScrollIndex !== -1}
+        maximumZoomScale={5}
         ref={flatListRef}
         initialScrollIndex={initialScrollIndex !== -1 ? initialScrollIndex : undefined}
         getItemLayout={getItemLayout}
