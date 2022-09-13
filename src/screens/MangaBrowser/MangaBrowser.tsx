@@ -4,6 +4,7 @@ import {
   FloatingActionButton,
   Icon,
   IconButton,
+  MangaList,
   RecyclerListViewScreen,
   Typography,
 } from '@components/core';
@@ -18,7 +19,7 @@ import { Manga } from '@services/scraper/scraper.interfaces';
 import pixelToNumber from '@utils/pixelToNumber';
 import { useTheme } from 'styled-components/native';
 import { MangaItemsLoading } from '@screens/GenericMangaList/GenericMangaList.base';
-import { TextInput } from 'react-native-gesture-handler';
+import { FlatList, TextInput } from 'react-native-gesture-handler';
 import { Keyboard, NativeScrollEvent, NativeSyntheticEvent, ScrollView, useWindowDimensions, View } from 'react-native';
 import Search from '@screens/Home/screens/MangaLibrary/components/Search';
 import { animate, withAnimatedMounting } from '@utils/Animations';
@@ -28,6 +29,9 @@ import { ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollcompon
 import { useSelector } from 'react-redux';
 import { AppState } from '@redux/store';
 import { ApplyWindowCorrectionEventHandler } from '@utils/RecyclerListView.interfaces';
+import { keyExtractor, renderItem } from '@screens/GenericMangaList/GenericMangaList.flatlist';
+import { useIsFocused } from '@react-navigation/native';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 const dataProviderFn = (r1: Manga, r2: Manga) => r1.title !== r2.title;
 
@@ -39,8 +43,7 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     },
   } = props;
   const theme = useTheme();
-  const [dataProvider, setDataProvider] = React.useState(new DataProvider(dataProviderFn).cloneWithRows(mangas));
-  const { layoutProvider, rowRenderer, extendedState } = useMangaLayout();
+  const [mangaList, setMangaList] = React.useState<Manga[]>(mangas);
   const [showFooter, setShowFooter] = React.useState<boolean>(true);
   const [query, setQuery] = React.useState<string>(initialQuery);
   const [reachedEnd, setReachedEnd] = React.useState<boolean>(false);
@@ -49,13 +52,14 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
   const [filter, setFilters] = React.useState<typeof schema>(schema);
   const [loading, setLoading] = React.useState<boolean>(false);
   const textInputRef = React.useRef<TextInput>(null);
-  const scrollRef = React.useRef<React.ElementRef<typeof RecyclerListViewScreen>>(null);
+  const scrollRef = React.useRef<FlatList>(null);
   const floatingRef = React.useRef<React.ElementRef<typeof FloatingActionButton>>(null);
   const handleOnExitSearch = React.useCallback(() => {
     navigation.goBack();
   }, [navigation]);
   const [show, setShow] = React.useState<boolean>(false);
   const [showBadge, setShowBadge] = React.useState<boolean>(false);
+  const isFocused = useIsFocused();
   function resetSearchOptions() {
     mangahost.resetPage();
     setReachedEnd(false);
@@ -67,7 +71,12 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
   }, [filter]);
 
   const onScroll = React.useCallback(
-    (rawEvent: ScrollEvent, offsetX: number, offsetY: number) => {
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const {
+        nativeEvent: {
+          contentOffset: { y: offsetY },
+        },
+      } = event;
       if (offsetY > 100) floatingRef.current?.expand();
       else floatingRef.current?.collapse();
     },
@@ -81,8 +90,8 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
   }, []);
 
   React.useEffect(() => {
-    if (dataProvider.getSize() === 0) setShowFooter(true);
-  }, [dataProvider.getSize()]);
+    if (mangaList.length === 0) setShowFooter(true);
+  }, [mangaList]);
 
   const handleOnShowFilters = React.useCallback(() => {
     setShow(true);
@@ -90,7 +99,7 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
   }, [setShow]);
 
   function handleOnScrollToTop() {
-    scrollRef.current?.scrollToTop(true);
+    scrollRef.current?.scrollToOffset({ offset: 0, animated: true });
   }
 
   function handleOnCloseFilters() {
@@ -103,7 +112,7 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
         try {
           resetSearchOptions();
           const mangas = await mangahost.search(text, filter);
-          setDataProvider((prev) => prev.newInstance(dataProviderFn).cloneWithRows(mangas));
+          setMangaList(mangas);
         } catch (e) {
           console.error(e);
         } finally {
@@ -111,7 +120,7 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
         }
       }
     },
-    [filter, mangahost, setDataProvider, query]
+    [filter, mangahost, setMangaList, query]
   );
 
   const handleOnApplyFilter = React.useCallback(
@@ -121,14 +130,14 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
         mangahost.resetPage();
         setFilters(state);
         const mangas = await mangahost.search(query, state);
-        setDataProvider((prev) => prev.newInstance(dataProviderFn).cloneWithRows(mangas));
+        setMangaList(mangas);
       } catch (e) {
         console.error(e);
       } finally {
         setLoading(false);
       }
     },
-    [query, mangahost, setFilters, setDataProvider, setLoading]
+    [query, mangahost, setFilters, setMangaList, setLoading]
   );
 
   const handleOnEndReached = React.useCallback(async () => {
@@ -137,10 +146,8 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
       try {
         mangahost.addPage();
         const mangas = await mangahost.search(query, filter);
-        if (
-          (dataProvider.getAllData() as Manga[])[dataProvider.getSize() - 1]?.title !== mangas[mangas.length - 1].title
-        )
-          setDataProvider((prev) => prev.cloneWithRows([...prev.getAllData(), ...mangas]));
+        if (mangaList[mangaList.length - 1]?.title !== mangas[mangas.length - 1].title)
+          setMangaList((prev) => [...prev, ...mangas]);
         else setReachedEnd(true);
       } catch (e) {
         console.error(e);
@@ -148,15 +155,11 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
         setShowFooter(false);
       }
     }
-  }, [filter, query, setDataProvider, dataProvider, loading, setLoading, reachedEnd, setReachedEnd]);
+  }, [filter, query, setMangaList, mangaList, loading, setLoading, reachedEnd, setReachedEnd]);
 
   const handleOnItemLayout = React.useCallback(() => {
     setShowFooter(false);
   }, [setShowFooter]);
-
-  const applyWindowCorrection: ApplyWindowCorrectionEventHandler = (_, __, windowCorrection) => {
-    windowCorrection.startCorrection = -pixelToNumber(theme.spacing(3));
-  };
 
   useStatefulHeader(
     <Search
@@ -189,35 +192,28 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
             }}>
             <MangaItemsLoading />
           </View>
-        ) : dataProvider.getSize() > 0 ? (
+        ) : mangaList.length > 0 ? (
           <>
-            <FloatingActionButton
-              title='Scroll to top'
-              icon={<Icon bundle='Feather' name='chevron-up' />}
-              ref={floatingRef}
-              onPress={handleOnScrollToTop}
-            />
-            <RecyclerListView
-              dataProvider={dataProvider}
-              rowRenderer={rowRenderer as any}
-              onItemLayout={handleOnItemLayout}
-              onEndReached={handleOnEndReached}
-              extendedState={extendedState}
+            {isFocused && (
+              <Animated.View entering={FadeIn} exiting={FadeOut}>
+                <FloatingActionButton
+                  title='Scroll to top'
+                  icon={<Icon bundle='Feather' name='chevron-up' />}
+                  ref={floatingRef}
+                  onPress={handleOnScrollToTop}
+                />
+              </Animated.View>
+            )}
+            <MangaList
               ref={scrollRef}
-              scrollViewProps={{
-                contentContainerStyle: {
-                  paddingBottom: pixelToNumber(theme.spacing(3)),
-                },
-              }}
+              data={mangaList}
+              keyExtractor={keyExtractor}
+              onEndReachedThreshold={0.1}
               onScroll={onScroll}
-              applyWindowCorrection={applyWindowCorrection}
-              layoutProvider={layoutProvider}
-              forceNonDeterministicRendering
-              canChangeSize
-              renderAheadOffset={2000}
-              renderFooter={() => (
-                <>{showFooter || loading ? animate(<MangaItemsLoading />, withAnimatedMounting) : null}</>
-              )}
+              renderItem={renderItem}
+              onEndReached={handleOnEndReached}
+              onLayout={handleOnItemLayout}
+              ListFooterComponent={showFooter ? <MangaItemsLoading /> : null}
             />
           </>
         ) : (
