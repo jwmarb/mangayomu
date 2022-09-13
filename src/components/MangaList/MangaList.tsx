@@ -9,7 +9,7 @@ import { FlatListProps, Animated } from 'react-native';
 import { useTheme } from 'styled-components/native';
 import pixelToNumber from '@utils/pixelToNumber';
 import { Collapsible } from 'react-navigation-collapsible';
-export default function MangaList<Item>(props: FlatListProps<Item> & { collapsible?: Collapsible }) {
+function MangaList<Item>(props: FlatListProps<Item> & { collapsible?: Collapsible }, ref: any) {
   const orientation = useSelector((state: AppState) => state.settings.deviceOrientation);
   const { contentContainerStyle, collapsible, ...rest } = props;
   const { width, height } = useWindowDimensions();
@@ -41,6 +41,7 @@ export default function MangaList<Item>(props: FlatListProps<Item> & { collapsib
 
   return (
     <Animated.FlatList
+      ref={ref}
       key={orientation}
       numColumns={
         orientation === Orientation.PORTRAIT_UP || orientation === Orientation.PORTRAIT_DOWN
@@ -62,3 +63,5 @@ export default function MangaList<Item>(props: FlatListProps<Item> & { collapsib
     />
   );
 }
+
+export default React.forwardRef<any, any>(MangaList as any);
