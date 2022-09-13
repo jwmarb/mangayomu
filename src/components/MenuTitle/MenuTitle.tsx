@@ -3,7 +3,7 @@ import Flex from '@components/Flex';
 import { Typography } from '@components/Typography';
 import React from 'react';
 
-const MenuTitle: React.FC = (props) => {
+const MenuTitle: React.FC<React.PropsWithChildren<{}>> = (props) => {
   const { children } = props;
   return (
     <>

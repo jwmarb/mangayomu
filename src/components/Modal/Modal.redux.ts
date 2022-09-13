@@ -2,7 +2,7 @@ import { ModalProps } from '@components/Modal/Modal.interfaces';
 import { AppState } from '@redux/store';
 import { connect, ConnectedProps } from 'react-redux';
 
-const mapStateToProps = (state: AppState, props: ModalProps) => ({
+const mapStateToProps = (state: AppState, props: React.PropsWithChildren<ModalProps>) => ({
   ...props,
   statusBarHidden: state.reader.chapterInView != null,
 });

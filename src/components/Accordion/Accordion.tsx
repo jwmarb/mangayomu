@@ -17,7 +17,7 @@ import Animated, {
   cancelAnimation,
 } from 'react-native-reanimated';
 
-const Accordion: React.FC<AccordionProps> = (props) => {
+const Accordion: React.FC<React.PropsWithChildren<AccordionProps>> = (props) => {
   const { title, children, expand, onToggle = () => void 0 } = props;
   const rotate = useSharedValue(0);
   const { ready } = useLazyLoading();
