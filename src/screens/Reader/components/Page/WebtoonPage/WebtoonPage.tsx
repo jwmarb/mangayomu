@@ -52,6 +52,8 @@ import {
   ImageScaling,
   ZoomStartPosition,
 } from '@redux/reducers/readerSettingProfileReducer/readerSettingProfileReducer.constants';
+import WebView from 'react-native-webview';
+const maxScale = 1;
 
 const WebtoonPage: React.FC<ConnectedPageProps> = (props) => {
   const {
@@ -75,7 +77,8 @@ const WebtoonPage: React.FC<ConnectedPageProps> = (props) => {
   const maxScaleInitializer = () => {
     return _width / imageWidth;
   };
-  const [maxScale, setMaxScale] = React.useState(maxScaleInitializer);
+
+  const [_maxScale, setMaxScale] = React.useState(maxScaleInitializer);
   const imageHeightToWindowHeightRatioInitializer = () => {
     return _height / imageHeight;
   };
@@ -147,8 +150,8 @@ const WebtoonPage: React.FC<ConnectedPageProps> = (props) => {
 
   // styles handled by PinchGestureHandler
   const imageStyles = useAnimatedStyle(() => ({
-    width: imageWidth,
-    height: imageHeight,
+    width: _width,
+    height: imageHeight * (_width / imageWidth),
     transform: [{ translateX: translateX.value }, { translateY: translateY.value }, { scale: scale.value }],
   }));
 
@@ -277,15 +280,40 @@ const WebtoonPage: React.FC<ConnectedPageProps> = (props) => {
     translateY.value = 0;
   }, [maxScale, imageHeightToWindowHeightRatio]);
 
-  const tapGestures = Gesture.Race(
-    Gesture.Exclusive(doubleTapGesture, singleTapGesture),
-    longPressGesture,
-    Gesture.Simultaneous(pinchGesture, panGesture)
+  const tapGestures = Gesture.Race(Gesture.Exclusive(doubleTapGesture, singleTapGesture), longPressGesture);
+
+  return (
+    <GestureDetector gesture={tapGestures}>
+      <Animated.View style={imageStyles}>
+        <WebView
+          source={{
+            html: `
+          <html>
+            <head>
+              <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
+            <head />
+            <body style="margin: 0;">
+              <img src="${uri}" width="100%"/>
+            </body>
+          </html>
+        `,
+          }}
+          scrollEnabled={false}
+          pointerEvents='none'
+          nestedScrollEnabled={false}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+        />
+      </Animated.View>
+    </GestureDetector>
   );
 
   return (
     <GestureDetector gesture={tapGestures}>
       <PageContainer imageHeight={imageHeight * maxScale} width={_width} height={_height}>
+        {/* <Animated.View style={{ width: imageWidth, height: imageHeight }}>
+          <WebView source={{ html: `<img src="${uri}" width="100%"" />` }} scrollEnabled={false} />
+        </Animated.View> */}
         <Animated.Image progressiveRenderingEnabled resizeMethod='resize' source={{ uri }} style={imageStyles} />
       </PageContainer>
     </GestureDetector>
