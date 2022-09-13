@@ -15,13 +15,13 @@ import { Typography } from '../Typography';
 import {
   FloatingActionButtonBase,
   FloatingActionButtonContainer,
+  FloatingActionButtonLayoutGetter,
   FloatingActionButtonWrapper,
 } from './FloatingActionButton.base';
 import { FloatingActionButtonProps, FloatingActionButtonRef } from './FloatingActionButton.interfaces';
-import { NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
+import { LayoutChangeEvent, NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
 import useMountedEffect from '@hooks/useMountedEffect';
-
-const BUTTON_WIDTH = 56;
+import { Portal } from '@gorhom/portal';
 
 const FloatingActionButton: React.ForwardRefRenderFunction<FloatingActionButtonRef, FloatingActionButtonProps> = (
   props,
@@ -32,7 +32,8 @@ const FloatingActionButton: React.ForwardRefRenderFunction<FloatingActionButtonR
   const handleOnTextLayout = (e: NativeSyntheticEvent<TextLayoutEventData>) => {
     setTextWidth(e.nativeEvent.lines.reduce((total, curr) => total + curr.width, 0));
   };
-  const width = useSharedValue(BUTTON_WIDTH);
+  const width = useSharedValue(0);
+  const buttonWidth = useSharedValue(0);
   const opacity = useSharedValue(0);
 
   const styles = useAnimatedStyle(() => ({
@@ -44,13 +45,18 @@ const FloatingActionButton: React.ForwardRefRenderFunction<FloatingActionButtonR
   }));
 
   function collapse() {
-    width.value = withTiming(BUTTON_WIDTH, { duration: 500, easing: Easing.ease });
+    width.value = withTiming(buttonWidth.value, { duration: 500, easing: Easing.ease });
     opacity.value = withSpring(0);
   }
 
   function expand() {
-    width.value = withTiming(textWidth + BUTTON_WIDTH + 16, { duration: 500, easing: Easing.ease });
+    width.value = withTiming(textWidth + buttonWidth.value + 16, { duration: 500, easing: Easing.ease });
     opacity.value = withSpring(1);
+  }
+
+  function handleOnButtonLayout(e: LayoutChangeEvent) {
+    width.value = e.nativeEvent.layout.width;
+    buttonWidth.value = e.nativeEvent.layout.width;
   }
 
   useMountedEffect(() => {
@@ -67,23 +73,30 @@ const FloatingActionButton: React.ForwardRefRenderFunction<FloatingActionButtonR
     expand,
   }));
   return (
-    <FloatingActionButtonContainer>
-      <FloatingActionButtonWrapper>
-        <ButtonBase round color='primary' onPress={onPress}>
-          <FloatingActionButtonBase style={styles}>
-            <Flex alignItems='center'>
-              {icon}
-              <Spacer x={1} />
-              <Animated.View style={mountStyles}>
-                <Typography variant='button' numberOfLines={1} onTextLayout={handleOnTextLayout}>
-                  {title}
-                </Typography>
-              </Animated.View>
-            </Flex>
+    <Portal>
+      <FloatingActionButtonContainer>
+        <FloatingActionButtonWrapper>
+          <ButtonBase round color='primary' onPress={onPress}>
+            <FloatingActionButtonBase style={styles}>
+              <Flex alignItems='center'>
+                {icon}
+                <Spacer x={1} />
+                <Animated.View style={mountStyles}>
+                  <Typography variant='button' numberOfLines={1} onTextLayout={handleOnTextLayout}>
+                    {title}
+                  </Typography>
+                </Animated.View>
+              </Flex>
+            </FloatingActionButtonBase>
+          </ButtonBase>
+        </FloatingActionButtonWrapper>
+        <FloatingActionButtonLayoutGetter>
+          <FloatingActionButtonBase onLayout={handleOnButtonLayout}>
+            <Flex alignItems='center'>{icon}</Flex>
           </FloatingActionButtonBase>
-        </ButtonBase>
-      </FloatingActionButtonWrapper>
-    </FloatingActionButtonContainer>
+        </FloatingActionButtonLayoutGetter>
+      </FloatingActionButtonContainer>
+    </Portal>
   );
 };
 

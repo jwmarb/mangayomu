@@ -29,3 +29,7 @@ export const FloatingActionButtonWrapper = styled.View.attrs(shadowDrop)`
     left: ${props.theme.spacing(4)};
   `}
 `;
+
+export const FloatingActionButtonLayoutGetter = styled.View.attrs({ pointerEvents: 'none' })`
+  opacity: 0;
+`;
