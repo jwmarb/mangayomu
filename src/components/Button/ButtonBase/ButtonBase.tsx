@@ -148,7 +148,7 @@ const GestureOpacityBase = styled(GestureTouchableOpacity).attrs<ButtonBaseProps
   } as TouchableOpacityProps;
 })``;
 
-export const ButtonBase: React.FC<ButtonBaseProps & Omit<ButtonProps, 'title'>> = ({
+export const ButtonBase: React.FC<React.PropsWithChildren<ButtonBaseProps & Omit<ButtonProps, 'title'>>> = ({
   children,
   onPress,
   onLongPress,
