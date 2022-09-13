@@ -1,3 +1,4 @@
+import mangalibTransformer from '@redux/transformers/mangalibTransformer';
 import ExpoStorage from '@utils/ExpoStorage';
 import { persistReducer } from 'redux-persist';
 
@@ -7,6 +8,7 @@ export default persistReducer(
     storage: ExpoStorage,
     key: 'manga_library',
     blacklist: ['search'],
+    transforms: [mangalibTransformer],
   },
   reducer
 );

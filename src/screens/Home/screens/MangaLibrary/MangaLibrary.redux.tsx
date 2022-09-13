@@ -7,6 +7,7 @@ import {
   searchInLibrary,
   setSortMethod,
   toggleReverseSort,
+  restoreLibrary,
 } from '@redux/reducers/mangalibReducer/mangalibReducer.actions';
 import { appendNewChapters } from '@redux/reducers/mangaReducer';
 
@@ -14,6 +15,7 @@ const mapStateToProps = (state: AppState, props: BottomTabScreenProps<BottomTabP
   return {
     ...props,
     mangas: state.library.mangas,
+    mangasList: state.library.mangasList.toArray(),
     history: state.mangas,
     cols: state.settings.mangaCover.perColumn,
     fontSize: state.settings.mangaCover.fontSize,
@@ -26,7 +28,13 @@ const mapStateToProps = (state: AppState, props: BottomTabScreenProps<BottomTabP
   };
 };
 
-const connector = connect(mapStateToProps, { searchInLibrary, appendNewChapters, setSortMethod, toggleReverseSort });
+const connector = connect(mapStateToProps, {
+  searchInLibrary,
+  appendNewChapters,
+  setSortMethod,
+  toggleReverseSort,
+  restoreLibrary,
+});
 
 export type MangaLibraryProps = ConnectedProps<typeof connector>;
 

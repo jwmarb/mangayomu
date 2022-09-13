@@ -10,6 +10,7 @@ import { injectThemeFromStore } from '@theme/Color/Color.helpers';
 import sortedListTransformer from './transformers/sortedListTransformer';
 import { injectStoreForTypography } from '@theme/Typography';
 import historyTransformer from '@redux/transformers/historyTransformer';
+import mangalibTransformer from '@redux/transformers/mangalibTransformer';
 const persistConfig: PersistConfig<AppState> = {
   key: 'root',
   storage: ExpoStorage,

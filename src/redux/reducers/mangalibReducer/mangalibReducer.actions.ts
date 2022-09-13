@@ -1,6 +1,12 @@
 import { AppDispatch } from '@redux/store';
 import { Manga } from '@services/scraper/scraper.interfaces';
 
+export const restoreLibrary = (library: string[]) => {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'RESTORE_LIBRARY_FROM_ARRAY', library });
+  };
+};
+
 export const addToLibrary = (manga: Manga) => {
   return (dispatch: AppDispatch) => {
     dispatch({ type: 'ADD_TO_LIBRARY', payload: manga });

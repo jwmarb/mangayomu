@@ -64,7 +64,8 @@
     "react-native-gesture-handler": "~2.5.0",
     "expo-updates": "~0.14.5",
     "expo-haptics": "~11.3.0",
-    "expo-keep-awake": "~10.2.0"
+    "expo-keep-awake": "~10.2.0",
+    "@shopify/flash-list": "1.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6",
