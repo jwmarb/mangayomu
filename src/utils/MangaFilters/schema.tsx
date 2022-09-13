@@ -8,13 +8,15 @@ import {
   Container,
   SortTypeItem,
   Icon,
+  MenuTitle,
+  MenuOption,
 } from '@components/core';
 import { binary, StringComparator } from '@utils/Algorithms';
 import displayMessage from '@utils/displayMessage';
 import InclusiveExclusiveItem from '@utils/MangaFilters/components/InclusiveExclusiveItem';
 import React from 'react';
-import { HoldItem } from 'react-native-hold-menu';
-import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
+import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
+import { useTheme } from 'styled-components/native';
 
 type InclusiveExclusiveFilter<T> = {
   type: 'inclusive/exclusive';
@@ -232,43 +234,65 @@ export function createSchema<T>(object: (filterCreators: FilterCreators) => Part
         elements.push(
           React.memo(({ setParentState, state: parentState }) => {
             const state = parentState as MutableOptionFilter<any>;
+            const [opened, setOpened] = React.useState<boolean>(false);
 
-            const menuItems: MenuItemProps[] = React.useMemo(
-              () => [
-                { text: key, isTitle: true, withSeparator: true },
-                ...state.options.map<MenuItemProps>((x) => ({
-                  text: x,
-                  onPress: () => {
-                    setParentState((prev) => ({
-                      ...prev,
-                      [key]: {
-                        ...prev[key],
-                        value: x,
-                      },
-                    }));
-                  },
-                })),
-              ],
-              [state.options, setParentState]
-            );
+            const theme = useTheme();
+
+            function handleOnPress() {
+              setOpened(true);
+            }
+
+            function handleOnClose() {
+              setOpened(false);
+            }
+
+            function handleOnSelect(x: any) {
+              setParentState((prev) => ({
+                ...prev,
+                [key]: {
+                  ...prev[key],
+                  value: x,
+                },
+              }));
+              handleOnClose();
+            }
 
             return (
-              <HoldItem activateOn='tap' items={menuItems}>
-                <Flex
-                  justifyContent='space-between'
-                  alignItems='center'
-                  container
-                  verticalPadding={1}
-                  horizontalPadding={3}>
-                  <Typography>{key}</Typography>
-                  <Button
-                    title={state.value}
-                    icon={<Icon bundle='Feather' name='chevron-down' />}
-                    iconPlacement='right'
-                  />
-                </Flex>
-              </HoldItem>
+              <Flex
+                justifyContent='space-between'
+                alignItems='center'
+                container
+                verticalPadding={1}
+                horizontalPadding={3}>
+                <Typography>{key}</Typography>
+                <Menu
+                  onSelect={handleOnSelect}
+                  opened={opened}
+                  onOpen={handleOnPress}
+                  onClose={handleOnClose}
+                  onBackdropPress={handleOnClose}>
+                  <MenuTrigger>
+                    <Button
+                      title={state.value}
+                      icon={<Icon bundle='Feather' name='chevron-down' />}
+                      iconPlacement='right'
+                      onPress={handleOnPress}
+                    />
+                  </MenuTrigger>
+                  <MenuOptions customStyles={theme.menuOptionsStyle}>
+                    <MenuTitle>{key}</MenuTitle>
+                    {state.options.map((x) => (
+                      <MenuOption value={x} text={x} color={x === state.value ? 'primary' : 'textPrimary'} />
+                    ))}
+                  </MenuOptions>
+                </Menu>
+              </Flex>
             );
+            // return (
+            //   <HoldItem activateOn='tap' items={menuItems}>
+
+            //   </HoldItem>
+            // );
           })
         );
         break;
