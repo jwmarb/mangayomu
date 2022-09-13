@@ -14,7 +14,7 @@ import { useTheme } from 'styled-components/native';
 import { BadgeContainer } from './Badge.base';
 import { BadgeProps } from './Badge.interfaces';
 
-const Badge: React.FC<BadgeProps> = (props) => {
+const Badge: React.FC<React.PropsWithChildren<BadgeProps>> = (props) => {
   const { children, color = 'secondary', badge, show } = props;
   const scale = useSharedValue(show === undefined ? (typeof badge === 'number' && badge === 0 ? 0 : 1) : show ? 1 : 0);
 
