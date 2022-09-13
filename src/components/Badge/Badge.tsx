@@ -31,7 +31,7 @@ const Badge: React.FC<React.PropsWithChildren<BadgeProps>> = (props) => {
         }
       } else scale.value = withSpring(1);
     else {
-      if (show) scale.value = withSpring(1);
+      if (show) scale.value = withSpring(badge === undefined ? 0.334 : 1);
       else scale.value = withTiming(0, { duration: 300, easing: Easing.ease });
     }
     return () => {
