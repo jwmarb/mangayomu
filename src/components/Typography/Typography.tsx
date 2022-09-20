@@ -5,8 +5,9 @@ import Animated from 'react-native-reanimated';
 import { TextProps } from 'react-native';
 import { useSelector } from 'react-redux';
 import { AppState } from '@redux/store';
+import React from 'react';
 
-export const Typography: React.FC<TypographyProps & TextProps> = (props) => {
+export const Typography: React.FC<React.PropsWithChildren<TypographyProps & TextProps>> = (props) => {
   const { fontFamily: _fontFamily, ...rest } = props;
   const fontFamily = useSelector((state: AppState) => state.settings.fontFamily.__selectedFont);
   return <TypographyBase fontFamily={_fontFamily ?? fontFamily} {...rest} />;
