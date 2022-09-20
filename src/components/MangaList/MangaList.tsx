@@ -57,7 +57,7 @@ function MangaList<Item extends Manga>(
 
   return (
     <AnimatedFlashList
-      estimatedItemSize={calculateCoverHeight(cols)}
+      estimatedItemSize={calculateCoverHeight(cols) * SPACE_MULTIPLIER}
       ref={ref}
       key={orientation}
       keyExtractor={mangaKeyExtractor}

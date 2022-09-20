@@ -277,7 +277,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     <FlashList
       key={orientation}
       renderItem={renderItem}
-      estimatedItemSize={calculateCoverWidth(cols)}
+      estimatedItemSize={calculateCoverHeight(cols) * SPACE_MULTIPLIER}
       keyExtractor={keyExtractor}
       numColumns={
         orientation === Orientation.PORTRAIT_UP || orientation === Orientation.PORTRAIT_DOWN
