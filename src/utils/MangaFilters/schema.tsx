@@ -282,7 +282,7 @@ export function createSchema<T>(object: (filterCreators: FilterCreators) => Part
                   <MenuOptions customStyles={theme.menuOptionsStyle}>
                     <MenuTitle>{key}</MenuTitle>
                     {state.options.map((x) => (
-                      <MenuOption value={x} text={x} color={x === state.value ? 'primary' : 'textPrimary'} />
+                      <MenuOption key={x} value={x} text={x} color={x === state.value ? 'primary' : 'textPrimary'} />
                     ))}
                   </MenuOptions>
                 </Menu>

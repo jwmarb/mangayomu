@@ -41,14 +41,14 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     },
   } = props;
   const theme = useTheme();
-  const [mangaList, setMangaList] = React.useState<Manga[]>(mangas);
+  const [mangaList, setMangaList] = React.useState<Manga[] | undefined>(mangas);
   const [showFooter, setShowFooter] = React.useState<boolean>(true);
   const [query, setQuery] = React.useState<string>(initialQuery);
   const [reachedEnd, setReachedEnd] = React.useState<boolean>(false);
   const mangahost = useMangaSource(source) as MangaHostWithFilters<Record<string, unknown>>;
   const { FilterModal, schema } = mangahost.getFilterSchema();
   const [filter, setFilters] = React.useState<typeof schema>(schema);
-  const [loading, setLoading] = React.useState<boolean>(false);
+  const [loading, setLoading] = React.useState<boolean>(true);
   const textInputRef = React.useRef<TextInput>(null);
   const scrollRef = React.useRef<FlatList>(null);
   const floatingRef = React.useRef<React.ElementRef<typeof FloatingActionButton>>(null);
@@ -88,7 +88,7 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
   }, []);
 
   React.useEffect(() => {
-    if (mangaList.length === 0) setShowFooter(true);
+    if (mangaList && mangaList.length === 0) setShowFooter(true);
   }, [mangaList]);
 
   const handleOnShowFilters = React.useCallback(() => {
@@ -121,6 +121,17 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
     [filter, mangahost, setMangaList, query]
   );
 
+  React.useEffect(() => {
+    if (mangas == null) {
+      mangahost
+        .search('')
+        .then((mangas) => {
+          if (mangas.length > 0) setMangaList(mangas);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, []);
+
   const handleOnApplyFilter = React.useCallback(
     async (state: typeof schema) => {
       setLoading(true);
@@ -144,8 +155,8 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
       try {
         mangahost.addPage();
         const mangas = await mangahost.search(query, filter);
-        if (mangaList[mangaList.length - 1]?.title !== mangas[mangas.length - 1].title)
-          setMangaList((prev) => [...prev, ...mangas]);
+        if (mangaList && mangaList[mangaList.length - 1]?.title !== mangas[mangas.length - 1].title)
+          setMangaList((prev) => [...(prev as Manga[]), ...mangas]);
         else setReachedEnd(true);
       } catch (e) {
         console.error(e);
@@ -183,46 +194,58 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
   if (ready)
     return (
       <>
-        {loading ? (
+        {loading && (
           <View
             style={{
               paddingBottom: pixelToNumber(theme.spacing(3)),
             }}>
             <MangaItemsLoading />
           </View>
-        ) : mangaList.length > 0 ? (
-          <>
-            {isFocused && (
-              <Animated.View entering={FadeIn} exiting={FadeOut}>
-                <FloatingActionButton
-                  title='Scroll to top'
-                  icon={<Icon bundle='Feather' name='chevron-up' />}
-                  ref={floatingRef}
-                  onPress={handleOnScrollToTop}
-                />
-              </Animated.View>
-            )}
-            <MangaList
-              ref={scrollRef}
-              data={mangaList}
-              onEndReachedThreshold={0.1}
-              onScroll={onScroll}
-              renderItem={renderItem}
-              onEndReached={handleOnEndReached}
-              onLayout={handleOnItemLayout}
-              ListFooterComponent={showFooter ? <MangaItemsLoading /> : null}
-            />
-          </>
-        ) : (
+        )}
+        {!loading && mangaList == null && (
           <Flex container horizontalPadding={3} justifyContent='center' alignItems='center' grow direction='column'>
             <Typography variant='subheader' align='center'>
-              No items found
+              Search for a manga
             </Typography>
             <Typography color='textSecondary' align='center'>
-              {mangahost.getName()} does not have the manga you are looking for
+              Search for manga using {mangahost.getName()}
             </Typography>
           </Flex>
         )}
+        {mangaList &&
+          (mangaList.length > 0 ? (
+            <>
+              {isFocused && (
+                <Animated.View entering={FadeIn} exiting={FadeOut}>
+                  <FloatingActionButton
+                    title='Scroll to top'
+                    icon={<Icon bundle='Feather' name='chevron-up' />}
+                    ref={floatingRef}
+                    onPress={handleOnScrollToTop}
+                  />
+                </Animated.View>
+              )}
+              <MangaList
+                ref={scrollRef}
+                data={mangaList}
+                onEndReachedThreshold={0.1}
+                onScroll={onScroll}
+                renderItem={renderItem}
+                onEndReached={handleOnEndReached}
+                onLayout={handleOnItemLayout}
+                ListFooterComponent={showFooter ? <MangaItemsLoading /> : null}
+              />
+            </>
+          ) : (
+            <Flex container horizontalPadding={3} justifyContent='center' alignItems='center' grow direction='column'>
+              <Typography variant='subheader' align='center'>
+                No items found
+              </Typography>
+              <Typography color='textSecondary' align='center'>
+                {mangahost.getName()} does not have the manga you are looking for
+              </Typography>
+            </Flex>
+          ))}
         <FilterModal show={show} onClose={handleOnCloseFilters} onApplyFilter={handleOnApplyFilter} />
       </>
     );

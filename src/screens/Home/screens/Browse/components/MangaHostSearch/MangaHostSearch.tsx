@@ -22,17 +22,14 @@ const MangaHostSearch: React.FC<MangaHostSearchProps> = (props) => {
   const navigation = useRootNavigation();
 
   function handleOnShowMore() {
-    if (mangas && mangas.length > 20)
-      navigation.navigate('MangaBrowser', { mangas, source: host.getName(), initialQuery: query });
+    navigation.navigate('MangaBrowser', { mangas, source: host.getName(), initialQuery: query });
   }
 
   return (
     <Flex direction='column'>
       <Category.Header>
         <Typography variant='subheader'>{host.getName()}</Typography>
-        {mangas && mangas.length > 20 && (
-          <IconButton icon={<Icon bundle='Feather' name='arrow-right' />} onPress={handleOnShowMore} />
-        )}
+        <IconButton icon={<Icon bundle='Feather' name='arrow-right' />} onPress={handleOnShowMore} />
       </Category.Header>
       <Spacer y={2} />
       {loading ? (

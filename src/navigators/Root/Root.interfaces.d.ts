@@ -21,7 +21,7 @@ export type RootStackParamList = {
   Settings: undefined;
   MangaBrowser: {
     initialQuery: string;
-    mangas: Manga[];
+    mangas?: Manga[];
     source: string;
   };
   DownloadManager: undefined;
