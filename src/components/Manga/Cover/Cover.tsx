@@ -21,7 +21,7 @@ import { animate, withAnimatedLoading, withAnimatedMounting } from '@utils/Anima
 import { FadeIn, FadeOut } from 'react-native-reanimated';
 import { MangaCoverStyles } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 
-const Cover: React.FC<ProcessedMangaCoverProps> = (props) => {
+const Cover: React.FC<React.PropsWithChildren<ProcessedMangaCoverProps>> = (props) => {
   const { uri, cols, fixedSize, customSize, base64, cacheMangaCover, coverStyle, children } = props;
   const setBase64 = (b: string | null) => cacheMangaCover(uri, b);
 

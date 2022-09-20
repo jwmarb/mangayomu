@@ -12,7 +12,9 @@ const BaseList = styled.FlatList.attrs((props) => ({
   },
 }))``;
 
-export default function CategoryListBase<T = any>(props: FlatListProps<T> & CategoryListProps) {
+export default function CategoryListBase<T = any>(
+  props: React.PropsWithChildren<FlatListProps<T> & CategoryListProps>
+) {
   const { spacing = 2 } = props;
   const style = useAnimatedMounting();
   const Separator = React.useCallback(() => <Spacer x={spacing} />, [spacing]);

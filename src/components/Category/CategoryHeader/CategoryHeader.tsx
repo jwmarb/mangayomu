@@ -10,7 +10,7 @@ const CategoryHeaderBase = styled.View`
   `}
 `;
 
-export const CategoryHeader: React.FC = ({ children }) => {
+export const CategoryHeader: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   return (
     <ScrollView
       horizontal
