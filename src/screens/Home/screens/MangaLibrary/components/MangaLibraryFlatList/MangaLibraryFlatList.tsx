@@ -176,7 +176,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     toggleReverseSort
   );
 
-  const [mangaList, setMangaList] = React.useState<string[]>(mangas.sort(selectedSortOption));
+  const [mangaList, setMangaList] = React.useState<string[]>([]);
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
   const isFocused = useIsFocused();
 
@@ -265,7 +265,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
       />
     </>
   );
-  useMountedEffect(() => {
+  React.useEffect(() => {
     setMangaList(mangas.filter((x) => titleIncludes(query)(history[x])).sort(selectedSortOption));
   }, [mangas.length, query, sort, reverse]);
 
