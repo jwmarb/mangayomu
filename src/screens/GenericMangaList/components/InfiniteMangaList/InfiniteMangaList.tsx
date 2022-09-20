@@ -188,7 +188,6 @@ const InfiniteMangaListFlatList: React.FC<{ genre: string; source: string }> = (
       <MangaList
         data={mangaList}
         renderItem={renderItem}
-        keyExtractor={keyExtractor}
         onEndReached={handleOnEndReached}
         onLayout={handleOnItemLayout}
         collapsible={collapsible}

@@ -33,8 +33,6 @@ import { keyExtractor, renderItem } from '@screens/GenericMangaList/GenericManga
 import { useIsFocused } from '@react-navigation/native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
-const dataProviderFn = (r1: Manga, r2: Manga) => r1.title !== r2.title;
-
 const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'>> = (props) => {
   const {
     navigation,
@@ -207,7 +205,6 @@ const MangaBrowser: React.FC<StackScreenProps<RootStackParamList, 'MangaBrowser'
             <MangaList
               ref={scrollRef}
               data={mangaList}
-              keyExtractor={keyExtractor}
               onEndReachedThreshold={0.1}
               onScroll={onScroll}
               renderItem={renderItem}

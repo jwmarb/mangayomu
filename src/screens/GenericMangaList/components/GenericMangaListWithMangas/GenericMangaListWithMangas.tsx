@@ -88,8 +88,7 @@ const GenericMangaListWithMangasFlatList: React.FC<{
   const { ready, Fallback } = useLazyLoading();
 
   const collapsible = useCollapsibleHeader(options);
-  if (ready)
-    return <MangaList data={mangas} renderItem={renderItem} keyExtractor={keyExtractor} collapsible={collapsible} />;
+  if (ready) return <MangaList data={mangas} renderItem={renderItem} collapsible={collapsible} />;
   return Fallback;
 };
 

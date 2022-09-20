@@ -19,4 +19,4 @@ const Item: React.FC<{ manga: Manga }> = React.memo(({ manga }) => {
 });
 
 export const renderItem: ListRenderItem<Manga> = ({ item }) => <Item manga={item} />;
-export const keyExtractor = (key: Manga) => key.link;
+export const keyExtractor = (key: Manga, index: number) => key.link + index;
