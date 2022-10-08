@@ -1,3 +1,4 @@
+import useLazyLoading from '@hooks/useLazyLoading';
 import { useIsFocused } from '@react-navigation/native';
 import { AppState } from '@redux/store';
 import HistoryEmpty from '@screens/Home/screens/History/components/HistoryEmpty';
@@ -25,7 +26,7 @@ const History: React.FC = (props) => {
       reverseMap.push({ title: dateFormatter(sectionList[i].date), data: sectionList[i].data.toArray() });
     }
     return reverseMap;
-  }, [sectionList.length]);
+  }, [sectionList]);
   const theme = useTheme();
 
   return (
@@ -45,7 +46,7 @@ const History: React.FC = (props) => {
 };
 
 export default function () {
-  const isFocused = useIsFocused();
-  if (isFocused) return <History />;
-  return null;
+  const { ready, Fallback } = useLazyLoading();
+  if (ready) return <History />;
+  return Fallback;
 }

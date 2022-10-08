@@ -60,10 +60,9 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
 };
 
 const MangaLibraryScreen: React.FC<MangaLibraryProps> = (props) => {
-  const focused = useIsFocused();
   const { ready, Fallback } = useLazyLoading();
 
-  if (focused && ready) return <MangaLibrary {...props} />;
+  if (ready) return <MangaLibrary {...props} />;
   return Fallback;
 };
 
