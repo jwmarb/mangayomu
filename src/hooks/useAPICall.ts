@@ -27,6 +27,7 @@ export default function useAPICall<T, TError>(
   const refresh = React.useCallback(async () => {
     cancelable.current = new CancelablePromise(apiCall);
     setLoading(true);
+    setError(undefined);
     try {
       const response = await cancelable.current?.start();
       if (!cancelable.current?.isCanceled()) setItems(response);
