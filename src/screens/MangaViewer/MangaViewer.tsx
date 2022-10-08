@@ -243,7 +243,10 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
 
   const handleOnRead = React.useCallback(() => {
     if (userMangaInfo) {
-      if (userMangaInfo.currentlyReadingChapter)
+      if (
+        userMangaInfo.currentlyReadingChapter != null &&
+        userMangaInfo.chapters[userMangaInfo.currentlyReadingChapter] != null
+      )
         navigation.navigate('Reader', {
           chapterKey: userMangaInfo.chapters[userMangaInfo.currentlyReadingChapter].link,
           mangaKey: userMangaInfo.link,
@@ -262,7 +265,9 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
       if (sort && sort.every(MangaValidator.isMultilingualChapter)) {
         setLanguage((prev) => {
           if (prev !== 'en') return prev;
-          return userMangaInfo.currentlyReadingChapter
+
+          return userMangaInfo.currentlyReadingChapter &&
+            userMangaInfo.chapters[userMangaInfo.currentlyReadingChapter] != null
             ? (userMangaInfo.chapters[userMangaInfo.currentlyReadingChapter] as unknown as MangaMultilingualChapter)
                 .language
             : (sort as unknown as MangaMultilingualChapter[])[0]?.language ?? 'en';

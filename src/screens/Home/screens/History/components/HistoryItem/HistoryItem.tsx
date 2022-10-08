@@ -15,6 +15,7 @@ import React from 'react';
 
 const HistoryItem: React.FC<ConnectedHistoryItemProps> = (props) => {
   const { manga, chapter, dateRead, sectionIndex, removeFromHistory, currentlyReadingChapter, mangaKey } = props;
+  const chapterDoesNotExist = chapter == null;
   const navigation = useRootNavigation();
   function handleOnRead() {
     navigation.navigate('Reader', { chapterKey: chapter.link, mangaKey: manga.link });
@@ -27,6 +28,10 @@ const HistoryItem: React.FC<ConnectedHistoryItemProps> = (props) => {
       manga: { imageCover: manga.imageCover, link: manga.link, source: manga.source, title: manga.title },
     });
   }
+
+  function handleOnNonExisting() {
+    alert('This chapter has been modified or deleted by the source');
+  }
   return (
     <HistoryItemContainer>
       <ButtonBase opacity onPress={handleOnPress}>
@@ -38,16 +43,30 @@ const HistoryItem: React.FC<ConnectedHistoryItemProps> = (props) => {
           <Flex direction='column'>
             <Typography numberOfLines={2}>{manga.title}</Typography>
             <Spacer y={1} />
-            <Typography variant='body2' color='textSecondary' numberOfLines={1}>
-              {chapter.name ?? `Chapter ${chapter.index + 1}`} - {format(dateRead, 'h:mm a')}
-            </Typography>
+            {chapterDoesNotExist ? (
+              <Typography variant='body2' color='secondary' numberOfLines={1}>
+                Chapter Not Found
+              </Typography>
+            ) : (
+              <Typography variant='body2' color='textSecondary' numberOfLines={1}>
+                {chapter.name ?? `Chapter ${chapter.index + 1}`} - {format(dateRead, 'h:mm a')}
+              </Typography>
+            )}
           </Flex>
         </ButtonBase>
       </Flex>
       <Spacer x={1} />
       <Flex grow justifyContent='flex-end'>
         <IconButton icon={<Icon bundle='Feather' name='trash-2' />} onPress={handleOnDelete} />
-        <IconButton icon={<Icon bundle='Feather' name='play' />} onPress={handleOnRead} />
+        {chapterDoesNotExist ? (
+          <IconButton
+            icon={<Icon bundle='MaterialCommunityIcons' name='exclamation' color='secondary' size='small' />}
+            onPress={handleOnNonExisting}
+            color='secondary'
+          />
+        ) : (
+          <IconButton icon={<Icon bundle='Feather' name='play' />} onPress={handleOnRead} />
+        )}
       </Flex>
     </HistoryItemContainer>
   );
