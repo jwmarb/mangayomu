@@ -34,6 +34,19 @@ class SortedList<T> {
   }
 
   /**
+   * Remove all items matching "item" in the array. This is a linear operation
+   * @param item The item to remove in the array including its copies
+   */
+  public removeAllOf(item: T) {
+    let i = 0;
+    while (i < this.arr.length) {
+      if (this.arr[i] === item) {
+        this.arr.splice(i, 1);
+      } else i++;
+    }
+  }
+
+  /**
    * Add an item to the array while persisting its order
    * @param item The item to add to the array
    */
