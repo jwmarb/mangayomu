@@ -187,9 +187,9 @@ export function parseTimestamp(txt: string) {
  * @returns Returns the V3 version of the url path
  */
 export function getV3URL(urlPath: string): string {
-  const underscoreIndex = urlPath.indexOf('_');
+  const dashIndex = urlPath.indexOf('-');
   const newUrlPath = urlPath.replace('/title/', '/comic/');
-  return newUrlPath.substring(0, underscoreIndex) + '/' + newUrlPath.substring(underscoreIndex + 1);
+  return newUrlPath.substring(0, dashIndex) + '/' + newUrlPath.substring(dashIndex + 1);
 }
 
 /**
