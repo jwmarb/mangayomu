@@ -12,7 +12,7 @@ export const MangaItemContainerEven = styled(Animated.View).attrs({ exiting: Fad
   `}
 `;
 
-const ListLoading = new Array(8).fill('').map((_, i) => (
+const ListLoading = new Array(9).fill('').map((_, i) => (
   <MangaItemContainerEven key={i}>
     <Skeleton.MangaComponent />
   </MangaItemContainerEven>
