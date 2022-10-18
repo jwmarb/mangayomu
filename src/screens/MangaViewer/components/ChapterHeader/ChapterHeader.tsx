@@ -86,7 +86,7 @@ const ChapterHeader: React.FC<ConnectedChapterHeaderProps> = (props) => {
       bgOpacity.value = withTiming(0.55, { duration: 100, easing: Easing.ease });
       translateX.value = withRepeat(
         withSequence(
-          withTiming(width, { duration: 1000, easing: Easing.out(Easing.sin) }),
+          withTiming(width, { duration: 1500, easing: Easing.linear }),
           withTiming(-halfWidth, { duration: 0 })
         ),
         -1
