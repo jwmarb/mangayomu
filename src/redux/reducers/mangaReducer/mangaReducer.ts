@@ -5,7 +5,7 @@ import {
   ReadingChapterInfo,
   ReadingChapterInfoRecord,
 } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
-import { MangaChapter } from '@services/scraper/scraper.interfaces';
+import { Manga, MangaChapter } from '@services/scraper/scraper.interfaces';
 import DownloadManager, { DownloadStatus } from '@utils/DownloadManager';
 import SortedList from '@utils/SortedList';
 
@@ -31,7 +31,11 @@ function updateOrderOfChapters(payload: MangaChapter[], orderedChapters?: Sorted
   return new SortedList<MangaChapter>(orderedChaptersComparator, payload);
 }
 
-function updateChapters(payload: MangaChapter[], state?: ReadingChapterInfoRecord): ReadingChapterInfoRecord {
+function updateChapters(
+  payload: MangaChapter[],
+  manga: Manga,
+  state?: ReadingChapterInfoRecord
+): ReadingChapterInfoRecord {
   const obj: ReadingChapterInfoRecord = {};
   if (state)
     for (const chapter of payload) {
@@ -41,8 +45,8 @@ function updateChapters(payload: MangaChapter[], state?: ReadingChapterInfoRecor
         totalPages: state[chapter.link]?.totalPages ?? 0,
         scrollPosition: state[chapter.link]?.scrollPosition ?? 0,
         dateRead: state[chapter.link]?.dateRead ?? null,
-        validatedStatus: state[chapter.link]?.validatedStatus ?? DownloadStatus.VALIDATING,
-        status: state[chapter.link]?.status ?? DownloadStatus.VALIDATING,
+        validatedStatus: DownloadManager.ofWithManga(chapter, manga).getValidatedStatus() ?? DownloadStatus.VALIDATING,
+        status: DownloadManager.ofWithManga(chapter, manga).getStatus() ?? DownloadStatus.VALIDATING,
       };
     }
   else
@@ -64,17 +68,19 @@ function updateChapters(payload: MangaChapter[], state?: ReadingChapterInfoRecor
 const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerAction): MangaReducerState => {
   switch (action.type) {
     case 'CHAPTER_UPDATES': {
-      return mapMangaToState(state, action.payload, (manga) => {
-        return {
-          ...action.payload,
-          chapters: updateChapters(action.payload.chapters, manga?.chapters),
-          inLibrary: manga?.inLibrary ?? false,
-          currentlyReadingChapter: manga?.currentlyReadingChapter ?? null,
-          dateAddedInLibrary: manga?.dateAddedInLibrary ?? null,
-          orderedChapters: manga?.orderedChapters ?? action.payload.chapters,
-          newChapters: manga ? action.payload.chapters.length - manga.orderedChapters.size() : 0,
-        };
-      });
+      if (action.payload.chapters.length > state[action.payload.link].orderedChapters.size())
+        return mapMangaToState(state, action.payload, (manga) => {
+          return {
+            ...action.payload,
+            chapters: updateChapters(action.payload.chapters, manga, manga?.chapters),
+            inLibrary: manga?.inLibrary ?? false,
+            currentlyReadingChapter: manga?.currentlyReadingChapter ?? null,
+            dateAddedInLibrary: manga?.dateAddedInLibrary ?? null,
+            orderedChapters: manga?.orderedChapters ?? action.payload.chapters,
+            newChapters: manga ? action.payload.chapters.length - manga.orderedChapters.size() : 0,
+          };
+        });
+      return state;
     }
     case 'SIMULATE_NEW_CHAPTERS': {
       const newState = { ...state };
@@ -302,7 +308,7 @@ const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerA
     case 'VIEW_MANGA':
       return mapMangaToState(state, action.payload, (manga) => ({
         ...action.payload,
-        chapters: updateChapters(action.payload.chapters, manga?.chapters),
+        chapters: updateChapters(action.payload.chapters, manga, manga?.chapters),
         inLibrary: manga?.inLibrary ?? manga?.inLibrary ?? false,
         currentlyReadingChapter: manga?.currentlyReadingChapter ?? null,
         dateAddedInLibrary: manga?.dateAddedInLibrary ?? null,
