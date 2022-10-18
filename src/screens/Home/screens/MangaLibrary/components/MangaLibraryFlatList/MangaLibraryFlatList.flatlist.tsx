@@ -1,7 +1,7 @@
 import Manga from '@components/Manga';
 import { AppState } from '@redux/store';
 import React from 'react';
-import { ListRenderItem } from '@shopify/flash-list';
+import { ListRenderItem } from 'react-native';
 import { useSelector } from 'react-redux';
 import styled, { css } from 'styled-components/native';
 

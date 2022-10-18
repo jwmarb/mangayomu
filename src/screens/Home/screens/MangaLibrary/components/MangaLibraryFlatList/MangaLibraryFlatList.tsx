@@ -13,6 +13,7 @@ import {
   ListItem,
   List,
   Button,
+  Progress,
 } from '@components/core';
 import { FlashList } from '@shopify/flash-list';
 import { FlatListScreen } from '@components/core';
@@ -44,7 +45,7 @@ import connector, { MangaLibraryProps } from '@screens/Home/screens/MangaLibrary
 import { SPACE_MULTIPLIER } from '@theme/Spacing';
 import { titleIncludes } from '@utils/MangaFilters';
 import pixelToNumber from '@utils/pixelToNumber';
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import { FlatList, Keyboard, RefreshControl, useWindowDimensions } from 'react-native';
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 import { useTheme } from 'styled-components/native';
@@ -57,6 +58,8 @@ import displayMessage from '@utils/displayMessage';
 import MangaHost from '@services/scraper/scraper.abstract';
 import pLimit from 'p-limit';
 import SortedList from '@utils/SortedList';
+import insertionSort from '@utils/Algorithms/insertionSort';
+import { MangaItemsLoading } from '@screens/GenericMangaList/GenericMangaList.base';
 const limit = pLimit(1);
 const personalLibrary = [
   'https://mangapark.net/comic/116916/oneesan-ga-shinryakuchuu',
@@ -176,25 +179,44 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     toggleReverseSort
   );
 
-  const [mangaList, setMangaList] = React.useState<string[]>([]);
+  const [mangaList, setMangaList] = React.useState<string[]>(mangas.sort(selectedSortOption));
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
-  const isFocused = useIsFocused();
+  const [fetching, setFetching] = React.useState<boolean>(false);
 
-  React.useEffect(() => {
+  useMountedEffect(() => {
+    setMangaList(insertionSort(mangas, selectedSortOption));
+  }, [history]);
+
+  useMountedEffect(() => {
+    setRefreshing(false);
     if (refreshing) {
-      displayMessage('Fetching updates...');
-      setRefreshing(false);
-      try {
-        for (const mangaKey in recordMangas) {
-          limit(async () => {
-            const meta = await MangaHost.availableSources.get(history[mangaKey].source)!.getMeta(history[mangaKey]);
-            appendNewChapters({ ...history[mangaKey], ...meta });
-          });
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        if (isFocused) setMangaList((mangas) => mangas.sort(selectedSortOption));
+      if (fetching) {
+        displayMessage('Please wait for the fetch operation to finish.');
+      } else {
+        setFetching(true);
+        displayMessage('Fetching updates...');
+        (async () => {
+          try {
+            await Promise.all(
+              Object.keys(recordMangas).map(async (mangaKey) =>
+                limit(async () => {
+                  console.log(`fetching updates for ${mangaKey}`);
+                  try {
+                    const meta = await MangaHost.availableSources
+                      .get(history[mangaKey].source)!
+                      .getMeta(history[mangaKey]);
+                    appendNewChapters({ ...history[mangaKey], ...meta });
+                  } catch (e) {
+                    console.error(e);
+                    console.error(`The error occurred at ${mangaKey}`);
+                  }
+                })
+              )
+            );
+          } finally {
+            setFetching(false);
+          }
+        })();
       }
     }
   }, [refreshing]);
@@ -265,7 +287,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
       />
     </>
   );
-  React.useEffect(() => {
+  useMountedEffect(() => {
     setMangaList(mangas.filter((x) => titleIncludes(query)(history[x])).sort(selectedSortOption));
   }, [mangas.length, query, sort, reverse]);
 
@@ -274,23 +296,26 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
   if (query && mangas.length > 0 && mangaList.length === 0) return <NoItemsFound query={query} />;
 
   return (
-    <FlashList
-      key={orientation}
-      renderItem={renderItem}
-      estimatedItemSize={calculateCoverHeight(cols) * SPACE_MULTIPLIER}
-      keyExtractor={keyExtractor}
-      numColumns={
-        orientation === Orientation.PORTRAIT_UP || orientation === Orientation.PORTRAIT_DOWN
-          ? numOfColumnsPortrait
-          : numOfColumnsLandscape
-      }
-      data={mangaList}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleOnRefresh} />}
-      contentContainerStyle={{
-        paddingTop: pixelToNumber(theme.spacing(2)),
-        paddingBottom: pixelToNumber(theme.spacing(24)),
-      }}
-    />
+    <>
+      {fetching && <Progress type='bar' />}
+      <FlatList
+        key={orientation}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        numColumns={
+          orientation === Orientation.PORTRAIT_UP || orientation === Orientation.PORTRAIT_DOWN
+            ? numOfColumnsPortrait
+            : numOfColumnsLandscape
+        }
+        data={mangaList}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleOnRefresh} />}
+        contentContainerStyle={{
+          paddingTop: pixelToNumber(theme.spacing(2)),
+          paddingBottom: pixelToNumber(theme.spacing(24)),
+        }}
+        ListEmptyComponent={<MangaItemsLoading />}
+      />
+    </>
   );
 };
 
