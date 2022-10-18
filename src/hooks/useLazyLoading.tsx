@@ -5,17 +5,7 @@ import { InteractionManager } from 'react-native';
 import Animated, { FadeInUp, FadeOutDown } from 'react-native-reanimated';
 import styled, { css } from 'styled-components/native';
 
-const Container = styled(Animated.View).attrs({ entering: FadeInUp, exiting: FadeOutDown })`
-  flex-grow: 1;
-  justify-content: center;
-  align-items: center;
-`;
-
-export const Fallback = (
-  <Container>
-    <Progress />
-  </Container>
-);
+export const Fallback = <Progress type='bar' />;
 
 /**
  * Lazy load a component if it is extremely laggy to mount
