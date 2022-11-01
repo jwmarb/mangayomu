@@ -393,61 +393,6 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
       </AnimatedProvider>
     </React.Suspense>
   );
-
-  // return (
-  //   <React.Suspense fallback={null}>
-  //     <AnimatedProvider style={loadingAnimation}>
-  //       <MangaViewerContainer>
-  //         <ImageBackground source={{ uri: manga.imageCover }}>
-  //           <LinearGradient colors={['transparent', '#171717']} start={{ x: 0, y: 0 }} end={{ x: 0, y: 0.7 }}>
-  //             <MangaViewerImageBackdrop paddingTop={collapsible.containerPaddingTop}>
-  //               <Flex container horizontalPadding={3} verticalPadding={0}>
-  //                 <MangaCover mangaCoverURI={manga.imageCover} title={manga.title} />
-  //                 <Spacer x={2} />
-  //                 <Flex direction='column' shrink>
-  //                   <Title title={manga.title} isAdult={isAdult} />
-  //                   <Authors
-  //                     manga={manga}
-  //                     authors={userMangaInfo && MangaValidator.hasAuthors(userMangaInfo) ? userMangaInfo.authors : null}
-  //                   />
-  //                   <Genres genres={userMangaInfo?.genres} source={source} />
-  //                   <Spacer y={1} />
-  //                   <StatusIndicator meta={userMangaInfo} />
-  //                   <MangaRating
-  //                     {...(userMangaInfo && MangaValidator.hasRating(userMangaInfo)
-  //                       ? { rating: { rating: userMangaInfo.rating } }
-  //                       : { rating: null })}
-  //                   />
-  //                 </Flex>
-  //               </Flex>
-  //               <MangaAction manga={manga} userMangaInfo={userMangaInfo} onRead={handleOnRead} />
-  //             </MangaViewerImageBackdrop>
-  //           </LinearGradient>
-  //         </ImageBackground>
-  //         <Spacer y={2} />
-  //         <Description description={userMangaInfo?.description} loading={loading} metaExists={userMangaInfo != null} />
-  //         <Spacer y={2} />
-  //         <Genres buttons genres={userMangaInfo?.genres} source={source} />
-  //       </MangaViewerContainer>
-  //       <ChapterHeader
-  //         checked={checked}
-  //         onSelectReadChapters={handleOnSelectAllRead}
-  //         onSelectUnreadChapters={handleOnSelectAllUnread}
-  //         onSelectDownloadedChapters={handleOnSelectAllDownloaded}
-  //         onSelectAll={handleOnSelectAll}
-  //         onChangeLanguage={setLanguage}
-  //         language={language}
-  //         refresh={refresh}
-  //         chapters={meta?.chapters}
-  //         sort={sort}
-  //         handleOnOpenModal={handleOnOpenModal}
-  //         loading={loading}
-  //       />
-  //       <LanguageModal visible={visible} onCloseModal={handleOnCloseModal} sortOptions={sortOptions} />
-  //       <SelectedChapters numOfChapters={meta?.chapters.length ?? 0} manga={manga} />
-  //     </AnimatedProvider>
-  //   </React.Suspense>
-  // );
 };
 
 export default connector(MangaViewer);
