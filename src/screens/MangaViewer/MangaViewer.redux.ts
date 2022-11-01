@@ -6,6 +6,7 @@ import * as chaptersListReducerActions from '@redux/reducers/chaptersListReducer
 import { connect, ConnectedProps } from 'react-redux';
 import MangaHost from '@services/scraper/scraper.abstract';
 import { exitSelectionMode } from '@redux/reducers/chaptersListReducer';
+import { Dimensions } from 'react-native';
 
 const mapStateToProps = (state: AppState, props: StackScreenProps<RootStackParamList, 'MangaViewer'>) => {
   const {
@@ -19,6 +20,15 @@ const mapStateToProps = (state: AppState, props: StackScreenProps<RootStackParam
     source: MangaHost.availableSources.get(manga.source)!,
     selectionMode: state.chaptersList.mode,
     checked: state.chaptersList.checkAll,
+    extendedState: {
+      chaptersList: state.chaptersList,
+      mangas: state.mangas,
+      chaptersInManga: state.mangas[manga.link]?.chapters ?? {},
+      metas: state.downloading.metas[manga.link],
+      manga: state.mangas[manga.link],
+      deviceOrientation: state.settings.deviceOrientation,
+      width: Dimensions.get('window').width,
+    },
   };
 };
 

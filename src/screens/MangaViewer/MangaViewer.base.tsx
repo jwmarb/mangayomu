@@ -10,9 +10,9 @@ export const MangaViewerContainer = styled.View`
   `}
 `;
 
-export const MangaViewerImageBackdrop = styled.View<{ paddingTop: number }>`
+export const MangaViewerImageBackdrop = styled.View`
   ${(props) => css`
     background-color: rgba(0, 0, 0, 0.2);
-    padding: ${RFValue(24) + props.paddingTop}px 0 0 0;
+    padding: ${props.theme.spacing(4, 0, 0, 0)};
   `}
 `;

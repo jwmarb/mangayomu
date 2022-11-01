@@ -141,15 +141,11 @@ const ChapterHeader: React.FC<ConnectedChapterHeaderProps> = (props) => {
   const chapterLanguages = React.useMemo(() => {
     if (chapters == null) return [];
     if (multilingualChapters) {
-      const availableLanguages: ISOLangCode[] = Object.keys(
-        (chapters as MangaMultilingualChapter[]).reduce((prev, curr) => {
-          if (prev[curr.language] != null) return prev;
-
-          return { ...prev, [curr.language]: curr.language };
-        }, {} as Record<ISOLangCode, ISOLangCode>)
-      ).sort() as ISOLangCode[];
-
-      return availableLanguages;
+      const set: Set<ISOLangCode> = new Set();
+      for (const chapter of chapters as MangaMultilingualChapter[]) {
+        set.add(chapter.language);
+      }
+      return [...set];
     }
     return [];
   }, [multilingualChapters, chapters]);
@@ -198,7 +194,7 @@ const ChapterHeader: React.FC<ConnectedChapterHeaderProps> = (props) => {
         <ChapterLoadingIndicator style={loadingStyle} />
         <ChapterLoadingIndicatorBackground style={bgStyle} />
         <Typography variant='subheader'>
-          {numOfChapters != null ? `Chapters - ${numOfChapters}` : 'Updating...'}
+          {numOfChapters != null && !loading ? `Chapters - ${numOfChapters}` : 'Updating...'}
         </Typography>
         <Spacer x={2} />
         <Flex alignItems='center'>
