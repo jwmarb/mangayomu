@@ -79,9 +79,11 @@ const Cover: React.FC<React.PropsWithChildren<ProcessedMangaCoverProps>> = (prop
             imageHeight={imageHeight}
             entering={FadeIn}
           />
-          <LoadingCoverContainer>
-            <LoadingClassicMangaCover cols={cols} />
-          </LoadingCoverContainer>
+          {loading && (
+            <LoadingCoverContainer>
+              <LoadingClassicMangaCover cols={cols} />
+            </LoadingCoverContainer>
+          )}
         </MangaCoverBaseContainer>
       );
     case MangaCoverStyles.MODERN:
