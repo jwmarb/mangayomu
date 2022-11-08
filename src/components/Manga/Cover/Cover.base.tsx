@@ -4,10 +4,22 @@ import pixelToNumber from '@utils/pixelToNumber';
 import { Dimensions } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import styled, { css } from 'styled-components/native';
-import Animated, { FadeIn } from 'react-native-reanimated';
+import Animated, { FadeOut } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Constants } from '@theme/core';
 import React from 'react';
+import { withAnimatedLoading } from '@utils/Animations';
+import { MangaSkeletonImage } from '@components/Manga/Manga.skeleton';
+
+export const LoadingClassicMangaCover = withAnimatedLoading(MangaSkeletonImage);
+
+export const LoadingCoverContainer = styled(Animated.View).attrs({ exiting: FadeOut })`
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+`;
 
 export const MangaCoverBaseImageBackground = styled.ImageBackground.attrs({ imageStyle: { borderRadius: 4 } })`
   width: 100%;

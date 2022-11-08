@@ -11,7 +11,7 @@ import { AppState } from '@redux/store';
 import { calculateCoverHeight, calculateCoverWidth } from '@components/Manga/Cover/Cover.helpers';
 import { MangaCoverStyles } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 
-const MangaSkeletonImage = styled.View<{ cols: number }>`
+export const MangaSkeletonImage = styled.View<{ cols: number }>`
   ${(props) => css`
     width: ${props.theme.spacing(calculateCoverWidth(props.cols))};
     height: ${props.theme.spacing(calculateCoverHeight(props.cols))};

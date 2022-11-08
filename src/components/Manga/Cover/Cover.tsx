@@ -7,6 +7,8 @@ import {
   ModernMangaCoverBase,
   MangaCoverBaseImageBackground,
   ModernMangaLinearGradient,
+  LoadingClassicMangaCover,
+  LoadingCoverContainer,
 } from '@components/Manga/Cover/Cover.base';
 import { calculateCoverHeight, calculateCoverWidth } from '@components/Manga/Cover/Cover.helpers';
 import connector, { ProcessedMangaCoverProps } from '@components/Manga/Cover/Cover.redux';
@@ -18,12 +20,14 @@ const { width } = Dimensions.get('window');
 import * as FileSystem from 'expo-file-system';
 import Progress from '@components/Progress';
 import { animate, withAnimatedLoading, withAnimatedMounting } from '@utils/Animations';
-import { FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { MangaCoverStyles } from '@redux/reducers/settingsReducer/settingsReducer.constants';
+import ExpoStorage from '@utils/ExpoStorage';
 
 const Cover: React.FC<React.PropsWithChildren<ProcessedMangaCoverProps>> = (props) => {
-  const { uri, cols, fixedSize, customSize, base64, cacheMangaCover, coverStyle, children } = props;
-  const setBase64 = (b: string | null) => cacheMangaCover(uri, b);
+  const { uri, cols, fixedSize, customSize, coverStyle, children } = props;
+  const [base64, setBase64] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(true);
 
   const theme = useTheme();
   const imageWidth = theme.spacing(calculateCoverWidth(customSize ?? cols));
@@ -31,7 +35,7 @@ const Cover: React.FC<React.PropsWithChildren<ProcessedMangaCoverProps>> = (prop
 
   async function initialize() {
     if (base64 === undefined) {
-      const fileUri = FileSystem.cacheDirectory + `${uri.replace(/[\\/]|(https?:)/g, '')}`;
+      const fileUri = ExpoStorage.IMAGE_CACHE_DIRECTORY + `${uri.replace(/[\\/]|(https?:)/g, '')}`;
       try {
         const info = await FileSystem.getInfoAsync(fileUri);
         if (!info.exists) {
@@ -50,6 +54,10 @@ const Cover: React.FC<React.PropsWithChildren<ProcessedMangaCoverProps>> = (prop
     initialize();
   }, []);
 
+  function handleOnLoad() {
+    setLoading(false);
+  }
+
   if (fixedSize)
     return (
       <FixedMangaCoverBaseContainer fixedSize={fixedSize}>
@@ -65,11 +73,15 @@ const Cover: React.FC<React.PropsWithChildren<ProcessedMangaCoverProps>> = (prop
       return (
         <MangaCoverBaseContainer imageWidth={imageWidth} imageHeight={imageHeight}>
           <MangaCoverBase
+            onLoad={handleOnLoad}
             source={{ uri: base64 ?? uri }}
             imageWidth={imageWidth}
             imageHeight={imageHeight}
             entering={FadeIn}
           />
+          <LoadingCoverContainer>
+            <LoadingClassicMangaCover cols={cols} />
+          </LoadingCoverContainer>
         </MangaCoverBaseContainer>
       );
     case MangaCoverStyles.MODERN:

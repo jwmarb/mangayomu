@@ -8,7 +8,7 @@ const placeholders = new Array(10).fill('').map((_, i) => <MangaSkeleton key={i}
 
 const MangaPlaceholder: React.FC = () => {
   return (
-    <Animated.View entering={FadeIn} exiting={FadeOut}>
+    <Animated.View entering={FadeIn}>
       <Flex spacing={2}>{placeholders}</Flex>
     </Animated.View>
   );
