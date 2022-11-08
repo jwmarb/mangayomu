@@ -1,5 +1,6 @@
 import { ListItem, ListSection } from '@components/core';
 import ItemDropdown from '@screens/Settings/screens/components/ItemDropdown';
+import { ItemDropdownMenu } from '@screens/Settings/screens/components/ItemDropdown/ItemDropdown.interfaces';
 import ItemToggle from '@screens/Settings/screens/components/ItemToggle';
 import React from 'react';
 import { MenuItemProps } from 'react-native-hold-menu/lib/typescript/components/menu/types';
@@ -17,15 +18,16 @@ function readableBytes(bytes: number): string {
 
 const Cache: React.FC<ConnectedCacheProps> = (props) => {
   const { cacheEnabled, maxCacheSize, toggleCache, setMaxCacheSize } = props;
-  const items: MenuItemProps[] = React.useMemo(
+  const items: ItemDropdownMenu[] = React.useMemo(
     () =>
       cacheSizes.map((x) => ({
         text: readableBytes(x),
+        isSelected: x === maxCacheSize,
         onPress: () => {
           setMaxCacheSize(x);
         },
       })),
-    []
+    [maxCacheSize]
   );
   return (
     <>

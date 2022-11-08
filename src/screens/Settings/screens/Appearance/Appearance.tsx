@@ -9,6 +9,7 @@ import { ChangeableTheme } from '@redux/reducers/settingsReducer/settingsReducer
 import { Menu, MenuTrigger, MenuOption, MenuOptions } from 'react-native-popup-menu';
 import { FontFamily } from '@theme/core';
 import { useTheme } from 'styled-components/native';
+import { ItemDropdownMenu } from '@screens/Settings/screens/components/ItemDropdown/ItemDropdown.interfaces';
 
 const Appearance: React.FC<ConnectedAppearanceProps> = (props) => {
   const { changeAppTheme, theme, changeFont, fontFamily } = props;
@@ -23,27 +24,31 @@ const Appearance: React.FC<ConnectedAppearanceProps> = (props) => {
     return () => changeFont(fontFamily);
   };
 
-  const themeOptions: MenuItemProps[] = React.useMemo(
-    (): MenuItemProps[] =>
+  const themeOptions: ItemDropdownMenu[] = React.useMemo(
+    (): ItemDropdownMenu[] =>
       Object.values(ChangeableTheme).map(
-        (x): MenuItemProps => ({
+        (x): ItemDropdownMenu => ({
+          isSelected: theme === x,
           text: x,
           onPress: () => {
             changeAppTheme(x);
           },
         })
       ),
-    []
+    [theme]
   );
 
-  const fontOptions: (MenuItemProps & { fontFamily?: FontFamily })[] = React.useMemo(
+  const fontOptions: ItemDropdownMenu[] = React.useMemo(
     () =>
-      Object.values(FontFamily).map((x): MenuItemProps & { fontFamily?: FontFamily } => ({
-        text: x,
-        onPress: onChangeFont(x),
-        fontFamily: x,
-      })),
-    []
+      Object.values(FontFamily).map(
+        (x): ItemDropdownMenu => ({
+          text: x,
+          isSelected: x === fontFamily,
+          onPress: onChangeFont(x),
+          fontFamily: x,
+        })
+      ),
+    [fontFamily]
   );
 
   return (
