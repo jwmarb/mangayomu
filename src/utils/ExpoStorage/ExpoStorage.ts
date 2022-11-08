@@ -6,11 +6,20 @@ import * as FileSystem from 'expo-file-system';
  */
 class ExpoStorage {
   private readonly STORAGE_DIRECTORY = FileSystem.documentDirectory + 'device_data/';
+  public readonly IMAGE_CACHE_DIRECTORY = FileSystem.cacheDirectory + 'images/';
+  private async createDir(path: string) {
+    try {
+      await FileSystem.readDirectoryAsync(path);
+    } catch (e) {
+      await FileSystem.makeDirectoryAsync(path);
+    }
+  }
   public async initialize() {
     try {
-      await FileSystem.readDirectoryAsync(this.STORAGE_DIRECTORY);
+      this.createDir(this.STORAGE_DIRECTORY);
+      this.createDir(this.IMAGE_CACHE_DIRECTORY);
     } catch (e) {
-      await FileSystem.makeDirectoryAsync(this.STORAGE_DIRECTORY);
+      console.error(e);
     }
   }
   private transformToURI(key: string) {
