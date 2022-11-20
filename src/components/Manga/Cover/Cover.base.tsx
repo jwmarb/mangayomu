@@ -11,8 +11,6 @@ import React from 'react';
 import { withAnimatedLoading } from '@utils/Animations';
 import { MangaSkeletonImage } from '@components/Manga/Manga.skeleton';
 
-export const LoadingClassicMangaCover = withAnimatedLoading(MangaSkeletonImage);
-
 export const LoadingCoverContainer = styled(Animated.View).attrs({ exiting: FadeOut })`
   position: absolute;
   left: 0;
