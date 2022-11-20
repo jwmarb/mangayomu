@@ -223,6 +223,8 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
 
     const authors = data.state.data.data.authors;
 
+    const imageCover = data.state.data.data.urlCoverOri;
+
     return {
       authors,
       description: data.state.data.data.summary.text,
@@ -237,6 +239,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
         } (Status)`,
       },
       chapters: [...englishChapterObjects, ...multilingualChapterObjects],
+      imageCover,
     };
   }
 }

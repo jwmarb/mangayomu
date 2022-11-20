@@ -122,6 +122,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       .map((_, el) => $(el).text())
       .get();
     const type = $('a[href*="/search/?type="]').text();
+    const imageCover = $('img.img-fluid.bottom-5').attr('src')!;
 
     return {
       authors: data.author,
@@ -143,6 +144,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         link: `https://${super.getLink()}/read-online/${IndexName}${ChapterURLEncode(chapter.Chapter)}`,
         index,
       })),
+      imageCover,
     };
   }
 

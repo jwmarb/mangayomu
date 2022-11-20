@@ -80,7 +80,12 @@ const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerA
             newChapters: manga ? action.payload.chapters.length - manga.orderedChapters.size() : 0,
           };
         });
-      return state;
+      return action.payload.imageCover !== state[action.payload.link].imageCover
+        ? mapMangaToState(state, action.payload, (manga) => ({
+            ...manga,
+            imageCover: action.payload.imageCover,
+          }))
+        : state;
     }
     case 'SIMULATE_NEW_CHAPTERS': {
       const newState = { ...state };
