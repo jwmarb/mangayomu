@@ -7,7 +7,6 @@ import {
   ModernMangaCoverBase,
   MangaCoverBaseImageBackground,
   ModernMangaLinearGradient,
-  LoadingClassicMangaCover,
   LoadingCoverContainer,
 } from '@components/Manga/Cover/Cover.base';
 import { calculateCoverHeight, calculateCoverWidth } from '@components/Manga/Cover/Cover.helpers';
@@ -23,10 +22,12 @@ import { animate, withAnimatedLoading, withAnimatedMounting } from '@utils/Anima
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { MangaCoverStyles } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 import ExpoStorage from '@utils/ExpoStorage';
+import { MangaSkeletonImage, FixedSizeMangaSkeletonImage } from '@components/Manga/Manga.skeleton';
+import { Typography } from '@components/Typography';
 
 const Cover: React.FC<React.PropsWithChildren<ProcessedMangaCoverProps>> = (props) => {
-  const { uri, cols, fixedSize, customSize, coverStyle, children } = props;
-  const [base64, setBase64] = React.useState<string | null>(null);
+  const { uri, cols, fixedSize, customSize, coverStyle, children, cacheEnabled } = props;
+  const [base64, setBase64] = React.useState<string | null | undefined>(undefined);
   const [loading, setLoading] = React.useState<boolean>(true);
 
   const theme = useTheme();
@@ -34,14 +35,16 @@ const Cover: React.FC<React.PropsWithChildren<ProcessedMangaCoverProps>> = (prop
   const imageHeight = theme.spacing(calculateCoverHeight(customSize ?? cols));
 
   async function initialize() {
-    if (base64 === undefined) {
-      const fileUri = ExpoStorage.IMAGE_CACHE_DIRECTORY + `${uri.replace(/[\\/]|(https?:)/g, '')}`;
+    if (base64 === undefined && cacheEnabled) {
+      const fileUri = ExpoStorage.IMAGE_CACHE_DIRECTORY + `${uri.replace(/[\\/]|(https?:)|\?.*/g, '')}`;
       try {
         const info = await FileSystem.getInfoAsync(fileUri);
         if (!info.exists) {
           const p = await FileSystem.downloadAsync(uri, fileUri);
+          console.log(`Downloaded cover image: ${uri}`);
           setBase64(p.uri);
         } else {
+          console.log(`Found existing cover image: ${uri}`);
           setBase64(fileUri);
         }
       } catch (e) {
@@ -61,9 +64,20 @@ const Cover: React.FC<React.PropsWithChildren<ProcessedMangaCoverProps>> = (prop
   if (fixedSize)
     return (
       <FixedMangaCoverBaseContainer fixedSize={fixedSize}>
-        {base64 === null && <FixedMangaCoverBase source={{ uri }} fixedSize={fixedSize} entering={FadeIn} />}
-        {base64 === undefined && <FixedMangaLoadingCoverBase fixedSize={fixedSize} exiting={FadeOut} />}
-        {base64 != null && <FixedMangaCoverBase source={{ uri: base64 }} fixedSize={fixedSize} entering={FadeIn} />}
+        {base64 !== null && (
+          <FixedMangaCoverBase
+            onLoad={handleOnLoad}
+            onError={handleOnLoad}
+            source={{ uri: cacheEnabled ? base64 : uri }}
+            fixedSize={fixedSize}
+            entering={FadeIn}
+          />
+        )}
+        {loading && (
+          <LoadingCoverContainer>
+            <FixedSizeMangaSkeletonImage fixedSize={fixedSize} />
+          </LoadingCoverContainer>
+        )}
       </FixedMangaCoverBaseContainer>
     );
 
@@ -74,14 +88,14 @@ const Cover: React.FC<React.PropsWithChildren<ProcessedMangaCoverProps>> = (prop
         <MangaCoverBaseContainer imageWidth={imageWidth} imageHeight={imageHeight}>
           <MangaCoverBase
             onLoad={handleOnLoad}
-            source={{ uri: base64 ?? uri }}
+            source={{ uri: cacheEnabled ? base64 : uri }}
             imageWidth={imageWidth}
             imageHeight={imageHeight}
             entering={FadeIn}
           />
           {loading && (
             <LoadingCoverContainer>
-              <LoadingClassicMangaCover cols={cols} />
+              <MangaSkeletonImage cols={cols} />
             </LoadingCoverContainer>
           )}
         </MangaCoverBaseContainer>
@@ -89,7 +103,7 @@ const Cover: React.FC<React.PropsWithChildren<ProcessedMangaCoverProps>> = (prop
     case MangaCoverStyles.MODERN:
       return (
         <ModernMangaCoverBase imageWidth={imageWidth} imageHeight={imageHeight} entering={FadeIn}>
-          <MangaCoverBaseImageBackground source={{ uri: base64 ?? uri }}>
+          <MangaCoverBaseImageBackground source={{ uri: cacheEnabled ? base64 : uri }}>
             <ModernMangaLinearGradient>{children}</ModernMangaLinearGradient>
           </MangaCoverBaseImageBackground>
         </ModernMangaCoverBase>

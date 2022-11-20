@@ -9,6 +9,7 @@ const mapStateToProps = (state: AppState, props: MangaCoverProps) => {
     ...props,
     cols: state.settings.mangaCover.perColumn,
     coverStyle: state.settings.mangaCover.style,
+    cacheEnabled: state.settings.cache.enabled,
   };
 };
 

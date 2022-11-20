@@ -10,6 +10,31 @@ import { useSelector } from 'react-redux';
 import { AppState } from '@redux/store';
 import { calculateCoverHeight, calculateCoverWidth } from '@components/Manga/Cover/Cover.helpers';
 import { MangaCoverStyles } from '@redux/reducers/settingsReducer/settingsReducer.constants';
+import { MangaCoverProps } from '@components/Manga/Cover/Cover.interfaces';
+
+export const FixedSizeMangaSkeletonImage = styled.View<{
+  fixedSize: MangaCoverProps['fixedSize'];
+}>`
+  ${(props) => {
+    switch (props.fixedSize) {
+      case true:
+      case 'medium':
+        return css`
+          width: ${props.theme.spacing(18)};
+          height: ${props.theme.spacing(360 / 13)};
+        `;
+      case 'small':
+        return css`
+          width: ${props.theme.spacing(8)};
+          height: ${props.theme.spacing(160 / 13)};
+        `;
+    }
+  }}
+  ${(props) => css`
+    border-radius: ${props.theme.borderRadius}px;
+    background-color: ${props.theme.palette.action.disabledBackground.get()};
+  `}
+`;
 
 export const MangaSkeletonImage = styled.View<{ cols: number }>`
   ${(props) => css`
