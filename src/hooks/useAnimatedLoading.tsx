@@ -9,11 +9,13 @@ import {
   cancelAnimation,
 } from 'react-native-reanimated';
 import { AnimatedContext } from '@context/AnimatedContext';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function useAnimatedLoading() {
   const providedStyle = useContext(AnimatedContext);
   if (providedStyle) return providedStyle;
   const opacity = useSharedValue(0.5);
+  const isFocused = useIsFocused();
   React.useEffect(() => {
     opacity.value = withRepeat(
       withSequence(
@@ -25,7 +27,7 @@ export default function useAnimatedLoading() {
     return () => {
       cancelAnimation(opacity);
     };
-  }, []);
+  }, [isFocused]);
   const style = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
