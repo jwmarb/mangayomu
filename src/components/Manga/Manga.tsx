@@ -22,6 +22,7 @@ const Manga: React.FC<ConnectedMangaProps> = (props) => {
   const { title, imageCover, cols, bold, fontSize, coverStyle, link, source, newChapters } = props;
   const navigation = useRootNavigation();
   function handleOnPress() {
+    console.log(`Viewing ${link}`);
     navigation.navigate('MangaViewer', { manga: { imageCover, title, link, source } });
   }
   switch (coverStyle) {
