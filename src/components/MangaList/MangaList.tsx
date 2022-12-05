@@ -53,11 +53,23 @@ function MangaList<Item extends Manga>(
     });
   }, []);
 
+  const getItemLayout = React.useCallback(
+    (item: any[], index: number) => ({
+      index,
+      length: calculateCoverHeight(cols) * SPACE_MULTIPLIER,
+      offset: calculateCoverHeight(cols) * SPACE_MULTIPLIER * index,
+    }),
+    [cols]
+  );
+
   if (!ready) return null;
 
   return (
-    <AnimatedFlashList
-      estimatedItemSize={calculateCoverHeight(cols) * SPACE_MULTIPLIER}
+    <Animated.FlatList
+      windowSize={7}
+      maxToRenderPerBatch={3}
+      updateCellsBatchingPeriod={50}
+      initialNumToRender={12}
       ref={ref}
       key={orientation}
       keyExtractor={mangaKeyExtractor}
