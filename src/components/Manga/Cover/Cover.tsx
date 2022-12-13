@@ -26,7 +26,7 @@ import { MangaSkeletonImage, FixedSizeMangaSkeletonImage } from '@components/Man
 import { Typography } from '@components/Typography';
 
 const Cover: React.FC<React.PropsWithChildren<ProcessedMangaCoverProps>> = (props) => {
-  const { uri, cols, fixedSize, customSize, coverStyle, children, cacheEnabled } = props;
+  const { uri, cols, fixedSize, customSize, coverStyle, children, cacheEnabled, maxCacheSize } = props;
   const [base64, setBase64] = React.useState<string | null | undefined>(undefined);
   const [loading, setLoading] = React.useState<boolean>(true);
 
@@ -40,6 +40,12 @@ const Cover: React.FC<React.PropsWithChildren<ProcessedMangaCoverProps>> = (prop
       try {
         const info = await FileSystem.getInfoAsync(fileUri);
         if (!info.exists) {
+          const { size } = await FileSystem.getInfoAsync(ExpoStorage.IMAGE_CACHE_DIRECTORY);
+          if (size == null) throw Error('Unable to measure cache directory size. Perhaps it does not exist?');
+          if (size >= maxCacheSize)
+            throw Error(
+              'The current cache exceeds its user-defined limit, and thus saving the image cannot be performed'
+            );
           const p = await FileSystem.downloadAsync(uri, fileUri);
           console.log(`Downloaded cover image: ${uri}`);
           setBase64(p.uri);
@@ -48,6 +54,7 @@ const Cover: React.FC<React.PropsWithChildren<ProcessedMangaCoverProps>> = (prop
           setBase64(fileUri);
         }
       } catch (e) {
+        console.log(e);
         setBase64(null);
       }
     }

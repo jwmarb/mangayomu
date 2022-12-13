@@ -10,6 +10,7 @@ const mapStateToProps = (state: AppState, props: MangaCoverProps) => {
     cols: state.settings.mangaCover.perColumn,
     coverStyle: state.settings.mangaCover.style,
     cacheEnabled: state.settings.cache.enabled,
+    maxCacheSize: state.settings.cache.maxSize,
   };
 };
 
