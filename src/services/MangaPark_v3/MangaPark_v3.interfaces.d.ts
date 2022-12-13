@@ -41,7 +41,7 @@ export type MangaParkV3NextDataMeta = {
                 authors: string[];
                 originalStatus: string;
                 summary: {
-                  text: string;
+                  code: string;
                 };
                 stat_score_bay: number;
                 stat_count_vote: number;
