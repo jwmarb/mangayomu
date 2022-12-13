@@ -227,7 +227,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
 
     return {
       authors,
-      description: data.state.data.data.summary.text,
+      description: data.state.data.data.summary.code,
       genres,
       rating: {
         value: ratingValue || 'N/A',
