@@ -110,7 +110,7 @@ const Cover: React.FC<React.PropsWithChildren<ProcessedMangaCoverProps>> = (prop
     case MangaCoverStyles.MODERN:
       return (
         <ModernMangaCoverBase imageWidth={imageWidth} imageHeight={imageHeight} entering={FadeIn}>
-          <MangaCoverBaseImageBackground source={{ uri: cacheEnabled ? base64 : uri }}>
+          <MangaCoverBaseImageBackground source={{ uri: cacheEnabled && base64 !== null ? base64 : uri }}>
             <ModernMangaLinearGradient>{children}</ModernMangaLinearGradient>
           </MangaCoverBaseImageBackground>
         </ModernMangaCoverBase>

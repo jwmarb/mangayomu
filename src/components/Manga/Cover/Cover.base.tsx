@@ -22,7 +22,7 @@ export const LoadingCoverContainer = styled(Animated.View).attrs({ exiting: Fade
 export const MangaCoverBaseImageBackground = styled.ImageBackground.attrs({ imageStyle: { borderRadius: 4 } })`
   width: 100%;
   height: 100%;
-` as React.FC<{ source: { uri: string } }>;
+` as React.FC<React.PropsWithChildren<{ source: { uri?: string } }>>;
 
 export const ModernMangaLinearGradient = styled(LinearGradient).attrs({
   colors: ['transparent', Constants.GRAY[12].get()],
