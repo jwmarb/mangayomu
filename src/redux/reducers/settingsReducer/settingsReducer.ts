@@ -42,11 +42,13 @@ const INITIAL_STATE: SettingsReducerState = {
     keepDeviceAwake: true,
     showPageNumber: true,
     skipChaptersMarkedRead: true,
+    notifyLastChapter: false,
     _global: {
       imageScaling: ImageScaling.SMART_FIT,
       orientation: ReaderScreenOrientation.FREE,
       readingDirection: ReaderDirection.RIGHT_TO_LEFT,
       zoomStartPosition: ZoomStartPosition.AUTOMATIC,
+      shortChapters: false,
     },
   },
   advanced: {
@@ -57,6 +59,17 @@ const INITIAL_STATE: SettingsReducerState = {
 
 const reducer = (state: SettingsReducerState = INITIAL_STATE, action: SettingsReducerAction): SettingsReducerState => {
   switch (action.type) {
+    case 'TOGGLE_GLOBAL_READER_SETTING_PROFILE':
+      return {
+        ...state,
+        reader: {
+          ...state.reader,
+          _global: {
+            ...state.reader._global,
+            [action.key]: !state.reader._global[action.key],
+          },
+        },
+      };
     case 'TOGGLE_ADVANCED_SETTING':
       return {
         ...state,

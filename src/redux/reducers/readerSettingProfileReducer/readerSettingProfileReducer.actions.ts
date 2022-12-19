@@ -4,6 +4,7 @@ import {
   ZoomStartPosition,
 } from '@redux/reducers/readerSettingProfileReducer/readerSettingProfileReducer.constants';
 import { OverloadedSetting } from '@redux/reducers/readerSettingProfileReducer/readerSettingProfileReducer.constants';
+import { ToggleReaderSettingProfileKeys } from '@redux/reducers/readerSettingProfileReducer/readerSettingProfileReducer.interfaces';
 import { ReaderDirection } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 import { AppDispatch } from '@redux/store';
 
@@ -31,5 +32,15 @@ export const setZoomStartPositionForSeries = (
 export const setImageScalingForSeries = (mangaKey: string, imageScaling: ImageScaling | OverloadedSetting) => {
   return (dispatch: AppDispatch) => {
     dispatch({ type: 'SET_IMAGE_SCALING_FOR_SERIES', mangaKey, imageScaling });
+  };
+};
+
+export const toggleReaderSetting = (
+  mangaKey: string,
+  booleanKey: ToggleReaderSettingProfileKeys,
+  value?: boolean | OverloadedSetting
+) => {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'TOGGLE_READER_SETTING_PROFILE', mangaKey, booleanKey, value });
   };
 };

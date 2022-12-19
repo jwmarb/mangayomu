@@ -13,7 +13,12 @@ import { AppDispatch } from '@redux/store';
 import MangaHost from '@services/scraper/scraper.abstract';
 import { FontFamily } from '@theme/Typography';
 import { Dispatch } from 'redux';
-import { AdvancedSettingsBooleans, SettingsReducerAction, SettingsReducerState } from './settingsReducer.interfaces';
+import {
+  AdvancedSettingsBooleans,
+  SettingsReducerAction,
+  SettingsReducerState,
+  ToggleableGlobalReaderSettings,
+} from './settingsReducer.interfaces';
 
 export function setMaxCacheSize(bytes: number) {
   return (dispatch: AppDispatch) => {
@@ -36,6 +41,12 @@ export function finishIntro() {
 export function adjustColumns(c: number) {
   return (dispatch: Dispatch<SettingsReducerAction>) => {
     dispatch({ type: 'ADJUST_MANGAS_PER_COLUMN', payload: c });
+  };
+}
+
+export function toggleNotifyLastChapter() {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'TOGGLE_READER_SETTING', key: 'notifyLastChapter' });
   };
 }
 
@@ -126,5 +137,11 @@ export function toggleAdvancedSetting(key: AdvancedSettingsBooleans) {
 export function setSource(payload: MangaHost) {
   return (dispatch: AppDispatch) => {
     dispatch({ type: 'SELECT_SOURCE', payload });
+  };
+}
+
+export function toggleGlobalReaderSettingProfile(key: ToggleableGlobalReaderSettings) {
+  return (dispatch: AppDispatch) => {
+    dispatch({ type: 'TOGGLE_GLOBAL_READER_SETTING_PROFILE', key });
   };
 }

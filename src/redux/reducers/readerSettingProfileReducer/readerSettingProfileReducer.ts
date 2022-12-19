@@ -16,6 +16,7 @@ export const INITIAL_READER_SETTING_PROFILE_STATE: ReaderSettingProfile = {
   imageScaling: OverloadedSetting.AUTO,
   zoomStartPosition: OverloadedSetting.AUTO,
   readingDirection: OverloadedSetting.AUTO,
+  shortChapters: OverloadedSetting.AUTO,
 };
 
 export default function (
@@ -23,6 +24,14 @@ export default function (
   action: ReaderSettingProfileReducerAction
 ): ReaderSettingProfileReducerState {
   switch (action.type) {
+    case 'TOGGLE_READER_SETTING_PROFILE':
+      return {
+        ...state,
+        [action.mangaKey]: {
+          ...state[action.mangaKey],
+          [action.booleanKey]: action.value != null ? action.value : !state[action.mangaKey][action.booleanKey],
+        },
+      };
     case 'SET_READER_DIRECTION_FOR_SERIES':
       return {
         ...state,

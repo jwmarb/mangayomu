@@ -24,8 +24,13 @@ const Reader: React.FC<ConnectedReaderSettingsScreenProps> = (props) => {
     setReaderScreenOrientation,
     setReaderScreenImageScaling,
     toggleShowPageNumber,
+    toggleNotifyLastChapter,
     setReaderScreenZoomStartPosition,
+    toggleGlobalReaderSettingProfile,
   } = props;
+  const toggleShortChapters = React.useCallback(() => {
+    toggleGlobalReaderSettingProfile('shortChapters');
+  }, [toggleGlobalReaderSettingProfile]);
   const bgColorOptions: ItemDropdownMenu[] = React.useMemo(
     () =>
       Object.values(ReaderBackgroundColor).map(
@@ -118,11 +123,23 @@ const Reader: React.FC<ConnectedReaderSettingsScreenProps> = (props) => {
         subtitle={settings._global.zoomStartPosition}
         items={globalScreenZoomStartPositionOptions}
       />
+      <ItemToggle
+        title='Short chapters mode'
+        enabled={settings._global.shortChapters}
+        onChange={toggleShortChapters}
+        subtitle='Enabling this will increase data usage, however, it will provide a more comfortable reading experience with very short chapters'
+      />
+
       <Divider />
       <ListSection title='General' />
       <ItemDropdown title='Background color' subtitle={settings.backgroundColor} items={bgColorOptions} />
       <ItemToggle title='Keep device awake' enabled={settings.keepDeviceAwake} onChange={toggleKeepDeviceAwake} />
       <ItemToggle title='Show page number' enabled={settings.showPageNumber} onChange={toggleShowPageNumber} />
+      <ItemToggle
+        title='Notify when last chapter'
+        enabled={settings.notifyLastChapter}
+        onChange={toggleNotifyLastChapter}
+      />
       <ItemToggle
         title='Skip chapters marked read'
         enabled={settings.skipChaptersMarkedRead}

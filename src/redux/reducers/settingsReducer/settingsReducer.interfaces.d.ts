@@ -41,6 +41,7 @@ export interface SettingsReducerState {
     keepDeviceAwake: boolean;
     showPageNumber: boolean;
     skipChaptersMarkedRead: boolean;
+    notifyLastChapter: boolean;
     _global: GlobalReadingSettingProfile;
   };
   advanced: {
@@ -65,6 +66,10 @@ export type AdvancedSettingsBooleans = keyof {
     : never]: boolean;
 };
 
+export type ToggleableGlobalReaderSettings = keyof {
+  [K in keyof GlobalReadingSettingProfile as GlobalReadingSettingProfile[K] extends boolean ? K : never]: boolean;
+};
+
 export type SettingsReducerAction =
   | {
       type: 'INTRO_DONE';
@@ -85,4 +90,5 @@ export type SettingsReducerAction =
   | { type: 'SET_READER_SCREEN_ORIENTATION'; orientation: ReaderScreenOrientation }
   | { type: 'SET_READER_IMAGE_SCALING'; imageScaling: ImageScaling }
   | { type: 'SET_READER_ZOOM_START_POSITION'; zoomStartPosition: ZoomStartPosition }
-  | { type: 'TOGGLE_ADVANCED_SETTING'; key: AdvancedSettingsBooleans };
+  | { type: 'TOGGLE_ADVANCED_SETTING'; key: AdvancedSettingsBooleans }
+  | { type: 'TOGGLE_GLOBAL_READER_SETTING_PROFILE'; key: ToggleableGlobalReaderSettings };

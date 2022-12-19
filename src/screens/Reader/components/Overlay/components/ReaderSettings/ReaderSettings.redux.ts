@@ -10,6 +10,8 @@ import {
   setReaderScreenOrientation,
   setReaderScreenImageScaling,
   setReaderScreenZoomStartPosition,
+  toggleNotifyLastChapter,
+  toggleGlobalReaderSettingProfile,
 } from '@redux/reducers/settingsReducer';
 import * as readerSettingProfileActions from '@redux/reducers/readerSettingProfileReducer/';
 
@@ -28,6 +30,8 @@ const connector = connect(mapStateToProps, {
   setReaderScreenOrientation,
   setReaderScreenImageScaling,
   setReaderScreenZoomStartPosition,
+  toggleNotifyLastChapter,
+  toggleGlobalReaderSettingProfile,
   ...readerSettingProfileActions,
 });
 
