@@ -1,4 +1,5 @@
 import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
+import { ChapterFetcher } from '@screens/Reader/Reader.interfaces';
 import { Manga, MangaChapter } from '@services/scraper/scraper.interfaces';
 
 export interface TransitioningPageProps {
@@ -6,12 +7,5 @@ export interface TransitioningPageProps {
   next: string;
   manga: Manga;
   extendedStateKey: string;
-  fetchChapter: (
-    pagesToFetchFrom: ReadingChapterInfo,
-    extendedStateKey?: string,
-    appendLocation?: 'start' | 'end' | null
-  ) => {
-    cancel: () => void;
-    start: () => Promise<void>;
-  };
+  fetchChapter: ChapterFetcher;
 }
