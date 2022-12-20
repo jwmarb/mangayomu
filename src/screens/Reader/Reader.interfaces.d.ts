@@ -1,7 +1,7 @@
 import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
 
 export type ChapterFetcher = (
-  pagesToFetchFrom: NewType,
+  pagesToFetchFrom: ReadingChapterInfo,
   extendedStateKey?: string,
   appendLocation?: 'start' | 'end' | null
 ) => {
