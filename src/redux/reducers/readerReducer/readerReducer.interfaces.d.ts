@@ -66,6 +66,7 @@ export type ReaderReducerAction =
       manga: Manga;
       appendLocation: 'start' | 'end' | null;
       initialIndexPage: number;
+      alreadyFetchedNextChapter?: boolean;
     }
   | { type: 'EXIT_READER' }
   | { type: 'OPEN_READER'; manga: Manga; chapter: ReadingChapterInfo }

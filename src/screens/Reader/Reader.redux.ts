@@ -11,6 +11,7 @@ import { getOrUseGlobalSetting } from '@screens/Reader/components/Overlay/compon
 const mapStateToProps = (state: AppState, props: StackScreenProps<RootStackParamList, 'Reader'>) => {
   return {
     ...props,
+    chapters: state.mangas[props.route.params.mangaKey].orderedChapters,
     deviceOrientation: state.settings.deviceOrientation,
     readerSettingsForSeries: state.readerSetting[props.route.params.mangaKey],
     readerOrientation: getOrUseGlobalSetting(state, props.route.params.mangaKey, 'orientation'),

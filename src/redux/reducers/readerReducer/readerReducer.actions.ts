@@ -1,18 +1,22 @@
 import { orderedChaptersComparator } from '@redux/reducers/mangaReducer/mangaReducer.helpers';
 import { ReadingChapterInfo } from '@redux/reducers/mangaReducer/mangaReducer.interfaces';
-import { getImageDimensions } from '@redux/reducers/readerReducer/readerReducer.helpers';
+import { generateExtendedStateKey, getImageDimensions } from '@redux/reducers/readerReducer/readerReducer.helpers';
 import { MangaPage, Page, SavePageInfo } from '@redux/reducers/readerReducer/readerReducer.interfaces';
 import { ReaderDirection } from '@redux/reducers/settingsReducer/settingsReducer.constants';
 import { AppState, AppDispatch } from '@redux/store';
+import { getOrUseGlobalSetting } from '@screens/Reader/components/Overlay/components/OverlayFooter/components/Selector.helpers';
+import { ChapterFetcher } from '@screens/Reader/Reader.interfaces';
 import { Manga, MangaChapter, MangaMultilingualChapter } from '@services/scraper/scraper.interfaces';
 import { ISOLangCode } from '@utils/languageCodes';
 import MangaValidator from '@utils/MangaValidator';
 import SortedList from '@utils/SortedList';
 import { Dimensions, Image, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import pLimit from 'p-limit';
 
 type StateGetter = () => AppState;
 let chapterLang: ISOLangCode | null = null;
 let orderedChapters: SortedList<MangaChapter> | null;
+const limit = pLimit(1);
 
 export const exitReader = () => {
   return (dispatch: AppDispatch) => {
@@ -34,7 +38,8 @@ export const transformPages = (
   pages: string[],
   chapter: ReadingChapterInfo,
   manga: Manga,
-  appendLocation: 'start' | 'end' | null = null
+  appendLocation: 'start' | 'end' | null = null,
+  alreadyFetchedNextChapter?: boolean
 ) => {
   return (dispatch: AppDispatch, getState: StateGetter) => {
     let canceled: boolean = false;
@@ -87,6 +92,7 @@ export const transformPages = (
             appendLocation,
             numOfPages: pages.length,
             initialIndexPage: index === 0 ? chapter.indexPage : chapter.indexPage + 1,
+            alreadyFetchedNextChapter,
           });
           if (getState().reader.isMounted) dispatch({ type: 'OPEN_READER', manga, chapter });
         }
@@ -123,6 +129,34 @@ export const setCurrentlyReadingChapter = (chapter: ReadingChapterInfo) => {
 export const transitioningPageShouldFetch = (key: string) => {
   return (dispatch: AppDispatch) => {
     dispatch({ type: 'TRANSITIONING_PAGE_SHOULD_FETCH_CHAPTER', extendedStateKey: key });
+  };
+};
+
+export const transitioningHandler = (
+  nextChapterTransitioningKey: string | null | undefined,
+  mangaKey: string,
+  currentChapter: MangaChapter,
+  fetcher: ChapterFetcher
+) => {
+  return async (dispatch: AppDispatch, getState: StateGetter) => {
+    if (getOrUseGlobalSetting(getState(), mangaKey, 'shortChapters') && nextChapterTransitioningKey != null) {
+      const chapters = getState().mangas[mangaKey].orderedChapters;
+      const currentChapterIndex = chapters.indexOf(currentChapter);
+      for (let i = 0; i < 5; i++) {
+        const nextChapterKey = generateExtendedStateKey(
+          chapters.get(currentChapterIndex + i + 1).link,
+          chapters.get(currentChapterIndex + i).link
+        );
+        if (nextChapterKey in getState().reader.extendedState) continue;
+        await fetcher(
+          getState().mangas[mangaKey].chapters[chapters.get(currentChapterIndex + i + 1).link],
+          nextChapterKey,
+          'end',
+          true
+        ).start();
+      }
+    } else if (nextChapterTransitioningKey != null)
+      dispatch({ type: 'TRANSITIONING_PAGE_SHOULD_FETCH_CHAPTER', extendedStateKey: nextChapterTransitioningKey });
   };
 };
 

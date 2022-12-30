@@ -58,9 +58,11 @@ import { ReaderScreenOrientation } from '@redux/reducers/readerSettingProfileRed
 import * as Orientation from 'expo-screen-orientation';
 import DownloadManager from '@utils/DownloadManager';
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
+import { ChapterFetcher } from '@screens/Reader/Reader.interfaces';
 
 const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const {
+    chapters,
     backgroundColor,
     source,
     chapter,
@@ -80,6 +82,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     initialScrollIndex,
     maintainScrollIndex,
     transitioningPageShouldFetch,
+    transitioningHandler,
     index,
     readerOrientation,
     deviceOrientation,
@@ -237,11 +240,12 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   //   console.log(`${data}`);
   // }, [data]);
 
-  const fetchChapter = React.useCallback(
+  const fetchChapter: ChapterFetcher = React.useCallback(
     (
       pagesToFetchFrom: ReadingChapterInfo,
       extendedStateKey?: string,
-      appendLocation: 'start' | 'end' | null = null
+      appendLocation: 'start' | 'end' | null = null,
+      alreadyFetchedNextChapter?: boolean
     ) => {
       let canceled: boolean = false;
       let transformer: ReturnType<typeof transformPages> | undefined;
@@ -258,7 +262,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
             try {
               const pages = await source.getPages(pagesToFetchFrom);
               if (!canceled) {
-                transformer = transformPages(pages, pagesToFetchFrom, manga, appendLocation);
+                transformer = transformPages(pages, pagesToFetchFrom, manga, appendLocation, alreadyFetchedNextChapter);
                 await transformer.start();
               }
             } catch (e) {
@@ -340,32 +344,35 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   );
 
   const handleOnViewableItemsChanged: (info: { viewableItems: ViewToken[]; changed: ViewToken[] }) => void =
-    React.useCallback(({ viewableItems, changed }) => {
-      if (viewableItems.length > 0) {
-        const [_page] = viewableItems.slice(-1);
-        if (_page.index != null && (_page.item as MangaPage).type === 'PAGE') setReaderIndex(_page.index);
-        switch ((_page.item as MangaPage).type) {
-          case 'PAGE': {
-            const page = _page as Omit<ViewToken, 'item'> & { item: IPage };
-            const { nextChapterTransitioningKey } = page.item;
-            if ((!page.item.isOfFirstChapter && page.item.isFirstPage != null) || page.item.isLastPage != null) {
-              setCurrentlyReadingChapter(page.item.chapter);
+    React.useCallback(
+      ({ viewableItems, changed }) => {
+        if (viewableItems.length > 0) {
+          const [_page] = viewableItems.slice(-1);
+          if (_page.index != null && (_page.item as MangaPage).type === 'PAGE') setReaderIndex(_page.index);
+          switch ((_page.item as MangaPage).type) {
+            case 'PAGE': {
+              const page = _page as Omit<ViewToken, 'item'> & { item: IPage };
+              const { nextChapterTransitioningKey } = page.item;
+              if ((!page.item.isOfFirstChapter && page.item.isFirstPage != null) || page.item.isLastPage != null) {
+                setCurrentlyReadingChapter(page.item.chapter);
+              }
+              transitioningHandler(nextChapterTransitioningKey, manga.link, page.item.chapter, fetchChapter);
+
+              break;
             }
-            if (nextChapterTransitioningKey != null && !page.item.isFirstPage)
-              transitioningPageShouldFetch(nextChapterTransitioningKey);
-            break;
+            case 'CHAPTER_TRANSITION': {
+              const { extendedStateKey } = _page.item as TransitionPage;
+              transitioningPageShouldFetch(extendedStateKey);
+              break;
+            }
+            case 'NO_MORE_CHAPTERS':
+              showOverlay();
+              break;
           }
-          case 'CHAPTER_TRANSITION': {
-            const { extendedStateKey } = _page.item as TransitionPage;
-            transitioningPageShouldFetch(extendedStateKey);
-            break;
-          }
-          case 'NO_MORE_CHAPTERS':
-            showOverlay();
-            break;
         }
-      }
-    }, []);
+      },
+      [fetchChapter]
+    );
 
   const viewabilityConfigCallbackPairs = React.useRef<ViewabilityConfigCallbackPairs>([
     {

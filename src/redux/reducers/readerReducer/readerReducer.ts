@@ -256,6 +256,7 @@ export default function (state: ReaderReducerState = INITIAL_STATE, action: Read
               };
               if (extendedStateKey in newState.extendedState === false)
                 newState.extendedState[extendedStateKey] = INITIAL_EXTENDED_STATE;
+              if (action.alreadyFetchedNextChapter) newState.extendedState[extendedStateKey].hasAlreadyFetched = true;
             }
 
             newState.chapterPositionOffset[action.chapter.link] = newState.data.length;
