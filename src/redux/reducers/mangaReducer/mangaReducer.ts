@@ -103,6 +103,7 @@ const reducer = (state: MangaReducerState = INITIAL_STATE, action: MangaReducerA
     case 'SET_INDEX_PAGE': {
       state[action.mangaKey].chapters[action.chapterKey].indexPage = action.indexPage;
       state[action.mangaKey].currentlyReadingChapter = action.chapterKey;
+      state[action.mangaKey].chapters[action.chapterKey] = { ...state[action.mangaKey].chapters[action.chapterKey] };
       return state;
     }
     case 'OPEN_READER':

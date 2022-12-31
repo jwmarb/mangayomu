@@ -10,7 +10,7 @@ const mapStateToProps = (state: AppState, props: ChapterProps) => {
   return props;
   // return {
   //   ...props,
-  //   isCurrentlyBeingRead: state.mangas[props.manga.link].currentlyReadingChapter === props.chapter.link,
+  //   chapter: state.mangas[props.manga.link].chapters[props.chapter.link]
   // };
 };
 
