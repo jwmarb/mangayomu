@@ -356,7 +356,8 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
               if ((!page.item.isOfFirstChapter && page.item.isFirstPage != null) || page.item.isLastPage != null) {
                 setCurrentlyReadingChapter(page.item.chapter);
               }
-              transitioningHandler(nextChapterTransitioningKey, manga.link, page.item.chapter, fetchChapter);
+              if (nextChapterTransitioningKey != null) transitioningPageShouldFetch(nextChapterTransitioningKey);
+              // transitioningHandler(nextChapterTransitioningKey, manga.link, page.item.chapter, fetchChapter); // TODO LATER
 
               break;
             }
