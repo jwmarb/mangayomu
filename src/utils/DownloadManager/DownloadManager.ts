@@ -210,7 +210,7 @@ export default class DownloadManager {
     const tempStatus = this.getStatus();
     this.setStatus(DownloadStatus.VALIDATING);
     this.setValidatedStatus(DownloadStatus.VALIDATING);
-    if ((await this.verifyPages()) && (await this.isDownloaded())) {
+    if (await this.isDownloaded()) {
       this.setValidatedStatus(DownloadStatus.DOWNLOADED);
       this.setStatus(DownloadStatus.DOWNLOADED);
     } else if (tempStatus !== DownloadStatus.DOWNLOADED) {
@@ -260,9 +260,6 @@ export default class DownloadManager {
    */
   public async validate(): Promise<void> {
     if (this.getValidatedStatus() === DownloadStatus.VALIDATING) {
-      // const downloaded = await this.isDownloaded();
-      // if (downloaded) this.setValidatedStatus(DownloadStatus.DOWNLOADED);
-      // else this.setValidatedStatus(DownloadStatus.IDLE);
       const validated = DownloadManager.validatedStatuses.get();
       if (validated[this.chapter.link] == null) {
         const downloaded = await this.isDownloaded();
@@ -427,7 +424,7 @@ export default class DownloadManager {
         this.getStatus() === DownloadStatus.PAUSED
       )
         return false;
-      return info.exists && info.isDirectory;
+      return info.exists && info.isDirectory && (await this.verifyPages());
       // && (await this.verifyPages());
     } catch (e) {
       this.setStatus(DownloadStatus.ERROR);
