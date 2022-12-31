@@ -47,6 +47,7 @@ export type MangaParkV3NextDataMeta = {
                 stat_count_vote: number;
                 genres: string[];
                 urlCoverOri: string;
+                name: string;
               };
             };
           };

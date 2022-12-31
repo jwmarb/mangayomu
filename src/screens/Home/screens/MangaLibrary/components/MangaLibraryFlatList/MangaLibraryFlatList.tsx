@@ -131,7 +131,7 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
                     const meta = await MangaHost.availableSources
                       .get(history[mangaKey].source)!
                       .getMeta(history[mangaKey]);
-                    appendNewChapters({ ...history[mangaKey], ...meta });
+                    appendNewChapters(meta);
                   } catch (e) {
                     console.error(e);
                     console.error(`The error occurred at ${mangaKey}`);
@@ -225,6 +225,10 @@ const MangaLibrary: React.FC<MangaLibraryProps> = (props) => {
     <>
       {fetching && <Progress type='bar' />}
       <FlatList
+        initialNumToRender={0}
+        maxToRenderPerBatch={5}
+        updateCellsBatchingPeriod={200}
+        windowSize={7}
         key={orientation}
         renderItem={renderItem}
         keyExtractor={keyExtractor}

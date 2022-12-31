@@ -139,7 +139,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
       })
       .get();
   }
-  public async getMeta(manga: Manga): Promise<MangaParkV3MangaMeta> {
+  public async getMeta(manga: Manga): Promise<MangaParkV3MangaMeta & Manga> {
     const $ = await super.route({ url: manga.link });
     const _$ = await super.route({ url: getV5URL(manga.link) });
     const html = _$('script#__NEXT_DATA__').html();
@@ -226,6 +226,9 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
     const imageCover = data.state.data.data.urlCoverOri;
 
     return {
+      title: data.state.data.data.name,
+      source: super.getName(),
+      link: manga.link,
       authors,
       description: data.state.data.data.summary.code,
       genres,

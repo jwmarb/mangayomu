@@ -516,6 +516,9 @@ export default class DownloadManager {
       }));
 
       DownloadManager.downloads[existingState.chapter.link] = { ref: ref ?? null, downloadManager: this };
-    } else throw Error('No args passed in constructor of DownloadManager');
+    } else
+      throw Error(
+        `No args passed in constructor of DownloadManager. Check if these variables are undefined:\nchapter=${chapter}\npathToDownload=${pathToDownload}\nsource=${source}\nexistingState=${existingState}`
+      );
   }
 }

@@ -50,7 +50,6 @@ const Cover: React.FC<React.PropsWithChildren<ProcessedMangaCoverProps>> = (prop
           console.log(`Downloaded cover image: ${uri}`);
           setBase64(p.uri);
         } else {
-          console.log(`Found existing cover image: ${uri}`);
           setBase64(fileUri);
         }
       } catch (e) {

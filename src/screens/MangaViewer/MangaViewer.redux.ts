@@ -20,6 +20,7 @@ const mapStateToProps = (state: AppState, props: StackScreenProps<RootStackParam
     source: MangaHost.availableSources.get(manga.source)!,
     selectionMode: state.chaptersList.mode,
     checked: state.chaptersList.checkAll,
+    inLibrary: manga.link in state.library.mangas,
     extendedState: {
       chaptersList: state.chaptersList,
       mangas: state.mangas,

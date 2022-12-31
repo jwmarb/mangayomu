@@ -8,7 +8,7 @@ const mapStateToProps = (state: AppState, props: OverlayProps) => ({
   ...props,
   show: state.reader.showOverlay,
   currentChapter: state.reader.chapterInView,
-  inLibrary: state.mangas[props.manga.link].inLibrary,
+  inLibrary: props.manga.link in state.library.mangas,
   indexOffset: state.reader.chapterInView ? state.reader.chapterPositionOffset[state.reader.chapterInView.link] : 0,
   index: state.reader.index,
   numberOfPages: state.reader.chapterInView ? state.reader.numberOfPages[state.reader.chapterInView.link] : null,

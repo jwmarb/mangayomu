@@ -27,7 +27,16 @@ import useSort from '@hooks/useSort';
 import { Manga, MangaChapter, MangaMultilingualChapter, WithDate } from '@services/scraper/scraper.interfaces';
 import { HeaderBuilder } from '@components/Screen/Header/Header.base';
 import { ISOLangCode, languages } from '@utils/languageCodes';
-import { BackHandler, ImageBackground, InteractionManager, Linking, Share } from 'react-native';
+import {
+  Animated,
+  BackHandler,
+  ImageBackground,
+  InteractionManager,
+  Linking,
+  ListRenderItem,
+  ListRenderItemInfo,
+  Share,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from 'styled-components/native';
 import { ChapterPressableMode, ChapterRef } from '@components/Chapter/Chapter.interfaces';
@@ -58,7 +67,6 @@ import onlyDisplayOnFocus from '@utils/onlyDisplayOnFocus';
 import { PortalHost } from '@gorhom/portal';
 import { DataProvider } from 'recyclerlistview';
 import displayMessage from '@utils/displayMessage';
-import { AnimatedFlashList, ListRenderItem, ListRenderItemInfo } from '@shopify/flash-list';
 import { keyExtractor } from './MangaViewer.flatlist';
 import { RFValue } from 'react-native-responsive-fontsize';
 const LanguageModal = React.lazy(() => import('@screens/MangaViewer/components/LanguageModal'));
@@ -82,56 +90,6 @@ function compareChapter(a: MangaChapter, b: MangaChapter) {
   throw Error(`Chapter cannot be sorted due to undefined name and index`);
 }
 
-const renderItem: ListRenderItem<ReadingChapterInfo & { manga: Manga }> = ({
-  item: data,
-  extraData: extendedState,
-}) => {
-  if (data.link in extendedState.chaptersInManga === false) return null;
-  return (
-    <Chapter
-      isCurrentlyBeingRead={extendedState.manga.currentlyReadingChapter === data.link}
-      width={extendedState.width}
-      manga={data.manga}
-      chapter={extendedState.chaptersInManga[data.link]}
-      status={extendedState.chaptersInManga[data.link]?.status ?? DownloadStatus.VALIDATING}
-      isSelected={getKey(data) in extendedState.chaptersList.selected}
-      selectionMode={extendedState.chaptersList.mode}
-      totalPages={extendedState.metas ? extendedState.metas[data.link]?.totalPages ?? 0 : 0}
-      totalProgress={extendedState.metas ? extendedState.metas[data.link]?.totalProgress ?? 0 : 0}
-      downloadedPages={extendedState.metas ? extendedState.metas[data.link]?.downloadedPages ?? 0 : 0}
-    />
-  );
-};
-
-const rowRenderer: (
-  type: string | number,
-  data: ReadingChapterInfo & { manga: Manga },
-  index: number,
-  extendedState: {
-    chaptersList: ChaptersListReducerState;
-    chaptersInManga: ReadingChapterInfoRecord;
-    metas: Record<string, ChapterState> | undefined;
-    width: number;
-    manga: ReadingMangaInfo;
-  }
-) => JSX.Element | JSX.Element[] | null = (type, data, i, extendedState) => {
-  if (data.link in extendedState.chaptersInManga === false) return null;
-  return (
-    <Chapter
-      isCurrentlyBeingRead={extendedState.manga.currentlyReadingChapter === data.link}
-      width={extendedState.width}
-      manga={data.manga}
-      chapter={extendedState.chaptersInManga[data.link]}
-      status={extendedState.chaptersInManga[data.link]?.status ?? DownloadStatus.VALIDATING}
-      isSelected={getKey(data) in extendedState.chaptersList.selected}
-      selectionMode={extendedState.chaptersList.mode}
-      totalPages={extendedState.metas ? extendedState.metas[data.link]?.totalPages ?? 0 : 0}
-      totalProgress={extendedState.metas ? extendedState.metas[data.link]?.totalProgress ?? 0 : 0}
-      downloadedPages={extendedState.metas ? extendedState.metas[data.link]?.downloadedPages ?? 0 : 0}
-    />
-  );
-};
-
 const MangaViewer: React.FC<MangaViewerProps> = (props) => {
   const {
     route: {
@@ -149,6 +107,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     checkAll,
     initializeChapters,
     hideFloatingModal,
+    inLibrary,
   } = props;
 
   const isFocused = useIsFocused();
@@ -165,7 +124,7 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     if (!loading) setLoading(true);
     try {
       const meta = await source.getMeta(manga);
-      viewManga({ ...manga, ...meta });
+      viewManga(meta);
     } catch (e) {
       alert(e);
     } finally {
@@ -323,17 +282,38 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
     } else if (sorted) setChapters(sorted.map((p: unknown) => ({ ...(p as ReadingChapterInfo), manga })));
   }, [language]);
 
+  const renderItem: ListRenderItem<ReadingChapterInfo> = React.useCallback(
+    ({ item: data }) => {
+      if (data.link in extendedState.chaptersInManga === false) return null;
+      return (
+        <Chapter
+          isCurrentlyBeingRead={extendedState.manga.currentlyReadingChapter === data.link}
+          width={extendedState.width}
+          manga={extendedState.manga}
+          chapter={extendedState.chaptersInManga[data.link]}
+          status={extendedState.chaptersInManga[data.link]?.status ?? DownloadStatus.VALIDATING}
+          isSelected={getKey(data) in extendedState.chaptersList.selected}
+          selectionMode={extendedState.chaptersList.mode}
+          totalPages={extendedState.metas ? extendedState.metas[data.link]?.totalPages ?? 0 : 0}
+          totalProgress={extendedState.metas ? extendedState.metas[data.link]?.totalProgress ?? 0 : 0}
+          downloadedPages={extendedState.metas ? extendedState.metas[data.link]?.downloadedPages ?? 0 : 0}
+        />
+      );
+    },
+    [extendedState]
+  );
+
   return (
     <React.Suspense fallback={null}>
       <AnimatedProvider style={loadingAnimation}>
-        <AnimatedFlashList
+        <Animated.FlatList
           contentContainerStyle={{ paddingTop: containerPaddingTop }}
           scrollIndicatorInsets={{ top: scrollIndicatorInsetTop }}
           onScroll={onScroll}
           data={chapters}
           extraData={extendedState}
           renderItem={renderItem}
-          estimatedItemSize={RFValue(60)}
+          // estimatedItemSize={RFValue(60)}
           keyExtractor={keyExtractor}
           ListHeaderComponent={
             <>
@@ -362,7 +342,12 @@ const MangaViewer: React.FC<MangaViewerProps> = (props) => {
                           />
                         </Flex>
                       </Flex>
-                      <MangaAction manga={manga} userMangaInfo={userMangaInfo} onRead={handleOnRead} />
+                      <MangaAction
+                        manga={manga}
+                        userMangaInfo={userMangaInfo}
+                        inLibrary={inLibrary}
+                        onRead={handleOnRead}
+                      />
                     </MangaViewerImageBackdrop>
                   </LinearGradient>
                 </ImageBackground>

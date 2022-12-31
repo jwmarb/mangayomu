@@ -160,6 +160,7 @@ export interface NewSeriesJSON {
 export interface MainEntityJSON {
   mainEntity: {
     '@type': string;
+    name: string;
     about: string;
     alternateName: string[];
     author: string[];

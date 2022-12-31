@@ -50,11 +50,6 @@ export interface ReadingMangaInfo extends MangaMeta, Manga {
   orderedChapters: SortedList<MangaChapter>;
 
   /**
-   * Determines whether or not the user has the manga added in their library
-   */
-  inLibrary: boolean;
-
-  /**
    * The date when the manga was added into the library. It is null if the manga is not in the library
    */
   dateAddedInLibrary: string | null;
@@ -77,7 +72,7 @@ export type MangaReducerAction =
       type: 'VIEW_MANGA';
       payload: Manga & MangaMeta;
     }
-  | { type: 'TOGGLE_LIBRARY'; payload: Manga }
+  | { type: 'TOGGLE_LIBRARY'; payload: Manga; inLibrary: boolean }
   | { type: 'VALIDATE_CHAPTERS'; payload: Manga }
   | {
       type: 'APPEND_TO_DOWNLOAD_REDUCER';
@@ -106,4 +101,4 @@ export type MangaReducerAction =
       manga: Manga;
     }
   | { type: 'SIMULATE_NEW_CHAPTERS' }
-  | { type: 'CHAPTER_UPDATES'; payload: Manga & MangaMeta };
+  | { type: 'CHAPTER_UPDATES'; payload: Manga & MangaMeta; inLibrary: boolean };

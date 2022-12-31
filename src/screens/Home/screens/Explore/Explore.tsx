@@ -1,17 +1,14 @@
 import Flex from '@components/Flex';
 import Screen from '@components/Screen';
-import { AppState } from '@redux/store';
 import Genres from '@screens/Home/screens/Explore/components/Genres';
 import HotManga from '@screens/Home/screens/Explore/components/HotManga';
 import LatestManga from '@screens/Home/screens/Explore/components/LatestManga';
 import useMangaSource from '@hooks/useMangaSource';
-import { withAnimatedMounting } from '@utils/Animations';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { RefreshControl } from 'react-native';
 import Spacer from '@components/Spacer';
 
-const Explore: React.FC = (props) => {
+const Explore: React.FC = () => {
   const source = useMangaSource();
   const [loading, setLoading] = React.useState<boolean>(false);
   const hotMangaRef = React.useRef<React.ElementRef<typeof HotManga>>(null);
@@ -26,6 +23,7 @@ const Explore: React.FC = (props) => {
       setLoading(false);
     }
   };
+
   return (
     <Screen
       scrollable

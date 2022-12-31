@@ -85,7 +85,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     return result;
   }
 
-  public async getMeta(manga: Manga): Promise<MangaSeeMangaMeta> {
+  public async getMeta(manga: Manga): Promise<MangaSeeMangaMeta & Manga> {
     const $ = await super.route({ url: manga.link });
 
     const html = $.html();
@@ -125,6 +125,9 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     const imageCover = $('img.img-fluid.bottom-5').attr('src')!;
 
     return {
+      source: super.getName(),
+      title: data.name,
+      link: manga.link,
       authors: data.author,
       genres: data.genre,
       description,

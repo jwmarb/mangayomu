@@ -9,7 +9,7 @@ import { ActivityIndicator } from 'react-native';
 import { useRootNavigation } from '@navigators/Root';
 
 const MangaAction: React.FC<MangaActionProps> = (props) => {
-  const { manga, userMangaInfo, onRead } = props;
+  const { manga, userMangaInfo, onRead, inLibrary } = props;
   const dispatch = useAppDispatch();
   const chaptersLength = userMangaInfo ? Object.keys(userMangaInfo.chapters).length : 0;
   const handleOnAddToLibrary = () => {
@@ -54,11 +54,11 @@ const MangaAction: React.FC<MangaActionProps> = (props) => {
           <Button
             disabled={!userMangaInfo}
             color='secondary'
-            variant={userMangaInfo?.inLibrary ? 'outline' : 'contained'}
-            title={userMangaInfo ? (userMangaInfo?.inLibrary ? 'Remove' : 'Add') : ''}
+            variant={inLibrary ? 'outline' : 'contained'}
+            title={userMangaInfo ? (inLibrary ? 'Remove' : 'Add') : ''}
             icon={
               userMangaInfo ? (
-                userMangaInfo.inLibrary ? (
+                inLibrary ? (
                   <Icon bundle='MaterialCommunityIcons' name='bookmark-minus-outline' />
                 ) : (
                   <Icon bundle='MaterialCommunityIcons' name='bookmark-plus' />

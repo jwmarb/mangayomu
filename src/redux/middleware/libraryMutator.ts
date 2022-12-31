@@ -11,11 +11,13 @@ const libraryMutator: Middleware<any> =
 
     switch (action.type) {
       case 'TOGGLE_LIBRARY':
-        if (getState().mangas[action.payload.link].inLibrary) {
+        if (action.payload.link in getState().library.mangas === false) {
           addToLibrary(action.payload)(dispatch);
           displayMessage('Added to library');
+          console.log(`Added ${action.payload.link} to library`);
         } else {
           removeFromLibrary(action.payload)(dispatch);
+          console.log(`Removed ${action.payload.link} from library`);
           displayMessage('Removed from library');
         }
         break;

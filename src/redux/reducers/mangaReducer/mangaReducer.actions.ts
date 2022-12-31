@@ -4,6 +4,7 @@ import { MangaReducerAction } from '@redux/reducers/mangaReducer/mangaReducer.in
 import { AppDispatch, AppState } from '@redux/store';
 import DownloadManager from '@utils/DownloadManager';
 import pLimit from 'p-limit';
+import { StateGetter } from '@redux/reducers/mangaDownloadingReducer';
 
 export function viewManga(meta: MangaMeta & Manga) {
   return (dispatch: Dispatch<MangaReducerAction>) => {
@@ -81,8 +82,8 @@ export const validateFileIntegrity = (mangaKey: string, chapterKey: string) => {
 };
 
 export const toggleLibrary = (manga: Manga) => {
-  return (dispatch: AppDispatch) => {
-    dispatch({ type: 'TOGGLE_LIBRARY', payload: manga });
+  return (dispatch: AppDispatch, getState: StateGetter) => {
+    dispatch({ type: 'TOGGLE_LIBRARY', payload: manga, inLibrary: manga.link in getState().library.mangas });
   };
 };
 
@@ -99,7 +100,7 @@ export const simulateNewChapters = () => {
 };
 
 export const appendNewChapters = (payload: Manga & MangaMeta) => {
-  return (dispatch: AppDispatch) => {
-    dispatch({ type: 'CHAPTER_UPDATES', payload });
+  return (dispatch: AppDispatch, getState: StateGetter) => {
+    dispatch({ type: 'CHAPTER_UPDATES', payload, inLibrary: payload.link in getState().library.mangas });
   };
 };
