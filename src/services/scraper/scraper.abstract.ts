@@ -154,9 +154,9 @@ abstract class MangaHost {
   /**
    * Get the meta data of the manga
    * @param manga The manga to fetch the meta data from
-   * @returns Returns the meta of the manga from the parameters
+   * @returns Returns the meta of the manga from the parameters. Will also return an updated version of the params.
    */
-  public abstract getMeta(manga: Manga): Promise<MangaMeta>;
+  public abstract getMeta(manga: Manga): Promise<MangaMeta & Manga>;
 
   /**
    * Get the pages of a manga chapter
