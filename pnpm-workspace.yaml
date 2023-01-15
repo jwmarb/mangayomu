@@ -1,0 +1,9 @@
+packages:
+  # React Component Library
+  - "components/*"
+  # Services such as GraphQL and scrapers
+  - "services/*"
+  # Web/Mobile apps
+  - "apps/mobile"
+  # Packages/Libraries
+  - "packages/*"
