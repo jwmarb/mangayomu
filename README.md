@@ -18,6 +18,10 @@ Then run
 npm run setup
 ```
 
+## Notice
+
+At the time of writing this (1/15/23), it is a pain to have `react-native` work with `pnpm`. `apps/mobile` will have to run with regular npm.
+
 ## Todo
 
 - Add database
