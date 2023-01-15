@@ -1,0 +1,10 @@
+{
+  "name": "@mangayomu/language-codes",
+  "private": true,
+  "description": "A package that adds language constants",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "rimraf dist && tsc"
+  }
+}

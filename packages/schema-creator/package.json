@@ -1,0 +1,13 @@
+{
+  "name": "@mangayomu/schema-creator",
+  "private": true,
+  "description": "A schema creator for mangascraper",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rimraf dist && tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

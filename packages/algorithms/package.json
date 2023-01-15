@@ -1,0 +1,9 @@
+{
+  "name": "@mangayomu/algorithms",
+  "private": true,
+  "description": "Useful quick algorithms",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rimraf dist && tsc"
+  }
+}
