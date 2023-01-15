@@ -2,8 +2,14 @@
   "name": "@mangayomu/root",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "packages/*",
+    "components/*",
+    "services/*",
+    "apps/mobile"
+  ],
   "scripts": {
-    "setup": "pnpm install && setup:mobile",
+    "setup": "yarn && setup:mobile",
     "setup:mobile": "cd ./apps/mobile && npm install"
   },
   "devDependencies": {

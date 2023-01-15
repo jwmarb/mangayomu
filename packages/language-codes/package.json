@@ -1,5 +1,6 @@
 {
   "name": "@mangayomu/language-codes",
+  "version": "1.0.0",
   "private": true,
   "description": "A package that adds language constants",
   "main": "./dist/index.js",

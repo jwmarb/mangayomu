@@ -9,7 +9,7 @@ MangaYomu will be a mobile application for manga reading. I plan to create a sin
 Make sure to have the following installed:
 
 ```sh
-npm i -g pnpm
+npm i -g yarn
 ```
 
 Then run
@@ -20,7 +20,25 @@ npm run setup
 
 ## Notice
 
-At the time of writing this (1/15/23), it is a pain to have `react-native` work with `pnpm`. `apps/mobile` will have to run with regular npm.
+At the time of writing this (1/15/23), `react-native` does not like to work with `yarn`. `apps/mobile` will have to run with regular npm.
+
+## Installing Dependencies on Mobile
+
+In order to install a dependency, use the following command while in the root directory:
+
+```sh
+npm i <package-name> -w <workspace>
+```
+
+## Installing Dependencies on sibling packages
+
+In order to install a dependency on a package that will use a sibling package, use the following command while in the root directory:
+
+```sh
+yarn workspace <workspace-name> add <package-name>@^<version>
+```
+
+Do note that `version` is required because yarn will think you are trying to install from the npm registry>
 
 ## Todo
 

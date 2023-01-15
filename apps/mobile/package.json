@@ -1,5 +1,5 @@
 {
-  "name": "mobile",
+  "name": "@mangayomu/mobile",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -10,6 +10,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "@mangayomu-ui/button": "^1.0.0",
+    "@mangayomu/mangascraper": "^1.0.0",
     "@react-native-community/cli-platform-android": "^10.1.0",
     "@react-native-community/cli-platform-ios": "^10.1.0",
     "@react-navigation/native": "^6.1.2",
