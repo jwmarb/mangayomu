@@ -94,7 +94,7 @@ export const cancelAllForSeries = (mangaKey: string) => {
 
 export const downloadAll = () => {
   return (dispatch: AppDispatch, getState: StateGetter) => {
-    let canceled: boolean = false;
+    let canceled = false;
 
     return {
       cancel: async () => {

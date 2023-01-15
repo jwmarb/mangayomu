@@ -13,7 +13,7 @@ class StorageManager<T> {
   public static getActiveKeys(): string[] {
     return this.activeManagedKeys.toArray().map((x) => x.key);
   }
-  public static manage<T>(key: string, defaultValue: T, priority: number = 0) {
+  public static manage<T>(key: string, defaultValue: T, priority = 0) {
     if (this.activeManagedKeys.indexOf({ key, priority }) === -1) this.activeManagedKeys.add({ key, priority });
     return new StorageManager<T>(key, defaultValue);
   }

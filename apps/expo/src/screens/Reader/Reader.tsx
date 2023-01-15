@@ -247,7 +247,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       appendLocation: 'start' | 'end' | null = null,
       alreadyFetchedNextChapter?: boolean
     ) => {
-      let canceled: boolean = false;
+      let canceled = false;
       let transformer: ReturnType<typeof transformPages> | undefined;
       return {
         cancel: () => {

@@ -1,4 +1,4 @@
 import { DownloadStatus } from '@utils/DownloadManager';
 import { ChapterDownloadActionsProps } from '../ChapterDownloadActions/ChapterDownloadActions.interfaces';
 
-export interface ChapterDownloadProgressProps extends ChapterDownloadActionsProps {}
+export type ChapterDownloadProgressProps = ChapterDownloadActionsProps

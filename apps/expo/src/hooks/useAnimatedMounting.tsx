@@ -3,7 +3,7 @@ import { InteractionManager } from 'react-native';
 import { useSharedValue, withSpring, withTiming, useAnimatedStyle, cancelAnimation } from 'react-native-reanimated';
 import { AnimatedContext } from '@context/AnimatedContext';
 
-export default function useAnimatedMounting(condition: boolean = true) {
+export default function useAnimatedMounting(condition = true) {
   const opacity = useSharedValue(0);
   const transformY = useSharedValue(-10);
   React.useEffect(() => {

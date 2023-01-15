@@ -42,7 +42,7 @@ export const transformPages = (
   alreadyFetchedNextChapter?: boolean
 ) => {
   return (dispatch: AppDispatch, getState: StateGetter) => {
-    let canceled: boolean = false;
+    let canceled = false;
     return {
       cancel: () => {
         canceled = true;

@@ -9,7 +9,7 @@ import React, { DependencyList } from 'react';
 export default function useAPICall<T, TError>(
   apiCall: () => Promise<T>,
   deps: DependencyList = [],
-  fetchCondition: boolean = true
+  fetchCondition = true
 ) {
   const cancelable = React.useRef<CancelablePromise<T>>();
   const [items, setItems] = React.useState<T>();

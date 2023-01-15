@@ -21,7 +21,7 @@ export default class DownloadCollection {
     chapters: ReadingChapterInfo[],
     source: MangaHost,
     limitDownload: number = chapters.length,
-    concurrencyLimit: number = 1
+    concurrencyLimit = 1
   ) {
     this.dir = dir;
     this.queuedChapters = chapters;
