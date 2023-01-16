@@ -8,17 +8,12 @@
       "components/*",
       "services/*",
       "apps/mobile"
-    ],
-    "nohoist": [
-      "**/react",
-      "**/react-dom",
-      "**/react-native",
-      "**/react-native/**",
-      "**/use-latest-callback"
     ]
   },
   "scripts": {
-    "reset": "npm --workspaces run reset --if-present && rimraf yarn.lock && rimraf node_modules"
+    "reset": "npm --workspaces run reset --if-present && rimraf yarn.lock && rimraf node_modules && yarn",
+    "android:metro": "yarn workspace @mangayomu/mobile start",
+    "android:start": "yarn workspace @mangayomu/mobile android"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.48.1",
@@ -27,5 +22,6 @@
     "eslint-config-prettier": "^8.6.0",
     "nx": "^15.5.1",
     "typescript": "^4.9.4"
-  }
+  },
+  "packageManager": "yarn@3.3.1"
 }
