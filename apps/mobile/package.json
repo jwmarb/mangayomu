@@ -11,6 +11,7 @@
     "reset": "rimraf node_modules"
   },
   "dependencies": {
+    "@mangayomu/theme": "^1.0.0",
     "@react-navigation/native": "^6.1.2",
     "@react-navigation/native-stack": "^6.9.8",
     "react": "18.2.0",
