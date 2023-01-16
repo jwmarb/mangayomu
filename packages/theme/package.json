@@ -2,8 +2,8 @@
   "name": "@mangayomu/theme",
   "version": "1.0.0",
   "description": "Theme for MangaYomu",
-  "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "main": "dist/index.js",
   "scripts": {
     "build": "rimraf dist && tsc",
     "reset": "rimraf node_modules",
@@ -12,11 +12,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "devDependencies": {
+    "@types/react": "^18.0.26",
+    "@types/react-native": "^0.71.0"
+  },
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
-  },
-  "devDependencies": {
-    "@types/react": "^18.0.26"
   }
 }

@@ -1,5 +1,5 @@
-import React from "react";
-import { Theme } from ".";
+import React from 'react';
+import { Theme } from '.';
 
 const ThemeContext = React.createContext<Theme>({} as Theme);
 export const useTheme = () => React.useContext(ThemeContext);

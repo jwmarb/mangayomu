@@ -1,4 +1,4 @@
-import { Theme, ThemeMode, ThemeSchema } from ".";
+import { Theme, ThemeMode, ThemeSchema } from '.';
 
 export type ColorSchema = {
   light: string;
@@ -14,29 +14,29 @@ type RecursiveRequired<T> = {
 };
 
 export function readColors(
-  obj: ThemeSchema<Theme>["palette"],
+  obj: ThemeSchema<Theme>['palette'],
   mode: ThemeMode,
 ) {
-  const converted: RecursivePartial<Theme["palette"]> = {};
+  const converted: RecursivePartial<Theme['palette']> = {};
   for (const name in obj) {
-    const typedName = name as keyof ThemeSchema<Theme>["palette"];
+    const typedName = name as keyof ThemeSchema<Theme>['palette'];
     converted[typedName] = {};
     for (const variety in obj[typedName]) {
       switch (mode) {
         case null:
         case undefined:
-        case "light":
+        case 'light':
           (converted as Record<string, Record<string, string>>)[name][variety] =
-            (obj[typedName] as Record<string, ColorSchema>)[variety]["light"];
+            (obj[typedName] as Record<string, ColorSchema>)[variety]['light'];
           break;
-        case "dark":
+        case 'dark':
           (converted as Record<string, Record<string, string>>)[name][variety] =
-            (obj[typedName] as Record<string, ColorSchema>)[variety]["dark"];
+            (obj[typedName] as Record<string, ColorSchema>)[variety]['dark'];
 
           break;
       }
     }
   }
 
-  return converted as RecursiveRequired<Theme["palette"]>;
+  return converted as RecursiveRequired<Theme['palette']>;
 }

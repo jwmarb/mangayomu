@@ -3,7 +3,11 @@
   "compilerOptions": {
     "jsx": "react",
     "outDir": "./dist",
-    "lib": ["es6", "DOM"]
+    "target": "es5",
+    "moduleResolution": "node",
+    "module": "CommonJS",
+    "lib": ["es6", "DOM"],
+    "composite": true
   },
   "include": ["."],
   "exclude": ["dist", "node_modules"]

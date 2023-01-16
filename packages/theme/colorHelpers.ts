@@ -1,4 +1,4 @@
-import { RGBA } from ".";
+import { RGBA } from '.';
 
 /**
  * Convert a hexadecimal to RGB value
@@ -14,7 +14,7 @@ export function hexToRgb(hex: string): RGBA {
       blue: parseInt(result[3], 16),
       alpha: 1,
     };
-  else throw Error("Invalid hex value");
+  else throw Error('Invalid hex value');
 }
 
 /**
@@ -24,7 +24,7 @@ export function hexToRgb(hex: string): RGBA {
  */
 export function rgbaToHex(rgba: RGBA): string {
   return (
-    "#" +
+    '#' +
     (rgba.red | (1 << 8)).toString(16).slice(1) +
     (rgba.green | (1 << 8)).toString(16).slice(1) +
     (rgba.blue | (1 << 8)).toString(16).slice(1)
@@ -39,7 +39,7 @@ export function rgbaToHex(rgba: RGBA): string {
 export function parseRGBA(rgba: string): RGBA {
   const rgbaregex = /\d+\.?\d*/g;
   const p = rgba.match(rgbaregex);
-  if (p == null) throw Error("Invalid RGBA input");
+  if (p == null) throw Error('Invalid RGBA input');
   const [red, green, blue, alpha] = p;
   return {
     red: parseInt(red),
