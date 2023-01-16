@@ -28,7 +28,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { RootStack } from '@navigators/Root';
 import Home from '@screens/Home';
 import MangaView from '@screens/MangaView';
-import { createTheme } from '@mangayomu/theme';
+import { createTheme, ThemeProvider } from '@mangayomu/theme';
 
 function App(): JSX.Element {
   const mode = useColorScheme();
@@ -60,15 +60,18 @@ function App(): JSX.Element {
       borderRadius: 24,
     },
   }));
+
   return (
     <>
       <StatusBar translucent backgroundColor="transparent" />
-      <NavigationContainer>
-        <RootStack.Navigator>
-          <RootStack.Screen name="Home" component={Home} />
-          <RootStack.Screen name="MangaView" component={MangaView} />
-        </RootStack.Navigator>
-      </NavigationContainer>
+      <ThemeProvider theme={theme}>
+        <NavigationContainer>
+          <RootStack.Navigator>
+            <RootStack.Screen name="Home" component={Home} />
+            <RootStack.Screen name="MangaView" component={MangaView} />
+          </RootStack.Navigator>
+        </NavigationContainer>
+      </ThemeProvider>
     </>
   );
 }
