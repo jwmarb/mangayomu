@@ -4,7 +4,7 @@ import { View, Text } from 'react-native';
 const Home: React.FC = () => {
   return (
     <View>
-      <Text>Hello from Home</Text>
+      <Text>Hello World!</Text>
     </View>
   );
 };
