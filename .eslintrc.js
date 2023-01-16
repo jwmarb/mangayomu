@@ -4,7 +4,7 @@ module.exports = {
   rules: {
     quotes: ["warn", "double"],
     semi: ["warn", "always"],
-    "arrow-parens": ["warn", "as-needed"],
+    "arrow-parens": ["warn", "always"],
     "array-element-newline": ["warn", "consistent"],
   },
   parser: "@typescript-eslint/parser",
