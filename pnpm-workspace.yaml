@@ -1,7 +1,0 @@
-packages:
-  # React Component Library
-  - "components/*"
-  # Services such as GraphQL and scrapers
-  - "services/*"
-  # Packages/Libraries
-  - "packages/*"
