@@ -1389,7 +1389,7 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@mangayomu-ui/button@^1.0.0", "@mangayomu-ui/button@file:C:\\Users\\15202\\manga-app-improved\\components\\Button":
+"@mangayomu-ui/button@file:C:\\Users\\15202\\manga-app-improved\\components\\Button":
   version "1.0.0"
   resolved "file:components/Button"
   dependencies:
@@ -1419,6 +1419,7 @@
   version "0.0.1"
   resolved "file:apps/mobile"
   dependencies:
+    "@mangayomu-ui/button" "^1.0.0"
     "@mangayomu/mangascraper" "^1.0.0"
     "@react-native-community/cli-platform-android" "^10.1.0"
     "@react-native-community/cli-platform-ios" "^10.1.0"
