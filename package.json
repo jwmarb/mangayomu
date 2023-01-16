@@ -2,12 +2,20 @@
   "name": "@mangayomu/root",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "components/*",
-    "services/*",
-    "apps/mobile"
-  ],
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "components/*",
+      "services/*",
+      "apps/mobile"
+    ],
+    "nohoist": [
+      "**/react",
+      "**/react-dom",
+      "**/react-native",
+      "**/react-native/**"
+    ]
+  },
   "scripts": {
     "setup": "yarn && setup:mobile",
     "setup:mobile": "cd ./apps/mobile && npm install"
