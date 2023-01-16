@@ -1,3 +1,4 @@
+import React from 'react';
 import { ColorSchema, readColors } from './helpers';
 export * from './colorHelpers';
 export * from './themeProvider';
@@ -61,6 +62,11 @@ export type ThemeSchema<T> = {
 
 type ThemeCreator<T> = (builder: ThemeBuilder) => ThemeSchema<T>;
 
+/**
+ * Create a theme for the application. Must be placed at the most top-level of the React app, and must be inside the component.
+ * @param builder A helper function to create a theme
+ * @returns Returns the theme that will be used for the application
+ */
 export function createTheme(builder: ThemeCreator<Theme>): Theme {
   function color(dark: string, light: string): ColorSchema {
     return { dark, light };
@@ -71,7 +77,10 @@ export function createTheme(builder: ThemeCreator<Theme>): Theme {
   const template = builder({ color, colorConstant });
   const parsed: Theme = {
     ...template,
-    palette: readColors(template.palette, template.mode),
+    palette: React.useMemo(
+      () => readColors(template.palette, template.mode),
+      [template.palette, template.mode],
+    ),
   };
   return parsed;
 }
