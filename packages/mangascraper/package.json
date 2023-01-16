@@ -1,6 +1,8 @@
 {
   "name": "@mangayomu/mangascraper",
   "version": "1.0.0",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
   "private": true,
   "description": "A scraper for mangas",
   "dependencies": {
