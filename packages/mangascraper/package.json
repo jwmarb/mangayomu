@@ -13,6 +13,7 @@
     "url": "^0.11.0"
   },
   "scripts": {
-    "build": "rimraf dist && tsc"
+    "build": "rimraf dist && tsc",
+    "reset": "rimraf node_modules"
   }
 }
