@@ -40,6 +40,12 @@ export interface DefaultTheme {
   };
   style: {
     borderRadius: number;
+    spacing: {
+      s: number | string;
+      m: number | string;
+      l: number | string;
+      xl: number | string;
+    };
   };
 }
 
