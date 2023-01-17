@@ -15,7 +15,7 @@ module.exports = {
     getTransformOptions: async () => ({
       transform: {
         experimentalImportSupport: false,
-        inlineRequires: true,
+        inlineRequires: false, // set to 'true' when not using storybook
       },
     }),
   },

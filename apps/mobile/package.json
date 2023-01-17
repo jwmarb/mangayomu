@@ -9,8 +9,18 @@
     "start": "react-native start",
     "test": "jest",
     "reset": "rimraf node_modules",
+    "prestorybook": "rnstl",
     "storybook": "start-storybook -p 7007",
     "build-storybook": "build-storybook"
+  },
+  "config": {
+    "react-native-storybook-loader": {
+      "searchDir": [
+        "./src/components"
+      ],
+      "pattern": "**/*.stories.tsx",
+      "outputFile": "./storybook/storyLoader.js"
+    }
   },
   "dependencies": {
     "@emotion/native": "^11.10.0",
@@ -51,6 +61,7 @@
     "prettier": "^2.4.1",
     "react-dom": "18.2.0",
     "react-native-monorepo-tools": "^1.2.1",
+    "react-native-storybook-loader": "^2.0.5",
     "react-test-renderer": "18.2.0",
     "typescript": "4.8.4"
   },
