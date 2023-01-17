@@ -2,35 +2,25 @@
 
 ## What is it?
 
-MangaYomu will be a mobile application for manga reading. I plan to create a single-page application version of it for desktop devices.
+MangaYomu will be a mobile application for manga reading. I plan to create a NextJS version of it for desktop devices.
 
 ## Setup
 
-Make sure to have the following installed:
+Do make sure you have `yarn` installed. If not, it is simple to install it globally:
 
 ```sh
 npm i -g yarn
 ```
 
-Then run
+Then in the project root directory, install all the necessary dependencies by running:
 
 ```sh
-npm run setup
+yarn
 ```
 
-## Notice
+## Using yarn workspaces
 
-At the time of writing this (1/15/23), `react-native` does not like to work with `yarn`. `apps/mobile` will have to run with regular npm.
-
-## Installing Dependencies on Mobile
-
-In order to install a dependency, use the following command while in the root directory:
-
-```sh
-npm i <package-name> -w <workspace>
-```
-
-## Installing Dependencies on sibling packages
+### Installing dependencies
 
 In order to install a dependency on a package that will use a sibling package, use the following command while in the root directory:
 
@@ -38,10 +28,41 @@ In order to install a dependency on a package that will use a sibling package, u
 yarn workspace <workspace-name> add <package-name>@^<version>
 ```
 
-Do note that `version` is required because yarn will think you are trying to install from the npm registry>
+Do note that `version` is required because yarn will think you are trying to install from the npm registry.
+
+### Running mobile
+
+The mobile app uses [React Native](https://reactnative.dev/). There is no iOS support, however, I plan to add support for it once I can get my hands on a MacBook.
+
+To start the development server from the root directory:
+
+```sh
+yarn android:metro
+```
+
+followed by
+
+```sh
+yarn android:start
+```
+
+If you are in `apps/mobile` directory, you can simply run:
+
+```sh
+npx react-native start
+```
+
+or
+
+```sh
+yarn start
+```
+
+Both will work; it depends which one you want to use :)
 
 ## Todo
 
 - Add database
 - Add web version
 - Add manga page sharing (share page that redirects to web app version)
+- Convert Expo to React Native
