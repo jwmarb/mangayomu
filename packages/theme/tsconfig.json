@@ -9,6 +9,6 @@
     "lib": ["es6", "DOM"],
     "composite": true
   },
-  "include": ["."],
-  "exclude": ["dist", "node_modules"]
+  "include": ["./src"],
+  "exclude": ["dist", "node_modules", "__tests__"]
 }

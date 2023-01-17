@@ -86,11 +86,14 @@ export type ThemeSchema<T extends DefaultTheme> = {
     : K extends 'helpers'
     ? Omit<
         {
-          [V in keyof T[K]]: (
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ...args: any[]
-          ) => // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (theme: DefaultTheme) => any;
+          [V in keyof T[K]]:
+            | ((
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                ...args: any[]
+              ) => // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (theme: T) => any)
+            | (() => (theme: T) => any)
+            | (() => () => any);
         },
         keyof DefaultThemeHelpers
       >
