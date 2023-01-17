@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "npx nx run-many --target=build",
-    "reset": "npm --workspaces run reset --if-present && rimraf yarn.lock && rimraf node_modules && yarn",
+    "reset": "npx nx run-many --target=reset --all && rimraf yarn.lock && rimraf node_modules && yarn",
     "android:metro": "yarn workspace @mangayomu/mobile start",
     "android:start": "yarn workspace @mangayomu/mobile android"
   },
