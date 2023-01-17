@@ -1,5 +1,5 @@
 import React from 'react';
-import { ColorSchema, readColors } from './helpers';
+import { ColorSchema, getColor, readColors, RecursivePartial } from './helpers';
 export * from './colorHelpers';
 export * from './themeProvider';
 
@@ -30,7 +30,22 @@ export interface TextColor {
   disabled: string;
 }
 
-export interface DefaultTheme {
+export type TextColors = 'textPrimary' | 'textSecondary' | 'disabled' | 'hint';
+export type ButtonColors = 'primary' | 'secondary';
+export type Colors = TextColors | ButtonColors;
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ThemeHelpers extends DefaultThemeHelpers {}
+
+export interface DefaultThemeHelpers {
+  getColor(colorProp: Colors): string;
+}
+
+export interface IThemeHelpers {
+  helpers: ThemeHelpers;
+}
+
+export interface DefaultTheme extends IThemeHelpers {
   mode: ThemeMode;
   palette: {
     primary: Color;
@@ -57,7 +72,7 @@ export interface ThemeBuilder {
   colorConstant(color: string): ColorSchema;
 }
 
-export type ThemeSchema<T> = {
+export type ThemeSchema<T extends DefaultTheme> = {
   [K in keyof T]: K extends 'palette'
     ? {
         [V in keyof T[K]]: T[K][V] extends Color | TextColor | BackgroundColor
@@ -68,11 +83,25 @@ export type ThemeSchema<T> = {
             }
           : T[K][V];
       }
+    : K extends 'helpers'
+    ? Omit<
+        {
+          [V in keyof T[K]]: (
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ...args: any[]
+          ) => // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (theme: DefaultTheme) => any;
+        },
+        keyof DefaultThemeHelpers
+      >
     : T[K];
 };
 
-type ThemeCreator<T> = (builder: ThemeBuilder) => ThemeSchema<T>;
-
+type PartializeKeys<T, K extends keyof T> = Omit<T, K> &
+  Pick<RecursivePartial<T>, K>;
+type ThemeCreator<T extends DefaultTheme> = (
+  builder: ThemeBuilder,
+) => ThemeSchema<T>;
 /**
  * Create a theme for the application. Must be placed at the most top-level of the React app, and must be inside the component.
  * @param builder A helper function to create a theme
@@ -89,11 +118,11 @@ export function createTheme<T extends DefaultTheme>(
   }
   const template: ThemeSchema<T> = builder({ color, colorConstant });
 
-  const parsed = {
+  const parsed: DefaultTheme = {
     ...template,
     palette: React.useMemo(
       () =>
-        readColors<DefaultTheme>(
+        readColors(
           (template as ThemeSchema<DefaultTheme>).palette,
           template.mode,
         ),
@@ -114,6 +143,14 @@ export function createTheme<T extends DefaultTheme>(
         ],
       ),
     },
+  } as DefaultTheme; // missing helpers, which will be assigned under this line
+  (parsed as PartializeKeys<DefaultTheme, 'helpers'>).helpers = {
+    getColor: getColor(parsed),
   };
-  return parsed as T;
+  for (const key in template.helpers) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (parsed.helpers as any)[key] = (...args: unknown[]) =>
+      (template.helpers as any)[key](args)(parsed);
+  }
+  return parsed as T & DefaultThemeHelpers;
 }
