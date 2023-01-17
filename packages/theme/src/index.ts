@@ -92,7 +92,9 @@ export type ThemeSchema<T extends DefaultTheme> = {
                 ...args: any[]
               ) => // eslint-disable-next-line @typescript-eslint/no-explicit-any
               (theme: T) => any)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             | (() => (theme: T) => any)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             | (() => () => any);
         },
         keyof DefaultThemeHelpers

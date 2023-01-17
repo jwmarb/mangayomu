@@ -3,7 +3,7 @@ jest.mock('react', () => {
   const originalImplementation = jest.requireActual('react');
   return {
     ...originalImplementation,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
     useMemo: (i: () => any, a: any[]) => i(),
   };
 });
