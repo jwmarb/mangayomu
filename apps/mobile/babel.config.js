@@ -8,6 +8,7 @@ module.exports = {
         alias: {
           '@navigators': './src/navigators',
           '@screens': './src/screens',
+          '@theme': './src/theme',
         },
       },
     ],
