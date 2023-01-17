@@ -4,7 +4,8 @@
     "paths": {
       "@navigators/*": ["src/navigators/*"],
       "@screens/*": ["./src/screens/*"],
-      "@theme/*": ["./src/theme/*"]
+      "@theme/*": ["./src/theme/*"],
+      "@components/*": ["./src/components/*"]
     }
   }
 }
