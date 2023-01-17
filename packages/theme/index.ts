@@ -49,7 +49,8 @@ export interface DefaultTheme {
   };
 }
 
-export type Theme = DefaultTheme;
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Theme extends DefaultTheme {}
 
 export interface ThemeBuilder {
   color(dark: string, light: string): ColorSchema;
@@ -58,10 +59,14 @@ export interface ThemeBuilder {
 
 export type ThemeSchema<T> = {
   [K in keyof T]: K extends 'palette'
-    ? ThemeSchema<T[K]>
-    : T[K] extends Color | BackgroundColor | TextColor
     ? {
-        [V in keyof T[K]]: T[K][V] extends string ? ColorSchema : T[K][V];
+        [V in keyof T[K]]: T[K][V] extends Color | TextColor | BackgroundColor
+          ? {
+              [S in keyof T[K][V]]: T[K][V][S] extends string
+                ? ColorSchema
+                : T[K][V][S];
+            }
+          : T[K][V];
       }
     : T[K];
 };
@@ -73,20 +78,42 @@ type ThemeCreator<T> = (builder: ThemeBuilder) => ThemeSchema<T>;
  * @param builder A helper function to create a theme
  * @returns Returns the theme that will be used for the application
  */
-export function createTheme(builder: ThemeCreator<Theme>): Theme {
+export function createTheme<T extends DefaultTheme>(
+  builder: ThemeCreator<T>,
+): T {
   function color(dark: string, light: string): ColorSchema {
     return { dark, light };
   }
   function colorConstant(color: string): ColorSchema {
     return { dark: color, light: color };
   }
-  const template = builder({ color, colorConstant });
-  const parsed: Theme = {
+  const template: ThemeSchema<T> = builder({ color, colorConstant });
+
+  const parsed = {
     ...template,
     palette: React.useMemo(
-      () => readColors(template.palette, template.mode),
+      () =>
+        readColors<DefaultTheme>(
+          (template as ThemeSchema<DefaultTheme>).palette,
+          template.mode,
+        ),
       [template.palette, template.mode],
     ),
+    style: {
+      borderRadius: React.useMemo(
+        () => template.style.borderRadius,
+        [template.style.borderRadius],
+      ),
+      spacing: React.useMemo(
+        () => template.style.spacing,
+        [
+          template.style.spacing.l,
+          template.style.spacing.m,
+          template.style.spacing.s,
+          template.style.spacing.xl,
+        ],
+      ),
+    },
   };
-  return parsed;
+  return parsed as T;
 }

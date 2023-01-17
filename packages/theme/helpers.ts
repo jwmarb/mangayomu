@@ -1,4 +1,4 @@
-import { Theme, ThemeMode, ThemeSchema } from '.';
+import { DefaultTheme, Theme, ThemeMode, ThemeSchema } from '.';
 
 export type ColorSchema = {
   light: string;
@@ -13,8 +13,8 @@ type RecursiveRequired<T> = {
   [K in keyof T]-?: T[K] extends object ? RecursiveRequired<T[K]> : T[K];
 };
 
-export function readColors(
-  obj: ThemeSchema<Theme>['palette'],
+export function readColors<T extends DefaultTheme>(
+  obj: ThemeSchema<T>['palette'],
   mode: ThemeMode,
 ) {
   const converted: RecursivePartial<Theme['palette']> = {};
