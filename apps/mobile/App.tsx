@@ -16,6 +16,7 @@ import { createTheme } from '@mangayomu/theme';
 import { ThemeProvider, Theme } from '@emotion/react';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { typography } from '@theme/theme';
+import { helpers } from '@theme/helpers';
 
 function App(): JSX.Element {
   const mode = useColorScheme();
@@ -46,13 +47,14 @@ function App(): JSX.Element {
     style: {
       borderRadius: RFValue(24),
       spacing: {
-        s: RFValue(2),
-        m: RFValue(6),
-        l: RFValue(10),
-        xl: RFValue(16),
+        s: 2,
+        m: 6,
+        l: 10,
+        xl: 16,
       },
     },
     typography,
+    helpers,
   }));
 
   return (
