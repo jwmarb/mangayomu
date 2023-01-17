@@ -155,7 +155,7 @@ export function createTheme<T extends DefaultTheme>(
   for (const key in template.helpers) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (parsed.helpers as any)[key] = (...args: unknown[]) =>
-      (template.helpers as any)[key](args)(parsed);
+      (template.helpers as any)[key](...args)(parsed);
   }
   return parsed as T & DefaultThemeHelpers;
 }

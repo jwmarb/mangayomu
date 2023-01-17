@@ -30,6 +30,11 @@ const helpers = {
       return theme.mode + ' ' + foo + 'bar';
     };
   },
+  withMultipleParams: (one: number, two: number) => {
+    return () => {
+      return one + two;
+    };
+  },
 };
 
 test('Theme object created and parsed properly', () => {
@@ -86,4 +91,5 @@ test('helper functions work as intended', () => {
   expect(theme.helpers.second()).toBe(theme.style.borderRadius * 2);
   expect(theme.helpers.withParams('foo')).toBe(theme.mode + ' ' + 'foobar');
   expect(theme.helpers.getColor('primary')).toBe(theme.palette.primary.main);
+  expect(theme.helpers.withMultipleParams(2, 2)).toBe(4);
 });
