@@ -6,33 +6,20 @@
  */
 
 import React from 'react';
-import type { PropsWithChildren } from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import { StatusBar, useColorScheme } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { RootStack } from '@navigators/Root';
 import Home from '@screens/Home';
 import MangaView from '@screens/MangaView';
-import { createTheme, ThemeProvider } from '@mangayomu/theme';
+import { createTheme } from '@mangayomu/theme';
+import { ThemeProvider, Theme } from '@emotion/react';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { typography } from '@theme/theme';
 
 function App(): JSX.Element {
   const mode = useColorScheme();
-  const theme = createTheme(({ color, colorConstant }) => ({
+  const theme = createTheme<Theme>(({ color, colorConstant }) => ({
     mode,
     palette: {
       primary: {
@@ -57,8 +44,15 @@ function App(): JSX.Element {
       },
     },
     style: {
-      borderRadius: 24,
+      borderRadius: RFValue(24),
+      spacing: {
+        s: RFValue(2),
+        m: RFValue(6),
+        l: RFValue(10),
+        xl: RFValue(16),
+      },
     },
+    typography,
   }));
 
   return (
