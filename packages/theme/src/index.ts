@@ -131,7 +131,7 @@ export function createTheme<T extends DefaultTheme>(
           (template as ThemeSchema<DefaultTheme>).palette,
           template.mode,
         ),
-      [template.palette, template.mode],
+      [template.mode],
     ),
     style: {
       borderRadius: React.useMemo(
