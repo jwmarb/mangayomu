@@ -3,7 +3,8 @@
   "compilerOptions": {
     "paths": {
       "@navigators/*": ["src/navigators/*"],
-      "@screens/*": ["./src/screens/*"]
+      "@screens/*": ["./src/screens/*"],
+      "@theme/*": ["./src/theme/*"]
     }
   }
 }
