@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-undef
 module.exports = {
   presets: ['@rnx-kit/babel-preset-metro-react-native'],
   plugins: [
@@ -9,6 +10,7 @@ module.exports = {
           '@navigators': './src/navigators',
           '@screens': './src/screens',
           '@theme': './src/theme',
+          '@components': './src/components',
         },
       },
     ],
