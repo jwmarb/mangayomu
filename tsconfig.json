@@ -7,5 +7,6 @@
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "composite": true
-  }
+  },
+  "exclude": ["node_modules", "dist", "./**/*.test.ts", "__tests__"]
 }
