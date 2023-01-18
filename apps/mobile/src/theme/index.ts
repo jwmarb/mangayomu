@@ -1,1 +1,1 @@
-export { typography } from './theme';
+export { typography, __storybook_theme__ } from './theme';

@@ -10,9 +10,11 @@ import { withKnobs } from '@storybook/addon-knobs';
 import { loadStories } from './storyLoader';
 
 import './rn-addons';
+import ThemeDecorator from './themeDecorator';
 
 // enables knobs for all stories
 addDecorator(withKnobs);
+addDecorator(ThemeDecorator);
 
 // import stories
 configure(() => {
