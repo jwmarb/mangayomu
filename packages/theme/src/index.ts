@@ -32,6 +32,7 @@ export interface TextColor {
 
 export type TextColors = 'textPrimary' | 'textSecondary' | 'disabled' | 'hint';
 export type ButtonColors = 'primary' | 'secondary';
+export type BackgroundColors = keyof DefaultTheme['palette']['background'];
 export type Colors = TextColors | ButtonColors;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -63,6 +64,8 @@ export interface DefaultTheme extends IThemeHelpers {
     };
   };
 }
+
+export type Spacing = keyof DefaultTheme['style']['spacing'];
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Theme extends DefaultTheme {}
