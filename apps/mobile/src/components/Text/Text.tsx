@@ -25,3 +25,7 @@ const Text = styled.Text<TextProps>`
 `;
 
 export default Text;
+
+export const HeaderStory = () => {
+  return <Text variant="header">Change component</Text>;
+};
