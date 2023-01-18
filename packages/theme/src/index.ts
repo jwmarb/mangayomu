@@ -125,28 +125,13 @@ export function createTheme<T extends DefaultTheme>(
 
   const parsed: DefaultTheme = {
     ...template,
-    palette: React.useMemo(
-      () =>
-        readColors(
-          (template as ThemeSchema<DefaultTheme>).palette,
-          template.mode,
-        ),
-      [template.mode],
+    palette: readColors(
+      (template as ThemeSchema<DefaultTheme>).palette,
+      template.mode,
     ),
     style: {
-      borderRadius: React.useMemo(
-        () => template.style.borderRadius,
-        [template.style.borderRadius],
-      ),
-      spacing: React.useMemo(
-        () => template.style.spacing,
-        [
-          template.style.spacing.l,
-          template.style.spacing.m,
-          template.style.spacing.s,
-          template.style.spacing.xl,
-        ],
-      ),
+      borderRadius: template.style.borderRadius,
+      spacing: template.style.spacing,
     },
   } as DefaultTheme; // missing helpers, which will be assigned under this line
   (parsed as PartializeKeys<DefaultTheme, 'helpers'>).helpers = {
