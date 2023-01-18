@@ -11,7 +11,7 @@
     ]
   },
   "scripts": {
-    "build": "npx nx run-many --target=build",
+    "build": "npx nx run-many --target=build --all",
     "reset": "npx nx run-many --target=reset --all && rimraf yarn.lock && rimraf node_modules && yarn",
     "android:metro": "yarn workspace @mangayomu/mobile start",
     "android:start": "yarn workspace @mangayomu/mobile android"
