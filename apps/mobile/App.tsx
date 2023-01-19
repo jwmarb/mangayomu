@@ -15,7 +15,7 @@ import MangaView from '@screens/MangaView';
 import { createTheme } from '@mangayomu/theme';
 import { ThemeProvider, Theme } from '@emotion/react';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { typography } from '@theme/theme';
+import { shadow, typography } from '@theme/theme';
 import { helpers } from '@theme/helpers';
 
 function App(): JSX.Element {
@@ -52,6 +52,7 @@ function App(): JSX.Element {
         l: 10,
         xl: 16,
       },
+      shadow,
     },
     typography,
     helpers,

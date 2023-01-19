@@ -30,9 +30,20 @@ export const typography = {
   `,
 } as const;
 
+export const shadow = css`
+  shadow-color: #000;
+  shadow-offset: 0px 2px;
+  shadow-opacity: 0.25;
+  shadow-radius: 3.84;
+  elevation: 5;
+`;
+
 declare module '@emotion/react' {
   export interface Theme extends DefaultTheme {
     typography: typeof typography;
+    style: {
+      shadow: typeof shadow;
+    } & DefaultTheme['style'];
   }
 }
 
@@ -62,6 +73,7 @@ export const __storybook_theme__ = createTheme<Theme>(
       },
     },
     style: {
+      shadow,
       borderRadius: RFValue(24),
       spacing: {
         s: 2,

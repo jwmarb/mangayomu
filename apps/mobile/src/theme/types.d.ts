@@ -5,5 +5,5 @@ import { Helpers } from '@theme/helpers';
 declare module '@mangayomu/theme' {
   export type Theme = EmotionTheme;
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  export interface ThemeHelpers extends Helpers {}
+  export interface ThemeHelpers extends Helpers, DefaultThemeHelpers {}
 }
