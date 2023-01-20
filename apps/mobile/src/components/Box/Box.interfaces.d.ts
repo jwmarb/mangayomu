@@ -1,6 +1,11 @@
 import React from 'react';
 import { ViewStyle } from 'react-native';
-import { ButtonColors, Spacing, BackgroundColors } from '@mangayomu/theme';
+import {
+  ButtonColors,
+  Spacing,
+  BackgroundColors,
+  BackgroundColor,
+} from '@mangayomu/theme';
 
 type P = ViewStyle[''];
 
@@ -40,4 +45,6 @@ export interface BoxProps extends React.PropsWithChildren {
   pr?: Spacing;
   pt?: Spacing;
   pb?: Spacing;
+
+  debug?: boolean;
 }

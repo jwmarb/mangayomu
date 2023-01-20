@@ -36,6 +36,7 @@ const Box = styled.View<BoxProps>`
       pb,
       width = 'auto',
       height = 'auto',
+      debug,
     } = props;
 
     return css`
@@ -47,6 +48,10 @@ const Box = styled.View<BoxProps>`
       flex-shrink: ${flexShrink ? 1 : 0};
       justify-content: ${justifyContent};
       ${(() => {
+        if (debug)
+          return css`
+            background-color: red;
+          `;
         if (bgColor == null) return;
         if (bgColor in theme.palette.background)
           return css`
