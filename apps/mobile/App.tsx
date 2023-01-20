@@ -19,6 +19,7 @@ import { shadow, typography } from '@theme/theme';
 import { helpers } from '@theme/helpers';
 import { Provider } from 'react-redux';
 import store from '@redux/store';
+import '@mmkv-storage/app';
 
 function App(): JSX.Element {
   const mode = useColorScheme();

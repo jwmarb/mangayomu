@@ -6,7 +6,9 @@
       "@screens/*": ["./src/screens/*"],
       "@theme/*": ["./src/theme/*"],
       "@components/*": ["./src/components/*"],
-      "@redux/*": ["./src/redux/*"]
+      "@redux/*": ["./src/redux/*"],
+      "@mmkv-storage/*": ["./src/mmkv-storage/*"],
+      "@hooks/*": ["./src/hooks/*"]
     }
   }
 }
