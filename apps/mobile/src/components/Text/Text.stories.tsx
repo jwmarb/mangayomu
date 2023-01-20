@@ -6,7 +6,7 @@ import { typography } from '@theme/theme';
 
 storiesOf('Text', module)
   .addDecorator((story) => <ScrollView>{story()}</ScrollView>)
-  .add('Typography', () => (
+  .add('Variants', () => (
     <>
       {Object.keys(typography).map((x) => (
         <Text variant={x as keyof typeof typography} key={x}>
