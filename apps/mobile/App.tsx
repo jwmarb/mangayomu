@@ -20,6 +20,7 @@ import { helpers } from '@theme/helpers';
 import { Provider } from 'react-redux';
 import store from '@redux/store';
 import '@mmkv-storage/app';
+import Root from './src/Root';
 
 function App(): JSX.Element {
   const mode = useColorScheme();
@@ -66,10 +67,7 @@ function App(): JSX.Element {
       <StatusBar translucent backgroundColor="transparent" />
       <ThemeProvider theme={theme}>
         <NavigationContainer>
-          <RootStack.Navigator>
-            <RootStack.Screen name="Home" component={Home} />
-            <RootStack.Screen name="MangaView" component={MangaView} />
-          </RootStack.Navigator>
+          <Root />
         </NavigationContainer>
       </ThemeProvider>
     </>
