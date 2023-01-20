@@ -32,7 +32,7 @@ export interface TextColor {
 
 export type TextColors = 'textPrimary' | 'textSecondary' | 'disabled' | 'hint';
 export type ButtonColors = 'primary' | 'secondary';
-export type BackgroundColors = keyof DefaultTheme['palette']['background'];
+export type BackgroundColors = keyof BackgroundColor;
 export type Colors = TextColors | ButtonColors;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

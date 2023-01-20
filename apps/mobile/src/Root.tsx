@@ -17,7 +17,11 @@ const Root: React.FC<RootProps> = ({ showWelcomeScreen }) => {
     >
       <RootStack.Screen name="Home" component={Home} />
       <RootStack.Screen name="MangaView" component={MangaView} />
-      <RootStack.Screen name="Welcome" component={Welcome} />
+      <RootStack.Screen
+        name="Welcome"
+        component={Welcome}
+        options={{ headerShown: false }}
+      />
     </RootStack.Navigator>
   );
 };
