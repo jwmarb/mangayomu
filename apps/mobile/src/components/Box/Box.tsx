@@ -3,6 +3,10 @@ import { BackgroundColor, ButtonColors } from '@mangayomu/theme';
 import { BoxProps } from './Box.interfaces';
 import { set, setu, setwandh } from './Box.helpers';
 
+/**
+ * Box is an abstract component for building layouts. All MangaYomu components are built upon this component.
+ * @component
+ */
 const Box = styled.View<BoxProps>`
   ${(props) => {
     const {
