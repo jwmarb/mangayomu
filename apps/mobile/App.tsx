@@ -18,9 +18,9 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { shadow, typography } from '@theme/theme';
 import { helpers } from '@theme/helpers';
 import { Provider } from 'react-redux';
-import store from '@redux/store';
 import '@mmkv-storage/app';
 import Root from './src/Root';
+import store from '@redux/main';
 
 function App(): JSX.Element {
   const mode = useColorScheme();
@@ -67,7 +67,9 @@ function App(): JSX.Element {
       <StatusBar translucent backgroundColor="transparent" />
       <ThemeProvider theme={theme}>
         <NavigationContainer>
-          <Root />
+          <Provider store={store}>
+            <Root />
+          </Provider>
         </NavigationContainer>
       </ThemeProvider>
     </>
