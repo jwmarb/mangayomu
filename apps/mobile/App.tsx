@@ -9,16 +9,12 @@ import React from 'react';
 import { StatusBar, useColorScheme } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
-import { RootStack } from '@navigators/Root';
-import Home from '@screens/Home';
-import MangaView from '@screens/MangaView';
 import { createTheme } from '@mangayomu/theme';
 import { ThemeProvider, Theme } from '@emotion/react';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { shadow, typography } from '@theme/theme';
 import { helpers } from '@theme/helpers';
 import { Provider } from 'react-redux';
-import '@mmkv-storage/app';
 import Root from './src/Root';
 import store from '@redux/main';
 
