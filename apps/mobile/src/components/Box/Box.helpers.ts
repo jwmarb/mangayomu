@@ -3,9 +3,9 @@ import { css, ReactNativeStyle } from '@emotion/native';
 export function set<T>(
   propertyName: string,
   input?: T,
-): ReactNativeStyle | undefined {
+): (() => ReactNativeStyle) | undefined {
   if (input != null)
-    return css`
+    return () => css`
       ${propertyName}: ${input};
     `;
 }
@@ -13,9 +13,9 @@ export function set<T>(
 export function setu<T>(
   propertyName: string,
   input?: T,
-): ReactNativeStyle | undefined {
+): (() => ReactNativeStyle) | undefined {
   if (input != null)
-    return css`
+    return () => css`
       ${propertyName}: ${input}px;
     `;
 }
@@ -23,14 +23,14 @@ export function setu<T>(
 export function setwandh(
   propertyName: 'width' | 'height',
   widthOrHeightValue: string | number,
-): ReactNativeStyle | undefined {
+): (() => ReactNativeStyle) | undefined {
   switch (typeof widthOrHeightValue) {
     case 'number':
-      return css`
+      return () => css`
         ${propertyName}: ${widthOrHeightValue}px;
       `;
     case 'string':
-      return css`
+      return () => css`
         ${propertyName}: ${widthOrHeightValue};
       `;
     default:

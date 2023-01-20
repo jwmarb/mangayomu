@@ -30,7 +30,7 @@ export const typography = {
   `,
 } as const;
 
-export const shadow = css`
+export const shadow = () => css`
   shadow-color: #000;
   shadow-offset: 0px 2px;
   shadow-opacity: 0.25;

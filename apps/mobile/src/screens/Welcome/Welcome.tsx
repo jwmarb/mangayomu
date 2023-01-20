@@ -11,9 +11,7 @@ const Welcome: React.FC = () => {
       showsHorizontalScrollIndicator={false}
       pagingEnabled
     >
-      <Box>
-        <Text>Hello World</Text>
-      </Box>
+      <Box></Box>
     </ScrollView>
   );
 };
