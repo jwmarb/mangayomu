@@ -12,6 +12,8 @@ module.exports = {
           '@theme': './src/theme',
           '@components': './src/components',
           '@redux': './src/redux',
+          '@mmkv-storage': './src/mmkv-storage',
+          '@hooks': './src/hooks',
         },
       },
     ],
