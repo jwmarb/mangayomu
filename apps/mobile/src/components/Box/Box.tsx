@@ -1,41 +1,7 @@
-import styled, { css, ReactNativeStyle } from '@emotion/native';
+import styled, { css } from '@emotion/native';
 import { BackgroundColor, ButtonColors } from '@mangayomu/theme';
 import { BoxProps } from './Box.interfaces';
-
-function set<T>(propertyName: string, input?: T): ReactNativeStyle | undefined {
-  if (input != null)
-    return css`
-      ${propertyName}: ${input};
-    `;
-}
-
-function setu<T>(
-  propertyName: string,
-  input?: T,
-): ReactNativeStyle | undefined {
-  if (input != null)
-    return css`
-      ${propertyName}: ${input}px;
-    `;
-}
-
-function setwandh(
-  propertyName: 'width' | 'height',
-  widthOrHeightValue: string | number,
-): ReactNativeStyle | undefined {
-  switch (typeof widthOrHeightValue) {
-    case 'number':
-      return css`
-        ${propertyName}: ${widthOrHeightValue}px;
-      `;
-    case 'string':
-      return css`
-        ${propertyName}: ${widthOrHeightValue};
-      `;
-    default:
-      throw Error('Invalid widthOrHeightValue passed in args');
-  }
-}
+import { set, setu, setwandh } from './Box.helpers';
 
 const Box = styled.View<BoxProps>`
   ${(props) => {
