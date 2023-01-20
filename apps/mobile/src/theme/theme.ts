@@ -34,7 +34,7 @@ export const shadow = css`
   shadow-color: #000;
   shadow-offset: 0px 2px;
   shadow-opacity: 0.25;
-  shadow-radius: 3.84;
+  shadow-radius: 3.84px;
   elevation: 5;
 `;
 
