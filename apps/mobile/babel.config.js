@@ -11,6 +11,7 @@ module.exports = {
           '@screens': './src/screens',
           '@theme': './src/theme',
           '@components': './src/components',
+          '@redux': './src/redux',
         },
       },
     ],

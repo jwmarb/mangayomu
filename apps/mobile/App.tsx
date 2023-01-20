@@ -17,6 +17,8 @@ import { ThemeProvider, Theme } from '@emotion/react';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { shadow, typography } from '@theme/theme';
 import { helpers } from '@theme/helpers';
+import { Provider } from 'react-redux';
+import store from '@redux/store';
 
 function App(): JSX.Element {
   const mode = useColorScheme();

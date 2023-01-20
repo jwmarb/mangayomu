@@ -5,7 +5,8 @@
       "@navigators/*": ["src/navigators/*"],
       "@screens/*": ["./src/screens/*"],
       "@theme/*": ["./src/theme/*"],
-      "@components/*": ["./src/components/*"]
+      "@components/*": ["./src/components/*"],
+      "@redux/*": ["./src/redux/*"]
     }
   }
 }
