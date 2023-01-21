@@ -9,4 +9,10 @@ export const helpers = {
   },
 } as const;
 
-export type Helpers = typeof helpers;
+type BaseHelpers = typeof helpers;
+
+export type Helpers = {
+  [K in keyof BaseHelpers]: (
+    ...args: Parameters<BaseHelpers[K]>
+  ) => ReturnType<ReturnType<BaseHelpers[K]>>;
+};
