@@ -1,31 +1,31 @@
-import { createTheme, DefaultTheme } from '@mangayomu/theme';
+import { createTheme, DefaultTheme, Spacing } from '@mangayomu/theme';
 import '@emotion/react';
 import { css } from '@emotion/native';
-import { RFValue } from 'react-native-responsive-fontsize';
 import { Theme } from '@emotion/react';
 import { helpers } from '@theme/helpers';
+import { moderateScale, scale } from 'react-native-size-matters';
 
 export type TextVariants = keyof typeof typography;
 
 export const typography = {
   header: css`
     font-family: Roboto;
-    font-size: 20px;
+    font-size: ${moderateScale(20) + 'px'};
     letter-spacing: -0.2px;
   `,
   body: css`
     font-family: Roboto;
-    font-size: 13px;
+    font-size: ${moderateScale(14) + 'px'};
     letter-spacing: -0.44px;
   `,
   button: css`
     font-family: Roboto;
-    font-size: 12px;
+    font-size: ${moderateScale(12) + 'px'};
     letter-spacing: -0.44px;
   `,
   'bottom-tab': css`
     font-family: Roboto;
-    font-size: 10px;
+    font-size: ${moderateScale(10) + 'px'};
     letter-spacing: -0.56px;
   `,
 } as const;
@@ -37,6 +37,13 @@ export const shadow = css`
   shadow-radius: 3.84px;
   elevation: 5;
 `;
+
+export const spacing: Record<Spacing, number> = {
+  s: moderateScale(8),
+  m: moderateScale(16),
+  l: moderateScale(24),
+  xl: moderateScale(32),
+};
 
 declare module '@emotion/react' {
   export interface Theme extends DefaultTheme {
@@ -74,7 +81,7 @@ export const __storybook_theme__ = createTheme<Theme>(
     },
     style: {
       shadow,
-      borderRadius: RFValue(24),
+      borderRadius: moderateScale(24),
       spacing: {
         s: 2,
         m: 6,

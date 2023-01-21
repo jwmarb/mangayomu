@@ -11,12 +11,12 @@ import { StatusBar, useColorScheme } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createTheme } from '@mangayomu/theme';
 import { ThemeProvider, Theme } from '@emotion/react';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { shadow, typography } from '@theme/theme';
+import { shadow, spacing, typography } from '@theme/theme';
 import { helpers } from '@theme/helpers';
 import { Provider } from 'react-redux';
 import Root from './src/Root';
 import store from '@redux/main';
+import { moderateScale } from 'react-native-size-matters';
 
 function App(): JSX.Element {
   const mode = useColorScheme();
@@ -45,13 +45,8 @@ function App(): JSX.Element {
       },
     },
     style: {
-      borderRadius: RFValue(24),
-      spacing: {
-        s: 2,
-        m: 6,
-        l: 10,
-        xl: 16,
-      },
+      borderRadius: moderateScale(24),
+      spacing,
       shadow,
     },
     typography,

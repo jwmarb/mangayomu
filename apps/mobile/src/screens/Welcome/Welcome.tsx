@@ -2,40 +2,40 @@ import Box from '@components/Box';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { SafeAreaView, ScrollView, useWindowDimensions } from 'react-native';
+import { moderateScale } from 'react-native-size-matters';
 
 const Welcome: React.FC = () => {
   const theme = useTheme();
+  const { width } = useWindowDimensions();
   return (
     <ScrollView
       style={{
         backgroundColor: theme.palette.background.default,
       }}
       showsVerticalScrollIndicator={false}
-      showsHorizontalScrollIndicator
-      overScrollMode="always"
+      showsHorizontalScrollIndicator={false}
       horizontal
+      pagingEnabled
     >
-      <Box align-items="center" justify-content="center" width="100%">
-        <Text bold variant="header">
-          Hello World
-        </Text>
-        <Text>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque iusto
-          dignissimos error vel non voluptatem est doloribus, magnam culpa ut
-          quod. Porro sint natus inventore ut fugiat eaque eos sed?
-        </Text>
+      <Box align-items="center" width={width} mt="xl">
+        <Box align-self="center" maxWidth={moderateScale(350)}>
+          <Text align="center" bold variant="header">
+            Welcome to MangaYomu
+          </Text>
+          <Text align="center">Discover and read manga for free</Text>
+        </Box>
       </Box>
-      <Box align-items="center" justify-content="center" width="100%">
-        <Text bold variant="header">
-          Sample Text
-        </Text>
-        <Text>
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Rerum odit
-          cumque, dolor nulla, ullam id pariatur doloribus soluta ipsam,
-          voluptatum quam vitae reprehenderit provident repellendus ex dolorum
-          laborum. Labore, molestias.
-        </Text>
+      <Box align-items="center" width={width}>
+        <Box align-self="center" maxWidth={moderateScale(350)}>
+          <Text align="center" bold variant="header">
+            Read anywhere, regardless of device
+          </Text>
+          <Text align="center">
+            MangaYomu is also available in the browser, meaning you can read
+            where you left off
+          </Text>
+        </Box>
       </Box>
     </ScrollView>
   );
