@@ -39,6 +39,12 @@ const Box = styled.View<BoxProps>`
       debug,
       maxWidth,
       maxHeight,
+      position,
+      left,
+      right,
+      top,
+      bottom,
+      'z-index': zIndex = 0,
     } = props;
 
     return css`
@@ -49,6 +55,7 @@ const Box = styled.View<BoxProps>`
       flex-grow: ${flexGrow ? 1 : 0};
       flex-shrink: ${flexShrink ? 1 : 0};
       justify-content: ${justifyContent};
+      z-index: ${zIndex};
       ${(() => {
         if (debug)
           return css`
@@ -65,9 +72,14 @@ const Box = styled.View<BoxProps>`
           background-color: ${theme.palette[bgColor as ButtonColors].main};
         `;
       })()}
+      ${set('position', position)};
       ${boxShadow && theme.style.shadow};
       ${maxWidth && setwandh('max-width', maxWidth)};
       ${maxHeight && setwandh('max-height', maxHeight)};
+      ${set('top', top)};
+      ${set('bototm', bottom)};
+      ${set('left', left)};
+      ${set('right', right)};
       ${setwandh('height', height)};
       ${setwandh('width', width)};
       ${set('flex-wrap', flexWrap)};

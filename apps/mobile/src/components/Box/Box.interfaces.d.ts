@@ -25,6 +25,12 @@ export interface BoxProps extends React.PropsWithChildren {
   height?: number | string;
   maxWidth?: number | string;
   maxHeight?: number | string;
+  position?: ViewStyle['position'];
+  top?: number | string;
+  bottom?: number | string;
+  left?: number | string;
+  right?: number | string;
+  'z-index'?: number;
   /**
    * Decorating
    */
