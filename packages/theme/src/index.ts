@@ -22,6 +22,7 @@ export interface Color {
 export interface BackgroundColor {
   paper: string;
   default: string;
+  disabled: string;
 }
 
 export interface TextColor {
