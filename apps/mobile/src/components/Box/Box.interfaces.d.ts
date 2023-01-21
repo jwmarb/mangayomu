@@ -23,6 +23,8 @@ export interface BoxProps extends React.PropsWithChildren {
   'flex-wrap'?: ViewStyle['flexWrap'];
   width?: number | string;
   height?: number | string;
+  maxWidth?: number | string;
+  maxHeight?: number | string;
   /**
    * Decorating
    */
