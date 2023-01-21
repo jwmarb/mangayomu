@@ -19,12 +19,12 @@ export function setu(
 ): ReactNativeStyle | undefined {
   if (input != null)
     return css`
-      ${propertyName}: ${theme.helpers.spacing(input)}px;
+      ${propertyName}: ${theme.helpers.spacing(input) + 'px'};
     `;
 }
 
 export function setwandh(
-  propertyName: 'width' | 'height',
+  propertyName: 'width' | 'height' | 'max-width' | 'max-height',
   widthOrHeightValue: string | number,
 ): ReactNativeStyle | undefined {
   switch (typeof widthOrHeightValue) {

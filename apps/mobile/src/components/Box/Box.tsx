@@ -37,6 +37,8 @@ const Box = styled.View<BoxProps>`
       width = 'auto',
       height = 'auto',
       debug,
+      maxWidth,
+      maxHeight,
     } = props;
 
     return css`
@@ -64,6 +66,8 @@ const Box = styled.View<BoxProps>`
         `;
       })()}
       ${boxShadow && theme.style.shadow};
+      ${maxWidth && setwandh('max-width', maxWidth)};
+      ${maxHeight && setwandh('max-height', maxHeight)};
       ${setwandh('height', height)};
       ${setwandh('width', width)};
       ${set('flex-wrap', flexWrap)};
