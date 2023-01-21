@@ -16,6 +16,7 @@ export interface Color {
   light: string;
   main: string;
   dark: string;
+  contrastText: string;
 }
 
 export interface BackgroundColor {
@@ -32,6 +33,9 @@ export interface TextColor {
 
 export type TextColors = 'textPrimary' | 'textSecondary' | 'disabled' | 'hint';
 export type ButtonColors = 'primary' | 'secondary';
+export type ButtonColorsTextContrasts =
+  | 'primary@contrast'
+  | 'secondary@contrast';
 export type BackgroundColors = keyof BackgroundColor;
 export type Colors = TextColors | ButtonColors;
 
@@ -39,7 +43,7 @@ export type Colors = TextColors | ButtonColors;
 export interface ThemeHelpers extends DefaultThemeHelpers {}
 
 export interface DefaultThemeHelpers {
-  getColor(colorProp: Colors): string;
+  getColor(colorProp: Colors | ButtonColorsTextContrasts): string;
 }
 
 export interface IThemeHelpers {
@@ -79,11 +83,14 @@ export type ThemeSchema<T extends DefaultTheme> = {
   [K in keyof T]: K extends 'palette'
     ? {
         [V in keyof T[K]]: T[K][V] extends Color | TextColor | BackgroundColor
-          ? {
-              [S in keyof T[K][V]]: T[K][V][S] extends string
-                ? ColorSchema
-                : T[K][V][S];
-            }
+          ? Omit<
+              {
+                [S in keyof T[K][V]]: T[K][V][S] extends string
+                  ? ColorSchema
+                  : T[K][V][S];
+              },
+              'contrastText'
+            >
           : T[K][V];
       }
     : K extends 'helpers'
