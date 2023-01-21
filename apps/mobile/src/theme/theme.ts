@@ -8,6 +8,11 @@ import { moderateScale, scale } from 'react-native-size-matters';
 export type TextVariants = keyof typeof typography;
 
 export const typography = {
+  'header-lg': css`
+    font-family: Roboto;
+    font-size: ${moderateScale(30) + 'px'};
+    letter-spacing: -0.19px;
+  `,
   header: css`
     font-family: Roboto;
     font-size: ${moderateScale(20) + 'px'};
