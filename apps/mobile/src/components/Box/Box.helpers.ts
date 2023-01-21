@@ -1,7 +1,7 @@
 import { BoxModel, FlexBoxModel } from '@components/Box/Box.interfaces';
 import { css, ReactNativeStyle } from '@emotion/native';
 import { Theme } from '@emotion/react';
-import { Spacing } from '@mangayomu/theme';
+import { ButtonColors, Spacing } from '@mangayomu/theme';
 
 export function set<T>(
   propertyName: string,
@@ -44,15 +44,36 @@ export function setwandh(
   }
 }
 
+export function setWithPalette(
+  theme: Theme,
+  cssProperty: string,
+  value?: string,
+) {
+  if (value == null) return;
+  if (value in theme.palette.background)
+    return css`
+      ${cssProperty}: ${theme.palette.background[
+        value as keyof typeof theme.palette.background
+      ]};
+    `;
+  if (value in theme.palette)
+    return css`
+      ${cssProperty}: ${theme.palette[value as ButtonColors].main};
+    `;
+  return css`
+    ${cssProperty}: ${value};
+  `;
+}
+
 export function implementBoxModel(theme: Theme, boxModel: BoxModel) {
-  const { p, m, px, pv, mx, pb, mt, mv, ml, mr, mb, pl, pr, pt } = boxModel;
+  const { p, m, px, py, mx, pb, mt, my, ml, mr, mb, pl, pr, pt } = boxModel;
   return css`
     ${setu(theme, 'padding', p)};
     ${setu(theme, 'margin', m)};
     ${setu(theme, 'padding-horizontal', px)};
-    ${setu(theme, 'padding-vertical', pv)};
+    ${setu(theme, 'padding-vertical', py)};
     ${setu(theme, 'margin-horizontal', mx)};
-    ${setu(theme, 'margin-vertical', mv)};
+    ${setu(theme, 'margin-vertical', my)};
     ${setu(theme, 'margin-left', ml)};
     ${setu(theme, 'margin-right', mr)};
     ${setu(theme, 'margin-bottom', mb)};

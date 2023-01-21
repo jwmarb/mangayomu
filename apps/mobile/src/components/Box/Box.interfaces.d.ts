@@ -11,9 +11,9 @@ export interface BoxModel {
   p?: Spacing | number;
   m?: Spacing | number;
   px?: Spacing | number;
-  pv?: Spacing | number;
+  py?: Spacing | number;
   mx?: Spacing | number;
-  mv?: Spacing | number;
+  my?: Spacing | number;
   ml?: Spacing | number;
   mr?: Spacing | number;
   mb?: Spacing | number;
@@ -55,8 +55,13 @@ export interface BoxProps
   /**
    * Decorating
    */
-  'background-color'?: ButtonColors | BackgroundColors;
+  'background-color'?: string;
   'box-shadow'?: boolean;
-
+  'border-radius'?: number | '@theme';
+  'border-color': string;
+  'border-width': number;
+  /**
+   * Properties
+   */
   debug?: boolean;
 }
