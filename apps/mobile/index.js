@@ -5,6 +5,7 @@
 import { AppRegistry } from 'react-native';
 import App from './App';
 import { name as appName } from './app.json';
+import 'react-native-gesture-handler';
 
 // let RegisteredApp = App;
 // eslint-disable-next-line @typescript-eslint/no-var-requires, no-undef
