@@ -1,7 +1,13 @@
 import styled, { css } from '@emotion/native';
 import { BackgroundColor, ButtonColors } from '@mangayomu/theme';
 import { BoxProps } from './Box.interfaces';
-import { set, setu, setwandh } from './Box.helpers';
+import {
+  implementBoxModel,
+  implementFlexBoxModel,
+  set,
+  setu,
+  setwandh,
+} from './Box.helpers';
 
 /**
  * Box is an abstract component for building layouts. All MangaYomu components are built upon this component.
@@ -20,6 +26,7 @@ const Box = styled.View<BoxProps>`
       'flex-grow': flexGrow,
       'flex-shrink': flexShrink,
       'flex-wrap': flexWrap,
+      'flex-direction': flexDirection,
       p,
       m,
       px,
@@ -48,13 +55,7 @@ const Box = styled.View<BoxProps>`
     } = props;
 
     return css`
-      align-items: ${alignItems};
-      align-self: ${alignSelf};
       ${boxShadow && theme.style.shadow};
-      flex: ${flex ? 1 : 0};
-      flex-grow: ${flexGrow ? 1 : 0};
-      flex-shrink: ${flexShrink ? 1 : 0};
-      justify-content: ${justifyContent};
       z-index: ${zIndex};
       ${(() => {
         if (debug)
@@ -77,26 +78,37 @@ const Box = styled.View<BoxProps>`
       ${maxWidth && setwandh('max-width', maxWidth)};
       ${maxHeight && setwandh('max-height', maxHeight)};
       ${set('top', top)};
-      ${set('bototm', bottom)};
+      ${set('bottom', bottom)};
       ${set('left', left)};
       ${set('right', right)};
       ${setwandh('height', height)};
       ${setwandh('width', width)};
-      ${set('flex-wrap', flexWrap)};
-      ${setu(theme, 'padding', p)};
-      ${setu(theme, 'margin', m)};
-      ${setu(theme, 'padding-horizontal', px)};
-      ${setu(theme, 'padding-vertical', pv)};
-      ${setu(theme, 'margin-horizontal', mx)};
-      ${setu(theme, 'margin-vertical', mv)};
-      ${setu(theme, 'margin-left', ml)};
-      ${setu(theme, 'margin-right', mr)};
-      ${setu(theme, 'margin-bottom', mb)};
-      ${setu(theme, 'margin-top', mt)};
-      ${setu(theme, 'padding-left', pl)};
-      ${setu(theme, 'padding-right', pr)};
-      ${setu(theme, 'padding-bottom', pb)};
-      ${setu(theme, 'padding-top', pt)};
+      ${implementBoxModel(theme, {
+        p,
+        pb,
+        pl,
+        pr,
+        pt,
+        pv,
+        px,
+        m,
+        mb,
+        ml,
+        mr,
+        mt,
+        mv,
+        mx,
+      })};
+      ${implementFlexBoxModel(theme, {
+        'align-items': alignItems,
+        'align-self': alignSelf,
+        'flex-direction': flexDirection,
+        'flex-grow': flexGrow,
+        'flex-shrink': flexShrink,
+        'flex-wrap': flexWrap,
+        flex,
+        'justify-content': justifyContent,
+      })}
     `;
   }}
 `;

@@ -7,12 +7,24 @@ import {
   BackgroundColor,
 } from '@mangayomu/theme';
 
-type P = ViewStyle[''];
+export interface BoxModel {
+  p?: Spacing | number;
+  m?: Spacing | number;
+  px?: Spacing | number;
+  pv?: Spacing | number;
+  mx?: Spacing | number;
+  mv?: Spacing | number;
+  ml?: Spacing | number;
+  mr?: Spacing | number;
+  mb?: Spacing | number;
+  mt?: Spacing | number;
+  pl?: Spacing | number;
+  pr?: Spacing | number;
+  pt?: Spacing | number;
+  pb?: Spacing | number;
+}
 
-export interface BoxProps extends React.PropsWithChildren {
-  /**
-   * Layout
-   */
+export interface FlexBoxModel {
   flex?: boolean;
   'flex-grow'?: boolean;
   'flex-shrink'?: boolean;
@@ -21,6 +33,15 @@ export interface BoxProps extends React.PropsWithChildren {
   'align-self'?: ViewStyle['alignSelf'];
   'flex-direction'?: ViewStyle['flexDirection'];
   'flex-wrap'?: ViewStyle['flexWrap'];
+}
+
+export interface BoxProps
+  extends React.PropsWithChildren,
+    BoxModel,
+    FlexBoxModel {
+  /**
+   * Layout
+   */
   width?: number | string;
   height?: number | string;
   maxWidth?: number | string;
@@ -36,23 +57,6 @@ export interface BoxProps extends React.PropsWithChildren {
    */
   'background-color'?: ButtonColors | BackgroundColors;
   'box-shadow'?: boolean;
-  /**
-   * Padding/Margin
-   */
-  p?: Spacing;
-  m?: Spacing;
-  px?: Spacing;
-  pv?: Spacing;
-  mx?: Spacing;
-  mv?: Spacing;
-  ml?: Spacing;
-  mr?: Spacing;
-  mb?: Spacing;
-  mt?: Spacing;
-  pl?: Spacing;
-  pr?: Spacing;
-  pt?: Spacing;
-  pb?: Spacing;
 
   debug?: boolean;
 }
