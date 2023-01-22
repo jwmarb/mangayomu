@@ -33,6 +33,10 @@ export const typography = {
     font-size: ${moderateScale(10) + 'px'};
     letter-spacing: -0.56px;
   `,
+  'icon-button': css`
+    font-family: Roboto;
+    font-size: ${moderateScale(20) + 'px'};
+  `,
 } as const;
 
 export const shadow = css`

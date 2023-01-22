@@ -1,13 +1,23 @@
-import { Manga, MangaChapter, MangaHostInfo, MangaMeta } from './scraper.interfaces';
+import {
+  Manga,
+  MangaChapter,
+  MangaHostInfo,
+  MangaMeta,
+} from './scraper.interfaces';
 import axios from 'axios';
 import url from 'url';
 import * as cheerio from 'cheerio';
 
 abstract class MangaHost {
   /**
+   * List of manga hosts
+   */
+  private static listSources: string[] = [];
+
+  /**
    * Total available of manga hosts
    */
-  public static availableSources = new Map<string, MangaHost>();
+  private static availableSources = new Map<string, MangaHost>();
   /**
    * Whether or not the manga host shows hot mangas
    */
@@ -57,6 +67,7 @@ abstract class MangaHost {
     else this.version = info.version;
 
     MangaHost.availableSources.set(info.name, this);
+    MangaHost.listSources.push(info.name);
   }
 
   /**
@@ -67,7 +78,9 @@ abstract class MangaHost {
     return this.version;
   }
 
-  protected async route(path: string | { url: string }): Promise<cheerio.CheerioAPI> {
+  protected async route(
+    path: string | { url: string },
+  ): Promise<cheerio.CheerioAPI> {
     if (typeof path === 'string') {
       const { data } = await axios.get(`https://${this.link}${path}`);
       return cheerio.load(data, { decodeEntities: false });
@@ -120,6 +133,10 @@ abstract class MangaHost {
     return this.availableSources;
   }
 
+  public static getListSources() {
+    return this.listSources;
+  }
+
   /**
    * List all recently updated mangas from the website, if available
    * @returns {Promise<Manga[]>} Returns a list of mangas that were recently updated
@@ -163,7 +180,9 @@ abstract class MangaHost {
    * @param chapter The manga chapter
    * @returns Returns a list of URLs of each page, usually in the form of .png from a CDN server
    */
-  public abstract getPages<T extends MangaChapter>(chapter: T): Promise<string[]>;
+  public abstract getPages<T extends MangaChapter>(
+    chapter: T,
+  ): Promise<string[]>;
 }
 
 export default MangaHost;

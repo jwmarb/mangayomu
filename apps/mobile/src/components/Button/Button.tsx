@@ -1,13 +1,48 @@
 import React from 'react';
 import { ButtonProps } from './Button.interfaces';
-import { TouchableOpacity, Text } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+import { BaseButton } from 'react-native-gesture-handler';
+import { moderateScale, ScaledSheet } from 'react-native-size-matters';
+import Box from '@components/Box';
+import Text from '@components/Text';
+import { useTheme } from '@emotion/react';
 
 const Button: React.FC<ButtonProps> = (props) => {
-  const { label } = props;
+  const { label, variant, color = 'primary', ...rest } = props;
+  const theme = useTheme();
   return (
-    <TouchableOpacity>
-      <Text>{label}</Text>
-    </TouchableOpacity>
+    <BaseButton
+      style={{
+        borderRadius: theme.style.borderRadius,
+        backgroundColor:
+          variant === 'contained' ? theme.palette[color].main : undefined,
+      }}
+      {...rest}
+      rippleColor={theme.palette[color][theme.mode ?? 'main']}
+    >
+      <Box
+        py={moderateScale(12)}
+        px={moderateScale(16)}
+        border-width={1.5}
+        border-radius="@theme"
+        {...(variant === 'outline'
+          ? {
+              'border-color': color,
+            }
+          : {
+              'border-color': 'transparent',
+            })}
+      >
+        <Text
+          variant="button"
+          align="center"
+          bold
+          color={variant === 'contained' ? 'primary@contrast' : 'primary'}
+        >
+          {label}
+        </Text>
+      </Box>
+    </BaseButton>
   );
 };
 

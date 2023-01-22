@@ -1,44 +1,237 @@
 import Box from '@components/Box';
+import Button from '@components/Button/Button';
+import { CustomBottomSheet } from '@components/CustomBottomSheet';
+import { Stack } from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
+import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import { MangaHost, MangaSee } from '@mangayomu/mangascraper';
+import { Circle } from '@screens/Welcome/Welcome.base';
 import React from 'react';
-import { SafeAreaView, ScrollView, useWindowDimensions } from 'react-native';
-import { moderateScale } from 'react-native-size-matters';
+import { Dimensions, ScrollViewProps, StyleSheet } from 'react-native';
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  ScrollView,
+  useWindowDimensions,
+} from 'react-native';
+import FastImage from 'react-native-fast-image';
+import Animated, {
+  interpolate,
+  interpolateColor,
+  runOnUI,
+  SharedValue,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+} from 'react-native-reanimated';
+import {
+  moderateScale,
+  ScaledSheet,
+  verticalScale,
+} from 'react-native-size-matters';
+import Orientation, { OrientationType } from 'react-native-orientation-locker';
+import Page from '@screens/Welcome/components/Page';
+import PaginationCircle from '@screens/Welcome/components/PaginationCircle';
+import PaginationOverlay from '@screens/Welcome/components/PaginationOverlay/PaginationOverlay';
+import MainSourceSelector from '@screens/Welcome/components/MainSourceSelector';
+import useRootNavigation from '@hooks/useRootNavigation';
 
 const Welcome: React.FC = () => {
-  const theme = useTheme();
-  const { width } = useWindowDimensions();
+  const scrollPosition = useSharedValue(0);
+  const handleOnScroll = React.useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      scrollPosition.value = e.nativeEvent.contentOffset.x;
+    },
+    [],
+  );
   return (
-    <ScrollView
-      style={{
-        backgroundColor: theme.palette.background.default,
-      }}
-      showsVerticalScrollIndicator={false}
-      showsHorizontalScrollIndicator={false}
-      horizontal
-      pagingEnabled
-    >
-      <Box align-items="center" width={width} mt="xl">
-        <Box align-self="center" maxWidth={moderateScale(350)}>
-          <Text align="center" bold variant="header">
-            Welcome to MangaYomu
-          </Text>
-          <Text align="center">Discover and read manga for free</Text>
-        </Box>
-      </Box>
-      <Box align-items="center" width={width}>
-        <Box align-self="center" maxWidth={moderateScale(350)}>
-          <Text align="center" bold variant="header">
-            Read anywhere, regardless of device
-          </Text>
-          <Text align="center">
-            MangaYomu is also available in the browser, meaning you can read
-            where you left off
-          </Text>
-        </Box>
-      </Box>
-    </ScrollView>
+    <>
+      <PaginationOverlay scrollPosition={scrollPosition} />
+      <Onboard onScroll={handleOnScroll} scrollPosition={scrollPosition} />
+    </>
   );
 };
+
+const Onboard: React.FC<
+  {
+    scrollPosition: SharedValue<number>;
+  } & Pick<ScrollViewProps, 'onScroll'>
+> = React.memo(({ onScroll, scrollPosition }) => {
+  const theme = useTheme();
+  const navigation = useRootNavigation();
+  const { width } = useWindowDimensions();
+  const ref = React.useRef<ScrollView>(null);
+  const bottomSheet = React.useRef<BottomSheet>(null);
+  const next = () => {
+    ref.current?.scrollTo({
+      x: (Math.round(scrollPosition.value / width) + 1) * width,
+    });
+  };
+  const scrollViewStyle = React.useMemo(
+    () => ({
+      backgroundColor: theme.palette.background.default,
+      zIndex: -1,
+    }),
+    [theme],
+  );
+
+  const fastImageVisibile = useSharedValue(1);
+
+  const fastImageStyle = useAnimatedStyle(() => ({
+    opacity: fastImageVisibile.value,
+    position: fastImageVisibile.value === 1 ? 'relative' : 'absolute',
+    width: fastImageVisibile.value === 1 ? 'auto' : 0,
+    height: fastImageVisibile.value === 1 ? 'auto' : 0,
+  }));
+  function openMainSourceSelector() {
+    bottomSheet.current?.snapToIndex(1);
+  }
+
+  function endSetup() {
+    navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
+  }
+
+  React.useLayoutEffect(() => {
+    const p = Dimensions.addEventListener('change', ({ window }) => {
+      // window.height = old width
+      fastImageVisibile.value = window.width > window.height ? 0 : 1;
+
+      const index = Math.round(scrollPosition.value / window.height);
+      const timer = setInterval(
+        () => ref.current?.scrollTo({ x: index * window.width }),
+        50,
+      );
+      setTimeout(() => clearInterval(timer), 200);
+    });
+    return () => {
+      p.remove();
+    };
+  }, []);
+
+  return (
+    <>
+      <MainSourceSelector ref={bottomSheet} />
+      <ScrollView
+        ref={ref}
+        onScroll={onScroll}
+        style={scrollViewStyle}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        horizontal
+        pagingEnabled
+        scrollEnabled={false}
+      >
+        <Box justify-content="center">
+          <Page index={0} scrollPosition={scrollPosition}>
+            <Box align-items="center" width={width} mt="xl">
+              <Box align-self="center" maxWidth={moderateScale(350)}>
+                <Stack space="m">
+                  <Text align="center" bold variant="header-lg">
+                    Welcome to MangaYomu!
+                  </Text>
+                  <Text align="center" color="textSecondary">
+                    Hey there! Before you start using the app, it is recommended
+                    to go through the quick setup.
+                  </Text>
+                  <Button
+                    label="Proceed to setup"
+                    variant="contained"
+                    onPress={next}
+                  />
+                  <Button label="Skip setup" onPress={endSetup} />
+                </Stack>
+              </Box>
+            </Box>
+          </Page>
+        </Box>
+        <Box justify-content="center">
+          <Page index={1} scrollPosition={scrollPosition}>
+            <Box align-items="center" width={width} mt="xl">
+              <Box align-self="center" maxWidth={moderateScale(350)}>
+                <Stack space="m">
+                  <Text align="center" bold variant="header-lg">
+                    Select a main source
+                  </Text>
+                  <Text align="center" color="textSecondary">
+                    This will be your main source. Whenever you open the
+                    application, the source's contents will be displayed in
+                    Explore page.
+                  </Text>
+                  <Text align="center" color="textSecondary">
+                    You can change this whenever you want.
+                  </Text>
+                  <Button
+                    label="Select a main source"
+                    variant="contained"
+                    onPress={openMainSourceSelector}
+                  />
+                  <Button label="Skip for now" onPress={next} />
+                </Stack>
+              </Box>
+            </Box>
+          </Page>
+        </Box>
+        <Box justify-content="center">
+          <Page index={2} scrollPosition={scrollPosition}>
+            <Box align-items="center" width={width} mt="xl">
+              <Box align-self="center" maxWidth={moderateScale(350)}>
+                <Stack space="m">
+                  <Text align="center" bold variant="header-lg">
+                    MangaYomu Cloud
+                  </Text>
+                  <Text align="center" color="textSecondary">
+                    MangaYomu provides a free cloud storage solution to enable
+                    easy access to your manga library anywhere on any device.
+                  </Text>
+                  <Text align="center" color="textSecondary">
+                    Simply link a social media account to enable access, though
+                    this step is completely optional.
+                  </Text>
+                  <Button label="Skip for now" onPress={next} />
+                </Stack>
+              </Box>
+            </Box>
+          </Page>
+        </Box>
+        <Box justify-content="center">
+          <Page index={3} scrollPosition={scrollPosition}>
+            <Box align-items="center" width={width} mt="xl">
+              <Box align-self="center" maxWidth={moderateScale(350)}>
+                <Stack space="m">
+                  <Animated.View style={fastImageStyle}>
+                    <FastImage
+                      source={require('@assets/reading.png')}
+                      resizeMode="contain"
+                      style={styles.fastImage}
+                    />
+                  </Animated.View>
+                  <Text align="center" bold variant="header-lg">
+                    Setup complete
+                  </Text>
+                  <Text align="center" color="textSecondary">
+                    Thanks for completing the initial setup.
+                  </Text>
+                  <Button
+                    label="Start reading"
+                    onPress={endSetup}
+                    variant="contained"
+                  />
+                </Stack>
+              </Box>
+            </Box>
+          </Page>
+        </Box>
+      </ScrollView>
+    </>
+  );
+});
+
+const styles = ScaledSheet.create({
+  fastImage: {
+    width: '350@ms',
+    height: '280@ms',
+  },
+});
 
 export default Welcome;

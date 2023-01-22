@@ -7,6 +7,7 @@ import {
   set,
   setu,
   setwandh,
+  setWithPalette,
 } from './Box.helpers';
 
 /**
@@ -30,9 +31,9 @@ const Box = styled.View<BoxProps>`
       p,
       m,
       px,
-      pv,
+      py,
       mx,
-      mv,
+      my,
       ml,
       mr,
       mb,
@@ -51,7 +52,10 @@ const Box = styled.View<BoxProps>`
       right,
       top,
       bottom,
+      'border-radius': borderRadius = 0,
       'z-index': zIndex = 0,
+      'border-color': borderColor,
+      'border-width': borderWidth,
     } = props;
 
     return css`
@@ -62,17 +66,10 @@ const Box = styled.View<BoxProps>`
           return css`
             background-color: red;
           `;
-        if (bgColor == null) return;
-        if (bgColor in theme.palette.background)
-          return css`
-            background-color: ${theme.palette.background[
-              bgColor as keyof BackgroundColor
-            ]};
-          `;
-        return css`
-          background-color: ${theme.palette[bgColor as ButtonColors].main};
-        `;
+        return setWithPalette(theme, 'background-color', bgColor);
       })()}
+      ${setWithPalette(theme, 'border-color', borderColor)};
+      ${setu(theme, 'border-width', borderWidth)}
       ${set('position', position)};
       ${boxShadow && theme.style.shadow};
       ${maxWidth && setwandh('max-width', maxWidth)};
@@ -83,20 +80,23 @@ const Box = styled.View<BoxProps>`
       ${set('right', right)};
       ${setwandh('height', height)};
       ${setwandh('width', width)};
+      border-radius: ${typeof borderRadius === 'number'
+        ? borderRadius + 'px'
+        : theme.style.borderRadius + 'px'};
       ${implementBoxModel(theme, {
         p,
         pb,
         pl,
         pr,
         pt,
-        pv,
+        py,
         px,
         m,
         mb,
         ml,
         mr,
         mt,
-        mv,
+        my,
         mx,
       })};
       ${implementFlexBoxModel(theme, {

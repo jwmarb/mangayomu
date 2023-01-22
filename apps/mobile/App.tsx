@@ -17,6 +17,7 @@ import { Provider } from 'react-redux';
 import Root from './src/Root';
 import store from '@redux/main';
 import { moderateScale } from 'react-native-size-matters';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 function App(): JSX.Element {
   const mode = useColorScheme();
@@ -42,6 +43,7 @@ function App(): JSX.Element {
       background: {
         default: color('#141414', '#fafafa'),
         paper: color('#262626', '#ffffff'),
+        disabled: color('#1C1C1C', '#EFEFEF'),
       },
     },
     style: {
@@ -56,13 +58,15 @@ function App(): JSX.Element {
   return (
     <>
       <StatusBar translucent backgroundColor="transparent" />
-      <ThemeProvider theme={theme}>
-        <NavigationContainer>
-          <Provider store={store}>
-            <Root />
-          </Provider>
-        </NavigationContainer>
-      </ThemeProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ThemeProvider theme={theme}>
+          <NavigationContainer>
+            <Provider store={store}>
+              <Root />
+            </Provider>
+          </NavigationContainer>
+        </ThemeProvider>
+      </GestureHandlerRootView>
     </>
   );
 }

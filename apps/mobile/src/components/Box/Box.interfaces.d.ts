@@ -58,8 +58,8 @@ export interface BoxProps
   'background-color'?: string;
   'box-shadow'?: boolean;
   'border-radius'?: number | '@theme';
-  'border-color': string;
-  'border-width': number;
+  'border-color'?: string;
+  'border-width'?: number;
   /**
    * Properties
    */
