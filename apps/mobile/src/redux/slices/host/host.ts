@@ -1,3 +1,4 @@
+import displayMessage from '@helpers/displayMessage';
 import { MangaHost } from '@mangayomu/mangascraper';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
@@ -18,6 +19,7 @@ export const hostSlice = createSlice({
       if (source == null)
         throw Error(`${action.payload} does not exist as a manga source.`);
       state.name = action.payload;
+      displayMessage(`Set ${action.payload} as main source`);
     },
   },
 });

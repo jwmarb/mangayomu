@@ -1,14 +1,15 @@
 import Box from '@components/Box';
 import Button from '@components/Button';
 import { CustomBottomSheet } from '@components/CustomBottomSheet';
-import Icon from '@components/Icon';
-import IconButton from '@components/IconButton';
 import Input from '@components/Input';
 import { Stack } from '@components/Stack';
 import Text from '@components/Text';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { MangaHost } from '@mangayomu/mangascraper';
+import connector, {
+  ConnectedItemProps,
+} from '@screens/Welcome/components/MainSourceSelector/MainSourceSelector.redux';
 import React from 'react';
 import { ListRenderItem } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -51,29 +52,41 @@ const renderItem: ListRenderItem<string> = ({ item }) => {
   return <Item item={item} />;
 };
 
-const Item: React.FC<{ item: string }> = React.memo(({ item }) => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const host = MangaHost.getAvailableSources().get(item)!;
-  return (
-    <Box
-      p={moderateScale(16)}
-      flex-direction="row"
-      justify-content="space-between"
-    >
-      <Stack flex-direction="row" space="m">
-        <FastImage source={{ uri: host.getIcon() }} style={styles.icon} />
+const _Item: React.FC<ConnectedItemProps> = React.memo(
+  ({ item, changeSource, isSelected }) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const host = MangaHost.getAvailableSources().get(item)!;
+    function handleOnPress() {
+      changeSource(host.getName());
+    }
+    return (
+      <Box
+        p={moderateScale(16)}
+        flex-direction="row"
+        justify-content="space-between"
+      >
+        <Stack flex-direction="row" space="m">
+          <FastImage source={{ uri: host.getIcon() }} style={styles.icon} />
 
-        <Stack>
-          <Text bold>{host.getName()}</Text>
-          <Text color="textSecondary">v{host.getVersion()}</Text>
+          <Stack>
+            <Text bold>{host.getName()}</Text>
+            <Text color="textSecondary">v{host.getVersion()}</Text>
+          </Stack>
         </Stack>
-      </Stack>
-      <Box>
-        <Button label="Set as main source" variant="outline" />
+        <Box>
+          <Button
+            label={isSelected ? 'Selected' : 'Set as main source'}
+            variant={isSelected ? 'text' : 'outline'}
+            disabled={isSelected}
+            onPress={handleOnPress}
+          />
+        </Box>
       </Box>
-    </Box>
-  );
-});
+    );
+  },
+);
+
+const Item = connector(_Item);
 
 const styles = ScaledSheet.create({
   icon: {

@@ -1,5 +1,4 @@
+import { ConnectedMainSourceSelectorProps } from '@screens/Welcome/components/MainSourceSelector/MainSourceSelector.redux';
 import React from 'react';
 
-export interface MainSourceSelectorProps extends React.PropsWithChildren {
-  onSelectSource?: () => void;
-}
+export type MainSourceSelectorProps = React.PropsWithChildren;
