@@ -8,10 +8,17 @@ import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 
 const Button: React.FC<ButtonProps> = (props) => {
-  const { label, variant, color = 'primary', ...rest } = props;
+  const {
+    label,
+    variant,
+    color = 'primary',
+    disabled = false,
+    ...rest
+  } = props;
   const theme = useTheme();
   return (
     <BaseButton
+      enabled={!disabled}
       style={{
         borderRadius: theme.style.borderRadius,
         backgroundColor:
@@ -27,7 +34,7 @@ const Button: React.FC<ButtonProps> = (props) => {
         border-radius="@theme"
         {...(variant === 'outline'
           ? {
-              'border-color': color,
+              'border-color': disabled ? theme.palette.text.disabled : color,
             }
           : {
               'border-color': 'transparent',
@@ -37,7 +44,13 @@ const Button: React.FC<ButtonProps> = (props) => {
           variant="button"
           align="center"
           bold
-          color={variant === 'contained' ? 'primary@contrast' : 'primary'}
+          color={
+            disabled
+              ? 'disabled'
+              : variant === 'contained'
+              ? 'primary@contrast'
+              : 'primary'
+          }
         >
           {label}
         </Text>

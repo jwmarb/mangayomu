@@ -6,4 +6,5 @@ export interface ButtonProps extends React.PropsWithChildren, BaseButtonProps {
   label: string;
   variant?: 'contained' | 'outline' | 'text';
   color?: ButtonColors;
+  disabled?: boolean;
 }
