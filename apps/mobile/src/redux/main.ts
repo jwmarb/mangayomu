@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { __initialReducer__ } from '@redux/slices/__initial__';
+import { hostReducer } from '@redux/slices/host';
 
 const store = configureStore({
   reducer: {
     __initial__: __initialReducer__,
+    host: hostReducer,
   },
 });
 
