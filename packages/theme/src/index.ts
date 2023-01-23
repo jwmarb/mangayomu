@@ -1,14 +1,11 @@
-import React from 'react';
 import {
   ColorSchema,
   definePalette,
   getColor,
   mutatePalette,
   readColors,
-  RecursivePartial,
 } from './helpers';
 export * from './colorHelpers';
-export * from './themeProvider';
 
 export interface RGBA {
   red: number;
