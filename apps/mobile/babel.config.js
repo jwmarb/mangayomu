@@ -15,6 +15,7 @@ module.exports = {
           '@mmkv-storage': './src/mmkv-storage',
           '@hooks': './src/hooks',
           '@assets': './src/assets',
+          '@helpers': './src/helpers',
         },
       },
     ],
