@@ -1,11 +1,22 @@
+import { TabHeader } from '@components/NavHeader';
+import { HomeTabNavigator } from '@navigators/Home';
+import Explore from '@screens/Explore';
+import History from '@screens/History';
+import Library from '@screens/Library';
+import Settings from '@screens/Settings';
 import React from 'react';
-import { View, Text } from 'react-native';
 
 const Home: React.FC = () => {
   return (
-    <View>
-      <Text>Hello World!</Text>
-    </View>
+    <HomeTabNavigator.Navigator
+      initialRouteName="Explore"
+      screenOptions={{ header: TabHeader }}
+    >
+      <HomeTabNavigator.Screen component={Explore} name="Explore" />
+      <HomeTabNavigator.Screen component={Library} name="Library" />
+      <HomeTabNavigator.Screen component={History} name="History" />
+      <HomeTabNavigator.Screen component={Settings} name="Settings" />
+    </HomeTabNavigator.Navigator>
   );
 };
 
