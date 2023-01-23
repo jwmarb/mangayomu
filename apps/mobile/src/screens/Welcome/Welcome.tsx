@@ -1,14 +1,11 @@
 import Box from '@components/Box';
 import Button from '@components/Button/Button';
-import { CustomBottomSheet } from '@components/CustomBottomSheet';
 import { Stack } from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
-import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
-import { MangaHost, MangaSee } from '@mangayomu/mangascraper';
-import { Circle } from '@screens/Welcome/Welcome.base';
+import BottomSheet from '@gorhom/bottom-sheet';
 import React from 'react';
-import { Dimensions, ScrollViewProps, StyleSheet } from 'react-native';
+import { Dimensions, ScrollViewProps } from 'react-native';
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -17,22 +14,12 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Animated, {
-  interpolate,
-  interpolateColor,
-  runOnUI,
   SharedValue,
   useAnimatedStyle,
-  useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
-import {
-  moderateScale,
-  ScaledSheet,
-  verticalScale,
-} from 'react-native-size-matters';
-import Orientation, { OrientationType } from 'react-native-orientation-locker';
+import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import Page from '@screens/Welcome/components/Page';
-import PaginationCircle from '@screens/Welcome/components/PaginationCircle';
 import PaginationOverlay from '@screens/Welcome/components/PaginationOverlay/PaginationOverlay';
 import MainSourceSelector from '@screens/Welcome/components/MainSourceSelector';
 import useRootNavigation from '@hooks/useRootNavigation';
