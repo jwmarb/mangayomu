@@ -4,6 +4,7 @@ import { css } from '@emotion/native';
 import { Theme } from '@emotion/react';
 import { helpers } from '@theme/helpers';
 import { moderateScale, scale } from 'react-native-size-matters';
+import { Theme as NavigationTheme } from '@react-navigation/native';
 
 export type TextVariants = keyof typeof typography;
 
@@ -60,6 +61,7 @@ declare module '@emotion/react' {
     style: {
       shadow: typeof shadow;
     } & DefaultTheme['style'];
+    __react_navigation__: NavigationTheme;
   }
 }
 

@@ -8,8 +8,11 @@
 import React from 'react';
 import { StatusBar, useColorScheme } from 'react-native';
 
-import { NavigationContainer } from '@react-navigation/native';
-import { createTheme } from '@mangayomu/theme';
+import {
+  NavigationContainer,
+  DefaultTheme as NavigationDefaultTheme,
+} from '@react-navigation/native';
+import { createTheme, UserDefinedPalette } from '@mangayomu/theme';
 import { ThemeProvider, Theme } from '@emotion/react';
 import { shadow, spacing, typography } from '@theme/theme';
 import { helpers } from '@theme/helpers';
@@ -21,46 +24,66 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 function App(): JSX.Element {
   const mode = useColorScheme();
-  const theme = createTheme<Theme>(({ color, colorConstant }) => ({
-    mode,
-    palette: {
-      primary: {
-        light: colorConstant('#69c0ff'),
-        main: colorConstant('#1890ff'),
-        dark: colorConstant('#0050b3'),
-      },
-      secondary: {
-        light: colorConstant('#ffa39e'),
-        main: colorConstant('#ff7875'),
-        dark: colorConstant('#ff4d4f'),
-      },
-      text: {
-        primary: color('rgba(255, 255, 255, 1)', 'rgba(0, 0, 0, 0.87)'),
-        secondary: color('rgba(255, 255, 255, 0.7)', 'rgba(0, 0, 0, 0.6)'),
-        disabled: color('rgba(255, 255, 255, 0.5)', 'rgba(0, 0, 0, 0.38)'),
-        hint: color('rgba(255, 255, 255, 0.5)', 'rgba(0, 0, 0, 0.38)'),
-      },
-      background: {
-        default: color('#141414', '#fafafa'),
-        paper: color('#262626', '#ffffff'),
-        disabled: color('#1C1C1C', '#EFEFEF'),
-      },
-    },
-    style: {
-      borderRadius: moderateScale(24),
-      spacing,
-      shadow,
-    },
-    typography,
-    helpers,
-  }));
+  const theme = React.useMemo(
+    () =>
+      createTheme<Theme>(({ color, colorConstant, definePalette }) => ({
+        mode,
+        palette: {
+          primary: {
+            light: colorConstant('#69c0ff'),
+            main: colorConstant('#1890ff'),
+            dark: colorConstant('#0050b3'),
+          },
+          secondary: {
+            light: colorConstant('#ffa39e'),
+            main: colorConstant('#ff7875'),
+            dark: colorConstant('#ff4d4f'),
+          },
+          text: {
+            primary: color('rgba(255, 255, 255, 1)', 'rgba(0, 0, 0, 0.87)'),
+            secondary: color('rgba(255, 255, 255, 0.7)', 'rgba(0, 0, 0, 0.6)'),
+            disabled: color('rgba(255, 255, 255, 0.5)', 'rgba(0, 0, 0, 0.38)'),
+            hint: color('rgba(255, 255, 255, 0.5)', 'rgba(0, 0, 0, 0.38)'),
+          },
+          background: {
+            default: color('#141414', '#fafafa'),
+            paper: color('#262626', '#ffffff'),
+            disabled: color('#1C1C1C', '#EFEFEF'),
+          },
+        },
+        style: {
+          borderRadius: moderateScale(24),
+          spacing,
+          shadow,
+        },
+        typography,
+        helpers,
+        __react_navigation__: {
+          dark: mode === 'dark',
+          colors: definePalette<(typeof NavigationDefaultTheme)['colors']>({
+            ...Object.entries(NavigationDefaultTheme.colors).reduce(
+              (prev, [key, value]) => {
+                prev[key as keyof typeof NavigationDefaultTheme.colors] =
+                  colorConstant(value);
+                return prev;
+              },
+              {} as UserDefinedPalette<typeof NavigationDefaultTheme.colors>,
+            ),
+            primary: colorConstant('#1890ff'),
+            background: color('#141414', '#fafafa'),
+            text: color('rgba(255, 255, 255, 1)', 'rgba(0, 0, 0, 0.87)'),
+          }),
+        },
+      })),
+    [mode],
+  );
 
   return (
     <>
       <StatusBar translucent backgroundColor="transparent" />
       <GestureHandlerRootView style={{ flex: 1 }}>
         <ThemeProvider theme={theme}>
-          <NavigationContainer>
+          <NavigationContainer theme={theme.__react_navigation__}>
             <Provider store={store}>
               <Root />
             </Provider>

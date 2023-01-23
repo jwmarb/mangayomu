@@ -1,5 +1,12 @@
 import React from 'react';
-import { ColorSchema, getColor, readColors, RecursivePartial } from './helpers';
+import {
+  ColorSchema,
+  definePalette,
+  getColor,
+  mutatePalette,
+  readColors,
+  RecursivePartial,
+} from './helpers';
 export * from './colorHelpers';
 export * from './themeProvider';
 
@@ -78,7 +85,18 @@ export interface Theme extends DefaultTheme {}
 export interface ThemeBuilder {
   color(dark: string, light: string): ColorSchema;
   colorConstant(color: string): ColorSchema;
+  definePalette<T extends Record<PropertyKey, unknown>>(
+    obj: UserDefinedPalette<T>,
+  ): T;
 }
+
+export type UserDefinedPalette<T extends Record<PropertyKey, unknown>> = {
+  [K in keyof T]: T[K] extends string
+    ? ColorSchema
+    : T[K] extends Record<PropertyKey, string>
+    ? UserDefinedPalette<T[K]>
+    : T[K];
+};
 
 export type ThemeSchema<T extends DefaultTheme> = {
   [K in keyof T]: K extends 'palette'
@@ -113,8 +131,6 @@ export type ThemeSchema<T extends DefaultTheme> = {
     : T[K];
 };
 
-type PartializeKeys<T, K extends keyof T> = Omit<T, K> &
-  Pick<RecursivePartial<T>, K>;
 type ThemeCreator<T extends DefaultTheme> = (
   builder: ThemeBuilder,
 ) => ThemeSchema<T>;
@@ -132,26 +148,41 @@ export function createTheme<T extends DefaultTheme>(
   function colorConstant(color: string): ColorSchema {
     return { dark: color, light: color };
   }
-  const template: ThemeSchema<T> = builder({ color, colorConstant });
+  const template: ThemeSchema<T> = builder({
+    color,
+    colorConstant,
+    definePalette: definePalette as ThemeBuilder['definePalette'],
+  });
 
-  const parsed: DefaultTheme = {
+  mutatePalette(template, template.mode);
+
+  // const parsed: DefaultTheme = {
+  //   ...template,
+  //   palette: readColors(
+  //     (template as ThemeSchema<DefaultTheme>).palette,
+  //     template.mode,
+  //   ),
+  //   style: {
+  //     borderRadius: template.style.borderRadius,
+  //     spacing: template.style.spacing,
+  //   },
+  // } as DefaultTheme; // missing helpers, which will be assigned under this line
+  const parsed = {
     ...template,
     palette: readColors(
       (template as ThemeSchema<DefaultTheme>).palette,
       template.mode,
     ),
-    style: {
-      borderRadius: template.style.borderRadius,
-      spacing: template.style.spacing,
-    },
-  } as DefaultTheme; // missing helpers, which will be assigned under this line
-  (parsed as PartializeKeys<DefaultTheme, 'helpers'>).helpers = {
-    getColor: getColor(parsed),
+    helpers: {},
   };
+
   for (const key in template.helpers) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (parsed.helpers as any)[key] = (...args: unknown[]) =>
-      (template.helpers as any)[key](...args)(parsed);
+      (template.helpers as any)[key](...args)(template);
   }
+  (parsed as DefaultTheme).helpers['getColor'] = getColor(
+    parsed as DefaultTheme,
+  );
   return parsed as T & DefaultThemeHelpers;
 }

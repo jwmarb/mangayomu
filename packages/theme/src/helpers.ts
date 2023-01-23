@@ -58,6 +58,35 @@ export function readColors(
   return converted as RecursiveRequired<Theme['palette']>;
 }
 
+export function mutatePalette<T>(a: T, mode: ThemeMode) {
+  for (const key in a) {
+    if (key === 'palette') continue;
+    if (typeof a[key] === 'object' && a[key] != null) {
+      const b = a[key] as Record<PropertyKey, unknown>;
+      if ('light' in b && 'dark' in b) {
+        (a as Record<string, unknown>)[key] =
+          mode === 'light' ? b.light : b.dark;
+      } else mutatePalette(a[key], mode);
+    }
+    if (Array.isArray(a[key])) {
+      const b = a[key] as unknown[];
+      if (b[0] === 'palette' && typeof b[1] === 'object' && b[1] != null) {
+        (a as Record<string, unknown>)[key] = { ...b[1] };
+        mutatePalette(a[key], mode);
+      }
+    }
+  }
+}
+
+/**
+ * If an object is going to use colors that will or cannot be defined in the `palette` property, this function should be called to recursively convert color properties
+ * @param obj The object to define a palette
+ * @returns
+ */
+export function definePalette<T>(obj: T) {
+  return ['palette', obj];
+}
+
 export function getColor(theme: DefaultTheme) {
   return (color: Colors | ButtonColorsTextContrasts) => {
     switch (color) {
