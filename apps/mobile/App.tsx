@@ -21,6 +21,12 @@ import Root from './src/Root';
 import store from '@redux/main';
 import { moderateScale } from 'react-native-size-matters';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Auth0Provider } from 'react-native-auth0';
+
+enum Auth0 {
+  DOMAIN = 'dev-wq6wbghv.us.auth0.com',
+  CLIENT_ID = '2dLESXiDyJFgpzKU2FYZJKb0s9yzXWX8',
+}
 
 function App(): JSX.Element {
   const mode = useColorScheme();
@@ -82,13 +88,15 @@ function App(): JSX.Element {
     <>
       <StatusBar translucent backgroundColor="transparent" />
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <ThemeProvider theme={theme}>
-          <NavigationContainer theme={theme.__react_navigation__}>
-            <Provider store={store}>
-              <Root />
-            </Provider>
-          </NavigationContainer>
-        </ThemeProvider>
+        <Auth0Provider domain={Auth0.DOMAIN} clientId={Auth0.CLIENT_ID}>
+          <ThemeProvider theme={theme}>
+            <NavigationContainer theme={theme.__react_navigation__}>
+              <Provider store={store}>
+                <Root />
+              </Provider>
+            </NavigationContainer>
+          </ThemeProvider>
+        </Auth0Provider>
       </GestureHandlerRootView>
     </>
   );

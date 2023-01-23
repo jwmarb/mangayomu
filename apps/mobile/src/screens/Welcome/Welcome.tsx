@@ -24,6 +24,7 @@ import PaginationOverlay from '@screens/Welcome/components/PaginationOverlay/Pag
 import MainSourceSelector from '@screens/Welcome/components/MainSourceSelector';
 import useRootNavigation from '@hooks/useRootNavigation';
 import useAppSelector from '@hooks/useAppSelector';
+import { useAuth0 } from 'react-native-auth0';
 
 const Welcome: React.FC = () => {
   const scrollPosition = useSharedValue(0);
@@ -49,6 +50,7 @@ const Onboard: React.FC<
   const theme = useTheme();
   const navigation = useRootNavigation();
   const { width } = useWindowDimensions();
+  const { authorize, user } = useAuth0();
   const ref = React.useRef<ScrollView>(null);
   const bottomSheet = React.useRef<BottomSheet>(null);
 
@@ -80,6 +82,14 @@ const Onboard: React.FC<
 
   function endSetup() {
     navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
+  }
+
+  async function login() {
+    try {
+      await authorize({ scope: 'openid profile email' });
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   React.useLayoutEffect(() => {
@@ -190,7 +200,22 @@ const Onboard: React.FC<
                     Simply link a social media account to enable access, though
                     this step is completely optional.
                   </Text>
-                  <Button label="Skip for now" onPress={next} />
+                  {user == null ? (
+                    <>
+                      <Button
+                        label="Link an account"
+                        onPress={login}
+                        variant="contained"
+                      />
+                      <Button label="Skip for now" onPress={next} />
+                    </>
+                  ) : (
+                    <Button
+                      label="Continue to the next step"
+                      variant="contained"
+                      onPress={next}
+                    />
+                  )}
                 </Stack>
               </Box>
             </Box>
