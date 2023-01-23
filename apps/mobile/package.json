@@ -7,7 +7,6 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest",
     "reset": "rimraf node_modules",
     "prestorybook": "rnstl",
     "storybook": "start-storybook -p 7007",
