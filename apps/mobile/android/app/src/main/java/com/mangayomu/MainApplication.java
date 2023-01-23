@@ -1,4 +1,4 @@
-package com.myapp;
+package com.mangayomu;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

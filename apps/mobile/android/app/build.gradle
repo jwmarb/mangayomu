@@ -93,13 +93,14 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.myapp"
+    namespace "com.mangayomu"
     defaultConfig {
-        applicationId "com.myapp"
+        applicationId "com.mangayomu"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        manifestPlaceholders = [auth0Domain: "dev-wq6wbghv.us.auth0.com", auth0Scheme: "2dLESXiDyJFgpzKU2FYZJKb0s9yzXWX8"]
     }
 
     splits {
