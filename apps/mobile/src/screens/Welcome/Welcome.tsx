@@ -23,6 +23,7 @@ import Page from '@screens/Welcome/components/Page';
 import PaginationOverlay from '@screens/Welcome/components/PaginationOverlay/PaginationOverlay';
 import MainSourceSelector from '@screens/Welcome/components/MainSourceSelector';
 import useRootNavigation from '@hooks/useRootNavigation';
+import useAppSelector from '@hooks/useAppSelector';
 
 const Welcome: React.FC = () => {
   const scrollPosition = useSharedValue(0);
@@ -50,6 +51,8 @@ const Onboard: React.FC<
   const { width } = useWindowDimensions();
   const ref = React.useRef<ScrollView>(null);
   const bottomSheet = React.useRef<BottomSheet>(null);
+
+  const hostName = useAppSelector((state) => state.host.name);
   const next = () => {
     ref.current?.scrollTo({
       x: (Math.round(scrollPosition.value / width) + 1) * width,
@@ -149,11 +152,23 @@ const Onboard: React.FC<
                     You can change this whenever you want.
                   </Text>
                   <Button
-                    label="Select a main source"
-                    variant="contained"
+                    label={
+                      hostName != null
+                        ? `Selected: ${hostName}`
+                        : 'Select a main source'
+                    }
+                    variant={hostName != null ? 'outline' : 'contained'}
                     onPress={openMainSourceSelector}
                   />
-                  <Button label="Skip for now" onPress={next} />
+                  <Button
+                    label={
+                      hostName == null
+                        ? 'Skip for now'
+                        : 'Continue to the next step'
+                    }
+                    variant={hostName == null ? 'text' : 'contained'}
+                    onPress={next}
+                  />
                 </Stack>
               </Box>
             </Box>
