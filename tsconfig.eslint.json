@@ -3,5 +3,6 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "include": ["services", "packages", "apps", "components"]
+  "include": ["services", "packages", "apps", "components"],
+  "exclude": ["node_modules"]
 }
