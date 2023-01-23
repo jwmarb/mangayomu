@@ -28,6 +28,7 @@
     "@gorhom/bottom-sheet": "^4",
     "@mangayomu/mangascraper": "^1.0.0",
     "@mangayomu/theme": "^1.0.0",
+    "@react-navigation/bottom-tabs": "^6.5.3",
     "@react-navigation/native": "^6.1.2",
     "@react-navigation/native-stack": "^6.9.8",
     "@reduxjs/toolkit": "^1.9.1",
