@@ -50,7 +50,7 @@ const Onboard: React.FC<
   const theme = useTheme();
   const navigation = useRootNavigation();
   const { width } = useWindowDimensions();
-  const { authorize, user } = useAuth0();
+  const { authorize, clearSession, user } = useAuth0();
   const ref = React.useRef<ScrollView>(null);
   const bottomSheet = React.useRef<BottomSheet>(null);
 
@@ -212,6 +212,16 @@ const Onboard: React.FC<
                   ) : (
                     <>
                       <Text>{JSON.stringify(user)}</Text>
+                      <Button
+                        label="Logout"
+                        onPress={async () => {
+                          try {
+                            await clearSession();
+                          } catch (e) {
+                            console.error(e);
+                          }
+                        }}
+                      />
                       <Button
                         label="Continue to the next step"
                         variant="contained"
