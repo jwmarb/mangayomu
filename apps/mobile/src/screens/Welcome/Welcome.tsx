@@ -210,11 +210,14 @@ const Onboard: React.FC<
                       <Button label="Skip for now" onPress={next} />
                     </>
                   ) : (
-                    <Button
-                      label="Continue to the next step"
-                      variant="contained"
-                      onPress={next}
-                    />
+                    <>
+                      <Text>{JSON.stringify(user)}</Text>
+                      <Button
+                        label="Continue to the next step"
+                        variant="contained"
+                        onPress={next}
+                      />
+                    </>
                   )}
                 </Stack>
               </Box>
