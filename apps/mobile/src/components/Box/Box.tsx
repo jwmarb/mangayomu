@@ -55,6 +55,7 @@ const Box = styled.View<BoxProps>`
       'z-index': zIndex = 0,
       'border-color': borderColor,
       'border-width': borderWidth,
+      overflow,
     } = props;
 
     return css`
@@ -73,6 +74,7 @@ const Box = styled.View<BoxProps>`
       ${boxShadow && theme.style.shadow};
       ${maxWidth && setwandh('max-width', maxWidth)};
       ${maxHeight && setwandh('max-height', maxHeight)};
+      ${set('overflow', overflow)};
       ${set('top', top)};
       ${set('bottom', bottom)};
       ${set('left', left)};

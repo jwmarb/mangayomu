@@ -45,6 +45,7 @@ export interface BoxProps
   height?: number | string;
   maxWidth?: number | string;
   maxHeight?: number | string;
+  overflow?: ViewStyle['overflow'];
   position?: ViewStyle['position'];
   top?: number | string;
   bottom?: number | string;
