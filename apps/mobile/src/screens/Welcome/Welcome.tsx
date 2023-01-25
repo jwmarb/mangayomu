@@ -24,7 +24,7 @@ import PaginationOverlay from '@screens/Welcome/components/PaginationOverlay/Pag
 import MainSourceSelector from '@screens/Welcome/components/MainSourceSelector';
 import useRootNavigation from '@hooks/useRootNavigation';
 import useAppSelector from '@hooks/useAppSelector';
-import { useAuth0 } from 'react-native-auth0';
+import useAuth0 from '@hooks/useAuth0';
 
 const Welcome: React.FC = () => {
   const scrollPosition = useSharedValue(0);
@@ -120,7 +120,7 @@ const Onboard: React.FC<
         showsHorizontalScrollIndicator={false}
         horizontal
         pagingEnabled
-        scrollEnabled={false}
+        // scrollEnabled={false}
       >
         <Box justify-content="center">
           <Page index={0} scrollPosition={scrollPosition}>
@@ -196,10 +196,12 @@ const Onboard: React.FC<
                     MangaYomu provides a free cloud storage solution to enable
                     easy access to your manga library anywhere on any device.
                   </Text>
-                  <Text align="center" color="textSecondary">
-                    Simply link a social media account to enable access, though
-                    this step is completely optional.
-                  </Text>
+                  {user == null && (
+                    <Text align="center" color="textSecondary">
+                      Simply link a social media account to enable access,
+                      though this step is completely optional.
+                    </Text>
+                  )}
                   {user == null ? (
                     <>
                       <Button
@@ -211,17 +213,9 @@ const Onboard: React.FC<
                     </>
                   ) : (
                     <>
-                      <Text>{JSON.stringify(user)}</Text>
-                      <Button
-                        label="Logout"
-                        onPress={async () => {
-                          try {
-                            await clearSession();
-                          } catch (e) {
-                            console.error(e);
-                          }
-                        }}
-                      />
+                      <Text align="center" bold>
+                        Account successfully linked.
+                      </Text>
                       <Button
                         label="Continue to the next step"
                         variant="contained"
