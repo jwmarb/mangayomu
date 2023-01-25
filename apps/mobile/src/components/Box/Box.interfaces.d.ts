@@ -56,7 +56,15 @@ export interface BoxProps
    */
   'background-color'?: string;
   'box-shadow'?: boolean;
-  'border-radius'?: number | '@theme';
+  'border-radius'?:
+    | number
+    | '@theme'
+    | {
+        tl: number | '@theme';
+        tr: number | '@theme';
+        bl: number | '@theme';
+        br: number | '@theme';
+      };
   'border-color'?: string;
   'border-width'?: number;
   /**

@@ -79,9 +79,35 @@ const Box = styled.View<BoxProps>`
       ${set('right', right)};
       ${setwandh('height', height)};
       ${setwandh('width', width)};
-      border-radius: ${typeof borderRadius === 'number'
-        ? borderRadius + 'px'
-        : theme.style.borderRadius + 'px'};
+      ${(() => {
+        if (borderRadius === '@theme')
+          return 'border-radius: ' + theme.style.borderRadius + 'px';
+        if (typeof borderRadius === 'number')
+          return 'border-radius: ' + borderRadius + 'px';
+        if (typeof borderRadius === 'object')
+          return css`
+            border-top-left-radius: ${typeof borderRadius.tl === 'number'
+              ? borderRadius.tl + 'px'
+              : borderRadius.tl == null
+              ? '0px'
+              : theme.style.borderRadius + 'px'};
+            border-bottom-left-radius: ${typeof borderRadius.tl === 'number'
+              ? borderRadius.bl + 'px'
+              : borderRadius.bl == null
+              ? '0px'
+              : theme.style.borderRadius + 'px'};
+            border-top-right-radius: ${typeof borderRadius.tl === 'number'
+              ? borderRadius.tr + 'px'
+              : borderRadius.tr == null
+              ? '0px'
+              : theme.style.borderRadius + 'px'};
+            border-bottom-right-radius: ${typeof borderRadius.tl === 'number'
+              ? borderRadius.br + 'px'
+              : borderRadius.br == null
+              ? '0px'
+              : theme.style.borderRadius + 'px'};
+          `;
+      })()};
       ${implementBoxModel(theme, {
         p,
         pb,
