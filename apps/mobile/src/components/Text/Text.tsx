@@ -14,7 +14,7 @@ const Text = styled.Text<TextProps>`
       align = 'auto',
     } = props;
     return css`
-      ${theme.typography[variant]}
+      ${variant !== 'inherit' && theme.typography[variant]}
       color: ${theme.helpers.getColor(color)};
       text-align: ${align};
       ${bold && 'font-weight: bold'};
