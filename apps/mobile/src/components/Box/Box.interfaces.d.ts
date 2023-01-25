@@ -25,7 +25,6 @@ export interface BoxModel {
 }
 
 export interface FlexBoxModel {
-  flex?: boolean;
   'flex-grow'?: boolean;
   'flex-shrink'?: boolean;
   'justify-content'?: ViewStyle['justifyContent'];

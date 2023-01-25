@@ -23,7 +23,6 @@ const Box = styled.View<BoxProps>`
       'background-color': bgColor,
       'box-shadow': boxShadow,
       'justify-content': justifyContent = 'flex-start',
-      flex,
       'flex-grow': flexGrow,
       'flex-shrink': flexShrink,
       'flex-wrap': flexWrap,
@@ -106,7 +105,6 @@ const Box = styled.View<BoxProps>`
         'flex-grow': flexGrow,
         'flex-shrink': flexShrink,
         'flex-wrap': flexWrap,
-        flex,
         'justify-content': justifyContent,
       })}
     `;

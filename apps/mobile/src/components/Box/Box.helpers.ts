@@ -93,7 +93,6 @@ export function implementFlexBoxModel(
     'align-items': alignItems = 'stretch',
     'align-self': alignSelf = 'stretch',
     'justify-content': justifyContent = 'flex-start',
-    flex,
     'flex-grow': flexGrow,
     'flex-shrink': flexShrink,
     'flex-wrap': flexWrap,
@@ -102,9 +101,8 @@ export function implementFlexBoxModel(
   return css`
     align-items: ${alignItems};
     align-self: ${alignSelf};
-    flex: ${flex ? 1 : 0};
-    flex-grow: ${flexGrow ? 1 : 0};
-    flex-shrink: ${flexShrink ? 1 : 0};
+    ${flexGrow ? 'flex-grow: 1' : ''};
+    ${flexShrink ? 'flex-shrink: 1' : ''};
     ${set('flex-wrap', flexWrap)};
     justify-content: ${justifyContent};
     ${set('flex-direction', flexDirection)};
