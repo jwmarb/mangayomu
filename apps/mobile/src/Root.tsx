@@ -8,16 +8,19 @@ import Welcome from '@screens/Welcome/Welcome';
 import { StackHeader } from '@components/NavHeader';
 
 const mapStateToProps = (state: AppState) => ({
-  showWelcomeScreen: state.__initial__,
+  showWelcomeScreen: state.__initial__.firstTimeUser,
 });
 
 const Root: React.FC<RootProps> = ({ showWelcomeScreen }) => {
   return (
     <RootStack.Navigator
       initialRouteName={showWelcomeScreen ? 'Welcome' : 'Home'}
-      screenOptions={{ header: StackHeader }}
     >
-      <RootStack.Screen name="Home" component={Home} />
+      <RootStack.Screen
+        name="Home"
+        component={Home}
+        options={{ headerShown: false }}
+      />
       <RootStack.Screen name="MangaView" component={MangaView} />
       <RootStack.Screen
         name="Welcome"

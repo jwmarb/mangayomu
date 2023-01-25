@@ -12,7 +12,7 @@ export const __initialSlice__ = createSlice({
   initialState,
   reducers: {
     disableWelcomeScreen: (state) => {
-      state.firstTimeUser = !state.firstTimeUser;
+      state.firstTimeUser = false;
     },
   },
 });
