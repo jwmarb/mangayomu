@@ -18,7 +18,7 @@ const Icon = styled(MaterialCommunityIcons)<IconProps>`
     return css`
       ${variant !== 'inherit' && theme.typography[variant]};
       color: ${theme.helpers.getColor(color)};
-      ${size != null && 'fdont-size: ' + size + 'px'};
+      ${size != null && 'font-size: ' + size + 'px'};
       ${bold && 'font-weight: bold'};
       ${italic && 'font-style: italic'};
       ${underline && 'text-decoration-line: underline'};
