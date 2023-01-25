@@ -19,12 +19,15 @@ import MainSourceSelector from '@screens/Welcome/components/MainSourceSelector';
 import useRootNavigation from '@hooks/useRootNavigation';
 import useAppSelector from '@hooks/useAppSelector';
 import useAuth0 from '@hooks/useAuth0';
+import connector, {
+  ConnectedOnboardProps,
+} from '@screens/Welcome/components/Onboard/Onboard.redux';
 
-const Onboard: React.FC<
-  {
-    scrollPosition: SharedValue<number>;
-  } & Pick<ScrollViewProps, 'onScroll'>
-> = React.memo(({ onScroll, scrollPosition }) => {
+const Onboard: React.FC<ConnectedOnboardProps> = ({
+  onScroll,
+  scrollPosition,
+  disableWelcomeScreen,
+}) => {
   const theme = useTheme();
   const navigation = useRootNavigation();
   const { width } = useWindowDimensions();
@@ -59,6 +62,7 @@ const Onboard: React.FC<
   }
 
   function endSetup() {
+    disableWelcomeScreen();
     navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
   }
 
@@ -237,8 +241,7 @@ const Onboard: React.FC<
       </ScrollView>
     </>
   );
-});
-
+};
 const styles = ScaledSheet.create({
   fastImage: {
     width: '350@ms',
@@ -246,4 +249,4 @@ const styles = ScaledSheet.create({
   },
 });
 
-export default Onboard;
+export default connector(React.memo(Onboard));
