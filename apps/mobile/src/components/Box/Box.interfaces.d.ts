@@ -60,10 +60,10 @@ export interface BoxProps
     | number
     | '@theme'
     | {
-        tl: number | '@theme';
-        tr: number | '@theme';
-        bl: number | '@theme';
-        br: number | '@theme';
+        tl?: number | '@theme';
+        tr?: number | '@theme';
+        bl?: number | '@theme';
+        br?: number | '@theme';
       };
   'border-color'?: string;
   'border-width'?: number;
