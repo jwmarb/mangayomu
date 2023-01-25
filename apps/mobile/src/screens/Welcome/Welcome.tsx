@@ -120,7 +120,7 @@ const Onboard: React.FC<
         showsHorizontalScrollIndicator={false}
         horizontal
         pagingEnabled
-        // scrollEnabled={false}
+        scrollEnabled={false}
       >
         <Box justify-content="center">
           <Page index={0} scrollPosition={scrollPosition}>
