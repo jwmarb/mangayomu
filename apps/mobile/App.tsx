@@ -18,10 +18,11 @@ import { shadow, spacing, typography } from '@theme/theme';
 import { helpers } from '@theme/helpers';
 import { Provider } from 'react-redux';
 import Root from './src/Root';
-import store from '@redux/main';
+import { store, persistor } from '@redux/main';
 import { moderateScale } from 'react-native-size-matters';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Auth0Provider } from 'react-native-auth0';
+import { PersistGate } from 'redux-persist/integration/react';
 
 enum Auth0 {
   DOMAIN = 'dev-wq6wbghv.us.auth0.com',
@@ -92,7 +93,9 @@ function App(): JSX.Element {
           <ThemeProvider theme={theme}>
             <NavigationContainer theme={theme.__react_navigation__}>
               <Provider store={store}>
-                <Root />
+                <PersistGate loading={null} persistor={persistor}>
+                  <Root />
+                </PersistGate>
               </Provider>
             </NavigationContainer>
           </ThemeProvider>

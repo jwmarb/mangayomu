@@ -1,15 +1,42 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { __initialReducer__ } from '@redux/slices/__initial__';
 import { hostReducer } from '@redux/slices/host';
+import {
+  persistStore,
+  persistReducer,
+  PersistConfig,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
+import { reduxStorage } from '@mmkv-storage/main';
 
-const store = configureStore({
-  reducer: {
-    __initial__: __initialReducer__,
-    host: hostReducer,
-  },
+const reducers = combineReducers({
+  __initial__: __initialReducer__,
+  host: hostReducer,
 });
 
-export type AppState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+const persistConfig: PersistConfig<AppState> = {
+  key: 'root',
+  storage: reduxStorage,
+};
 
-export default store;
+const persisted = persistReducer(persistConfig, reducers);
+
+export const store = configureStore({
+  reducer: persisted,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+});
+
+export const persistor = persistStore(store);
+
+export type AppState = ReturnType<typeof reducers>;
+export type AppDispatch = typeof store.dispatch;
