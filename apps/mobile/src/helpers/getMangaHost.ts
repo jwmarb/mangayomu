@@ -11,9 +11,6 @@ export default function getMangaHost(state: AppState, overrideSource?: string) {
   const p = MangaHost.getAvailableSources();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (overrideSource != null) return p.get(overrideSource)!;
-  if (state.host.name == null)
-    throw Error(
-      'Cannot derive a MangaHost from state.host.name because it is null.',
-    );
-  return p.get(state.host.name)!;
+  if (state.host.name == null) return null;
+  return p.get(state.host.name);
 }
