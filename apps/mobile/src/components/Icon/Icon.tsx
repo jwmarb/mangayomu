@@ -14,7 +14,7 @@ const styles = ScaledSheet.create({
   imageIcon: {
     width: '32@ms',
     height: '32@ms',
-    borderRadius: 10000,
+    borderRadius: '4@ms',
   },
 });
 
