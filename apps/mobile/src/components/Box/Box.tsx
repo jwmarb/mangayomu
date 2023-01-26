@@ -121,7 +121,7 @@ const Box = styled.View<BoxProps>`
         my,
         mx,
       })};
-      ${implementFlexBoxModel(theme, {
+      ${implementFlexBoxModel({
         'align-items': alignItems,
         'align-self': alignSelf,
         'flex-direction': flexDirection,

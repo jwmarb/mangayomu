@@ -90,10 +90,7 @@ export function implementBoxModel(theme: Theme, boxModel: BoxModel) {
   `;
 }
 
-export function implementFlexBoxModel(
-  theme: Theme,
-  flexBoxModel: FlexBoxModel,
-) {
+export function implementFlexBoxModel(flexBoxModel: FlexBoxModel) {
   const {
     'align-items': alignItems = 'stretch',
     'align-self': alignSelf = 'stretch',
