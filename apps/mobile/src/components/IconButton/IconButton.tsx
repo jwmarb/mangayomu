@@ -9,7 +9,7 @@ import { moderateScale } from 'react-native-size-matters';
 import { IconButtonProps } from './IconButton.interfaces';
 
 const IconButton: React.FC<IconButtonProps> = (props) => {
-  const { color, name, compact, ...rest } = props;
+  const { color, icon, compact, ...rest } = props;
   const theme = useTheme();
   const rippleColor = React.useMemo(() => {
     if (color == null) return undefined;
@@ -37,7 +37,7 @@ const IconButton: React.FC<IconButtonProps> = (props) => {
         rippleColor={rippleColor}
         {...rest}
       >
-        <Icon name={name} variant="icon-button" color={color} />
+        {icon && React.cloneElement(icon, { variant: 'icon-button', color })}
       </BorderlessButton>
     </Box>
   );

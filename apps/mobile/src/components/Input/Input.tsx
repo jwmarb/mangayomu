@@ -1,5 +1,6 @@
 import Box from '@components/Box';
 import Button from '@components/Button';
+import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
 import { InputBase } from '@components/Input/Input.base';
 import Text from '@components/Text';
@@ -47,7 +48,7 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
       <Box position="absolute" right={0} align-self="center" mr="m">
         <Animated.View style={style}>
           <IconButton
-            name="close"
+            icon={<Icon name="close" />}
             compact
             color="textSecondary"
             onPress={handleOnClear}
