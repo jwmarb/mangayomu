@@ -12,6 +12,8 @@ const NavTabs: React.FC<BottomTabBarProps> = (props) => {
       overflow="hidden"
       flex-direction="row"
       background-color="paper"
+      position="absolute"
+      bottom={0}
       border-radius={{
         tl: '@theme',
         tr: '@theme',
