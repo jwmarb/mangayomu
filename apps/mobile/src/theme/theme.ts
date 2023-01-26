@@ -16,7 +16,7 @@ export const typography = {
   `,
   header: css`
     font-family: Roboto;
-    font-size: ${moderateScale(20) + 'px'};
+    font-size: ${moderateScale(17) + 'px'};
     letter-spacing: -0.2px;
   `,
   body: css`
