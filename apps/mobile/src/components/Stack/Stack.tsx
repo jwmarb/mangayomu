@@ -1,6 +1,8 @@
 import {
   implementBoxModel,
+  implementDimensionsModel,
   implementFlexBoxModel,
+  implementPositionModel,
 } from '@components/Box/Box.helpers';
 import { StackProps } from '@components/Stack/Stack.interfaces';
 import styled, { css } from '@emotion/native';
@@ -73,6 +75,8 @@ const Stack = styled.View<StackProps>`
           `;
         }
       })()}
+      ${implementDimensionsModel(props)};
+      ${implementPositionModel(props)};
       ${implementBoxModel(theme, {
         p,
         pb,
