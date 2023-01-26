@@ -11,7 +11,9 @@ const Home: React.FC = () => {
   return (
     <HomeTabNavigator.Navigator
       initialRouteName="Explore"
-      screenOptions={{ header: TabHeader }}
+      screenOptions={{
+        header: TabHeader,
+      }}
       tabBar={NavTabs}
     >
       <HomeTabNavigator.Screen component={Explore} name="Explore" />
