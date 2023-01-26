@@ -1,7 +1,58 @@
+import Box from '@components/Box';
+import Button from '@components/Button';
+import Icon from '@components/Icon';
+import IconButton from '@components/IconButton';
+import Input from '@components/Input';
+import { Stack } from '@components/Stack';
+import Text from '@components/Text';
+import useAuth0 from '@hooks/useAuth0';
+import useCollapsibleTabHeader from '@hooks/useCollapsibleTabHeader';
 import React from 'react';
+import FastImage from 'react-native-fast-image';
+import Animated from 'react-native-reanimated';
+import { moderateScale } from 'react-native-size-matters';
 
 const Explore: React.FC = () => {
-  return null;
+  const { user, getCredentials, authorize } = useAuth0();
+  React.useEffect(() => {
+    // authorize({ scope: 'openid profile email' });
+    /**
+     * Todo: authorize and persist user state
+     * Make sure to check if no network connection
+     */
+  }, []);
+  const { onScroll, scrollViewStyle } = useCollapsibleTabHeader({
+    headerLeft: <IconButton icon={<Icon name="menu" />} />,
+    headerRight: (
+      <IconButton
+        icon={
+          <FastImage
+            source={{ uri: user?.picture }}
+            style={{
+              width: moderateScale(32),
+              height: moderateScale(32),
+              borderRadius: 10000,
+            }}
+          />
+        }
+        onPress={() => console.log('Account')}
+      />
+    ),
+  });
+  return (
+    <Animated.ScrollView style={scrollViewStyle} onScroll={onScroll}>
+      <Stack space="s">
+        <Box my="s" mx="m">
+          <Input width="100%" placeholder="Titles, authors, or topics" />
+        </Box>
+        <Box my="s" mx="m">
+          <Text variant="header" bold>
+            Genres
+          </Text>
+        </Box>
+      </Stack>
+    </Animated.ScrollView>
+  );
 };
 
 export default Explore;
