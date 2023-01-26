@@ -26,14 +26,18 @@ const Explore: React.FC = () => {
     headerRight: (
       <IconButton
         icon={
-          <FastImage
-            source={{ uri: user?.picture }}
-            style={{
-              width: moderateScale(32),
-              height: moderateScale(32),
-              borderRadius: 10000,
-            }}
-          />
+          user == null ? (
+            <Icon name="account" />
+          ) : (
+            <FastImage
+              source={{ uri: user?.picture }}
+              style={{
+                width: moderateScale(32),
+                height: moderateScale(32),
+                borderRadius: 10000,
+              }}
+            />
+          )
         }
         onPress={() => console.log('Account')}
       />
