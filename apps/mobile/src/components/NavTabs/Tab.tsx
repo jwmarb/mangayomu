@@ -29,7 +29,7 @@ const tabIcons = {
 };
 
 const Tab: React.FC<TabProps> = (props) => {
-  const { tabBarIcon, routeKey, routeName, isFocused, navigation } = props;
+  const { routeName, isFocused, navigation } = props;
   const theme = useTheme();
   const indicator = useSharedValue(isFocused ? 1 : 0);
   React.useEffect(() => {
