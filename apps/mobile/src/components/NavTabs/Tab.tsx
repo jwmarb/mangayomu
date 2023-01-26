@@ -3,6 +3,7 @@ import Icon from '@components/Icon';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -74,29 +75,33 @@ const Tab: React.FC<TabProps> = (props) => {
   );
 
   return (
-    <Box flex-grow>
-      <BorderlessButton onPress={handleOnPress}>
-        <Box py="m" px="s" flex-direction="column" align-items="center">
-          <Text
-            as={Animated.Text}
-            variant="header"
-            color={isFocused ? 'primary' : 'textSecondary'}
-            style={memoTextStyle}
-          >
-            {tabIcons[routeName]}
-          </Text>
-          <Text
-            as={Animated.Text}
-            variant="bottom-tab"
-            color={isFocused ? 'primary' : 'textSecondary'}
-            style={textStyle}
-          >
-            {routeName}
-          </Text>
-        </Box>
-      </BorderlessButton>
-    </Box>
+    <BorderlessButton style={styles.button} onPress={handleOnPress}>
+      <Box py="m" px="s" flex-direction="column" align-items="center" flex-grow>
+        <Text
+          as={Animated.Text}
+          variant="header"
+          color={isFocused ? 'primary' : 'textSecondary'}
+          style={memoTextStyle}
+        >
+          {tabIcons[routeName]}
+        </Text>
+        <Text
+          as={Animated.Text}
+          variant="bottom-tab"
+          color={isFocused ? 'primary' : 'textSecondary'}
+          style={textStyle}
+        >
+          {routeName}
+        </Text>
+      </Box>
+    </BorderlessButton>
   );
 };
+
+const styles = StyleSheet.create({
+  button: {
+    flexGrow: 1,
+  },
+});
 
 export default Tab;
