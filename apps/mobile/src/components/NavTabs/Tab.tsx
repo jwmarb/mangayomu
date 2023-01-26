@@ -2,6 +2,7 @@ import Box from '@components/Box';
 import Icon from '@components/Icon';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
+import displayMessage from '@helpers/displayMessage';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
@@ -16,6 +17,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
 import { TabProps } from './Tab.interfaces';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 const tabIcons = {
   Explore: (
@@ -74,8 +76,19 @@ const Tab: React.FC<TabProps> = (props) => {
     [textStyle, style],
   );
 
+  function handleOnLongPress() {
+    ReactNativeHapticFeedback.trigger('impactHeavy', {
+      enableVibrateFallback: true,
+    });
+    displayMessage(routeName);
+  }
+
   return (
-    <BorderlessButton style={styles.button} onPress={handleOnPress}>
+    <BorderlessButton
+      style={styles.button}
+      onPress={handleOnPress}
+      onLongPress={handleOnLongPress}
+    >
       <Box py="m" px="s" flex-direction="column" align-items="center" flex-grow>
         <Text
           as={Animated.Text}
