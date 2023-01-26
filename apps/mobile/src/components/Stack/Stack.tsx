@@ -9,31 +9,7 @@ import styled, { css } from '@emotion/native';
 
 const Stack = styled.View<StackProps>`
   ${(props) => {
-    const {
-      theme,
-      space,
-      p,
-      m,
-      pb,
-      pl,
-      pr,
-      pt,
-      px,
-      py,
-      mb,
-      ml,
-      mr,
-      my,
-      mt,
-      mx,
-      'align-items': alignItems,
-      'align-self': alignSelf,
-      'justify-content': justifyContent,
-      'flex-direction': flexDirection,
-      'flex-grow': flexGrow,
-      'flex-shrink': flexShrink,
-      'flex-wrap': flexWrap,
-    } = props;
+    const { theme, space } = props;
     return css`
       ${(() => {
         if (space == null) return;
@@ -77,31 +53,8 @@ const Stack = styled.View<StackProps>`
       })()}
       ${implementDimensionsModel(props)};
       ${implementPositionModel(props)};
-      ${implementBoxModel(theme, {
-        p,
-        pb,
-        pl,
-        pr,
-        py,
-        px,
-        pt,
-        m,
-        mb,
-        ml,
-        mr,
-        my,
-        mt,
-        mx,
-      })};
-      ${implementFlexBoxModel(theme, {
-        'flex-direction': flexDirection,
-        'flex-grow': flexGrow,
-        'flex-shrink': flexShrink,
-        'flex-wrap': flexWrap,
-        'justify-content': justifyContent,
-        'align-items': alignItems,
-        'align-self': alignSelf,
-      })}
+      ${implementBoxModel(theme, props)};
+      ${implementFlexBoxModel(props)}
     `;
   }}
 `;

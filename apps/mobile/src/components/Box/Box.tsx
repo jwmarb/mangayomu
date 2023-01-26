@@ -20,39 +20,9 @@ const Box = styled.View<BoxProps>`
   ${(props) => {
     const {
       theme,
-      'align-items': alignItems = 'stretch',
-      'align-self': alignSelf = 'stretch',
       'background-color': bgColor,
       'box-shadow': boxShadow,
-      'justify-content': justifyContent = 'flex-start',
-      'flex-grow': flexGrow,
-      'flex-shrink': flexShrink,
-      'flex-wrap': flexWrap,
-      'flex-direction': flexDirection,
-      p,
-      m,
-      px,
-      py,
-      mx,
-      my,
-      ml,
-      mr,
-      mb,
-      mt,
-      pl,
-      pr,
-      pt,
-      pb,
-      width = 'auto',
-      height = 'auto',
       debug,
-      maxWidth,
-      maxHeight,
-      position,
-      left,
-      right,
-      top,
-      bottom,
       'border-radius': borderRadius = 0,
       'z-index': zIndex = 0,
       'border-color': borderColor,
@@ -72,8 +42,8 @@ const Box = styled.View<BoxProps>`
       })()}
       ${setWithPalette(theme, 'border-color', borderColor)};
       ${setu(theme, 'border-width', borderWidth)}
-      ${implementDimensionsModel({ width, height, maxHeight, maxWidth })};
-      ${implementPositionModel({ position, left, right, top, bottom })};
+      ${implementDimensionsModel(props)};
+      ${implementPositionModel(props)};
       ${boxShadow && theme.style.shadow};
       ${set('overflow', overflow)};
       ${(() => {
@@ -105,31 +75,8 @@ const Box = styled.View<BoxProps>`
               : theme.style.borderRadius + 'px'};
           `;
       })()};
-      ${implementBoxModel(theme, {
-        p,
-        pb,
-        pl,
-        pr,
-        pt,
-        py,
-        px,
-        m,
-        mb,
-        ml,
-        mr,
-        mt,
-        my,
-        mx,
-      })};
-      ${implementFlexBoxModel({
-        'align-items': alignItems,
-        'align-self': alignSelf,
-        'flex-direction': flexDirection,
-        'flex-grow': flexGrow,
-        'flex-shrink': flexShrink,
-        'flex-wrap': flexWrap,
-        'justify-content': justifyContent,
-      })}
+      ${implementBoxModel(theme, props)};
+      ${implementFlexBoxModel(props)}
     `;
   }}
 `;
