@@ -16,6 +16,8 @@ export interface DimensionsModel {
   height?: number | string;
   maxWidth?: number | string;
   maxHeight?: number | string;
+  minWidth?: number | string;
+  minHeight?: number | string;
 }
 
 export interface PositionModel {

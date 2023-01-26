@@ -32,9 +32,16 @@ export function setu(
 }
 
 export function setwandh(
-  propertyName: 'width' | 'height' | 'max-width' | 'max-height',
-  widthOrHeightValue: string | number,
+  propertyName:
+    | 'width'
+    | 'height'
+    | 'max-width'
+    | 'max-height'
+    | 'min-height'
+    | 'min-width',
+  widthOrHeightValue?: string | number,
 ): ReactNativeStyle | undefined {
+  if (widthOrHeightValue == null) return;
   switch (typeof widthOrHeightValue) {
     case 'number':
       return css`
@@ -44,8 +51,6 @@ export function setwandh(
       return css`
         ${propertyName}: ${widthOrHeightValue};
       `;
-    default:
-      throw Error('Invalid widthOrHeightValue passed in args');
   }
 }
 
@@ -117,10 +122,14 @@ export function implementDimensionsModel(dimensionsModel: DimensionsModel) {
     maxWidth,
     width = 'auto',
     height = 'auto',
+    minHeight,
+    minWidth,
   } = dimensionsModel;
   return css`
-    ${maxWidth && setwandh('max-width', maxWidth)};
-    ${maxHeight && setwandh('max-height', maxHeight)};
+    ${setwandh('min-height', minHeight)};
+    ${setwandh('min-width', minWidth)};
+    ${setwandh('max-width', maxWidth)};
+    ${setwandh('max-height', maxHeight)};
     ${setwandh('height', height)};
     ${setwandh('width', width)};
   `;
