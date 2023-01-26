@@ -25,6 +25,7 @@
     "@emotion/native": "^11.10.0",
     "@emotion/react": "^11.10.5",
     "@gorhom/bottom-sheet": "^4",
+    "@mangayomu/algorithms": "^1.0.0",
     "@mangayomu/mangascraper": "^1.0.0",
     "@mangayomu/theme": "^1.0.0",
     "@react-navigation/bottom-tabs": "^6.5.3",

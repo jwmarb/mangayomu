@@ -53,11 +53,12 @@ const renderItem: ListRenderItem<string> = ({ item }) => {
 };
 
 const _Item: React.FC<ConnectedItemProps> = React.memo(
-  ({ item, changeSource, isSelected }) => {
+  ({ item, addSource, isSelected, removeSource }) => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const host = MangaHost.getAvailableSources().get(item)!;
     function handleOnPress() {
-      changeSource(host.getName());
+      if (!isSelected) addSource(host.getName());
+      else removeSource(host.getName());
     }
     return (
       <Box
@@ -99,9 +100,9 @@ const Header: React.FC<{
   setQuery: React.Dispatch<React.SetStateAction<string>>;
 }> = React.memo(({ setQuery }) => (
   <Box m="l">
-    <Stack space={verticalScale(8)}>
+    <Stack space={moderateScale(8)}>
       <Text variant="header" align="center">
-        Select a main source
+        Select main sources
       </Text>
       <Input
         placeholder="Type a source name..."

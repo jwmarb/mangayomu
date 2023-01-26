@@ -1,13 +1,23 @@
 import { connect, ConnectedProps } from 'react-redux';
-import { changeSource } from '@redux/slices/host';
+import {
+  addSource,
+  addSources,
+  removeSource,
+  removeSources,
+} from '@redux/slices/host';
 import { AppState } from '@redux/main';
 
 const mapStateToProps = (state: AppState, props: { item: string }) => ({
-  isSelected: props.item === state.host.name,
+  isSelected: state.host.name.has(props.item),
   item: props.item,
 });
 
-const connector = connect(mapStateToProps, { changeSource });
+const connector = connect(mapStateToProps, {
+  addSource,
+  addSources,
+  removeSource,
+  removeSources,
+});
 
 export type ConnectedItemProps = ConnectedProps<typeof connector>;
 
