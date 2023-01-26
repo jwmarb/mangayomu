@@ -91,13 +91,13 @@ function App(): JSX.Element {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <Auth0Provider domain={Auth0.DOMAIN} clientId={Auth0.CLIENT_ID}>
           <ThemeProvider theme={theme}>
-            <NavigationContainer theme={theme.__react_navigation__}>
-              <Provider store={store}>
-                <PersistGate loading={null} persistor={persistor}>
+            <Provider store={store}>
+              <PersistGate loading={null} persistor={persistor}>
+                <NavigationContainer theme={theme.__react_navigation__}>
                   <Root />
-                </PersistGate>
-              </Provider>
-            </NavigationContainer>
+                </NavigationContainer>
+              </PersistGate>
+            </Provider>
           </ThemeProvider>
         </Auth0Provider>
       </GestureHandlerRootView>
