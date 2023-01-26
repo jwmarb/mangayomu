@@ -21,11 +21,32 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 const tabIcons = {
   Explore: (
-    <Icon variant="inherit" size={moderateScale(20)} name="compass-outline" />
+    <Icon
+      type="font"
+      variant="inherit"
+      size={moderateScale(20)}
+      name="compass-outline"
+    />
   ),
-  Library: <Icon variant="inherit" size={moderateScale(20)} name="bookshelf" />,
-  History: <Icon variant="inherit" size={moderateScale(20)} name="history" />,
-  Settings: <Icon variant="inherit" size={moderateScale(20)} name="cog" />,
+  Library: (
+    <Icon
+      type="font"
+      variant="inherit"
+      size={moderateScale(20)}
+      name="bookshelf"
+    />
+  ),
+  History: (
+    <Icon
+      type="font"
+      variant="inherit"
+      size={moderateScale(20)}
+      name="history"
+    />
+  ),
+  Settings: (
+    <Icon type="font" variant="inherit" size={moderateScale(20)} name="cog" />
+  ),
 };
 
 const Tab: React.FC<TabProps> = (props) => {
