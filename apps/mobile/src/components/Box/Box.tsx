@@ -3,7 +3,9 @@ import { BackgroundColor, ButtonColors } from '@mangayomu/theme';
 import { BoxProps } from './Box.interfaces';
 import {
   implementBoxModel,
+  implementDimensionsModel,
   implementFlexBoxModel,
+  implementPositionModel,
   set,
   setu,
   setwandh,
@@ -70,17 +72,10 @@ const Box = styled.View<BoxProps>`
       })()}
       ${setWithPalette(theme, 'border-color', borderColor)};
       ${setu(theme, 'border-width', borderWidth)}
-      ${set('position', position)};
+      ${implementDimensionsModel({ width, height, maxHeight, maxWidth })};
+      ${implementPositionModel({ position, left, right, top, bottom })};
       ${boxShadow && theme.style.shadow};
-      ${maxWidth && setwandh('max-width', maxWidth)};
-      ${maxHeight && setwandh('max-height', maxHeight)};
       ${set('overflow', overflow)};
-      ${set('top', top)};
-      ${set('bottom', bottom)};
-      ${set('left', left)};
-      ${set('right', right)};
-      ${setwandh('height', height)};
-      ${setwandh('width', width)};
       ${(() => {
         if (borderRadius === '@theme')
           return 'border-radius: ' + theme.style.borderRadius + 'px';

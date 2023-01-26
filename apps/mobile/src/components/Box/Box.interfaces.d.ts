@@ -7,6 +7,25 @@ import {
   BackgroundColor,
 } from '@mangayomu/theme';
 
+export interface Debuggable {
+  debug?: boolean;
+}
+
+export interface DimensionsModel {
+  width?: number | string;
+  height?: number | string;
+  maxWidth?: number | string;
+  maxHeight?: number | string;
+}
+
+export interface PositionModel {
+  position?: ViewStyle['position'];
+  top?: number | string;
+  bottom?: number | string;
+  left?: number | string;
+  right?: number | string;
+}
+
 export interface BoxModel {
   p?: Spacing | number;
   m?: Spacing | number;
@@ -37,20 +56,16 @@ export interface FlexBoxModel {
 export interface BoxProps
   extends React.PropsWithChildren,
     BoxModel,
-    FlexBoxModel {
+    FlexBoxModel,
+    DimensionsModel,
+    PositionModel,
+    Debuggable {
   /**
    * Layout
    */
-  width?: number | string;
-  height?: number | string;
-  maxWidth?: number | string;
-  maxHeight?: number | string;
+
   overflow?: ViewStyle['overflow'];
-  position?: ViewStyle['position'];
-  top?: number | string;
-  bottom?: number | string;
-  left?: number | string;
-  right?: number | string;
+
   'z-index'?: number;
   /**
    * Decorating
@@ -68,8 +83,4 @@ export interface BoxProps
       };
   'border-color'?: string;
   'border-width'?: number;
-  /**
-   * Properties
-   */
-  debug?: boolean;
 }

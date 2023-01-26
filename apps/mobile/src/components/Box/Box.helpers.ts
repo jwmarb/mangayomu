@@ -1,4 +1,9 @@
-import { BoxModel, FlexBoxModel } from '@components/Box/Box.interfaces';
+import {
+  BoxModel,
+  DimensionsModel,
+  FlexBoxModel,
+  PositionModel,
+} from '@components/Box/Box.interfaces';
 import { css, ReactNativeStyle } from '@emotion/native';
 import { Theme } from '@emotion/react';
 import { ButtonColors, Spacing } from '@mangayomu/theme';
@@ -106,5 +111,31 @@ export function implementFlexBoxModel(
     ${set('flex-wrap', flexWrap)};
     justify-content: ${justifyContent};
     ${set('flex-direction', flexDirection)};
+  `;
+}
+
+export function implementDimensionsModel(dimensionsModel: DimensionsModel) {
+  const {
+    maxHeight,
+    maxWidth,
+    width = 'auto',
+    height = 'auto',
+  } = dimensionsModel;
+  return css`
+    ${maxWidth && setwandh('max-width', maxWidth)};
+    ${maxHeight && setwandh('max-height', maxHeight)};
+    ${setwandh('height', height)};
+    ${setwandh('width', width)};
+  `;
+}
+
+export function implementPositionModel(positionModel: PositionModel) {
+  const { position, top, bottom, left, right } = positionModel;
+  return css`
+    ${set('position', position)};
+    ${set('top', top)};
+    ${set('bottom', bottom)};
+    ${set('left', left)};
+    ${set('right', right)};
   `;
 }
