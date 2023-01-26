@@ -1,6 +1,17 @@
 import { Comparator } from './Comparator';
 
-function binarySearch<T, E>(arr: T[], elementToFind: E, comparator: Comparator<T, E>): number {
+/**
+ * A basic binary search function.
+ * @param arr The array
+ * @param elementToFind Element to find
+ * @param comparator A comparator function that will be used to compare elements
+ * @returns Returns the index of an element
+ */
+function binarySearch<T, E>(
+  arr: T[],
+  elementToFind: E,
+  comparator: Comparator<T, E>,
+): number {
   let l = 0,
     r = arr.length;
   let m = -1,
@@ -15,7 +26,18 @@ function binarySearch<T, E>(arr: T[], elementToFind: E, comparator: Comparator<T
   return -1;
 }
 
-function suggestIndex<T, E>(arr: T[], elementToFind: E, comparator: Comparator<T, E>): number {
+/**
+ * Suggest which index for an element in a sorted array. The array MUST be sorted for this to work.
+ * @param arr The array
+ * @param elementToFind Element to insert to an index
+ * @param comparator A comparator function that will be used to compare elements
+ * @returns Returns the index that the element should be placed in to maintain element order based on the comparator function.
+ */
+function suggestIndex<T, E>(
+  arr: T[],
+  elementToFind: E,
+  comparator: Comparator<T, E>,
+): number {
   let l = 0,
     r = arr.length;
   let m = -1,
@@ -30,7 +52,11 @@ function suggestIndex<T, E>(arr: T[], elementToFind: E, comparator: Comparator<T
   return l;
 }
 
-function lowerBound<T, E>(arr: T[], elementToFind: E, comparator: Comparator<T, E>): number {
+function lowerBound<T, E>(
+  arr: T[],
+  elementToFind: E,
+  comparator: Comparator<T, E>,
+): number {
   let l = 0;
   let r = arr.length - 1;
   let pos = -1;
@@ -46,7 +72,11 @@ function lowerBound<T, E>(arr: T[], elementToFind: E, comparator: Comparator<T, 
   return pos;
 }
 
-function upperBound<T, E>(arr: T[], elementToFind: E, comparator: Comparator<T, E>): number {
+function upperBound<T, E>(
+  arr: T[],
+  elementToFind: E,
+  comparator: Comparator<T, E>,
+): number {
   let l = 0;
   let r = arr.length - 1;
   let pos = -1;
@@ -62,7 +92,11 @@ function upperBound<T, E>(arr: T[], elementToFind: E, comparator: Comparator<T, 
   return pos;
 }
 
-function range<T, E>(arr: T[], elementToFind: E, comparator: Comparator<T, E>): [number, number] {
+function range<T, E>(
+  arr: T[],
+  elementToFind: E,
+  comparator: Comparator<T, E>,
+): [number, number] {
   const l = lowerBound(arr, elementToFind, comparator);
   if (l === -1) return [-1, -1];
   const r = upperBound(arr, elementToFind, comparator);
