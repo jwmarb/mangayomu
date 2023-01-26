@@ -9,7 +9,7 @@ import styled, { css } from '@emotion/native';
 
 const Stack = styled.View<StackProps>`
   ${(props) => {
-    const { theme, space } = props;
+    const { theme, space, debug } = props;
     return css`
       ${(() => {
         if (space == null) return;
@@ -50,7 +50,11 @@ const Stack = styled.View<StackProps>`
             }};
           `;
         }
-      })()}
+      })()};
+      ${debug &&
+      css`
+        background-color: red;
+      `};
       ${implementDimensionsModel(props)};
       ${implementPositionModel(props)};
       ${implementBoxModel(theme, props)};
