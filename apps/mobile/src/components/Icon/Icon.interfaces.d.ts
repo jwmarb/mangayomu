@@ -3,9 +3,16 @@ import MaterialCommunityIconNames from 'react-native-vector-icons/glyphmaps/Mate
 import React from 'react';
 import { TextProps } from '@components/Text/Text.interfaces';
 
-export interface IconProps
+interface AbstractIconProps<T>
   extends React.PropsWithChildren,
     Pick<TextProps, 'color' | 'variant' | 'bold' | 'italic' | 'underline'> {
-  name: keyof typeof MaterialCommunityIconNames;
-  size?: number;
+  type?: T;
+}
+
+export interface IconProps extends AbstractIconProps<'font'> {
+  name?: keyof typeof MaterialCommunityIconNames;
+}
+
+export interface ImageIconProps extends AbstractIconProps<'image'> {
+  name?: string;
 }

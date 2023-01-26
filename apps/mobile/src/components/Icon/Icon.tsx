@@ -1,10 +1,31 @@
 import styled, { css } from '@emotion/native';
 import React from 'react';
-import { IconProps } from './Icon.interfaces';
+import { IconProps, ImageIconProps } from './Icon.interfaces';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { set } from '@components/Box/Box.helpers';
+import FastImage from 'react-native-fast-image';
+import { ScaledSheet } from 'react-native-size-matters';
+import MaterialCommunityIconNames from 'react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json';
 
-const Icon = styled(MaterialCommunityIcons)<IconProps>`
+type RequireKey<T, KEYS extends keyof T> = Omit<T, KEYS> & {
+  [K in keyof T as K extends KEYS ? K : never]-?: T[K];
+};
+
+const styles = ScaledSheet.create({
+  imageIcon: {
+    width: '32@ms',
+    height: '32@ms',
+    borderRadius: 10000,
+  },
+});
+
+const Icon: React.FC<IconProps | ImageIconProps> = (props) => {
+  if (props.name == null) throw Error('name is required in Icon');
+  if (props.name in MaterialCommunityIconNames)
+    return <IconFromFont {...(props as RequireKey<IconProps, 'name'>)} />;
+  return <FastImage source={{ uri: props.name }} style={styles.imageIcon} />;
+};
+
+const IconFromFont = styled(MaterialCommunityIcons)<IconProps>`
   ${(props) => {
     const {
       theme,
