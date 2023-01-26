@@ -11,6 +11,7 @@ interface AbstractIconProps<T>
 
 export interface IconProps extends AbstractIconProps<'font'> {
   name?: keyof typeof MaterialCommunityIconNames;
+  size?: number;
 }
 
 export interface ImageIconProps extends AbstractIconProps<'image'> {
