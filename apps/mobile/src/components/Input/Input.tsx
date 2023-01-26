@@ -14,7 +14,7 @@ import Animated, {
 import { InputProps } from './Input.interfaces';
 
 const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
-  const { onChangeText = () => void 0, icon = null, ...rest } = props;
+  const { onChangeText = () => void 0, icon, ...rest } = props;
   const textRef = React.useRef<TextInput>(null);
   const opacity = useSharedValue(0);
   const theme = useTheme();
