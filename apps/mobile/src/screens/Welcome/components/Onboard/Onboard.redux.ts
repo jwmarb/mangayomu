@@ -9,7 +9,11 @@ const mapStateToProps = (
   props: {
     scrollPosition: SharedValue<number>;
   } & Pick<ScrollViewProps, 'onScroll'>,
-) => props;
+) => ({
+  scrollPosition: props.scrollPosition,
+  onScroll: props.onScroll,
+  hostName: state.host.name,
+});
 
 const connector = connect(mapStateToProps, { disableWelcomeScreen });
 

@@ -5,11 +5,10 @@ import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import BottomSheet from '@gorhom/bottom-sheet';
 import React from 'react';
-import { Dimensions, ScrollViewProps } from 'react-native';
+import { Dimensions } from 'react-native';
 import { ScrollView, useWindowDimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Animated, {
-  SharedValue,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
@@ -17,7 +16,6 @@ import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import Page from '@screens/Welcome/components/Page';
 import MainSourceSelector from '@screens/Welcome/components/MainSourceSelector';
 import useRootNavigation from '@hooks/useRootNavigation';
-import useAppSelector from '@hooks/useAppSelector';
 import useAuth0 from '@hooks/useAuth0';
 import connector, {
   ConnectedOnboardProps,
@@ -27,6 +25,7 @@ const Onboard: React.FC<ConnectedOnboardProps> = ({
   onScroll,
   scrollPosition,
   disableWelcomeScreen,
+  hostName,
 }) => {
   const theme = useTheme();
   const navigation = useRootNavigation();
@@ -35,7 +34,6 @@ const Onboard: React.FC<ConnectedOnboardProps> = ({
   const ref = React.useRef<ScrollView>(null);
   const bottomSheet = React.useRef<BottomSheet>(null);
 
-  const hostName = useAppSelector((state) => state.host.name);
   const next = () => {
     ref.current?.scrollTo({
       x: (Math.round(scrollPosition.value / width) + 1) * width,
