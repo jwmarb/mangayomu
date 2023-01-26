@@ -117,4 +117,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Tab;
+export default React.memo(Tab);
