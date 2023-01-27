@@ -54,7 +54,7 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
         onChange(true);
         opacity.value = withTiming(1, { duration: 100 });
       }
-    }
+    } else onChange(!checked);
   }
   return (
     <Box
