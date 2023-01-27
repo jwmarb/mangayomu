@@ -8,11 +8,16 @@
       "components/*",
       "services/*",
       "apps/mobile"
+    ],
+    "nohoist": [
+      "**/react-native",
+      "**/react-native-*",
+      "**/@react-native-community/*"
     ]
   },
   "scripts": {
     "build": "npx nx run-many --target=build --all",
-    "reset": "npx nx run-many --target=reset --all && rimraf yarn.lock && rimraf node_modules && yarn",
+    "reset": "npx nx run-many --target=reset --all && rimraf yarn.lock && rimraf node_modules",
     "test": "npx nx run-many --target=test --all",
     "android:metro": "yarn workspace @mangayomu/mobile start",
     "android:start": "yarn workspace @mangayomu/mobile android"
