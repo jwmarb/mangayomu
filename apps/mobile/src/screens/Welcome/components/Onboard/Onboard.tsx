@@ -143,20 +143,22 @@ const Onboard: React.FC<ConnectedOnboardProps> = ({
                   </Text>
                   <Button
                     label={
-                      hostName != null
-                        ? `Selected: ${hostName}`
+                      hostName.length > 0
+                        ? `${hostName.length} source${
+                            hostName.length > 1 ? 's' : ''
+                          } selected`
                         : 'Select a main source'
                     }
-                    variant={hostName != null ? 'outline' : 'contained'}
+                    variant={hostName.length > 0 ? 'outline' : 'contained'}
                     onPress={openMainSourceSelector}
                   />
                   <Button
                     label={
-                      hostName == null
+                      hostName.length === 0
                         ? 'Skip for now'
                         : 'Continue to the next step'
                     }
-                    variant={hostName == null ? 'text' : 'contained'}
+                    variant={hostName.length === 0 ? 'text' : 'contained'}
                     onPress={next}
                   />
                 </Stack>

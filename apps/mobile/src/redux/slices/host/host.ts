@@ -5,25 +5,30 @@ import { MangaHost } from '@mangayomu/mangascraper';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface HostState {
-  name: string[]
-  comparatorKey: keyof typeof SORT_HOSTS_BY
+  name: string[];
+  comparatorKey: keyof typeof SORT_HOSTS_BY;
+  reversed: boolean;
 }
 
 const initialState: HostState = {
   name: [],
-  comparatorKey: 
+  comparatorKey: 'Alphabetically',
+  reversed: false,
 };
 
 export const SORT_HOSTS_BY = {
-  'Alphabetically': (n1: string, n2: string) => n1.localeCompare(n2),
-  'Version': (n1: string, n2: string) => {
+  Alphabetically: (reversed: boolean) => (n1: string, n2: string) =>
+    reversed ? n2.localeCompare(n1) : n1.localeCompare(n2),
+  Version: (reversed: boolean) => (n1: string, n2: string) => {
     const source1 = MangaHost.getAvailableSources().get(n1);
     const source2 = MangaHost.getAvailableSources().get(n2);
-    if (source1 == null || source2 == null) throw Error(`Cannot compare sources that do not exist.`);
-    return source1.getVersion().localeCompare(source2.getVersion());
-
-  }
-} as const
+    if (source1 == null || source2 == null)
+      throw Error('Cannot compare sources that do not exist.');
+    return reversed
+      ? source2.getVersion().localeCompare(source1.getVersion())
+      : source1.getVersion().localeCompare(source2.getVersion());
+  },
+} as const;
 export const hostSlice = createSlice({
   name: 'host',
   initialState,
@@ -32,34 +37,30 @@ export const hostSlice = createSlice({
       const source = MangaHost.getAvailableSources().get(action.payload);
       if (source == null)
         throw Error(`${action.payload} does not exist as a manga source.`);
-      integrateSortedList(state.name, ).add(source.getName());
+      integrateSortedList(
+        state.name,
+        SORT_HOSTS_BY[state.comparatorKey](state.reversed),
+      ).add(source.getName());
       displayMessage(`Set ${action.payload} as main source`);
     },
     removeSource: (state, action: PayloadAction<string>) => {
       const source = MangaHost.getAvailableSources().get(action.payload);
       if (source == null)
         throw Error(`${action.payload} does not exist as a manga source.`);
-      state.name.delete(source.getName());
+      integrateSortedList(
+        state.name,
+        SORT_HOSTS_BY[state.comparatorKey](state.reversed),
+      ).remove(source.getName());
     },
-    addSources: (state, action: PayloadAction<string[]>) => {
-      for (const x of action.payload) {
-        const source = MangaHost.getAvailableSources().get(x);
-        if (source == null)
-          throw Error(`${action.payload} does not exist as a manga source.`);
-        state.name.add(source.getName());
-      }
+    toggleReversedList: (state) => {
+      state.reversed = !state.reversed;
     },
-    removeSources: (state, action: PayloadAction<string[]>) => {
-      for (const x of action.payload) {
-        const source = MangaHost.getAvailableSources().get(x);
-        if (source == null)
-          throw Error(`${action.payload} does not exist as a manga source.`);
-        state.name.delete(source.getName());
-      }
+    sortHostsBy: (state, action: PayloadAction<keyof typeof SORT_HOSTS_BY>) => {
+      state.comparatorKey = action.payload;
     },
   },
 });
 
-export const { addSource, addSources, removeSource, removeSources } =
+export const { addSource, removeSource, sortHostsBy, toggleReversedList } =
   hostSlice.actions;
 export default hostSlice.reducer;
