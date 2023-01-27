@@ -41,7 +41,6 @@ export const hostSlice = createSlice({
         state.name,
         SORT_HOSTS_BY[state.comparatorKey](state.reversed),
       ).add(source.getName());
-      displayMessage(`Set ${action.payload} as main source`);
     },
     removeSource: (state, action: PayloadAction<string>) => {
       const source = MangaHost.getAvailableSources().get(action.payload);
