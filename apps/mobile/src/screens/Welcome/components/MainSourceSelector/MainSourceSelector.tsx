@@ -1,5 +1,6 @@
 import Box from '@components/Box';
 import Button from '@components/Button';
+import Checkbox from '@components/Checkbox';
 import { CustomBottomSheet } from '@components/CustomBottomSheet';
 import Input from '@components/Input';
 import { Stack } from '@components/Stack';
@@ -13,6 +14,7 @@ import connector, {
 import React from 'react';
 import { ListRenderItem } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { RectButton } from 'react-native-gesture-handler';
 import {
   moderateScale,
   ScaledSheet,
@@ -61,28 +63,23 @@ const _Item: React.FC<ConnectedItemProps> = React.memo(
       else removeSource(host.getName());
     }
     return (
-      <Box
-        p={moderateScale(16)}
-        flex-direction="row"
-        justify-content="space-between"
-      >
-        <Stack flex-direction="row" space="m">
-          <FastImage source={{ uri: host.getIcon() }} style={styles.icon} />
+      <RectButton onPress={handleOnPress}>
+        <Box
+          p={moderateScale(16)}
+          flex-direction="row"
+          justify-content="space-between"
+        >
+          <Stack flex-direction="row" space="m">
+            <FastImage source={{ uri: host.getIcon() }} style={styles.icon} />
 
-          <Stack>
-            <Text bold>{host.getName()}</Text>
-            <Text color="textSecondary">v{host.getVersion()}</Text>
+            <Stack>
+              <Text bold>{host.getName()}</Text>
+              <Text color="textSecondary">v{host.getVersion()}</Text>
+            </Stack>
           </Stack>
-        </Stack>
-        <Box>
-          <Button
-            label={isSelected ? 'Selected' : 'Set as main source'}
-            variant={isSelected ? 'text' : 'outline'}
-            disabled={isSelected}
-            onPress={handleOnPress}
-          />
+          <Checkbox onChange={handleOnPress} checked={isSelected} />
         </Box>
-      </Box>
+      </RectButton>
     );
   },
 );
