@@ -58,17 +58,17 @@ const Box = styled.View<BoxProps>`
               : borderRadius.tl == null
               ? '0px'
               : theme.style.borderRadius + 'px'};
-            border-bottom-left-radius: ${typeof borderRadius.tl === 'number'
+            border-bottom-left-radius: ${typeof borderRadius.bl === 'number'
               ? borderRadius.bl + 'px'
               : borderRadius.bl == null
               ? '0px'
               : theme.style.borderRadius + 'px'};
-            border-top-right-radius: ${typeof borderRadius.tl === 'number'
+            border-top-right-radius: ${typeof borderRadius.tr === 'number'
               ? borderRadius.tr + 'px'
               : borderRadius.tr == null
               ? '0px'
               : theme.style.borderRadius + 'px'};
-            border-bottom-right-radius: ${typeof borderRadius.tl === 'number'
+            border-bottom-right-radius: ${typeof borderRadius.br === 'number'
               ? borderRadius.br + 'px'
               : borderRadius.br == null
               ? '0px'
