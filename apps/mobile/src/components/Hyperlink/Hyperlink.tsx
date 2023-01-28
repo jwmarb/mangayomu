@@ -16,7 +16,7 @@ const Hyperlink: React.FC<HyperlinkProps> = (props) => {
   }
   return (
     <TouchableWithoutFeedback onPress={handleOnPress}>
-      <Text color="primary" underline={underline} {...rest}>
+      <Text color="hint" underline={underline} {...rest}>
         {children}
       </Text>
     </TouchableWithoutFeedback>
