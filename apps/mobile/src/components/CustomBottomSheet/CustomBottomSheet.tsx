@@ -7,13 +7,12 @@ import BottomSheet, {
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { useTheme } from '@emotion/react';
 import { StatusBar } from 'react-native';
-import Box from '@components/Box';
 import Animated, {
   interpolate,
   useAnimatedStyle,
   useDerivedValue,
 } from 'react-native-reanimated';
-import { useWindowDimensions } from 'react-native/Libraries/Utilities/Dimensions';
+import { Portal } from '@gorhom/portal';
 
 const CustomHandle: React.FC<BottomSheetHandleProps> = ({ animatedIndex }) => {
   const indicatorHeight = useDerivedValue(() =>
@@ -44,23 +43,25 @@ const CustomBottomSheet = React.forwardRef<
     ...rest
   } = props;
   return (
-    <BottomSheet
-      ref={ref}
-      index={index}
-      backdropComponent={BottomSheetBackdrop}
-      snapPoints={snapPoints}
-      enablePanDownToClose={enablePanDownToClose}
-      handleComponent={handleComponent}
-      backgroundStyle={[
-        backgroundStyle,
-        {
-          backgroundColor: theme.palette.background.paper,
-        },
-      ]}
-      {...rest}
-    >
-      {children}
-    </BottomSheet>
+    <Portal>
+      <BottomSheet
+        ref={ref}
+        index={index}
+        backdropComponent={BottomSheetBackdrop}
+        snapPoints={snapPoints}
+        enablePanDownToClose={enablePanDownToClose}
+        handleComponent={handleComponent}
+        backgroundStyle={[
+          backgroundStyle,
+          {
+            backgroundColor: theme.palette.background.paper,
+          },
+        ]}
+        {...rest}
+      >
+        {children}
+      </BottomSheet>
+    </Portal>
   );
 });
 
