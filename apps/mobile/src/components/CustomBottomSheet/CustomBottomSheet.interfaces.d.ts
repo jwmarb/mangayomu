@@ -7,4 +7,5 @@ type SelectivePartial<T, K extends keyof T, U = Pick<T, K>> = Omit<T, K> & {
 export interface CustomBottomSheetProps
   extends Omit<SelectivePartial<BottomSheetProps, 'snapPoints'>, 'children'> {
   children: React.ReactNode | React.ReactNode[];
+  header?: React.ReactNode;
 }

@@ -1,18 +1,20 @@
-import React from 'react';
+import React, { useImperativeHandle } from 'react';
 import { CustomBottomSheetProps } from './CustomBottomSheet.interfaces';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetHandleProps,
+  BottomSheetView,
 } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { useTheme } from '@emotion/react';
-import { StatusBar } from 'react-native';
+import { BackHandler, StatusBar } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedStyle,
   useDerivedValue,
 } from 'react-native-reanimated';
 import { Portal } from '@gorhom/portal';
+import Box from '@components/Box';
 
 const CustomHandle: React.FC<BottomSheetHandleProps> = ({ animatedIndex }) => {
   const indicatorHeight = useDerivedValue(() =>
@@ -40,25 +42,63 @@ const CustomBottomSheet = React.forwardRef<
     handleComponent = CustomHandle,
     backgroundStyle,
     children,
+    onClose,
+    onChange,
+    header,
     ...rest
   } = props;
+  const bottomSheet = React.useRef<BottomSheet>(null);
+  const isOpened = React.useRef<boolean>(false);
+  const styledBackground = React.useMemo(
+    () => [
+      backgroundStyle,
+      { backgroundColor: theme.palette.background.paper },
+    ],
+    [theme.palette.background.paper, backgroundStyle],
+  );
+  function handleOnClose() {
+    onClose && onClose();
+    isOpened.current = false;
+  }
+  function handleOnChange(i: number) {
+    onChange && onChange(i);
+    if (i === -1) isOpened.current = false;
+    else isOpened.current = true;
+  }
+  React.useEffect(() => {
+    const p = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (isOpened.current) {
+        bottomSheet.current?.close();
+        return true;
+      }
+      return false;
+    });
+    return () => {
+      p.remove();
+    };
+  }, []);
   return (
     <Portal>
       <BottomSheet
-        ref={ref}
+        onChange={handleOnChange}
+        onClose={handleOnClose}
+        ref={(r) => {
+          (bottomSheet as any).current = r;
+          (ref as any).current = r;
+        }}
         index={index}
         backdropComponent={BottomSheetBackdrop}
         snapPoints={snapPoints}
         enablePanDownToClose={enablePanDownToClose}
         handleComponent={handleComponent}
-        backgroundStyle={[
-          backgroundStyle,
-          {
-            backgroundColor: theme.palette.background.paper,
-          },
-        ]}
+        backgroundStyle={styledBackground}
         {...rest}
       >
+        {header && (
+          <Box my="l" mx="m">
+            {header}
+          </Box>
+        )}
         {children}
       </BottomSheet>
     </Portal>
