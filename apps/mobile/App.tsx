@@ -43,9 +43,9 @@ function App(): JSX.Element {
             dark: colorConstant('#0050b3'),
           },
           secondary: {
-            light: colorConstant('#ffa39e'),
-            main: colorConstant('#ff7875'),
-            dark: colorConstant('#ff4d4f'),
+            light: colorConstant('	#EE4B2B'),
+            main: colorConstant('#D22B2B'),
+            dark: colorConstant('#AA4A44'),
           },
           text: {
             primary: color('rgba(255, 255, 255, 1)', 'rgba(0, 0, 0, 0.87)'),
@@ -54,9 +54,9 @@ function App(): JSX.Element {
             hint: color('rgba(255, 255, 255, 0.5)', 'rgba(0, 0, 0, 0.38)'),
           },
           background: {
-            default: color('#141414', '#fafafa'),
-            paper: color('#262626', '#ffffff'),
-            disabled: color('#1C1C1C', '#EFEFEF'),
+            default: color('#000000', '#fafafa'),
+            paper: color('#111111', '#ffffff'),
+            disabled: color('#232323', '#EFEFEF'),
           },
         },
         style: {

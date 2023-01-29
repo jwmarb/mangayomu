@@ -5,31 +5,49 @@ import React from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
-  runOnUI,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
-import { CheckboxProps } from './Checkbox.interfaces';
+import { MultiCheckboxProps } from './MultiCheckbox.interfaces';
 
-const Checkbox: React.FC<CheckboxProps> = (props) => {
-  const { checked, onChange = () => void 0, defaultState = false } = props;
+const MultiCheckbox: React.FC<MultiCheckboxProps> = (props) => {
+  const { state = 0, onChange = () => void 0, defaultState = 0 } = props;
   const theme = useTheme();
-  const opacity = useSharedValue(defaultState || checked ? 1 : 0);
+  const opacity = useSharedValue(defaultState | state);
   const backgroundColor = useDerivedValue(() =>
     interpolateColor(
-      opacity.value,
-      [0, 1],
+      state,
+      [0, 1, 2],
       [
         theme.mode === 'light'
           ? 'rgba(0, 0, 0, 0.15)'
           : 'rgba(255, 255, 255, 0.1)',
         theme.palette.primary.main,
+        theme.palette.secondary.main,
       ],
     ),
   );
+  const textColor = React.useMemo(() => {
+    switch (state) {
+      case 1:
+      default:
+        return 'primary@contrast';
+      case 2:
+        return 'secondary@contrast';
+    }
+  }, [state]);
+  const iconName = React.useMemo(() => {
+    switch (state) {
+      case 1:
+      default:
+        return 'check-bold';
+      case 2:
+        return 'close-thick';
+    }
+  }, [state]);
   const boxStyle = useAnimatedStyle(() => ({
     backgroundColor: backgroundColor.value,
   }));
@@ -38,22 +56,21 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
   }));
 
   React.useEffect(() => {
-    if (checked != null) {
-      if (!checked) opacity.value = withTiming(0, { duration: 100 });
-      else opacity.value = withTiming(1, { duration: 100 });
-    }
-  }, [checked]);
-
+    if (state === 0) opacity.value = withTiming(0, { duration: 100 });
+    else opacity.value = withTiming(1, { duration: 100 });
+  }, [state]);
   function handleOnPress() {
-    if (checked == null) {
-      if (opacity.value === 1) {
-        onChange(false);
-        opacity.value = withTiming(0, { duration: 100 });
-      } else {
-        onChange(true);
-        opacity.value = withTiming(1, { duration: 100 });
-      }
-    } else onChange(!checked);
+    switch (state) {
+      case 0:
+        onChange(1);
+        break;
+      case 1:
+        onChange(2);
+        break;
+      case 2:
+        onChange(0);
+        break;
+    }
   }
   return (
     <Box border-radius={10000}>
@@ -67,7 +84,7 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
           style={boxStyle}
         >
           <Animated.View style={checkmarkStyle}>
-            <Icon type="font" name="check-bold" color="primary@contrast" />
+            <Icon type="font" name={iconName} color={textColor} />
           </Animated.View>
         </Box>
       </BorderlessButton>
@@ -85,4 +102,4 @@ const styles = ScaledSheet.create({
   },
 });
 
-export default Checkbox;
+export default MultiCheckbox;

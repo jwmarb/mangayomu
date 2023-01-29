@@ -13,15 +13,18 @@ import {
   REGISTER,
 } from 'redux-persist';
 import { reduxStorage } from '@mmkv-storage/main';
+import { MainSourceSelectorReducer } from '@redux/slices/mainSourceSelector';
 
 const reducers = combineReducers({
   __initial__: __initialReducer__,
   host: hostReducer,
+  mainSourceSelector: MainSourceSelectorReducer,
 });
 
 const persistConfig: PersistConfig<AppState> = {
   key: 'root',
   storage: reduxStorage,
+  blacklist: ['mainSourceSelector'],
 };
 
 const persisted = persistReducer(persistConfig, reducers);

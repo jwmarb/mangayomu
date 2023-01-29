@@ -6,6 +6,7 @@ import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import Box from '@components/Box';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
+import { hexToRgb, rgbaToString } from '@mangayomu/theme';
 
 const Button: React.FC<ButtonProps> = (props) => {
   const {
@@ -25,7 +26,7 @@ const Button: React.FC<ButtonProps> = (props) => {
           variant === 'contained' ? theme.palette[color].main : undefined,
       }}
       {...rest}
-      rippleColor={theme.palette[color][theme.mode ?? 'main']}
+      rippleColor={theme.palette[color].ripple}
     >
       <Box
         py={moderateScale(12)}

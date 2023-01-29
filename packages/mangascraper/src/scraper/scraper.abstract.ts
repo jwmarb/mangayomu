@@ -55,6 +55,10 @@ abstract class MangaHost {
 
   private readonly version: string;
 
+  private readonly _isAdult: boolean;
+
+  private readonly _hasMangaDirectory: boolean;
+
   public constructor(info: MangaHostInfo) {
     this.link = url.parse(info.host).hostname ?? '';
     this.genres = info.genres;
@@ -65,6 +69,8 @@ abstract class MangaHost {
     this.page = 1;
     if (info.version == null) this.version = '1.0.0';
     else this.version = info.version;
+    this._isAdult = info.isAdult;
+    this._hasMangaDirectory = info.hasMangaDirectory;
 
     MangaHost.availableSources.set(info.name, this);
     MangaHost.listSources.push(info.name);
@@ -87,6 +93,14 @@ abstract class MangaHost {
     }
     const { data } = await axios.get(path.url);
     return cheerio.load(data, { decodeEntities: false });
+  }
+
+  public hasMangaDirectory() {
+    return this._hasMangaDirectory;
+  }
+
+  public isAdult() {
+    return this._isAdult;
   }
 
   public getPage() {

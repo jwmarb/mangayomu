@@ -99,21 +99,56 @@ const MANGAPARKV3_GENRES = [
 ] as const;
 
 const filters = createSchema(
-  ({ createInclusiveExclusiveFilter, createOptionFilter, createSortFilter, createDescription }) => ({
-    description: createDescription('NOTE: Text search is ignored whenever filters are applied!'),
+  ({
+    createInclusiveExclusiveFilter,
+    createOptionFilter,
+    createSortFilter,
+    createDescription,
+  }) => ({
+    description: createDescription(
+      'NOTE: Text search is ignored whenever filters are applied!',
+    ),
     Type: createInclusiveExclusiveFilter({
-      fields: ['Artbook', 'Cartoon', 'Comic', 'Doujinshi', 'Imageset', 'Manga', 'Manhuwa', 'Manhwa', 'Webtoon'],
+      fields: [
+        'Artbook',
+        'Cartoon',
+        'Comic',
+        'Doujinshi',
+        'Imageset',
+        'Manga',
+        'Manhuwa',
+        'Manhwa',
+        'Webtoon',
+      ],
     }),
     'Original Language': createOptionFilter({
       options: ['Any', 'Chinese', 'English', 'Japanese', 'Korean'],
       default: 'Any',
     }),
     Status: createOptionFilter({
-      options: ['All', 'Pending', 'Ongoing', 'Completed', 'Hiatus', 'Cancelled'],
+      options: [
+        'All',
+        'Pending',
+        'Ongoing',
+        'Completed',
+        'Hiatus',
+        'Cancelled',
+      ],
       default: 'All',
     }),
     Chapters: createOptionFilter({
-      options: ['All', '1 ~ 9', '10 ~ 29', '30 ~ 99', '100 ~ 199', '200+', ' 100+', '50+', '10+', '1+'],
+      options: [
+        'All',
+        '1 ~ 9',
+        '10 ~ 29',
+        '30 ~ 99',
+        '100 ~ 199',
+        '200+',
+        ' 100+',
+        '50+',
+        '10+',
+        '1+',
+      ],
       default: 'All',
     }),
     'Order by': createSortFilter({
@@ -121,13 +156,14 @@ const filters = createSchema(
       default: 'Rating',
     }),
     Genres: createInclusiveExclusiveFilter({ fields: MANGAPARKV3_GENRES }),
-  })
+  }),
 );
 
 export type MangaParkV3Filter = typeof filters.schema;
 
 export const MANGAPARKV3_INFO: MangaHostFiltersInfo<MangaParkV3Filter> = {
   filters,
+  isAdult: true,
   genres: MANGAPARKV3_GENRES as any,
   hasHotMangas: true,
   hasLatestMangas: true,

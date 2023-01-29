@@ -1,5 +1,6 @@
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
+import { toggleReverse, setSort } from '@redux/slices/mainSourceSelector';
 
 const mapStateToProps = (
   state: AppState,
@@ -11,7 +12,7 @@ const mapStateToProps = (
   numSelected: state.host.name.length,
 });
 
-const connector = connect(mapStateToProps);
+const connector = connect(mapStateToProps, { toggleReverse, setSort });
 
 export type ConnectedHeaderProps = ConnectedProps<typeof connector>;
 

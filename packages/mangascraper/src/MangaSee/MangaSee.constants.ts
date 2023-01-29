@@ -43,40 +43,69 @@ const MANGASEE_GENRES = [
   'Yuri',
 ] as const;
 
-const filters = createSchema(({ createInclusiveExclusiveFilter, createOptionFilter, createSortFilter }) => ({
-  'Official Translation': createOptionFilter({
-    options: ['Any', 'Official Translation Only'],
-    default: 'Any',
+const filters = createSchema(
+  ({
+    createInclusiveExclusiveFilter,
+    createOptionFilter,
+    createSortFilter,
+  }) => ({
+    'Official Translation': createOptionFilter({
+      options: ['Any', 'Official Translation Only'],
+      default: 'Any',
+    }),
+    'Scan Status': createOptionFilter({
+      options: [
+        'Any',
+        'Cancelled',
+        'Complete',
+        'Discontinued',
+        'Hiatus',
+        'Ongoing',
+      ],
+      default: 'Any',
+    }),
+    'Publish Status': createOptionFilter({
+      options: [
+        'Any',
+        'Cancelled',
+        'Complete',
+        'Discontinued',
+        'Hiatus',
+        'Ongoing',
+      ],
+      default: 'Any',
+    }),
+    Type: createOptionFilter({
+      options: [
+        'Any',
+        'Doujinshi',
+        'Manga',
+        'Manhua',
+        'Manhwa',
+        'OEL',
+        'One-shot',
+      ],
+      default: 'Any',
+    }),
+    'Sort By': createSortFilter({
+      options: [
+        'Alphabetical',
+        'Popularity (All Time)',
+        'Popularity (Monthly)',
+        'Recently Released Chapter',
+        'Year Released',
+      ],
+      default: 'Alphabetical',
+    }),
+    Genres: createInclusiveExclusiveFilter({ fields: MANGASEE_GENRES }),
   }),
-  'Scan Status': createOptionFilter({
-    options: ['Any', 'Cancelled', 'Complete', 'Discontinued', 'Hiatus', 'Ongoing'],
-    default: 'Any',
-  }),
-  'Publish Status': createOptionFilter({
-    options: ['Any', 'Cancelled', 'Complete', 'Discontinued', 'Hiatus', 'Ongoing'],
-    default: 'Any',
-  }),
-  Type: createOptionFilter({
-    options: ['Any', 'Doujinshi', 'Manga', 'Manhua', 'Manhwa', 'OEL', 'One-shot'],
-    default: 'Any',
-  }),
-  'Sort By': createSortFilter({
-    options: [
-      'Alphabetical',
-      'Popularity (All Time)',
-      'Popularity (Monthly)',
-      'Recently Released Chapter',
-      'Year Released',
-    ],
-    default: 'Alphabetical',
-  }),
-  Genres: createInclusiveExclusiveFilter({ fields: MANGASEE_GENRES }),
-}));
+);
 
 export type MangaSeeFilter = typeof filters.schema;
 
 export const MANGASEE_INFO: MangaHostFiltersInfo<typeof filters.schema> = {
   host: MANGASEE_URL,
+  isAdult: false,
   genres: MANGASEE_GENRES as any,
   version: '1.0.0',
   name: 'MangaSee',

@@ -21,6 +21,7 @@ export interface Color {
   main: string;
   dark: string;
   contrastText: string;
+  ripple: string;
 }
 
 export interface BackgroundColor {
@@ -105,7 +106,7 @@ export type ThemeSchema<T extends DefaultTheme> = {
                   ? ColorSchema
                   : T[K][V][S];
               },
-              'contrastText'
+              'contrastText' | 'ripple'
             >
           : T[K][V];
       }

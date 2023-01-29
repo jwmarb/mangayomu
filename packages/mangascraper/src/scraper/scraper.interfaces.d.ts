@@ -79,6 +79,11 @@ export declare interface MangaHostInfo {
    * x.x.1 = patch version that fixes bugs
    */
   version: string;
+
+  /**
+   * Whether or not the manga host is mostly composed of adult content such as hentai
+   */
+  isAdult: boolean;
 }
 
 /**
@@ -204,7 +209,9 @@ export declare interface WithModificationDate {
   };
 }
 
-export declare interface MangaMeta<TChapters extends MangaChapter = MangaChapter> extends WithGenres {
+export declare interface MangaMeta<
+  TChapters extends MangaChapter = MangaChapter,
+> extends WithGenres {
   /**
    * The chapters of the manga
    */
@@ -250,7 +257,11 @@ export declare interface MangaChapter {
   date: string;
 }
 
-export type WithFilters = WithGenresFilter | WithSortFilter | WithStatusFilter | WithOfficialTranslationFilter;
+export type WithFilters =
+  | WithGenresFilter
+  | WithSortFilter
+  | WithStatusFilter
+  | WithOfficialTranslationFilter;
 
 export type ExclusiveInclusiveFilter<T> = {
   include: T[];

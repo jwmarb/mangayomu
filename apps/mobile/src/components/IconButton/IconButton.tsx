@@ -1,20 +1,18 @@
 import Box from '@components/Box';
-import Icon from '@components/Icon';
 import { useTheme } from '@emotion/react';
 import { ButtonColors } from '@mangayomu/theme';
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import { IconButtonProps } from './IconButton.interfaces';
 
 const IconButton: React.FC<IconButtonProps> = (props) => {
-  const { color, icon, compact, ...rest } = props;
+  const { color = 'textSecondary', icon, compact, ...rest } = props;
   const theme = useTheme();
   const rippleColor = React.useMemo(() => {
     if (color == null) return undefined;
     if (color in theme.palette)
-      return theme.palette[color as ButtonColors][theme.mode ?? 'light'];
+      return theme.palette[color as ButtonColors].ripple;
   }, [color, theme]);
   const borderlessButtonStyle = React.useMemo(
     () =>

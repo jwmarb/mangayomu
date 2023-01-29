@@ -15,8 +15,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Portal } from '@gorhom/portal';
 import Box from '@components/Box';
+import Text from '@components/Text';
 
-const CustomHandle: React.FC<BottomSheetHandleProps> = ({ animatedIndex }) => {
+const CustomHandle: React.FC<
+  BottomSheetHandleProps & { header?: React.ReactNode }
+> = ({ animatedIndex, header }) => {
+  const theme = useTheme();
   const indicatorHeight = useDerivedValue(() =>
     interpolate(
       animatedIndex.value,
@@ -24,27 +28,62 @@ const CustomHandle: React.FC<BottomSheetHandleProps> = ({ animatedIndex }) => {
       [0, StatusBar.currentHeight ?? 0],
     ),
   );
+  const borderRadius = useDerivedValue(() =>
+    interpolate(animatedIndex.value, [1.8, 2], [2, 0]),
+  );
+  const headerStyle = useAnimatedStyle(() => ({
+    borderTopLeftRadius: borderRadius.value,
+    borderTopRightRadius: borderRadius.value,
+  }));
   const style = useAnimatedStyle(() => ({
     height: indicatorHeight.value,
   }));
-  return <Animated.View style={style} />;
+  const styles = React.useMemo(
+    () => [
+      style,
+      {
+        backgroundColor: theme.palette.background.paper,
+      },
+    ],
+    [style, theme.palette.background.paper],
+  );
+  return (
+    <>
+      <Animated.View style={styles} />
+      {header && (
+        <Box
+          as={Animated.View}
+          style={headerStyle}
+          p="m"
+          background-color="paper"
+        >
+          {header}
+        </Box>
+      )}
+    </>
+  );
 };
 
-const CustomBottomSheet = React.forwardRef<
+const CustomBottomSheet: React.ForwardRefRenderFunction<
   BottomSheetMethods,
   CustomBottomSheetProps
->((props, ref) => {
+> = (props, ref) => {
   const theme = useTheme();
   const {
     enablePanDownToClose = true,
     index = -1,
     snapPoints = ['40%', '70%', '100%'],
-    handleComponent = CustomHandle,
     backgroundStyle,
     children,
     onClose,
     onChange,
     header,
+    handleComponent = React.useCallback(
+      (props: BottomSheetHandleProps) => (
+        <CustomHandle header={header} {...props} />
+      ),
+      [header],
+    ),
     ...rest
   } = props;
   const bottomSheet = React.useRef<BottomSheet>(null);
@@ -52,9 +91,9 @@ const CustomBottomSheet = React.forwardRef<
   const styledBackground = React.useMemo(
     () => [
       backgroundStyle,
-      { backgroundColor: theme.palette.background.paper },
+      { backgroundColor: theme.palette.background.default },
     ],
-    [theme.palette.background.paper, backgroundStyle],
+    [theme.palette.background.default, backgroundStyle],
   );
   function handleOnClose() {
     onClose && onClose();
@@ -94,15 +133,12 @@ const CustomBottomSheet = React.forwardRef<
         backgroundStyle={styledBackground}
         {...rest}
       >
-        {header && (
-          <Box my="l" mx="m">
-            {header}
-          </Box>
-        )}
         {children}
       </BottomSheet>
     </Portal>
   );
-});
+};
 
-export default CustomBottomSheet;
+export default React.forwardRef<BottomSheetMethods, CustomBottomSheetProps>(
+  CustomBottomSheet,
+);

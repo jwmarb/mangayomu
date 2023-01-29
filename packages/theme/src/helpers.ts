@@ -3,6 +3,7 @@ import {
   Colors,
   DefaultTheme,
   hexToRgb,
+  rgbaToString,
   Theme,
   ThemeMode,
   ThemeSchema,
@@ -52,6 +53,12 @@ export function readColors(
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       converted[typedName]!.contrastText =
         yiq > 125 ? obj.text.primary.light : obj.text.primary.dark;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      converted[typedName]!.ripple = rgbaToString({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        ...hexToRgb(converted[typedName]![mode ?? 'main']!),
+        alpha: 0.4,
+      });
     }
   }
 

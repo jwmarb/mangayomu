@@ -26,12 +26,11 @@ const Item: React.FC<ConnectedItemProps> = React.memo(
     }
     return (
       <RectButton onPress={handleOnPress}>
-        <Box
-          p={moderateScale(16)}
-          flex-direction="row"
-          justify-content="space-between"
-        >
-          <Stack flex-direction="row" space="m">
+        <Box flex-direction="row" align-items="center">
+          <Box align-self="center" ml="s">
+            <Checkbox onChange={handleOnPress} checked={isSelected} />
+          </Box>
+          <Stack py="s" flex-direction="row" space="m">
             <FastImage source={{ uri: host.getIcon() }} style={styles.icon} />
             <Stack>
               <Text bold>{host.getName()}</Text>
@@ -41,7 +40,6 @@ const Item: React.FC<ConnectedItemProps> = React.memo(
               </Hyperlink>
             </Stack>
           </Stack>
-          <Checkbox onChange={handleOnPress} checked={isSelected} />
         </Box>
       </RectButton>
     );
