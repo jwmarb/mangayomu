@@ -1,4 +1,6 @@
 import {
+  BorderModel,
+  BorderProperty,
   BoxModel,
   DimensionsModel,
   FlexBoxModel,
@@ -73,6 +75,68 @@ export function setWithPalette(
   return css`
     ${cssProperty}: ${value};
   `;
+}
+
+export function implementBorderModel(theme: Theme, borderModel: BorderModel) {
+  const {
+    'border-color': borderColor,
+    'border-radius': borderRadius,
+    'border-width': borderWidth,
+  } = borderModel;
+  return css`
+    ${(() => {
+      switch (typeof borderColor) {
+        case 'string':
+          return setWithPalette(theme, 'border-color', borderColor);
+        case 'object':
+          return css`
+            ${setWithPalette(theme, 'border-top-color', borderColor.t)};
+            ${setWithPalette(theme, 'border-bottom-color', borderColor.b)};
+            ${setWithPalette(theme, 'border-right-color', borderColor.r)};
+            ${setWithPalette(theme, 'border-left-color', borderColor.l)};
+          `;
+      }
+    })()};
+    ${(() => {
+      switch (typeof borderWidth) {
+        case 'number':
+          return `border-width: ${borderWidth}px`;
+        case 'object':
+          return css`
+            ${setu(theme, 'border-top-width', borderWidth.t)};
+            ${setu(theme, 'border-bottom-width', borderWidth.b)};
+            ${setu(theme, 'border-right-width', borderWidth.r)};
+            ${setu(theme, 'border-left-width', borderWidth.l)};
+          `;
+      }
+    })()};
+    ${(() => {
+      switch (typeof borderRadius) {
+        case 'number':
+          return `border-radius: ${borderRadius}px`;
+        case 'object':
+          return css`
+            ${toBorderRadiusProperty(theme, 'top-left', borderRadius.tl)};
+            ${toBorderRadiusProperty(theme, 'top-right', borderRadius.tr)};
+            ${toBorderRadiusProperty(theme, 'bottom-right', borderRadius.br)};
+            ${toBorderRadiusProperty(theme, 'bottom-left', borderRadius.bl)};
+          `;
+      }
+    })()};
+  `;
+}
+
+function toBorderRadiusProperty(
+  theme: Theme,
+  location: string,
+  value?: number | '@theme',
+) {
+  if (value != null)
+    return css`
+      border-${location}-radius: ${
+      value === '@theme' ? theme.style.borderRadius : value + 'px'
+    };
+    `;
 }
 
 export function implementBoxModel(theme: Theme, boxModel: BoxModel) {

@@ -28,6 +28,26 @@ export interface PositionModel {
   right?: number | string;
 }
 
+type BorderRadiusProperty<T> = {
+  readonly tl?: T;
+  readonly tr?: T;
+  readonly bl?: T;
+  readonly br?: T;
+};
+
+type BorderSideProperty<T> = {
+  readonly t?: T;
+  readonly l?: T;
+  readonly r?: T;
+  readonly b?: T;
+};
+
+export interface BorderModel {
+  'border-radius'?: number | '@theme' | BorderRadiusProperty<number | '@theme'>;
+  'border-color'?: string | BorderSideProperty<string>;
+  'border-width'?: number | BorderSideProperty<number>;
+}
+
 export interface BoxModel {
   p?: Spacing | number;
   m?: Spacing | number;
@@ -61,6 +81,7 @@ export interface BoxProps
     FlexBoxModel,
     DimensionsModel,
     PositionModel,
+    BorderModel,
     Debuggable {
   /**
    * Layout
@@ -74,15 +95,4 @@ export interface BoxProps
    */
   'background-color'?: string;
   'box-shadow'?: boolean;
-  'border-radius'?:
-    | number
-    | '@theme'
-    | {
-        tl?: number | '@theme';
-        tr?: number | '@theme';
-        bl?: number | '@theme';
-        br?: number | '@theme';
-      };
-  'border-color'?: string;
-  'border-width'?: number;
 }

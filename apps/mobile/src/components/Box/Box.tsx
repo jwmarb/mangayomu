@@ -2,6 +2,7 @@ import styled, { css } from '@emotion/native';
 import { BackgroundColor, ButtonColors } from '@mangayomu/theme';
 import { BoxProps } from './Box.interfaces';
 import {
+  implementBorderModel,
   implementBoxModel,
   implementDimensionsModel,
   implementFlexBoxModel,
@@ -40,41 +41,12 @@ const Box = styled.View<BoxProps>`
           `;
         return setWithPalette(theme, 'background-color', bgColor);
       })()}
-      ${setWithPalette(theme, 'border-color', borderColor)};
-      ${setu(theme, 'border-width', borderWidth)}
+      ${implementBorderModel(theme, props)};
       ${implementDimensionsModel(props)};
       ${implementPositionModel(props)};
       ${boxShadow && theme.style.shadow};
       ${set('overflow', overflow)};
-      ${(() => {
-        if (borderRadius === '@theme')
-          return 'border-radius: ' + theme.style.borderRadius + 'px';
-        if (typeof borderRadius === 'number')
-          return 'border-radius: ' + borderRadius + 'px';
-        if (typeof borderRadius === 'object')
-          return css`
-            border-top-left-radius: ${typeof borderRadius.tl === 'number'
-              ? borderRadius.tl + 'px'
-              : borderRadius.tl == null
-              ? '0px'
-              : theme.style.borderRadius + 'px'};
-            border-bottom-left-radius: ${typeof borderRadius.bl === 'number'
-              ? borderRadius.bl + 'px'
-              : borderRadius.bl == null
-              ? '0px'
-              : theme.style.borderRadius + 'px'};
-            border-top-right-radius: ${typeof borderRadius.tr === 'number'
-              ? borderRadius.tr + 'px'
-              : borderRadius.tr == null
-              ? '0px'
-              : theme.style.borderRadius + 'px'};
-            border-bottom-right-radius: ${typeof borderRadius.br === 'number'
-              ? borderRadius.br + 'px'
-              : borderRadius.br == null
-              ? '0px'
-              : theme.style.borderRadius + 'px'};
-          `;
-      })()};
+
       ${implementBoxModel(theme, props)};
       ${implementFlexBoxModel(props)}
     `;
