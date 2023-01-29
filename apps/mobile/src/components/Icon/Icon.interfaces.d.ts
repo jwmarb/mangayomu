@@ -1,5 +1,4 @@
 import MaterialCommunityIconNames from 'react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json';
-
 import React from 'react';
 import { TextProps } from '@components/Text/Text.interfaces';
 
@@ -9,9 +8,10 @@ interface AbstractIconProps<T>
   type?: T;
 }
 
-export interface IconProps extends AbstractIconProps<'font'> {
+export interface IconProps extends AbstractIconProps<'font'>, TextProps {
   name?: keyof typeof MaterialCommunityIconNames;
   size?: number;
+  animated?: boolean;
 }
 
 export interface ImageIconProps extends AbstractIconProps<'image'> {

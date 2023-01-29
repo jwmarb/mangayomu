@@ -5,6 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import FastImage from 'react-native-fast-image';
 import { ScaledSheet } from 'react-native-size-matters';
 import MaterialCommunityIconNames from 'react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json';
+import Animated from 'react-native-reanimated';
 
 type RequireKey<T, KEYS extends keyof T> = Omit<T, KEYS> & {
   [K in keyof T as K extends KEYS ? K : never]-?: T[K];
@@ -18,10 +19,17 @@ const styles = ScaledSheet.create({
   },
 });
 
+const AnimatedIcon = Animated.createAnimatedComponent(MaterialCommunityIcons);
+
 const Icon: React.FC<IconProps | ImageIconProps> = (props) => {
   if (props.name == null) throw Error('name is required in Icon');
-  if (props.name in MaterialCommunityIconNames)
-    return <IconFromFont {...(props as RequireKey<IconProps, 'name'>)} />;
+  if (props.type === 'font' && props.name in MaterialCommunityIconNames)
+    return (
+      <IconFromFont
+        as={props.animated ? AnimatedIcon : undefined}
+        {...(props as RequireKey<IconProps, 'name'>)}
+      />
+    );
   return <FastImage source={{ uri: props.name }} style={styles.imageIcon} />;
 };
 
