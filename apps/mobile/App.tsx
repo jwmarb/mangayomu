@@ -24,6 +24,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Auth0Provider } from 'react-native-auth0';
 import { PersistGate } from 'redux-persist/integration/react';
 import { PortalProvider } from '@gorhom/portal';
+import { MenuProvider } from 'react-native-popup-menu';
 
 enum Auth0 {
   DOMAIN = 'dev-wq6wbghv.us.auth0.com',
@@ -94,11 +95,13 @@ function App(): JSX.Element {
           <ThemeProvider theme={theme}>
             <Provider store={store}>
               <PersistGate loading={null} persistor={persistor}>
-                <PortalProvider>
-                  <NavigationContainer theme={theme.__react_navigation__}>
-                    <Root />
-                  </NavigationContainer>
-                </PortalProvider>
+                <MenuProvider>
+                  <PortalProvider>
+                    <NavigationContainer theme={theme.__react_navigation__}>
+                      <Root />
+                    </NavigationContainer>
+                  </PortalProvider>
+                </MenuProvider>
               </PersistGate>
             </Provider>
           </ThemeProvider>
