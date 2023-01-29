@@ -24,10 +24,7 @@ const Box = styled.View<BoxProps>`
       'background-color': bgColor,
       'box-shadow': boxShadow,
       debug,
-      'border-radius': borderRadius = 0,
       'z-index': zIndex = 0,
-      'border-color': borderColor,
-      'border-width': borderWidth,
       overflow,
     } = props;
 
