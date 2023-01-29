@@ -22,6 +22,7 @@ const MainSourceSelector = React.forwardRef<
 >(
   (
     {
+      query,
       sort,
       reversed,
       filters: { showNSFW, hasHotUpdates, hasLatestUpdates, hasMangaDirectory },
@@ -29,7 +30,6 @@ const MainSourceSelector = React.forwardRef<
     ref,
   ) => {
     const [data, setData] = React.useState<string[]>(state);
-    const [query, setQuery] = React.useState<string>('');
     const theme = useTheme();
     const contentContainerStyle = React.useMemo(
       () => [{ backgroundColor: theme.palette.background.default }],
@@ -62,7 +62,7 @@ const MainSourceSelector = React.forwardRef<
     ]);
 
     return (
-      <CustomBottomSheet header={<Header setQuery={setQuery} />} ref={ref}>
+      <CustomBottomSheet header={<Header />} ref={ref}>
         <BottomSheetFlatList
           contentContainerStyle={contentContainerStyle}
           data={data}

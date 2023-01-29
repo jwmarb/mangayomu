@@ -21,8 +21,10 @@ export function applyFilterState(value: boolean, s: FilterState) {
 export type MainSourceFilterKeys = keyof MainSourceSelectorState['filters'];
 
 interface MainSourceSelectorState {
+  index: number;
   reversed: boolean;
   sort: keyof typeof SORT_HOSTS_BY;
+  query: string;
   filters: {
     showNSFW: FilterState;
     hasHotUpdates: FilterState;
@@ -32,8 +34,10 @@ interface MainSourceSelectorState {
 }
 
 const initialMainSourceSelectorState: MainSourceSelectorState = {
+  index: 0,
   reversed: false,
   sort: 'Alphabetically',
+  query: '',
   filters: {
     showNSFW: FilterState.ANY,
     hasHotUpdates: FilterState.INCLUDE,
@@ -75,9 +79,21 @@ const mainSourceSelectorSlice = createSlice({
           break;
       }
     },
+    setIndex: (state, action: PayloadAction<number>) => {
+      state.index = action.payload;
+    },
+    setQuery: (state, action: PayloadAction<string>) => {
+      state.query = action.payload;
+    },
   },
 });
 
-export const { setSort, toggleReverse, applyFilter, switchStateOfFilter } =
-  mainSourceSelectorSlice.actions;
+export const {
+  setSort,
+  toggleReverse,
+  applyFilter,
+  switchStateOfFilter,
+  setIndex,
+  setQuery,
+} = mainSourceSelectorSlice.actions;
 export default mainSourceSelectorSlice.reducer;

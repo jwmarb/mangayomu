@@ -14,16 +14,20 @@ import CustomTabs from '@components/CustomTabs';
 import Filters from './Tabs/Filters';
 import Sort from '@screens/Welcome/components/MainSourceSelector/components/Header/Tabs/Sort';
 
-const Header: React.FC<ConnectedHeaderProps> = ({ setQuery, numSelected }) => {
+const Header: React.FC<ConnectedHeaderProps> = ({
+  setQuery,
+  numSelected,
+  index,
+  setIndex,
+  totalSources,
+  query,
+}) => {
   const bottomSheet =
     React.useRef<React.ElementRef<typeof CustomBottomSheet>>(null);
   function handleOnFilters() {
     bottomSheet.current?.snapToIndex(1);
   }
-  const [index, setIndex] = React.useState<number>(0);
-  React.useEffect(() => {
-    console.log(index);
-  }, [index]);
+
   return (
     <>
       <Stack space={moderateScale(8)}>
@@ -36,16 +40,23 @@ const Header: React.FC<ConnectedHeaderProps> = ({ setQuery, numSelected }) => {
           <Box>
             <Text variant="header">Select your main sources</Text>
             <Text color="textSecondary">
-              <Text bold>{numSelected}</Text> source
+              <Text bold>
+                {numSelected} / {totalSources}
+              </Text>{' '}
+              source
               {numSelected === 1 ? '' : 's'} selected
             </Text>
           </Box>
-          <IconButton
-            icon={<Icon type="font" name="filter-menu" />}
-            onPress={handleOnFilters}
-          />
+          <Stack space="s" flex-direction="row">
+            <IconButton
+              icon={<Icon type="font" name="filter-menu" />}
+              onPress={handleOnFilters}
+            />
+            <IconButton icon={<Icon type="font" name="dots-vertical" />} />
+          </Stack>
         </Stack>
         <Input
+          defaultValue={query}
           icon={<Icon type="font" name="magnify" />}
           placeholder="Type a source name..."
           clearButtonMode="always"
@@ -64,20 +75,13 @@ const Header: React.FC<ConnectedHeaderProps> = ({ setQuery, numSelected }) => {
   );
 };
 
-const Display = () => (
-  <Box>
-    <Text>Hello from Layout</Text>
-  </Box>
-);
 const renderScene = SceneMap({
   filters: Filters,
   sort: Sort,
-  display: Display,
 });
 const routes = [
   { key: 'filters', title: 'Filter' },
   { key: 'sort', title: 'Sort' },
-  { key: 'display', title: 'Layout' },
 ];
 
 export default connector(React.memo(Header));
