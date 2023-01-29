@@ -14,9 +14,14 @@ import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import { MultiCheckboxProps } from './MultiCheckbox.interfaces';
 
 const MultiCheckbox: React.FC<MultiCheckboxProps> = (props) => {
-  const { state = 0, onChange = () => void 0, defaultState = 0 } = props;
+  const {
+    onChange = () => void 0,
+    defaultState = 0,
+    state = defaultState,
+  } = props;
   const theme = useTheme();
-  const opacity = useSharedValue(defaultState | state);
+  const checkOpacity = useSharedValue(state === 1 ? 1 : 0);
+  const closeOpacity = useSharedValue(state === 2 ? 1 : 0);
   const backgroundColor = useDerivedValue(() =>
     interpolateColor(
       state,
@@ -30,34 +35,26 @@ const MultiCheckbox: React.FC<MultiCheckboxProps> = (props) => {
       ],
     ),
   );
-  const textColor = React.useMemo(() => {
-    switch (state) {
-      case 1:
-      default:
-        return 'primary@contrast';
-      case 2:
-        return 'secondary@contrast';
-    }
-  }, [state]);
-  const iconName = React.useMemo(() => {
-    switch (state) {
-      case 1:
-      default:
-        return 'check-bold';
-      case 2:
-        return 'close-thick';
-    }
-  }, [state]);
+
   const boxStyle = useAnimatedStyle(() => ({
     backgroundColor: backgroundColor.value,
   }));
   const checkmarkStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
+    opacity: checkOpacity.value,
   }));
+  const closeStyle = useAnimatedStyle(() => ({
+    opacity: closeOpacity.value,
+  }));
+  const closeStyleFinal = React.useMemo(
+    () => [closeStyle, { position: 'absolute', alignSelf: 'center' } as const],
+    [closeStyle],
+  );
 
   React.useEffect(() => {
-    if (state === 0) opacity.value = withTiming(0, { duration: 100 });
-    else opacity.value = withTiming(1, { duration: 100 });
+    if (state === 1) checkOpacity.value = withTiming(1, { duration: 100 });
+    else checkOpacity.value = withTiming(0, { duration: 100 });
+    if (state === 2) closeOpacity.value = withTiming(1, { duration: 100 });
+    else closeOpacity.value = withTiming(0, { duration: 100 });
   }, [state]);
   function handleOnPress() {
     switch (state) {
@@ -83,9 +80,20 @@ const MultiCheckbox: React.FC<MultiCheckboxProps> = (props) => {
           justify-content="center"
           style={boxStyle}
         >
-          <Animated.View style={checkmarkStyle}>
-            <Icon type="font" name={iconName} color={textColor} />
-          </Animated.View>
+          <Icon
+            type="font"
+            name="check-bold"
+            color="primary@contrast"
+            animated
+            style={checkmarkStyle}
+          />
+          <Icon
+            animated
+            style={closeStyleFinal}
+            type="font"
+            name="close-thick"
+            color="secondary@contrast"
+          />
         </Box>
       </BorderlessButton>
     </Box>
