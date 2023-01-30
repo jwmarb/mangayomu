@@ -43,6 +43,12 @@ export default function getMangaHost(state: AppState) {
     hasNoSources() {
       return hosts.length === 0;
     },
+    getGenres() {
+      const genres = hosts.flatMap((x) =>
+        x.getGenres().map((y) => ({ genre: y, source: x.getName() })),
+      );
+      return genres;
+    },
     async getHotMangas(): MangaConcurrencyResult {
       const mangaCollection = await Promise.allSettled(
         hosts.map((x) => x.listHotMangas()),
