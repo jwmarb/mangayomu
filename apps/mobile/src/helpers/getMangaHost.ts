@@ -6,17 +6,17 @@ function indexComparator(a: Manga, b: Manga) {
   return a.index - b.index;
 }
 
-interface SourceError {
+export interface SourceError {
   error: string;
   source: string;
 }
 
 type MangaCollectionState = [SourceError[], Manga[]];
 
-type MangaConcurrencyResult = Promise<{
+export type MangaConcurrencyResult = {
   errors: SourceError[];
   mangas: Manga[];
-}>;
+};
 
 function getErrorMessage(err: unknown): string {
   if (typeof err === 'string') return err;
@@ -49,7 +49,7 @@ export default function getMangaHost(state: AppState) {
       );
       return genres;
     },
-    async getHotMangas(): MangaConcurrencyResult {
+    async getHotMangas(): Promise<MangaConcurrencyResult> {
       const mangaCollection = await Promise.allSettled(
         hosts.map((x) => x.listHotMangas()),
       );
@@ -70,7 +70,7 @@ export default function getMangaHost(state: AppState) {
         mangas,
       };
     },
-    async getLatestMangas(): MangaConcurrencyResult {
+    async getLatestMangas(): Promise<MangaConcurrencyResult> {
       const mangaCollection = await Promise.allSettled(
         hosts.map((x) => x.listRecentlyUpdatedManga()),
       );
@@ -91,7 +91,7 @@ export default function getMangaHost(state: AppState) {
         mangas,
       };
     },
-    async getMangaDirectory(): MangaConcurrencyResult {
+    async getMangaDirectory(): Promise<MangaConcurrencyResult> {
       const mangaCollection = await Promise.allSettled(
         hosts.map((x) => x.listMangas()),
       );
