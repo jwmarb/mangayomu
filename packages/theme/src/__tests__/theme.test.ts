@@ -154,3 +154,12 @@ test('palette in a different key is parsed', () => {
   expect(theme2.__react_navigation__.colors.text).toBe('#000');
   expect(theme2.palette.primary.main).toBe('#1890ff');
 });
+
+test('getContrastText', () => {
+  const contrastColor1 = theme.helpers.getContrastText('rgb(255, 255, 255)'); // white background, so it should return a black text;
+  const contrastColor2 = theme.helpers.getContrastText('#000000'); // black background, so it should return a white text;
+  const contrastColor3 = theme.helpers.getContrastText('#FFFFFF'); // white background, so it should return a black text;
+  expect(contrastColor1).toBe('rgba(0, 0, 0, 0.87)');
+  expect(contrastColor2).toBe('rgba(255, 255, 255, 1)');
+  expect(contrastColor3).toBe('rgba(0, 0, 0, 0.87)');
+});
