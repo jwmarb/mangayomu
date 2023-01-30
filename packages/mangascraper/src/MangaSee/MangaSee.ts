@@ -9,7 +9,11 @@ import {
   MangaSeeManga,
   MangaSeeMangaMeta,
 } from './MangaSee.interfaces';
-import { extractDataFromApplicationLDJson, parseMangaSeeDate, processScript } from './MangaSee.utils';
+import {
+  extractDataFromApplicationLDJson,
+  parseMangaSeeDate,
+  processScript,
+} from './MangaSee.utils';
 import { MangaHostWithFilters } from '../scraper/scraper.filters';
 import { Manga, MangaChapter } from '../scraper/scraper.interfaces';
 import { binary, StringComparator } from '@mangayomu/algorithms';
@@ -34,12 +38,13 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     const LatestJSON = variable<LatestJSON[]>('vm.LatestJSON');
 
     return Promise.resolve<Manga[]>(
-      LatestJSON.map((x) => ({
+      LatestJSON.map((x, i) => ({
         link: `https://${super.getLink()}/manga/${x.IndexName}`,
         title: x.SeriesName,
         imageCover: this.getImageCover(html, x.IndexName),
         source: super.getName(),
-      }))
+        index: i,
+      })),
     );
   }
 
@@ -49,12 +54,13 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     const { variable, fn } = processScript(html);
     const HotUpdateJSON = variable<HotUpdateJSON[]>('vm.HotUpdateJSON');
     return Promise.resolve<Manga[]>(
-      HotUpdateJSON.map((x) => ({
+      HotUpdateJSON.map((x, i) => ({
         link: `https://${super.getLink()}/manga/${x.IndexName}`,
         title: x.SeriesName,
         imageCover: this.getImageCover(html, x.IndexName),
         source: super.getName(),
-      }))
+        index: i,
+      })),
     );
   }
 
@@ -63,7 +69,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     const html = $('body').html();
     const { variable } = processScript(html);
     const Directory = variable<Directory[]>('vm.Directory');
-    const result = Directory.map((x) => ({
+    const result = Directory.map((x, i) => ({
       title: x.s,
       link: `https://${super.getLink()}/manga/${x.i}`,
       imageCover: this.getImageCover(html, x.i),
@@ -71,6 +77,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         scan: x.ss,
         publish: x.ps,
       },
+      index: i,
       isHentai: x.h,
       type: x.t,
       genres: x.g,
@@ -90,7 +97,8 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
 
     const html = $.html();
 
-    const { mainEntity: data } = extractDataFromApplicationLDJson<MainEntityJSON>(html);
+    const { mainEntity: data } =
+      extractDataFromApplicationLDJson<MainEntityJSON>(html);
     const { variable, fn } = processScript(html);
     const Chapters = variable<MangaSeeChapterJSON[]>('vm.Chapters');
     const ChapterDisplay = fn<(e: string) => string>('vm.ChapterDisplay');
@@ -130,6 +138,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       link: manga.link,
       authors: data.author,
       genres: data.genre,
+      index: manga.index,
       description,
       yearReleased,
       type,
@@ -143,8 +152,12 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       },
       chapters: Chapters.map((chapter, index) => ({
         date: parseMangaSeeDate(chapter.Date),
-        name: `${chapter.Type != '' ? chapter.Type : 'Chapter'} ${ChapterDisplay(chapter.Chapter)}`,
-        link: `https://${super.getLink()}/read-online/${IndexName}${ChapterURLEncode(chapter.Chapter)}`,
+        name: `${
+          chapter.Type != '' ? chapter.Type : 'Chapter'
+        } ${ChapterDisplay(chapter.Chapter)}`,
+        link: `https://${super.getLink()}/read-online/${IndexName}${ChapterURLEncode(
+          chapter.Chapter,
+        )}`,
         index,
       })),
       imageCover,
@@ -178,40 +191,66 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       pages.push(
         `https://${CurPathName}/manga/${IndexName}/${
           CurChapter.Directory === '' ? '' : `${CurChapter.Directory}/`
-        }${ChapterImage(CurChapter.Chapter)}-${PageImage(i)}.png`
+        }${ChapterImage(CurChapter.Chapter)}-${PageImage(i)}.png`,
       );
     }
 
     return Promise.resolve(pages);
   }
 
-  public async search(query: string, filters?: MangaSeeFilter): Promise<MangaSeeManga[]> {
+  public async search(
+    query: string,
+    filters?: MangaSeeFilter,
+  ): Promise<MangaSeeManga[]> {
     const directory = await this.listMangas();
     const withTitle = titleIncludes(query);
 
     if (filters) {
       const withIncludingGenre = (manga: MangaSeeManga) => {
-        if (filters.Genres == null || filters.Genres.include.length === 0) return true;
+        if (filters.Genres == null || filters.Genres.include.length === 0)
+          return true;
         for (let i = 0; i < filters.Genres.include.length; i++) {
-          if (binary.search(manga.genres, filters.Genres.include[i], StringComparator) !== -1) return true;
+          if (
+            binary.search(
+              manga.genres,
+              filters.Genres.include[i],
+              StringComparator,
+            ) !== -1
+          )
+            return true;
         }
         return false;
       };
       const withExcludingGenre = (manga: MangaSeeManga) => {
         if (filters.Genres == null) return true;
         for (let i = 0; i < filters.Genres.exclude.length; i++) {
-          if (binary.search(manga.genres, filters.Genres.exclude[i], StringComparator) !== -1) return false;
+          if (
+            binary.search(
+              manga.genres,
+              filters.Genres.exclude[i],
+              StringComparator,
+            ) !== -1
+          )
+            return false;
         }
         return true;
       };
 
       const withScanStatus = (manga: MangaSeeManga) => {
-        if (filters['Scan Status'] == null || filters['Scan Status'].value === 'Any') return true;
+        if (
+          filters['Scan Status'] == null ||
+          filters['Scan Status'].value === 'Any'
+        )
+          return true;
         return filters['Scan Status'].value === manga.status.scan;
       };
 
       const withPublishStatus = (manga: MangaSeeManga) => {
-        if (filters['Publish Status'] == null || filters['Publish Status'].value === 'Any') return true;
+        if (
+          filters['Publish Status'] == null ||
+          filters['Publish Status'].value === 'Any'
+        )
+          return true;
         return filters['Publish Status'].value === manga.status.publish;
       };
 
@@ -228,10 +267,12 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
           withScanStatus(manga) &&
           withIncludingGenre(manga) &&
           withExcludingGenre(manga) &&
-          withTitle(manga)
+          withTitle(manga),
       );
 
-      const createSort = (compareFn: (a: MangaSeeManga, b: MangaSeeManga) => number) => {
+      const createSort = (
+        compareFn: (a: MangaSeeManga, b: MangaSeeManga) => number,
+      ) => {
         if (filters['Sort By'] != null && filters['Sort By'].reversed)
           return (a: MangaSeeManga, b: MangaSeeManga) => -compareFn(a, b);
         return compareFn;
@@ -241,17 +282,26 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         if (filters['Sort By'] == null) return undefined;
         switch (filters['Sort By'].value) {
           case 'Alphabetical':
-            return createSort((a: MangaSeeManga, b: MangaSeeManga) => a.title.localeCompare(b.title));
+            return createSort((a: MangaSeeManga, b: MangaSeeManga) =>
+              a.title.localeCompare(b.title),
+            );
           case 'Year Released':
             return createSort(
-              (a: MangaSeeManga, b: MangaSeeManga) => parseInt(b.yearReleased) - parseInt(a.yearReleased)
+              (a: MangaSeeManga, b: MangaSeeManga) =>
+                parseInt(b.yearReleased) - parseInt(a.yearReleased),
             );
           case 'Popularity (All Time)':
-            return createSort((a: MangaSeeManga, b: MangaSeeManga) => b.v - a.v);
+            return createSort(
+              (a: MangaSeeManga, b: MangaSeeManga) => b.v - a.v,
+            );
           case 'Popularity (Monthly)':
-            return createSort((a: MangaSeeManga, b: MangaSeeManga) => b.vm - a.vm);
+            return createSort(
+              (a: MangaSeeManga, b: MangaSeeManga) => b.vm - a.vm,
+            );
           case 'Recently Released Chapter':
-            return createSort((a: MangaSeeManga, b: MangaSeeManga) => b.lt - a.lt);
+            return createSort(
+              (a: MangaSeeManga, b: MangaSeeManga) => b.lt - a.lt,
+            );
         }
       };
 
