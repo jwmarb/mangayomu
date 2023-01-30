@@ -38,6 +38,11 @@ export const typography = {
     font-family: Roboto;
     font-size: ${moderateScale(20) + 'px'};
   `,
+  badge: css`
+    font-family: Roboto;
+    font-size: ${moderateScale(10) + 'px'};
+    letter-spacing: -0.4px;
+  `,
 } as const;
 
 export const shadow = css`
