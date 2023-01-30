@@ -72,6 +72,10 @@ export function setWithPalette(
     return css`
       ${cssProperty}: ${theme.palette[value as ButtonColors].main};
     `;
+  if (value === 'textPrimary' || value === 'textSecondary')
+    return css`
+      ${cssProperty}: ${theme.helpers.getColor(value)};
+    `;
   return css`
     ${cssProperty}: ${value};
   `;
