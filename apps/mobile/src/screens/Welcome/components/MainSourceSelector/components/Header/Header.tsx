@@ -13,6 +13,7 @@ import { SceneMap } from 'react-native-tab-view';
 import CustomTabs from '@components/CustomTabs';
 import Filters from './Tabs/Filters';
 import Sort from '@screens/Welcome/components/MainSourceSelector/components/Header/Tabs/Sort';
+import { Menu, MenuItem } from '@components/Menu';
 
 const Header: React.FC<ConnectedHeaderProps> = ({
   setQuery,
@@ -21,6 +22,8 @@ const Header: React.FC<ConnectedHeaderProps> = ({
   setIndex,
   totalSources,
   query,
+  addAllSources,
+  removeAllSources,
 }) => {
   const bottomSheet =
     React.useRef<React.ElementRef<typeof CustomBottomSheet>>(null);
@@ -52,7 +55,14 @@ const Header: React.FC<ConnectedHeaderProps> = ({
               icon={<Icon type="font" name="filter-menu" />}
               onPress={handleOnFilters}
             />
-            <IconButton icon={<Icon type="font" name="dots-vertical" />} />
+            <Menu
+              trigger={
+                <IconButton icon={<Icon type="font" name="dots-vertical" />} />
+              }
+            >
+              <MenuItem onPress={addAllSources}>Select all</MenuItem>
+              <MenuItem onPress={removeAllSources}>Deselect all</MenuItem>
+            </Menu>
           </Stack>
         </Stack>
         <Input

@@ -57,9 +57,24 @@ export const hostSlice = createSlice({
     sortHostsBy: (state, action: PayloadAction<keyof typeof SORT_HOSTS_BY>) => {
       state.comparatorKey = action.payload;
     },
+    addAllSources: (state) => {
+      const sources = MangaHost.getListSources();
+      state.name = sources.sort(
+        SORT_HOSTS_BY[state.comparatorKey](state.reversed),
+      );
+    },
+    removeAllSources: (state) => {
+      state.name = [];
+    },
   },
 });
 
-export const { addSource, removeSource, sortHostsBy, toggleReversedList } =
-  hostSlice.actions;
+export const {
+  addSource,
+  removeSource,
+  sortHostsBy,
+  toggleReversedList,
+  addAllSources,
+  removeAllSources,
+} = hostSlice.actions;
 export default hostSlice.reducer;

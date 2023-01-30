@@ -7,6 +7,7 @@ import {
   setQuery,
 } from '@redux/slices/mainSourceSelector';
 import { MangaHost } from '@mangayomu/mangascraper';
+import { addAllSources, removeAllSources } from '@redux/slices/host';
 
 const mapStateToProps = (state: AppState) => ({
   numSelected: state.host.name.length,
@@ -20,6 +21,8 @@ const connector = connect(mapStateToProps, {
   setSort,
   setIndex,
   setQuery,
+  addAllSources,
+  removeAllSources,
 });
 
 export type ConnectedHeaderProps = ConnectedProps<typeof connector>;
