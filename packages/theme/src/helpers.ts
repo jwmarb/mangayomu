@@ -3,6 +3,8 @@ import {
   Colors,
   DefaultTheme,
   hexToRgb,
+  parseRGBA,
+  RGBA,
   rgbaToString,
   Theme,
   ThemeMode,
@@ -113,5 +115,25 @@ export function getColor(theme: DefaultTheme) {
 
         throw Error('Invalid color');
     }
+  };
+}
+
+export function getContrastText(
+  preparsedPalette: ThemeSchema<DefaultTheme>['palette'],
+) {
+  return (color: string, variant?: 'textPrimary' | 'textSecondary') => {
+    let rgba: RGBA;
+    if (color.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i) != null)
+      rgba = hexToRgb(color);
+    else if (color.match(/rgb(a?)\(\d+/g) != null) rgba = parseRGBA(color);
+    else throw Error('Invalid color');
+    const yiq = (rgba.red * 299 + rgba.green * 587 + rgba.blue * 114) / 1000;
+    return yiq > 125
+      ? preparsedPalette.text[
+          variant === 'textSecondary' ? 'secondary' : 'primary'
+        ].light
+      : preparsedPalette.text[
+          variant === 'textSecondary' ? 'secondary' : 'primary'
+        ].dark;
   };
 }
