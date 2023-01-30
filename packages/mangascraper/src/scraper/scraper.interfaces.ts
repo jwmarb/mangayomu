@@ -190,6 +190,11 @@ export declare interface Manga {
    * The link that redirects to the manga page
    */
   link: string;
+
+  /**
+   * The index of the manga in the array. This is necessary for sorting purposes.
+   */
+  index: number;
 }
 
 export declare interface WithModificationDate {
