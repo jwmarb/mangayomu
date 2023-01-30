@@ -7,6 +7,7 @@ import { TextProps as NativeTextProps, TextStyle } from 'react-native';
 export interface TextProps extends React.PropsWithChildren, NativeTextProps {
   variant?: TextVariants | 'inherit';
   color?: Colors | ButtonColorsTextContrasts;
+  contrast?: boolean;
   align?: TextStyle['textAlign'];
   bold?: boolean;
   italic?: boolean;

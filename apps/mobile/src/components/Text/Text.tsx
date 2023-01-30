@@ -12,10 +12,16 @@ const Text = styled.Text<TextProps>`
       italic = false,
       underline = false,
       align = 'auto',
+      contrast = false,
     } = props;
     return css`
       ${variant !== 'inherit' && theme.typography[variant]}
-      ${variant !== 'inherit' && `color: ${theme.helpers.getColor(color)}`};
+      ${variant !== 'inherit' &&
+      `color: ${
+        contrast
+          ? theme.helpers.getContrastText(theme.helpers.getColor(color))
+          : theme.helpers.getColor(color)
+      }`};
       text-align: ${align};
       ${bold && 'font-weight: bold'};
       ${italic && 'font-style: italic'};
