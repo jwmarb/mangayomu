@@ -4,6 +4,7 @@ import { connect, ConnectedProps } from 'react-redux';
 
 const mapStateToProps = (state: AppState) => ({
   source: getMangaHost(state),
+  strSources: state.host.name,
 });
 
 const connector = connect(mapStateToProps);
