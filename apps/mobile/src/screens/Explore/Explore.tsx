@@ -55,7 +55,7 @@ const Explore: React.FC<ConnectedExploreProps> = ({ source }) => {
       <Stack space="s" flex-grow minHeight={height}>
         <Box my="s" mx="m">
           <Input
-            icon={<Icon name="magnify" />}
+            icon={<Icon type="font" name="magnify" />}
             width="100%"
             placeholder="Titles, authors, or topics"
           />
