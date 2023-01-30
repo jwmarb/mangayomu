@@ -111,6 +111,8 @@ export function implementBorderModel(theme: Theme, borderModel: BorderModel) {
       }
     })()};
     ${(() => {
+      if (borderRadius === '@theme')
+        return `border-radius: ${theme.style.borderRadius}px;`;
       switch (typeof borderRadius) {
         case 'number':
           return `border-radius: ${borderRadius}px`;
