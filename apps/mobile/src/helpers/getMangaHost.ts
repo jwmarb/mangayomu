@@ -2,7 +2,7 @@ import integrateSortedList from '@helpers/integrateSortedList';
 import { MangaHost, Manga } from '@mangayomu/mangascraper';
 import { AppState } from '@redux/main';
 
-function indexComparator(a: Manga, b: Manga) {
+function indexComparator(a: { index: number }, b: { index: number }) {
   return a.index - b.index;
 }
 
@@ -39,14 +39,20 @@ export default function getMangaHost(state: AppState) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const hosts = state.host.name.map((host) => p.get(host)!);
   return {
-    sources: hosts,
+    getSourcesLength() {
+      return hosts.length;
+    },
     hasNoSources() {
       return hosts.length === 0;
     },
     getGenres() {
-      const genres = hosts.flatMap((x) =>
-        x.getGenres().map((y) => ({ genre: y, source: x.getName() })),
-      );
+      const genres = hosts
+        .flatMap((x) =>
+          x
+            .getGenres()
+            .map((y, i) => ({ genre: y, source: x.getName(), index: i })),
+        )
+        .sort(indexComparator);
       return genres;
     },
     async getHotMangas(): Promise<MangaConcurrencyResult> {

@@ -26,6 +26,7 @@ const reducers = combineReducers({
 const persistConfig: PersistConfig<AppState> = {
   key: 'root',
   storage: reduxStorage,
+  blacklist: ['explore'],
 };
 
 const persisted = persistReducer(persistConfig, reducers);

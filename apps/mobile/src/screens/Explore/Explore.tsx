@@ -13,12 +13,30 @@ import React from 'react';
 import FastImage from 'react-native-fast-image';
 import Animated from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
-import { useWindowDimensions } from 'react-native';
+import {
+  InteractionManager,
+  ListRenderItem,
+  useWindowDimensions,
+} from 'react-native';
 import MainSourceSelector from '@screens/Welcome/components/MainSourceSelector';
 import Avatar from '@components/Avatar';
 import Badge from '@components/Badge';
+import NetInfo from '@react-native-community/netinfo';
+import { FlatList } from 'react-native-gesture-handler';
+import { Manga } from '@mangayomu/mangascraper';
+import { HotMangaList } from '@screens/Explore/components/HotMangaList';
+import { LatestMangaList } from '@screens/Explore/components/LatestMangaList';
+import GenresList from '@screens/Explore/components/GenresList';
 
-const Explore: React.FC<ConnectedExploreProps> = ({ source, strSources }) => {
+const Explore: React.FC<ConnectedExploreProps> = ({
+  source,
+  setExplorerState,
+  explorerNetworkStateListenerHandler,
+  refreshExplorerState,
+  networkStatus,
+  hotMangas,
+  latestMangas,
+}) => {
   const { user } = useAuth0();
   const { height } = useWindowDimensions();
   const sourceSelectorRef =
@@ -27,9 +45,9 @@ const Explore: React.FC<ConnectedExploreProps> = ({ source, strSources }) => {
     sourceSelectorRef.current?.snapToIndex(1);
   }
   const { onScroll, scrollViewStyle } = useCollapsibleTabHeader({
-    dependencies: [strSources.length],
+    dependencies: [source.getSourcesLength()],
     headerLeft: (
-      <Badge type="number" count={strSources.length} color="primary">
+      <Badge type="number" count={source.getSourcesLength()} color="primary">
         <IconButton
           icon={<Icon type="font" name="bookshelf" />}
           onPress={handleOnPress}
@@ -43,6 +61,23 @@ const Explore: React.FC<ConnectedExploreProps> = ({ source, strSources }) => {
       />
     ),
   });
+  React.useEffect(() => {
+    const netListener = NetInfo.addEventListener(
+      explorerNetworkStateListenerHandler,
+    );
+    return () => {
+      netListener(); // unsubscribe from listening to network events
+    };
+  }, []);
+  React.useEffect(() => {
+    InteractionManager.runAfterInteractions(async () => {
+      if (networkStatus === 'online') {
+        const hot = await source.getHotMangas();
+        const latest = await source.getLatestMangas();
+        setExplorerState({ hot, latest });
+      }
+    });
+  }, []);
   return (
     <>
       <Animated.ScrollView style={scrollViewStyle} onScroll={onScroll}>
@@ -70,28 +105,10 @@ const Explore: React.FC<ConnectedExploreProps> = ({ source, strSources }) => {
               </Text>
             </Stack>
           )}
-          <Box my="s" mx="m">
-            <Text variant="header" bold>
-              Genres
-            </Text>
-            <Text variant="header" bold>
-              Trending updates{' '}
-              <Icon
-                type="font"
-                name="fire"
-                color="secondary"
-                variant="header"
-              />
-            </Text>
-            <Text variant="header" bold>
-              Recently updated{' '}
-              <Icon
-                type="font"
-                name="clock-fast"
-                color="primary"
-                variant="header"
-              />
-            </Text>
+          <Box my="s">
+            <GenresList />
+            <HotMangaList />
+            <LatestMangaList />
           </Box>
         </Stack>
       </Animated.ScrollView>
