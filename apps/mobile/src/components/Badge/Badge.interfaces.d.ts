@@ -17,4 +17,12 @@ export interface StatusBadgeProps extends AbstractBadgeProps<'status'> {
 
 export type DotBadgeProps = AbstractBadgeProps<'dot'>;
 
-export type BadgeProps = DotBadgeProps | StatusBadgeProps | NumberBadgeProps;
+export type BadgeProps =
+  | DotBadgeProps
+  | StatusBadgeProps
+  | NumberBadgeProps
+  | ImageBadgeProps;
+
+export interface ImageBadgeProps extends AbstractBadgeProps<'image'> {
+  uri?: string;
+}

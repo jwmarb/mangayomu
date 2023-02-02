@@ -16,4 +16,5 @@ export interface IconProps extends AbstractIconProps<'font'>, TextProps {
 
 export interface ImageIconProps extends AbstractIconProps<'image'> {
   name?: string;
+  size?: number;
 }

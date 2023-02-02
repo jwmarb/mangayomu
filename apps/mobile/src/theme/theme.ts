@@ -1,7 +1,7 @@
-import { createTheme, DefaultTheme, Spacing } from '@mangayomu/theme';
+import { Color, createTheme, DefaultTheme, Spacing } from '@mangayomu/theme';
 import '@emotion/react';
 import { css } from '@emotion/native';
-import { Theme } from '@emotion/react';
+import { Theme as AppTheme } from '@emotion/react';
 import { helpers } from '@theme/helpers';
 import { moderateScale, scale } from 'react-native-size-matters';
 import { Theme as NavigationTheme } from '@react-navigation/native';
@@ -43,6 +43,11 @@ export const typography = {
     font-size: ${moderateScale(10) + 'px'};
     letter-spacing: -0.4px;
   `,
+  'book-title': css`
+    font-family: Roboto;
+    font-size: ${moderateScale(12) + 'px'};
+    letter-spacing: -0.4px;
+  `,
 } as const;
 
 export const shadow = css`
@@ -70,7 +75,7 @@ declare module '@emotion/react' {
   }
 }
 
-export const __storybook_theme__ = createTheme<Theme>(
+export const __storybook_theme__ = createTheme<AppTheme>(
   ({ color, colorConstant }) => ({
     mode: 'dark',
     palette: {

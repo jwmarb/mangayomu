@@ -1,4 +1,5 @@
 import {
+  ButtonColors,
   ButtonColorsTextContrasts,
   Colors,
   DefaultTheme,
@@ -98,23 +99,25 @@ export function definePalette<T>(obj: T) {
 
 export function getColor(theme: DefaultTheme) {
   return (color: Colors | ButtonColorsTextContrasts) => {
-    switch (color) {
-      case 'textPrimary':
-        return theme.palette.text.primary;
-      case 'textSecondary':
-        return theme.palette.text.secondary;
-      case 'primary@contrast':
-        return theme.palette.primary.contrastText;
-      case 'secondary@contrast':
-        return theme.palette.secondary.contrastText;
-      default:
-        if (color in theme.palette)
-          return theme.palette[color as 'primary' | 'secondary'].main;
-        if (color in theme.palette.text)
-          return theme.palette.text[color as 'disabled' | 'hint'];
+    const indexContrastDecoration = color.indexOf('@contrast');
+    if (indexContrastDecoration === -1)
+      switch (color) {
+        case 'textPrimary':
+          return theme.palette.text.primary;
+        case 'textSecondary':
+          return theme.palette.text.secondary;
+        default:
+          if (color in theme.palette)
+            return theme.palette[color as 'primary' | 'secondary'].main;
+          if (color in theme.palette.text)
+            return theme.palette.text[color as 'disabled' | 'hint'];
 
-        throw Error('Invalid color');
-    }
+          throw Error('Invalid color');
+      }
+
+    return theme.palette[
+      color.substring(0, indexContrastDecoration) as ButtonColors
+    ].contrastText;
   };
 }
 

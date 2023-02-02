@@ -39,10 +39,25 @@ export interface TextColor {
 }
 
 export type TextColors = 'textPrimary' | 'textSecondary' | 'disabled' | 'hint';
-export type ButtonColors = 'primary' | 'secondary';
-export type ButtonColorsTextContrasts =
-  | 'primary@contrast'
-  | 'secondary@contrast';
+export type ButtonColors = keyof Omit<Theme['palette'], 'background' | 'text'>;
+export type ButtonColorsTextContrasts<
+  O = Omit<Theme['palette'], 'background' | 'text'>,
+> = keyof {
+  [K in keyof O as K extends string ? `${K}@contrast` : never]: O[K];
+};
+
+export type CustomButtonColorsTextContrasts<
+  T extends DefaultTheme,
+  O = Omit<T['palette'], 'background' | 'text'>,
+> = keyof {
+  [K in keyof O as K extends string ? `${K}@contrast` : never]: O[K];
+};
+
+export type CustomButtonColors<T extends DefaultTheme> = keyof Omit<
+  T['palette'],
+  'background' | 'text'
+>;
+
 export type BackgroundColors = keyof BackgroundColor;
 export type Colors = TextColors | ButtonColors;
 
@@ -63,6 +78,8 @@ export interface DefaultTheme extends IThemeHelpers {
   palette: {
     primary: Color;
     secondary: Color;
+    warning: Color;
+    error: Color;
     background: BackgroundColor;
     text: TextColor;
   };
@@ -131,17 +148,13 @@ export type ThemeSchema<T extends DefaultTheme> = {
     : T[K];
 };
 
-type ThemeCreator<T extends DefaultTheme> = (
-  builder: ThemeBuilder,
-) => ThemeSchema<T>;
+type ThemeCreator<T extends Theme> = (builder: ThemeBuilder) => ThemeSchema<T>;
 /**
  * Create a theme for the application. Must be placed at the most top-level of the React app, and must be inside the component.
  * @param builder A helper function to create a theme
  * @returns Returns the theme that will be used for the application
  */
-export function createTheme<T extends DefaultTheme>(
-  builder: ThemeCreator<T>,
-): T {
+export function createTheme<T extends Theme>(builder: ThemeCreator<T>): T {
   function color(dark: string, light: string): ColorSchema {
     return { dark, light };
   }

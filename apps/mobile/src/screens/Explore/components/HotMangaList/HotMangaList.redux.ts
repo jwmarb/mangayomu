@@ -4,6 +4,7 @@ import { connect, ConnectedProps } from 'react-redux';
 const mapStateToProps = (state: AppState) => ({
   hotMangas: state.explore.states.hot,
   status: state.explore.status.hot,
+  errors: state.explore.errors.hot,
 });
 
 const connector = connect(mapStateToProps);

@@ -52,7 +52,7 @@ export default function getMangaHost(state: AppState) {
             .getGenres()
             .map((y, i) => ({ genre: y, source: x.getName(), index: i })),
         )
-        .sort(indexComparator);
+        .sort((a, b) => a.genre.localeCompare(b.genre));
       return genres;
     },
     async getHotMangas(): Promise<MangaConcurrencyResult> {

@@ -21,7 +21,7 @@ import {
 import MainSourceSelector from '@screens/Welcome/components/MainSourceSelector';
 import Avatar from '@components/Avatar';
 import Badge from '@components/Badge';
-import NetInfo from '@react-native-community/netinfo';
+import NetInfo, { NetInfoStateType } from '@react-native-community/netinfo';
 import { FlatList } from 'react-native-gesture-handler';
 import { Manga } from '@mangayomu/mangascraper';
 import { HotMangaList } from '@screens/Explore/components/HotMangaList';
@@ -71,7 +71,10 @@ const Explore: React.FC<ConnectedExploreProps> = ({
   }, []);
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(async () => {
-      if (networkStatus === 'online') {
+      if (
+        networkStatus === 'online' ||
+        (await NetInfo.fetch()).isInternetReachable
+      ) {
         const hot = await source.getHotMangas();
         const latest = await source.getLatestMangas();
         setExplorerState({ hot, latest });

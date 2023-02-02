@@ -26,6 +26,7 @@ const IconButton: React.FC<IconButtonProps> = (props) => {
   );
   return (
     <Box
+      align-self="center"
       width={borderlessButtonStyle.width}
       height={borderlessButtonStyle.height}
       border-radius={10000}

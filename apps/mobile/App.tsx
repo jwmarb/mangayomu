@@ -48,6 +48,16 @@ function App(): JSX.Element {
             main: colorConstant('#D22B2B'),
             dark: colorConstant('#AA4A44'),
           },
+          error: {
+            main: color('#f44336', '#d32f2f'),
+            light: color('#e57373', '#ef5350'),
+            dark: color('#d32f2f', '#c62828'),
+          },
+          warning: {
+            main: color('#ed6c02', '#ffa726'),
+            light: color('#ff9800', '#ffb74d'),
+            dark: color('#e65100', '#f57c00'),
+          },
           text: {
             primary: color('rgba(255, 255, 255, 1)', 'rgba(0, 0, 0, 0.87)'),
             secondary: color('rgba(255, 255, 255, 0.7)', 'rgba(0, 0, 0, 0.6)'),

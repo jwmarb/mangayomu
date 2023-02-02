@@ -3,7 +3,7 @@ import React from 'react';
 import { IconProps, ImageIconProps } from './Icon.interfaces';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FastImage from 'react-native-fast-image';
-import { ScaledSheet } from 'react-native-size-matters';
+import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import MaterialCommunityIconNames from 'react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json';
 import Animated from 'react-native-reanimated';
 
@@ -13,8 +13,6 @@ type RequireKey<T, KEYS extends keyof T> = Omit<T, KEYS> & {
 
 const styles = ScaledSheet.create({
   imageIcon: {
-    width: '32@ms',
-    height: '32@ms',
     borderRadius: '4@ms',
   },
 });
@@ -30,7 +28,13 @@ const Icon: React.FC<IconProps | ImageIconProps> = (props) => {
         {...(props as RequireKey<IconProps, 'name'>)}
       />
     );
-  return <FastImage source={{ uri: props.name }} style={styles.imageIcon} />;
+  const { size = moderateScale(32) } = props;
+  return (
+    <FastImage
+      source={{ uri: props.name }}
+      style={[styles.imageIcon, { width: size, height: size }]}
+    />
+  );
 };
 
 const IconFromFont = styled(MaterialCommunityIcons)<IconProps>`
