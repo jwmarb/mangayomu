@@ -1,4 +1,5 @@
 import {
+  implementBorderModel,
   implementBoxModel,
   implementDimensionsModel,
   implementFlexBoxModel,
@@ -59,6 +60,7 @@ const Stack = styled.View<StackProps>`
       ${implementPositionModel(props)};
       ${implementBoxModel(theme, props)};
       ${implementFlexBoxModel(props)}
+      ${implementBorderModel(theme, props)};
     `;
   }}
 `;

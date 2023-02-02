@@ -1,4 +1,5 @@
 import {
+  BorderModel,
   BoxModel,
   Debuggable,
   DimensionsModel,
@@ -13,6 +14,7 @@ export interface StackProps
     FlexBoxModel,
     Debuggable,
     PositionModel,
-    DimensionsModel {
+    DimensionsModel,
+    BorderModel {
   space?: Spacing | number | { x?: Spacing | number; y?: Spacing | number };
 }
