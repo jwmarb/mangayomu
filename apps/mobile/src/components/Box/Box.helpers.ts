@@ -122,10 +122,26 @@ export function implementBorderModel(theme: Theme, borderModel: BorderModel) {
           return `border-radius: ${borderRadius}px`;
         case 'object':
           return css`
-            ${toBorderRadiusProperty(theme, 'top-left', borderRadius.tl)};
-            ${toBorderRadiusProperty(theme, 'top-right', borderRadius.tr)};
-            ${toBorderRadiusProperty(theme, 'bottom-right', borderRadius.br)};
-            ${toBorderRadiusProperty(theme, 'bottom-left', borderRadius.bl)};
+            ${toBorderRadiusProperty(
+              theme,
+              'border-top-left-radius',
+              borderRadius.tl,
+            )};
+            ${toBorderRadiusProperty(
+              theme,
+              'border-top-right-radius',
+              borderRadius.tr,
+            )};
+            ${toBorderRadiusProperty(
+              theme,
+              'border-bottom-right-radius',
+              borderRadius.br,
+            )};
+            ${toBorderRadiusProperty(
+              theme,
+              'border-bottom-left-radius',
+              borderRadius.bl,
+            )};
           `;
       }
     })()};
@@ -134,14 +150,14 @@ export function implementBorderModel(theme: Theme, borderModel: BorderModel) {
 
 function toBorderRadiusProperty(
   theme: Theme,
-  location: string,
+  property: string,
   value?: number | '@theme',
 ) {
   if (value != null)
     return css`
-      border-${location}-radius: ${
-      value === '@theme' ? theme.style.borderRadius : value + 'px'
-    };
+      ${property}: ${value === '@theme'
+        ? theme.style.borderRadius + 'px'
+        : value + 'px'};
     `;
 }
 

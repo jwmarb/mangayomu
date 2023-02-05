@@ -5,7 +5,10 @@ export function extractDataFromVariable(html: string | null) {
     if (html == null) throw Error('HTML is null');
     const match = html.match(new RegExp(`${variableName} = .*;`, 'g'));
     if (match == null) throw Error(`${variableName} does not exist`);
-    const json = match[0].substring(variableName.length + 3);
+    const json = match[0].substring(
+      variableName.length + 3,
+      match[0].length - 1,
+    );
     return JSON.parse(json);
   };
 }
@@ -19,7 +22,7 @@ export function extractDataFromApplicationLDJson<T>(html: string | null): T {
   const parsed = JSON.parse(
     `{${obj[0].replace(/ ".*" /g, (s) => {
       return s.replace(/"/g, '\\"');
-    })}}`
+    })}}`,
   );
 
   return parsed;
@@ -28,12 +31,16 @@ export function extractDataFromApplicationLDJson<T>(html: string | null): T {
 export function extractFunctionFromVariable(html: string | null) {
   return <T extends (...args: any) => any>(fnName: string): T => {
     if (html == null) throw Error('HTML is null');
-    const b = html.match(new RegExp(`${fnName}( = |=)function\\((.)*?\\){(\\s|.)*?}(;|,)`));
+    const b = html.match(
+      new RegExp(`${fnName}( = |=)function\\((.)*?\\){(\\s|.)*?}(;|,)`),
+    );
 
     if (b == null) throw Error('Invalid regexp');
 
     return new Function(
-      `var ${b[0].replace(fnName, 'extractedFunction').replace('},', '};')} return extractedFunction`
+      `var ${b[0]
+        .replace(fnName, 'extractedFunction')
+        .replace('},', '};')} return extractedFunction`,
     )();
   };
 }

@@ -10,6 +10,9 @@ export const NavStyles = ScaledSheet.create({
   offset: {
     paddingTop: '90@ms',
   },
+  contentContainerStyle: {
+    paddingBottom: '150@vs',
+  },
 });
 export { default as StackHeader } from './NavHeader';
 export { default as TabHeader } from './TabHeader';

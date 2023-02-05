@@ -44,23 +44,24 @@ const Explore: React.FC<ConnectedExploreProps> = ({
   function handleOnPress() {
     sourceSelectorRef.current?.snapToIndex(1);
   }
-  const { onScroll, scrollViewStyle } = useCollapsibleTabHeader({
-    dependencies: [source.getSourcesLength()],
-    headerLeft: (
-      <Badge type="number" count={source.getSourcesLength()} color="primary">
+  const { onScroll, scrollViewStyle, contentContainerStyle } =
+    useCollapsibleTabHeader({
+      dependencies: [source.getSourcesLength()],
+      headerLeft: (
+        <Badge type="number" count={source.getSourcesLength()} color="primary">
+          <IconButton
+            icon={<Icon type="font" name="bookshelf" />}
+            onPress={handleOnPress}
+          />
+        </Badge>
+      ),
+      headerRight: (
         <IconButton
-          icon={<Icon type="font" name="bookshelf" />}
-          onPress={handleOnPress}
+          icon={<Avatar uri={user?.picture} />}
+          onPress={() => console.log('Account')}
         />
-      </Badge>
-    ),
-    headerRight: (
-      <IconButton
-        icon={<Avatar uri={user?.picture} />}
-        onPress={() => console.log('Account')}
-      />
-    ),
-  });
+      ),
+    });
   React.useEffect(() => {
     const netListener = NetInfo.addEventListener(
       explorerNetworkStateListenerHandler,
@@ -83,7 +84,11 @@ const Explore: React.FC<ConnectedExploreProps> = ({
   }, []);
   return (
     <>
-      <Animated.ScrollView style={scrollViewStyle} onScroll={onScroll}>
+      <Animated.ScrollView
+        style={scrollViewStyle}
+        onScroll={onScroll}
+        contentContainerStyle={contentContainerStyle}
+      >
         <Stack space="s" flex-grow minHeight={height}>
           <Box my="s" mx="m">
             <Input
@@ -92,7 +97,7 @@ const Explore: React.FC<ConnectedExploreProps> = ({
               placeholder="Titles, authors, or topics"
             />
           </Box>
-          {source.hasNoSources() && (
+          {source.hasNoSources() ? (
             <Stack space="s" mx="m" align-self="center">
               <Text variant="header" align="center">
                 No sources selected
@@ -107,12 +112,13 @@ const Explore: React.FC<ConnectedExploreProps> = ({
                 open the source selector modal.
               </Text>
             </Stack>
+          ) : (
+            <Box my="s">
+              <GenresList />
+              <HotMangaList />
+              <LatestMangaList />
+            </Box>
           )}
-          <Box my="s">
-            <GenresList />
-            <HotMangaList />
-            <LatestMangaList />
-          </Box>
         </Stack>
       </Animated.ScrollView>
       <MainSourceSelector ref={sourceSelectorRef} />

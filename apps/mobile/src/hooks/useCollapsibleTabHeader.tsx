@@ -6,9 +6,11 @@ import { useTheme } from '@emotion/react';
 import useRootNavigation from '@hooks/useRootNavigation';
 import React from 'react';
 import {
+  Dimensions,
   NativeScrollEvent,
   NativeScrollVelocity,
   StyleProp,
+  useWindowDimensions,
   ViewStyle,
 } from 'react-native';
 import { NativeSyntheticEvent } from 'react-native';
@@ -143,6 +145,19 @@ export default function useCollapsibleTabHeader(
     [style, NavStyles.header],
   );
 
+  React.useEffect(() => {
+    const p = Dimensions.addEventListener(
+      'change',
+      ({ window: { width, height } }) => {
+        scrollPosition.value = (scrollPosition.value / height) * width;
+        translateY.value = 0;
+      },
+    );
+    return () => {
+      p.remove();
+    };
+  }, []);
+
   React.useLayoutEffect(() => {
     navigation.setOptions({
       header: ({ route }) => (
@@ -158,5 +173,9 @@ export default function useCollapsibleTabHeader(
     });
   }, dependencies);
 
-  return { onScroll, scrollViewStyle: NavStyles.offset };
+  return {
+    onScroll,
+    scrollViewStyle: NavStyles.offset,
+    contentContainerStyle: NavStyles.contentContainerStyle,
+  };
 }

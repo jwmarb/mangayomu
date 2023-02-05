@@ -18,6 +18,7 @@ import Animated, {
 import { moderateScale } from 'react-native-size-matters';
 import { TabProps } from './Tab.interfaces';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import vibrate from '@helpers/vibrate';
 
 const tabIcons = {
   Explore: (
@@ -98,10 +99,8 @@ const Tab: React.FC<TabProps> = (props) => {
   );
 
   function handleOnLongPress() {
-    ReactNativeHapticFeedback.trigger('impactHeavy', {
-      enableVibrateFallback: true,
-    });
     displayMessage(routeName);
+    vibrate();
   }
 
   return (

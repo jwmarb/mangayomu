@@ -79,7 +79,6 @@ const exploreSlice = createSlice({
         )
           state.status.latest = 'failed_with_errors';
       }
-      console.log('called');
     },
     refreshExplorerState: (state) => {
       state.status.latest = 'loading';

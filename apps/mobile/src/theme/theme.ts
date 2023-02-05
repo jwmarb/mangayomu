@@ -58,18 +58,19 @@ export const shadow = css`
   elevation: 5;
 `;
 
-export const spacing: Record<Spacing, number> = {
+export const spacing = {
   s: moderateScale(8),
   m: moderateScale(16),
   l: moderateScale(24),
   xl: moderateScale(32),
-};
+} as const;
 
 declare module '@emotion/react' {
   export interface Theme extends DefaultTheme {
     typography: typeof typography;
     style: {
       shadow: typeof shadow;
+      spacing: typeof spacing;
     } & DefaultTheme['style'];
     __react_navigation__: NavigationTheme;
   }

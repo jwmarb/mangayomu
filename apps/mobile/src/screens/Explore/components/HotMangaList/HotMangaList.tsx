@@ -1,3 +1,4 @@
+import { LoadingBook } from '@components/Book/Book';
 import Box from '@components/Box';
 import Button from '@components/Button';
 import Icon from '@components/Icon';
@@ -9,10 +10,12 @@ import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSh
 import SourceWarningDetails from '@screens/Explore/components/SourceWarningDetails';
 import {
   keyExtractor,
+  MangaListLoading,
   MangaSeparator,
   renderItem,
 } from '@screens/Explore/Explore.flatlist';
 import React from 'react';
+import { ActivityIndicator } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import connector, { ConnectedHotMangaListProps } from './HotMangaList.redux';
@@ -37,15 +40,15 @@ const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
           flex-grow
         >
           <Stack space="s" flex-direction="row" align-items="center">
-            {status === 'done_with_errors' ||
-              (status === 'failed_with_errors' && (
-                <IconButton
-                  icon={<Icon type="font" name="alert-circle" />}
-                  color="warning"
-                  compact
-                  onPress={handleOnPress}
-                />
-              ))}
+            {(status === 'done_with_errors' ||
+              status === 'failed_with_errors') && (
+              <IconButton
+                icon={<Icon type="font" name="alert-circle" />}
+                color="warning"
+                compact
+                onPress={handleOnPress}
+              />
+            )}
             <Text variant="header" bold>
               Trending updates{' '}
               <Icon
@@ -56,21 +59,15 @@ const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
               />
             </Text>
           </Stack>
-          {hotMangas.length > 0 && (
-            <Animated.View entering={FadeIn} exiting={FadeOut}>
-              <Button label="See More" />
-            </Animated.View>
-          )}
+          <Button label="See More" disabled={status === 'loading'} />
         </Stack>
         <FlatList
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={MangaSeparator}
           contentContainerStyle={{ paddingHorizontal: theme.style.spacing.m }}
-          ListHeaderComponent={
-            <>{status === 'loading' && <Text>Loading...</Text>}</>
-          }
-          data={hotMangas}
+          ListHeaderComponent={<>{status === 'loading' && MangaListLoading}</>}
+          data={hotMangas.slice(0, 9)}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           horizontal
