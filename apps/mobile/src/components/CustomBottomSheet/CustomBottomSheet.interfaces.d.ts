@@ -8,4 +8,5 @@ export interface CustomBottomSheetProps
   extends Omit<SelectivePartial<BottomSheetProps, 'snapPoints'>, 'children'> {
   children: React.ReactNode | React.ReactNode[];
   header?: React.ReactNode;
+  onOpen?: () => void;
 }

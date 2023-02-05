@@ -58,6 +58,7 @@ const CustomBottomSheet: React.ForwardRefRenderFunction<
     onChange,
     header,
     handleComponent = CustomHandle,
+    onOpen = () => void 0,
     ...rest
   } = props;
   const bottomSheet = React.useRef<BottomSheet>(null);
@@ -86,7 +87,10 @@ const CustomBottomSheet: React.ForwardRefRenderFunction<
   function handleOnChange(i: number) {
     onChange && onChange(i);
     if (i === -1) isOpened.current = false;
-    else isOpened.current = true;
+    else {
+      onOpen();
+      isOpened.current = true;
+    }
   }
   React.useEffect(() => {
     const p = BackHandler.addEventListener('hardwareBackPress', () => {
