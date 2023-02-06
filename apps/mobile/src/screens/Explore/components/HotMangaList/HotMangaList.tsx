@@ -1,4 +1,4 @@
-import { LoadingBook } from '@components/Book/Book';
+import { bookDimensions, LoadingBook } from '@components/Book/Book';
 import Box from '@components/Box';
 import Button from '@components/Button';
 import Icon from '@components/Icon';
@@ -7,6 +7,7 @@ import { Stack } from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
+import useRootNavigation from '@hooks/useRootNavigation';
 import SourceWarningDetails from '@screens/Explore/components/SourceWarningDetails';
 import {
   keyExtractor,
@@ -14,6 +15,7 @@ import {
   MangaSeparator,
   renderItem,
 } from '@screens/Explore/Explore.flatlist';
+import FlashList from '@shopify/flash-list/dist/FlashList';
 import React from 'react';
 import { ActivityIndicator } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
@@ -22,10 +24,14 @@ import connector, { ConnectedHotMangaListProps } from './HotMangaList.redux';
 
 const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
   const { hotMangas, status, errors } = props;
+  const navigation = useRootNavigation();
   const theme = useTheme();
   const ref = React.useRef<BottomSheet>(null);
   function handleOnPress() {
     ref.current?.snapToIndex(1);
+  }
+  function handleOnPressSeeMore() {
+    navigation.navigate('BasicMangaList', { stateKey: 'hot' });
   }
   return (
     <>
@@ -59,18 +65,25 @@ const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
               />
             </Text>
           </Stack>
-          <Button label="See More" disabled={status === 'loading'} />
+          <Button
+            label="See More"
+            disabled={status === 'loading'}
+            onPress={handleOnPressSeeMore}
+          />
         </Stack>
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
+        <FlashList
           ItemSeparatorComponent={MangaSeparator}
           contentContainerStyle={{ paddingHorizontal: theme.style.spacing.m }}
           ListHeaderComponent={<>{status === 'loading' && MangaListLoading}</>}
           data={hotMangas.slice(0, 9)}
+          estimatedItemSize={bookDimensions.height}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           horizontal
+          {...{
+            showsHorizontalScrollIndicator: false,
+            showsVerticalScrollIndicator: false,
+          }}
         />
       </Stack>
     </>

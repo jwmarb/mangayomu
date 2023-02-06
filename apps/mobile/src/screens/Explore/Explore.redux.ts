@@ -12,6 +12,7 @@ const mapStateToProps = (state: AppState) => ({
   networkStatus: state.explore.internetStatus,
   hotMangas: state.explore.states.hot,
   latestMangas: state.explore.states.latest,
+  suspendRendering: state.host.suspendRendering,
 });
 
 const connector = connect(mapStateToProps, {

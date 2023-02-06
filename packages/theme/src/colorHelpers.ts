@@ -14,7 +14,7 @@ export function hexToRgb(hex: string): RGBA {
       blue: parseInt(result[3], 16),
       alpha: 1,
     };
-  else throw Error('Invalid hex value');
+  else throw Error('Invalid hex value: ' + hex);
 }
 
 /**
@@ -39,7 +39,7 @@ export function rgbaToHex(rgba: RGBA): string {
 export function parseRGBA(rgba: string): RGBA {
   const rgbaregex = /\d+\.?\d*/g;
   const p = rgba.match(rgbaregex);
-  if (p == null) throw Error('Invalid RGBA input');
+  if (p == null) throw Error('Invalid RGBA input: ' + rgba);
   const [red, green, blue, alpha] = p;
   return {
     red: parseInt(red),

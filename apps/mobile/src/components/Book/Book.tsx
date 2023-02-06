@@ -24,6 +24,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import { BookProps } from './Book.interfaces';
+
+export const bookDimensions = {
+  width: moderateScale(110),
+  height: moderateScale(205),
+};
+
 const styles = ScaledSheet.create({
   image: {
     width: '110@ms',
@@ -46,26 +52,13 @@ const styles = ScaledSheet.create({
   },
 });
 
+const combinedStyles = [styles.image, styles.imageOverlay];
+
 const Book: React.FC<BookProps> = (props) => {
   const { manga } = props;
   const source = useMangaSource(manga);
   const opacity = useSharedValue(0);
-  const overlayOpacity = useSharedValue(0);
-  const isFocused = useIsFocused();
-  React.useEffect(() => {
-    if (isFocused) {
-      overlayOpacity.value = withRepeat(
-        withSequence(
-          withTiming(1, { duration: 1000, easing: Easing.ease }),
-          withTiming(0.5, { duration: 1000, easing: Easing.ease }),
-        ),
-        -1,
-      );
-      return () => {
-        cancelAnimation(overlayOpacity);
-      };
-    }
-  }, [isFocused]);
+
   function handleOnPress() {
     // todo: onPress functionality
   }
@@ -76,50 +69,33 @@ const Book: React.FC<BookProps> = (props) => {
   function handleOnError() {
     opacity.value = 1;
   }
-  function handleOnLoadEnd() {
-    cancelAnimation(overlayOpacity);
-    overlayOpacity.value = withTiming(0, {
-      duration: 1000,
-      easing: Easing.ease,
-    });
-  }
 
   const style = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
-  const imageOverlay = useAnimatedStyle(() => ({
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'gray',
-    opacity: overlayOpacity.value,
-  }));
-  const overlayStyles = React.useMemo(
-    () => [imageOverlay, styles.image],
-    [imageOverlay, styles.image],
-  );
   return (
     <BaseButton
       style={styles.button}
       onPress={handleOnPress}
       onLongPress={handleOnLongPress}
     >
-      <Stack space="s" maxWidth={moderateScale(110)}>
+      <Stack
+        space="s"
+        width={bookDimensions.width}
+        height={bookDimensions.height}
+      >
         <Badge type="image" uri={source.getIcon()} show>
-          <Animated.View style={overlayStyles} />
+          <Animated.View style={combinedStyles} />
           <Animated.View style={style}>
             <FastImage
               source={require('@assets/No-Image-Placeholder.png')}
-              style={[styles.image, styles.imageOverlay]}
+              style={combinedStyles}
             />
           </Animated.View>
           <FastImage
             source={{ uri: manga.imageCover }}
             style={styles.image}
             onError={handleOnError}
-            onLoadEnd={handleOnLoadEnd}
           />
         </Badge>
         <Text variant="book-title" numberOfLines={2} bold>
@@ -163,7 +139,11 @@ export const LoadingBook = React.memo(() => {
     [loading, styles.image],
   );
   return (
-    <Stack space="s" maxWidth={moderateScale(110)}>
+    <Stack
+      space="s"
+      width={bookDimensions.width}
+      height={bookDimensions.height}
+    >
       <Animated.View style={loadingStyles} />
       <Box>
         <Animated.View style={textLoading}>

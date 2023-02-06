@@ -14,6 +14,7 @@ import FastImage from 'react-native-fast-image';
 import Animated from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
 import {
+  ActivityIndicator,
   InteractionManager,
   ListRenderItem,
   useWindowDimensions,
@@ -27,6 +28,8 @@ import { Manga } from '@mangayomu/mangascraper';
 import { HotMangaList } from '@screens/Explore/components/HotMangaList';
 import { LatestMangaList } from '@screens/Explore/components/LatestMangaList';
 import GenresList from '@screens/Explore/components/GenresList';
+import { Freeze } from 'react-freeze';
+import Progress from '@components/Progress';
 
 const Explore: React.FC<ConnectedExploreProps> = ({
   source,
@@ -36,6 +39,7 @@ const Explore: React.FC<ConnectedExploreProps> = ({
   networkStatus,
   hotMangas,
   latestMangas,
+  suspendRendering,
 }) => {
   const { user } = useAuth0();
   const { height } = useWindowDimensions();
@@ -73,20 +77,23 @@ const Explore: React.FC<ConnectedExploreProps> = ({
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(async () => {
       if (
-        networkStatus === 'online' ||
-        (await NetInfo.fetch()).isInternetReachable
+        (networkStatus === 'online' ||
+          (await NetInfo.fetch()).isInternetReachable) &&
+        !suspendRendering
       ) {
+        refreshExplorerState();
         const hot = await source.getHotMangas();
         const latest = await source.getLatestMangas();
         setExplorerState({ hot, latest });
       }
     });
-  }, []);
+  }, [suspendRendering]);
   return (
     <>
       <Animated.ScrollView
         style={scrollViewStyle}
         onScroll={onScroll}
+        onMomentumScrollEnd={onScroll}
         contentContainerStyle={contentContainerStyle}
       >
         <Stack space="s" flex-grow minHeight={height}>
@@ -97,28 +104,30 @@ const Explore: React.FC<ConnectedExploreProps> = ({
               placeholder="Titles, authors, or topics"
             />
           </Box>
-          {source.hasNoSources() ? (
-            <Stack space="s" mx="m" align-self="center">
-              <Text variant="header" align="center">
-                No sources selected
-              </Text>
-              <Text color="textSecondary">
-                Sources that are selected will have their hot and latest updates
-                shown here.
-              </Text>
-              <Text color="textSecondary">
-                To select sources, press on{' '}
-                <Icon type="font" name="bookshelf" /> at the top left corner to
-                open the source selector modal.
-              </Text>
-            </Stack>
-          ) : (
-            <Box my="s">
-              <GenresList />
-              <HotMangaList />
-              <LatestMangaList />
-            </Box>
-          )}
+          <Freeze freeze={suspendRendering} placeholder={<Progress />}>
+            {source.hasNoSources() ? (
+              <Stack space="s" mx="m" align-self="center">
+                <Text variant="header" align="center">
+                  No sources selected
+                </Text>
+                <Text color="textSecondary">
+                  Sources that are selected will have their hot and latest
+                  updates shown here.
+                </Text>
+                <Text color="textSecondary">
+                  To select sources, press on{' '}
+                  <Icon type="font" name="bookshelf" /> at the top left corner
+                  to open the source selector modal.
+                </Text>
+              </Stack>
+            ) : (
+              <Stack space="s" my="s">
+                <GenresList />
+                <HotMangaList />
+                <LatestMangaList />
+              </Stack>
+            )}
+          </Freeze>
         </Stack>
       </Animated.ScrollView>
       <MainSourceSelector ref={sourceSelectorRef} />

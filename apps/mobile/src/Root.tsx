@@ -6,6 +6,7 @@ import MangaView from '@screens/MangaView';
 import React from 'react';
 import Welcome from '@screens/Welcome/Welcome';
 import { StackHeader } from '@components/NavHeader';
+import BasicMangaList from '@screens/BasicMangaList';
 
 const mapStateToProps = (state: AppState) => ({
   showWelcomeScreen: state.__initial__.firstTimeUser,
@@ -27,6 +28,7 @@ const Root: React.FC<RootProps> = ({ showWelcomeScreen }) => {
         component={Welcome}
         options={{ headerShown: false }}
       />
+      <RootStack.Screen name="BasicMangaList" component={BasicMangaList} />
     </RootStack.Navigator>
   );
 };

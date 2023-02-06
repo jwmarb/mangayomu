@@ -26,6 +26,8 @@ const MainSourceSelector = React.forwardRef<
       sort,
       reversed,
       filters: { showNSFW, hasHotUpdates, hasLatestUpdates, hasMangaDirectory },
+      enableRerendering,
+      suspendRendering,
     },
     ref,
   ) => {
@@ -62,7 +64,12 @@ const MainSourceSelector = React.forwardRef<
     ]);
 
     return (
-      <CustomBottomSheet header={<Header />} ref={ref}>
+      <CustomBottomSheet
+        onOpen={suspendRendering}
+        onClose={enableRerendering}
+        header={<Header />}
+        ref={ref}
+      >
         <BottomSheetFlatList
           contentContainerStyle={contentContainerStyle}
           data={data}

@@ -25,7 +25,8 @@ import { Auth0Provider } from 'react-native-auth0';
 import { PersistGate } from 'redux-persist/integration/react';
 import { PortalProvider } from '@gorhom/portal';
 import { MenuProvider } from 'react-native-popup-menu';
-
+import { enableFreeze } from 'react-native-screens';
+enableFreeze(true);
 enum Auth0 {
   DOMAIN = 'dev-wq6wbghv.us.auth0.com',
   CLIENT_ID = '2dLESXiDyJFgpzKU2FYZJKb0s9yzXWX8',
@@ -44,7 +45,7 @@ function App(): JSX.Element {
             dark: colorConstant('#0050b3'),
           },
           secondary: {
-            light: colorConstant('	#EE4B2B'),
+            light: colorConstant('#EE4B2B'),
             main: colorConstant('#D22B2B'),
             dark: colorConstant('#AA4A44'),
           },

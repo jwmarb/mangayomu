@@ -1,6 +1,4 @@
-import displayMessage from '@helpers/displayMessage';
 import integrateSortedList from '@helpers/integrateSortedList';
-import { Comparator } from '@mangayomu/algorithms';
 import { MangaHost } from '@mangayomu/mangascraper';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
@@ -8,12 +6,14 @@ export interface HostState {
   name: string[];
   comparatorKey: keyof typeof SORT_HOSTS_BY;
   reversed: boolean;
+  suspendRendering: boolean;
 }
 
 const initialState: HostState = {
   name: [],
   comparatorKey: 'Alphabetically',
   reversed: false,
+  suspendRendering: false,
 };
 
 export const SORT_HOSTS_BY = {
@@ -33,6 +33,12 @@ export const hostSlice = createSlice({
   name: 'host',
   initialState,
   reducers: {
+    enableRerendering: (state) => {
+      state.suspendRendering = false;
+    },
+    suspendRendering: (state) => {
+      state.suspendRendering = true;
+    },
     addSource: (state, action: PayloadAction<string>) => {
       const source = MangaHost.getAvailableSources().get(action.payload);
       if (source == null)
@@ -75,6 +81,8 @@ export const {
   sortHostsBy,
   toggleReversedList,
   addAllSources,
+  enableRerendering,
   removeAllSources,
+  suspendRendering,
 } = hostSlice.actions;
 export default hostSlice.reducer;

@@ -25,11 +25,9 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 
-export interface CollapsibleTabHeaderOptions {
-  headerLeft?: React.ReactNode;
+export interface CollapsibleHeaderOptions {
   headerRight?: React.ReactNode;
   headerTitle?: string;
-  headerCenter?: React.ReactNode;
   /**
    * The conditions in which the header should rerender, such as a state.
    */
@@ -38,70 +36,53 @@ export interface CollapsibleTabHeaderOptions {
 
 const CollapsibleBase = React.memo<
   { style: StyleProp<ViewStyle>; routeName: string } & Omit<
-    CollapsibleTabHeaderOptions,
+    CollapsibleHeaderOptions,
     'dependencies'
   >
->(
-  ({
-    style,
-    routeName,
-    headerCenter,
-    headerLeft,
-    headerRight,
-    headerTitle = routeName,
-  }) => {
-    return (
-      <Box
-        as={Animated.View}
-        style={style}
-        position="absolute"
-        flex-grow
-        left={0}
-        right={0}
-        top={0}
-        bottom={0}
-        background-color="transparent"
-      >
-        <Stack space="s" flex-direction="row" justify-content="space-between">
-          {(headerLeft || headerRight) && (
-            <Box flex-grow justify-content="center" maxWidth="33%">
-              <Box ml="m" flex-direction="row">
-                {headerLeft}
-              </Box>
-            </Box>
-          )}
-          <Box flex-shrink justify-content="center">
-            {headerCenter == null ? (
-              <Text variant="header" align="center" bold numberOfLines={1}>
-                {headerTitle}
-              </Text>
-            ) : (
-              headerCenter
-            )}
+>(({ style, routeName, headerRight, headerTitle = routeName }) => {
+  const navigation = useRootNavigation();
+  return (
+    <Box
+      as={Animated.View}
+      style={style}
+      position="absolute"
+      flex-grow
+      left={0}
+      right={0}
+      top={0}
+      bottom={0}
+      background-color="transparent"
+    >
+      <Stack space="s" flex-direction="row">
+        <Box flex-shrink justify-content="center">
+          <Box ml="m" flex-direction="row">
+            <IconButton
+              icon={<Icon type="font" name="arrow-left" />}
+              onPress={() => {
+                if (navigation.canGoBack()) navigation.goBack();
+              }}
+            />
           </Box>
-          {(headerLeft || headerRight) && (
-            <Box flex-grow justify-content="center" maxWidth="33%">
-              <Box mr="m" justify-content="flex-end" flex-direction="row">
-                {headerRight}
-              </Box>
-            </Box>
-          )}
-        </Stack>
-      </Box>
-    );
-  },
-);
+        </Box>
+        <Box justify-content="center">
+          <Text variant="header" bold numberOfLines={1}>
+            {headerTitle}
+          </Text>
+        </Box>
+        <Box flex-shrink justify-content="center">
+          <Box mr="m" justify-content="flex-end" flex-direction="row-reverse">
+            {headerRight}
+          </Box>
+        </Box>
+      </Stack>
+    </Box>
+  );
+});
 
 export default function useCollapsibleTabHeader(
-  options: CollapsibleTabHeaderOptions = {},
+  options: CollapsibleHeaderOptions = {},
 ) {
-  const {
-    headerLeft,
-    headerRight,
-    headerTitle,
-    headerCenter,
-    dependencies = [],
-  } = options;
+  const { headerRight, headerTitle, dependencies = [] } = options;
   const theme = useTheme();
   const navigation = useRootNavigation();
   const translateY = useSharedValue(0);
@@ -123,7 +104,6 @@ export default function useCollapsibleTabHeader(
         -NAVHEADER_HEIGHT,
         Math.min(translateY.value - 2.5 * velocity.y, 0),
       );
-    else translateY.value = 0;
   }
 
   function scrollPositionHandler(y: number) {
@@ -169,10 +149,8 @@ export default function useCollapsibleTabHeader(
         <CollapsibleBase
           style={animatedHeaderStyle}
           routeName={route.name}
-          headerLeft={headerLeft}
           headerRight={headerRight}
           headerTitle={headerTitle}
-          headerCenter={headerCenter}
         />
       ),
     });
