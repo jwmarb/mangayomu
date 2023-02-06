@@ -127,6 +127,8 @@ export type ThemeSchema<T extends DefaultTheme> = {
               },
               'contrastText' | 'ripple'
             >
+          : T[K][V] extends string
+          ? ColorSchema
           : T[K][V];
       }
     : K extends 'helpers'

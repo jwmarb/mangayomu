@@ -4,6 +4,12 @@ interface TestTheme extends DefaultTheme {
   helpers: typeof helpers & DefaultThemeHelpers;
 }
 
+interface CustomPaletteTheme extends DefaultTheme {
+  palette: DefaultTheme['palette'] & {
+    customPaletteColor: string;
+  };
+}
+
 interface ReactNavigationTheme extends DefaultTheme {
   __react_navigation__: {
     dark: boolean;
@@ -45,6 +51,16 @@ test('Theme object created and parsed properly', () => {
   theme = createTheme<TestTheme>(({ color, colorConstant }) => ({
     mode: 'light',
     palette: {
+      error: {
+        main: color('#f44336', '#d32f2f'),
+        light: color('#e57373', '#ef5350'),
+        dark: color('#d32f2f', '#c62828'),
+      },
+      warning: {
+        main: color('#ed6c02', '#ffa726'),
+        light: color('#ff9800', '#ffb74d'),
+        dark: color('#e65100', '#f57c00'),
+      },
       primary: {
         light: colorConstant('#69c0ff'),
         main: colorConstant('#1890ff'),
@@ -105,6 +121,16 @@ test('palette in a different key is parsed', () => {
     ({ color, colorConstant, definePalette }) => ({
       mode: 'dark',
       palette: {
+        error: {
+          main: color('#f44336', '#d32f2f'),
+          light: color('#e57373', '#ef5350'),
+          dark: color('#d32f2f', '#c62828'),
+        },
+        warning: {
+          main: color('#ed6c02', '#ffa726'),
+          light: color('#ff9800', '#ffb74d'),
+          dark: color('#e65100', '#f57c00'),
+        },
         primary: {
           light: colorConstant('#69c0ff'),
           main: colorConstant('#1890ff'),
@@ -162,4 +188,59 @@ test('getContrastText', () => {
   expect(contrastColor1).toBe('rgba(0, 0, 0, 0.87)');
   expect(contrastColor2).toBe('rgba(255, 255, 255, 1)');
   expect(contrastColor3).toBe('rgba(0, 0, 0, 0.87)');
+});
+
+test('Custom palette color', () => {
+  const theme3 = createTheme<CustomPaletteTheme>(
+    ({ color, colorConstant }) => ({
+      mode: 'light',
+      palette: {
+        customPaletteColor: color('#ffffff', '#000000'),
+        error: {
+          main: color('#f44336', '#d32f2f'),
+          light: color('#e57373', '#ef5350'),
+          dark: color('#d32f2f', '#c62828'),
+        },
+        warning: {
+          main: color('#ed6c02', '#ffa726'),
+          light: color('#ff9800', '#ffb74d'),
+          dark: color('#e65100', '#f57c00'),
+        },
+        primary: {
+          light: colorConstant('#69c0ff'),
+          main: colorConstant('#1890ff'),
+          dark: colorConstant('#0050b3'),
+        },
+        secondary: {
+          light: colorConstant('#ffa39e'),
+          main: colorConstant('#ff7875'),
+          dark: colorConstant('#ff4d4f'),
+        },
+        text: {
+          primary: color('rgba(255, 255, 255, 1)', 'rgba(0, 0, 0, 0.87)'),
+          secondary: color('rgba(255, 255, 255, 0.7)', 'rgba(0, 0, 0, 0.6)'),
+          disabled: color('rgba(255, 255, 255, 0.5)', 'rgba(0, 0, 0, 0.38)'),
+          hint: color('rgba(255, 255, 255, 0.5)', 'rgba(0, 0, 0, 0.38)'),
+        },
+        background: {
+          default: color('#141414', '#fafafa'),
+          paper: color('#262626', '#ffffff'),
+          disabled: color('#141414', '#fafafa'),
+        },
+      },
+      style: {
+        borderRadius: 4,
+        spacing: {
+          s: 2,
+          m: 6,
+          l: 10,
+          xl: 16,
+        },
+      },
+      helpers,
+    }),
+  );
+
+  expect(typeof theme3.palette.customPaletteColor).toBe('string');
+  expect(theme3.palette.customPaletteColor).toBe('#000000');
 });

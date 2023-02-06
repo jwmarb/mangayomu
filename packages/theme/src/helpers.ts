@@ -32,20 +32,49 @@ export function readColors(
   const converted: RecursivePartial<DefaultTheme['palette']> = {};
   for (const name in obj) {
     const typedName = name as keyof ThemeSchema<Theme>['palette'];
-    converted[typedName] = {};
-    for (const variety in obj[typedName]) {
+
+    if (
+      'light' in obj[typedName] &&
+      'dark' in obj[typedName] &&
+      typeof (obj[typedName] as unknown as ColorSchema).light === 'string' &&
+      typeof (obj[typedName] as unknown as ColorSchema).dark === 'string'
+    ) {
       switch (mode) {
         case null:
         case undefined:
         case 'light':
-          (converted as Record<string, Record<string, string>>)[name][variety] =
-            (obj[typedName] as Record<string, ColorSchema>)[variety]['light'];
+          (converted[typedName] as string) = (
+            obj[typedName] as unknown as ColorSchema
+          ).light;
           break;
         case 'dark':
-          (converted as Record<string, Record<string, string>>)[name][variety] =
-            (obj[typedName] as Record<string, ColorSchema>)[variety]['dark'];
-
+          (converted[typedName] as string) = (
+            obj[typedName] as unknown as ColorSchema
+          ).dark;
           break;
+      }
+    } else {
+      converted[typedName] = {};
+      for (const variety in obj[typedName]) {
+        switch (mode) {
+          case null:
+          case undefined:
+          case 'light':
+            (converted as Record<string, Record<string, string>>)[name][
+              variety
+            ] = (obj[typedName] as Record<string, ColorSchema>)[variety][
+              'light'
+            ];
+            break;
+          case 'dark':
+            (converted as Record<string, Record<string, string>>)[name][
+              variety
+            ] = (obj[typedName] as Record<string, ColorSchema>)[variety][
+              'dark'
+            ];
+
+            break;
+        }
       }
     }
     if (typedName === 'primary' || typedName === 'secondary') {
