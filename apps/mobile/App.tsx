@@ -39,6 +39,7 @@ function App(): JSX.Element {
       createTheme<Theme>(({ color, colorConstant, definePalette }) => ({
         mode,
         palette: {
+          skeleton: color('rgba(255, 255, 255, 0.12)', 'rgba(0, 0, 0, 0.12)'),
           primary: {
             light: colorConstant('#69c0ff'),
             main: colorConstant('#1890ff'),

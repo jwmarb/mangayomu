@@ -1,5 +1,6 @@
 import Badge from '@components/Badge';
 import Box from '@components/Box';
+import Progress from '@components/Progress';
 import { Stack } from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
@@ -45,7 +46,8 @@ const styles = ScaledSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'gray',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   placeholderText: {
     opacity: 0,
@@ -58,6 +60,7 @@ const Book: React.FC<BookProps> = (props) => {
   const { manga } = props;
   const source = useMangaSource(manga);
   const opacity = useSharedValue(0);
+  const theme = useTheme();
 
   function handleOnPress() {
     // todo: onPress functionality
@@ -73,6 +76,14 @@ const Book: React.FC<BookProps> = (props) => {
   const style = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
+  const loadingStyle = React.useMemo(
+    () => [
+      styles.imageOverlay,
+      { backgroundColor: theme.palette.skeleton },
+      styles.image,
+    ],
+    [styles.image, theme.palette.skeleton, styles.imageOverlay],
+  );
   return (
     <BaseButton
       style={styles.button}
@@ -85,7 +96,9 @@ const Book: React.FC<BookProps> = (props) => {
         height={bookDimensions.height}
       >
         <Badge type="image" uri={source.getIcon()} show>
-          <Animated.View style={combinedStyles} />
+          <Animated.View style={loadingStyle}>
+            <Progress />
+          </Animated.View>
           <Animated.View style={style}>
             <FastImage
               source={require('@assets/No-Image-Placeholder.png')}

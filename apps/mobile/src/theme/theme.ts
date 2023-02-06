@@ -67,6 +67,9 @@ export const spacing = {
 
 declare module '@emotion/react' {
   export interface Theme extends DefaultTheme {
+    palette: DefaultTheme['palette'] & {
+      skeleton: string;
+    };
     typography: typeof typography;
     style: {
       shadow: typeof shadow;
