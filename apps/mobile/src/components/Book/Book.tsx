@@ -79,11 +79,7 @@ const Book: React.FC<BookProps> = (props) => {
     opacity: opacity.value,
   }));
   const loadingStyle = React.useMemo(
-    () => [
-      styles.imageOverlay,
-      { backgroundColor: theme.palette.skeleton },
-      styles.image,
-    ],
+    () => [combinedStyles, { backgroundColor: theme.palette.skeleton }],
     [styles.image, theme.palette.skeleton, styles.imageOverlay],
   );
   return (
