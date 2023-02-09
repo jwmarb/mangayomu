@@ -26,6 +26,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { PortalProvider } from '@gorhom/portal';
 import { MenuProvider } from 'react-native-popup-menu';
 import { enableFreeze } from 'react-native-screens';
+import { MangaRealmProvider } from '@realm/schemas/Manga';
 enableFreeze(true);
 enum Auth0 {
   DOMAIN = 'dev-wq6wbghv.us.auth0.com',
@@ -96,6 +97,7 @@ function App(): JSX.Element {
           }),
         },
       })),
+
     [mode],
   );
 
@@ -104,19 +106,21 @@ function App(): JSX.Element {
       <StatusBar translucent backgroundColor="transparent" />
       <GestureHandlerRootView style={{ flex: 1 }}>
         <Auth0Provider domain={Auth0.DOMAIN} clientId={Auth0.CLIENT_ID}>
-          <ThemeProvider theme={theme}>
-            <Provider store={store}>
-              <PersistGate loading={null} persistor={persistor}>
-                <MenuProvider>
-                  <PortalProvider>
-                    <NavigationContainer theme={theme.__react_navigation__}>
-                      <Root />
-                    </NavigationContainer>
-                  </PortalProvider>
-                </MenuProvider>
-              </PersistGate>
-            </Provider>
-          </ThemeProvider>
+          <MangaRealmProvider>
+            <ThemeProvider theme={theme}>
+              <Provider store={store}>
+                <PersistGate loading={null} persistor={persistor}>
+                  <MenuProvider>
+                    <PortalProvider>
+                      <NavigationContainer theme={theme.__react_navigation__}>
+                        <Root />
+                      </NavigationContainer>
+                    </PortalProvider>
+                  </MenuProvider>
+                </PersistGate>
+              </Provider>
+            </ThemeProvider>
+          </MangaRealmProvider>
         </Auth0Provider>
       </GestureHandlerRootView>
     </>
