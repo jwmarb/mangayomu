@@ -1,7 +1,8 @@
-import { Manga, MangaChapter } from '@mangayomu/mangascraper';
+import { Manga, MangaChapter, MangaMeta } from '@mangayomu/mangascraper';
 import { IChapterSchema } from '@realm/schemas/Chapter';
 import Realm from 'realm';
 import { createRealmContext } from '@realm/react';
+import React from 'react';
 
 export const SORT_CHAPTERS_BY = {
   'Chapter number':
@@ -31,6 +32,10 @@ export interface IMangaSchema extends Omit<Manga, 'index'> {
 }
 
 export class MangaSchema extends Realm.Object<IMangaSchema> {
+  link!: string;
+  title!: string;
+  imageCover!: string;
+  source!: string;
   description!: string;
   genres!: string[];
   currentlyReadingChapter!: string;
@@ -41,7 +46,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   static schema: Realm.ObjectSchema = {
     name: 'Manga',
     properties: {
-      url: 'string',
+      link: 'string',
       title: 'string',
       imageCover: 'string',
       source: 'string',
@@ -53,7 +58,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
       chapters: { type: 'list', objectType: 'Chapter' },
       sortChaptersBy: { type: 'string', default: 'Chapter number' },
     },
-    primaryKey: 'url',
+    primaryKey: 'link',
   };
 }
 
@@ -61,4 +66,22 @@ export const {
   RealmProvider: MangaRealmProvider,
   useRealm: useMangaRealm,
   useQuery: useMangaQuery,
+  useObject: useMangaObject,
 } = createRealmContext({ schema: [MangaSchema] });
+
+export const useManga = (link: string) => {
+  const [manga, setManga] = React.useState<IMangaSchema>();
+  const mangaObject = useMangaObject(MangaSchema, link);
+  const realm = useMangaRealm();
+  React.useEffect(() => {
+    if (mangaObject != null) {
+      mangaObject.addListener((_manga, changes) => {
+        if (changes.deleted) setManga(undefined);
+        else setManga(_manga);
+      });
+      return () => {
+        mangaObject.removeAllListeners();
+      };
+    }
+  }, [link, mangaObject]);
+};
