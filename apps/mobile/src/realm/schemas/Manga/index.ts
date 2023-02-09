@@ -57,4 +57,8 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   };
 }
 
-export const MangaRealmContext = createRealmContext({ schema: [MangaSchema] });
+export const {
+  RealmProvider: MangaRealmProvider,
+  useRealm: useMangaRealm,
+  useQuery: useMangaQuery,
+} = createRealmContext({ schema: [MangaSchema] });
