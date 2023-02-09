@@ -4,6 +4,7 @@ import Cover from '@components/Cover';
 import Text from '@components/Text';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import { RootStackProps } from '@navigators/Root/Root.interfaces';
+import { useMangaRealm } from '@realm/schemas/Manga';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
@@ -18,6 +19,9 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
     },
     navigation,
   } = props;
+  const realm = useMangaRealm();
+
+  realm.
 
   const { onScroll, contentContainerStyle, scrollViewStyle } =
     useCollapsibleHeader({ headerTitle: '' });
