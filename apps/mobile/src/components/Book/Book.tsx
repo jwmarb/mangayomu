@@ -96,9 +96,9 @@ const Book: React.FC<BookProps> = (props) => {
         height={bookDimensions.height}
       >
         <Badge type="image" uri={source.getIcon()} show>
-          <Animated.View style={loadingStyle}>
+          <Box style={loadingStyle}>
             <Progress />
-          </Animated.View>
+          </Box>
           <Animated.View style={style}>
             <FastImage
               source={require('@assets/No-Image-Placeholder.png')}
@@ -138,18 +138,22 @@ export const LoadingBook = React.memo(() => {
     }
   }, [isFocused]);
   const loading = useAnimatedStyle(() => ({
-    backgroundColor: 'gray',
     opacity: opacity.value,
   }));
-  const textLoading = useAnimatedStyle(() => ({
-    backgroundColor: 'gray',
-    opacity: opacity.value,
-    width: '100%',
-    borderRadius: theme.style.borderRadius,
-  }));
+  const textLoading = React.useMemo(
+    () => [
+      {
+        width: '100%',
+        borderRadius: theme.style.borderRadius,
+        backgroundColor: theme.palette.skeleton,
+      },
+      loading,
+    ],
+    [loading, theme.palette.skeleton],
+  );
   const loadingStyles = React.useMemo(
-    () => [loading, styles.image],
-    [loading, styles.image],
+    () => [loading, styles.image, { backgroundColor: theme.palette.skeleton }],
+    [loading, styles.image, theme.palette.skeleton],
   );
   return (
     <Stack
