@@ -54,7 +54,7 @@ const Cover: React.FC<CoverProps> = (props) => {
   );
 
   return (
-    <Box width={bookDimensions.width} height={bookDimensions.height}>
+    <>
       <Box style={loadingStyle}>
         <Progress />
       </Box>
@@ -69,7 +69,7 @@ const Cover: React.FC<CoverProps> = (props) => {
         style={coverStyles.image}
         onError={handleOnError}
       />
-    </Box>
+    </>
   );
 };
 
