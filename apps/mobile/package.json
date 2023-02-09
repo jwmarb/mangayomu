@@ -33,6 +33,7 @@
     "@react-navigation/bottom-tabs": "^6.5.3",
     "@react-navigation/native": "^6.1.2",
     "@react-navigation/native-stack": "^6.9.8",
+    "@realm/react": "^0.4.3",
     "@reduxjs/toolkit": "^1.9.1",
     "@shopify/flash-list": "^1.4.1",
     "prop-types": "^15.8.1",
@@ -54,6 +55,7 @@
     "react-native-tab-view": "^3.3.4",
     "react-native-vector-icons": "^9.2.0",
     "react-redux": "^8.0.5",
+    "realm": "^11.4.0",
     "redux-persist": "^6.0.0"
   },
   "devDependencies": {

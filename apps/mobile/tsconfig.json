@@ -10,7 +10,8 @@
       "@mmkv-storage/*": ["./src/mmkv/*"],
       "@hooks/*": ["./src/hooks/*"],
       "@assets/*": ["./src/assets/*"],
-      "@helpers/*": ["./src/helpers/*"]
+      "@helpers/*": ["./src/helpers/*"],
+      "@realm/*": ["./src/realm/*"]
     }
   }
 }

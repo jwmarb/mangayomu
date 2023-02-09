@@ -1,6 +1,15 @@
+import Book, { bookDimensions } from '@components/Book';
+import Box from '@components/Box';
+import Cover from '@components/Cover';
+import Text from '@components/Text';
+import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import { RootStackProps } from '@navigators/Root/Root.interfaces';
+import { FlashList } from '@shopify/flash-list';
 import React from 'react';
-import { View, Text } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import { ScaledSheet } from 'react-native-size-matters';
+
+const data = [1, 2, 3];
 
 const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
   const {
@@ -10,10 +19,22 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
     navigation,
   } = props;
 
+  const { onScroll, contentContainerStyle, scrollViewStyle } =
+    useCollapsibleHeader({ headerTitle: '' });
+
   return (
-    <View>
-      <Text>Hello from MangaView</Text>
-    </View>
+    <FlashList
+      data={data}
+      ListHeaderComponent={
+        <Box style={scrollViewStyle}>
+          <Text>Hello World</Text>
+        </Box>
+      }
+      ListFooterComponent={<Box style={contentContainerStyle} />}
+      renderItem={null}
+      estimatedItemSize={5}
+      {...{ onScroll }}
+    />
   );
 };
 
