@@ -7,6 +7,7 @@ import { useTheme } from '@emotion/react';
 import displayMessage from '@helpers/displayMessage';
 import vibrate from '@helpers/vibrate';
 import useMangaSource from '@hooks/useMangaSource';
+import useRootNavigation from '@hooks/useRootNavigation';
 import { MangaHost } from '@mangayomu/mangascraper';
 import { useIsFocused } from '@react-navigation/native';
 import React from 'react';
@@ -58,12 +59,13 @@ const combinedStyles = [styles.image, styles.imageOverlay];
 
 const Book: React.FC<BookProps> = (props) => {
   const { manga } = props;
+  const navigation = useRootNavigation();
   const source = useMangaSource(manga);
   const opacity = useSharedValue(0);
   const theme = useTheme();
 
   function handleOnPress() {
-    // todo: onPress functionality
+    navigation.navigate('MangaView', { dbKey: manga.link });
   }
   function handleOnLongPress() {
     displayMessage(manga.title);
