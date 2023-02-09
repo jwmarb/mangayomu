@@ -79,7 +79,7 @@ const CollapsibleBase = React.memo<
   );
 });
 
-export default function useCollapsibleTabHeader(
+export default function useCollapsibleHeader(
   options: CollapsibleHeaderOptions = {},
 ) {
   const { headerRight, headerTitle, dependencies = [] } = options;
