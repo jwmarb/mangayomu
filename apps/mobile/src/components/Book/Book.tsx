@@ -1,5 +1,7 @@
 import Badge from '@components/Badge';
 import Box from '@components/Box';
+import Cover from '@components/Cover';
+import { coverStyles } from '@components/Cover/Cover';
 import Progress from '@components/Progress';
 import { Stack } from '@components/Stack';
 import Text from '@components/Text';
@@ -32,37 +34,10 @@ export const bookDimensions = {
   height: moderateScale(205),
 };
 
-const styles = ScaledSheet.create({
-  image: {
-    width: '110@ms',
-    height: '160@ms',
-    borderRadius: '8@ms',
-  },
-  button: {
-    borderRadius: '8@ms',
-  },
-  imageOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderText: {
-    opacity: 0,
-  },
-});
-
-const combinedStyles = [styles.image, styles.imageOverlay];
-
 const Book: React.FC<BookProps> = (props) => {
   const { manga } = props;
   const navigation = useRootNavigation();
   const source = useMangaSource(manga);
-  const opacity = useSharedValue(0);
-  const theme = useTheme();
 
   function handleOnPress() {
     navigation.navigate('MangaView', { dbKey: manga.link });
@@ -71,20 +46,10 @@ const Book: React.FC<BookProps> = (props) => {
     displayMessage(manga.title);
     vibrate();
   }
-  function handleOnError() {
-    opacity.value = 1;
-  }
 
-  const style = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }));
-  const loadingStyle = React.useMemo(
-    () => [combinedStyles, { backgroundColor: theme.palette.skeleton }],
-    [styles.image, theme.palette.skeleton, styles.imageOverlay],
-  );
   return (
     <BaseButton
-      style={styles.button}
+      style={coverStyles.button}
       onPress={handleOnPress}
       onLongPress={handleOnLongPress}
     >
@@ -94,20 +59,7 @@ const Book: React.FC<BookProps> = (props) => {
         height={bookDimensions.height}
       >
         <Badge type="image" uri={source.getIcon()} show>
-          <Box style={loadingStyle}>
-            <Progress />
-          </Box>
-          <Animated.View style={style}>
-            <FastImage
-              source={require('@assets/No-Image-Placeholder.png')}
-              style={combinedStyles}
-            />
-          </Animated.View>
-          <FastImage
-            source={{ uri: manga.imageCover }}
-            style={styles.image}
-            onError={handleOnError}
-          />
+          <Cover cover={manga} />
         </Badge>
         <Text variant="book-title" numberOfLines={2} bold>
           {manga.title}
@@ -150,8 +102,12 @@ export const LoadingBook = React.memo(() => {
     [loading, theme.palette.skeleton],
   );
   const loadingStyles = React.useMemo(
-    () => [loading, styles.image, { backgroundColor: theme.palette.skeleton }],
-    [loading, styles.image, theme.palette.skeleton],
+    () => [
+      loading,
+      coverStyles.image,
+      { backgroundColor: theme.palette.skeleton },
+    ],
+    [loading, coverStyles.image, theme.palette.skeleton],
   );
   return (
     <Stack
@@ -166,7 +122,7 @@ export const LoadingBook = React.memo(() => {
             variant="book-title"
             numberOfLines={2}
             bold
-            style={styles.placeholderText}
+            style={coverStyles.placeholderText}
           >
             a
           </Text>
@@ -176,7 +132,7 @@ export const LoadingBook = React.memo(() => {
             variant="book-title"
             numberOfLines={2}
             bold
-            style={styles.placeholderText}
+            style={coverStyles.placeholderText}
           >
             a
           </Text>
