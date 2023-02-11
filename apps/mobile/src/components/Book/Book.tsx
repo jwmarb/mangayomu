@@ -40,7 +40,7 @@ const Book: React.FC<BookProps> = (props) => {
   const source = useMangaSource(manga);
 
   function handleOnPress() {
-    navigation.navigate('MangaView', { dbKey: manga.link });
+    navigation.navigate('MangaView', manga);
   }
   function handleOnLongPress() {
     displayMessage(manga.title);
