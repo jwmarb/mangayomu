@@ -7,6 +7,7 @@ import Box from '@components/Box';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import { hexToRgb, rgbaToString } from '@mangayomu/theme';
+import { Stack } from '@components/Stack';
 
 const Button: React.FC<ButtonProps> = (props) => {
   const {
@@ -14,6 +15,7 @@ const Button: React.FC<ButtonProps> = (props) => {
     variant,
     color = 'primary',
     disabled = false,
+    icon,
     ...rest
   } = props;
   const theme = useTheme();
@@ -28,11 +30,15 @@ const Button: React.FC<ButtonProps> = (props) => {
       {...rest}
       rippleColor={theme.palette[color].ripple}
     >
-      <Box
+      <Stack
+        space={moderateScale(4)}
         py={moderateScale(12)}
         px={moderateScale(16)}
         border-width={1.5}
         border-radius="@theme"
+        flex-direction="row"
+        align-items="center"
+        justify-content="center"
         {...(variant === 'outline'
           ? {
               'border-color': disabled ? theme.palette.text.disabled : color,
@@ -41,6 +47,14 @@ const Button: React.FC<ButtonProps> = (props) => {
               'border-color': 'transparent',
             })}
       >
+        {icon &&
+          React.cloneElement(icon, {
+            color: disabled
+              ? 'disabled'
+              : variant === 'contained'
+              ? 'primary@contrast'
+              : 'primary',
+          })}
         <Text
           variant="button"
           align="center"
@@ -55,7 +69,7 @@ const Button: React.FC<ButtonProps> = (props) => {
         >
           {label}
         </Text>
-      </Box>
+      </Stack>
     </BaseButton>
   );
 };
