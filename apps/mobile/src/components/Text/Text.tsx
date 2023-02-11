@@ -1,3 +1,4 @@
+import { getOrUseCustomColor } from '@components/Text/Text.helpers';
 import styled, { css } from '@emotion/native';
 import 'react';
 import { TextProps } from './Text.interfaces';
@@ -17,10 +18,11 @@ const Text = styled.Text<TextProps>`
     return css`
       ${variant !== 'inherit' && theme.typography[variant]}
       ${variant !== 'inherit' &&
+      color !== 'inherit' &&
       `color: ${
         contrast
-          ? theme.helpers.getContrastText(theme.helpers.getColor(color))
-          : theme.helpers.getColor(color)
+          ? theme.helpers.getContrastText(getOrUseCustomColor(theme, color))
+          : getOrUseCustomColor(theme, color)
       }`};
       text-align: ${align};
       ${bold && 'font-weight: bold'};

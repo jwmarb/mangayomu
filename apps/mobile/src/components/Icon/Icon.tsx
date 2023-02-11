@@ -6,6 +6,7 @@ import FastImage from 'react-native-fast-image';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import MaterialCommunityIconNames from 'react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json';
 import Animated from 'react-native-reanimated';
+import { getOrUseCustomColor } from '@components/Text';
 
 type RequireKey<T, KEYS extends keyof T> = Omit<T, KEYS> & {
   [K in keyof T as K extends KEYS ? K : never]-?: T[K];
@@ -25,7 +26,8 @@ const Icon: React.FC<IconProps | ImageIconProps> = (props) => {
     return (
       <IconFromFont
         as={props.animated ? AnimatedIcon : undefined}
-        {...(props as RequireKey<IconProps, 'name'>)}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        {...(props as unknown as any)}
       />
     );
   const { size = moderateScale(32) } = props;
@@ -50,7 +52,9 @@ const IconFromFont = styled(MaterialCommunityIcons)<IconProps>`
     } = props;
     return css`
       ${variant !== 'inherit' && theme.typography[variant]};
-      ${variant !== 'inherit' && `color: ${theme.helpers.getColor(color)}`};
+      ${variant !== 'inherit' &&
+      color !== 'inherit' &&
+      `color: ${getOrUseCustomColor(theme, color)}`};
       ${size != null && 'font-size: ' + size + 'px'};
       ${bold && 'font-weight: bold'};
       ${italic && 'font-style: italic'};

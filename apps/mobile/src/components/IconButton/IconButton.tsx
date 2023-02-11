@@ -1,16 +1,24 @@
 import Box from '@components/Box';
+import { generateRippleColor } from '@components/IconButton/IconButton.helpers';
 import { useTheme } from '@emotion/react';
-import { ButtonColors } from '@mangayomu/theme';
+import {
+  ButtonColors,
+  hexToRgb,
+  parseRGBA,
+  RGBA,
+  rgbaToString,
+} from '@mangayomu/theme';
 import React from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import { IconButtonProps } from './IconButton.interfaces';
 
 const IconButton: React.FC<IconButtonProps> = (props) => {
-  const { color = 'textSecondary', icon, compact, ...rest } = props;
+  const { color = 'textSecondary', icon, compact, animated, ...rest } = props;
   const theme = useTheme();
   const rippleColor = React.useMemo(() => {
     if (color == null) return undefined;
+    if (typeof color === 'object') return generateRippleColor(color.custom);
     if (color in theme.palette)
       return theme.palette[color as ButtonColors].ripple;
   }, [color, theme]);
@@ -36,7 +44,8 @@ const IconButton: React.FC<IconButtonProps> = (props) => {
         rippleColor={rippleColor}
         {...rest}
       >
-        {icon && React.cloneElement(icon, { variant: 'icon-button', color })}
+        {icon &&
+          React.cloneElement(icon, { variant: 'icon-button', color, animated })}
       </BorderlessButton>
     </Box>
   );
