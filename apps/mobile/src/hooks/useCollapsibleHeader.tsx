@@ -1,6 +1,7 @@
 import Box from '@components/Box';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
+import { IconButtonProps } from '@components/IconButton/IconButton.interfaces';
 import { NAVHEADER_HEIGHT, NavStyles } from '@components/NavHeader';
 import { Stack } from '@components/Stack';
 import Text from '@components/Text';
@@ -32,6 +33,7 @@ export interface CollapsibleHeaderOptions {
    * The conditions in which the header should rerender, such as a state.
    */
   dependencies?: React.DependencyList;
+  backButtonColor?: IconButtonProps['color'];
 }
 
 const CollapsibleBase = React.memo<
@@ -39,50 +41,64 @@ const CollapsibleBase = React.memo<
     CollapsibleHeaderOptions,
     'dependencies'
   >
->(({ style, routeName, headerRight, headerTitle = routeName }) => {
-  const navigation = useRootNavigation();
-  return (
-    <Box
-      as={Animated.View}
-      style={style}
-      position="absolute"
-      flex-grow
-      left={0}
-      right={0}
-      top={0}
-      bottom={0}
-      background-color="transparent"
-    >
-      <Stack space="s" flex-direction="row">
-        <Box flex-shrink justify-content="center">
-          <Box ml="m" flex-direction="row">
-            <IconButton
-              icon={<Icon type="font" name="arrow-left" />}
-              onPress={() => {
-                if (navigation.canGoBack()) navigation.goBack();
-              }}
-            />
+>(
+  ({
+    style,
+    routeName,
+    headerRight,
+    headerTitle = routeName,
+    backButtonColor = 'textPrimary',
+  }) => {
+    const navigation = useRootNavigation();
+    return (
+      <Box
+        as={Animated.View}
+        style={style}
+        position="absolute"
+        flex-grow
+        left={0}
+        right={0}
+        top={0}
+        bottom={0}
+        background-color="transparent"
+      >
+        <Stack space="s" flex-direction="row">
+          <Box flex-shrink justify-content="center">
+            <Box ml="m" flex-direction="row">
+              <IconButton
+                color={backButtonColor}
+                icon={<Icon type="font" name="arrow-left" />}
+                onPress={() => {
+                  if (navigation.canGoBack()) navigation.goBack();
+                }}
+              />
+            </Box>
           </Box>
-        </Box>
-        <Box justify-content="center">
-          <Text variant="header" bold numberOfLines={1}>
-            {headerTitle}
-          </Text>
-        </Box>
-        <Box flex-shrink justify-content="center">
-          <Box mr="m" justify-content="flex-end" flex-direction="row-reverse">
-            {headerRight}
+          <Box justify-content="center">
+            <Text variant="header" bold numberOfLines={1}>
+              {headerTitle}
+            </Text>
           </Box>
-        </Box>
-      </Stack>
-    </Box>
-  );
-});
+          <Box flex-shrink justify-content="center">
+            <Box mr="m" justify-content="flex-end" flex-direction="row-reverse">
+              {headerRight}
+            </Box>
+          </Box>
+        </Stack>
+      </Box>
+    );
+  },
+);
 
 export default function useCollapsibleHeader(
   options: CollapsibleHeaderOptions = {},
 ) {
-  const { headerRight, headerTitle, dependencies = [] } = options;
+  const {
+    headerRight,
+    headerTitle,
+    dependencies = [],
+    backButtonColor,
+  } = options;
   const theme = useTheme();
   const navigation = useRootNavigation();
   const translateY = useSharedValue(0);
@@ -151,6 +167,7 @@ export default function useCollapsibleHeader(
           routeName={route.name}
           headerRight={headerRight}
           headerTitle={headerTitle}
+          backButtonColor={backButtonColor}
         />
       ),
     });
