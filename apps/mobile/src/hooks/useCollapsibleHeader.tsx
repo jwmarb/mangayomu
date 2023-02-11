@@ -1,6 +1,6 @@
 import Box from '@components/Box';
 import Icon from '@components/Icon';
-import IconButton from '@components/IconButton';
+import IconButton, { generateRippleColor } from '@components/IconButton';
 import { IconButtonProps } from '@components/IconButton/IconButton.interfaces';
 import { NAVHEADER_HEIGHT, NavStyles } from '@components/NavHeader';
 import { Stack } from '@components/Stack';
@@ -34,6 +34,8 @@ export interface CollapsibleHeaderOptions {
    */
   dependencies?: React.DependencyList;
   backButtonColor?: IconButtonProps['color'];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  backButtonStyle?: any;
 }
 
 const CollapsibleBase = React.memo<
@@ -48,6 +50,7 @@ const CollapsibleBase = React.memo<
     headerRight,
     headerTitle = routeName,
     backButtonColor = 'textPrimary',
+    backButtonStyle,
   }) => {
     const navigation = useRootNavigation();
     return (
@@ -63,24 +66,27 @@ const CollapsibleBase = React.memo<
         background-color="transparent"
       >
         <Stack space="s" flex-direction="row">
-          <Box flex-shrink justify-content="center">
+          <Box flex-grow justify-content="center">
             <Box ml="m" flex-direction="row">
               <IconButton
                 color={backButtonColor}
-                icon={<Icon type="font" name="arrow-left" />}
+                animated={!!backButtonStyle}
+                icon={
+                  <Icon type="font" name="arrow-left" style={backButtonStyle} />
+                }
                 onPress={() => {
                   if (navigation.canGoBack()) navigation.goBack();
                 }}
               />
             </Box>
           </Box>
-          <Box justify-content="center">
+          <Box justify-content="center" flex-grow>
             <Text variant="header" bold numberOfLines={1}>
               {headerTitle}
             </Text>
           </Box>
-          <Box flex-shrink justify-content="center">
-            <Box mr="m" justify-content="flex-end" flex-direction="row-reverse">
+          <Box flex-grow justify-content="center">
+            <Box mr="m" justify-content="flex-end" flex-direction="row">
               {headerRight}
             </Box>
           </Box>
@@ -98,6 +104,7 @@ export default function useCollapsibleHeader(
     headerTitle,
     dependencies = [],
     backButtonColor,
+    backButtonStyle,
   } = options;
   const theme = useTheme();
   const navigation = useRootNavigation();
@@ -168,6 +175,7 @@ export default function useCollapsibleHeader(
           headerRight={headerRight}
           headerTitle={headerTitle}
           backButtonColor={backButtonColor}
+          backButtonStyle={backButtonStyle}
         />
       ),
     });
