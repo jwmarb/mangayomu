@@ -9,7 +9,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import { ScaledSheet } from 'react-native-size-matters';
+import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import { CoverProps } from './Cover.interfaces';
 
 export const coverStyles = ScaledSheet.create({
@@ -34,12 +34,23 @@ export const coverStyles = ScaledSheet.create({
     opacity: 0,
   },
 });
-const combinedStyles = [coverStyles.image, coverStyles.imageOverlay];
 
 const Cover: React.FC<CoverProps> = (props) => {
-  const { cover } = props;
+  const { cover, scale = 1 } = props;
   const opacity = useSharedValue(0);
   const theme = useTheme();
+  const imageStyle = React.useMemo(
+    () => ({
+      width: moderateScale(110 * scale),
+      height: moderateScale(160 * scale),
+      borderRadius: moderateScale(8 * scale),
+    }),
+    [scale],
+  );
+  const combinedStyles = React.useMemo(
+    () => [imageStyle, coverStyles.imageOverlay],
+    [imageStyle, coverStyles.imageOverlay],
+  );
 
   function handleOnError() {
     opacity.value = 1;
@@ -50,7 +61,7 @@ const Cover: React.FC<CoverProps> = (props) => {
   }));
   const loadingStyle = React.useMemo(
     () => [combinedStyles, { backgroundColor: theme.palette.skeleton }],
-    [coverStyles.image, theme.palette.skeleton, coverStyles.imageOverlay],
+    [imageStyle, theme.palette.skeleton, coverStyles.imageOverlay],
   );
 
   return (
@@ -66,7 +77,7 @@ const Cover: React.FC<CoverProps> = (props) => {
       </Animated.View>
       <FastImage
         source={{ uri: typeof cover === 'string' ? cover : cover?.imageCover }}
-        style={coverStyles.image}
+        style={imageStyle}
         onError={handleOnError}
       />
     </>
