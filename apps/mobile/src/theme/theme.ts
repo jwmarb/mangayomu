@@ -69,6 +69,13 @@ declare module '@emotion/react' {
   export interface Theme extends DefaultTheme {
     palette: DefaultTheme['palette'] & {
       skeleton: string;
+      mangaViewerBackButtonColor: string;
+      status: {
+        ongoing: string;
+        discontinued: string;
+        hiatus: string;
+        completed: string;
+      };
     };
     typography: typeof typography;
     style: {
