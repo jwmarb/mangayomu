@@ -44,6 +44,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
     scrollViewStyle,
     status,
     error,
+    numberOfSelectedLanguageChapters,
     onBookmark,
     queriedChaptersForManga,
   } = props;
@@ -135,7 +136,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
         >
           {meta ? (
             <Text variant="header" bold>
-              {meta.chapters.length} Chapters
+              {numberOfSelectedLanguageChapters} Chapters
             </Text>
           ) : (
             <Stack

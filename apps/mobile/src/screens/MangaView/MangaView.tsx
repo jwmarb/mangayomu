@@ -90,6 +90,7 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
       data={selectedLanguageChapters as ChapterSchema[]}
       ListHeaderComponent={
         <MangaViewerHeader
+          numberOfSelectedLanguageChapters={selectedLanguageChapters.length}
           queriedChaptersForManga={multilingualChapters}
           onBookmark={handleOnBookmark}
           status={status}
