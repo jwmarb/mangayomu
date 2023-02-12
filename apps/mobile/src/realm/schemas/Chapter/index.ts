@@ -37,5 +37,6 @@ export class ChapterSchema extends Realm.Object<IChapterSchema> {
       indexPage: { type: 'int', default: 0 },
       dateRead: 'string?',
     },
+    primaryKey: 'link',
   };
 }
