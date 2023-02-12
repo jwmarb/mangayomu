@@ -16,6 +16,7 @@ const Button: React.FC<ButtonProps> = (props) => {
     color = 'primary',
     disabled = false,
     icon,
+    iconPlacement = 'left',
     ...rest
   } = props;
   const theme = useTheme();
@@ -47,13 +48,18 @@ const Button: React.FC<ButtonProps> = (props) => {
               'border-color': 'transparent',
             })}
       >
-        {icon &&
+        {iconPlacement === 'left' &&
+          icon &&
           React.cloneElement(icon, {
             color: disabled
               ? 'disabled'
               : variant === 'contained'
-              ? 'primary@contrast'
-              : 'primary',
+              ? {
+                  custom: theme.helpers.getContrastText(
+                    theme.palette[color].main,
+                  ),
+                }
+              : color,
           })}
         <Text
           variant="button"
@@ -63,12 +69,29 @@ const Button: React.FC<ButtonProps> = (props) => {
             disabled
               ? 'disabled'
               : variant === 'contained'
-              ? 'primary@contrast'
-              : 'primary'
+              ? {
+                  custom: theme.helpers.getContrastText(
+                    theme.palette[color].main,
+                  ),
+                }
+              : color
           }
         >
           {label}
         </Text>
+        {iconPlacement === 'right' &&
+          icon &&
+          React.cloneElement(icon, {
+            color: disabled
+              ? 'disabled'
+              : variant === 'contained'
+              ? {
+                  custom: theme.helpers.getContrastText(
+                    theme.palette[color].main,
+                  ),
+                }
+              : color,
+          })}
       </Stack>
     </BaseButton>
   );
