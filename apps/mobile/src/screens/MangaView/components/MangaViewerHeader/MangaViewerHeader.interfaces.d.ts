@@ -17,6 +17,7 @@ export interface MangaViewerHeaderProps extends React.PropsWithChildren {
     ChapterSchema & Realm.Object<unknown, never>
   >;
   numberOfSelectedLanguageChapters: number;
+  onOpenMenu: () => void;
 }
 
 export interface MangaMetaProperty<TProperty extends keyof IMangaSchema> {

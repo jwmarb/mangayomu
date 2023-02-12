@@ -47,6 +47,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
     numberOfSelectedLanguageChapters,
     onBookmark,
     queriedChaptersForManga,
+    onOpenMenu,
   } = props;
   const theme = useTheme();
 
@@ -156,7 +157,10 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
               </Text>
             </Stack>
           )}
-          <IconButton icon={<Icon type="font" name="filter-menu" />} />
+          <IconButton
+            icon={<Icon type="font" name="filter-menu" />}
+            onPress={onOpenMenu}
+          />
         </Stack>
       </Stack>
       <Box border-color="disabled" border-width={{ b: 1.5 }} />
