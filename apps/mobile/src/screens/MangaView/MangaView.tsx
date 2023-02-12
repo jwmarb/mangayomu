@@ -1,43 +1,93 @@
-import Book, { bookDimensions } from '@components/Book';
 import Box from '@components/Box';
-import Cover from '@components/Cover';
-import Text from '@components/Text';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import { RootStackProps } from '@navigators/Root/Root.interfaces';
-import { useMangaRealm } from '@realm/schemas/Manga';
+import { useManga } from '@database/schemas/Manga';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
-import FastImage from 'react-native-fast-image';
-import { ScaledSheet } from 'react-native-size-matters';
-
-const data = [1, 2, 3];
+import MangaViewerHeader from './components/MangaViewerHeader';
+import { useTheme } from '@emotion/react';
+import IconButton from '@components/IconButton';
+import Icon from '@components/Icon';
+import { useRealm } from '@database/main';
+import displayMessage from '@helpers/displayMessage';
+import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import {
+  interpolateColor,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+} from 'react-native-reanimated';
+import { NAVHEADER_HEIGHT } from '@components/NavHeader';
 
 const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
   const {
-    route: {
-      params: { dbKey },
-    },
+    route: { params },
     navigation,
   } = props;
-  const realm = useMangaRealm();
-
-  realm.
-
+  const theme = useTheme();
+  const { manga, status, error, refresh, update } = useManga(params, {
+    preferLocal: false,
+  });
+  const handleOnBookmark = React.useCallback(() => {
+    update((mangaObj) => {
+      mangaObj.inLibrary = !mangaObj.inLibrary;
+      displayMessage(
+        mangaObj.inLibrary ? 'Added to library' : 'Removed from library',
+      );
+    });
+  }, [update]);
+  const scrollPosition = useSharedValue(0);
+  const buttonStyle = useAnimatedStyle(() => ({
+    color: interpolateColor(
+      scrollPosition.value,
+      [0, NAVHEADER_HEIGHT],
+      [theme.palette.mangaViewerBackButtonColor, theme.palette.text.secondary],
+    ),
+  }));
   const { onScroll, contentContainerStyle, scrollViewStyle } =
-    useCollapsibleHeader({ headerTitle: '' });
+    useCollapsibleHeader({
+      headerTitle: '',
+      backButtonColor: { custom: theme.palette.mangaViewerBackButtonColor },
+      backButtonStyle: buttonStyle,
+      headerRight: (
+        <IconButton
+          color={{ custom: theme.palette.mangaViewerBackButtonColor }}
+          animated
+          onPress={handleOnBookmark}
+          icon={
+            <Icon
+              type="font"
+              name={manga?.inLibrary ? 'bookmark' : 'bookmark-outline'}
+              style={buttonStyle}
+            />
+          }
+        />
+      ),
+      dependencies: [theme, manga?.inLibrary],
+    });
 
+  function handleOnScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
+    onScroll(e);
+    scrollPosition.value = e.nativeEvent.contentOffset.y;
+  }
   return (
     <FlashList
-      data={data}
+      data={manga?.chapters}
       ListHeaderComponent={
-        <Box style={scrollViewStyle}>
-          <Text>Hello World</Text>
-        </Box>
+        <MangaViewerHeader
+          onBookmark={handleOnBookmark}
+          status={status}
+          manga={params}
+          meta={manga}
+          error={error}
+          refresh={refresh}
+          scrollViewStyle={scrollViewStyle}
+        />
       }
       ListFooterComponent={<Box style={contentContainerStyle} />}
       renderItem={null}
       estimatedItemSize={5}
-      {...{ onScroll }}
+      {...{ onScroll: handleOnScroll }}
     />
   );
 };
