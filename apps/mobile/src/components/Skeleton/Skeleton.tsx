@@ -1,5 +1,4 @@
 import Box from '@components/Box';
-import styled, { css } from '@emotion/native';
 import { useTheme } from '@emotion/react';
 import React from 'react';
 import { StyleSheet } from 'react-native';
