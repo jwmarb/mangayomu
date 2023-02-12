@@ -37,6 +37,7 @@
     "@realm/react": "^0.4.3",
     "@reduxjs/toolkit": "^1.9.1",
     "@shopify/flash-list": "^1.4.1",
+    "date-fns": "^2.29.3",
     "prop-types": "^15.8.1",
     "react": "18.2.0",
     "react-freeze": "^1.0.3",
