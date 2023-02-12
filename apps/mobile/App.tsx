@@ -26,7 +26,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { PortalProvider } from '@gorhom/portal';
 import { MenuProvider } from 'react-native-popup-menu';
 import { enableFreeze } from 'react-native-screens';
-import { MangaRealmProvider } from '@realm/schemas/Manga';
+import { RealmProvider } from '@database/main';
 enableFreeze(true);
 enum Auth0 {
   DOMAIN = 'dev-wq6wbghv.us.auth0.com',
@@ -40,6 +40,7 @@ function App(): JSX.Element {
       createTheme<Theme>(({ color, colorConstant, definePalette }) => ({
         mode,
         palette: {
+          mangaViewerBackButtonColor: colorConstant('#fafafa'),
           skeleton: color('rgba(255, 255, 255, 0.12)', 'rgba(0, 0, 0, 0.12)'),
           primary: {
             light: colorConstant('#69c0ff'),
@@ -71,6 +72,12 @@ function App(): JSX.Element {
             default: color('#000000', '#fafafa'),
             paper: color('#111111', '#ffffff'),
             disabled: color('#232323', '#EFEFEF'),
+          },
+          status: {
+            ongoing: color('#73d13d', '#b7eb8f'),
+            hiatus: color('#ffc53d', '#ffe58f'),
+            discontinued: color('#f5222d', '#ff7875'),
+            completed: color('#434343', '#8c8c8c'),
           },
         },
         style: {
@@ -106,7 +113,7 @@ function App(): JSX.Element {
       <StatusBar translucent backgroundColor="transparent" />
       <GestureHandlerRootView style={{ flex: 1 }}>
         <Auth0Provider domain={Auth0.DOMAIN} clientId={Auth0.CLIENT_ID}>
-          <MangaRealmProvider>
+          <RealmProvider>
             <ThemeProvider theme={theme}>
               <Provider store={store}>
                 <PersistGate loading={null} persistor={persistor}>
@@ -120,7 +127,7 @@ function App(): JSX.Element {
                 </PersistGate>
               </Provider>
             </ThemeProvider>
-          </MangaRealmProvider>
+          </RealmProvider>
         </Auth0Provider>
       </GestureHandlerRootView>
     </>
