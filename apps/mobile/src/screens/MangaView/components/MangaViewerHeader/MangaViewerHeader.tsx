@@ -38,27 +38,31 @@ const styles = StyleSheet.create({
 });
 
 const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
-  const { meta, manga, scrollViewStyle, status, error, onBookmark } = props;
+  const {
+    meta,
+    manga,
+    scrollViewStyle,
+    status,
+    error,
+    onBookmark,
+    queriedChaptersForManga,
+  } = props;
   const theme = useTheme();
 
-  const realm = useRealm();
   const supportedLang = React.useMemo(
     () =>
-      realm
-        .objects<ChapterSchema>('Chapter')
-        .filtered(`manga == "${manga.link}"`)
-        .reduce(
-          (prev, curr) => {
-            if (curr.language != null) {
-              if (!prev.a.has(curr.language))
-                prev.b.push(languages[curr.language].name);
-              prev.a.add(curr.language);
-            }
-            return prev;
-          },
-          { a: new Set(), b: [] as string[] },
-        ).b,
-    [realm, meta?.chapters],
+      queriedChaptersForManga.reduce(
+        (prev, curr) => {
+          if (curr.language != null) {
+            if (!prev.a.has(curr.language))
+              prev.b.push(languages[curr.language].name);
+            prev.a.add(curr.language);
+          }
+          return prev;
+        },
+        { a: new Set(), b: [] as string[] },
+      ).b,
+    [queriedChaptersForManga, meta?.chapters],
   );
 
   const isLoading = status === 'loading';
@@ -151,12 +155,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
               </Text>
             </Stack>
           )}
-          <Stack space="s" flex-direction="row">
-            {supportedLang.length > 1 && (
-              <IconButton icon={<Icon type="font" name="translate" />} />
-            )}
-            <IconButton icon={<Icon type="font" name="dots-vertical" />} />
-          </Stack>
+          <IconButton icon={<Icon type="font" name="filter-menu" />} />
         </Stack>
       </Stack>
       <Box border-color="disabled" border-width={{ b: 1.5 }} />
