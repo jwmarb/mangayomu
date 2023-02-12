@@ -34,21 +34,22 @@ export const MangaStatusSchema: Realm.ObjectSchema = {
 };
 
 export const SORT_CHAPTERS_BY = {
-  'Chapter number':
-    (reversed: boolean) => (a: MangaChapter, b: MangaChapter) => {
-      if (a.name && b.name) {
-        const aName = a.name.match(/(0|[1-9]\d*)(\.\d+)?/g);
-        const bName = b.name.match(/(0|[1-9]\d*)(\.\d+)?/g);
-        if (aName != null && bName != null)
-          return (
-            (reversed ? -1 : 1) * (parseFloat(bName[0]) - parseFloat(aName[0]))
-          );
-      }
-      if (a.index != null && b.index != null)
-        return (reversed ? -1 : 1) * (b.index - a.index);
-      throw Error('Chapter cannot be sorted due to undefined name and index');
-    },
+  'Chapter number': (a: MangaChapter) => {
+    if (a.name) {
+      const aName = a.name.match(/(0|[1-9]\d*)(\.\d+)?/g);
+      if (aName != null) return parseFloat(aName[0]);
+    }
+    if (a.index != null) return a.index;
+    throw Error('Chapter cannot be sorted due to undefined name and index');
+  },
+  Timestamp: (a: MangaChapter) => Date.parse(a.date),
 };
+
+export const KEYS_OF_SORT_CHAPTERS_BY = Object.keys(
+  SORT_CHAPTERS_BY,
+) as readonly SortChaptersMethod[];
+
+export type SortChaptersMethod = keyof typeof SORT_CHAPTERS_BY;
 
 export interface IMangaSchema
   extends Omit<Manga, 'index'>,
@@ -62,7 +63,8 @@ export interface IMangaSchema
   dateAddedInLibrary?: string;
   notifyNewChaptersCount?: number;
   chapters: string[];
-  sortChaptersBy: keyof typeof SORT_CHAPTERS_BY;
+  sortChaptersBy: SortChaptersMethod;
+  reversedSort: boolean;
   inLibrary: boolean;
 }
 
@@ -83,6 +85,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   isHentai!: boolean;
   rating!: WithRating['rating'];
   status!: WithStatus['status'];
+  reversedSort!: boolean;
 
   static schema: Realm.ObjectSchema = {
     name: 'Manga',
@@ -103,6 +106,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
       rating: 'MangaRating?',
       inLibrary: { type: 'bool', default: false },
       status: 'MangaStatus?',
+      reversedSort: { type: 'bool', default: true },
     },
     primaryKey: 'link',
   };
@@ -204,11 +208,14 @@ export const useManga = (
     (
       fn: (
         mangaRealmObject: MangaSchema & Realm.Object<MangaSchema, never>,
+        getChapter: (key: string) => ChapterSchema | null,
       ) => void,
     ) => {
       if (mangaObject != null)
         mangaRealm.write(() => {
-          fn(mangaObject);
+          fn(mangaObject, (k: string) =>
+            mangaRealm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
+          );
         });
     },
     [mangaObject, mangaRealm],
