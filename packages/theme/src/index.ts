@@ -129,6 +129,8 @@ export type ThemeSchema<T extends DefaultTheme> = {
             >
           : T[K][V] extends string
           ? ColorSchema
+          : T[K][V] extends Record<PropertyKey, unknown>
+          ? UserDefinedPalette<T[K][V]>
           : T[K][V];
       }
     : K extends 'helpers'

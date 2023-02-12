@@ -7,6 +7,9 @@ interface TestTheme extends DefaultTheme {
 interface CustomPaletteTheme extends DefaultTheme {
   palette: DefaultTheme['palette'] & {
     customPaletteColor: string;
+    nested: {
+      one: string;
+    };
   };
 }
 
@@ -196,6 +199,9 @@ test('Custom palette color', () => {
       mode: 'light',
       palette: {
         customPaletteColor: color('#ffffff', '#000000'),
+        nested: {
+          one: color('#ffffff', '#000000'),
+        },
         error: {
           main: color('#f44336', '#d32f2f'),
           light: color('#e57373', '#ef5350'),
@@ -243,4 +249,6 @@ test('Custom palette color', () => {
 
   expect(typeof theme3.palette.customPaletteColor).toBe('string');
   expect(theme3.palette.customPaletteColor).toBe('#000000');
+  expect(typeof theme3.palette.nested.one).toBe('string');
+  expect(theme3.palette.nested.one).toBe('#000000');
 });
