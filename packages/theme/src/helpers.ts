@@ -158,7 +158,7 @@ export function getContrastText(
     if (color.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i) != null)
       rgba = hexToRgb(color);
     else if (color.match(/rgb(a?)\(\d+/g) != null) rgba = parseRGBA(color);
-    else throw Error('Invalid color');
+    else throw Error('Invalid color: ' + color);
     const yiq = (rgba.red * 299 + rgba.green * 587 + rgba.blue * 114) / 1000;
     return yiq > 125
       ? preparsedPalette.text[
