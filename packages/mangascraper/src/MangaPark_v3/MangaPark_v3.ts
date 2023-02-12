@@ -256,6 +256,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
             href.lastIndexOf('-') + 3,
           );
           return {
+            index: i,
             name: `${title} (${languages[isoCode as ISOLangCode].name})`,
             language: isoCode,
             date: dateUpdated,
