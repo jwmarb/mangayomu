@@ -13,6 +13,7 @@ import { InteractionManager } from 'react-native';
 import { getErrorMessage } from '@helpers/getErrorMessage';
 import { useObject, useRealm } from '../../main';
 import { ChapterSchema } from '@database/schemas/Chapter';
+import useMountEffect from '@hooks/useMountEffect';
 
 export const MangaRatingSchema: Realm.ObjectSchema = {
   name: 'MangaRating',
@@ -183,7 +184,7 @@ export const useManga = (
     mangaRealm,
     mangaObject,
   ]);
-  React.useEffect(() => {
+  useMountEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       fetchData();
     });
