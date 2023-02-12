@@ -12,6 +12,7 @@ import useMangaSource from '@hooks/useMangaSource';
 import { InteractionManager } from 'react-native';
 import { getErrorMessage } from '@helpers/getErrorMessage';
 import { useObject, useRealm } from '../../main';
+import { ChapterSchema } from '@database/schemas/Chapter';
 
 export const MangaRatingSchema: Realm.ObjectSchema = {
   name: 'MangaRating',
@@ -19,6 +20,15 @@ export const MangaRatingSchema: Realm.ObjectSchema = {
   properties: {
     value: 'mixed',
     voteCount: 'int',
+  },
+};
+
+export const MangaStatusSchema: Realm.ObjectSchema = {
+  name: 'MangaStatus',
+  embedded: true,
+  properties: {
+    scan: 'string?',
+    publish: 'string?',
   },
 };
 
@@ -45,7 +55,7 @@ export interface IMangaSchema
     Partial<WithStatus>,
     Partial<WithHentai>,
     Partial<WithRating> {
-  description: string;
+  description: string | null;
   genres: string[];
   currentlyReadingChapter?: string;
   dateAddedInLibrary?: string;
@@ -60,7 +70,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   title!: string;
   imageCover!: string;
   source!: string;
-  description!: string;
+  description!: string | null;
   genres!: string[];
   currentlyReadingChapter!: string;
   dateAddedInLibrary!: string;
@@ -71,6 +81,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   authors!: string[];
   isHentai!: boolean;
   rating!: WithRating['rating'];
+  status!: WithStatus['status'];
 
   static schema: Realm.ObjectSchema = {
     name: 'Manga',
@@ -79,7 +90,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
       title: 'string',
       imageCover: 'string',
       source: 'string',
-      description: 'string',
+      description: 'mixed',
       genres: 'string[]',
       currentlyReadingChapter: 'string?',
       dateAddedInLibrary: 'string?',
@@ -90,6 +101,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
       isHentai: { type: 'bool', default: false },
       rating: 'MangaRating?',
       inLibrary: { type: 'bool', default: false },
+      status: 'MangaStatus?',
     },
     primaryKey: 'link',
   };
@@ -145,8 +157,17 @@ export const useManga = (
               },
               Realm.UpdateMode.Modified,
             );
+
+            for (const x of meta.chapters) {
+              const copy = x;
+              (copy as ChapterSchema).manga = manga.link;
+              mangaRealm.create<ChapterSchema>(
+                'Chapter',
+                copy,
+                Realm.UpdateMode.Modified,
+              );
+            }
           });
-          setStatus('success');
         })
         .catch((e) => {
           setStatus('error');
@@ -168,17 +189,29 @@ export const useManga = (
     });
   }, []);
   React.useEffect(() => {
-    if (mangaObject != null) {
-      setManga(mangaObject);
-      mangaObject.addListener((_manga, changes) => {
-        if (changes.deleted) setManga(undefined);
-        else setManga(_manga);
-      });
-      return () => {
-        mangaObject.removeAllListeners();
-      };
-    }
-  }, [link, mangaObject]);
+    mangaObject?.addListener((_manga, changes) => {
+      if (status === 'loading') setStatus('success');
+      if (changes.deleted) setManga(undefined);
+      else setManga(_manga);
+    });
+    return () => {
+      mangaObject?.removeAllListeners();
+    };
+  }, [mangaObject == null]);
 
-  return { manga, refresh: fetchData, status, error };
+  const update = React.useCallback(
+    (
+      fn: (
+        mangaRealmObject: MangaSchema & Realm.Object<MangaSchema, never>,
+      ) => void,
+    ) => {
+      if (mangaObject != null)
+        mangaRealm.write(() => {
+          fn(mangaObject);
+        });
+    },
+    [mangaObject, mangaRealm],
+  );
+
+  return { manga, refresh: fetchData, status, error, update };
 };
