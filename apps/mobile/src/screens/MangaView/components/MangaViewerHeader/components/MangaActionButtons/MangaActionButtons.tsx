@@ -19,7 +19,7 @@ const MangaActionButtons: React.FC<MangaActionButtonsProps> = (props) => {
     >
       <Box maxWidth={moderateScale(480)} flex-grow>
         <Button
-          icon={<Icon type="font" name="book-outline" />}
+          icon={<Icon type="font" name="book" />}
           label="Read"
           variant="contained"
         />
