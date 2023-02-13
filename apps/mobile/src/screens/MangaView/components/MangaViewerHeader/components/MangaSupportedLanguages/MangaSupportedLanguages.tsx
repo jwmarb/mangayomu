@@ -11,13 +11,13 @@ import { MangaSupportedLanguagesProps } from './MangaSupportedLanguages.interfac
 const MangaSupportedLanguages: React.FC<MangaSupportedLanguagesProps> = (
   props,
 ) => {
-  const { loading, supportedLang } = props;
+  const { data } = props;
 
   return (
     <Stack space="s" flex-direction="row" justify-content="space-between">
       <Text color="textSecondary">Supported languages</Text>
       <Box maxWidth="50%" align-self="flex-end">
-        {loading ? (
+        {data == null ? (
           <Skeleton>
             <Text numberOfLines={1}>
               Lorem ipsum dolor sit amet consectetur adipisicing elit. A ipsa,
@@ -28,7 +28,7 @@ const MangaSupportedLanguages: React.FC<MangaSupportedLanguagesProps> = (
           </Skeleton>
         ) : (
           <Text bold>
-            {supportedLang
+            {data
               .map((x: unknown) => languages[x as ISOLangCode].name)
               .join(', ')}
           </Text>

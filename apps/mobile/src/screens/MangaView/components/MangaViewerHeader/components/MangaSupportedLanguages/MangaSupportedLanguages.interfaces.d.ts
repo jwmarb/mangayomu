@@ -1,6 +1,5 @@
+import { MangaMetaProperty } from '@screens/MangaView/components/MangaViewerHeader/MangaViewerHeader.interfaces';
 import React from 'react';
 
-export interface MangaSupportedLanguagesProps {
-  loading?: boolean;
-  supportedLang: string[];
-}
+export type MangaSupportedLanguagesProps =
+  MangaMetaProperty<'availableLanguages'>;
