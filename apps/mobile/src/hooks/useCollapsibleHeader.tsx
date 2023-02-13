@@ -75,7 +75,7 @@ const CollapsibleBase = React.memo<
         background-color="transparent"
       >
         <Stack space="s" flex-direction="row">
-          <Box flex-grow justify-content="center">
+          <Box justify-content="center">
             <Box ml="m" flex-direction="row">
               <IconButton
                 color={backButtonColor}
