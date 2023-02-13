@@ -42,6 +42,10 @@ function App(): JSX.Element {
         palette: {
           mangaViewerBackButtonColor: colorConstant('#fafafa'),
           skeleton: color('rgba(255, 255, 255, 0.12)', 'rgba(0, 0, 0, 0.12)'),
+          borderColor: color('#444444', '#CCCCCC'),
+          action: {
+            ripple: color('#606060', '#C4C4C4'),
+          },
           primary: {
             light: colorConstant('#69c0ff'),
             main: colorConstant('#1890ff'),
