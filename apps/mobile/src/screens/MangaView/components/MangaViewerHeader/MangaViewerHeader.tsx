@@ -109,7 +109,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
         <MangaStatus data={meta?.status} loading={isLoading} />
         <MangaSource mangaSource={manga.source} />
         <MangaSupportedLanguages
-          loading={isLoading || meta == null}
+          loading={isLoading && meta == null}
           supportedLang={supportedLang}
         />
 
