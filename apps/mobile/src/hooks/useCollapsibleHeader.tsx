@@ -25,6 +25,7 @@ import Animated, {
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
+import { moderateScale } from 'react-native-size-matters';
 
 export interface CollapsibleHeaderOptions {
   headerRight?: React.ReactNode;
@@ -37,13 +38,14 @@ export interface CollapsibleHeaderOptions {
   backButtonRippleColor?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   backButtonStyle?: any;
+  loading?: boolean;
 }
 
 const CollapsibleBase = React.memo<
-  { style: StyleProp<ViewStyle>; routeName: string } & Omit<
-    CollapsibleHeaderOptions,
-    'dependencies'
-  >
+  {
+    style: StyleProp<ViewStyle>;
+    routeName: string;
+  } & Omit<CollapsibleHeaderOptions, 'dependencies'>
 >(
   ({
     style,
@@ -53,6 +55,7 @@ const CollapsibleBase = React.memo<
     backButtonColor = 'textPrimary',
     backButtonStyle,
     backButtonRippleColor,
+    loading,
   }) => {
     const navigation = useRootNavigation();
     return (
@@ -109,6 +112,7 @@ export default function useCollapsibleHeader(
     backButtonColor,
     backButtonStyle,
     backButtonRippleColor,
+    loading,
   } = options;
   const theme = useTheme();
   const navigation = useRootNavigation();
@@ -150,6 +154,7 @@ export default function useCollapsibleHeader(
     transform: [{ translateY: translateY.value }],
     opacity: opacity.value,
     backgroundColor: backgroundColor.value,
+    height: NAVHEADER_HEIGHT,
   }));
 
   const animatedHeaderStyle = React.useMemo(
@@ -173,15 +178,18 @@ export default function useCollapsibleHeader(
   React.useLayoutEffect(() => {
     navigation.setOptions({
       header: ({ route }) => (
-        <CollapsibleBase
-          style={animatedHeaderStyle}
-          routeName={route.name}
-          headerRight={headerRight}
-          headerTitle={headerTitle}
-          backButtonColor={backButtonColor}
-          backButtonStyle={backButtonStyle}
-          backButtonRippleColor={backButtonRippleColor}
-        />
+        <>
+          <CollapsibleBase
+            style={animatedHeaderStyle}
+            routeName={route.name}
+            headerRight={headerRight}
+            headerTitle={headerTitle}
+            backButtonColor={backButtonColor}
+            backButtonStyle={backButtonStyle}
+            backButtonRippleColor={backButtonRippleColor}
+            loading={loading}
+          />
+        </>
       ),
     });
   }, dependencies);
