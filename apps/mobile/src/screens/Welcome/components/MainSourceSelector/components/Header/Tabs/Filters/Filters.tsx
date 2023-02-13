@@ -5,9 +5,11 @@ import { useTheme } from '@emotion/react';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { AppState } from '@redux/main';
 import {
+  FilterState,
   MainSourceFilterKeys,
   switchStateOfFilter,
 } from '@redux/slices/mainSourceSelector';
+import FilterItem from '@components/Filters/FilterItem';
 import React from 'react';
 import { ListRenderItem } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
@@ -45,27 +47,11 @@ const mapStateToProps = (state: AppState, props: Element<typeof filters>) => ({
   itemKey: props.itemKey,
 });
 
-const _Item: React.FC<ConnectedItemProps> = (props) => {
-  const theme = useTheme();
-  return (
-    <RectButton
-      onPress={props.toggle}
-      rippleColor={theme.palette.action.ripple}
-    >
-      <Stack space="s" m="s" flex-direction="row" align-items="center">
-        <MultiCheckbox state={props.state} onChange={props.toggle} />
-        <Text color="textSecondary">{props.title}</Text>
-      </Stack>
-    </RectButton>
-  );
-};
+const itemConnector = connect(mapStateToProps, {
+  onToggle: switchStateOfFilter,
+});
 
-const itemConnector = connect(mapStateToProps, (dispatch, props) => ({
-  toggle: () => dispatch(switchStateOfFilter(props.itemKey)),
-}));
-
-type ConnectedItemProps = ConnectedProps<typeof itemConnector>;
-
-const Item = itemConnector(React.memo(_Item));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Item = itemConnector(FilterItem as any);
 
 export default Filters;

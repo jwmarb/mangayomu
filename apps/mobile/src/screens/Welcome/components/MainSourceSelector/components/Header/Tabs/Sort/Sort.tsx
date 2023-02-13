@@ -4,7 +4,7 @@ import { SORT_HOSTS_BY } from '@redux/slices/host';
 import { setSort, toggleReverse } from '@redux/slices/mainSourceSelector';
 import React from 'react';
 import { ListRenderItem } from 'react-native';
-import SortItem from './Sort.item';
+import SortItem from '@components/Filters/SortItem';
 
 import { connect, ConnectedProps } from 'react-redux';
 

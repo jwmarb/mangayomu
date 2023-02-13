@@ -7,7 +7,7 @@ import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { SortProps } from './Sort.interfaces';
 import React from 'react';
 import { ListRenderItem } from 'react-native';
-import SortItem from '@screens/Welcome/components/MainSourceSelector/components/Header/Tabs/Sort/Sort.item';
+import SortItem from '@components/Filters/SortItem';
 
 const Sort: React.FC<SortProps> = (props) => {
   const { update } = useManga(props.mangaLink);
