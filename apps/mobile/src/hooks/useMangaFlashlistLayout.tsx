@@ -17,7 +17,10 @@ const Item: React.FC<{ item: Omit<Manga, 'index'> }> = React.memo(
 export default function useMangaFlashlistLayout<
   T extends Omit<Manga, 'index'> = Manga,
 >(bookDimensions: { width: number; height: number }) {
-  const keyExtractor = React.useCallback((i: T) => i.link, []);
+  const keyExtractor = React.useCallback(
+    (i: T, index: number) => i.link + index,
+    [],
+  );
 
   const renderItem: ListRenderItem<T> = React.useCallback(
     ({ item }) => <Item item={item} />,
