@@ -9,5 +9,5 @@ import {
 export const { RealmProvider, useRealm, useQuery, useObject } =
   createRealmContext({
     schema: [MangaSchema, ChapterSchema, MangaRatingSchema, MangaStatusSchema],
-    schemaVersion: 11,
+    schemaVersion: 15,
   });
