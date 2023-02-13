@@ -27,7 +27,7 @@ import Divider from '@components/Divider';
 import { CustomBottomSheet } from '@components/CustomBottomSheet';
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
 import MangaViewModal from '@screens/MangaView/components/MangaViewModal';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList, RefreshControl } from 'react-native-gesture-handler';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import { inPlaceSort } from 'fast-sort';
 import integrateSortedList from '@helpers/integrateSortedList';
@@ -44,6 +44,7 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
   const { manga, status, error, refresh, update } = useManga(params, {
     preferLocal: false,
   });
+  const [refreshing, setRefreshing] = React.useState<boolean>(false);
   const handleOnBookmark = React.useCallback(() => {
     update((mangaObj) => {
       mangaObj.inLibrary = !mangaObj.inLibrary;
@@ -66,6 +67,7 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
       backButtonColor: { custom: theme.palette.mangaViewerBackButtonColor },
       backButtonStyle: buttonStyle,
       backButtonRippleColor: theme.palette.action.ripple,
+      loading: status === 'loading',
       headerRight: (
         <IconButton
           color={{ custom: theme.palette.mangaViewerBackButtonColor }}
@@ -155,11 +157,29 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
     [manga?.chapters, manga?.selectedLanguage],
   );
 
+  function handleOnRefresh() {
+    setRefreshing(true);
+  }
+
+  React.useEffect(() => {
+    if (refreshing) {
+      try {
+        refresh();
+      } finally {
+        setRefreshing(false);
+      }
+    }
+  }, [refreshing]);
+
   return (
     <>
       <FlashList
         // data={manga?.chapters ?? []}
         data={data}
+        refreshing={refreshing}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleOnRefresh} />
+        }
         ListHeaderComponent={
           <MangaViewerHeader
             onOpenMenu={handleOnOpenMenu}
