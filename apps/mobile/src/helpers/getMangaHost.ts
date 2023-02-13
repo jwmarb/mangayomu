@@ -1,6 +1,8 @@
 import integrateSortedList from '@helpers/integrateSortedList';
 import { MangaHost, Manga } from '@mangayomu/mangascraper';
 import { AppState } from '@redux/main';
+import { inPlaceSort } from 'fast-sort';
+import React from 'react';
 import { getErrorMessage } from './getErrorMessage';
 
 function indexComparator(a: { index: number }, b: { index: number }) {
@@ -35,6 +37,20 @@ export default function getMangaHost(state: AppState) {
     },
     hasNoSources() {
       return hosts.length === 0;
+    },
+    /**
+     * Get all genres from all sources combined, merging their genres into one array. This method is only available in a component.
+     * @returns Returns [Set<genres>, Array<genres>]
+     */
+    getUniqGenres() {
+      const set = React.useMemo(
+        () => new Set(hosts.flatMap((x) => x.getGenres())),
+        state.host.name,
+      );
+      return [
+        set,
+        React.useMemo(() => inPlaceSort([...set]).desc(), [set]),
+      ] as const;
     },
     getGenres() {
       const genres = hosts
