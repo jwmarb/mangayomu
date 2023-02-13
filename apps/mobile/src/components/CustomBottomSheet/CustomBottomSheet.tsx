@@ -102,9 +102,9 @@ const CustomBottomSheet: React.ForwardRefRenderFunction<
     });
     return () => {
       p.remove();
+      bottomSheet.current?.close();
     };
   }, []);
-
   return (
     <Portal>
       <BottomSheet
