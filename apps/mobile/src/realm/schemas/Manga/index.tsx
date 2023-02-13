@@ -15,6 +15,7 @@ import { useObject, useRealm } from '../../main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useMountEffect from '@hooks/useMountEffect';
 import { ISOLangCode } from '@mangayomu/language-codes';
+import displayMessage from '@helpers/displayMessage';
 
 export const MangaRatingSchema: Realm.ObjectSchema = {
   name: 'MangaRating',
@@ -145,6 +146,7 @@ export const useManga = (
   );
   const source = typeof link !== 'string' ? useMangaSource(link) : null;
   const mangaRealm = useRealm();
+
   const fetchData = React.useCallback(() => {
     if (!options.preferLocal) {
       if (typeof link === 'string')
@@ -200,6 +202,7 @@ export const useManga = (
     mangaRealm,
     mangaObject,
   ]);
+
   useMountEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       fetchData();
@@ -214,7 +217,7 @@ export const useManga = (
     return () => {
       mangaObject?.removeAllListeners();
     };
-  }, [mangaObject == null]);
+  }, [mangaObject == null, status]);
 
   const update = React.useCallback(
     (
