@@ -54,7 +54,7 @@ export const KEYS_OF_SORT_CHAPTERS_BY = Object.keys(
 export type SortChaptersMethod = keyof typeof SORT_CHAPTERS_BY;
 
 export interface IMangaSchema
-  extends Omit<Manga, 'index'>,
+  extends Manga,
     Partial<WithAuthors>,
     Partial<WithStatus>,
     Partial<WithHentai>,
@@ -75,6 +75,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   link!: string;
   title!: string;
   imageCover!: string;
+  index!: number;
   source!: string;
   description!: string | null;
   genres!: string[];
@@ -95,6 +96,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
     name: 'Manga',
     properties: {
       link: 'string',
+      index: 'int',
       title: 'string',
       imageCover: 'string',
       source: 'string',
@@ -147,7 +149,7 @@ export const useManga = (
   const source = typeof link !== 'string' ? useMangaSource(link) : null;
   const mangaRealm = useRealm();
 
-  const fetchData = React.useCallback(() => {
+  const fetchData = React.useCallback(async () => {
     if (!options.preferLocal) {
       if (typeof link === 'string')
         throw Error(
@@ -160,38 +162,35 @@ export const useManga = (
       const manga = link as Manga;
       setStatus('loading');
       setError('');
-      source
-        .getMeta(manga)
-        .then((meta) => {
-          mangaRealm.write(() => {
-            mangaRealm.create<MangaSchema>(
-              'Manga',
-              {
-                ...meta,
-                chapters: meta.chapters.map((x) => x.link),
-                modifyNewChaptersCount: mangaObject
-                  ? mangaObject.modifyNewChaptersCount +
-                    (meta.chapters.length - mangaObject.chapters.length)
-                  : 0,
-              },
+      try {
+        const meta = await source.getMeta(manga);
+        mangaRealm.write(() => {
+          mangaRealm.create<MangaSchema>(
+            'Manga',
+            {
+              ...meta,
+              chapters: meta.chapters.map((x) => x.link),
+              modifyNewChaptersCount: mangaObject
+                ? mangaObject.modifyNewChaptersCount +
+                  (meta.chapters.length - mangaObject.chapters.length)
+                : 0,
+            },
+            Realm.UpdateMode.Modified,
+          );
+
+          for (const x of meta.chapters) {
+            const copy = x;
+            (copy as ChapterSchema).manga = manga.link;
+            mangaRealm.create<ChapterSchema>(
+              'Chapter',
+              copy,
               Realm.UpdateMode.Modified,
             );
-
-            for (const x of meta.chapters) {
-              const copy = x;
-              (copy as ChapterSchema).manga = manga.link;
-              mangaRealm.create<ChapterSchema>(
-                'Chapter',
-                copy,
-                Realm.UpdateMode.Modified,
-              );
-            }
-          });
-        })
-        .catch((e) => {
-          setStatus('error');
-          setError(getErrorMessage(e));
+          }
         });
+      } catch (e) {
+        throw Error(getErrorMessage(e));
+      }
     }
   }, [
     options.preferLocal,
@@ -203,21 +202,38 @@ export const useManga = (
     mangaObject,
   ]);
 
+  const refresh = React.useCallback(async () => {
+    if (mangaObject != null) {
+      try {
+        await fetchData();
+        setStatus('success');
+      } catch (e) {
+        setStatus('error');
+        setError(e as string);
+      }
+    }
+  }, [fetchData, mangaObject == null]);
+
   useMountEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      fetchData();
+    InteractionManager.runAfterInteractions(async () => {
+      try {
+        await fetchData();
+        setStatus('success');
+      } catch (e) {
+        setStatus('error');
+        setError(e as string);
+      }
     });
   }, []);
   React.useEffect(() => {
     mangaObject?.addListener((_manga, changes) => {
-      if (status === 'loading') setStatus('success');
       if (changes.deleted) setManga(undefined);
       else setManga(_manga);
     });
     return () => {
       mangaObject?.removeAllListeners();
     };
-  }, [mangaObject == null, status]);
+  }, [mangaObject == null]);
 
   const update = React.useCallback(
     (
@@ -236,5 +252,5 @@ export const useManga = (
     [mangaObject, mangaRealm],
   );
 
-  return { manga, refresh: fetchData, status, error, update };
+  return { manga, refresh, status, error, update };
 };
