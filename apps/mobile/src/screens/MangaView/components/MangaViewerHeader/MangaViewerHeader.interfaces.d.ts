@@ -8,7 +8,7 @@ import { ISOLangCode } from '@mangayomu/language-codes';
 
 export interface MangaViewerHeaderProps extends React.PropsWithChildren {
   meta?: IMangaSchema;
-  manga: Manga;
+  manga: Omit<Manga, 'index'>;
   status: FetchMangaMetaStatus;
   error: string;
   refresh: () => void;

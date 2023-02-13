@@ -54,7 +54,7 @@ export const KEYS_OF_SORT_CHAPTERS_BY = Object.keys(
 export type SortChaptersMethod = keyof typeof SORT_CHAPTERS_BY;
 
 export interface IMangaSchema
-  extends Manga,
+  extends Omit<Manga, 'index'>,
     Partial<WithAuthors>,
     Partial<WithStatus>,
     Partial<WithHentai>,
@@ -134,7 +134,7 @@ export type UseMangaOptions = {
 export type FetchMangaMetaStatus = 'loading' | 'success' | 'local' | 'error';
 
 export const useManga = (
-  link: string | Manga,
+  link: string | Omit<Manga, 'index'>,
   options: UseMangaOptions = { preferLocal: true },
 ) => {
   const [manga, setManga] = React.useState<IMangaSchema>();
