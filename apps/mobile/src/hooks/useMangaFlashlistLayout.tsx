@@ -6,14 +6,16 @@ import { ListRenderItem } from '@shopify/flash-list';
 import React from 'react';
 import { Dimensions, useWindowDimensions } from 'react-native';
 
-const Item: React.FC<{ item: Manga }> = React.memo(({ item }) => (
-  <Box my="s" align-items="center" flex-grow>
-    <Book manga={item} />
-  </Box>
-));
+const Item: React.FC<{ item: Omit<Manga, 'index'> }> = React.memo(
+  ({ item }) => (
+    <Box my="s" align-items="center" flex-grow>
+      <Book manga={item} />
+    </Box>
+  ),
+);
 
 export default function useMangaFlashlistLayout<
-  T extends Manga = Manga,
+  T extends Omit<Manga, 'index'> = Manga,
 >(bookDimensions: { width: number; height: number }) {
   const keyExtractor = React.useCallback((i: T) => i.link, []);
 

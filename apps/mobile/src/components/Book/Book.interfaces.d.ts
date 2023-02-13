@@ -1,5 +1,5 @@
 import { Manga } from '@mangayomu/mangascraper';
 
 export interface BookProps {
-  manga: Manga;
+  manga: Omit<Manga, 'index'>;
 }
