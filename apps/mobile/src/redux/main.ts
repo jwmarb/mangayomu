@@ -15,12 +15,14 @@ import {
 import { reduxStorage } from '@mmkv-storage/main';
 import { MainSourceSelectorReducer } from '@redux/slices/mainSourceSelector';
 import { ExplorerReducer } from '@redux/slices/explore';
+import { LibraryReducer } from '@redux/slices/library';
 
 const reducers = combineReducers({
   __initial__: __initialReducer__,
   host: hostReducer,
   mainSourceSelector: MainSourceSelectorReducer,
   explore: ExplorerReducer,
+  library: LibraryReducer,
 });
 
 const persistConfig: PersistConfig<AppState> = {
