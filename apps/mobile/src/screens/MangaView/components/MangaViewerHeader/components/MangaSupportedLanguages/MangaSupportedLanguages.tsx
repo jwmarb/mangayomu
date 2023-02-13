@@ -4,7 +4,7 @@ import { Stack } from '@components/Stack';
 import Text from '@components/Text';
 import { useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
-import languages from '@mangayomu/language-codes';
+import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import React from 'react';
 import { MangaSupportedLanguagesProps } from './MangaSupportedLanguages.interfaces';
 
@@ -27,7 +27,11 @@ const MangaSupportedLanguages: React.FC<MangaSupportedLanguagesProps> = (
             </Text>
           </Skeleton>
         ) : (
-          <Text bold>{supportedLang.join(', ')}</Text>
+          <Text bold>
+            {supportedLang
+              .map((x: unknown) => languages[x as ISOLangCode].name)
+              .join(', ')}
+          </Text>
         )}
       </Box>
     </Stack>

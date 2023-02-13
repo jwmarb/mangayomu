@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import Box from '@components/Box';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import { RootStackProps } from '@navigators/Root/Root.interfaces';
-import { useManga } from '@database/schemas/Manga';
+import { SORT_CHAPTERS_BY, useManga } from '@database/schemas/Manga';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import React from 'react';
 import MangaViewerHeader from './components/MangaViewerHeader';
@@ -27,6 +28,11 @@ import { CustomBottomSheet } from '@components/CustomBottomSheet';
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
 import MangaViewModal from '@screens/MangaView/components/MangaViewModal';
 import { FlatList } from 'react-native-gesture-handler';
+import languages, { ISOLangCode } from '@mangayomu/language-codes';
+import { inPlaceSort } from 'fast-sort';
+import integrateSortedList from '@helpers/integrateSortedList';
+
+const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 
 const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
   const {
@@ -59,9 +65,11 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
       headerTitle: '',
       backButtonColor: { custom: theme.palette.mangaViewerBackButtonColor },
       backButtonStyle: buttonStyle,
+      backButtonRippleColor: theme.palette.action.ripple,
       headerRight: (
         <IconButton
           color={{ custom: theme.palette.mangaViewerBackButtonColor }}
+          rippleColor={theme.palette.action.ripple}
           animated
           onPress={handleOnBookmark}
           icon={
@@ -86,6 +94,7 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
   }
 
   const chapters = useQuery(ChapterSchema);
+  const realm = useRealm();
 
   const multilingualChapters = React.useMemo(
     () => chapters.filtered(`manga == "${params.link}"`),
@@ -93,19 +102,69 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
   );
 
   const selectedLanguageChapters = React.useMemo(
-    () => multilingualChapters.filtered('language == "en"'),
+    () =>
+      multilingualChapters.filtered(
+        `language == "${
+          manga?.selectedLanguage === 'Use default language'
+            ? DEFAULT_LANGUAGE
+            : manga?.selectedLanguage
+        }"`,
+      ),
+    [multilingualChapters, manga?.selectedLanguage],
+  );
+
+  const supportedLang = React.useMemo(
+    () =>
+      multilingualChapters.reduce(
+        (prev, curr) => {
+          if (curr.language != null) {
+            if (!prev.a.has(curr.language))
+              integrateSortedList(prev.b, (a, b) =>
+                languages[a].name.localeCompare(languages[b].name),
+              ).add(curr.language);
+            prev.a.add(curr.language);
+          }
+          return prev;
+        },
+        { a: new Set(), b: [] as ISOLangCode[] },
+      ).b,
     [multilingualChapters],
+  ) as ISOLangCode[];
+
+  const sortfn = React.useCallback(
+    (a: string) =>
+      SORT_CHAPTERS_BY[manga!.sortChaptersBy](
+        realm.objectForPrimaryKey('Chapter', a)!,
+      ),
+    [manga != null, realm],
+  );
+
+  const data = React.useMemo(
+    () =>
+      manga
+        ? inPlaceSort(selectedLanguageChapters.map((x) => x.link)).by(
+            manga.reversedSort
+              ? {
+                  desc: sortfn,
+                }
+              : {
+                  asc: sortfn,
+                },
+          )
+        : [],
+    [manga?.chapters, manga?.selectedLanguage],
   );
 
   return (
     <>
       <FlashList
-        data={manga?.chapters ?? []}
+        // data={manga?.chapters ?? []}
+        data={data}
         ListHeaderComponent={
           <MangaViewerHeader
             onOpenMenu={handleOnOpenMenu}
             numberOfSelectedLanguageChapters={selectedLanguageChapters.length}
-            queriedChaptersForManga={multilingualChapters}
+            supportedLang={supportedLang}
             onBookmark={handleOnBookmark}
             status={status}
             manga={params}
@@ -127,6 +186,8 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
           sortMethod={manga?.sortChaptersBy ?? 'Chapter number'}
           reversed={manga?.reversedSort ?? false}
           mangaLink={params.link}
+          selectedLanguage={manga?.selectedLanguage}
+          supportedLanguages={supportedLang}
         />
       )}
     </>

@@ -45,27 +45,11 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
     status,
     error,
     numberOfSelectedLanguageChapters,
+    supportedLang,
     onBookmark,
-    queriedChaptersForManga,
     onOpenMenu,
   } = props;
   const theme = useTheme();
-
-  const supportedLang = React.useMemo(
-    () =>
-      queriedChaptersForManga.reduce(
-        (prev, curr) => {
-          if (curr.language != null) {
-            if (!prev.a.has(curr.language))
-              prev.b.push(languages[curr.language].name);
-            prev.a.add(curr.language);
-          }
-          return prev;
-        },
-        { a: new Set(), b: [] as string[] },
-      ).b,
-    [queriedChaptersForManga, meta?.chapters],
-  );
 
   const isLoading = status === 'loading';
   return (

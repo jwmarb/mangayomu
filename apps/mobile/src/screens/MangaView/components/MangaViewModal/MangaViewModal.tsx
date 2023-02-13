@@ -4,6 +4,7 @@ import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { MangaViewModalProps } from '@screens/MangaView/components/MangaViewModal/MangaViewModal.interfaces';
 import React from 'react';
 import Sort from './Tabs/Sort';
+import Language from './Tabs/Language';
 
 const MangaViewModal: React.ForwardRefRenderFunction<
   BottomSheetMethods,
@@ -25,6 +26,13 @@ const MangaViewModal: React.ForwardRefRenderFunction<
                 />
               );
             case 'language':
+              return (
+                <Language
+                  selectedLanguage={props.selectedLanguage}
+                  supportedLanguages={props.supportedLanguages}
+                  mangaLink={props.mangaLink}
+                />
+              );
             case 'display':
               return null;
           }
