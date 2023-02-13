@@ -10,4 +10,5 @@ export interface IconButtonProps
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: React.ReactElement<any>;
   animated?: boolean;
+  rippleColor?: string;
 }

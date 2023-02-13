@@ -21,7 +21,7 @@ const Tag: React.FC<TagProps> = (props) => {
       rippleColor={
         color === 'primary' || color === 'secondary'
           ? theme.palette[color].ripple
-          : undefined
+          : theme.palette.action.ripple
       }
     >
       <Stack
@@ -32,9 +32,7 @@ const Tag: React.FC<TagProps> = (props) => {
         border-width={moderateScale(1.5)}
         border-color={
           color === 'textPrimary' || color === 'textSecondary'
-            ? theme.mode === 'light'
-              ? 'rgba(0, 0, 0, 0.2)'
-              : '#444444'
+            ? theme.palette.borderColor
             : theme.helpers.getColor(color)
         }
         border-radius="@theme"

@@ -46,12 +46,14 @@ const Book: React.FC<BookProps> = (props) => {
     displayMessage(manga.title);
     vibrate();
   }
+  const theme = useTheme();
 
   return (
     <BaseButton
       style={coverStyles.button}
       onPress={handleOnPress}
       onLongPress={handleOnLongPress}
+      rippleColor={theme.palette.action.ripple}
     >
       <Stack
         space="s"

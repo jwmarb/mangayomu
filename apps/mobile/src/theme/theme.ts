@@ -76,6 +76,10 @@ declare module '@emotion/react' {
         hiatus: string;
         completed: string;
       };
+      borderColor: string;
+      action: {
+        ripple: string;
+      };
     };
     typography: typeof typography;
     style: {

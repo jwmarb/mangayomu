@@ -17,7 +17,7 @@ const IconButton: React.FC<IconButtonProps> = (props) => {
   const { color = 'textSecondary', icon, compact, animated, ...rest } = props;
   const theme = useTheme();
   const rippleColor = React.useMemo(() => {
-    if (color == null) return undefined;
+    if (color == null) return theme.palette.action.ripple;
     if (typeof color === 'object') return generateRippleColor(color.custom);
     if (color in theme.palette)
       return theme.palette[color as ButtonColors].ripple;

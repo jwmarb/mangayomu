@@ -49,7 +49,10 @@ function SortItem<T extends string>(props: SortItemProps<T>) {
     else props.onToggleReverse();
   }
   return (
-    <RectButton onPress={handleOnPress}>
+    <RectButton
+      onPress={handleOnPress}
+      rippleColor={theme.palette.action.ripple}
+    >
       <Stack p="m" space="m" flex-direction="row" align-items="center">
         <Animated.View style={iconStyle}>
           <Icon type="font" name="arrow-up" color="primary" />

@@ -108,6 +108,7 @@ const Tab: React.FC<TabProps> = (props) => {
       style={styles.button}
       onPress={handleOnPress}
       onLongPress={handleOnLongPress}
+      rippleColor={theme.palette.action.ripple}
     >
       <Box py="m" px="s" flex-direction="column" align-items="center" flex-grow>
         <Text

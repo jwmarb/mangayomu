@@ -34,6 +34,7 @@ export interface CollapsibleHeaderOptions {
    */
   dependencies?: React.DependencyList;
   backButtonColor?: IconButtonProps['color'];
+  backButtonRippleColor?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   backButtonStyle?: any;
 }
@@ -51,6 +52,7 @@ const CollapsibleBase = React.memo<
     headerTitle = routeName,
     backButtonColor = 'textPrimary',
     backButtonStyle,
+    backButtonRippleColor,
   }) => {
     const navigation = useRootNavigation();
     return (
@@ -70,6 +72,7 @@ const CollapsibleBase = React.memo<
             <Box ml="m" flex-direction="row">
               <IconButton
                 color={backButtonColor}
+                rippleColor={backButtonRippleColor}
                 animated={!!backButtonStyle}
                 icon={
                   <Icon type="font" name="arrow-left" style={backButtonStyle} />
@@ -105,6 +108,7 @@ export default function useCollapsibleHeader(
     dependencies = [],
     backButtonColor,
     backButtonStyle,
+    backButtonRippleColor,
   } = options;
   const theme = useTheme();
   const navigation = useRootNavigation();
@@ -176,6 +180,7 @@ export default function useCollapsibleHeader(
           headerTitle={headerTitle}
           backButtonColor={backButtonColor}
           backButtonStyle={backButtonStyle}
+          backButtonRippleColor={backButtonRippleColor}
         />
       ),
     });

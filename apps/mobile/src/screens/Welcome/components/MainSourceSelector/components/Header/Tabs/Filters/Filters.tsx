@@ -1,6 +1,7 @@
 import MultiCheckbox from '@components/MultiCheckbox';
 import { Stack } from '@components/Stack';
 import Text from '@components/Text';
+import { useTheme } from '@emotion/react';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { AppState } from '@redux/main';
 import {
@@ -45,8 +46,12 @@ const mapStateToProps = (state: AppState, props: Element<typeof filters>) => ({
 });
 
 const _Item: React.FC<ConnectedItemProps> = (props) => {
+  const theme = useTheme();
   return (
-    <RectButton onPress={props.toggle}>
+    <RectButton
+      onPress={props.toggle}
+      rippleColor={theme.palette.action.ripple}
+    >
       <Stack space="s" m="s" flex-direction="row" align-items="center">
         <MultiCheckbox state={props.state} onChange={props.toggle} />
         <Text color="textSecondary">{props.title}</Text>

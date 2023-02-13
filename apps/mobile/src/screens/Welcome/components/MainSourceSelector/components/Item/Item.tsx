@@ -6,6 +6,7 @@ import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
 import { Stack } from '@components/Stack';
 import Text from '@components/Text';
+import { useTheme } from '@emotion/react';
 import { MangaHost } from '@mangayomu/mangascraper';
 import connector, {
   ConnectedItemProps,
@@ -24,8 +25,12 @@ const Item: React.FC<ConnectedItemProps> = React.memo(
       if (!isSelected) addSource(host.getName());
       else removeSource(host.getName());
     }
+    const theme = useTheme();
     return (
-      <RectButton onPress={handleOnPress}>
+      <RectButton
+        onPress={handleOnPress}
+        rippleColor={theme.palette.action.ripple}
+      >
         <Box flex-direction="row" align-items="center">
           <Box align-self="center" ml="s">
             <Checkbox onChange={handleOnPress} checked={isSelected} />
