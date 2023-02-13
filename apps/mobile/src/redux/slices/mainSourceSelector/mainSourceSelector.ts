@@ -46,6 +46,17 @@ const initialMainSourceSelectorState: MainSourceSelectorState = {
   },
 };
 
+export function toggleBetweenFilters(filter: FilterState) {
+  switch (filter) {
+    case FilterState.ANY:
+      return FilterState.INCLUDE;
+    case FilterState.INCLUDE:
+      return FilterState.EXCLUDE;
+    case FilterState.EXCLUDE:
+      return FilterState.ANY;
+  }
+}
+
 const mainSourceSelectorSlice = createSlice({
   initialState: initialMainSourceSelectorState,
   name: 'mainSourceSelector',
@@ -67,17 +78,9 @@ const mainSourceSelectorSlice = createSlice({
       state,
       action: PayloadAction<MainSourceFilterKeys>,
     ) => {
-      switch (state.filters[action.payload]) {
-        case FilterState.ANY:
-          state.filters[action.payload] = FilterState.INCLUDE;
-          break;
-        case FilterState.INCLUDE:
-          state.filters[action.payload] = FilterState.EXCLUDE;
-          break;
-        case FilterState.EXCLUDE:
-          state.filters[action.payload] = FilterState.ANY;
-          break;
-      }
+      state.filters[action.payload] = toggleBetweenFilters(
+        state.filters[action.payload],
+      );
     },
     setIndex: (state, action: PayloadAction<number>) => {
       state.index = action.payload;
