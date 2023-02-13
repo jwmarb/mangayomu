@@ -62,7 +62,7 @@ export interface IMangaSchema
     Partial<WithHentai>,
     Partial<WithRating> {
   description: string | null;
-  genres: string[];
+  genres: Set<string>;
   currentlyReadingChapter?: string;
   dateAddedInLibrary?: string;
   notifyNewChaptersCount?: number;
@@ -81,7 +81,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   index!: number;
   source!: string;
   description!: string | null;
-  genres!: string[];
+  genres!: Set<string>;
   currentlyReadingChapter!: string;
   dateAddedInLibrary!: string;
   modifyNewChaptersCount!: number;
@@ -105,7 +105,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
       imageCover: 'string',
       source: 'string',
       description: 'mixed',
-      genres: 'string[]',
+      genres: 'string<>',
       currentlyReadingChapter: 'string?',
       dateAddedInLibrary: 'string?',
       notifyNewChaptersCount: { type: 'int?', default: 0 },
@@ -199,6 +199,7 @@ export const useManga = (
             'Manga',
             {
               ...meta,
+              genres: meta.genres as unknown as Set<string>,
               chapters,
               availableLanguages,
               modifyNewChaptersCount: mangaObject

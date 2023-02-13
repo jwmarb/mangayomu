@@ -10,7 +10,7 @@ const MangaGenres: React.FC<MangaGenresProps> = (props) => {
   return (
     <Stack flex-direction="row" flex-wrap="wrap" space="s" align-items="center">
       {data != null ? (
-        data.map((x) => <Tag key={x} label={x} />)
+        [...data].map((x) => <Tag key={x} label={x} />)
       ) : (
         <>
           <Skeleton>
