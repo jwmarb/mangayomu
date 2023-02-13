@@ -14,6 +14,7 @@ import { getErrorMessage } from '@helpers/getErrorMessage';
 import { useObject, useRealm } from '../../main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useMountEffect from '@hooks/useMountEffect';
+import { ISOLangCode } from '@mangayomu/language-codes';
 
 export const MangaRatingSchema: Realm.ObjectSchema = {
   name: 'MangaRating',
@@ -66,6 +67,7 @@ export interface IMangaSchema
   sortChaptersBy: SortChaptersMethod;
   reversedSort: boolean;
   inLibrary: boolean;
+  selectedLanguage: ISOLangCode | 'Use default language';
 }
 
 export class MangaSchema extends Realm.Object<IMangaSchema> {
@@ -86,6 +88,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   rating!: WithRating['rating'];
   status!: WithStatus['status'];
   reversedSort!: boolean;
+  selectedLanguage!: ISOLangCode | 'Use default language';
 
   static schema: Realm.ObjectSchema = {
     name: 'Manga',
@@ -107,6 +110,14 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
       inLibrary: { type: 'bool', default: false },
       status: 'MangaStatus?',
       reversedSort: { type: 'bool', default: true },
+      /**
+       * Todo: To set default, use redux to set preferredLanguage in options, passing a preferred language as an argument.
+       * ```js
+       * useManga(manga, { preferLocal: props.preferredLanguageFromRedux });
+       * ```
+       * By having this as 'Use default language', a preferred language can be set specifically for a manga. If the user has no preferred language, let it be the system language
+       */
+      selectedLanguage: { type: 'string', default: 'Use default language' },
     },
     primaryKey: 'link',
   };
@@ -114,6 +125,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
 
 export type UseMangaOptions = {
   preferLocal?: boolean;
+  preferredLanguage?: ISOLangCode;
 };
 
 export type FetchMangaMetaStatus = 'loading' | 'success' | 'local' | 'error';
