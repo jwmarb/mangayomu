@@ -70,7 +70,7 @@ const CollapsibleBase = React.memo<
               </Box>
             </Box>
           )}
-          <Box flex-shrink justify-content="center">
+          <Box flex-grow justify-content="center">
             {headerCenter == null ? (
               <Text variant="header" align="center" bold numberOfLines={1}>
                 {headerTitle}
