@@ -1,6 +1,6 @@
 import { StatusBar } from 'react-native';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
-export const NAVHEADER_HEIGHT = moderateScale(80);
+export const NAVHEADER_HEIGHT = moderateScale(90);
 export const NavStyles = ScaledSheet.create({
   header: {
     height: '90@ms',
