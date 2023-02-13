@@ -26,7 +26,11 @@ const Button: React.FC<ButtonProps> = (props) => {
       style={{
         borderRadius: theme.style.borderRadius,
         backgroundColor:
-          variant === 'contained' ? theme.palette[color].main : undefined,
+          variant === 'contained'
+            ? disabled
+              ? theme.palette.text.disabled
+              : theme.palette[color].main
+            : undefined,
       }}
       {...rest}
       rippleColor={theme.palette[color].ripple}
@@ -61,24 +65,26 @@ const Button: React.FC<ButtonProps> = (props) => {
                 }
               : color,
           })}
-        <Text
-          variant="button"
-          align="center"
-          bold
-          color={
-            disabled
-              ? 'disabled'
-              : variant === 'contained'
-              ? {
-                  custom: theme.helpers.getContrastText(
-                    theme.palette[color].main,
-                  ),
-                }
-              : color
-          }
-        >
-          {label}
-        </Text>
+        {label && (
+          <Text
+            variant="button"
+            align="center"
+            bold
+            color={
+              disabled
+                ? 'disabled'
+                : variant === 'contained'
+                ? {
+                    custom: theme.helpers.getContrastText(
+                      theme.palette[color].main,
+                    ),
+                  }
+                : color
+            }
+          >
+            {label}
+          </Text>
+        )}
         {iconPlacement === 'right' &&
           icon &&
           React.cloneElement(icon, {
