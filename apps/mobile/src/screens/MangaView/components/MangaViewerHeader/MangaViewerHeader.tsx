@@ -45,7 +45,6 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
     status,
     error,
     numberOfSelectedLanguageChapters,
-    supportedLang,
     onBookmark,
     onOpenMenu,
   } = props;
@@ -85,6 +84,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
               <MangaRating data={meta?.rating} loading={isLoading} />
             </Stack>
             <MangaActionButtons
+              loading={isLoading}
               onBookmark={onBookmark}
               inLibrary={meta?.inLibrary}
             />
@@ -108,10 +108,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
         </Text>
         <MangaStatus data={meta?.status} loading={isLoading} />
         <MangaSource mangaSource={manga.source} />
-        <MangaSupportedLanguages
-          loading={isLoading && meta == null}
-          supportedLang={supportedLang}
-        />
+        <MangaSupportedLanguages data={meta?.availableLanguages} />
 
         <Stack
           space="s"

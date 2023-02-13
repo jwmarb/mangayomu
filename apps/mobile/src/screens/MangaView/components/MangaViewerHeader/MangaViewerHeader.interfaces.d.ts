@@ -15,7 +15,6 @@ export interface MangaViewerHeaderProps extends React.PropsWithChildren {
   scrollViewStyle: typeof NavStyles.offset;
   onBookmark: () => void;
   numberOfSelectedLanguageChapters: number;
-  supportedLang: ISOLangCode[];
   onOpenMenu: () => void;
 }
 

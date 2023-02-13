@@ -115,24 +115,6 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
     [multilingualChapters, manga?.selectedLanguage],
   );
 
-  const supportedLang = React.useMemo(
-    () =>
-      multilingualChapters.reduce(
-        (prev, curr) => {
-          if (curr.language != null) {
-            if (!prev.a.has(curr.language))
-              integrateSortedList(prev.b, (a, b) =>
-                languages[a].name.localeCompare(languages[b].name),
-              ).add(curr.language);
-            prev.a.add(curr.language);
-          }
-          return prev;
-        },
-        { a: new Set(), b: [] as ISOLangCode[] },
-      ).b,
-    [multilingualChapters],
-  ) as ISOLangCode[];
-
   const sortfn = React.useCallback(
     (a: string) =>
       SORT_CHAPTERS_BY[manga!.sortChaptersBy](
@@ -174,7 +156,6 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
   return (
     <>
       <FlashList
-        // data={manga?.chapters ?? []}
         data={data}
         refreshing={refreshing}
         refreshControl={
@@ -184,7 +165,6 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
           <MangaViewerHeader
             onOpenMenu={handleOnOpenMenu}
             numberOfSelectedLanguageChapters={selectedLanguageChapters.length}
-            supportedLang={supportedLang}
             onBookmark={handleOnBookmark}
             status={status}
             manga={params}
@@ -203,11 +183,11 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
       {manga != null && (
         <MangaViewModal
           ref={ref}
-          sortMethod={manga?.sortChaptersBy ?? 'Chapter number'}
-          reversed={manga?.reversedSort ?? false}
+          sortMethod={manga.sortChaptersBy}
+          reversed={manga.reversedSort ?? false}
           mangaLink={params.link}
-          selectedLanguage={manga?.selectedLanguage}
-          supportedLanguages={supportedLang}
+          selectedLanguage={manga.selectedLanguage}
+          supportedLanguages={manga.availableLanguages}
         />
       )}
     </>

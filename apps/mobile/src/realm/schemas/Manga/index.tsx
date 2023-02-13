@@ -1,6 +1,7 @@
 import {
   Manga,
   MangaChapter,
+  MangaMultilingualChapter,
   WithAuthors,
   WithHentai,
   WithRating,
@@ -14,8 +15,9 @@ import { getErrorMessage } from '@helpers/getErrorMessage';
 import { useObject, useRealm } from '../../main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useMountEffect from '@hooks/useMountEffect';
-import { ISOLangCode } from '@mangayomu/language-codes';
+import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import displayMessage from '@helpers/displayMessage';
+import integrateSortedList from '@helpers/integrateSortedList';
 
 export const MangaRatingSchema: Realm.ObjectSchema = {
   name: 'MangaRating',
@@ -69,6 +71,7 @@ export interface IMangaSchema
   reversedSort: boolean;
   inLibrary: boolean;
   selectedLanguage: ISOLangCode | 'Use default language';
+  availableLanguages: ISOLangCode[];
 }
 
 export class MangaSchema extends Realm.Object<IMangaSchema> {
@@ -85,12 +88,13 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   chapters!: string[];
   sortChaptersBy!: keyof typeof SORT_CHAPTERS_BY;
   inLibrary!: boolean;
-  authors!: string[];
-  isHentai!: boolean;
-  rating!: WithRating['rating'];
-  status!: WithStatus['status'];
+  authors?: string[];
+  isHentai?: boolean;
+  rating?: WithRating['rating'];
+  status?: WithStatus['status'];
   reversedSort!: boolean;
   selectedLanguage!: ISOLangCode | 'Use default language';
+  availableLanguages!: ISOLangCode[];
 
   static schema: Realm.ObjectSchema = {
     name: 'Manga',
@@ -121,6 +125,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
        * By having this as 'Use default language', a preferred language can be set specifically for a manga. If the user has no preferred language, let it be the system language
        */
       selectedLanguage: { type: 'string', default: 'Use default language' },
+      availableLanguages: 'string[]',
     },
     primaryKey: 'link',
   };
@@ -132,6 +137,9 @@ export type UseMangaOptions = {
 };
 
 export type FetchMangaMetaStatus = 'loading' | 'success' | 'local' | 'error';
+
+const SortLanguages = (a: ISOLangCode, b: ISOLangCode) =>
+  languages[a].name.localeCompare(languages[b].name);
 
 export const useManga = (
   link: string | Omit<Manga, 'index'>,
@@ -165,11 +173,34 @@ export const useManga = (
       try {
         const meta = await source.getMeta(manga);
         mangaRealm.write(() => {
+          const { chapters, availableLanguages } = meta.chapters.reduce(
+            (prev, curr) => {
+              prev.chapters.push(curr.link);
+              const { add } = integrateSortedList(
+                prev.availableLanguages,
+                SortLanguages,
+              );
+              if ('language' in curr) {
+                const multilingualChapter = curr as MangaMultilingualChapter;
+                if (!prev.__memo__.has(multilingualChapter.language)) {
+                  add(multilingualChapter.language);
+                  prev.__memo__.add(multilingualChapter.language);
+                }
+              }
+              return prev;
+            },
+            {
+              chapters: [] as string[],
+              availableLanguages: [] as ISOLangCode[],
+              __memo__: new Set(),
+            },
+          );
           mangaRealm.create<MangaSchema>(
             'Manga',
             {
               ...meta,
-              chapters: meta.chapters.map((x) => x.link),
+              chapters,
+              availableLanguages,
               modifyNewChaptersCount: mangaObject
                 ? mangaObject.modifyNewChaptersCount +
                   (meta.chapters.length - mangaObject.chapters.length)
