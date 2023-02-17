@@ -50,7 +50,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
   } = props;
   const theme = useTheme();
 
-  const isLoading = status === 'loading' && meta == null;
+  const isLoading = status === 'loading' || meta == null;
   return (
     <Box>
       <FastImage
