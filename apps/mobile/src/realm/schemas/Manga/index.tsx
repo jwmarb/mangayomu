@@ -186,13 +186,16 @@ export const useManga = (
                   add(multilingualChapter.language);
                   prev.__memo__.add(multilingualChapter.language);
                 }
+              } else if (!prev.__memo__.has('en')) {
+                add('en');
+                prev.__memo__.add('en');
               }
               return prev;
             },
             {
               chapters: [] as string[],
               availableLanguages: [] as ISOLangCode[],
-              __memo__: new Set(),
+              __memo__: new Set<ISOLangCode>(),
             },
           );
           mangaRealm.create<MangaSchema>(
