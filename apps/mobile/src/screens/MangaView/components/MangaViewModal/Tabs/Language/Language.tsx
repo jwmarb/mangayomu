@@ -25,7 +25,13 @@ const Language: React.FC<LanguageProps> = (props) => {
     ({ item }) => (
       <SelectItem
         isSelected={selectedLanguage === item}
-        title={item in languages ? languages[item as ISOLangCode].name : item}
+        title={
+          item in languages
+            ? `${languages[item as ISOLangCode].name} (${
+                languages[item as ISOLangCode].nativeName
+              })`
+            : item
+        }
         itemKey={item}
         onChange={handleOnChange}
       />
