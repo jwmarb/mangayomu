@@ -17,10 +17,7 @@ const Library: React.FC = () => {
   function handleOnPress() {
     ref.current?.snapToIndex(1);
   }
-  const data = React.useMemo(
-    () => [...mangas.filtered('inLibrary == true')],
-    [mangas],
-  );
+  const data = mangas.filtered('inLibrary == true');
   const { renderItem, keyExtractor, estimatedItemSize, columns, key } =
     useMangaFlashlistLayout<MangaSchema>(bookDimensions);
   const { scrollViewStyle, contentContainerStyle, onScroll } =
