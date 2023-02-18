@@ -4,7 +4,12 @@ import IconButton from '@components/IconButton';
 import { Stack } from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
-import { LayoutChangeEvent, NativeSyntheticEvent } from 'react-native';
+import { Freeze } from 'react-freeze';
+import {
+  LayoutChangeEvent,
+  NativeSyntheticEvent,
+  ViewProps,
+} from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -20,10 +25,19 @@ const Accordion: React.ForwardRefRenderFunction<
   AccordionMethods,
   AccordionProps
 > = (props, ref) => {
-  const { title, textProps, containerProps, children } = props;
+  const {
+    title,
+    textProps,
+    containerProps,
+    children,
+    defaultState = 'expanded',
+  } = props;
   const [height, setHeight] = React.useState<number | undefined>(undefined);
+  const [pointerEvents, setPointerEvents] = React.useState<
+    ViewProps['pointerEvents']
+  >(defaultState === 'collapsed' ? 'none' : 'auto');
 
-  const rotate = useSharedValue<number>(0);
+  const rotate = useSharedValue<number>(defaultState === 'collapsed' ? 180 : 0);
   const containerHeight = useDerivedValue(() =>
     interpolate(rotate.value, [0, 180], [height ?? 0, 0]),
   );
@@ -32,9 +46,11 @@ const Accordion: React.ForwardRefRenderFunction<
   );
   function collapse() {
     rotate.value = withTiming(180, { duration: 150, easing: Easing.ease });
+    setPointerEvents('none');
   }
   function expand() {
     rotate.value = withTiming(0, { duration: 150, easing: Easing.ease });
+    setPointerEvents('auto');
   }
   function toggle() {
     if (rotate.value === 180) expand();
@@ -78,13 +94,14 @@ const Accordion: React.ForwardRefRenderFunction<
           />
         </Stack>
       </TouchableWithoutFeedback>
-      <Animated.View
-        onLayout={handleOnLayout}
-        pointerEvents={rotate.value === 180 ? 'auto' : 'none'}
-        style={collapsibleStyle}
-      >
+      <Animated.View pointerEvents={pointerEvents} style={collapsibleStyle}>
         {children}
       </Animated.View>
+      <Freeze freeze={typeof height === 'number'}>
+        <Box position="absolute" onLayout={handleOnLayout}>
+          {children}
+        </Box>
+      </Freeze>
     </Box>
   );
 };

@@ -6,6 +6,7 @@ export interface AccordionProps extends React.PropsWithChildren {
   title: string;
   textProps?: TextProps;
   containerProps?: StackProps;
+  defaultState?: 'expanded' | 'collapsed';
 }
 
 export interface AccordionMethods {
