@@ -88,6 +88,7 @@ export interface BoxProps
    */
 
   overflow?: ViewStyle['overflow'];
+  opacity?: number;
 
   'z-index'?: number;
   /**

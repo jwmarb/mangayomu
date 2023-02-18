@@ -26,10 +26,12 @@ const Box = styled.View<BoxProps>`
       debug,
       'z-index': zIndex = 0,
       overflow,
+      opacity = 1,
     } = props;
 
     return css`
       ${boxShadow && theme.style.shadow};
+      opacity: ${opacity};
       z-index: ${zIndex};
       ${(() => {
         if (debug)
