@@ -8,39 +8,143 @@ import { FilterState } from '@redux/slices/mainSourceSelector';
 import FilterItem from '@components/Filters/FilterItem';
 import React from 'react';
 import connector, { ConnectedLibraryFilterProps } from './Filter.redux';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import {
+  BottomSheetScrollView,
+  BottomSheetSectionList,
+} from '@gorhom/bottom-sheet';
 import Accordion from '@components/Accordion';
+import { Stack } from '@components/Stack';
+import IconButton from '@components/IconButton';
+import Icon from '@components/Icon';
+import Animated, {
+  Easing,
+  FadeIn,
+  FadeInDown,
+  FadeOut,
+  FadeOutUp,
+  SlideInDown,
+  SlideInUp,
+  SlideOutUp,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import { ListRenderItem, SectionListData } from 'react-native';
+const keyExtractor = (x: string, i: number) => x + i;
+
+interface SectionHeaderProps {
+  toggle: (key: string) => void;
+  title: string;
+  expanded: boolean;
+}
+const SectionHeader: React.FC<SectionHeaderProps> = React.memo(
+  ({ title, toggle, expanded }) => {
+    const rotate = useSharedValue(expanded ? 180 : 0);
+    React.useEffect(() => {
+      if (expanded)
+        rotate.value = withTiming(180, { duration: 150, easing: Easing.ease });
+      else rotate.value = withTiming(0, { duration: 150, easing: Easing.ease });
+    }, [expanded]);
+    const iconStyle = useAnimatedStyle(() => ({
+      transform: [{ rotate: rotate.value + 'deg' }],
+    }));
+    return (
+      <Stack
+        mx="m"
+        my="s"
+        flex-direction="row"
+        space="s"
+        justify-content="space-between"
+        align-items="center"
+      >
+        <Text bold>{title}</Text>
+        <IconButton
+          icon={<Icon style={iconStyle} type="font" name="chevron-down" />}
+          animated
+          onPress={() => toggle(title)}
+          compact
+        />
+      </Stack>
+    );
+  },
+);
 
 const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
   const { host, hosts, filterStates, toggleGenre, toggleSourceVisibility } =
     props;
-  const [set, genres] = host.getUniqGenres();
+  const [genresSet, genres] = host.getUniqGenres();
+  const data = React.useRef([
+    {
+      title: 'Sources',
+      data: hosts,
+    },
+    {
+      title: 'Genres',
+      data: genres,
+    },
+  ]).current;
+  const [state, setState] = React.useState({
+    Sources: true,
+    Genres: false,
+  });
 
-  return (
-    <BottomSheetScrollView>
-      <Accordion title="Sources" containerProps={{ mx: 'm', my: 's' }}>
-        {hosts.map((x) => (
-          <CheckboxItem
-            key={x}
-            title={x}
-            checked={filterStates.Sources[x]}
-            onToggle={toggleSourceVisibility}
-            itemKey={x}
-          />
-        ))}
-      </Accordion>
-      <Accordion title="Genres" containerProps={{ mx: 'm', my: 's' }}>
-        {genres.map((x) => (
+  const toggle = React.useCallback(
+    (key: string) => {
+      setState((s) => ({ ...s, [key]: !s[key as keyof typeof state] }));
+    },
+    [setState],
+  );
+
+  const renderSectionHeader = React.useCallback(
+    ({ section }: { section: SectionListData<string> }) => (
+      <SectionHeader
+        title={section.title}
+        expanded={state[section.title as keyof typeof state]}
+        toggle={toggle}
+      />
+    ),
+    [toggle, state],
+  );
+
+  const renderItem: ListRenderItem<string> = React.useCallback(
+    ({ item }) =>
+      state[genresSet.has(item) ? 'Genres' : 'Sources'] ? (
+        genresSet.has(item) ? (
           <FilterItem
-            key={x}
-            title={x}
-            itemKey={x}
-            state={filterStates.Genres[x] ?? FilterState.ANY}
+            key={item}
+            title={item}
+            itemKey={item}
+            state={filterStates.Genres[item] ?? FilterState.ANY}
             onToggle={toggleGenre}
           />
-        ))}
-      </Accordion>
-    </BottomSheetScrollView>
+        ) : (
+          <CheckboxItem
+            key={item}
+            title={item}
+            checked={filterStates.Sources[item]}
+            onToggle={toggleSourceVisibility}
+            itemKey={item}
+          />
+        )
+      ) : null,
+    [
+      state,
+      filterStates.Genres,
+      filterStates.Sources,
+      toggleSourceVisibility,
+      toggleGenre,
+      genresSet,
+    ],
+  );
+
+  return (
+    <BottomSheetSectionList
+      // ListHeaderComponent={} // use this for additional filters
+      sections={data}
+      keyExtractor={keyExtractor}
+      renderSectionHeader={renderSectionHeader}
+      renderItem={renderItem}
+    />
   );
 };
 
