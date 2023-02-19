@@ -30,6 +30,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { ListRenderItem, SectionListData } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 const keyExtractor = (x: string, i: number) => x + i;
 
 interface SectionHeaderProps {
@@ -48,23 +49,26 @@ const SectionHeader: React.FC<SectionHeaderProps> = React.memo(
     const iconStyle = useAnimatedStyle(() => ({
       transform: [{ rotate: rotate.value + 'deg' }],
     }));
+    const handleOnPress = () => toggle(title);
     return (
-      <Stack
-        mx="m"
-        my="s"
-        flex-direction="row"
-        space="s"
-        justify-content="space-between"
-        align-items="center"
-      >
-        <Text bold>{title}</Text>
-        <IconButton
-          icon={<Icon style={iconStyle} type="font" name="chevron-down" />}
-          animated
-          onPress={() => toggle(title)}
-          compact
-        />
-      </Stack>
+      <TouchableWithoutFeedback onPress={handleOnPress}>
+        <Stack
+          mx="m"
+          my="s"
+          flex-direction="row"
+          space="s"
+          justify-content="space-between"
+          align-items="center"
+        >
+          <Text bold>{title}</Text>
+          <IconButton
+            icon={<Icon style={iconStyle} type="font" name="chevron-down" />}
+            animated
+            onPress={handleOnPress}
+            compact
+          />
+        </Stack>
+      </TouchableWithoutFeedback>
     );
   },
 );
