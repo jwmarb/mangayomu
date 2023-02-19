@@ -36,6 +36,7 @@ const Library: React.FC = () => {
             onPress={handleOnPress}
           />
         ) : null,
+      dependencies: [data.length > 0],
     });
   return (
     <>
