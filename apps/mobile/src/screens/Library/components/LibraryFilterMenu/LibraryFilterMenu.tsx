@@ -37,4 +37,4 @@ const routes = [
   },
 ];
 
-export default React.forwardRef(LibraryFilterMenu);
+export default React.memo(React.forwardRef(LibraryFilterMenu));
