@@ -117,13 +117,6 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
       inLibrary: { type: 'bool', default: false },
       status: 'MangaStatus?',
       reversedSort: { type: 'bool', default: true },
-      /**
-       * Todo: To set default, use redux to set preferredLanguage in options, passing a preferred language as an argument.
-       * ```js
-       * useManga(manga, { preferLocal: props.preferredLanguageFromRedux });
-       * ```
-       * By having this as 'Use default language', a preferred language can be set specifically for a manga. If the user has no preferred language, let it be the system language
-       */
       selectedLanguage: { type: 'string', default: 'Use default language' },
       availableLanguages: 'string[]',
     },
