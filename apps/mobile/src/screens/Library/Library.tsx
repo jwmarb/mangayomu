@@ -15,15 +15,59 @@ import Text from '@components/Text';
 import { moderateScale } from 'react-native-size-matters';
 import { useWindowDimensions } from 'react-native';
 import { Stack } from '@components/Stack';
+import { inPlaceSort } from 'fast-sort';
+import connector, { ConnectedLibraryProps } from './Library.redux';
+import { SORT_LIBRARY_BY } from '@redux/slices/library';
+import { FilterState } from '@redux/slices/mainSourceSelector';
 
-const Library: React.FC = () => {
+const Library: React.FC<ConnectedLibraryProps> = ({
+  sortBy,
+  reversed,
+  filters,
+}) => {
   const ref = React.useRef<BottomSheetMethods>(null);
   const mangas = useQuery(MangaSchema);
   function handleOnPress() {
     ref.current?.snapToIndex(1);
   }
+  const applyFilters = React.useMemo(() => {
+    const ignoreGenres = new Set<string>();
+    const requireGenres = new Set<string>();
+    for (const x in filters.Genres) {
+      switch (filters.Genres[x]) {
+        case FilterState.EXCLUDE:
+          ignoreGenres.add(x);
+          break;
+        case FilterState.INCLUDE:
+          requireGenres.add(x);
+      }
+    }
+    return (manga: MangaSchema) => {
+      if (ignoreGenres.size > 0) {
+        for (const genre of ignoreGenres) {
+          if (manga.genres.has(genre)) return false;
+        }
+      }
+      if (requireGenres.size > 0) {
+        for (const genre of requireGenres) {
+          if (!manga.genres.has(genre)) return false;
+        }
+      }
+      if (manga.source in filters.Sources === false) return false;
+      return true;
+    };
+  }, [filters.Genres, filters.Sources]);
 
-  const data = mangas.filtered('inLibrary == true');
+  const mangasInLibrary = mangas.filtered('inLibrary == true');
+  const data = React.useMemo(
+    () =>
+      inPlaceSort(mangasInLibrary.filter(applyFilters)).by(
+        reversed
+          ? { desc: SORT_LIBRARY_BY[sortBy] }
+          : { asc: SORT_LIBRARY_BY[sortBy] },
+      ),
+    [sortBy, reversed, mangasInLibrary, applyFilters],
+  );
   const { renderItem, keyExtractor, estimatedItemSize, columns, key } =
     useMangaFlashlistLayout<MangaSchema>(bookDimensions);
   const { scrollViewStyle, contentContainerStyle, onScroll } =
@@ -102,4 +146,4 @@ const ListEmptyComponent = React.memo(() => {
   );
 });
 
-export default Library;
+export default connector(Library);
