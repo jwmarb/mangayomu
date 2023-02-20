@@ -35,7 +35,7 @@ export interface LibraryState {
   numberOfFiltersApplied: number;
   reversed: boolean;
   filters: {
-    Sources: Record<string, undefined>;
+    Sources: Record<string, null>;
     Genres: Record<string, FilterState>;
   };
 }
@@ -71,7 +71,7 @@ const librarySlice = createSlice({
         delete state.filters.Sources[action.payload];
         state.numberOfSelectedSourcesInFilter++;
       } else {
-        state.filters.Sources[action.payload] = undefined;
+        state.filters.Sources[action.payload] = null;
         state.numberOfSelectedSourcesInFilter--;
       }
     },
@@ -95,7 +95,7 @@ const librarySlice = createSlice({
       state.numberOfSelectedSourcesInFilter = action.payload.length;
       state.numberOfFiltersApplied = 0;
       for (const source of action.payload) {
-        state.filters.Sources[source] = undefined;
+        state.filters.Sources[source] = null;
       }
     },
   },
