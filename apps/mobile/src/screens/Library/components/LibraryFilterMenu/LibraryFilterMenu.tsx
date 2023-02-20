@@ -5,6 +5,7 @@ import React from 'react';
 import { SceneMap } from 'react-native-tab-view';
 
 import Filter from './Tabs/Filter';
+import Sort from './Tabs/Sort';
 
 const LibraryFilterMenu: React.ForwardRefRenderFunction<BottomSheetMethods> = (
   props,
@@ -24,7 +25,7 @@ const LibraryFilterMenu: React.ForwardRefRenderFunction<BottomSheetMethods> = (
 
 const renderScene = SceneMap({
   filter: Filter,
-  sort: () => null,
+  sort: Sort,
 });
 const routes = [
   {
