@@ -31,6 +31,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { ListRenderItem, SectionListData } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import Button from '@components/Button';
 const keyExtractor = (x: string, i: number) => x + i;
 
 interface SectionHeaderProps {
@@ -74,8 +75,17 @@ const SectionHeader: React.FC<SectionHeaderProps> = React.memo(
 );
 
 const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
-  const { host, hosts, filterStates, toggleGenre, toggleSourceVisibility } =
-    props;
+  const {
+    host,
+    hosts,
+    filterStates,
+    toggleGenre,
+    toggleSourceVisibility,
+    resetFilters,
+  } = props;
+  const onResetFilter = () => {
+    resetFilters(hosts);
+  };
   const [genresSet, genres] = host.getUniqGenres();
   const data = React.useRef([
     {
@@ -143,7 +153,15 @@ const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
 
   return (
     <BottomSheetSectionList
-      // ListHeaderComponent={} // use this for additional filters
+      ListHeaderComponent={
+        <Box mx="m" my="s">
+          <Button
+            label="Reset Filters"
+            onPress={onResetFilter}
+            variant="outline"
+          />
+        </Box>
+      } // use this for additional filters
       sections={data}
       keyExtractor={keyExtractor}
       renderSectionHeader={renderSectionHeader}

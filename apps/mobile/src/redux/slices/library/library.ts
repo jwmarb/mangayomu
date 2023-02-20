@@ -90,6 +90,14 @@ const librarySlice = createSlice({
           break;
       }
     },
+    resetFilters: (state, action: PayloadAction<string[]>) => {
+      state.filters.Genres = {};
+      state.numberOfSelectedSourcesInFilter = action.payload.length;
+      state.numberOfFiltersApplied = 0;
+      for (const source of action.payload) {
+        state.filters.Sources[source] = undefined;
+      }
+    },
   },
 });
 
@@ -98,6 +106,7 @@ export const {
   toggleLibraryReverse,
   toggleGenre,
   toggleSourceVisibility,
+  resetFilters,
 } = librarySlice.actions;
 
 export default librarySlice.reducer;
