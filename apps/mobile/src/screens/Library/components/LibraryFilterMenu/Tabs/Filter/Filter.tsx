@@ -32,6 +32,8 @@ import Animated, {
 import { ListRenderItem, SectionListData } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Button from '@components/Button';
+import { moderateScale } from 'react-native-size-matters';
+import { useTheme } from '@emotion/react';
 const keyExtractor = (x: string, i: number) => x + i;
 
 interface SectionHeaderProps {
@@ -155,13 +157,9 @@ const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
     <BottomSheetSectionList
       ListHeaderComponent={
         <Box mx="m" my="s">
-          <Button
-            label="Reset Filters"
-            onPress={onResetFilter}
-            variant="outline"
-          />
+          <Button label="Reset Filters" onPress={onResetFilter} />
         </Box>
-      } // use this for additional filters
+      }
       sections={data}
       keyExtractor={keyExtractor}
       renderSectionHeader={renderSectionHeader}
