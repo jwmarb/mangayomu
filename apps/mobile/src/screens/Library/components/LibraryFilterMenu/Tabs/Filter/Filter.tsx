@@ -125,7 +125,7 @@ const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
           <CheckboxItem
             key={item}
             title={item}
-            checked={filterStates.Sources[item]}
+            checked={item in filterStates.Sources}
             onToggle={toggleSourceVisibility}
             itemKey={item}
           />
