@@ -51,6 +51,8 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
       displayMessage(
         mangaObj.inLibrary ? 'Added to library' : 'Removed from library',
       );
+      if (mangaObj.inLibrary) mangaObj.dateAddedInLibrary = new Date();
+      else mangaObj.dateAddedInLibrary = undefined;
     });
   }, [update]);
   const scrollPosition = useSharedValue(0);
