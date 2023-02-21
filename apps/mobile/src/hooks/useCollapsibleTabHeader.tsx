@@ -1,4 +1,5 @@
 import Box from '@components/Box';
+import { BoxProps } from '@components/Box/Box.interfaces';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
 import { NAVHEADER_HEIGHT, NavStyles } from '@components/NavHeader';
@@ -30,6 +31,12 @@ export interface CollapsibleTabHeaderOptions {
   headerRight?: React.ReactNode;
   headerTitle?: string;
   headerCenter?: React.ReactNode;
+  showHeaderCenter?: boolean;
+  header?: React.ReactNode;
+  showHeaderLeft?: boolean;
+  showHeaderRight?: boolean;
+  headerLeftProps?: BoxProps;
+  headerRightProps?: BoxProps;
   /**
    * The conditions in which the header should rerender, such as a state.
    */
@@ -49,6 +56,20 @@ const CollapsibleBase = React.memo<
     headerLeft,
     headerRight,
     headerTitle = routeName,
+    header,
+    showHeaderLeft,
+    showHeaderRight,
+    showHeaderCenter,
+    headerLeftProps = {
+      'flex-grow': true,
+      'justify-content': 'center',
+      maxWidth: '33%',
+    },
+    headerRightProps = {
+      'flex-grow': true,
+      'justify-content': 'center',
+      maxWidth: '33%',
+    },
   }) => {
     return (
       <Box
@@ -63,24 +84,26 @@ const CollapsibleBase = React.memo<
         background-color="transparent"
       >
         <Stack space="s" flex-direction="row" justify-content="space-between">
-          {(headerLeft || headerRight) && (
-            <Box flex-grow justify-content="center" maxWidth="33%">
+          {showHeaderLeft && (headerLeft || headerRight) && (
+            <Box {...headerLeftProps}>
               <Box ml="m" flex-direction="row">
                 {headerLeft}
               </Box>
             </Box>
           )}
-          <Box flex-grow justify-content="center">
-            {headerCenter == null ? (
-              <Text variant="header" align="center" bold numberOfLines={1}>
-                {headerTitle}
-              </Text>
-            ) : (
-              headerCenter
-            )}
-          </Box>
-          {(headerLeft || headerRight) && (
-            <Box flex-grow justify-content="center" maxWidth="33%">
+          {showHeaderCenter && (
+            <Box flex-grow justify-content="center">
+              {headerCenter == null ? (
+                <Text variant="header" align="center" bold numberOfLines={1}>
+                  {headerTitle}
+                </Text>
+              ) : (
+                headerCenter
+              )}
+            </Box>
+          )}
+          {showHeaderRight && (headerLeft || headerRight) && (
+            <Box {...headerRightProps}>
               <Box mr="m" justify-content="flex-end" flex-direction="row">
                 {headerRight}
               </Box>
@@ -101,6 +124,12 @@ export default function useCollapsibleTabHeader(
     headerTitle,
     headerCenter,
     dependencies = [],
+    header,
+    showHeaderLeft = true,
+    showHeaderRight = true,
+    showHeaderCenter = true,
+    headerLeftProps,
+    headerRightProps,
   } = options;
   const theme = useTheme();
   const navigation = useRootNavigation();
@@ -165,16 +194,24 @@ export default function useCollapsibleTabHeader(
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      header: ({ route }) => (
-        <CollapsibleBase
-          style={animatedHeaderStyle}
-          routeName={route.name}
-          headerLeft={headerLeft}
-          headerRight={headerRight}
-          headerTitle={headerTitle}
-          headerCenter={headerCenter}
-        />
-      ),
+      header: ({ route }) =>
+        header ? (
+          header
+        ) : (
+          <CollapsibleBase
+            style={animatedHeaderStyle}
+            routeName={route.name}
+            headerLeft={headerLeft}
+            headerRight={headerRight}
+            headerTitle={headerTitle}
+            headerCenter={headerCenter}
+            showHeaderRight={showHeaderRight}
+            showHeaderLeft={showHeaderLeft}
+            showHeaderCenter={showHeaderCenter}
+            headerLeftProps={headerLeftProps}
+            headerRightProps={headerRightProps}
+          />
+        ),
     });
   }, dependencies);
 
