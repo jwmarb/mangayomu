@@ -14,7 +14,7 @@ import Animated, {
 import { InputProps } from './Input.interfaces';
 
 const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
-  const { onChangeText = () => void 0, icon, ...rest } = props;
+  const { onChangeText = () => void 0, icon, iconButton, ...rest } = props;
   const textRef = React.useRef<TextInput>(null);
   const opacity = useSharedValue(0);
   const theme = useTheme();
@@ -39,7 +39,13 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
           {React.cloneElement(icon, { variant: 'icon-button' })}
         </Box>
       )}
+      {iconButton && (
+        <Box left={0} position="absolute" align-self="center">
+          {iconButton}
+        </Box>
+      )}
       <InputBase
+        iconButton={iconButton}
         icon={icon}
         onChangeText={handleOnChangeText}
         {...rest}
@@ -54,7 +60,7 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
       <Box position="absolute" right={0} align-self="center" mr="m">
         <Animated.View style={style}>
           <IconButton
-            icon={<Icon name="close" />}
+            icon={<Icon type="font" name="close" />}
             compact
             color="textSecondary"
             onPress={handleOnClear}

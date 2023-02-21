@@ -6,4 +6,6 @@ export interface InputProps extends React.ComponentProps<TextInput> {
   maxWidth?: number | string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon?: React.ReactElement<any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  iconButton?: React.ReactElement<any>;
 }
