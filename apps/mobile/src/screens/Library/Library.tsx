@@ -13,7 +13,7 @@ import LibraryFilterMenu from '@screens/Library/components/LibraryFilterMenu';
 import { Freeze } from 'react-freeze';
 import Text from '@components/Text';
 import { moderateScale } from 'react-native-size-matters';
-import { useWindowDimensions } from 'react-native';
+import { StatusBar, useWindowDimensions } from 'react-native';
 import { Stack } from '@components/Stack';
 import { inPlaceSort } from 'fast-sort';
 import connector, { ConnectedLibraryProps } from './Library.redux';
@@ -21,6 +21,9 @@ import { SORT_LIBRARY_BY } from '@redux/slices/library';
 import { FilterState } from '@redux/slices/mainSourceSelector';
 import Checkbox from '@components/Checkbox';
 import Badge from '@components/Badge';
+import Input from '@components/Input';
+import { Portal } from '@gorhom/portal';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 const Library: React.FC<ConnectedLibraryProps> = ({
   sortBy,
@@ -30,6 +33,7 @@ const Library: React.FC<ConnectedLibraryProps> = ({
   numberOfAppliedFilters,
 }) => {
   const ref = React.useRef<BottomSheetMethods>(null);
+  const inputRef = React.useRef<React.ElementRef<typeof Input>>(null);
   const mangas = useQuery(MangaSchema);
   function handleOnPress() {
     ref.current?.snapToIndex(1);
@@ -63,35 +67,107 @@ const Library: React.FC<ConnectedLibraryProps> = ({
   }, [filters.Genres, filters.Sources]);
 
   const mangasInLibrary = mangas.filtered('inLibrary == true');
-  const data = React.useMemo(
+  const [showSearchBar, setShowSearchBar] = React.useState<boolean>(false);
+  const [query, setQuery] = React.useState<string>('');
+  function handleOnShowSearchBar() {
+    setShowSearchBar(true);
+    inputRef.current?.focus();
+  }
+  function handleOnBlur() {
+    setShowSearchBar(false);
+  }
+
+  const sortedData = React.useMemo(
     () =>
       inPlaceSort(mangasInLibrary.filter(applyFilters)).by(
         reversed
           ? { desc: SORT_LIBRARY_BY[sortBy] }
           : { asc: SORT_LIBRARY_BY[sortBy] },
       ),
-    [sortBy, reversed, mangasInLibrary, applyFilters],
+    [sortBy, reversed, mangasInLibrary.length, applyFilters],
   );
+  const data = React.useMemo(
+    () =>
+      sortedData.filter((x) =>
+        x.title.toLowerCase().includes(query.toLowerCase()),
+      ),
+    [sortedData, query],
+  );
+  const inputStyle = useAnimatedStyle(() => ({
+    opacity: showSearchBar ? 1 : 0,
+  }));
   const { renderItem, keyExtractor, estimatedItemSize, columns, key } =
     useMangaFlashlistLayout<MangaSchema>(bookDimensions);
   const { scrollViewStyle, contentContainerStyle, onScroll } =
     useCollapsibleTabHeader({
       headerTitle: 'Library',
-      headerRight:
-        mangasInLibrary.length > 0 ? (
-          <Badge type="number" count={numberOfAppliedFilters} color="primary">
-            <IconButton
-              icon={<Icon type="font" name="filter-menu" />}
-              onPress={handleOnPress}
+      headerLeft:
+        mangasInLibrary.length > 0 && !showSearchBar ? (
+          <IconButton
+            icon={<Icon type="font" name="magnify" />}
+            onPress={handleOnShowSearchBar}
+          />
+        ) : (
+          <Box maxWidth="90%">
+            <Input
+              iconButton={
+                <IconButton
+                  icon={<Icon type="font" name="arrow-left" />}
+                  onPress={() => console.log('Back')}
+                />
+              }
+              defaultValue={query}
+              onBlur={handleOnBlur}
+              ref={inputRef}
+              onChangeText={setQuery}
+              placeholder="Search for a title..."
+              width="100%"
             />
-          </Badge>
-        ) : null,
-      dependencies: [mangasInLibrary.length > 0, numberOfAppliedFilters],
+          </Box>
+        ),
+      headerLeftProps:
+        mangasInLibrary.length > 0 && !showSearchBar
+          ? { 'flex-shrink': true }
+          : { 'flex-grow': true },
+      showHeaderRight: mangasInLibrary.length > 0,
+      showHeaderCenter: !showSearchBar,
+      headerRight: (
+        <Badge type="number" count={numberOfAppliedFilters} color="primary">
+          <IconButton
+            icon={<Icon type="font" name="filter-menu" />}
+            onPress={handleOnPress}
+          />
+        </Badge>
+      ),
+      headerRightProps: { 'flex-shrink': true },
+      dependencies: [
+        mangasInLibrary.length > 0,
+        numberOfAppliedFilters,
+        showSearchBar,
+      ],
     });
+
+  React.useEffect(() => {
+    if (showSearchBar) inputRef.current?.focus();
+  }, [showSearchBar]);
+
   return (
     <>
+      {/* <Box
+        position="absolute"
+        top={0}
+        left={0}
+        right={0}
+        bottom={0}
+        z-index={1000}
+      >
+        <Animated.View style={inputStyle}>
+          
+        </Animated.View>
+      </Box> */}
       <FlashList
         onScroll={onScroll}
+        onMomentumScrollEnd={onScroll}
         data={data}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
