@@ -69,10 +69,10 @@ const librarySlice = createSlice({
     toggleSourceVisibility: (state, action: PayloadAction<string>) => {
       if (action.payload in state.filters.Sources) {
         delete state.filters.Sources[action.payload];
-        state.numberOfSelectedSourcesInFilter++;
+        state.numberOfSelectedSourcesInFilter--;
       } else {
         state.filters.Sources[action.payload] = null;
-        state.numberOfSelectedSourcesInFilter--;
+        state.numberOfSelectedSourcesInFilter++;
       }
     },
     toggleGenre: (state, action: PayloadAction<string>) => {
