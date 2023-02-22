@@ -7,6 +7,7 @@ import {
 import axios from 'axios';
 import url from 'url';
 import * as cheerio from 'cheerio';
+import { toPascalCase } from './scraper.helpers';
 
 abstract class MangaHost {
   /**
@@ -43,6 +44,8 @@ abstract class MangaHost {
    */
   private readonly genres: string[];
 
+  private readonly genresDictionary: Record<string, string>;
+
   /**
    * The link to the manga hosting website
    */
@@ -62,6 +65,13 @@ abstract class MangaHost {
   public constructor(info: MangaHostInfo) {
     this.link = url.parse(info.host).hostname ?? '';
     this.genres = info.genres;
+    this.genresDictionary = info.genres.reduce((prev, curr) => {
+      const pascalForm = toPascalCase(curr);
+
+      prev[pascalForm] = curr;
+      prev[curr] = pascalForm;
+      return prev;
+    }, {} as Record<string, string>);
     this.icon = info.icon;
     this.name = info.name;
     this.hotMangas = info.hasHotMangas ?? false;
@@ -119,8 +129,8 @@ abstract class MangaHost {
     return this.link;
   }
 
-  public getGenre(index: number) {
-    return this.genres[index];
+  public getGenre(genre: string) {
+    return this.genresDictionary[genre];
   }
 
   public getName() {
