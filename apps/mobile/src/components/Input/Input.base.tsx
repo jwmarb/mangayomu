@@ -10,6 +10,7 @@ export const InputBase = styled(TextInput)<InputProps>`
     border-radius: ${theme.style.borderRadius + 'px'};
     border-width: 1.5px;
     border-color: ${theme.palette.borderColor};
+    padding-horizontal: ${verticalScale(16) + 'px'};
     padding-vertical: ${verticalScale(6) + 'px'};
     ${theme.typography.body};
     background-color: ${theme.mode === 'light'

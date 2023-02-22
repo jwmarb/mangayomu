@@ -14,12 +14,19 @@ import Animated, {
 import { InputProps } from './Input.interfaces';
 
 const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
-  const { onChangeText = () => void 0, icon, iconButton, ...rest } = props;
+  const {
+    onChangeText = () => void 0,
+    icon,
+    iconButton,
+    defaultValue = '',
+    ...rest
+  } = props;
   const textRef = React.useRef<TextInput>(null);
-  const opacity = useSharedValue(0);
+  const opacity = useSharedValue(defaultValue.length > 0 ? 1 : 0);
   const theme = useTheme();
   function handleOnClear() {
     textRef.current?.clear();
+    onChangeText('');
     opacity.value = 0;
   }
   function handleOnChangeText(t: string) {
@@ -48,6 +55,7 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
         iconButton={iconButton}
         icon={icon}
         onChangeText={handleOnChangeText}
+        defaultValue={defaultValue}
         {...rest}
         ref={(r) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
