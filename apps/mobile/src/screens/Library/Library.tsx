@@ -73,7 +73,9 @@ const Library: React.FC<ConnectedLibraryProps> = ({
     setShowSearchBar(true);
     inputRef.current?.focus();
   }
-  function handleOnBlur() {
+
+  function handleOnBack() {
+    inputRef.current?.blur();
     setShowSearchBar(false);
   }
 
@@ -93,9 +95,6 @@ const Library: React.FC<ConnectedLibraryProps> = ({
       ),
     [sortedData, query],
   );
-  const inputStyle = useAnimatedStyle(() => ({
-    opacity: showSearchBar ? 1 : 0,
-  }));
   const { renderItem, keyExtractor, estimatedItemSize, columns, key } =
     useMangaFlashlistLayout<MangaSchema>(bookDimensions);
   const { scrollViewStyle, contentContainerStyle, onScroll } =
@@ -103,27 +102,26 @@ const Library: React.FC<ConnectedLibraryProps> = ({
       headerTitle: 'Library',
       headerLeft:
         mangasInLibrary.length > 0 && !showSearchBar ? (
-          <IconButton
-            icon={<Icon type="font" name="magnify" />}
-            onPress={handleOnShowSearchBar}
-          />
+          <Badge type="dot" show={query.length > 0} color="primary">
+            <IconButton
+              icon={<Icon type="font" name="magnify" />}
+              onPress={handleOnShowSearchBar}
+            />
+          </Badge>
         ) : (
-          <Box maxWidth="90%">
+          <Stack space="s" maxWidth="80%" flex-direction="row">
+            <IconButton
+              icon={<Icon type="font" name="arrow-left" />}
+              onPress={handleOnBack}
+            />
             <Input
-              iconButton={
-                <IconButton
-                  icon={<Icon type="font" name="arrow-left" />}
-                  onPress={() => console.log('Back')}
-                />
-              }
               defaultValue={query}
-              onBlur={handleOnBlur}
               ref={inputRef}
               onChangeText={setQuery}
               placeholder="Search for a title..."
               width="100%"
             />
-          </Box>
+          </Stack>
         ),
       headerLeftProps:
         mangasInLibrary.length > 0 && !showSearchBar
@@ -144,6 +142,7 @@ const Library: React.FC<ConnectedLibraryProps> = ({
         mangasInLibrary.length > 0,
         numberOfAppliedFilters,
         showSearchBar,
+        query.length > 0,
       ],
     });
 
