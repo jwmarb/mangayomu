@@ -8,6 +8,7 @@ import { RectButton } from 'react-native-gesture-handler';
 
 export interface CheckboxItemProps<T extends string> {
   title: string;
+  subtitle?: string;
   itemKey: T;
   checked: boolean;
   onToggle: (itemKey: T) => void;
@@ -27,7 +28,10 @@ function CheckboxItem<T extends string>(props: CheckboxItemProps<T>) {
         <Box>
           <Checkbox checked={props.checked} onChange={handleOnToggle} />
         </Box>
-        <Text color="textSecondary">{props.title}</Text>
+        <Stack space="s" flex-direction="row" align-self="center">
+          <Text color="textSecondary">{props.title}</Text>
+          <Text color="disabled">{props.subtitle}</Text>
+        </Stack>
       </Stack>
     </RectButton>
   );
