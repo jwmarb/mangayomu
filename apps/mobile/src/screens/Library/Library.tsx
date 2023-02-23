@@ -123,6 +123,7 @@ const Library: React.FC<ConnectedLibraryProps> = ({
             />
           </Stack>
         ),
+      showHeaderLeft: mangasInLibrary.length > 0,
       headerLeftProps:
         mangasInLibrary.length > 0 && !showSearchBar
           ? { 'flex-shrink': true }
