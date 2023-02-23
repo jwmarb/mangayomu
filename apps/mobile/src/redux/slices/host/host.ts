@@ -1,9 +1,12 @@
 import integrateSortedList from '@helpers/integrateSortedList';
+import { StringComparator } from '@mangayomu/algorithms';
 import { MangaHost } from '@mangayomu/mangascraper';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface HostState {
   name: string[];
+  pinned: Record<string, null>;
+  lastUsed: string;
   comparatorKey: keyof typeof SORT_HOSTS_BY;
   reversed: boolean;
   suspendRendering: boolean;
@@ -11,6 +14,8 @@ export interface HostState {
 
 const initialState: HostState = {
   name: [],
+  pinned: {},
+  lastUsed: '',
   comparatorKey: 'Alphabetically',
   reversed: false,
   suspendRendering: false,
@@ -39,6 +44,16 @@ export const hostSlice = createSlice({
     suspendRendering: (state) => {
       state.suspendRendering = true;
     },
+    pinSource: (state, action: PayloadAction<string>) => {
+      state.pinned[action.payload] = null;
+    },
+    unpinSource: (state, action: PayloadAction<string>) => {
+      delete state.pinned[action.payload];
+    },
+    toggleSourcePin: (state, action: PayloadAction<string>) => {
+      if (action.payload in state.pinned) delete state.pinned[action.payload];
+      else state.pinned[action.payload] = null;
+    },
     addSource: (state, action: PayloadAction<string>) => {
       const source = MangaHost.getAvailableSources().get(action.payload);
       if (source == null)
@@ -56,6 +71,7 @@ export const hostSlice = createSlice({
         state.name,
         SORT_HOSTS_BY[state.comparatorKey](state.reversed),
       ).remove(source.getName());
+      delete state.pinned[action.payload];
     },
     toggleReversedList: (state) => {
       state.reversed = !state.reversed;
@@ -84,5 +100,8 @@ export const {
   enableRerendering,
   removeAllSources,
   suspendRendering,
+  pinSource,
+  unpinSource,
+  toggleSourcePin,
 } = hostSlice.actions;
 export default hostSlice.reducer;

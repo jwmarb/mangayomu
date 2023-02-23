@@ -5,12 +5,12 @@ import Item from './components/Item';
 import SectionHeader from './components/SectionHeader';
 
 const Browse: React.FC<ConnectedBrowseProps> = (props) => {
-  const { sources } = props;
+  const { sources, pinnedSources } = props;
   const data = React.useMemo(() => {
     return [
       {
         title: 'Pinned',
-        data: [],
+        data: pinnedSources,
       },
       {
         title: 'Last used',
@@ -21,7 +21,7 @@ const Browse: React.FC<ConnectedBrowseProps> = (props) => {
         data: sources,
       },
     ];
-  }, [sources.length]);
+  }, [sources.length, pinnedSources.length]);
   return (
     <SectionList
       sections={data}

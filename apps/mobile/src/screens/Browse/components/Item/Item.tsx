@@ -9,10 +9,18 @@ import React from 'react';
 import { RectButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import { ItemProps } from './Item.interfaces';
+import connector, { ConnectedItemProps } from './Item.redux';
 
-const Item: React.FC<ItemProps> = ({ item }) => {
+const Item: React.FC<ConnectedItemProps> = ({
+  item,
+  isPinned,
+  toggleSourcePin,
+}) => {
   const theme = useTheme();
   const source = useMangaSource(item);
+  function handleOnPin() {
+    toggleSourcePin(item);
+  }
   return (
     <RectButton rippleColor={theme.palette.action.ripple}>
       <Stack
@@ -41,7 +49,11 @@ const Item: React.FC<ItemProps> = ({ item }) => {
           </Box>
         </Stack>
         <Stack space="s" flex-direction="row">
-          <IconButton icon={<Icon type="font" name="pin-outline" />} />
+          <IconButton
+            icon={<Icon type="font" name={isPinned ? 'pin' : 'pin-outline'} />}
+            color={isPinned ? 'primary' : 'textSecondary'}
+            onPress={handleOnPin}
+          />
           <IconButton icon={<Icon type="font" name="cog" />} />
         </Stack>
       </Stack>
@@ -49,4 +61,4 @@ const Item: React.FC<ItemProps> = ({ item }) => {
   );
 };
 
-export default React.memo(Item);
+export default connector(React.memo(Item));
