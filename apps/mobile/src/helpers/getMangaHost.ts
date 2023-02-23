@@ -62,6 +62,12 @@ export default function getMangaHost(state: AppState) {
         .sort((a, b) => a.genre.localeCompare(b.genre));
       return genres;
     },
+    getRawGenres() {
+      return hosts.reduce((prev, curr) => {
+        prev[curr.getName()] = curr.getFormattedGenres();
+        return prev;
+      }, {} as Record<string, string[]>);
+    },
     async getHotMangas(): Promise<MangaConcurrencyResult> {
       const mangaCollection = await Promise.allSettled(
         hosts.map((x) => x.listHotMangas()),
