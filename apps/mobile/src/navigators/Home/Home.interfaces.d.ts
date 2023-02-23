@@ -4,7 +4,7 @@ export type HomeTabParamList = {
   Explore: undefined;
   Library: undefined;
   History: undefined;
-  Settings: undefined;
+  More: undefined;
 };
 
 export type HomeTabProps<T extends keyof HomeTabParamList> =
