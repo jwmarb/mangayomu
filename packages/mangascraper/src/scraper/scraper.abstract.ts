@@ -46,6 +46,8 @@ abstract class MangaHost {
 
   private readonly genresDictionary: Record<string, string>;
 
+  private readonly formattedGenres: string[];
+
   /**
    * The link to the manga hosting website
    */
@@ -72,6 +74,7 @@ abstract class MangaHost {
       prev[curr] = pascalForm;
       return prev;
     }, {} as Record<string, string>);
+    this.formattedGenres = info.genres.map((x) => toPascalCase(x));
     this.icon = info.icon;
     this.name = info.name;
     this.hotMangas = info.hasHotMangas ?? false;
@@ -131,6 +134,10 @@ abstract class MangaHost {
 
   public getGenre(genre: string) {
     return this.genresDictionary[genre];
+  }
+
+  public getFormattedGenres() {
+    return this.formattedGenres;
   }
 
   public getName() {
