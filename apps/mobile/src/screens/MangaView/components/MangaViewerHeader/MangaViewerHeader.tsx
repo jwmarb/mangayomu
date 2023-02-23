@@ -102,7 +102,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
         width="100%"
       >
         <MangaDescription loading={isLoading} data={meta?.description} />
-        <MangaGenres data={meta?.genres} />
+        <MangaGenres data={meta?.genres} source={manga.source} />
         <Text variant="header" bold>
           Additional info
         </Text>

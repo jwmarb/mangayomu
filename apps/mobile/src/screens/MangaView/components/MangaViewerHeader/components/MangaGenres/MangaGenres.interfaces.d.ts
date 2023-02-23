@@ -1,4 +1,6 @@
 import { MangaMetaProperty } from '@screens/MangaView/components/MangaViewerHeader/MangaViewerHeader.interfaces';
 import React from 'react';
 
-export type MangaGenresProps = MangaMetaProperty<'genres'>;
+export interface MangaGenresProps extends MangaMetaProperty<'genres'> {
+  source: string;
+}
