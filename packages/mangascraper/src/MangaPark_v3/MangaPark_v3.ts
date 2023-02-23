@@ -120,9 +120,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
         'Order by': OrderBy,
       } = filters;
       const genres: string = Genres
-        ? `genres=${Genres.include
-            .map((x) => GENRES[x])
-            .join(',')}|${Genres.exclude.map((x) => GENRES[x]).join(',')}`
+        ? `genres=${Genres.include.join(',')}|${Genres.exclude.join(',')}`
         : '';
       const language: string =
         Language != null
@@ -265,9 +263,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
         })
         .get();
 
-    const genres = data.state.data.data.genres.map(
-      (x) => x[0].toUpperCase() + x.substring(1),
-    );
+    const genres = data.state.data.data.genres;
 
     const ratingValue = data.state.data.data.stat_score_bay;
 
