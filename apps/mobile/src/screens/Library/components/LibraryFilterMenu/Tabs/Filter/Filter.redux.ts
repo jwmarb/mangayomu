@@ -9,8 +9,6 @@ import {
 import { FilterProps } from './Filter.interfaces';
 
 const mapStateToProps = (state: AppState, props: FilterProps) => ({
-  host: getMangaHost(state),
-  hosts: state.host.name,
   filteredMangas: props.filtered,
   filterStates: state.library.filters,
 });
