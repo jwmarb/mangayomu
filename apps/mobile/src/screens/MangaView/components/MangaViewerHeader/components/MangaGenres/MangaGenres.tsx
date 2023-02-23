@@ -9,6 +9,17 @@ import { MangaGenresProps } from './MangaGenres.interfaces';
 const MangaGenres: React.FC<MangaGenresProps> = (props) => {
   const { data, source } = props;
   const host = useMangaSource(source);
+  React.useEffect(() => {
+    if (data != null)
+      for (const genre of data) {
+        if (host.getGenre(genre) == null)
+          console.warn(
+            `${genre} does not exist in host.getGenre(). Add it to the source genres.\nIndex in genres: ${host
+              .getGenres()
+              .indexOf(genre)}`,
+          );
+      }
+  }, [data]);
   return (
     <Stack flex-direction="row" flex-wrap="wrap" space="s" align-items="center">
       {data != null ? (
