@@ -27,13 +27,16 @@ import MangaViewModal from '@screens/MangaView/components/MangaViewModal';
 import { RefreshControl } from 'react-native-gesture-handler';
 import { ISOLangCode } from '@mangayomu/language-codes';
 import { inPlaceSort } from 'fast-sort';
+import connector, {
+  ConnectedMangaViewProps,
+} from '@screens/MangaView/MangaView.redux';
 
 const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 
-const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
+const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   const {
     route: { params },
-    navigation,
+    addIfNewSourceToLibrary,
   } = props;
   const theme = useTheme();
   const ref = React.useRef<BottomSheet>(null);
@@ -43,6 +46,7 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
   const handleOnBookmark = React.useCallback(() => {
     update((mangaObj) => {
+      addIfNewSourceToLibrary(mangaObj.source);
       mangaObj.inLibrary = !mangaObj.inLibrary;
       displayMessage(
         mangaObj.inLibrary ? 'Added to library' : 'Removed from library',
@@ -196,4 +200,4 @@ const renderItem: ListRenderItem<string> = ({ item }) => (
   <RowChapter rowChapterKey={item} />
 );
 
-export default MangaView;
+export default connector(MangaView);

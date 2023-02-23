@@ -164,7 +164,7 @@ const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
             key={item}
             title={item}
             subtitle={`(${mangasPerSource[item]})`}
-            checked={item in filterStates.Sources}
+            checked={filterStates.Sources[item]}
             onToggle={toggleSourceVisibility}
             itemKey={item}
           />
@@ -177,6 +177,7 @@ const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
       toggleSourceVisibility,
       toggleGenre,
       genresSet,
+      mangasPerSource,
     ],
   );
 

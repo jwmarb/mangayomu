@@ -35,7 +35,7 @@ export interface LibraryState {
   numberOfFiltersApplied: number;
   reversed: boolean;
   filters: {
-    Sources: Record<string, null>;
+    Sources: Record<string, boolean>;
     Genres: Record<string, FilterState>;
   };
 }
@@ -60,6 +60,12 @@ const librarySlice = createSlice({
   name: 'library',
   initialState: initialLibraryState,
   reducers: {
+    addIfNewSourceToLibrary: (state, action: PayloadAction<string>) => {
+      if (action.payload in state.filters.Sources === false) {
+        state.filters.Sources[action.payload] = true;
+        state.numberOfSelectedSourcesInFilter++;
+      }
+    },
     sortLibrary: (state, action: PayloadAction<LibrarySortOption>) => {
       state.sortBy = action.payload;
     },
@@ -67,11 +73,11 @@ const librarySlice = createSlice({
       state.reversed = !state.reversed;
     },
     toggleSourceVisibility: (state, action: PayloadAction<string>) => {
-      if (action.payload in state.filters.Sources) {
-        delete state.filters.Sources[action.payload];
+      if (state.filters.Sources[action.payload]) {
+        state.filters.Sources[action.payload] = false;
         state.numberOfSelectedSourcesInFilter--;
       } else {
-        state.filters.Sources[action.payload] = null;
+        state.filters.Sources[action.payload] = true;
         state.numberOfSelectedSourcesInFilter++;
       }
     },
@@ -95,7 +101,7 @@ const librarySlice = createSlice({
       state.numberOfSelectedSourcesInFilter = action.payload.length;
       state.numberOfFiltersApplied = 0;
       for (const source of action.payload) {
-        state.filters.Sources[source] = null;
+        state.filters.Sources[source] = true;
       }
     },
   },
@@ -107,6 +113,7 @@ export const {
   toggleGenre,
   toggleSourceVisibility,
   resetFilters,
+  addIfNewSourceToLibrary,
 } = librarySlice.actions;
 
 export default librarySlice.reducer;

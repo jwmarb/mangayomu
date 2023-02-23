@@ -67,8 +67,7 @@ const Library: React.FC<ConnectedLibraryProps> = ({
           else if (!manga.genres.has(source.getGenre(genre))) return false;
         }
       }
-      if (manga.source in filters.Sources === false) return false;
-      return true;
+      return filters.Sources[manga.source];
     };
   }, [filters.Genres, filters.Sources]);
 
