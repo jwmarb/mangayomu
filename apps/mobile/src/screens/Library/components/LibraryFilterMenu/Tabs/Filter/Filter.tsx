@@ -2,29 +2,16 @@ import Box from '@components/Box';
 import CheckboxItem from '@components/Filters/CheckboxItem';
 import Text from '@components/Text';
 
-import { BottomSheetSectionListProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetScrollable/types';
-
 import { FilterState } from '@redux/slices/mainSourceSelector';
 import FilterItem from '@components/Filters/FilterItem';
 import React from 'react';
 import connector, { ConnectedLibraryFilterProps } from './Filter.redux';
-import {
-  BottomSheetScrollView,
-  BottomSheetSectionList,
-} from '@gorhom/bottom-sheet';
-import Accordion from '@components/Accordion';
+import { BottomSheetSectionList } from '@gorhom/bottom-sheet';
 import { Stack } from '@components/Stack';
 import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
-import Animated, {
+import {
   Easing,
-  FadeIn,
-  FadeInDown,
-  FadeOut,
-  FadeOutUp,
-  SlideInDown,
-  SlideInUp,
-  SlideOutUp,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -32,8 +19,9 @@ import Animated, {
 import { ListRenderItem, SectionListData } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Button from '@components/Button';
-import { moderateScale } from 'react-native-size-matters';
-import { useTheme } from '@emotion/react';
+import { MangaHost } from '@mangayomu/mangascraper';
+import integrateSortedList from '@helpers/integrateSortedList';
+import { StringComparator } from '@mangayomu/algorithms';
 const keyExtractor = (x: string, i: number) => x + i;
 
 interface SectionHeaderProps {
@@ -78,27 +66,65 @@ const SectionHeader: React.FC<SectionHeaderProps> = React.memo(
 
 const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
   const {
-    host,
-    hosts,
     filterStates,
     toggleGenre,
     toggleSourceVisibility,
     resetFilters,
+    filteredMangas,
   } = props;
-  const onResetFilter = () => {
-    resetFilters(hosts);
-  };
-  const [genresSet, genres] = host.getUniqGenres();
-  const data = React.useRef([
-    {
-      title: 'Sources',
-      data: hosts,
-    },
-    {
-      title: 'Genres',
-      data: genres,
-    },
-  ]).current;
+  const hostsInLibrary = React.useMemo(
+    () =>
+      filteredMangas.reduce((prev, curr) => {
+        prev.add(curr.source);
+        return prev;
+      }, new Set<string>()),
+    [filteredMangas.length],
+  );
+  const mangasPerSource = React.useMemo(
+    () =>
+      filteredMangas.reduce((prev, curr) => {
+        if (curr.source in prev === false) prev[curr.source] = 1;
+        else prev[curr.source] += 1;
+        return prev;
+      }, {} as Record<string, number>),
+    [filteredMangas.length],
+  );
+  const onResetFilter = React.useCallback(() => {
+    resetFilters([...hostsInLibrary]);
+  }, [hostsInLibrary]);
+  const genresSet = React.useMemo(() => {
+    const genres = new Set<string>();
+    for (const source of hostsInLibrary) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const host = MangaHost.getAvailableSources().get(source)!;
+      for (const genre of host.getFormattedGenres()) {
+        genres.add(genre);
+      }
+    }
+    return genres;
+  }, [hostsInLibrary.size]);
+  const data = React.useMemo(() => {
+    const HostComparator = (a: string, b: string) =>
+      mangasPerSource[b] - mangasPerSource[a];
+    const sortedGenres: string[] = [];
+    for (const genre of genresSet) {
+      integrateSortedList(sortedGenres, StringComparator).add(genre);
+    }
+    const sortedHosts: string[] = [];
+    for (const host of hostsInLibrary) {
+      integrateSortedList(sortedHosts, HostComparator).add(host);
+    }
+    return [
+      {
+        title: 'Sources',
+        data: sortedHosts,
+      },
+      {
+        title: 'Genres',
+        data: sortedGenres,
+      },
+    ];
+  }, [hostsInLibrary.size, genresSet, mangasPerSource]);
   const [state, setState] = React.useState({
     Sources: true,
     Genres: false,
@@ -137,6 +163,7 @@ const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
           <CheckboxItem
             key={item}
             title={item}
+            subtitle={`(${mangasPerSource[item]})`}
             checked={item in filterStates.Sources}
             onToggle={toggleSourceVisibility}
             itemKey={item}

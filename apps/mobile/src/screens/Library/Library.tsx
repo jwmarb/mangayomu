@@ -13,7 +13,7 @@ import LibraryFilterMenu from '@screens/Library/components/LibraryFilterMenu';
 import { Freeze } from 'react-freeze';
 import Text from '@components/Text';
 import { moderateScale } from 'react-native-size-matters';
-import { StatusBar, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { Stack } from '@components/Stack';
 import { inPlaceSort } from 'fast-sort';
 import connector, { ConnectedLibraryProps } from './Library.redux';
@@ -22,8 +22,7 @@ import { FilterState } from '@redux/slices/mainSourceSelector';
 import Checkbox from '@components/Checkbox';
 import Badge from '@components/Badge';
 import Input from '@components/Input';
-import { Portal } from '@gorhom/portal';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { MangaHost } from '@mangayomu/mangascraper';
 
 const Library: React.FC<ConnectedLibraryProps> = ({
   sortBy,
@@ -51,14 +50,21 @@ const Library: React.FC<ConnectedLibraryProps> = ({
       }
     }
     return (manga: MangaSchema) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const source = MangaHost.getAvailableSources().get(manga.source)!;
       if (ignoreGenres.size > 0) {
         for (const genre of ignoreGenres) {
-          if (manga.genres.has(genre)) return false;
+          if (
+            source.getGenre(genre) != null &&
+            manga.genres.has(source.getGenre(genre))
+          )
+            return false;
         }
       }
       if (requireGenres.size > 0) {
         for (const genre of requireGenres) {
-          if (!manga.genres.has(genre)) return false;
+          if (source.getGenre(genre) == null) return false;
+          else if (!manga.genres.has(source.getGenre(genre))) return false;
         }
       }
       if (manga.source in filters.Sources === false) return false;
@@ -188,7 +194,7 @@ const Library: React.FC<ConnectedLibraryProps> = ({
         }
       />
       <Freeze freeze={mangasInLibrary.length === 0}>
-        <LibraryFilterMenu ref={ref} />
+        <LibraryFilterMenu ref={ref} filtered={mangasInLibrary} />
       </Freeze>
     </>
   );

@@ -1,8 +1,14 @@
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
 import { toggleLibraryReverse, sortLibrary } from '@redux/slices/library';
+import { MangaSchema } from '@database/schemas/Manga';
 
-const mapStateToProps = (state: AppState) => state.library;
+const mapStateToProps = (
+  state: AppState,
+  props: { filtered: MangaSchema[] },
+) => ({
+  filtered: props.filtered,
+});
 
 const connector = connect(
   mapStateToProps,
