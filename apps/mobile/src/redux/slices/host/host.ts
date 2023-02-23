@@ -10,6 +10,13 @@ export interface HostState {
   comparatorKey: keyof typeof SORT_HOSTS_BY;
   reversed: boolean;
   suspendRendering: boolean;
+  hostsConfig: Record<string, HostConfigState>;
+}
+
+export interface HostConfigState {
+  useWithUniversalSearch: boolean;
+  useLatestUpdates: boolean;
+  useHottestUpdates: boolean;
 }
 
 const initialState: HostState = {
@@ -19,6 +26,7 @@ const initialState: HostState = {
   comparatorKey: 'Alphabetically',
   reversed: false,
   suspendRendering: false,
+  hostsConfig: {},
 };
 
 export const SORT_HOSTS_BY = {
@@ -62,6 +70,13 @@ export const hostSlice = createSlice({
         state.name,
         SORT_HOSTS_BY[state.comparatorKey](state.reversed),
       ).add(source.getName());
+      if (action.payload in state.hostsConfig === false) {
+        state.hostsConfig[action.payload] = {
+          useWithUniversalSearch: true,
+          useHottestUpdates: source.hasHotMangas(),
+          useLatestUpdates: source.hasLatestMangas(),
+        };
+      }
     },
     removeSource: (state, action: PayloadAction<string>) => {
       const source = MangaHost.getAvailableSources().get(action.payload);
@@ -84,9 +99,28 @@ export const hostSlice = createSlice({
       state.name = sources.sort(
         SORT_HOSTS_BY[state.comparatorKey](state.reversed),
       );
+      for (const name of sources) {
+        if (name in state.hostsConfig === false) {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const source = MangaHost.getAvailableSources().get(name)!;
+          state.hostsConfig[name] = {
+            useWithUniversalSearch: true,
+            useHottestUpdates: source.hasHotMangas(),
+            useLatestUpdates: source.hasLatestMangas(),
+          };
+        }
+      }
     },
     removeAllSources: (state) => {
       state.name = [];
+      state.pinned = {};
+    },
+    toggleConfig: (
+      state,
+      action: PayloadAction<{ source: string; key: keyof HostConfigState }>,
+    ) => {
+      state.hostsConfig[action.payload.source][action.payload.key] =
+        !state.hostsConfig[action.payload.source][action.payload.key];
     },
   },
 });
@@ -103,5 +137,6 @@ export const {
   pinSource,
   unpinSource,
   toggleSourcePin,
+  toggleConfig,
 } = hostSlice.actions;
 export default hostSlice.reducer;
