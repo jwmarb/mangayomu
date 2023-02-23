@@ -64,7 +64,7 @@ export interface IMangaSchema
   description: string | null;
   genres: Set<string>;
   currentlyReadingChapter?: string;
-  dateAddedInLibrary?: Date;
+  dateAddedInLibrary?: number;
   notifyNewChaptersCount?: number;
   chapters: string[];
   sortChaptersBy: SortChaptersMethod;
@@ -83,7 +83,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   description!: string | null;
   genres!: Set<string>;
   currentlyReadingChapter!: string;
-  dateAddedInLibrary?: Date;
+  dateAddedInLibrary?: number;
   modifyNewChaptersCount!: number;
   chapters!: string[];
   sortChaptersBy!: keyof typeof SORT_CHAPTERS_BY;
@@ -107,7 +107,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
       description: 'mixed',
       genres: 'string<>',
       currentlyReadingChapter: 'string?',
-      dateAddedInLibrary: 'date?',
+      dateAddedInLibrary: 'int?',
       notifyNewChaptersCount: { type: 'int?', default: 0 },
       chapters: 'string[]',
       sortChaptersBy: { type: 'string', default: 'Chapter number' },
