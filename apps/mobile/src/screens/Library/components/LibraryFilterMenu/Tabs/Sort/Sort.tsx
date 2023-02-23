@@ -30,4 +30,4 @@ const Sort: React.FC<ConnectedLibrarySortProps> = (props) => {
   );
 };
 
-export default connector(Sort);
+export default connector(React.memo(Sort));
