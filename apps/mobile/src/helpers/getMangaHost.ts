@@ -70,7 +70,11 @@ export default function getMangaHost(state: AppState) {
     },
     async getHotMangas(): Promise<MangaConcurrencyResult> {
       const mangaCollection = await Promise.allSettled(
-        hosts.map((x) => x.listHotMangas()),
+        hosts.map((x) =>
+          state.host.hostsConfig[x.getName()].useHottestUpdates
+            ? x.listHotMangas()
+            : ([] as Manga[]),
+        ),
       );
       const [errors, mangas] = mangaCollection.reduce(
         (prev, curr, index) => {
@@ -91,7 +95,11 @@ export default function getMangaHost(state: AppState) {
     },
     async getLatestMangas(): Promise<MangaConcurrencyResult> {
       const mangaCollection = await Promise.allSettled(
-        hosts.map((x) => x.listRecentlyUpdatedManga()),
+        hosts.map((x) =>
+          state.host.hostsConfig[x.getName()].useLatestUpdates
+            ? x.listRecentlyUpdatedManga()
+            : ([] as Manga[]),
+        ),
       );
       const [errors, mangas] = mangaCollection.reduce(
         (prev, curr, index) => {
