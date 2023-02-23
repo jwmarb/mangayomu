@@ -47,7 +47,7 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
       displayMessage(
         mangaObj.inLibrary ? 'Added to library' : 'Removed from library',
       );
-      if (mangaObj.inLibrary) mangaObj.dateAddedInLibrary = new Date();
+      if (mangaObj.inLibrary) mangaObj.dateAddedInLibrary = Date.now();
       else mangaObj.dateAddedInLibrary = undefined;
     });
   }, [update]);
