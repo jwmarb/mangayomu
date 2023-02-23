@@ -9,6 +9,9 @@ export type RootStackParamList = {
   BasicMangaList: {
     stateKey: keyof ExploreState['states'];
   };
+  SourceView: {
+    source: string;
+  };
 };
 
 export type RootStackProps<T extends keyof RootStackParamList> =
