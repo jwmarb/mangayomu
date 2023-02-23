@@ -5,6 +5,7 @@ export type HomeTabParamList = {
   Library: undefined;
   History: undefined;
   More: undefined;
+  Browse: undefined;
 };
 
 export type HomeTabProps<T extends keyof HomeTabParamList> =

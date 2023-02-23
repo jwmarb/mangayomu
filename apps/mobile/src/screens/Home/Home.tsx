@@ -1,6 +1,7 @@
 import { TabHeader } from '@components/NavHeader';
 import NavTabs from '@components/NavTabs';
 import { HomeTabNavigator } from '@navigators/Home';
+import Browse from '@screens/Browse';
 import Explore from '@screens/Explore';
 import History from '@screens/History';
 import Library from '@screens/Library';
@@ -18,6 +19,7 @@ const Home: React.FC = () => {
     >
       <HomeTabNavigator.Screen component={Explore} name="Explore" />
       <HomeTabNavigator.Screen component={Library} name="Library" />
+      <HomeTabNavigator.Screen component={Browse} name="Browse" />
       <HomeTabNavigator.Screen component={History} name="History" />
       <HomeTabNavigator.Screen component={More} name="More" />
     </HomeTabNavigator.Navigator>

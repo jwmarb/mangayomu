@@ -45,8 +45,21 @@ const tabIcons = {
       name="history"
     />
   ),
-  Settings: (
-    <Icon type="font" variant="inherit" size={moderateScale(20)} name="cog" />
+  More: (
+    <Icon
+      type="font"
+      variant="inherit"
+      size={moderateScale(20)}
+      name="dots-horizontal"
+    />
+  ),
+  Browse: (
+    <Icon
+      type="font"
+      variant="inherit"
+      size={moderateScale(20)}
+      name="magnify"
+    />
   ),
 };
 
