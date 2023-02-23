@@ -5,6 +5,7 @@ import { Stack } from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import useMangaSource from '@hooks/useMangaSource';
+import useRootNavigation from '@hooks/useRootNavigation';
 import React from 'react';
 import { RectButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
@@ -18,8 +19,12 @@ const Item: React.FC<ConnectedItemProps> = ({
 }) => {
   const theme = useTheme();
   const source = useMangaSource(item);
+  const navigation = useRootNavigation();
   function handleOnPin() {
     toggleSourcePin(item);
+  }
+  function navigateToSettings() {
+    navigation.navigate('SourceView', { source: item });
   }
   return (
     <RectButton rippleColor={theme.palette.action.ripple}>
@@ -54,7 +59,10 @@ const Item: React.FC<ConnectedItemProps> = ({
             color={isPinned ? 'primary' : 'textSecondary'}
             onPress={handleOnPin}
           />
-          <IconButton icon={<Icon type="font" name="cog" />} />
+          <IconButton
+            icon={<Icon type="font" name="cog" />}
+            onPress={navigateToSettings}
+          />
         </Stack>
       </Stack>
     </RectButton>
