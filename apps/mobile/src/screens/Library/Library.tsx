@@ -114,19 +114,19 @@ const Library: React.FC<ConnectedLibraryProps> = ({
             />
           </Badge>
         ) : (
-          <Stack space="s" maxWidth="80%" flex-direction="row">
-            <IconButton
-              icon={<Icon type="font" name="arrow-left" />}
-              onPress={handleOnBack}
-            />
-            <Input
-              defaultValue={query}
-              ref={inputRef}
-              onChangeText={setQuery}
-              placeholder="Search for a title..."
-              width="100%"
-            />
-          </Stack>
+          <Input
+            defaultValue={query}
+            ref={inputRef}
+            onChangeText={setQuery}
+            placeholder="Search for a title..."
+            expanded
+            iconButton={
+              <IconButton
+                icon={<Icon type="font" name="arrow-left" />}
+                onPress={handleOnBack}
+              />
+            }
+          />
         ),
       showHeaderLeft: mangasInLibrary.length > 0,
       headerLeftProps:
