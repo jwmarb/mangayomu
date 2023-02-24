@@ -154,6 +154,7 @@ export default function useCollapsibleHeader(
         easing: Easing.ease,
       });
       cancelAnimation(loadingBarTranslateX);
+      loadingBarTranslateX.value = 0;
     }
 
     return () => {

@@ -18,13 +18,19 @@ import {
 } from 'react-native';
 import { NativeSyntheticEvent } from 'react-native';
 import Animated, {
+  cancelAnimation,
+  Easing,
   interpolate,
   interpolateColor,
   runOnUI,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
 } from 'react-native-reanimated';
+import { moderateScale } from 'react-native-size-matters';
 
 export interface CollapsibleTabHeaderOptions {
   headerLeft?: React.ReactNode;
@@ -41,6 +47,7 @@ export interface CollapsibleTabHeaderOptions {
    * The conditions in which the header should rerender, such as a state.
    */
   dependencies?: React.DependencyList;
+  loading?: boolean;
 }
 
 const CollapsibleBase = React.memo<
@@ -130,11 +137,50 @@ export default function useCollapsibleTabHeader(
     showHeaderCenter = true,
     headerLeftProps,
     headerRightProps,
+    loading = false,
   } = options;
   const theme = useTheme();
   const navigation = useRootNavigation();
   const translateY = useSharedValue(0);
   const scrollPosition = useSharedValue(0);
+  const loadingOpacity = useSharedValue(0);
+  const loadingBarTranslateX = useSharedValue(0);
+  const { width } = useWindowDimensions();
+
+  React.useLayoutEffect(() => {
+    if (loading) {
+      loadingOpacity.value = withTiming(1, {
+        duration: 150,
+        easing: Easing.ease,
+      });
+      loadingBarTranslateX.value = withRepeat(
+        withSequence(
+          withTiming(width * 1.3, { duration: 1500, easing: Easing.linear }),
+        ),
+        -1,
+      );
+    } else {
+      loadingOpacity.value = withTiming(0, {
+        duration: 150,
+        easing: Easing.ease,
+      });
+      cancelAnimation(loadingBarTranslateX);
+      loadingBarTranslateX.value = 0;
+    }
+
+    return () => {
+      cancelAnimation(loadingOpacity);
+      cancelAnimation(loadingBarTranslateX);
+    };
+  }, [loading, width]);
+
+  const loadingStyle = useAnimatedStyle(() => ({
+    opacity: loadingOpacity.value,
+  }));
+  const loadingBarStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: loadingBarTranslateX.value }],
+  }));
+
   const opacity = useDerivedValue(() =>
     interpolate(translateY.value, [-NAVHEADER_HEIGHT, 0], [0, 1]),
   );
@@ -198,19 +244,43 @@ export default function useCollapsibleTabHeader(
         header ? (
           header
         ) : (
-          <CollapsibleBase
-            style={animatedHeaderStyle}
-            routeName={route.name}
-            headerLeft={headerLeft}
-            headerRight={headerRight}
-            headerTitle={headerTitle}
-            headerCenter={headerCenter}
-            showHeaderRight={showHeaderRight}
-            showHeaderLeft={showHeaderLeft}
-            showHeaderCenter={showHeaderCenter}
-            headerLeftProps={headerLeftProps}
-            headerRightProps={headerRightProps}
-          />
+          <>
+            <CollapsibleBase
+              style={animatedHeaderStyle}
+              routeName={route.name}
+              headerLeft={headerLeft}
+              headerRight={headerRight}
+              headerTitle={headerTitle}
+              headerCenter={headerCenter}
+              showHeaderRight={showHeaderRight}
+              showHeaderLeft={showHeaderLeft}
+              showHeaderCenter={showHeaderCenter}
+              headerLeftProps={headerLeftProps}
+              headerRightProps={headerRightProps}
+            />
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              right={0}
+              as={Animated.View}
+              style={loadingStyle}
+              height={moderateScale(3)}
+              width="100%"
+              background-color="disabled"
+            >
+              <Box
+                position="absolute"
+                top={0}
+                left="-30%"
+                as={Animated.View}
+                width="30%"
+                height={moderateScale(3)}
+                background-color="primary"
+                style={loadingBarStyle}
+              />
+            </Box>
+          </>
         ),
     });
   }, dependencies);
