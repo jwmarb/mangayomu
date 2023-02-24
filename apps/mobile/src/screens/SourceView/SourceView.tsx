@@ -69,7 +69,7 @@ const SourceView: React.FC<ConnectedSourceViewProps> = (props) => {
         <Box mx="m" my="s">
           <Button
             label="Visit website"
-            icon={<Icon type="font" name="earth" />}
+            icon={<Icon type="font" name="web" />}
             onPress={handleOnViewWebsite}
             onLongPress={handleOnLongPress}
           />
