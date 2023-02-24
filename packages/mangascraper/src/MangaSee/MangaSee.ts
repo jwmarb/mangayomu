@@ -20,6 +20,7 @@ import { binary, StringComparator } from '@mangayomu/algorithms';
 import { titleIncludes } from '../filter';
 
 class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
+  private memoizedDir: MangaSeeManga[] | null = null;
   private imageURLBase: string | null = null;
   private getImageCover(html: string | null, indexName: string) {
     if (this.imageURLBase == null) {
@@ -65,31 +66,34 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   }
 
   public async listMangas(): Promise<MangaSeeManga[]> {
-    const $ = await super.route('/search');
-    const html = $('body').html();
-    const { variable } = processScript(html);
-    const Directory = variable<Directory[]>('vm.Directory');
-    const result = Directory.map((x, i) => ({
-      title: x.s,
-      link: `https://${super.getLink()}/manga/${x.i}`,
-      imageCover: this.getImageCover(html, x.i),
-      status: {
-        scan: x.ss,
-        publish: x.ps,
-      },
-      index: i,
-      isHentai: x.h,
-      type: x.t,
-      genres: x.g,
-      yearReleased: x.y,
-      source: super.getName(),
-      officialTranslation: x.o === 'yes' ? true : false,
-      altTitles: x.al,
-      lt: parseInt(x.lt),
-      v: parseInt(x.v),
-      vm: parseInt(x.vm),
-    }));
-    return result;
+    if (this.memoizedDir == null) {
+      const $ = await super.route('/search');
+      const html = $('body').html();
+      const { variable } = processScript(html);
+      const Directory = variable<Directory[]>('vm.Directory');
+      const result = Directory.map((x, i) => ({
+        title: x.s,
+        link: `https://${super.getLink()}/manga/${x.i}`,
+        imageCover: this.getImageCover(html, x.i),
+        status: {
+          scan: x.ss,
+          publish: x.ps,
+        },
+        index: i,
+        isHentai: x.h,
+        type: x.t,
+        genres: x.g,
+        yearReleased: x.y,
+        source: super.getName(),
+        officialTranslation: x.o === 'yes' ? true : false,
+        altTitles: x.al,
+        lt: parseInt(x.lt),
+        v: parseInt(x.v),
+        vm: parseInt(x.vm),
+      }));
+      return result;
+    }
+    return this.memoizedDir;
   }
 
   public async getMeta(manga: Manga): Promise<MangaSeeMangaMeta & Manga> {
