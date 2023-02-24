@@ -5,7 +5,7 @@ import { TextInput } from 'react-native-gesture-handler';
 import { moderateScale, verticalScale } from 'react-native-size-matters';
 
 export const InputBase = styled(TextInput)<InputProps>`
-  ${({ theme, width, maxWidth, icon, iconButton }) => css`
+  ${({ theme, width, maxWidth, icon, iconButton, expanded }) => css`
     color: ${theme.palette.text.primary};
     border-radius: ${theme.style.borderRadius + 'px'};
     border-width: 1.5px;
@@ -23,5 +23,7 @@ export const InputBase = styled(TextInput)<InputProps>`
     css`
       padding-left: ${moderateScale(48) + 'px'};
     `};
+    ${expanded && 'flex-grow: 1'};
+    z-index: -1000;
   `}
 `;

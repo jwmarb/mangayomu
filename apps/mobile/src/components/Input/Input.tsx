@@ -19,6 +19,7 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
     icon,
     iconButton,
     defaultValue = '',
+    expanded,
     ...rest
   } = props;
   const textRef = React.useRef<TextInput>(null);
@@ -56,6 +57,7 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
         icon={icon}
         onChangeText={handleOnChangeText}
         defaultValue={defaultValue}
+        expanded={expanded}
         {...rest}
         ref={(r) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
