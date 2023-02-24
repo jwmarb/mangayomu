@@ -16,6 +16,7 @@ import { reduxStorage } from '@mmkv-storage/main';
 import { MainSourceSelectorReducer } from '@redux/slices/mainSourceSelector';
 import { ExplorerReducer } from '@redux/slices/explore';
 import { LibraryReducer } from '@redux/slices/library';
+import { BrowseReducer } from '@redux/slices/browse';
 
 const reducers = combineReducers({
   __initial__: __initialReducer__,
@@ -23,12 +24,13 @@ const reducers = combineReducers({
   mainSourceSelector: MainSourceSelectorReducer,
   explore: ExplorerReducer,
   library: LibraryReducer,
+  browse: BrowseReducer,
 });
 
 const persistConfig: PersistConfig<AppState> = {
   key: 'root',
   storage: reduxStorage,
-  blacklist: ['explore'],
+  blacklist: ['explore', 'browse'],
 };
 
 const persisted = persistReducer(persistConfig, reducers);

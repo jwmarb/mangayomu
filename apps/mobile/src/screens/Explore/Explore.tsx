@@ -17,19 +17,26 @@ import {
   ActivityIndicator,
   InteractionManager,
   ListRenderItem,
+  NativeSyntheticEvent,
+  TextInputSubmitEditingEventData,
   useWindowDimensions,
 } from 'react-native';
 import MainSourceSelector from '@screens/Welcome/components/MainSourceSelector';
 import Avatar from '@components/Avatar';
 import Badge from '@components/Badge';
 import NetInfo, { NetInfoStateType } from '@react-native-community/netinfo';
-import { FlatList, RefreshControl } from 'react-native-gesture-handler';
+import {
+  FlatList,
+  RefreshControl,
+  TextInput,
+} from 'react-native-gesture-handler';
 import { Manga } from '@mangayomu/mangascraper';
 import { HotMangaList } from '@screens/Explore/components/HotMangaList';
 import { LatestMangaList } from '@screens/Explore/components/LatestMangaList';
 import GenresList from '@screens/Explore/components/GenresList';
 import { Freeze } from 'react-freeze';
 import Progress from '@components/Progress';
+import useTabNavigation from '@hooks/useTabNavigation';
 
 const Explore: React.FC<ConnectedExploreProps> = ({
   source,
@@ -44,14 +51,17 @@ const Explore: React.FC<ConnectedExploreProps> = ({
 }) => {
   const { user } = useAuth0();
   const { height } = useWindowDimensions();
+  const navigation = useTabNavigation();
   const sourceSelectorRef =
     React.useRef<React.ElementRef<typeof MainSourceSelector>>(null);
+  const inputRef = React.useRef<TextInput>(null);
   function handleOnPress() {
     sourceSelectorRef.current?.snapToIndex(1);
   }
   const { onScroll, scrollViewStyle, contentContainerStyle } =
     useCollapsibleTabHeader({
       dependencies: [source.getSourcesLength()],
+      loading,
       headerLeft: (
         <Badge type="number" count={source.getSourcesLength()} color="primary">
           <IconButton
@@ -93,11 +103,23 @@ const Explore: React.FC<ConnectedExploreProps> = ({
       await fetchMangas();
     });
   }, [suspendRendering]);
+  function handleOnSubmitEditing(
+    e: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
+  ) {
+    navigation.navigate('Browse', { initialQuery: e.nativeEvent.text });
+    inputRef.current?.clear();
+  }
   return (
     <>
       <Animated.ScrollView
         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={fetchMangas} />
+          <RefreshControl
+            onRefresh={fetchMangas}
+            refreshing={loading}
+            tintColor="transparent"
+            colors={['transparent']}
+            style={{ backgroundColor: 'transparent' }}
+          />
         }
         style={scrollViewStyle}
         onScroll={onScroll}
@@ -107,6 +129,8 @@ const Explore: React.FC<ConnectedExploreProps> = ({
         <Stack space="s" flex-grow minHeight={height}>
           <Box my="s" mx="m">
             <Input
+              ref={inputRef}
+              onSubmitEditing={handleOnSubmitEditing}
               icon={<Icon type="font" name="magnify" />}
               width="100%"
               placeholder="Titles, authors, or topics"
