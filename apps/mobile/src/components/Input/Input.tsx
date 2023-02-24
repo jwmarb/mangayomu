@@ -24,6 +24,13 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
   } = props;
   const textRef = React.useRef<TextInput>(null);
   const opacity = useSharedValue(defaultValue.length > 0 ? 1 : 0);
+  React.useImperativeHandle(ref, () => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...(textRef.current as any),
+    clear: () => {
+      handleOnClear();
+    },
+  }));
   const theme = useTheme();
   function handleOnClear() {
     textRef.current?.clear();
