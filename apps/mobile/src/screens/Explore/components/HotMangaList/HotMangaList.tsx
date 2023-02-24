@@ -9,6 +9,7 @@ import { useTheme } from '@emotion/react';
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
 import useRootNavigation from '@hooks/useRootNavigation';
 import SourceWarningDetails from '@screens/Explore/components/SourceWarningDetails';
+import { EmptyMangaListComponent } from '@screens/Explore/Explore';
 import {
   keyExtractor,
   MangaListLoading,
@@ -17,7 +18,7 @@ import {
 } from '@screens/Explore/Explore.flatlist';
 import FlashList from '@shopify/flash-list/dist/FlashList';
 import React from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, useWindowDimensions } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import connector, { ConnectedHotMangaListProps } from './HotMangaList.redux';
@@ -65,13 +66,16 @@ const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
               />
             </Text>
           </Stack>
-          <Button
-            label="See More"
-            disabled={status === 'loading'}
-            onPress={handleOnPressSeeMore}
-          />
+          {(hotMangas.length > 9 || status === 'loading') && (
+            <Button
+              label="See More"
+              disabled={status === 'loading'}
+              onPress={handleOnPressSeeMore}
+            />
+          )}
         </Stack>
         <FlashList
+          ListEmptyComponent={EmptyMangaListComponent}
           ItemSeparatorComponent={MangaSeparator}
           contentContainerStyle={{ paddingHorizontal: theme.style.spacing.m }}
           ListHeaderComponent={<>{status === 'loading' && MangaListLoading}</>}

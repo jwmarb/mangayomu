@@ -13,6 +13,9 @@ const mapStateToProps = (state: AppState) => ({
   hotMangas: state.explore.states.hot,
   latestMangas: state.explore.states.latest,
   suspendRendering: state.host.suspendRendering,
+  loading:
+    state.explore.status.hot === 'loading' ||
+    state.explore.status.latest === 'loading',
 });
 
 const connector = connect(mapStateToProps, {

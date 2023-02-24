@@ -23,7 +23,7 @@ import MainSourceSelector from '@screens/Welcome/components/MainSourceSelector';
 import Avatar from '@components/Avatar';
 import Badge from '@components/Badge';
 import NetInfo, { NetInfoStateType } from '@react-native-community/netinfo';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList, RefreshControl } from 'react-native-gesture-handler';
 import { Manga } from '@mangayomu/mangascraper';
 import { HotMangaList } from '@screens/Explore/components/HotMangaList';
 import { LatestMangaList } from '@screens/Explore/components/LatestMangaList';
@@ -39,6 +39,7 @@ const Explore: React.FC<ConnectedExploreProps> = ({
   networkStatus,
   hotMangas,
   latestMangas,
+  loading,
   suspendRendering,
 }) => {
   const { user } = useAuth0();
@@ -74,23 +75,30 @@ const Explore: React.FC<ConnectedExploreProps> = ({
       netListener(); // unsubscribe from listening to network events
     };
   }, []);
+
+  async function fetchMangas() {
+    if (
+      (networkStatus === 'online' ||
+        (await NetInfo.fetch()).isInternetReachable) &&
+      !suspendRendering
+    ) {
+      refreshExplorerState();
+      const hot = await source.getHotMangas();
+      const latest = await source.getLatestMangas();
+      setExplorerState({ hot, latest });
+    }
+  }
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(async () => {
-      if (
-        (networkStatus === 'online' ||
-          (await NetInfo.fetch()).isInternetReachable) &&
-        !suspendRendering
-      ) {
-        refreshExplorerState();
-        const hot = await source.getHotMangas();
-        const latest = await source.getLatestMangas();
-        setExplorerState({ hot, latest });
-      }
+      await fetchMangas();
     });
   }, [suspendRendering]);
   return (
     <>
       <Animated.ScrollView
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={fetchMangas} />
+        }
         style={scrollViewStyle}
         onScroll={onScroll}
         onMomentumScrollEnd={onScroll}
@@ -134,5 +142,11 @@ const Explore: React.FC<ConnectedExploreProps> = ({
     </>
   );
 };
+
+export const EmptyMangaListComponent = (
+  <Box>
+    <Text color="textSecondary">No mangas found</Text>
+  </Box>
+);
 
 export default connector(Explore);

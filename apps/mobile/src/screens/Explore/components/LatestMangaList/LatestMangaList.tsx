@@ -9,6 +9,7 @@ import { useTheme } from '@emotion/react';
 import BottomSheet from '@gorhom/bottom-sheet';
 import useRootNavigation from '@hooks/useRootNavigation';
 import SourceWarningDetails from '@screens/Explore/components/SourceWarningDetails';
+import { EmptyMangaListComponent } from '@screens/Explore/Explore';
 import {
   keyExtractor,
   MangaListLoading,
@@ -65,16 +66,19 @@ const LatestMangaList: React.FC<ConnectedLatestMangaListProps> = (props) => {
               />
             </Text>
           </Stack>
-          <Button
-            label="See More"
-            disabled={status === 'loading'}
-            onPress={handleOnPressSeeMore}
-          />
+          {(latestMangas.length > 9 || status === 'loading') && (
+            <Button
+              label="See More"
+              disabled={status === 'loading'}
+              onPress={handleOnPressSeeMore}
+            />
+          )}
         </Stack>
         <FlashList
           ItemSeparatorComponent={MangaSeparator}
           contentContainerStyle={{ paddingHorizontal: theme.style.spacing.m }}
           ListHeaderComponent={<>{status === 'loading' && MangaListLoading}</>}
+          ListEmptyComponent={EmptyMangaListComponent}
           data={latestMangas.slice(0, 9)}
           estimatedItemSize={bookDimensions.height}
           renderItem={renderItem}
