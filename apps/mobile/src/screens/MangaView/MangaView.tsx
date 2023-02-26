@@ -12,7 +12,11 @@ import Icon from '@components/Icon';
 import { useQuery, useRealm } from '@database/main';
 import displayMessage from '@helpers/displayMessage';
 import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
-import {
+import Animated, {
+  FadeInDown,
+  FadeInUp,
+  FadeOutDown,
+  FadeOutUp,
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
@@ -30,6 +34,8 @@ import { inPlaceSort } from 'fast-sort';
 import connector, {
   ConnectedMangaViewProps,
 } from '@screens/MangaView/MangaView.redux';
+import Text from '@components/Text';
+import { Portal } from '@gorhom/portal';
 
 const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 
@@ -37,6 +43,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   const {
     route: { params },
     addIfNewSourceToLibrary,
+    internetStatus,
   } = props;
   const theme = useTheme();
   const ref = React.useRef<BottomSheet>(null);
@@ -157,6 +164,25 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
 
   return (
     <>
+      <Portal>
+        <Box
+          position="absolute"
+          bottom={0}
+          left={0}
+          right={0}
+          pointerEvents="none"
+        >
+          {internetStatus === 'offline' && (
+            <Animated.View exiting={FadeOutDown} entering={FadeInDown}>
+              <Box px="s" py="s" background-color="primary">
+                <Text bold align="center">
+                  You are viewing a local version of the manga
+                </Text>
+              </Box>
+            </Animated.View>
+          )}
+        </Box>
+      </Portal>
       <FlashList
         data={data}
         refreshing={refreshing}
