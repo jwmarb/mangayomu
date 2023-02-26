@@ -12,6 +12,9 @@ export type RootStackParamList = {
   SourceView: {
     source: string;
   };
+  InfiniteMangaList: {
+    source: string;
+  };
 };
 
 export type RootStackProps<T extends keyof RootStackParamList> =

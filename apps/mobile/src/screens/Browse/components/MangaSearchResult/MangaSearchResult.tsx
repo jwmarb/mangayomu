@@ -17,11 +17,16 @@ import {
 } from '@screens/Explore/Explore.flatlist';
 import Text from '@components/Text';
 import Icon from '@components/Icon';
+import useRootNavigation from '@hooks/useRootNavigation';
 const MangaSearchResult: React.FC<ConnectedMangaSearchResultProps> = (
   props,
 ) => {
   const { status, mangas, error, source } = props;
   const theme = useTheme();
+  const navigation = useRootNavigation();
+  function handleOnMore() {
+    navigation.navigate('InfiniteMangaList', { source });
+  }
   return (
     <Stack space="s">
       <Stack
@@ -49,7 +54,7 @@ const MangaSearchResult: React.FC<ConnectedMangaSearchResultProps> = (
             pointerEvents={mangas.length > 9 ? 'auto' : 'none'}
             opacity={mangas.length > 9 ? 1 : 0}
           >
-            <Button label="See More" />
+            <Button label="See More" onPress={handleOnMore} />
           </Box>
         )}
       </Stack>

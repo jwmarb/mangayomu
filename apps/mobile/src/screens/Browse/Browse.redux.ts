@@ -7,6 +7,7 @@ import {
   exitUniversalSearch,
   appendUniversalSearchResults,
   universalSearchResultHandler,
+  setQuery,
 } from '@redux/slices/browse';
 import { HomeTabProps } from '@navigators/Home/Home.interfaces';
 
@@ -20,6 +21,7 @@ const mapStateToProps = (state: AppState, props: HomeTabProps<'Browse'>) => ({
   loading: state.browse.loading,
   searchStates: state.browse.states,
   initialQuery: props.route.params?.initialQuery,
+  query: state.browse.query,
 });
 
 const connector = connect(mapStateToProps, {
@@ -28,6 +30,7 @@ const connector = connect(mapStateToProps, {
   exitUniversalSearch,
   appendUniversalSearchResults,
   universalSearchResultHandler,
+  setQuery,
 });
 
 export type ConnectedBrowseProps = ConnectedProps<typeof connector>;

@@ -13,6 +13,20 @@ export type MangaParkV3MangaMeta = MangaMeta<MangaMultilingualChapter> &
   WithRating &
   WithAuthors;
 
+export type MangaParkV3SearchManga = {
+  data: {
+    get_content_browse_search: {
+      items: {
+        data: {
+          name: string;
+          urlPath: string;
+          imageCoverUrl: string;
+        };
+      }[];
+    };
+  };
+};
+
 export type MangaParkV3HotMangas = {
   data: {
     get_content_browse_latest: {

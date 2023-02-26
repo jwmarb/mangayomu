@@ -88,8 +88,11 @@ const exploreSlice = createSlice({
       state,
       action: PayloadAction<NetInfoState>,
     ) => {
-      if (!action.payload.isInternetReachable) state.internetStatus = 'offline';
-      else state.internetStatus = 'online';
+      if (!action.payload.isInternetReachable) {
+        state.internetStatus = 'offline';
+      } else {
+        state.internetStatus = 'online';
+      }
     },
   },
 });

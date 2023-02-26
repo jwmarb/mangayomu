@@ -1,7 +1,6 @@
 import { sub } from 'date-fns';
 
 export const GENRES = {
-  All: 'all',
   Artbook: 'artbook',
   Cartoon: 'cartoon',
   Comic: 'comic',
@@ -114,15 +113,78 @@ export const GENRES = {
   Completed: 'completed',
   Hiatus: 'hiatus',
   Cancelled: 'cancelled',
-  '1 ~ 9': '1-9',
-  '10 ~ 29': '10-29',
-  '30 ~ 99': '30-99',
-  '100 ~ 199': '100-199',
-  '200+': '200',
-  '100+': '100',
-  '50+': '50',
-  '10+': '10',
+};
+
+export const VIEW_CHAPTERS = {
+  Any: null,
+  '0': '0',
   '1+': '1',
+  '10+': '10',
+  '20+': '20',
+  '30+': '30',
+  '40+': '40',
+  '50+': '50',
+  '60+': '60',
+  '70+': '70',
+  '80+': '80',
+  '90+': '90',
+  '100+': '100',
+  '200+': '200',
+  '300+': '300',
+  '200~299': '200-299',
+  '199~100': '199-100',
+  '99~90': '99-90',
+  '89~80': '89-80',
+  '79~70': '79-70',
+  '69~60': '69-60',
+  '59~50': '59-50',
+  '49~40': '49-40',
+  '39~30': '39-30',
+  '29~20': '29-20',
+  '19~10': '19-10',
+  '9~1': '9-1',
+} as const;
+
+export const TYPE = {
+  Any: null,
+  Artbook: 'artbook',
+  Cartoon: 'cartoon',
+  Comic: 'comic',
+  Doujinshi: 'doujinshi',
+  Imageset: 'imageset',
+  Manga: 'manga',
+  Manhua: 'manhua',
+  Manhwa: 'manhwa',
+  Webtoon: 'webtoon',
+  Western: 'western',
+} as const;
+
+export const OFFICIAL_WORK_STATUS = {
+  All: null,
+  Pending: 'pending',
+  Ongoing: 'ongoing',
+  Completed: 'completed',
+  Hiatus: 'hiatus',
+  Cancelled: 'cancelled',
+} as const;
+
+export const ORDER_BY = {
+  'Rating Score': 'field_score',
+  'Most Follows': 'field_follow',
+  'Most Reviews': 'field_review',
+  'Most Comments': 'field_post',
+  'Most Chapters': 'field_chapter',
+  'Latest Upload': 'field_upload',
+  'Recently Created': 'field_public',
+  'Name A-Z': 'field_name',
+} as const;
+
+export const ORIGINAL_WORK_LANGUAGE = {
+  English: 'en',
+  Chinese: 'zh',
+  Any: null,
+  Japanese: 'ja',
+  Korean: 'ko',
 };
 
 /**
@@ -145,7 +207,7 @@ export function extractChapterTitle(title: string) {
  * @returns Returns the string with numbers only
  */
 export function digitsOnly(str: string) {
-  return str.replace(/[^0-9\.]/g, '');
+  return str.replace(/[^0-9.]/g, '');
 }
 
 /**

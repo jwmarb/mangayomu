@@ -7,21 +7,28 @@ import {
 } from 'react-native-popup-menu';
 import { useTheme } from '@emotion/react';
 import { moderateScale } from 'react-native-size-matters';
-import { RectButton } from 'react-native-gesture-handler';
+import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import Box from '@components/Box';
 import Text from '@components/Text';
+
+const OptionTouchableComponent: React.FC<React.PropsWithChildren> = (props) => {
+  const theme = useTheme();
+  return <RectButton rippleColor={theme.palette.action.ripple} {...props} />;
+};
 
 const Menu: React.FC<MenuProps> = (props) => {
   const { trigger, children, title } = props;
   const theme = useTheme();
+  const shouldUseScroll = React.Children.count(children) > 4;
 
   const customMenuOptionsStyles = React.useMemo(
     () => ({
       optionsContainer: {
         backgroundColor: theme.palette.background.paper,
         maxWidth: moderateScale(300),
+        borderRadius: moderateScale(8),
         width: 'auto',
-        overflow: 'hidden' as const,
+        overflow: 'scroll' as const,
       },
       optionsWrapper: {
         maxWidth: moderateScale(300),
@@ -30,25 +37,26 @@ const Menu: React.FC<MenuProps> = (props) => {
         borderWidth: moderateScale(1),
         borderColor: theme.palette.background.disabled,
         borderRadius: moderateScale(8),
-        overflow: 'hidden',
+        maxHeight: shouldUseScroll ? moderateScale(200) : undefined,
+        overflow: 'scroll' as const,
       } as const,
-      OptionTouchableComponent: RectButton,
+      OptionTouchableComponent,
     }),
-    [theme],
+    [theme, shouldUseScroll],
   );
-  const customMenuTriggerCustomSyles = React.useMemo(
+  const customMenuTriggerCustomStyles = React.useMemo(
     () => ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       TriggerTouchableComponent: (props: any) => (
         <>{React.cloneElement(trigger, props)}</>
       ),
     }),
-    [theme],
+    [theme, trigger],
   );
 
   return (
     <RNMenu>
-      <MenuTrigger customStyles={customMenuTriggerCustomSyles} />
+      <MenuTrigger customStyles={customMenuTriggerCustomStyles} />
       <MenuOptions customStyles={customMenuOptionsStyles}>
         {title && (
           <Box
@@ -63,7 +71,7 @@ const Menu: React.FC<MenuProps> = (props) => {
             </Text>
           </Box>
         )}
-        {children}
+        <ScrollView persistentScrollbar>{children}</ScrollView>
       </MenuOptions>
     </RNMenu>
   );

@@ -1,68 +1,18 @@
 import Box from '@components/Box';
 import CheckboxItem from '@components/Filters/CheckboxItem';
-import Text from '@components/Text';
 
 import { FilterState } from '@redux/slices/mainSourceSelector';
 import FilterItem from '@components/Filters/FilterItem';
 import React from 'react';
 import connector, { ConnectedLibraryFilterProps } from './Filter.redux';
 import { BottomSheetSectionList } from '@gorhom/bottom-sheet';
-import { Stack } from '@components/Stack';
-import IconButton from '@components/IconButton';
-import Icon from '@components/Icon';
-import {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
 import { ListRenderItem, SectionListData } from 'react-native';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Button from '@components/Button';
 import { MangaHost } from '@mangayomu/mangascraper';
 import integrateSortedList from '@helpers/integrateSortedList';
 import { StringComparator } from '@mangayomu/algorithms';
+import SectionHeader from './components/SectionHeader';
 const keyExtractor = (x: string, i: number) => x + i;
-
-interface SectionHeaderProps {
-  toggle: (key: string) => void;
-  title: string;
-  expanded: boolean;
-}
-const SectionHeader: React.FC<SectionHeaderProps> = React.memo(
-  ({ title, toggle, expanded }) => {
-    const rotate = useSharedValue(expanded ? 180 : 0);
-    React.useEffect(() => {
-      if (expanded)
-        rotate.value = withTiming(180, { duration: 150, easing: Easing.ease });
-      else rotate.value = withTiming(0, { duration: 150, easing: Easing.ease });
-    }, [expanded]);
-    const iconStyle = useAnimatedStyle(() => ({
-      transform: [{ rotate: rotate.value + 'deg' }],
-    }));
-    const handleOnPress = () => toggle(title);
-    return (
-      <TouchableWithoutFeedback onPress={handleOnPress}>
-        <Stack
-          mx="m"
-          my="s"
-          flex-direction="row"
-          space="s"
-          justify-content="space-between"
-          align-items="center"
-        >
-          <Text bold>{title}</Text>
-          <IconButton
-            icon={<Icon style={iconStyle} type="font" name="chevron-down" />}
-            animated
-            onPress={handleOnPress}
-            compact
-          />
-        </Stack>
-      </TouchableWithoutFeedback>
-    );
-  },
-);
 
 const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
   const {

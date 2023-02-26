@@ -5,6 +5,7 @@ const mapStateToProps = (state: AppState) => ({
   latestMangas: state.explore.states.latest,
   status: state.explore.status.latest,
   errors: state.explore.errors.latest,
+  isOffline: state.explore.internetStatus === 'offline',
 });
 
 const connector = connect(mapStateToProps);

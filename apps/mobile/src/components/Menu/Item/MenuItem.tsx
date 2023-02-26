@@ -6,12 +6,22 @@ import { moderateScale } from 'react-native-size-matters';
 import { MenuItemProps } from './MenuItem.interfaces';
 
 const MenuItem: React.FC<MenuItemProps> = (props) => {
-  const { children, onPress = () => void 0 } = props;
+  const {
+    children,
+    onPress = () => void 0,
+    optionKey,
+    onSelect = () => void 0,
+    ...rest
+  } = props;
 
+  function handleOnPress() {
+    onPress();
+    if (optionKey != null) onSelect(optionKey);
+  }
   return (
-    <MenuOption onSelect={onPress}>
-      <Box py={moderateScale(12)} px={moderateScale(16)}>
-        <Text variant="button" bold>
+    <MenuOption onSelect={handleOnPress}>
+      <Box py={moderateScale(8)} px={moderateScale(16)}>
+        <Text {...rest} variant="button" bold>
           {children}
         </Text>
       </Box>

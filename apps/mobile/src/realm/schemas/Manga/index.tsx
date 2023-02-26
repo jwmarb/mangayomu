@@ -18,6 +18,7 @@ import useMountEffect from '@hooks/useMountEffect';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import displayMessage from '@helpers/displayMessage';
 import integrateSortedList from '@helpers/integrateSortedList';
+import NetInfo, { useNetInfo } from '@react-native-community/netinfo';
 
 export const MangaRatingSchema: Realm.ObjectSchema = {
   name: 'MangaRating',
@@ -138,7 +139,7 @@ export const useManga = (
   link: string | Omit<Manga, 'index'>,
   options: UseMangaOptions = { preferLocal: true },
 ) => {
-  const [manga, setManga] = React.useState<IMangaSchema>();
+  const [isOffline, setIsOffline] = React.useState<boolean | null>(null);
   const [status, setStatus] = React.useState<FetchMangaMetaStatus>(
     options.preferLocal ? 'local' : 'loading',
   );
@@ -147,11 +148,44 @@ export const useManga = (
     MangaSchema,
     typeof link === 'string' ? link : link.link,
   );
+  const [manga, setManga] = React.useState<IMangaSchema | undefined>(
+    mangaObject ?? undefined,
+  );
+  React.useEffect(() => {
+    const netListener = NetInfo.addEventListener((state) => {
+      setIsOffline(state.isInternetReachable === false);
+      if (state.isInternetReachable === false)
+        setStatus((prevStatus) =>
+          prevStatus === 'loading' ? 'error' : 'local',
+        );
+    });
+    return () => {
+      netListener();
+    };
+  }, []);
+  React.useEffect(() => {
+    InteractionManager.runAfterInteractions(async () => {
+      if (!isOffline) {
+        try {
+          console.log('fetching...');
+          await fetchData();
+          setStatus('success');
+        } catch (e) {
+          setStatus('error');
+          setError(e as string);
+        }
+      }
+    });
+  }, [isOffline]);
   const source = typeof link !== 'string' ? useMangaSource(link) : null;
   const mangaRealm = useRealm();
 
   const fetchData = React.useCallback(async () => {
     if (!options.preferLocal) {
+      if (isOffline) {
+        displayMessage('You are offline.');
+        return;
+      }
       if (typeof link === 'string')
         throw Error(
           `"${link}" does not exist in the realm and is being called upon when it is undefined. Use type Manga instead of type string.`,
@@ -228,6 +262,7 @@ export const useManga = (
     source,
     mangaRealm,
     mangaObject,
+    isOffline,
   ]);
 
   const refresh = React.useCallback(async () => {
@@ -242,17 +277,17 @@ export const useManga = (
     }
   }, [fetchData, mangaObject == null]);
 
-  useMountEffect(() => {
-    InteractionManager.runAfterInteractions(async () => {
-      try {
-        await fetchData();
-        setStatus('success');
-      } catch (e) {
-        setStatus('error');
-        setError(e as string);
-      }
-    });
-  }, []);
+  // useMountEffect(() => {
+  //   InteractionManager.runAfterInteractions(async () => {
+  //     try {
+  //       await fetchData();
+  //       setStatus('success');
+  //     } catch (e) {
+  //       setStatus('error');
+  //       setError(e as string);
+  //     }
+  //   });
+  // }, []);
   React.useEffect(() => {
     mangaObject?.addListener((_manga, changes) => {
       if (changes.deleted) setManga(undefined);

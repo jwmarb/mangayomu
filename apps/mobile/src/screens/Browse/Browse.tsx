@@ -15,7 +15,7 @@ import {
   SectionListData,
   TextInputSubmitEditingEventData,
 } from 'react-native';
-import { FlatList, ScrollView } from 'react-native-gesture-handler';
+import { FlatList, ScrollView, TextInput } from 'react-native-gesture-handler';
 import Animated, {
   FadeIn,
   FadeOut,
@@ -44,7 +44,9 @@ const Browse: React.FC<ConnectedBrowseProps> = (props) => {
     loading,
     universalSearchResultHandler,
     searchStates,
+    setQuery,
     initialQuery,
+    query,
   } = props;
   const [showSearchBar, setShowSearchBar] = React.useState(
     initialQuery != null,
@@ -58,6 +60,7 @@ const Browse: React.FC<ConnectedBrowseProps> = (props) => {
   React.useEffect(() => {
     if (initialQuery) {
       setShowSearchBar(true);
+      setQuery(initialQuery);
       setTimeout(async () => await searchMangas(initialQuery), 500);
     }
   }, [initialQuery]);
@@ -92,7 +95,8 @@ const Browse: React.FC<ConnectedBrowseProps> = (props) => {
         <Box mx="m">
           <Stack space="s" flex-direction="row">
             <Input
-              defaultValue={initialQuery}
+              value={query}
+              onChangeText={setQuery}
               expanded
               onSubmitEditing={handleOnSubmitEditing}
               placeholder="Universal search..."
@@ -116,7 +120,7 @@ const Browse: React.FC<ConnectedBrowseProps> = (props) => {
         width: '33%',
       },
       showHeaderLeft: !showSearchBar,
-      dependencies: [showSearchBar],
+      dependencies: [showSearchBar, query],
     });
   const data = React.useMemo(() => {
     return [

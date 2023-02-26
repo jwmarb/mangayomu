@@ -48,6 +48,7 @@ const Explore: React.FC<ConnectedExploreProps> = ({
   latestMangas,
   loading,
   suspendRendering,
+  internetStatus,
 }) => {
   const { user } = useAuth0();
   const { height } = useWindowDimensions();
@@ -77,6 +78,16 @@ const Explore: React.FC<ConnectedExploreProps> = ({
         />
       ),
     });
+
+  async function fetchMangas() {
+    if (!suspendRendering && !loading) {
+      console.log('fetching explorer state');
+      refreshExplorerState();
+      const hot = await source.getHotMangas();
+      const latest = await source.getLatestMangas();
+      setExplorerState({ hot, latest });
+    }
+  }
   React.useEffect(() => {
     const netListener = NetInfo.addEventListener(
       explorerNetworkStateListenerHandler,
@@ -85,24 +96,11 @@ const Explore: React.FC<ConnectedExploreProps> = ({
       netListener(); // unsubscribe from listening to network events
     };
   }, []);
-
-  async function fetchMangas() {
-    if (
-      (networkStatus === 'online' ||
-        (await NetInfo.fetch()).isInternetReachable) &&
-      !suspendRendering
-    ) {
-      refreshExplorerState();
-      const hot = await source.getHotMangas();
-      const latest = await source.getLatestMangas();
-      setExplorerState({ hot, latest });
-    }
-  }
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(async () => {
-      await fetchMangas();
+      if (internetStatus !== 'offline') await fetchMangas();
     });
-  }, [suspendRendering]);
+  }, [suspendRendering, internetStatus]);
   function handleOnSubmitEditing(
     e: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
   ) {

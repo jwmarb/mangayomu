@@ -24,7 +24,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import connector, { ConnectedHotMangaListProps } from './HotMangaList.redux';
 
 const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
-  const { hotMangas, status, errors } = props;
+  const { hotMangas, status, errors, isOffline } = props;
   const navigation = useRootNavigation();
   const theme = useTheme();
   const ref = React.useRef<BottomSheet>(null);
@@ -56,6 +56,7 @@ const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
                 onPress={handleOnPress}
               />
             )}
+            {isOffline && <Icon type="font" name="wifi-off" color="warning" />}
             <Text variant="header" bold>
               Trending updates{' '}
               <Icon
@@ -66,7 +67,7 @@ const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
               />
             </Text>
           </Stack>
-          {(hotMangas.length > 9 || status === 'loading') && (
+          {(hotMangas.length > 9 || (status === 'loading' && !isOffline)) && (
             <Button
               label="See More"
               disabled={status === 'loading'}
@@ -75,10 +76,17 @@ const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
           )}
         </Stack>
         <FlashList
-          ListEmptyComponent={EmptyMangaListComponent}
+          ListEmptyComponent={!isOffline ? EmptyMangaListComponent : undefined}
           ItemSeparatorComponent={MangaSeparator}
           contentContainerStyle={{ paddingHorizontal: theme.style.spacing.m }}
-          ListHeaderComponent={<>{status === 'loading' && MangaListLoading}</>}
+          ListHeaderComponent={
+            <>
+              {status === 'loading' && !isOffline && MangaListLoading}
+              {isOffline && hotMangas.length === 0 && (
+                <Text color="textSecondary">Offline</Text>
+              )}
+            </>
+          }
           data={hotMangas.slice(0, 9)}
           estimatedItemSize={bookDimensions.height}
           renderItem={renderItem}

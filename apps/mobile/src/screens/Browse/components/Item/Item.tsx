@@ -26,8 +26,14 @@ const Item: React.FC<ConnectedItemProps> = ({
   function navigateToSettings() {
     navigation.navigate('SourceView', { source: item });
   }
+  function handleOnPress() {
+    navigation.navigate('InfiniteMangaList', { source: item });
+  }
   return (
-    <RectButton rippleColor={theme.palette.action.ripple}>
+    <RectButton
+      rippleColor={theme.palette.action.ripple}
+      onPress={handleOnPress}
+    >
       <Stack
         space="s"
         flex-direction="row"

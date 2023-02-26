@@ -8,6 +8,7 @@ import Welcome from '@screens/Welcome/Welcome';
 import { StackHeader } from '@components/NavHeader';
 import BasicMangaList from '@screens/BasicMangaList';
 import SourceView from '@screens/SourceView';
+import InfiniteMangaList from '@screens/InfiniteMangaList';
 
 const mapStateToProps = (state: AppState) => ({
   showWelcomeScreen: state.__initial__.firstTimeUser,
@@ -31,6 +32,10 @@ const Root: React.FC<RootProps> = ({ showWelcomeScreen }) => {
       />
       <RootStack.Screen name="BasicMangaList" component={BasicMangaList} />
       <RootStack.Screen name="SourceView" component={SourceView} />
+      <RootStack.Screen
+        name="InfiniteMangaList"
+        component={InfiniteMangaList}
+      />
     </RootStack.Navigator>
   );
 };

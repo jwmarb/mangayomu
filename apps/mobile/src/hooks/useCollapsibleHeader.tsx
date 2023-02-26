@@ -1,4 +1,5 @@
 import Box from '@components/Box';
+import { BoxProps } from '@components/Box/Box.interfaces';
 import Icon from '@components/Icon';
 import IconButton, { generateRippleColor } from '@components/IconButton';
 import { IconButtonProps } from '@components/IconButton/IconButton.interfaces';
@@ -41,6 +42,11 @@ export interface CollapsibleHeaderOptions {
   dependencies?: React.DependencyList;
   backButtonColor?: IconButtonProps['color'];
   backButtonRippleColor?: string;
+  showBackButton?: boolean;
+  showHeaderRight?: boolean;
+  headerRightProps?: BoxProps;
+  headerLeftProps?: BoxProps;
+  header?: React.ReactNode;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   backButtonStyle?: any;
   loading?: boolean;
@@ -58,8 +64,19 @@ const CollapsibleBase = React.memo<
     headerRight,
     headerTitle = routeName,
     backButtonColor = 'textPrimary',
+    showBackButton,
     backButtonStyle,
     backButtonRippleColor,
+    header = (
+      <Box justify-content="center" flex-grow>
+        <Text variant="header" bold numberOfLines={1}>
+          {headerTitle}
+        </Text>
+      </Box>
+    ),
+    headerLeftProps = { 'justify-content': 'center' },
+    headerRightProps = { 'flex-grow': true, 'justify-content': 'center' },
+    showHeaderRight,
   }) => {
     const navigation = useRootNavigation();
     return (
@@ -75,31 +92,35 @@ const CollapsibleBase = React.memo<
         background-color="transparent"
       >
         <Stack space="s" flex-direction="row">
-          <Box justify-content="center">
-            <Box ml="m" flex-direction="row">
-              <IconButton
-                color={backButtonColor}
-                rippleColor={backButtonRippleColor}
-                animated={!!backButtonStyle}
-                icon={
-                  <Icon type="font" name="arrow-left" style={backButtonStyle} />
-                }
-                onPress={() => {
-                  if (navigation.canGoBack()) navigation.goBack();
-                }}
-              />
+          {showBackButton && (
+            <Box {...headerLeftProps}>
+              <Box ml="m" flex-direction="row">
+                <IconButton
+                  color={backButtonColor}
+                  rippleColor={backButtonRippleColor}
+                  animated={!!backButtonStyle}
+                  icon={
+                    <Icon
+                      type="font"
+                      name="arrow-left"
+                      style={backButtonStyle}
+                    />
+                  }
+                  onPress={() => {
+                    if (navigation.canGoBack()) navigation.goBack();
+                  }}
+                />
+              </Box>
             </Box>
-          </Box>
-          <Box justify-content="center" flex-grow>
-            <Text variant="header" bold numberOfLines={1}>
-              {headerTitle}
-            </Text>
-          </Box>
-          <Box flex-grow justify-content="center">
-            <Box mr="m" justify-content="flex-end" flex-direction="row">
-              {headerRight}
+          )}
+          {header}
+          {showHeaderRight && (
+            <Box {...headerRightProps}>
+              <Box mr="m" justify-content="flex-end" flex-direction="row">
+                {headerRight}
+              </Box>
             </Box>
-          </Box>
+          )}
         </Stack>
       </Box>
     );
@@ -117,6 +138,11 @@ export default function useCollapsibleHeader(
     backButtonStyle,
     backButtonRippleColor,
     loading,
+    showBackButton = true,
+    headerLeftProps,
+    headerRightProps,
+    showHeaderRight = true,
+    header,
   } = options;
   const theme = useTheme();
   const navigation = useRootNavigation();
@@ -224,11 +250,16 @@ export default function useCollapsibleHeader(
             style={animatedHeaderStyle}
             routeName={route.name}
             headerRight={headerRight}
+            header={header}
             headerTitle={headerTitle}
             backButtonColor={backButtonColor}
             backButtonStyle={backButtonStyle}
             backButtonRippleColor={backButtonRippleColor}
             loading={loading}
+            showBackButton={showBackButton}
+            headerLeftProps={headerLeftProps}
+            headerRightProps={headerRightProps}
+            showHeaderRight={showHeaderRight}
           />
           <Box
             position="absolute"

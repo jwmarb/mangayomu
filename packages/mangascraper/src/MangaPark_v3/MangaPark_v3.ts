@@ -4,13 +4,19 @@ import {
   GENRES,
   getV3URL,
   getV5URL,
+  OFFICIAL_WORK_STATUS,
+  ORDER_BY,
+  ORIGINAL_WORK_LANGUAGE,
   parseTimestamp,
+  TYPE,
+  VIEW_CHAPTERS,
 } from './MangaPark_v3.helpers';
 import {
   MangaParkV3HotMangas,
   MangaParkV3MangaMeta,
   MangaParkV3NextDataMeta,
   MangaParkV3NextDataReader,
+  MangaParkV3SearchManga,
 } from './MangaPark_v3.interfaces';
 import { MangaHostWithFilters } from '../scraper/scraper.filters';
 import {
@@ -72,7 +78,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
     const {
       data: { data },
     } = await axios.post<MangaParkV3HotMangas>(
-      'https://api.mangapark.net/apo/?csr=1',
+      'https://api.mangapark.net/apo/?csr=1/',
       {
         query:
           'query get_content_browse_latest($select: ComicLatestSelect) {\n  get_content_browse_latest(select: $select) {\n    items {\n      comic {\n        data {\n          name\n          urlPath\n          imageCoverUrl\n        }\n      }\n    }\n  }\n}\n',
@@ -99,72 +105,83 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
   }
   public async search(
     query: string,
-    filters?: MangaParkV3Filter,
+    filters: MangaParkV3Filter,
   ): Promise<Manga[]> {
-    if (
-      filters &&
-      (filters.Chapters?.value !== filters.Chapters?.default ||
-        (filters.Genres &&
-          (filters.Genres.include.length > 0 ||
-            filters.Genres.exclude.length > 0)) ||
-        filters['Order by']?.default !== filters['Order by']?.value ||
-        filters['Original Language']?.value !==
-          filters['Original Language']?.default ||
-        filters.Status?.value !== filters.Status?.default ||
-        (filters.Type &&
-          (filters.Type.include.length > 0 || filters.Type.exclude.length > 0)))
-    ) {
+    if (filters) {
       const {
-        Genres,
-        'Original Language': Language,
-        'Order by': OrderBy,
-      } = filters;
-      const genres: string = Genres
-        ? `genres=${Genres.include.join(',')}|${Genres.exclude.join(',')}`
-        : '';
-      const language: string =
-        Language != null
-          ? Language.value === 'Any'
-            ? ''
-            : `&origs=${GENRES[Language.value]}`
-          : '';
-      const sort: string =
-        OrderBy != null ? `&sort=${OrderBy.value.toLowerCase()}` : '';
-      const $ = await super.route(
-        `/browse?${genres}${language}${sort}&page=${super.getPage()}`,
+        data: {
+          data: {
+            get_content_browse_search: { items },
+          },
+        },
+      } = await axios.post<MangaParkV3SearchManga>(
+        'https://mangapark.net/apo/',
+        {
+          operationName: 'get_content_browse_search',
+          query:
+            'query get_content_browse_search($select: ComicSearchSelect) {\n  get_content_browse_search(select: $select) {\n    items {\n      data {\n        name\n        urlPath\n        imageCoverUrl\n      }\n    }\n  }\n}\n',
+          variables: {
+            select: {
+              chapCount: VIEW_CHAPTERS[filters['Number of Chapters'].value],
+              excGenres: filters.Genres.exclude.concat(
+                filters.Type.exclude.map((x) => TYPE[x]),
+              ),
+              incGenres: filters.Genres.include.concat(
+                filters.Type.include.map((x) => TYPE[x]),
+              ),
+              oficStatus:
+                OFFICIAL_WORK_STATUS[filters['Original Work Status'].value],
+              origLang:
+                ORIGINAL_WORK_LANGUAGE[filters['Original Work Language'].value],
+              page: super.getPage(),
+              sort: ORDER_BY[filters['Order by'].value],
+              word: query,
+            },
+          },
+        },
       );
-
-      return $('div.col.mt-3.pb-3.d-flex.item.line-b')
-        .map((index, el) => {
-          const image = $(el).find('img.cover.rounded').attr('src')!;
-          const anchorEl = $(el).find('a.fw-bold.text-ellipsis-2');
-          const href = anchorEl.attr('href');
-          const title = anchorEl.text().trim();
-          return {
-            link: 'https://' + super.getLink() + href,
-            imageCover: image,
-            source: super.getName(),
-            title,
-            index,
-          };
-        })
-        .get();
-    }
-    const $ = await super.route(
-      `/search?word=${encodeURIComponent(query)}&page=${super.getPage()}`,
-    );
-
-    const listElements = $('div#search-list').children();
-    return listElements
-      .map((_, el) => {
-        return {
-          link: `https://${super.getLink()}${$(el).find('a').attr('href')!}`,
-          imageCover: $(el).find('img').attr('src')!,
+      return items.map(
+        ({ data }, index): Manga => ({
+          imageCover: data.imageCoverUrl,
+          link: 'https://' + super.getLink() + getV3URL(data.urlPath),
           source: super.getName(),
-          title: $(el).children('div').children('a').text().trim(),
-        } as Manga;
-      })
-      .get();
+          title: data.name,
+          index,
+        }),
+      );
+    }
+    const {
+      data: {
+        data: {
+          get_content_browse_search: { items },
+        },
+      },
+    } = await axios.post<MangaParkV3SearchManga>('https://mangapark.net/apo/', {
+      operationName: 'get_content_browse_search',
+      query:
+        'query get_content_browse_search($select: ComicSearchSelect) {\n  get_content_browse_search(select: $select) {\n    items {\n      data {\n        name\n        urlPath\n        imageCoverUrl\n      }\n    }\n  }\n}\n',
+      variables: {
+        select: {
+          chapCount: null,
+          excGenres: [],
+          incGenres: [],
+          oficStatus: null,
+          origLang: null,
+          page: super.getPage(),
+          sort: null,
+          word: query,
+        },
+      },
+    });
+    return items.map(
+      ({ data }, index): Manga => ({
+        imageCover: data.imageCoverUrl,
+        link: 'https://' + super.getLink() + getV3URL(data.urlPath),
+        source: super.getName(),
+        title: data.name,
+        index,
+      }),
+    );
   }
   public async getMeta(manga: Manga): Promise<MangaParkV3MangaMeta & Manga> {
     const $ = await super.route({ url: manga.link });

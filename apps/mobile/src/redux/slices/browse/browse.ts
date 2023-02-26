@@ -14,18 +14,24 @@ export interface BrowseState {
   >;
   inputSubmitted: boolean;
   loading: boolean;
+  query: string;
 }
 
 const initialBrowseState: BrowseState = {
   states: {},
   inputSubmitted: false,
   loading: false,
+  query: '',
 };
 
 const browseSlice = createSlice({
   name: 'browse',
   initialState: initialBrowseState,
   reducers: {
+    setQuery: (state, action: PayloadAction<string>) => {
+      state.query = action.payload;
+    },
+
     universalSearchResultHandler: (
       state,
       action: PayloadAction<
@@ -88,6 +94,7 @@ const browseSlice = createSlice({
       state.states = {};
       state.inputSubmitted = false;
       state.loading = false;
+      state.query = '';
     },
   },
 });
@@ -97,6 +104,7 @@ export const {
   errorUniversalSearchResults,
   exitUniversalSearch,
   universalSearchResultHandler,
+  setQuery,
 } = browseSlice.actions;
 
 export default browseSlice.reducer;

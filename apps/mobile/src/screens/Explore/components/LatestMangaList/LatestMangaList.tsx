@@ -24,7 +24,7 @@ import connector, {
 } from './LatestMangaList.redux';
 
 const LatestMangaList: React.FC<ConnectedLatestMangaListProps> = (props) => {
-  const { latestMangas, status, errors } = props;
+  const { latestMangas, status, errors, isOffline } = props;
   const theme = useTheme();
   const navigation = useRootNavigation();
   const ref = React.useRef<BottomSheet>(null);
@@ -56,6 +56,7 @@ const LatestMangaList: React.FC<ConnectedLatestMangaListProps> = (props) => {
                 onPress={handleOnPress}
               />
             )}
+            {isOffline && <Icon type="font" name="wifi-off" color="warning" />}
             <Text variant="header" bold>
               Recent updates{' '}
               <Icon
@@ -66,7 +67,8 @@ const LatestMangaList: React.FC<ConnectedLatestMangaListProps> = (props) => {
               />
             </Text>
           </Stack>
-          {(latestMangas.length > 9 || status === 'loading') && (
+          {(latestMangas.length > 9 ||
+            (status === 'loading' && !isOffline)) && (
             <Button
               label="See More"
               disabled={status === 'loading'}
@@ -77,8 +79,15 @@ const LatestMangaList: React.FC<ConnectedLatestMangaListProps> = (props) => {
         <FlashList
           ItemSeparatorComponent={MangaSeparator}
           contentContainerStyle={{ paddingHorizontal: theme.style.spacing.m }}
-          ListHeaderComponent={<>{status === 'loading' && MangaListLoading}</>}
-          ListEmptyComponent={EmptyMangaListComponent}
+          ListHeaderComponent={
+            <>
+              {status === 'loading' && !isOffline && MangaListLoading}
+              {isOffline && latestMangas.length === 0 && (
+                <Text color="textSecondary">Offline</Text>
+              )}
+            </>
+          }
+          ListEmptyComponent={!isOffline ? EmptyMangaListComponent : undefined}
           data={latestMangas.slice(0, 9)}
           estimatedItemSize={bookDimensions.height}
           renderItem={renderItem}
