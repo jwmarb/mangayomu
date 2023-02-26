@@ -32,7 +32,6 @@ const Library: React.FC<ConnectedLibraryProps> = ({
   numberOfAppliedFilters,
 }) => {
   const ref = React.useRef<BottomSheetMethods>(null);
-  const inputRef = React.useRef<React.ElementRef<typeof Input>>(null);
   const mangas = useQuery(MangaSchema);
   function handleOnPress() {
     ref.current?.snapToIndex(1);
@@ -114,7 +113,6 @@ const Library: React.FC<ConnectedLibraryProps> = ({
         ) : (
           <Input
             defaultValue={query}
-            ref={inputRef}
             onChangeText={setQuery}
             placeholder="Search for a title..."
             expanded
@@ -149,10 +147,6 @@ const Library: React.FC<ConnectedLibraryProps> = ({
         query.length > 0,
       ],
     });
-
-  React.useEffect(() => {
-    if (showSearchBar) inputRef.current?.focus();
-  }, [showSearchBar]);
 
   return (
     <>
