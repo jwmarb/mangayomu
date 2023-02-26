@@ -61,7 +61,7 @@ const Explore: React.FC<ConnectedExploreProps> = ({
   }
   const { onScroll, scrollViewStyle, contentContainerStyle } =
     useCollapsibleTabHeader({
-      dependencies: [source.getSourcesLength()],
+      dependencies: [source.getSourcesLength(), user?.picture],
       loading,
       headerLeft: (
         <Badge type="number" count={source.getSourcesLength()} color="primary">
@@ -72,10 +72,7 @@ const Explore: React.FC<ConnectedExploreProps> = ({
         </Badge>
       ),
       headerRight: (
-        <IconButton
-          icon={<Avatar uri={user?.picture} />}
-          onPress={() => console.log('Account')}
-        />
+        <IconButton icon={<Avatar />} onPress={() => console.log('Account')} />
       ),
     });
 
