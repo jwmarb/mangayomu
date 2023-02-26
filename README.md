@@ -34,6 +34,13 @@ Do note that `version` is required because yarn will think you are trying to ins
 
 The mobile app uses [React Native](https://reactnative.dev/). There is no iOS support, however, I plan to add support for it once I can get my hands on a MacBook.
 
+Before starting the server, it is required to setup variables in a `.env` in the root directory of `apps/mobile`.
+
+```
+# Replace the following encapsulated by curly brackets
+REACT_APP_REALM_ID={realmId}
+```
+
 To start the development server from the root directory:
 
 ```sh
