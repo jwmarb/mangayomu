@@ -76,11 +76,9 @@ const Library: React.FC<ConnectedLibraryProps> = ({
   const [query, setQuery] = React.useState<string>('');
   function handleOnShowSearchBar() {
     setShowSearchBar(true);
-    inputRef.current?.focus();
   }
 
   function handleOnBack() {
-    inputRef.current?.blur();
     setShowSearchBar(false);
   }
 
