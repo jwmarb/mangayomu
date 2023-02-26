@@ -38,6 +38,7 @@
     "@reduxjs/toolkit": "^1.9.1",
     "@shopify/flash-list": "^1.4.1",
     "date-fns": "^2.29.3",
+    "dotenv": "^16.0.3",
     "fast-sort": "^3.2.1",
     "prop-types": "^15.8.1",
     "react": "18.2.0",
