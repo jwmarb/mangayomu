@@ -32,7 +32,6 @@ export class ChapterSchema extends Realm.Object<IChapterSchema> {
     properties: {
       _id: 'string',
       _realmId: 'string',
-      link: 'string',
       name: 'string?',
       index: 'int',
       date: 'string',
