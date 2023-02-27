@@ -138,7 +138,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   const data = React.useMemo(
     () =>
       manga
-        ? inPlaceSort(selectedLanguageChapters.map((x) => x.link)).by(
+        ? inPlaceSort(selectedLanguageChapters.map((x) => x._id)).by(
             manga.reversedSort
               ? {
                   desc: sortfn,
