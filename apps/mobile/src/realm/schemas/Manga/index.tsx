@@ -210,6 +210,16 @@ export const useManga = (
         mangaRealm.write(() => {
           const { chapters, availableLanguages } = meta.chapters.reduce(
             (prev, curr) => {
+              const copy = curr;
+              (copy as ChapterSchema)._mangaId = meta.link;
+              (copy as ChapterSchema)._id = curr.link;
+              (copy as ChapterSchema)._realmId = currentUser.id;
+
+              mangaRealm.create<ChapterSchema>(
+                'Chapter',
+                copy,
+                Realm.UpdateMode.Modified,
+              );
               prev.chapters.push(curr.link);
               const { add } = integrateSortedList(
                 prev.availableLanguages,
@@ -233,7 +243,7 @@ export const useManga = (
               __memo__: new Set<ISOLangCode>(),
             },
           );
-          const mangaInRealm = mangaRealm.create<MangaSchema>(
+          mangaRealm.create<MangaSchema>(
             'Manga',
             {
               ...meta,
@@ -250,19 +260,6 @@ export const useManga = (
             },
             Realm.UpdateMode.Modified,
           );
-
-          for (const x of meta.chapters) {
-            const copy = x;
-            (copy as ChapterSchema)._mangaId = mangaInRealm._id;
-            (copy as ChapterSchema)._id = x.link;
-            (copy as ChapterSchema)._realmId = currentUser.id;
-
-            mangaRealm.create<ChapterSchema>(
-              'Chapter',
-              copy,
-              Realm.UpdateMode.Modified,
-            );
-          }
         });
       } catch (e) {
         console.error(e);
