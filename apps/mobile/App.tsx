@@ -26,9 +26,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { PortalProvider } from '@gorhom/portal';
 import { MenuProvider } from 'react-native-popup-menu';
 import { enableFreeze } from 'react-native-screens';
-import { RealmEffect, RealmProvider, RealmUserProvider } from '@database/main';
-import { RealmCloudListener, RealmCloudProvider } from '@database/cloud';
-import Realm from 'realm';
+import { RealmProvider, RealmUserProvider, RealmEffect } from '@database/main';
 enableFreeze(true);
 enum Auth0 {
   DOMAIN = 'dev-wq6wbghv.us.auth0.com',
@@ -121,19 +119,23 @@ function App(): JSX.Element {
         <Auth0Provider domain={Auth0.DOMAIN} clientId={Auth0.CLIENT_ID}>
           <RealmUserProvider>
             <RealmProvider>
-              <ThemeProvider theme={theme}>
-                <Provider store={store}>
-                  <PersistGate loading={null} persistor={persistor}>
-                    <MenuProvider>
-                      <PortalProvider>
-                        <NavigationContainer theme={theme.__react_navigation__}>
-                          <Root />
-                        </NavigationContainer>
-                      </PortalProvider>
-                    </MenuProvider>
-                  </PersistGate>
-                </Provider>
-              </ThemeProvider>
+              <RealmEffect>
+                <ThemeProvider theme={theme}>
+                  <Provider store={store}>
+                    <PersistGate loading={null} persistor={persistor}>
+                      <MenuProvider>
+                        <PortalProvider>
+                          <NavigationContainer
+                            theme={theme.__react_navigation__}
+                          >
+                            <Root />
+                          </NavigationContainer>
+                        </PortalProvider>
+                      </MenuProvider>
+                    </PersistGate>
+                  </Provider>
+                </ThemeProvider>
+              </RealmEffect>
             </RealmProvider>
           </RealmUserProvider>
         </Auth0Provider>
