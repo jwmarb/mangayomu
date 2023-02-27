@@ -12,7 +12,7 @@ import React from 'react';
 import useMangaSource from '@hooks/useMangaSource';
 import { InteractionManager } from 'react-native';
 import { getErrorMessage } from '@helpers/getErrorMessage';
-import { useObject, useRealm } from '../../main';
+import { useCurrentUserFromRealm, useObject, useRealm } from '../../main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useMountEffect from '@hooks/useMountEffect';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
@@ -64,15 +64,17 @@ export interface IMangaSchema
     Partial<WithRating> {
   description: string | null;
   genres: Set<string>;
-  currentlyReadingChapter?: string;
-  dateAddedInLibrary?: number;
-  notifyNewChaptersCount?: number;
   chapters: string[];
   sortChaptersBy: SortChaptersMethod;
   reversedSort: boolean;
+  currentlyReadingChapter?: string;
+  dateAddedInLibrary?: number;
+  notifyNewChaptersCount?: number;
   inLibrary: boolean;
   selectedLanguage: ISOLangCode | 'Use default language';
   availableLanguages: ISOLangCode[];
+  _id: string;
+  _realmId: string;
 }
 
 export class MangaSchema extends Realm.Object<IMangaSchema> {
@@ -96,10 +98,14 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   reversedSort!: boolean;
   selectedLanguage!: ISOLangCode | 'Use default language';
   availableLanguages!: ISOLangCode[];
+  _id!: string;
+  _realmId!: string;
 
   static schema: Realm.ObjectSchema = {
     name: 'Manga',
     properties: {
+      _id: 'string',
+      _realmId: 'string',
       link: 'string',
       index: 'int',
       title: 'string',
@@ -121,7 +127,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
       selectedLanguage: { type: 'string', default: 'Use default language' },
       availableLanguages: 'string[]',
     },
-    primaryKey: 'link',
+    primaryKey: '_id',
   };
 }
 
@@ -139,6 +145,10 @@ export const useManga = (
   link: string | Omit<Manga, 'index'>,
   options: UseMangaOptions = { preferLocal: true },
 ) => {
+  const mangaRealm = useRealm();
+  const currentUser = useCurrentUserFromRealm();
+  if (currentUser == null)
+    throw Error('currentUser is null in useManga() when it is required.');
   const [isOffline, setIsOffline] = React.useState<boolean | null>(null);
   const [status, setStatus] = React.useState<FetchMangaMetaStatus>(
     options.preferLocal ? 'local' : 'loading',
@@ -165,9 +175,8 @@ export const useManga = (
   }, []);
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(async () => {
-      if (!isOffline) {
+      if (isOffline === false) {
         try {
-          console.log('fetching...');
           await fetchData();
           setStatus('success');
         } catch (e) {
@@ -178,7 +187,6 @@ export const useManga = (
     });
   }, [isOffline]);
   const source = typeof link !== 'string' ? useMangaSource(link) : null;
-  const mangaRealm = useRealm();
 
   const fetchData = React.useCallback(async () => {
     if (!options.preferLocal) {
@@ -225,10 +233,13 @@ export const useManga = (
               __memo__: new Set<ISOLangCode>(),
             },
           );
-          mangaRealm.create<MangaSchema>(
+          const mangaInRealm = mangaRealm.create<MangaSchema>(
             'Manga',
             {
               ...meta,
+              _id: meta.link,
+              _realmId: currentUser.id,
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               genres: meta.genres as unknown as Set<string>,
               chapters,
               availableLanguages,
@@ -242,7 +253,10 @@ export const useManga = (
 
           for (const x of meta.chapters) {
             const copy = x;
-            (copy as ChapterSchema).manga = manga.link;
+            (copy as ChapterSchema)._mangaId = mangaInRealm._id;
+            (copy as ChapterSchema)._id = x.link;
+            (copy as ChapterSchema)._realmId = currentUser.id;
+
             mangaRealm.create<ChapterSchema>(
               'Chapter',
               copy,
@@ -251,6 +265,7 @@ export const useManga = (
           }
         });
       } catch (e) {
+        console.error(e);
         throw Error(getErrorMessage(e));
       }
     }
@@ -305,12 +320,13 @@ export const useManga = (
         getChapter: (key: string) => ChapterSchema | null,
       ) => void,
     ) => {
-      if (mangaObject != null)
+      if (mangaObject != null) {
         mangaRealm.write(() => {
           fn(mangaObject, (k: string) =>
             mangaRealm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
           );
         });
+      }
     },
     [mangaObject, mangaRealm],
   );

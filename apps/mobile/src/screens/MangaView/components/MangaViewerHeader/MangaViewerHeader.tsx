@@ -21,7 +21,6 @@ import Tag from '@components/Tag';
 import MangaActionButtons from '@screens/MangaView/components/MangaViewerHeader/components/MangaActionButtons';
 import MangaGenres from '@screens/MangaView/components/MangaViewerHeader/components/MangaGenres';
 import MangaStatus from '@screens/MangaView/components/MangaViewerHeader/components/MangaStatus';
-import { useQuery, useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import MangaSupportedLanguages from '@screens/MangaView/components/MangaViewerHeader/components/MangaSupportedLanguages';

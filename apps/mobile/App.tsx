@@ -26,7 +26,9 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { PortalProvider } from '@gorhom/portal';
 import { MenuProvider } from 'react-native-popup-menu';
 import { enableFreeze } from 'react-native-screens';
-import { RealmProvider } from '@database/main';
+import { RealmEffect, RealmProvider, RealmUserProvider } from '@database/main';
+import { RealmCloudListener, RealmCloudProvider } from '@database/cloud';
+import Realm from 'realm';
 enableFreeze(true);
 enum Auth0 {
   DOMAIN = 'dev-wq6wbghv.us.auth0.com',
@@ -117,21 +119,23 @@ function App(): JSX.Element {
       <StatusBar translucent backgroundColor="transparent" />
       <GestureHandlerRootView style={{ flex: 1 }}>
         <Auth0Provider domain={Auth0.DOMAIN} clientId={Auth0.CLIENT_ID}>
-          <RealmProvider>
-            <ThemeProvider theme={theme}>
-              <Provider store={store}>
-                <PersistGate loading={null} persistor={persistor}>
-                  <MenuProvider>
-                    <PortalProvider>
-                      <NavigationContainer theme={theme.__react_navigation__}>
-                        <Root />
-                      </NavigationContainer>
-                    </PortalProvider>
-                  </MenuProvider>
-                </PersistGate>
-              </Provider>
-            </ThemeProvider>
-          </RealmProvider>
+          <RealmUserProvider>
+            <RealmProvider>
+              <ThemeProvider theme={theme}>
+                <Provider store={store}>
+                  <PersistGate loading={null} persistor={persistor}>
+                    <MenuProvider>
+                      <PortalProvider>
+                        <NavigationContainer theme={theme.__react_navigation__}>
+                          <Root />
+                        </NavigationContainer>
+                      </PortalProvider>
+                    </MenuProvider>
+                  </PersistGate>
+                </Provider>
+              </ThemeProvider>
+            </RealmProvider>
+          </RealmUserProvider>
         </Auth0Provider>
       </GestureHandlerRootView>
     </>

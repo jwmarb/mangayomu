@@ -111,8 +111,8 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   const realm = useRealm();
 
   const multilingualChapters = React.useMemo(
-    () => chapters.filtered(`manga == "${params.link}"`),
-    [chapters],
+    () => chapters.filtered(`_mangaId == "${params.link}"`),
+    [chapters, params.link],
   );
 
   const selectedLanguageChapters = React.useMemo(

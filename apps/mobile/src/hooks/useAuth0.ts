@@ -1,7 +1,12 @@
 import {
   useAuth0 as useAuth0_,
   Auth0ContextInterface as Auth0ContextInterface_,
+  AuthorizeParams,
+  AuthorizeOptions,
 } from 'react-native-auth0';
+import React from 'react';
+import { app } from '@database/main';
+import Realm from 'realm';
 
 interface User {
   name: string;
