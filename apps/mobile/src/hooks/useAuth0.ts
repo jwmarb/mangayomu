@@ -7,6 +7,7 @@ import {
 import React from 'react';
 import { app } from '@database/main';
 import Realm from 'realm';
+import { useApp, useUser } from '@realm/react';
 
 interface User {
   name: string;
@@ -23,5 +24,59 @@ interface Auth0ContextInterface extends Auth0ContextInterface_ {
  * @returns Returns authentication
  */
 export default function useAuth0(): Auth0ContextInterface {
-  return useAuth0_();
+  const {
+    authorize: _authorize,
+    requireLocalAuthentication,
+    clearCredentials,
+    clearSession: _clearSession,
+    user,
+    isLoading,
+    getCredentials,
+    error,
+  } = useAuth0_();
+  const app = useApp();
+  const realmUser = useUser();
+  const authorize = React.useCallback(
+    async (...params: Parameters<typeof _authorize>) => {
+      try {
+        await _authorize(...params);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        try {
+          const credentials = await getCredentials();
+          await app.logIn(Realm.Credentials.jwt(credentials.idToken!));
+        } catch (e) {
+          console.error(e);
+        } finally {
+          console.log('Authorized user through Auth0 and Realm');
+        }
+      }
+    },
+    [_authorize, getCredentials, app],
+  );
+  const clearSession = React.useCallback(async () => {
+    if (realmUser == null) {
+      console.warn('Tried to clearSession when realmUser does not exist');
+      return;
+    }
+    try {
+      await _clearSession();
+      await realmUser.logOut();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      console.log('Successfully executed clearSession');
+    }
+  }, [_clearSession, realmUser]);
+  return {
+    authorize,
+    requireLocalAuthentication,
+    clearCredentials,
+    clearSession,
+    user,
+    isLoading,
+    getCredentials,
+    error,
+  };
 }

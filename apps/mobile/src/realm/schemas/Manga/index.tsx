@@ -12,13 +12,14 @@ import React from 'react';
 import useMangaSource from '@hooks/useMangaSource';
 import { InteractionManager } from 'react-native';
 import { getErrorMessage } from '@helpers/getErrorMessage';
-import { useCurrentUserFromRealm, useObject, useRealm } from '../../main';
+import { useObject, useRealm } from '../../main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useMountEffect from '@hooks/useMountEffect';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import displayMessage from '@helpers/displayMessage';
 import integrateSortedList from '@helpers/integrateSortedList';
 import NetInfo, { useNetInfo } from '@react-native-community/netinfo';
+import { useUser } from '@realm/react';
 
 export const MangaRatingSchema: Realm.ObjectSchema = {
   name: 'MangaRating',
@@ -118,7 +119,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
       notifyNewChaptersCount: { type: 'int?', default: 0 },
       chapters: 'string[]',
       sortChaptersBy: { type: 'string', default: 'Chapter number' },
-      authors: { type: 'string?[]', default: [] },
+      authors: { type: 'string[]', default: [] },
       isHentai: { type: 'bool', default: false },
       rating: 'MangaRating?',
       inLibrary: { type: 'bool', default: false },
@@ -146,7 +147,7 @@ export const useManga = (
   options: UseMangaOptions = { preferLocal: true },
 ) => {
   const mangaRealm = useRealm();
-  const currentUser = useCurrentUserFromRealm();
+  const currentUser = useUser();
   if (currentUser == null)
     throw Error('currentUser is null in useManga() when it is required.');
   const [isOffline, setIsOffline] = React.useState<boolean | null>(null);

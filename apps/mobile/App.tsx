@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { StatusBar, useColorScheme } from 'react-native';
+import { StatusBar, Text, useColorScheme } from 'react-native';
 
 import {
   NavigationContainer,
@@ -26,7 +26,10 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { PortalProvider } from '@gorhom/portal';
 import { MenuProvider } from 'react-native-popup-menu';
 import { enableFreeze } from 'react-native-screens';
-import { RealmProvider, RealmUserProvider, RealmEffect } from '@database/main';
+import { RealmProvider, RealmUserProvider } from '@database/main';
+import { UserProvider, AppProvider } from '@realm/react';
+import { REACT_APP_REALM_ID } from '@env';
+import { RealmEffect } from '@database/providers/RealmProvider';
 enableFreeze(true);
 enum Auth0 {
   DOMAIN = 'dev-wq6wbghv.us.auth0.com',
@@ -117,27 +120,36 @@ function App(): JSX.Element {
       <StatusBar translucent backgroundColor="transparent" />
       <GestureHandlerRootView style={{ flex: 1 }}>
         <Auth0Provider domain={Auth0.DOMAIN} clientId={Auth0.CLIENT_ID}>
-          <RealmUserProvider>
-            <RealmProvider>
-              <RealmEffect>
-                <ThemeProvider theme={theme}>
-                  <Provider store={store}>
-                    <PersistGate loading={null} persistor={persistor}>
-                      <MenuProvider>
-                        <PortalProvider>
-                          <NavigationContainer
-                            theme={theme.__react_navigation__}
-                          >
-                            <Root />
-                          </NavigationContainer>
-                        </PortalProvider>
-                      </MenuProvider>
-                    </PersistGate>
-                  </Provider>
-                </ThemeProvider>
-              </RealmEffect>
-            </RealmProvider>
-          </RealmUserProvider>
+          <AppProvider id={REACT_APP_REALM_ID}>
+            <UserProvider fallback={<RealmUserProvider />}>
+              <RealmProvider
+                sync={{
+                  flexible: true,
+                  onError: (_, error) => {
+                    console.error(error);
+                  },
+                }}
+              >
+                <RealmEffect>
+                  <ThemeProvider theme={theme}>
+                    <Provider store={store}>
+                      <PersistGate loading={null} persistor={persistor}>
+                        <MenuProvider>
+                          <PortalProvider>
+                            <NavigationContainer
+                              theme={theme.__react_navigation__}
+                            >
+                              <Root />
+                            </NavigationContainer>
+                          </PortalProvider>
+                        </MenuProvider>
+                      </PersistGate>
+                    </Provider>
+                  </ThemeProvider>
+                </RealmEffect>
+              </RealmProvider>
+            </UserProvider>
+          </AppProvider>
         </Auth0Provider>
       </GestureHandlerRootView>
     </>
