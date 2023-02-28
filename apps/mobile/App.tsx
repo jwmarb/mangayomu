@@ -26,7 +26,11 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { PortalProvider } from '@gorhom/portal';
 import { MenuProvider } from 'react-native-popup-menu';
 import { enableFreeze } from 'react-native-screens';
-import { RealmProvider, RealmUserProvider } from '@database/main';
+import {
+  LocalRealmProvider,
+  RealmProvider,
+  RealmUserProvider,
+} from '@database/main';
 import { UserProvider, AppProvider } from '@realm/react';
 import { REACT_APP_REALM_ID } from '@env';
 import { RealmEffect } from '@database/providers/RealmProvider';
@@ -130,23 +134,25 @@ function App(): JSX.Element {
                   },
                 }}
               >
-                <RealmEffect>
-                  <ThemeProvider theme={theme}>
-                    <Provider store={store}>
-                      <PersistGate loading={null} persistor={persistor}>
-                        <MenuProvider>
-                          <PortalProvider>
-                            <NavigationContainer
-                              theme={theme.__react_navigation__}
-                            >
-                              <Root />
-                            </NavigationContainer>
-                          </PortalProvider>
-                        </MenuProvider>
-                      </PersistGate>
-                    </Provider>
-                  </ThemeProvider>
-                </RealmEffect>
+                <LocalRealmProvider>
+                  <RealmEffect>
+                    <ThemeProvider theme={theme}>
+                      <Provider store={store}>
+                        <PersistGate loading={null} persistor={persistor}>
+                          <MenuProvider>
+                            <PortalProvider>
+                              <NavigationContainer
+                                theme={theme.__react_navigation__}
+                              >
+                                <Root />
+                              </NavigationContainer>
+                            </PortalProvider>
+                          </MenuProvider>
+                        </PersistGate>
+                      </Provider>
+                    </ThemeProvider>
+                  </RealmEffect>
+                </LocalRealmProvider>
               </RealmProvider>
             </UserProvider>
           </AppProvider>

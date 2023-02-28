@@ -12,7 +12,7 @@ import React from 'react';
 import useMangaSource from '@hooks/useMangaSource';
 import { InteractionManager } from 'react-native';
 import { getErrorMessage } from '@helpers/getErrorMessage';
-import { useObject, useRealm } from '../../main';
+import { useObject, useRealm, useLocalRealm } from '../../main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useMountEffect from '@hooks/useMountEffect';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
@@ -37,6 +37,20 @@ export const MangaStatusSchema: Realm.ObjectSchema = {
     scan: 'string?',
     publish: 'string?',
   },
+};
+
+export const MangaReadingChapter: Realm.ObjectSchema = {
+  name: 'MangaReadingChapter',
+  embedded: true,
+  properties: {
+    _id: 'string',
+    index: 'double',
+  },
+};
+
+export type CurrentlyReadingChapter = {
+  _id: string;
+  index: number;
 };
 
 export const SORT_CHAPTERS_BY = {
@@ -68,7 +82,7 @@ export interface IMangaSchema
   chapters: string[];
   sortChaptersBy: SortChaptersMethod;
   reversedSort: boolean;
-  currentlyReadingChapter?: string;
+  currentlyReadingChapter?: CurrentlyReadingChapter;
   dateAddedInLibrary?: number;
   notifyNewChaptersCount?: number;
   inLibrary: boolean;
@@ -86,7 +100,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   source!: string;
   description!: string | null;
   genres!: Set<string>;
-  currentlyReadingChapter!: string;
+  currentlyReadingChapter!: CurrentlyReadingChapter;
   dateAddedInLibrary?: number;
   modifyNewChaptersCount!: number;
   chapters!: string[];
@@ -114,7 +128,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
       source: 'string',
       description: 'mixed',
       genres: 'string<>',
-      currentlyReadingChapter: 'string?',
+      currentlyReadingChapter: 'MangaReadingChapter?',
       dateAddedInLibrary: 'int?',
       notifyNewChaptersCount: { type: 'int?', default: 0 },
       chapters: 'string[]',
@@ -147,6 +161,7 @@ export const useManga = (
   options: UseMangaOptions = { preferLocal: true },
 ) => {
   const mangaRealm = useRealm();
+  const cloudRealm = useLocalRealm();
   const currentUser = useUser();
   if (currentUser == null)
     throw Error('currentUser is null in useManga() when it is required.');
@@ -208,19 +223,23 @@ export const useManga = (
       setError('');
       try {
         const meta = await source.getMeta(manga);
+        cloudRealm.write(() => {
+          for (const x of meta.chapters) {
+            const copy = x;
+            (copy as ChapterSchema)._mangaId = meta.link;
+            (copy as ChapterSchema)._id = x.link;
+            (copy as ChapterSchema)._realmId = currentUser.id;
+
+            cloudRealm.create<ChapterSchema>(
+              'Chapter',
+              copy,
+              Realm.UpdateMode.Modified,
+            );
+          }
+        });
         mangaRealm.write(() => {
           const { chapters, availableLanguages } = meta.chapters.reduce(
             (prev, curr) => {
-              const copy = curr;
-              (copy as ChapterSchema)._mangaId = meta.link;
-              (copy as ChapterSchema)._id = curr.link;
-              (copy as ChapterSchema)._realmId = currentUser.id;
-
-              mangaRealm.create<ChapterSchema>(
-                'Chapter',
-                copy,
-                Realm.UpdateMode.Modified,
-              );
               prev.chapters.push(curr.link);
               const { add } = integrateSortedList(
                 prev.availableLanguages,
@@ -276,6 +295,7 @@ export const useManga = (
     mangaRealm,
     mangaObject,
     isOffline,
+    cloudRealm,
   ]);
 
   const refresh = React.useCallback(async () => {
@@ -321,12 +341,12 @@ export const useManga = (
       if (mangaObject != null) {
         mangaRealm.write(() => {
           fn(mangaObject, (k: string) =>
-            mangaRealm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
+            cloudRealm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
           );
         });
       }
     },
-    [mangaObject, mangaRealm],
+    [mangaObject, mangaRealm, cloudRealm],
   );
 
   return { manga, refresh, status, error, update };

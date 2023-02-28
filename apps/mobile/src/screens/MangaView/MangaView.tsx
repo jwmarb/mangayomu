@@ -9,7 +9,12 @@ import MangaViewerHeader from './components/MangaViewerHeader';
 import { useTheme } from '@emotion/react';
 import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
-import { useQuery, useRealm } from '@database/main';
+import {
+  useLocalQuery,
+  useLocalRealm,
+  useQuery,
+  useRealm,
+} from '@database/main';
 import displayMessage from '@helpers/displayMessage';
 import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import Animated, {
@@ -106,9 +111,9 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   function handleOnOpenMenu() {
     ref.current?.snapToIndex(1);
   }
+  const cloudRealm = useLocalRealm();
 
-  const chapters = useQuery(ChapterSchema);
-  const realm = useRealm();
+  const chapters = useLocalQuery(ChapterSchema);
 
   const multilingualChapters = React.useMemo(
     () => chapters.filtered(`_mangaId == "${params.link}"`),
@@ -130,9 +135,9 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   const sortfn = React.useCallback(
     (a: string) =>
       SORT_CHAPTERS_BY[manga!.sortChaptersBy](
-        realm.objectForPrimaryKey('Chapter', a)!,
+        cloudRealm.objectForPrimaryKey('Chapter', a)!,
       ),
-    [manga != null, realm],
+    [manga != null, cloudRealm],
   );
 
   const data = React.useMemo(

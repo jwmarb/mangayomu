@@ -7,7 +7,7 @@ import { RectButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import { RowChapterProps } from './RowChapter.interfaces';
 import { format, formatDistanceToNow } from 'date-fns';
-import { useRealm } from '@database/main';
+import { useLocalRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 
 export const ROW_CHAPTER_HEIGHT = moderateScale(60);
@@ -15,9 +15,9 @@ export const ROW_CHAPTER_HEIGHT = moderateScale(60);
 const RowChapter: React.FC<RowChapterProps> = (props) => {
   if ('loading' in props) return null;
   const { rowChapterKey } = props;
-  const realm = useRealm();
+  const cloudRealm = useLocalRealm();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const rowChapter = realm.objectForPrimaryKey<ChapterSchema>(
+  const rowChapter = cloudRealm.objectForPrimaryKey<ChapterSchema>(
     'Chapter',
     rowChapterKey,
   )!;
