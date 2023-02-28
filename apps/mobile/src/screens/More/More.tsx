@@ -2,16 +2,15 @@ import Avatar from '@components/Avatar';
 import Button from '@components/Button';
 import { Stack } from '@components/Stack';
 import Text from '@components/Text';
-import { app, currentUser } from '@database/main';
-import { useCurrentUserFromRealm } from '@database/main';
 import useAuth0 from '@hooks/useAuth0';
+import { useUser } from '@realm/react';
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 
 const Settings: React.FC = () => {
   const { user, authorize, clearSession, clearCredentials } = useAuth0();
-  const currentUser = useCurrentUserFromRealm();
+  const currentUser = useUser();
 
   return (
     <ScrollView>
