@@ -17,6 +17,7 @@ import { MainSourceSelectorReducer } from '@redux/slices/mainSourceSelector';
 import { ExplorerReducer } from '@redux/slices/explore';
 import { LibraryReducer } from '@redux/slices/library';
 import { BrowseReducer } from '@redux/slices/browse';
+import { SettingsReducer } from '@redux/slices/settings';
 
 const reducers = combineReducers({
   __initial__: __initialReducer__,
@@ -25,6 +26,7 @@ const reducers = combineReducers({
   explore: ExplorerReducer,
   library: LibraryReducer,
   browse: BrowseReducer,
+  settings: SettingsReducer,
 });
 
 const persistConfig: PersistConfig<AppState> = {
