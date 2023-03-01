@@ -5,7 +5,6 @@ import {
   AuthorizeOptions,
 } from 'react-native-auth0';
 import React from 'react';
-import { app } from '@database/main';
 import Realm from 'realm';
 import { useApp, useUser } from '@realm/react';
 
@@ -13,6 +12,7 @@ interface User {
   name: string;
   picture: string;
   email: string;
+  sub: string;
 }
 
 interface Auth0ContextInterface extends Auth0ContextInterface_ {
