@@ -17,7 +17,7 @@ const Avatar: React.FC<AvatarProps> = (props) => {
     [size],
   );
   if (user == null)
-    return <Icon type="font" size={moderateScale(32)} name="account-circle" />;
+    return <Icon type="font" size={size} name="account-circle" />;
   return <FastImage source={{ uri: user.picture }} style={avatarStyle} />;
 };
 
