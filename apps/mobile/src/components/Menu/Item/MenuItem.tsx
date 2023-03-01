@@ -1,4 +1,5 @@
 import Box from '@components/Box';
+import { Stack } from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
 import { MenuOption } from 'react-native-popup-menu';
@@ -11,6 +12,7 @@ const MenuItem: React.FC<MenuItemProps> = (props) => {
     onPress = () => void 0,
     optionKey,
     onSelect = () => void 0,
+    icon,
     ...rest
   } = props;
 
@@ -20,11 +22,18 @@ const MenuItem: React.FC<MenuItemProps> = (props) => {
   }
   return (
     <MenuOption onSelect={handleOnPress}>
-      <Box py={moderateScale(8)} px={moderateScale(16)}>
+      <Stack
+        flex-direction="row"
+        py={moderateScale(8)}
+        px={moderateScale(16)}
+        align-items="center"
+        space="s"
+      >
+        {icon && React.cloneElement(icon, rest)}
         <Text {...rest} variant="button" bold>
           {children}
         </Text>
-      </Box>
+      </Stack>
     </MenuOption>
   );
 };
