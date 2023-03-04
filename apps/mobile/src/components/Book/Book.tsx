@@ -1,7 +1,7 @@
 import Badge from '@components/Badge';
 import Box from '@components/Box';
 import Cover from '@components/Cover';
-import { coverStyles } from '@components/Cover/Cover';
+import { coverStyles, CustomizableCover } from '@components/Cover/Cover';
 import Progress from '@components/Progress';
 import { Stack } from '@components/Stack';
 import Text from '@components/Text';
@@ -10,8 +10,9 @@ import displayMessage from '@helpers/displayMessage';
 import vibrate from '@helpers/vibrate';
 import useMangaSource from '@hooks/useMangaSource';
 import useRootNavigation from '@hooks/useRootNavigation';
-import { MangaHost } from '@mangayomu/mangascraper';
+import { Manga, MangaHost } from '@mangayomu/mangascraper';
 import { useIsFocused } from '@react-navigation/native';
+import { SettingsState } from '@redux/slices/settings';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 import { BaseButton } from 'react-native-gesture-handler';
@@ -20,7 +21,9 @@ import Animated, {
   Easing,
   FadeIn,
   FadeOut,
+  SharedValue,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withRepeat,
   withSequence,
@@ -68,6 +71,37 @@ const Book: React.FC<BookProps> = (props) => {
         </Text>
       </Stack>
     </BaseButton>
+  );
+};
+
+const AnimatedStack = Animated.createAnimatedComponent(Stack);
+
+const multiplier = moderateScale(160) / moderateScale(205);
+
+export const CustomizableBook: React.FC<
+  {
+    width: SharedValue<number>;
+    height: SharedValue<number>;
+  } & Omit<Manga, 'index' | 'link'>
+> = (props) => {
+  const { width, height, source: mangaSource, title, imageCover } = props;
+  const source = useMangaSource(mangaSource);
+  const stackStyle = useAnimatedStyle(() => ({
+    width: width.value,
+    height: height.value,
+  }));
+  console.log(height.value, bookDimensions.height);
+
+  const c = useDerivedValue(() => height.value * multiplier);
+  return (
+    <AnimatedStack space="s" style={stackStyle}>
+      <Badge type="image" uri={source.getIcon()} show>
+        <CustomizableCover width={width} height={c} src={imageCover} />
+      </Badge>
+      <Text variant="book-title" numberOfLines={2} bold>
+        {title}
+      </Text>
+    </AnimatedStack>
   );
 };
 
