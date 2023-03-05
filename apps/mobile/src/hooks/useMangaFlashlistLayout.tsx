@@ -1,6 +1,7 @@
 import Book from '@components/Book';
 import Box from '@components/Box';
 import { useTheme } from '@emotion/react';
+import useMountedEffect from '@hooks/useMountedEffect';
 import { Manga } from '@mangayomu/mangascraper';
 import { ListRenderItem } from '@shopify/flash-list';
 import React from 'react';
@@ -31,10 +32,11 @@ export default function useMangaFlashlistLayout<
   const theme = useTheme();
   const padding = 2 * theme.style.spacing.s;
   const [columns, setColumns] = React.useState<number>(
-    Math.round(
-      (width - 2 * theme.style.spacing.m) / (bookDimensions.width + padding),
-    ),
+    Math.round(width / (bookDimensions.width + padding)),
   );
+  useMountedEffect(() => {
+    setColumns(Math.round(width / (bookDimensions.width + padding)));
+  }, [bookDimensions.width]);
   React.useLayoutEffect(() => {
     const p = Dimensions.addEventListener('change', ({ window: { width } }) => {
       setColumns(
