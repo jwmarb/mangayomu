@@ -1,10 +1,9 @@
 import Box from '@components/Box';
 import { useTheme } from '@emotion/react';
-import useMountEffect from '@hooks/useMountEffect';
 import React from 'react';
 import {
+  Dimensions,
   LayoutChangeEvent,
-  SliderComponent,
   useWindowDimensions,
 } from 'react-native';
 import {
@@ -21,7 +20,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
-import { SliderProps } from './Slider.interfaces';
+import { SliderProps, SliderMethods } from './Slider.interfaces';
 
 const AnimatedButton = Animated.createAnimatedComponent(BorderlessButton);
 
@@ -35,14 +34,15 @@ const styles = ScaledSheet.create({
   },
   trail: {
     height: '1.5@ms',
-    marginVertical: '15@ms',
-    position: 'absolute',
   },
 });
 
 const maxLeft = -moderateScale(15);
 
-const Slider: React.FC<SliderProps> = (props) => {
+const Slider: React.ForwardRefRenderFunction<SliderMethods, SliderProps> = (
+  props,
+  ref,
+) => {
   const {
     onChange = () => void 0,
     min = 0,
@@ -56,10 +56,28 @@ const Slider: React.FC<SliderProps> = (props) => {
   const mounted = React.useRef<boolean>(false);
   const [maxRight, setMaxRight] = React.useState<number>();
   const containerWidth = React.useRef<number>(width);
-  const left = useSharedValue<number>(9999999);
+  const opacity = useSharedValue(0);
+  const left = useSharedValue<number>(
+    interpolate(min, [min, max], [maxLeft, maxRight ?? width]),
+  );
   function handleOnChange(val: number) {
-    if (mounted.current) onChange(val);
+    if (mounted.current && opacity.value > 0) onChange(val);
   }
+  React.useImperativeHandle(ref, () => ({
+    setValue(val) {
+      left.value = interpolate(val, [min, max], [maxLeft, maxRight ?? width]);
+    },
+  }));
+
+  React.useEffect(() => {
+    const listener = Dimensions.addEventListener('change', () => {
+      opacity.value = 0;
+    });
+    return () => {
+      listener.remove();
+    };
+  }, []);
+
   React.useLayoutEffect(() => {
     if (maxRight != null && !mounted.current) {
       // left.value =
@@ -78,7 +96,7 @@ const Slider: React.FC<SliderProps> = (props) => {
   useAnimatedReaction(
     () => interpolatedValue.value,
     (curr) => runOnJS(handleOnChange)(curr),
-    [],
+    [handleOnChange],
   );
   const panGesture = React.useMemo(
     () =>
@@ -91,11 +109,26 @@ const Slider: React.FC<SliderProps> = (props) => {
     [maxRight],
   );
 
+  const composedGestures = React.useMemo(
+    () =>
+      Gesture.Simultaneous(
+        Gesture.Tap().onStart((e) => {
+          left.value = Math.min(Math.max(e.x, maxLeft), maxRight ?? width);
+        }),
+        Gesture.Pan().onChange((e) => {
+          left.value = Math.min(Math.max(e.x, maxLeft), maxRight ?? width);
+        }),
+      ),
+    [maxRight],
+  );
+
   const buttonStyle = useAnimatedStyle(() => ({
     left: left.value,
+    opacity: opacity.value,
   }));
   const trailStyle = useAnimatedStyle(() => ({
-    width: left.value - maxLeft,
+    width: left.value - maxLeft * 0.5,
+    opacity: opacity.value,
   }));
 
   const combinedBarStyles = React.useMemo(
@@ -105,8 +138,8 @@ const Slider: React.FC<SliderProps> = (props) => {
 
   const combinedTrailStyles = React.useMemo(
     () => [
-      styles.trail,
       trailStyle,
+      styles.trail,
       {
         backgroundColor: theme.helpers.getColor(color),
       },
@@ -115,20 +148,35 @@ const Slider: React.FC<SliderProps> = (props) => {
   );
 
   const handleOnLayout = (e: LayoutChangeEvent) => {
-    setMaxRight(e.nativeEvent.layout.width + maxLeft); // maxLeft is the padding
+    const newWidth = e.nativeEvent.layout.width + maxLeft;
+    left.value = interpolate(
+      left.value,
+      [maxLeft, maxRight ?? width],
+      [maxLeft, newWidth],
+    );
+    setTimeout(() => (opacity.value = 1), 1);
+
+    setMaxRight(newWidth); // maxLeft is the padding: ;
     containerWidth.current = e.nativeEvent.layout.width;
   };
 
   return (
     <Box flex-direction="row">
-      <Box
-        onLayout={handleOnLayout}
-        width="100%"
-        height={moderateScale(1.5)}
-        background-color={theme.palette.background.disabled}
-        my={moderateScale(15)}
-      />
-      <Animated.View style={combinedTrailStyles} />
+      <GestureDetector gesture={composedGestures}>
+        <Box width="100%" height={moderateScale(1.5)} py={moderateScale(15)}>
+          <Box
+            onLayout={handleOnLayout}
+            width="100%"
+            height={moderateScale(1.5)}
+            background-color={theme.palette.background.disabled}
+          />
+        </Box>
+      </GestureDetector>
+      <GestureDetector gesture={composedGestures}>
+        <Box position="absolute" py={moderateScale(15)}>
+          <Animated.View style={combinedTrailStyles}></Animated.View>
+        </Box>
+      </GestureDetector>
       <GestureDetector gesture={panGesture}>
         <AnimatedButton
           borderless
@@ -148,4 +196,4 @@ const Slider: React.FC<SliderProps> = (props) => {
   );
 };
 
-export default Slider;
+export default React.forwardRef(Slider);

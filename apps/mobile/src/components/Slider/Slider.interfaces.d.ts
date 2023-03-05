@@ -8,3 +8,7 @@ export interface SliderProps extends React.PropsWithChildren {
   color?: Colors;
   defaultValue?: number;
 }
+
+export interface SliderMethods {
+  setValue: (val: number) => void;
+}
