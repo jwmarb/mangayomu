@@ -16,9 +16,6 @@ import {
 } from '@screens/Explore/Explore.flatlist';
 import FlashList from '@shopify/flash-list/dist/FlashList';
 import React from 'react';
-import { ActivityIndicator, useWindowDimensions } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import connector, { ConnectedHotMangaListProps } from './HotMangaList.redux';
 
 const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
