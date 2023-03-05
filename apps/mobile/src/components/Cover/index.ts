@@ -1,2 +1,2 @@
 export { default } from './Cover';
-export { CustomizableCover } from './Cover';
+export { default as CustomizableCover } from './Cover.customizable';

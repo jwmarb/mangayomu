@@ -1,8 +1,7 @@
 import Badge from '@components/Badge';
-import Box from '@components/Box';
+import connector, { ConnectedBookProps } from '@components/Book/Book.redux';
 import Cover from '@components/Cover';
-import { coverStyles, CustomizableCover } from '@components/Cover/Cover';
-import Progress from '@components/Progress';
+import { coverStyles } from '@components/Cover/Cover';
 import { Stack } from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
@@ -10,35 +9,17 @@ import displayMessage from '@helpers/displayMessage';
 import vibrate from '@helpers/vibrate';
 import useMangaSource from '@hooks/useMangaSource';
 import useRootNavigation from '@hooks/useRootNavigation';
-import { Manga, MangaHost } from '@mangayomu/mangascraper';
-import { useIsFocused } from '@react-navigation/native';
-import { SettingsState } from '@redux/slices/settings';
 import React from 'react';
-import FastImage from 'react-native-fast-image';
 import { BaseButton } from 'react-native-gesture-handler';
-import Animated, {
-  cancelAnimation,
-  Easing,
-  FadeIn,
-  FadeOut,
-  SharedValue,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withRepeat,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
-import { moderateScale, ScaledSheet } from 'react-native-size-matters';
-import { BookProps } from './Book.interfaces';
+import { moderateScale } from 'react-native-size-matters';
 
 export const bookDimensions = {
   width: moderateScale(110),
   height: moderateScale(205),
 };
 
-const Book: React.FC<BookProps> = (props) => {
-  const { manga } = props;
+const Book: React.FC<ConnectedBookProps> = (props) => {
+  const { manga, width, height, align, fontSize, bold, letterSpacing } = props;
   const navigation = useRootNavigation();
   const source = useMangaSource(manga);
 
@@ -51,6 +32,11 @@ const Book: React.FC<BookProps> = (props) => {
   }
   const theme = useTheme();
 
+  const textStyle = React.useMemo(
+    () => ({ fontSize, letterSpacing }),
+    [fontSize, letterSpacing],
+  );
+
   return (
     <BaseButton
       style={coverStyles.button}
@@ -58,15 +44,11 @@ const Book: React.FC<BookProps> = (props) => {
       onLongPress={handleOnLongPress}
       rippleColor={theme.palette.action.ripple}
     >
-      <Stack
-        space="s"
-        width={bookDimensions.width}
-        height={bookDimensions.height}
-      >
+      <Stack space="s" width={width} minHeight={height}>
         <Badge type="image" uri={source.getIcon()} show>
           <Cover cover={manga} />
         </Badge>
-        <Text variant="book-title" numberOfLines={2} bold>
+        <Text style={textStyle} numberOfLines={2} bold={bold} align={align}>
           {manga.title}
         </Text>
       </Stack>
@@ -74,108 +56,4 @@ const Book: React.FC<BookProps> = (props) => {
   );
 };
 
-const AnimatedStack = Animated.createAnimatedComponent(Stack);
-
-const multiplier = moderateScale(160) / moderateScale(205);
-
-export const CustomizableBook: React.FC<
-  {
-    width: SharedValue<number>;
-    height: SharedValue<number>;
-  } & Omit<Manga, 'index' | 'link'>
-> = (props) => {
-  const { width, height, source: mangaSource, title, imageCover } = props;
-  const source = useMangaSource(mangaSource);
-  const stackStyle = useAnimatedStyle(() => ({
-    width: width.value,
-    height: height.value,
-  }));
-  console.log(height.value, bookDimensions.height);
-
-  const c = useDerivedValue(() => height.value * multiplier);
-  return (
-    <AnimatedStack space="s" style={stackStyle}>
-      <Badge type="image" uri={source.getIcon()} show>
-        <CustomizableCover width={width} height={c} src={imageCover} />
-      </Badge>
-      <Text variant="book-title" numberOfLines={2} bold>
-        {title}
-      </Text>
-    </AnimatedStack>
-  );
-};
-
-export const LoadingBook = React.memo(() => {
-  const opacity = useSharedValue(0.5);
-  const isFocused = useIsFocused();
-  const theme = useTheme();
-  React.useEffect(() => {
-    if (isFocused) {
-      opacity.value = withRepeat(
-        withSequence(
-          withTiming(1, { duration: 1000, easing: Easing.ease }),
-          withTiming(0.5, { duration: 1000, easing: Easing.ease }),
-        ),
-        -1,
-      );
-      return () => {
-        cancelAnimation(opacity);
-      };
-    }
-  }, [isFocused]);
-  const loading = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }));
-  const textLoading = React.useMemo(
-    () => [
-      {
-        width: '100%',
-        borderRadius: theme.style.borderRadius,
-        backgroundColor: theme.palette.skeleton,
-      },
-      loading,
-    ],
-    [loading, theme.palette.skeleton],
-  );
-  const loadingStyles = React.useMemo(
-    () => [
-      loading,
-      coverStyles.image,
-      { backgroundColor: theme.palette.skeleton },
-    ],
-    [loading, coverStyles.image, theme.palette.skeleton],
-  );
-  return (
-    <Stack
-      space="s"
-      width={bookDimensions.width}
-      height={bookDimensions.height}
-    >
-      <Animated.View style={loadingStyles} />
-      <Box>
-        <Animated.View style={textLoading}>
-          <Text
-            variant="book-title"
-            numberOfLines={2}
-            bold
-            style={coverStyles.placeholderText}
-          >
-            a
-          </Text>
-        </Animated.View>
-        <Animated.View style={textLoading}>
-          <Text
-            variant="book-title"
-            numberOfLines={2}
-            bold
-            style={coverStyles.placeholderText}
-          >
-            a
-          </Text>
-        </Animated.View>
-      </Box>
-    </Stack>
-  );
-});
-
-export default React.memo(Book);
+export default connector(React.memo(Book));

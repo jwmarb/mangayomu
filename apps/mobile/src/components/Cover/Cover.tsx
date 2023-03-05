@@ -1,22 +1,17 @@
-import { bookDimensions } from '@components/Book';
 import Box from '@components/Box';
+import connector, { ConnectedCoverProps } from '@components/Cover/Cover.redux';
 import Progress from '@components/Progress';
 import { useTheme } from '@emotion/react';
-import useMangaSource from '@hooks/useMangaSource';
 import React from 'react';
-import FastImage, { FastImageProps } from 'react-native-fast-image';
+import FastImage from 'react-native-fast-image';
 import Animated, {
-  SharedValue,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
-import { CoverProps } from './Cover.interfaces';
 
 export const coverStyles = ScaledSheet.create({
   image: {
-    width: '110@ms',
-    height: '160@ms',
     borderRadius: '8@ms',
   },
   button: {
@@ -36,74 +31,17 @@ export const coverStyles = ScaledSheet.create({
   },
 });
 
-const borderRadius = moderateScale(8);
-
-const AnimatedFastImage = Animated.createAnimatedComponent(
-  FastImage as React.FC<FastImageProps>,
-);
-
-export const CustomizableCover: React.FC<{
-  width: SharedValue<number>;
-  height: SharedValue<number>;
-  src: string;
-}> = (props) => {
-  const { width, height, src } = props;
-  const opacity = useSharedValue(0);
-  const theme = useTheme();
-  const imageStyle = useAnimatedStyle(() => ({
-    width: width.value,
-    height: height.value,
-    borderRadius,
-  }));
-
-  const combinedStyles = React.useMemo(
-    () => [imageStyle, coverStyles.imageOverlay],
-    [imageStyle, coverStyles.imageOverlay],
-  );
-
-  function handleOnError() {
-    opacity.value = 1;
-  }
-
-  const style = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }));
-  const loadingStyle = React.useMemo(
-    () => [combinedStyles, { backgroundColor: theme.palette.skeleton }],
-    [imageStyle, theme.palette.skeleton, coverStyles.imageOverlay],
-  );
-
-  return (
-    <>
-      <Animated.View style={loadingStyle}>
-        <Progress />
-      </Animated.View>
-      <Animated.View style={style}>
-        <AnimatedFastImage
-          source={require('@assets/No-Image-Placeholder.png')}
-          style={combinedStyles}
-        />
-      </Animated.View>
-      <AnimatedFastImage
-        source={{ uri: src }}
-        style={imageStyle}
-        onError={handleOnError}
-      />
-    </>
-  );
-};
-
-const Cover: React.FC<CoverProps> = (props) => {
-  const { cover, scale = 1 } = props;
+const Cover: React.FC<ConnectedCoverProps> = (props) => {
+  const { cover, scale = 1, coverHeight, width } = props;
   const opacity = useSharedValue(0);
   const theme = useTheme();
   const imageStyle = React.useMemo(
     () => ({
-      width: moderateScale(110 * scale),
-      height: moderateScale(160 * scale),
+      width: width,
+      height: coverHeight,
       borderRadius: moderateScale(8 * scale),
     }),
-    [scale],
+    [scale, width, coverHeight],
   );
   const combinedStyles = React.useMemo(
     () => [imageStyle, coverStyles.imageOverlay],
@@ -142,4 +80,4 @@ const Cover: React.FC<CoverProps> = (props) => {
   );
 };
 
-export default Cover;
+export default connector(Cover);
