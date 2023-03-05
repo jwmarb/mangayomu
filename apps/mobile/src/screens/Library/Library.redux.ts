@@ -8,6 +8,8 @@ const mapStateToProps = (state: AppState) => ({
   noSourcesSelectedInFilter:
     state.library.numberOfSelectedSourcesInFilter === 0,
   numberOfAppliedFilters: state.library.numberOfFiltersApplied,
+  bookWidth: state.settings.book.width,
+  bookHeight: state.settings.book.height,
 });
 
 const connector = connect(mapStateToProps);

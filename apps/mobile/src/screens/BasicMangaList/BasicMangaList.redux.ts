@@ -12,6 +12,8 @@ const mapStateToProps = (
     props.route.params.stateKey === 'latest'
       ? 'Recently updated'
       : 'Trending updates',
+  bookWidth: state.settings.book.width,
+  bookHeight: state.settings.book.height,
 });
 
 const connector = connect(mapStateToProps);

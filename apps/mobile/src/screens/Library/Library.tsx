@@ -30,6 +30,8 @@ const Library: React.FC<ConnectedLibraryProps> = ({
   filters,
   noSourcesSelectedInFilter,
   numberOfAppliedFilters,
+  bookHeight,
+  bookWidth,
 }) => {
   const ref = React.useRef<BottomSheetMethods>(null);
   const mangas = useQuery(MangaSchema);
@@ -98,7 +100,10 @@ const Library: React.FC<ConnectedLibraryProps> = ({
     [sortedData, query],
   );
   const { renderItem, keyExtractor, estimatedItemSize, columns, key } =
-    useMangaFlashlistLayout<MangaSchema>(bookDimensions);
+    useMangaFlashlistLayout<MangaSchema>({
+      width: bookWidth,
+      height: bookHeight,
+    });
   const { scrollViewStyle, contentContainerStyle, onScroll } =
     useCollapsibleTabHeader({
       headerTitle: 'Library',

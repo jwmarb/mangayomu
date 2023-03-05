@@ -1,5 +1,3 @@
-import { bookDimensions, LoadingBook } from '@components/Book/Book';
-import Box from '@components/Box';
 import Button from '@components/Button';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
@@ -24,7 +22,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import connector, { ConnectedHotMangaListProps } from './HotMangaList.redux';
 
 const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
-  const { hotMangas, status, errors, isOffline } = props;
+  const { hotMangas, status, errors, isOffline, bookHeight } = props;
   const navigation = useRootNavigation();
   const theme = useTheme();
   const ref = React.useRef<BottomSheet>(null);
@@ -88,7 +86,7 @@ const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
             </>
           }
           data={hotMangas.slice(0, 9)}
-          estimatedItemSize={bookDimensions.height}
+          estimatedItemSize={bookHeight}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           horizontal

@@ -3,17 +3,19 @@ import connector, {
 } from './BasicMangaList.redux';
 import React from 'react';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
-import { bookDimensions } from '@components/Book';
 import Box from '@components/Box';
 import { FlashList } from '@shopify/flash-list';
 import useMangaFlashlistLayout from '@hooks/useMangaFlashlistLayout';
 
 const BasicMangaList: React.FC<ConnectedBasicMangaListProps> = (props) => {
-  const { mangas, title } = props;
+  const { mangas, title, bookHeight, bookWidth } = props;
   const { onScroll, contentContainerStyle, scrollViewStyle } =
     useCollapsibleHeader({ headerTitle: title });
   const { estimatedItemSize, columns, renderItem, keyExtractor, key } =
-    useMangaFlashlistLayout(bookDimensions);
+    useMangaFlashlistLayout({
+      width: bookWidth,
+      height: bookHeight,
+    });
 
   return (
     <FlashList

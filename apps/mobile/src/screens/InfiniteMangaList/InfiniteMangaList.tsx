@@ -3,7 +3,6 @@ import connector, {
 } from './InfiniteMangaList.redux';
 import React from 'react';
 import { FlashList } from '@shopify/flash-list';
-import { bookDimensions } from '@components/Book';
 import useMangaFlashlistLayout from '@hooks/useMangaFlashlistLayout';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import Box from '@components/Box';
@@ -11,7 +10,6 @@ import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
 import Text from '@components/Text';
 import { Stack } from '@components/Stack';
-import { LoadingBook } from '@components/Book/Book';
 import Animated, { FadeOut } from 'react-native-reanimated';
 import Input from '@components/Input';
 import {
@@ -39,6 +37,7 @@ import { getErrorMessage } from '@helpers/getErrorMessage';
 import useMountedEffect from '@hooks/useMountedEffect';
 import Button from '@components/Button';
 import { moderateScale } from 'react-native-size-matters';
+import { LoadingBook } from '@components/Book';
 
 const reducer = (s: boolean) => !s;
 
@@ -58,7 +57,8 @@ export type StatefulSort = {
 export type StatefulOption = { type: 'option'; selected: string };
 
 const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
-  const { source, state, initialQuery, isOffline } = props;
+  const { source, state, initialQuery, isOffline, bookHeight, bookWidth } =
+    props;
   const numberOfItemsPerPage = React.useRef<number | null>(
     state?.mangas.length ?? null,
   );
@@ -175,7 +175,10 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
 
   const [showSearchBar, toggle] = React.useReducer(reducer, !!initialQuery);
   const { estimatedItemSize, keyExtractor, renderItem, columns, key } =
-    useMangaFlashlistLayout(bookDimensions);
+    useMangaFlashlistLayout({
+      width: bookWidth,
+      height: bookHeight,
+    });
   async function handleOnSubmitEditing(
     e: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
   ) {

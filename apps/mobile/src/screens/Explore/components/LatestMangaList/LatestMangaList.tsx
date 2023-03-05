@@ -1,4 +1,3 @@
-import { bookDimensions } from '@components/Book';
 import Box from '@components/Box';
 import Button from '@components/Button';
 import Icon from '@components/Icon';
@@ -24,7 +23,7 @@ import connector, {
 } from './LatestMangaList.redux';
 
 const LatestMangaList: React.FC<ConnectedLatestMangaListProps> = (props) => {
-  const { latestMangas, status, errors, isOffline } = props;
+  const { latestMangas, status, errors, isOffline, bookHeight } = props;
   const theme = useTheme();
   const navigation = useRootNavigation();
   const ref = React.useRef<BottomSheet>(null);
@@ -89,7 +88,7 @@ const LatestMangaList: React.FC<ConnectedLatestMangaListProps> = (props) => {
           }
           ListEmptyComponent={!isOffline ? EmptyMangaListComponent : undefined}
           data={latestMangas.slice(0, 9)}
-          estimatedItemSize={bookDimensions.height}
+          estimatedItemSize={bookHeight}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           horizontal

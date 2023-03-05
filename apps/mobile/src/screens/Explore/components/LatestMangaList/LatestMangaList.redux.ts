@@ -6,6 +6,7 @@ const mapStateToProps = (state: AppState) => ({
   status: state.explore.status.latest,
   errors: state.explore.errors.latest,
   isOffline: state.explore.internetStatus === 'offline',
+  bookHeight: state.settings.book.height,
 });
 
 const connector = connect(mapStateToProps);

@@ -14,6 +14,8 @@ const mapStateToProps = (
   source: MangaHost.getAvailableSources().get(props.route.params.source)!,
   initialQuery: state.browse.query,
   isOffline: state.explore.internetStatus === 'offline',
+  bookWidth: state.settings.book.width,
+  bookHeight: state.settings.book.height,
 });
 
 const connector = connect(mapStateToProps);
