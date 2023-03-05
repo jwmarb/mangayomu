@@ -76,7 +76,7 @@ const LoadingBook: React.FC<LoadingBookProps> = ({
     [loading, coverStyles.image, theme.palette.skeleton],
   );
   return (
-    <Stack space="s" width={width} height={height}>
+    <Stack space="s" width={width} minHeight={height}>
       <Animated.View style={loadingStyles} />
       <Box>
         <Animated.View style={textLoading}>
