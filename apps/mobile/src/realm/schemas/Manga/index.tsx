@@ -174,8 +174,9 @@ export const useManga = (
     MangaSchema,
     typeof link === 'string' ? link : link.link,
   );
+
   const [manga, setManga] = React.useState<IMangaSchema | undefined>(
-    mangaObject ?? undefined,
+    mangaObject && mangaObject.isValid() ? mangaObject : undefined,
   );
   React.useEffect(() => {
     const netListener = NetInfo.addEventListener((state) => {
@@ -322,14 +323,16 @@ export const useManga = (
   //   });
   // }, []);
   React.useEffect(() => {
-    mangaObject?.addListener((_manga, changes) => {
-      if (changes.deleted) setManga(undefined);
-      else setManga(_manga);
-    });
-    return () => {
-      mangaObject?.removeAllListeners();
-    };
-  }, [mangaObject == null]);
+    if (mangaObject?.isValid()) {
+      mangaObject?.addListener((_manga, changes) => {
+        if (changes.deleted) setManga(undefined);
+        else setManga(_manga);
+      });
+      return () => {
+        mangaObject?.removeAllListeners();
+      };
+    }
+  }, [mangaObject]);
 
   const update = React.useCallback(
     (
@@ -338,7 +341,7 @@ export const useManga = (
         getChapter: (key: string) => ChapterSchema | null,
       ) => void,
     ) => {
-      if (mangaObject != null) {
+      if (mangaObject != null && mangaObject.isValid()) {
         mangaRealm.write(() => {
           fn(mangaObject, (k: string) =>
             cloudRealm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
