@@ -1,5 +1,6 @@
 import Badge from '@components/Badge';
 import { CustomizableBookProps } from '@components/Book/Book.interfaces';
+import Box from '@components/Box';
 import { CustomizableCover } from '@components/Cover/';
 import { Stack } from '@components/Stack';
 import Text from '@components/Text';
@@ -12,13 +13,21 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
 } from 'react-native-reanimated';
-import { moderateScale } from 'react-native-size-matters';
+import { moderateScale, ScaledSheet } from 'react-native-size-matters';
+
+const styles = ScaledSheet.create({
+  linearGradient: {
+    flexGrow: 1,
+    flexDirection: 'column-reverse',
+  },
+});
 
 const AnimatedStack = Animated.createAnimatedComponent(Stack);
 
 export const BOOK_COVER_RATIO = moderateScale(160) / moderateScale(205);
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
+const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 const CustomizableBook: React.FC<CustomizableBookProps> = (props) => {
   const {
@@ -37,6 +46,9 @@ const CustomizableBook: React.FC<CustomizableBookProps> = (props) => {
   const theme = useTheme();
 
   const coverHeight = useDerivedValue(() => height.value * BOOK_COVER_RATIO);
+  const linearGradientPadding = useDerivedValue(() =>
+    Math.max(theme.style.spacing.s, height.value * 0.025),
+  );
 
   const stackStyle = useAnimatedStyle(() => ({
     width: width.value,
@@ -48,36 +60,69 @@ const CustomizableBook: React.FC<CustomizableBookProps> = (props) => {
     letterSpacing: letterSpacing.value,
   }));
 
-  const textContainerStyle = useAnimatedStyle(() => ({
-    position: bookStyle === BookStyle.TACHIYOMI ? 'absolute' : 'relative',
-    zIndex: 10000,
+  const linearGradientStyle = useAnimatedStyle(() => ({
+    paddingHorizontal: linearGradientPadding.value,
   }));
 
-  return (
-    <AnimatedStack space="s" style={stackStyle}>
-      <Badge type="image" uri={source.getIcon()} show>
-        <LinearGradient
-          colors={['rgba(0, 0, 0, 0.8)', theme.palette.background.default]}
-        >
+  const combinedLinearGradientStyle = React.useMemo(
+    () => [
+      linearGradientStyle,
+      styles.linearGradient,
+      { paddingBottom: theme.style.spacing.s },
+    ],
+    [linearGradientStyle, theme.style.spacing.s, styles.linearGradient],
+  );
+
+  if (bookStyle === BookStyle.TACHIYOMI)
+    return (
+      <AnimatedStack space="s" style={stackStyle}>
+        <Badge type="image" uri={source.getIcon()} show>
           <CustomizableCover
             bookStyle={bookStyle}
             bookHeight={height}
             width={width}
-            height={coverHeight}
+            height={height}
             src={imageCover}
-          />
-        </LinearGradient>
+          >
+            <AnimatedLinearGradient
+              colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={combinedLinearGradientStyle}
+            >
+              <AnimatedText
+                style={fontStyle}
+                numberOfLines={2}
+                bold={bold}
+                align={align}
+              >
+                {title}
+              </AnimatedText>
+            </AnimatedLinearGradient>
+          </CustomizableCover>
+        </Badge>
+      </AnimatedStack>
+    );
+
+  return (
+    <AnimatedStack space="s" style={stackStyle}>
+      <Badge type="image" uri={source.getIcon()} show>
+        <CustomizableCover
+          bookStyle={bookStyle}
+          bookHeight={height}
+          width={width}
+          height={coverHeight}
+          src={imageCover}
+        />
       </Badge>
-      <Animated.View style={textContainerStyle}>
-        <AnimatedText
-          style={fontStyle}
-          numberOfLines={2}
-          bold={bold}
-          align={align}
-        >
-          {title}
-        </AnimatedText>
-      </Animated.View>
+      <AnimatedText
+        style={fontStyle}
+        numberOfLines={2}
+        bold={bold}
+        align={align}
+      >
+        {title}
+      </AnimatedText>
     </AnimatedStack>
   );
 };

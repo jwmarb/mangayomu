@@ -9,7 +9,7 @@ export interface CoverProps extends React.PropsWithChildren {
   normalBookDimensions?: boolean;
 }
 
-export interface CustomizableCoverProps {
+export interface CustomizableCoverProps extends React.PropsWithChildren {
   width: SharedValue<number>;
   height: SharedValue<number>;
   bookHeight: SharedValue<number>;

@@ -40,6 +40,7 @@ const Cover: React.FC<ConnectedCoverProps> = (props) => {
     width,
     bookHeight,
     coverStyle,
+    children,
   } = props;
   const opacity = useSharedValue(0);
   const theme = useTheme();
@@ -52,6 +53,11 @@ const Cover: React.FC<ConnectedCoverProps> = (props) => {
           : coverHeight * scale,
       borderRadius:
         coverStyle !== BookStyle.MANGAROCK ? moderateScale(8 * scale) : 0,
+      borderWidth: coverStyle === BookStyle.TACHIYOMI ? 1 : 0,
+      borderColor:
+        coverStyle === BookStyle.TACHIYOMI
+          ? theme.palette.background.disabled
+          : undefined,
     }),
     [scale, width, coverHeight, bookHeight, coverStyle],
   );
@@ -81,13 +87,17 @@ const Cover: React.FC<ConnectedCoverProps> = (props) => {
         <FastImage
           source={require('@assets/No-Image-Placeholder.png')}
           style={combinedStyles}
-        />
+        >
+          {children}
+        </FastImage>
       </Animated.View>
       <FastImage
         source={{ uri: typeof cover === 'string' ? cover : cover?.imageCover }}
         style={imageStyle}
         onError={handleOnError}
-      />
+      >
+        {children}
+      </FastImage>
     </>
   );
 };

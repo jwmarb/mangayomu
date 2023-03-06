@@ -69,6 +69,7 @@ export interface SettingsState {
     coverHeight: number;
     autoHeight: boolean;
     style: BookStyle;
+    paddingHorizontal: number; // TACHIYOMI STYLE ONLY
     title: {
       bold: boolean;
       size: number;
@@ -100,6 +101,7 @@ const initialSettingsState: SettingsState = {
     coverHeight: moderateScale(160),
     autoHeight: true,
     style: BookStyle.CLASSIC,
+    paddingHorizontal: moderateScale(4),
     title: {
       size: moderateScale(12),
       bold: false,
@@ -126,6 +128,10 @@ const settingsSlice = createSlice({
       if (action.payload.height != null) {
         state.book.height = action.payload.height;
         state.book.coverHeight = action.payload.height * BOOK_COVER_RATIO;
+        state.book.paddingHorizontal = Math.max(
+          moderateScale(4),
+          action.payload.height * 0.025,
+        );
       }
       // if (state.book.title.autoLetterSpacing) {
       //   state.book.title.letterSpacing = -state.book.width / moderateScale(30);

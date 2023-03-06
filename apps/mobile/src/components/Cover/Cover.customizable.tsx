@@ -18,13 +18,18 @@ const AnimatedFastImage = Animated.createAnimatedComponent(
 );
 
 const CustomizableCover: React.FC<CustomizableCoverProps> = (props) => {
-  const { width, height, src, bookStyle, bookHeight } = props;
+  const { width, height, src, bookStyle, bookHeight, children } = props;
   const opacity = useSharedValue(0);
   const theme = useTheme();
   const imageStyle = useAnimatedStyle(() => ({
     width: width.value,
     height: bookStyle === BookStyle.TACHIYOMI ? bookHeight.value : height.value,
     borderRadius: bookStyle !== BookStyle.MANGAROCK ? borderRadius : 0,
+    borderWidth: bookStyle === BookStyle.TACHIYOMI ? 1 : 0,
+    borderColor:
+      bookStyle === BookStyle.TACHIYOMI
+        ? theme.palette.background.disabled
+        : undefined,
   }));
 
   const combinedStyles = React.useMemo(
@@ -53,13 +58,17 @@ const CustomizableCover: React.FC<CustomizableCoverProps> = (props) => {
         <AnimatedFastImage
           source={require('@assets/No-Image-Placeholder.png')}
           style={combinedStyles}
-        />
+        >
+          {children}
+        </AnimatedFastImage>
       </Animated.View>
       <AnimatedFastImage
         source={{ uri: src }}
         style={imageStyle}
         onError={handleOnError}
-      />
+      >
+        {children}
+      </AnimatedFastImage>
     </>
   );
 };

@@ -10,6 +10,8 @@ const mapStateToProps = (state: AppState, props: BookProps) => ({
   letterSpacing: state.settings.book.title.letterSpacing,
   bold: state.settings.book.title.bold,
   align: state.settings.book.title.alignment,
+  bookStyle: state.settings.book.style,
+  paddingHorizontal: state.settings.book.paddingHorizontal,
 });
 
 const connector = connect(mapStateToProps);

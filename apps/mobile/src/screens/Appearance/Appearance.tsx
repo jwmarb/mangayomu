@@ -98,7 +98,7 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
   width: bookWidth,
   height: bookHeight,
   setTitleFontSize,
-  setBookStyle,
+  setBookStyle: _setBookStyle,
   style,
 }) => {
   const { onScroll, contentContainerStyle, scrollViewStyle } =
@@ -110,14 +110,45 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
   const height = useSharedValue(bookHeight);
   const fontSize = useSharedValue(title.size);
   const letterSpacing = useSharedValue(title.letterSpacing);
+  const autoAdjustHeight = React.useCallback(
+    (widthValue: number) => {
+      switch (style) {
+        case BookStyle.TACHIYOMI:
+          height.value = widthValue / moderateScale(0.66);
+          break;
+        case BookStyle.CLASSIC:
+        case BookStyle.MANGAROCK:
+          height.value = widthValue / BOOK_RATIO;
+          break;
+      }
+    },
+    [style],
+  );
   function handleOnCheckbox() {
     toggleAutoBookHeight();
-    height.value = width.value / BOOK_RATIO;
+    autoAdjustHeight(width.value);
   }
+
+  const setBookStyle = React.useCallback(
+    (newValue: BookStyle) => {
+      if (autoHeight)
+        switch (newValue) {
+          case BookStyle.TACHIYOMI:
+            height.value = width.value / moderateScale(0.66);
+            break;
+          case BookStyle.CLASSIC:
+          case BookStyle.MANGAROCK:
+            height.value = width.value / BOOK_RATIO;
+            break;
+        }
+      _setBookStyle(newValue);
+    },
+    [_setBookStyle, autoHeight],
+  );
 
   function handleOnChangeWidth(v: number) {
     width.value = v;
-    if (autoHeight) height.value = v / BOOK_RATIO;
+    if (autoHeight) autoAdjustHeight(v);
   }
 
   function handleOnChangeHeight(v: number) {
