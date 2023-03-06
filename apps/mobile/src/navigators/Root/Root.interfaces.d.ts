@@ -15,6 +15,8 @@ export type RootStackParamList = {
   InfiniteMangaList: {
     source: string;
   };
+  Settings: undefined;
+  Appearance: undefined;
 };
 
 export type RootStackProps<T extends keyof RootStackParamList> =

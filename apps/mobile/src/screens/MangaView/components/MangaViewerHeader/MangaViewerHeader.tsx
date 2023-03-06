@@ -76,7 +76,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
                 box-shadow
                 border-radius={moderateScale(12)}
               >
-                <Cover cover={manga} scale={1.5} />
+                <Cover cover={manga} scale={1.5} normalBookDimensions />
               </Box>
               <MangaTitle title={manga.title} />
               <MangaAuthors data={meta?.authors} loading={isLoading} />

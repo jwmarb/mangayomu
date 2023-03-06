@@ -9,6 +9,8 @@ import { StackHeader } from '@components/NavHeader';
 import BasicMangaList from '@screens/BasicMangaList';
 import SourceView from '@screens/SourceView';
 import InfiniteMangaList from '@screens/InfiniteMangaList';
+import Settings from '@screens/Settings';
+import Appearance from '@screens/Appearance';
 
 const mapStateToProps = (state: AppState) => ({
   showWelcomeScreen: state.__initial__.firstTimeUser,
@@ -36,6 +38,8 @@ const Root: React.FC<RootProps> = ({ showWelcomeScreen }) => {
         name="InfiniteMangaList"
         component={InfiniteMangaList}
       />
+      <RootStack.Screen name="Settings" component={Settings} />
+      <RootStack.Screen name="Appearance" component={Appearance} />
     </RootStack.Navigator>
   );
 };

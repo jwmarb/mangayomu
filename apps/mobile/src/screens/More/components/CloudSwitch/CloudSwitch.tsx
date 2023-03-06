@@ -6,9 +6,12 @@ import connector, { ConnectedCloudSwitchProps } from './CloudSwitch.redux';
 
 const CloudSwitch: React.FC<ConnectedCloudSwitchProps> = (props) => {
   const { toggleCloudSync, cloudSyncEnabled } = props;
+  const handleOnPress = React.useCallback(() => {
+    toggleCloudSync();
+  }, [toggleCloudSync]);
   return (
     <PressableListItem
-      onPress={() => toggleCloudSync()}
+      onPress={handleOnPress}
       label="Enable Cloud"
       iconLeft={<Icon type="font" name="cloud" />}
       iconRight={

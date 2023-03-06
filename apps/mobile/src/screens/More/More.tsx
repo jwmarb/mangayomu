@@ -13,6 +13,8 @@ import { useRealm } from '@database/main';
 import { useTheme } from '@emotion/react';
 import copyTextToClipboard from '@helpers/copyTextToClipboard';
 import useAuth0 from '@hooks/useAuth0';
+import useRootNavigation from '@hooks/useRootNavigation';
+import { RootStackProps } from '@navigators/Root/Root.interfaces';
 import { useUser } from '@realm/react';
 import CloudSwitch from '@screens/More/components/CloudSwitch';
 import PressableListItem from '@screens/More/components/PressableListItem';
@@ -28,6 +30,10 @@ import User from './components/User';
 const Settings: React.FC = () => {
   const { user } = useAuth0();
   const theme = useTheme();
+  const navigation = useRootNavigation();
+  const handleOnSettings = React.useCallback(() => {
+    navigation.navigate('Settings');
+  }, [navigation]);
 
   return (
     <ScrollView>
@@ -48,6 +54,7 @@ const Settings: React.FC = () => {
         <PressableListItem
           label="Settings"
           iconLeft={<Icon type="font" name="cog" />}
+          onPress={handleOnSettings}
         />
         <Divider />
         <PressableListItem

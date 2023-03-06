@@ -151,7 +151,7 @@ const Slider: React.ForwardRefRenderFunction<SliderMethods, SliderProps> = (
     const newWidth = e.nativeEvent.layout.width + maxLeft;
     left.value = interpolate(
       left.value,
-      [maxLeft, maxRight ?? width],
+      [maxLeft, maxRight ?? newWidth],
       [maxLeft, newWidth],
     );
     setTimeout(() => (opacity.value = 1), 1);
@@ -161,12 +161,12 @@ const Slider: React.ForwardRefRenderFunction<SliderMethods, SliderProps> = (
   };
 
   return (
-    <Box flex-direction="row">
+    <Box flex-direction="row" flex-grow>
       <GestureDetector gesture={composedGestures}>
-        <Box width="100%" height={moderateScale(1.5)} py={moderateScale(15)}>
+        <Box flex-grow height={moderateScale(1.5)} py={moderateScale(15)}>
           <Box
             onLayout={handleOnLayout}
-            width="100%"
+            flex-grow
             height={moderateScale(1.5)}
             background-color={theme.palette.background.disabled}
           />

@@ -9,9 +9,13 @@ import Realm from 'realm';
 import React from 'react';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useAuth0 from '@hooks/useAuth0';
+import useMountedEffect from '@hooks/useMountedEffect';
+import { AppState } from '@redux/main';
+import { connect, ConnectedProps } from 'react-redux';
 
-export const RealmEffect: React.FC<React.PropsWithChildren> = ({
+const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
   children,
+  enableCloud,
 }) => {
   // const mangas = useQuery(MangaSchema);
   const realm = useRealm();
@@ -26,6 +30,11 @@ export const RealmEffect: React.FC<React.PropsWithChildren> = ({
   //     console.log(`${user?.deviceId} - ${title}`);
   //   }
   // }, []);
+
+  useMountedEffect(() => {
+    if (enableCloud) realm.syncSession?.resume();
+    else realm.syncSession?.pause();
+  }, [enableCloud]);
 
   React.useEffect(() => {
     (async () => {
@@ -50,3 +59,14 @@ export const RealmEffect: React.FC<React.PropsWithChildren> = ({
   }, [user]);
   return <>{children}</>;
 };
+
+const mapStateToProps = (state: AppState, props: React.PropsWithChildren) => ({
+  children: props.children,
+  enableCloud: state.settings.cloud.enabled,
+});
+
+const connector = connect(mapStateToProps);
+
+type ConnectedRealmEffectProps = ConnectedProps<typeof connector>;
+
+export const RealmEffect = connector(_RealmEffect);

@@ -1,5 +1,5 @@
 import Book from '@components/Book';
-import { LoadingBook } from '@components/Book/Book';
+import { LoadingBook } from '@components/Book/';
 import Box from '@components/Box';
 import { Manga } from '@mangayomu/mangascraper';
 import React from 'react';

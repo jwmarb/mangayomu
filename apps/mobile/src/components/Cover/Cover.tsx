@@ -2,6 +2,7 @@ import Box from '@components/Box';
 import connector, { ConnectedCoverProps } from '@components/Cover/Cover.redux';
 import Progress from '@components/Progress';
 import { useTheme } from '@emotion/react';
+import { BookStyle } from '@redux/slices/settings';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 import Animated, {
@@ -32,16 +33,27 @@ export const coverStyles = ScaledSheet.create({
 });
 
 const Cover: React.FC<ConnectedCoverProps> = (props) => {
-  const { cover, scale = 1, coverHeight, width } = props;
+  const {
+    cover,
+    scale = 1,
+    coverHeight,
+    width,
+    bookHeight,
+    coverStyle,
+  } = props;
   const opacity = useSharedValue(0);
   const theme = useTheme();
   const imageStyle = React.useMemo(
     () => ({
-      width: width,
-      height: coverHeight,
-      borderRadius: moderateScale(8 * scale),
+      width: width * scale,
+      height:
+        coverStyle === BookStyle.TACHIYOMI
+          ? bookHeight * scale
+          : coverHeight * scale,
+      borderRadius:
+        coverStyle !== BookStyle.MANGAROCK ? moderateScale(8 * scale) : 0,
     }),
-    [scale, width, coverHeight],
+    [scale, width, coverHeight, bookHeight, coverStyle],
   );
   const combinedStyles = React.useMemo(
     () => [imageStyle, coverStyles.imageOverlay],

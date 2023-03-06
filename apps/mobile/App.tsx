@@ -123,22 +123,22 @@ function App(): JSX.Element {
     <>
       <StatusBar translucent backgroundColor="transparent" />
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <Auth0Provider domain={Auth0.DOMAIN} clientId={Auth0.CLIENT_ID}>
-          <AppProvider id={REACT_APP_REALM_ID}>
-            <UserProvider fallback={<RealmUserProvider />}>
-              <RealmProvider
-                sync={{
-                  flexible: true,
-                  onError: (_, error) => {
-                    console.error(error);
-                  },
-                }}
-              >
-                <LocalRealmProvider>
-                  <RealmEffect>
-                    <ThemeProvider theme={theme}>
-                      <Provider store={store}>
-                        <PersistGate loading={null} persistor={persistor}>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <Auth0Provider domain={Auth0.DOMAIN} clientId={Auth0.CLIENT_ID}>
+              <AppProvider id={REACT_APP_REALM_ID}>
+                <UserProvider fallback={<RealmUserProvider />}>
+                  <RealmProvider
+                    sync={{
+                      flexible: true,
+                      onError: (_, error) => {
+                        console.error(error);
+                      },
+                    }}
+                  >
+                    <LocalRealmProvider>
+                      <RealmEffect>
+                        <ThemeProvider theme={theme}>
                           <MenuProvider>
                             <PortalProvider>
                               <NavigationContainer
@@ -148,15 +148,15 @@ function App(): JSX.Element {
                               </NavigationContainer>
                             </PortalProvider>
                           </MenuProvider>
-                        </PersistGate>
-                      </Provider>
-                    </ThemeProvider>
-                  </RealmEffect>
-                </LocalRealmProvider>
-              </RealmProvider>
-            </UserProvider>
-          </AppProvider>
-        </Auth0Provider>
+                        </ThemeProvider>
+                      </RealmEffect>
+                    </LocalRealmProvider>
+                  </RealmProvider>
+                </UserProvider>
+              </AppProvider>
+            </Auth0Provider>
+          </PersistGate>
+        </Provider>
       </GestureHandlerRootView>
     </>
   );
