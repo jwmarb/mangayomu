@@ -16,6 +16,7 @@ import {
 } from '@screens/Explore/Explore.flatlist';
 import FlashList from '@shopify/flash-list/dist/FlashList';
 import React from 'react';
+import { FlatList } from 'react-native-gesture-handler';
 import connector, { ConnectedHotMangaListProps } from './HotMangaList.redux';
 
 const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
@@ -71,6 +72,7 @@ const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
           )}
         </Stack>
         <FlashList
+          key={bookHeight}
           ListEmptyComponent={!isOffline ? EmptyMangaListComponent : undefined}
           ItemSeparatorComponent={MangaSeparator}
           contentContainerStyle={{ paddingHorizontal: theme.style.spacing.m }}
