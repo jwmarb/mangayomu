@@ -31,10 +31,12 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
   //   }
   // }, []);
 
-  useMountedEffect(() => {
-    if (enableCloud) realm.syncSession?.resume();
-    else realm.syncSession?.pause();
-  }, [enableCloud]);
+  React.useEffect(() => {
+    if (enableCloud && user != null && currentUser != null) {
+      realm.syncSession?.resume();
+      realm.syncSession?.downloadAllServerChanges();
+    } else realm.syncSession?.pause();
+  }, [enableCloud, user, currentUser]);
 
   React.useEffect(() => {
     (async () => {
@@ -56,7 +58,7 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
     // return () => {
     //   mangas.removeListener(callback);
     // };
-  }, [user]);
+  }, [currentUser?.id]);
   return <>{children}</>;
 };
 
