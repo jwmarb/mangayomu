@@ -27,6 +27,12 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useWindowDimensions } from 'react-native';
 import { Manga } from '@mangayomu/mangascraper';
 import { useTheme } from '@emotion/react';
+import Style from '@screens/Appearance/components/Style';
+import CoverImage from '@screens/Appearance/components/CoverImage';
+import Alignment from '@screens/Appearance/components/Alignment';
+import BoldFont from '@screens/Appearance/components/BoldFont';
+import FontSize from '@screens/Appearance/components/FontSize';
+import LetterSpacing from '@screens/Appearance/components/LetterSpacing';
 
 const BOOK_RATIO = bookDimensions.width / bookDimensions.height;
 
@@ -77,15 +83,6 @@ const libraryExampleData: CustomManga[] = [
 ];
 const keyExtractor = (_: CustomManga, i: number) => `${i}`;
 
-const styles = ScaledSheet.create({
-  textSmall: {
-    fontSize: '10@ms',
-  },
-  textLarge: {
-    fontSize: '20@ms',
-  },
-});
-
 const Appearance: React.FC<ConnectedAppearanceProps> = ({
   title,
   toggleAutoBookHeight,
@@ -124,10 +121,10 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
     },
     [style],
   );
-  function handleOnCheckbox() {
+  const handleOnToggleAutoHeight = React.useCallback(() => {
     toggleAutoBookHeight();
     autoAdjustHeight(width.value);
-  }
+  }, [toggleAutoBookHeight, autoAdjustHeight]);
 
   const setBookStyle = React.useCallback(
     (newValue: BookStyle) => {
@@ -146,31 +143,34 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
     [_setBookStyle, autoHeight],
   );
 
-  function handleOnChangeWidth(v: number) {
-    width.value = v;
-    if (autoHeight) autoAdjustHeight(v);
-  }
+  const handleOnChangeWidth = React.useCallback(
+    (v: number) => {
+      width.value = v;
+      if (autoHeight) autoAdjustHeight(v);
+    },
+    [autoHeight, autoAdjustHeight],
+  );
 
-  function handleOnChangeHeight(v: number) {
+  const handleOnChangeHeight = React.useCallback((v: number) => {
     height.value = v;
-  }
+  }, []);
 
-  function handleOnChangeFontSize(v: number) {
+  const handleOnChangeFontSize = React.useCallback((v: number) => {
     fontSize.value = v;
-  }
+  }, []);
 
-  function handleOnBoldToggle() {
+  const handleOnBoldToggle = React.useCallback(() => {
     toggleBoldTitleFont();
-  }
+  }, [toggleBoldTitleFont]);
 
-  function handleOnToggleLetterSpacing() {
+  const handleOnToggleLetterSpacing = React.useCallback(() => {
     toggleAutoLetterSpacing();
     letterSpacing.value = -fontSize.value / moderateScale(30);
-  }
+  }, [toggleAutoLetterSpacing]);
 
-  function handleOnChangeLetterSpacing(v: number) {
+  const handleOnChangeLetterSpacing = React.useCallback((v: number) => {
     letterSpacing.value = v;
-  }
+  }, []);
 
   function onLibraryPreview() {
     bottomSheet.current?.expand();
@@ -233,117 +233,33 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
                 label="Press for library preview"
                 onPress={onLibraryPreview}
               />
-              <Text bold variant="header">
-                Style
-              </Text>
-              <RadioGroup onChange={setBookStyle} value={style}>
-                <Stack space="s" flex-direction="row">
-                  <Radio value={BookStyle.CLASSIC} label="Classic" />
-                  <Radio value={BookStyle.TACHIYOMI} label="Tachiyomi" />
-                  <Radio value={BookStyle.MANGAROCK} label="MangaRock" />
-                </Stack>
-              </RadioGroup>
-              <Text color="textSecondary" variant="book-title">
-                Choose a style that best fits your taste
-              </Text>
-              <Text bold variant="header">
-                Cover Image
-              </Text>
-              <Box>
-                <Text>Width</Text>
-                <Slider
-                  defaultValue={width.value}
-                  onChange={handleOnChangeWidth}
-                  min={moderateScale(50)}
-                  max={moderateScale(200)}
-                />
-              </Box>
-              <Box>
-                <Stack flex-direction="row" space="m" align-items="center">
-                  <Text>Height</Text>
-                  <Box flex-direction="row" align-items="center">
-                    <Checkbox
-                      checked={autoHeight}
-                      onChange={handleOnCheckbox}
-                    />
-                    <TouchableWithoutFeedback onPress={handleOnCheckbox}>
-                      <Text variant="book-title" color="textSecondary">
-                        Auto
-                      </Text>
-                    </TouchableWithoutFeedback>
-                  </Box>
-                </Stack>
-
-                <Box
-                  pointerEvents={autoHeight ? 'none' : 'auto'}
-                  opacity={autoHeight ? 0.5 : 1}
-                >
-                  {!autoHeight && (
-                    <Slider
-                      defaultValue={height.value}
-                      onChange={handleOnChangeHeight}
-                      min={50}
-                      max={moderateScale(400)}
-                    />
-                  )}
-                </Box>
-              </Box>
+              <Style style={style} setBookStyle={setBookStyle} />
+              <CoverImage
+                onChangeHeight={handleOnChangeHeight}
+                onChangeWidth={handleOnChangeWidth}
+                autoHeight={autoHeight}
+                onToggleAutoHeight={handleOnToggleAutoHeight}
+                width={width}
+                height={height}
+              />
               <Text bold variant="header">
                 Title
               </Text>
-              <Text>Alignment</Text>
-              <RadioGroup onChange={setTitleAlignment} value={title.alignment}>
-                <Stack flex-direction="row" space="s">
-                  <Radio value={TitleAlignment.START} label="Left" />
-                  <Radio value={TitleAlignment.CENTER} label="Center" />
-                  <Radio value={TitleAlignment.END} label="Right" />
-                </Stack>
-              </RadioGroup>
-              <Stack space="s" flex-direction="row" align-items="center">
-                <TouchableWithoutFeedback onPress={handleOnBoldToggle}>
-                  <Text>Bold font</Text>
-                </TouchableWithoutFeedback>
-                <Checkbox onChange={handleOnBoldToggle} checked={title.bold} />
-              </Stack>
-              <Box>
-                <Text>Font size</Text>
-                <Stack flex-direction="row" space="m" align-items="center">
-                  <Text style={styles.textSmall}>abc</Text>
-                  <Slider
-                    min={moderateScale(10)}
-                    max={moderateScale(20)}
-                    defaultValue={fontSize.value}
-                    onChange={handleOnChangeFontSize}
-                  />
-                  <Text style={styles.textLarge}>abc</Text>
-                </Stack>
-              </Box>
-              <Box>
-                <Stack space="s" flex-direction="row" align-items="center">
-                  <Text>Letter spacing</Text>
-                  <Box flex-direction="row" align-items="center">
-                    <Checkbox
-                      checked={title.autoLetterSpacing}
-                      onChange={handleOnToggleLetterSpacing}
-                    />
-                    <TouchableWithoutFeedback
-                      onPress={handleOnToggleLetterSpacing}
-                    >
-                      <Text variant="book-title" color="textSecondary">
-                        Auto
-                      </Text>
-                    </TouchableWithoutFeedback>
-                  </Box>
-                </Stack>
-                {!title.autoLetterSpacing && (
-                  <Slider
-                    min={-2}
-                    max={1}
-                    onChange={handleOnChangeLetterSpacing}
-                    defaultValue={letterSpacing.value}
-                  />
-                )}
-              </Box>
+              <Alignment
+                setTitleAlignment={setTitleAlignment}
+                alignment={title.alignment}
+              />
+              <BoldFont isBold={title.bold} onToggleBold={handleOnBoldToggle} />
+              <FontSize
+                fontSize={fontSize}
+                onChangeFontSize={handleOnChangeFontSize}
+              />
+              <LetterSpacing
+                letterSpacing={letterSpacing}
+                autoLetterSpacing={title.autoLetterSpacing}
+                onChangeLetterSpacing={handleOnChangeLetterSpacing}
+                onToggleAutoLetterSpacing={handleOnToggleLetterSpacing}
+              />
             </Stack>
           </Box>
           <Text variant="header" bold>
