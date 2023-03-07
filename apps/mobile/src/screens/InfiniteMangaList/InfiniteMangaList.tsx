@@ -64,6 +64,7 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
   );
   const [query, setQuery] = React.useState<string>(initialQuery);
   const [mangas, setMangas] = React.useState<Manga[]>(state?.mangas ?? []);
+
   const [status, setStatus] = React.useState<StatusAPI>(
     state == null ? 'loading' : 'done',
   );
@@ -385,36 +386,39 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
         }
       }
       resetSearchState();
-      await fetchMangas();
+      ref.current?.close();
+      await fetchMangas(true);
     }
   }
-  async function fetchMangas() {
+  async function fetchMangas(isReceivingNewBatch?: boolean) {
     setStatus('loading');
     try {
       let data: Manga[];
       if (source instanceof MangaHostWithFilters)
         data = await source.search(query, parsedFilter.current);
       else data = await source.search(query);
-      // Check if the data length returned is 0. If it is, then it should be assumed that this is the end of the list.
-      if (data.length === 0) {
-        hasNext.current = false;
-        setStatus('done');
-        return;
+      if (!isReceivingNewBatch) {
+        // Check if the data length returned is 0. If it is, then it should be assumed that this is the end of the list.
+        if (data.length === 0) {
+          hasNext.current = false;
+          setStatus('done');
+          return;
+        }
+        if (
+          mangas.length > 0 &&
+          data[data.length - 1].link === mangas[mangas.length - 1].link
+        ) {
+          // Check if the last elements appear to be the same. If they are, we should assume this is the end of the list.
+          hasNext.current = false;
+          setStatus('done');
+          return;
+        }
+        if (
+          numberOfItemsPerPage.current &&
+          data.length < numberOfItemsPerPage.current
+        )
+          hasNext.current = false;
       }
-      if (
-        mangas.length > 0 &&
-        data[data.length - 1].link === mangas[mangas.length - 1].link
-      ) {
-        // Check if the last elements appear to be the same. If they are, we should assume this is the end of the list.
-        hasNext.current = false;
-        setStatus('done');
-        return;
-      }
-      if (
-        numberOfItemsPerPage.current &&
-        data.length < numberOfItemsPerPage.current
-      )
-        hasNext.current = false;
 
       setMangas((prev) => prev.concat(data));
       numberOfItemsPerPage.current =
