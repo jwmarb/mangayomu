@@ -16,6 +16,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
+import { BookStyle } from '@redux/slices/settings';
 
 const mapStateToProps = (state: AppState) => state.settings.book;
 
@@ -27,6 +28,7 @@ const LoadingBook: React.FC<LoadingBookProps> = ({
   height,
   coverHeight,
   title,
+  style,
 }) => {
   const opacity = useSharedValue(0.5);
   const isFocused = useIsFocused();
@@ -70,36 +72,42 @@ const LoadingBook: React.FC<LoadingBookProps> = ({
   const loadingStyles = React.useMemo(
     () => [
       loading,
-      coverStyles.image,
-      { backgroundColor: theme.palette.skeleton, width, height: coverHeight },
+      style === BookStyle.MANGAROCK ? { borderRadius: 0 } : coverStyles.image,
+      {
+        backgroundColor: theme.palette.skeleton,
+        width,
+        height: style === BookStyle.TACHIYOMI ? height : coverHeight,
+      },
     ],
-    [loading, coverStyles.image, theme.palette.skeleton],
+    [loading, coverStyles.image, theme.palette.skeleton, style],
   );
   return (
     <Stack space="s" width={width} minHeight={height}>
       <Animated.View style={loadingStyles} />
-      <Box>
-        <Animated.View style={textLoading}>
-          <Text
-            numberOfLines={2}
-            bold={title.bold}
-            align={title.alignment}
-            style={textStyle}
-          >
-            a
-          </Text>
-        </Animated.View>
-        <Animated.View style={textLoading}>
-          <Text
-            numberOfLines={2}
-            bold={title.bold}
-            align={title.alignment}
-            style={textStyle}
-          >
-            a
-          </Text>
-        </Animated.View>
-      </Box>
+      {style !== BookStyle.TACHIYOMI && (
+        <Box>
+          <Animated.View style={textLoading}>
+            <Text
+              numberOfLines={2}
+              bold={title.bold}
+              align={title.alignment}
+              style={textStyle}
+            >
+              a
+            </Text>
+          </Animated.View>
+          <Animated.View style={textLoading}>
+            <Text
+              numberOfLines={2}
+              bold={title.bold}
+              align={title.alignment}
+              style={textStyle}
+            >
+              a
+            </Text>
+          </Animated.View>
+        </Box>
+      )}
     </Stack>
   );
 };
