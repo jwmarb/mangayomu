@@ -323,16 +323,14 @@ export const useManga = (
   //   });
   // }, []);
   React.useEffect(() => {
-    if (mangaObject?.isValid()) {
-      mangaObject?.addListener((_manga, changes) => {
-        if (changes.deleted) setManga(undefined);
-        else setManga(_manga);
-      });
-      return () => {
-        mangaObject?.removeAllListeners();
-      };
-    }
-  }, [mangaObject]);
+    mangaObject?.addListener((_manga, changes) => {
+      if (changes.deleted) setManga(undefined);
+      else setManga(_manga);
+    });
+    return () => {
+      mangaObject?.removeAllListeners();
+    };
+  }, [mangaObject != null]);
 
   const update = React.useCallback(
     (
