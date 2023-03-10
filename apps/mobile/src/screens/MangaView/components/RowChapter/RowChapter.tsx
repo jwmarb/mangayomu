@@ -9,12 +9,14 @@ import { RowChapterProps } from './RowChapter.interfaces';
 import { format, formatDistanceToNow } from 'date-fns';
 import { useLocalRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
+import useRootNavigation from '@hooks/useRootNavigation';
 
 export const ROW_CHAPTER_HEIGHT = moderateScale(60);
 
 const RowChapter: React.FC<RowChapterProps> = (props) => {
   if ('loading' in props) return null;
   const { rowChapterKey } = props;
+  const navigation = useRootNavigation();
   const cloudRealm = useLocalRealm();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const rowChapter = cloudRealm.objectForPrimaryKey<ChapterSchema>(
@@ -31,8 +33,11 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
         : format(parsed, 'MMMM dd, yyyy'),
     [parsed, isWithinWeek],
   );
+  function handleOnPress() {
+    navigation.navigate('Reader', { chapter: rowChapterKey });
+  }
   return (
-    <RectButton>
+    <RectButton onPress={handleOnPress}>
       <Stack
         space="s"
         mx="m"
