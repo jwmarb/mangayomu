@@ -17,6 +17,9 @@ export type RootStackParamList = {
   };
   Settings: undefined;
   Appearance: undefined;
+  Reader: {
+    chapter: string;
+  };
 };
 
 export type RootStackProps<T extends keyof RootStackParamList> =
