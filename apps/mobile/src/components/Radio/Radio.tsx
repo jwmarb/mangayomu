@@ -3,7 +3,7 @@ import { RadioProps, BaseRadioProps } from './Radio.interfaces';
 import { useRadioGroup } from '@components/RadioGroup';
 import Box from '@components/Box';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import {
   BorderlessButton,

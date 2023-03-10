@@ -1,6 +1,6 @@
 import Box from '@components/Box';
 import Cover from '@components/Cover';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import MangaAuthors from '@screens/MangaView/components/MangaViewerHeader/components/MangaAuthors';
 import MangaTitle from '@screens/MangaView/components/MangaViewerHeader/components/MangaTitle';

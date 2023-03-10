@@ -2,7 +2,7 @@ import Box from '@components/Box';
 import Button from '@components/Button';
 import Icon from '@components/Icon';
 import Progress from '@components/Progress';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import React from 'react';
 import { moderateScale } from 'react-native-size-matters';
 import { MangaActionButtonsProps } from './MangaActionButtons.interfaces';

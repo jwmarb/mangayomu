@@ -2,7 +2,7 @@ import Box from '@components/Box';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
 import Input from '@components/Input';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import useAuth0 from '@hooks/useAuth0';
 import useCollapsibleTabHeader from '@hooks/useCollapsibleTabHeader';

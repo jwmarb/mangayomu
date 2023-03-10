@@ -1,6 +1,6 @@
 import Box from '@components/Box';
 import { coverStyles } from '@components/Cover/Cover';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import { useIsFocused } from '@react-navigation/native';
 import { useTheme } from '@emotion/react';
 import React from 'react';

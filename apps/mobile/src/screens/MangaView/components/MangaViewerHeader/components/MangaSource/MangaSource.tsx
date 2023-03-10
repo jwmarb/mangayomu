@@ -1,4 +1,4 @@
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
 import { MangaSourceProps } from './MangaSource.interfaces';

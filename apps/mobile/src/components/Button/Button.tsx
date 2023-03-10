@@ -7,7 +7,7 @@ import Box from '@components/Box';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import { hexToRgb, rgbaToString } from '@mangayomu/theme';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 
 const Button: React.FC<ButtonProps> = (props) => {
   const {

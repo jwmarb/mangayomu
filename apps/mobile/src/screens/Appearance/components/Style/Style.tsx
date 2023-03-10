@@ -1,6 +1,6 @@
 import Radio from '@components/Radio';
 import RadioGroup from '@components/RadioGroup';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { BookStyle } from '@redux/slices/settings';
 import React from 'react';

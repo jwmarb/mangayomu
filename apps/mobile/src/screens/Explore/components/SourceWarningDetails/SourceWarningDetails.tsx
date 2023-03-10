@@ -1,6 +1,6 @@
 import Box from '@components/Box';
 import { CustomBottomSheet } from '@components/CustomBottomSheet';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';

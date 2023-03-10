@@ -2,7 +2,7 @@ import React from 'react';
 import { SectionHeaderProps } from './SectionHeader.interfaces';
 import Text from '@components/Text';
 
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
 import {

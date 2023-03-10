@@ -6,7 +6,7 @@ import Divider from '@components/Divider';
 import Radio from '@components/Radio';
 import RadioGroup from '@components/RadioGroup';
 import Slider from '@components/Slider';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import { BookStyle, TitleAlignment } from '@redux/slices/settings';

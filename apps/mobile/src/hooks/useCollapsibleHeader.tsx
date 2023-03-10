@@ -4,7 +4,7 @@ import Icon from '@components/Icon';
 import IconButton, { generateRippleColor } from '@components/IconButton';
 import { IconButtonProps } from '@components/IconButton/IconButton.interfaces';
 import { NAVHEADER_HEIGHT, NavStyles } from '@components/NavHeader';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import useRootNavigation from '@hooks/useRootNavigation';

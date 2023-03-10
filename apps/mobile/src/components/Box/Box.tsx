@@ -12,6 +12,7 @@ import {
   setwandh,
   setWithPalette,
 } from './Box.helpers';
+import Animated from 'react-native-reanimated';
 
 /**
  * Box is an abstract component for building layouts. All MangaYomu components are built upon this component.
@@ -51,5 +52,7 @@ const Box = styled.View<BoxProps>`
     `;
   }}
 `;
+
+export const AnimatedBox = Animated.createAnimatedComponent(Box);
 
 export default Box;

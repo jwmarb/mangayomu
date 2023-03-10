@@ -1,7 +1,7 @@
 import Button from '@components/Button';
 import Icon from '@components/Icon';
 import { Menu, MenuItem } from '@components/Menu';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
 import { OptionProps } from './Option.interfaces';

@@ -2,8 +2,8 @@ import Badge from '@components/Badge';
 import { CustomizableBookProps } from '@components/Book/Book.interfaces';
 import Box from '@components/Box';
 import { CustomizableCover } from '@components/Cover/';
-import * as AnimatedPlus from '@components/AnimatedPlus';
-import Text from '@components/Text';
+import { AnimatedStack } from '@components/Stack';
+import Text, { AnimatedText } from '@components/Text';
 import { useTheme } from '@emotion/react';
 import useMangaSource from '@hooks/useMangaSource';
 import { BookStyle } from '@redux/slices/settings';
@@ -72,7 +72,7 @@ const CustomizableBook: React.FC<CustomizableBookProps> = (props) => {
 
   if (bookStyle === BookStyle.TACHIYOMI)
     return (
-      <AnimatedPlus.Stack space="s" style={stackStyle}>
+      <AnimatedStack space="s" style={stackStyle}>
         <Badge type="image" uri={source.getIcon()} show>
           <CustomizableCover
             bookStyle={bookStyle}
@@ -87,22 +87,22 @@ const CustomizableBook: React.FC<CustomizableBookProps> = (props) => {
               end={{ x: 0, y: 1 }}
               style={combinedLinearGradientStyle}
             >
-              <AnimatedPlus.Text
+              <AnimatedText
                 style={fontStyle}
                 numberOfLines={2}
                 bold={bold}
                 align={align}
               >
                 {title}
-              </AnimatedPlus.Text>
+              </AnimatedText>
             </AnimatedLinearGradient>
           </CustomizableCover>
         </Badge>
-      </AnimatedPlus.Stack>
+      </AnimatedStack>
     );
 
   return (
-    <AnimatedPlus.Stack space="s" style={stackStyle}>
+    <AnimatedStack space="s" style={stackStyle}>
       <Badge type="image" uri={source.getIcon()} show>
         <CustomizableCover
           bookStyle={bookStyle}
@@ -112,15 +112,15 @@ const CustomizableBook: React.FC<CustomizableBookProps> = (props) => {
           src={imageCover}
         />
       </Badge>
-      <AnimatedPlus.Text
+      <AnimatedText
         style={fontStyle}
         numberOfLines={2}
         bold={bold}
         align={align}
       >
         {title}
-      </AnimatedPlus.Text>
-    </AnimatedPlus.Stack>
+      </AnimatedText>
+    </AnimatedStack>
   );
 };
 

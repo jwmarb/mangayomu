@@ -1,7 +1,7 @@
 import Box from '@components/Box';
 import Button from '@components/Button';
 import Progress from '@components/Progress';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import { useTheme } from '@emotion/react';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';

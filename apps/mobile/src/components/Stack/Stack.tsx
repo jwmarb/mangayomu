@@ -7,6 +7,7 @@ import {
 } from '@components/Box/Box.helpers';
 import { StackProps } from '@components/Stack/Stack.interfaces';
 import styled, { css } from '@emotion/native';
+import Animated from 'react-native-reanimated';
 
 const Stack = styled.View<StackProps>`
   ${(props) => {
@@ -64,5 +65,7 @@ const Stack = styled.View<StackProps>`
     `;
   }}
 `;
+
+export const AnimatedStack = Animated.createAnimatedComponent(Stack);
 
 export default Stack;

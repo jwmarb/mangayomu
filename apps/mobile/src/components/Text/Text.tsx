@@ -1,6 +1,7 @@
 import { getOrUseCustomColor } from '@components/Text/Text.helpers';
 import styled, { css } from '@emotion/native';
 import 'react';
+import Animated from 'react-native-reanimated';
 import { TextProps } from './Text.interfaces';
 
 const Text = styled.Text<TextProps>`
@@ -31,5 +32,7 @@ const Text = styled.Text<TextProps>`
     `;
   }}
 `;
+
+export const AnimatedText = Animated.createAnimatedComponent(Text);
 
 export default Text;

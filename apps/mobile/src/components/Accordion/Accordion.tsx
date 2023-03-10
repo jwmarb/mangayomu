@@ -1,7 +1,7 @@
 import Box from '@components/Box';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
 import { Freeze } from 'react-freeze';

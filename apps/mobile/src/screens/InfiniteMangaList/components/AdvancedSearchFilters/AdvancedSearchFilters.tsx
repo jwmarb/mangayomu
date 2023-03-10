@@ -1,7 +1,7 @@
 import Box from '@components/Box';
 import Button from '@components/Button';
 import { CustomBottomSheet } from '@components/CustomBottomSheet';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import {
   BottomSheetFlatList,

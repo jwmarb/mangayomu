@@ -3,7 +3,7 @@ import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
 import Input from '@components/Input';
 import Progress from '@components/Progress';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import useCollapsibleTabHeader from '@hooks/useCollapsibleTabHeader';
 import { MangaHost } from '@mangayomu/mangascraper';

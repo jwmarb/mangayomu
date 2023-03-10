@@ -3,7 +3,7 @@ import Box from '@components/Box';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
 import { Menu, MenuItem } from '@components/Menu';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useRealm } from '@database/main';
 import copyTextToClipboard from '@helpers/copyTextToClipboard';

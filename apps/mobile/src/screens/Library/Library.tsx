@@ -14,7 +14,7 @@ import { Freeze } from 'react-freeze';
 import Text from '@components/Text';
 import { moderateScale } from 'react-native-size-matters';
 import { useWindowDimensions } from 'react-native';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import { inPlaceSort } from 'fast-sort';
 import connector, { ConnectedLibraryProps } from './Library.redux';
 import { SORT_LIBRARY_BY } from '@redux/slices/library';

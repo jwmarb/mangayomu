@@ -42,7 +42,7 @@ import connector, {
 import Text from '@components/Text';
 import { Portal } from '@gorhom/portal';
 import { moderateScale } from 'react-native-size-matters';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 
 const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 

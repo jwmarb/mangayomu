@@ -1,7 +1,7 @@
 import Button from '@components/Button';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';

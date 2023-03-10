@@ -1,5 +1,5 @@
 import Box from '@components/Box';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import React from 'react';

@@ -1,6 +1,6 @@
 import Box from '@components/Box';
 import Checkbox from '@components/Checkbox';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
 import { RectButton } from 'react-native-gesture-handler';

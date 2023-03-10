@@ -1,6 +1,6 @@
 import Box from '@components/Box';
 import Slider from '@components/Slider';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';

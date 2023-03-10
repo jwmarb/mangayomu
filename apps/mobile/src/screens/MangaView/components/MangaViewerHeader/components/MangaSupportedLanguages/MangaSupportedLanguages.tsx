@@ -1,6 +1,6 @@
 import Box from '@components/Box';
 import Skeleton from '@components/Skeleton';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';

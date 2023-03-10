@@ -1,5 +1,5 @@
 import Skeleton from '@components/Skeleton';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Tag from '@components/Tag';
 import useMangaSource from '@hooks/useMangaSource';
 import React from 'react';

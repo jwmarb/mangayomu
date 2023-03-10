@@ -6,7 +6,7 @@ import Divider from '@components/Divider';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
 import { Menu, MenuItem } from '@components/Menu';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Switch from '@components/Switch';
 import Text from '@components/Text';
 import { useRealm } from '@database/main';

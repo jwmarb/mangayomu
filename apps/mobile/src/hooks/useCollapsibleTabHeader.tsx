@@ -3,7 +3,7 @@ import { BoxProps } from '@components/Box/Box.interfaces';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
 import { NAVHEADER_HEIGHT, NavStyles } from '@components/NavHeader';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import useRootNavigation from '@hooks/useRootNavigation';

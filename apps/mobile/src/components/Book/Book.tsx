@@ -2,7 +2,7 @@ import Badge from '@components/Badge';
 import connector, { ConnectedBookProps } from '@components/Book/Book.redux';
 import Cover from '@components/Cover';
 import { coverStyles } from '@components/Cover/Cover';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import displayMessage from '@helpers/displayMessage';

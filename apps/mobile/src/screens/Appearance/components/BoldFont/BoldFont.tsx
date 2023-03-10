@@ -1,5 +1,5 @@
 import Checkbox from '@components/Checkbox';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';

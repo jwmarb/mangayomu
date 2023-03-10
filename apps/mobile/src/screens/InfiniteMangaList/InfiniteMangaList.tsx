@@ -9,7 +9,7 @@ import Box from '@components/Box';
 import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
 import Text from '@components/Text';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Animated, { FadeOut } from 'react-native-reanimated';
 import Input from '@components/Input';
 import {

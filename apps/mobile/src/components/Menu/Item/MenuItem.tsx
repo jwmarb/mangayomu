@@ -1,5 +1,5 @@
 import Box from '@components/Box';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
 import { MenuOption } from 'react-native-popup-menu';

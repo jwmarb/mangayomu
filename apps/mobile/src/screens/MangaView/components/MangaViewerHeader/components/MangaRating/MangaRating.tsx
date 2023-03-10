@@ -1,7 +1,7 @@
 import Box from '@components/Box';
 import Icon from '@components/Icon';
 import Skeleton from '@components/Skeleton';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
 import { MangaRatingProps } from './MangaRating.interfaces';

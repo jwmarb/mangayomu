@@ -5,7 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import FastImage from 'react-native-fast-image';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import MaterialCommunityIconNames from 'react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json';
-import * as AnimatedPlus from '@components/AnimatedPlus';
+import Animated from 'react-native-reanimated';
 import { getOrUseCustomColor } from '@components/Text';
 
 type RequireKey<T, KEYS extends keyof T> = Omit<T, KEYS> & {
@@ -18,12 +18,14 @@ const styles = ScaledSheet.create({
   },
 });
 
+const AnimatedIcon = Animated.createAnimatedComponent(MaterialCommunityIcons);
+
 const Icon: React.FC<IconProps | ImageIconProps> = (props) => {
   if (props.name == null) throw Error('name is required in Icon');
   if (props.type === 'font' && props.name in MaterialCommunityIconNames)
     return (
       <IconFromFont
-        as={props.animated ? AnimatedPlus.Icon : undefined}
+        as={props.animated ? AnimatedIcon : undefined}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         {...(props as unknown as any)}
       />
