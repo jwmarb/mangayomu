@@ -2,7 +2,7 @@
   "Access redux state for component": {
     "prefix": "redux",
     "body": [
-      "import { AppState } from '@redux/store';",
+      "import { AppState } from '@redux/main';",
       "import { connect, ConnectedProps } from 'react-redux';",
       "import React from 'react';",
       "",
