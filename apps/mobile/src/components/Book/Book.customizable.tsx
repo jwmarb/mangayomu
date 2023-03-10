@@ -2,7 +2,7 @@ import Badge from '@components/Badge';
 import { CustomizableBookProps } from '@components/Book/Book.interfaces';
 import Box from '@components/Box';
 import { CustomizableCover } from '@components/Cover/';
-import { Stack } from '@components/Stack';
+import * as AnimatedPlus from '@components/AnimatedPlus';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import useMangaSource from '@hooks/useMangaSource';
@@ -22,11 +22,8 @@ const styles = ScaledSheet.create({
   },
 });
 
-const AnimatedStack = Animated.createAnimatedComponent(Stack);
-
 export const BOOK_COVER_RATIO = moderateScale(160) / moderateScale(205);
 
-const AnimatedText = Animated.createAnimatedComponent(Text);
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 const CustomizableBook: React.FC<CustomizableBookProps> = (props) => {
@@ -75,7 +72,7 @@ const CustomizableBook: React.FC<CustomizableBookProps> = (props) => {
 
   if (bookStyle === BookStyle.TACHIYOMI)
     return (
-      <AnimatedStack space="s" style={stackStyle}>
+      <AnimatedPlus.Stack space="s" style={stackStyle}>
         <Badge type="image" uri={source.getIcon()} show>
           <CustomizableCover
             bookStyle={bookStyle}
@@ -90,22 +87,22 @@ const CustomizableBook: React.FC<CustomizableBookProps> = (props) => {
               end={{ x: 0, y: 1 }}
               style={combinedLinearGradientStyle}
             >
-              <AnimatedText
+              <AnimatedPlus.Text
                 style={fontStyle}
                 numberOfLines={2}
                 bold={bold}
                 align={align}
               >
                 {title}
-              </AnimatedText>
+              </AnimatedPlus.Text>
             </AnimatedLinearGradient>
           </CustomizableCover>
         </Badge>
-      </AnimatedStack>
+      </AnimatedPlus.Stack>
     );
 
   return (
-    <AnimatedStack space="s" style={stackStyle}>
+    <AnimatedPlus.Stack space="s" style={stackStyle}>
       <Badge type="image" uri={source.getIcon()} show>
         <CustomizableCover
           bookStyle={bookStyle}
@@ -115,15 +112,15 @@ const CustomizableBook: React.FC<CustomizableBookProps> = (props) => {
           src={imageCover}
         />
       </Badge>
-      <AnimatedText
+      <AnimatedPlus.Text
         style={fontStyle}
         numberOfLines={2}
         bold={bold}
         align={align}
       >
         {title}
-      </AnimatedText>
-    </AnimatedStack>
+      </AnimatedPlus.Text>
+    </AnimatedPlus.Stack>
   );
 };
 
