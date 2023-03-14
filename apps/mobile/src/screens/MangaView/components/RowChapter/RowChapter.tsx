@@ -34,7 +34,10 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
     [parsed, isWithinWeek],
   );
   function handleOnPress() {
-    navigation.navigate('Reader', { chapter: rowChapterKey });
+    navigation.navigate('Reader', {
+      chapter: rowChapterKey,
+      manga: rowChapter._mangaId,
+    });
   }
   return (
     <RectButton onPress={handleOnPress}>

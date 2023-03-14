@@ -30,6 +30,6 @@ export const {
   useRealm: useLocalRealm,
 } = createRealmContext({
   schema: [ChapterSchema],
-  schemaVersion: 0,
+  schemaVersion: 1,
   path: Realm.defaultPath.replace('default.realm', 'local.realm'),
 });

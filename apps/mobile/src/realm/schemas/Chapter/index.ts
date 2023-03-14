@@ -41,6 +41,7 @@ export class ChapterSchema extends Realm.Object<IChapterSchema> {
       scrollPositionPortrait: { type: 'int', default: 0 },
       indexPage: { type: 'int', default: 0 },
       dateRead: 'string?',
+      link: 'string',
     },
     primaryKey: '_id',
   };

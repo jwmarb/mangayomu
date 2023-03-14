@@ -1,7 +1,7 @@
 import Box from '@components/Box';
 import Button from '@components/Button';
 import Icon from '@components/Icon';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Switch from '@components/Switch';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';

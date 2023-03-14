@@ -18,7 +18,8 @@ export type RootStackParamList = {
   Settings: undefined;
   Appearance: undefined;
   Reader: {
-    chapter: string;
+    chapter: string; // The key of the chapter
+    manga: string; // The key of the manga
   };
 };
 

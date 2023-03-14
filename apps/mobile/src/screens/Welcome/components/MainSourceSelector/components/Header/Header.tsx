@@ -1,7 +1,7 @@
 import Box from '@components/Box';
 import Icon from '@components/Icon';
 import Input from '@components/Input';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
 import connector from './Header.redux';
 import { ConnectedHeaderProps } from '@screens/Welcome/components/MainSourceSelector/components/Header/Header.redux';

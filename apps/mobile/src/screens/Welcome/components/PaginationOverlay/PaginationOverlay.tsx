@@ -1,5 +1,5 @@
 import Box from '@components/Box';
-import { Stack } from '@components/Stack';
+import Stack from '@components/Stack';
 import PaginationCircle from '@screens/Welcome/components/PaginationCircle';
 import React from 'react';
 import { Dimensions, useWindowDimensions } from 'react-native';

@@ -18,6 +18,7 @@ import { ExplorerReducer } from '@redux/slices/explore';
 import { LibraryReducer } from '@redux/slices/library';
 import { BrowseReducer } from '@redux/slices/browse';
 import { SettingsReducer } from '@redux/slices/settings';
+import { ReaderReducer } from '@redux/slices/reader';
 
 const reducers = combineReducers({
   __initial__: __initialReducer__,
@@ -27,12 +28,13 @@ const reducers = combineReducers({
   library: LibraryReducer,
   browse: BrowseReducer,
   settings: SettingsReducer,
+  reader: ReaderReducer,
 });
 
 const persistConfig: PersistConfig<AppState> = {
   key: 'root',
   storage: reduxStorage,
-  blacklist: ['explore', 'browse'],
+  blacklist: ['explore', 'browse', 'reader'],
 };
 
 const persisted = persistReducer(persistConfig, reducers);
