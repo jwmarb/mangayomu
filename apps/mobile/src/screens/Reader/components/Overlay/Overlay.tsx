@@ -14,31 +14,152 @@ import Animated, {
 import Text from '@components/Text';
 import Button from '@components/Button';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { Portal } from '@gorhom/portal';
+import IconButton from '@components/IconButton';
+import Icon from '@components/Icon';
+import useRootNavigation from '@hooks/useRootNavigation';
+import { StatusBar } from 'react-native';
+import { useTheme } from '@emotion/react';
+import Stack, { AnimatedStack } from '@components/Stack';
+import { useLocalObject, useObject, useRealm } from '@database/main';
+import { ChapterSchema } from '@database/schemas/Chapter';
+import { IMangaSchema, MangaSchema } from '@database/schemas/Manga';
+import Realm from 'realm';
+import displayMessage from '@helpers/displayMessage';
+
+const OVERLAY_COLOR = 'rgba(0, 0, 0, 0.35)';
+const OVERLAY_TEXT_PRIMARY = { custom: 'rgba(255, 255, 255, 1)' };
+const OVERLAY_TEXT_SECONDARY = { custom: 'rgba(255, 255, 255, 0.7)' };
 
 const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
-  const { opacity, active } = props;
+  const {
+    opacity,
+    active,
+    mangaTitle,
+    chapter,
+    manga,
+    addIfNewSourceToLibrary,
+    totalPages,
+  } = props;
+  const realm = useRealm();
+  const [isBookmarked, setIsBookmarked] = React.useState<boolean>(
+    manga.inLibrary,
+  );
+  const [page, setPage] = React.useState<number>(1);
+  React.useEffect(() => {
+    const callback: Realm.ObjectChangeCallback<IMangaSchema> = (change) => {
+      setIsBookmarked(change.inLibrary);
+      if (change.currentlyReadingChapter)
+        setPage(change.currentlyReadingChapter.index + 1);
+    };
+    manga.addListener(callback);
+    return () => {
+      manga.removeListener(callback);
+    };
+  }, []);
+  const theme = useTheme();
 
   const style = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
 
+  const navigation = useRootNavigation();
+
+  function handleOnBack() {
+    if (navigation.canGoBack()) navigation.goBack();
+  }
+
+  function handleOnBookmark() {
+    realm.write(() => {
+      addIfNewSourceToLibrary(manga.source);
+      manga.inLibrary = !manga.inLibrary;
+      displayMessage(
+        manga.inLibrary ? 'Added to library' : 'Removed from library',
+      );
+      if (manga.inLibrary) manga.dateAddedInLibrary = Date.now();
+      else manga.dateAddedInLibrary = undefined;
+    });
+  }
+
   return (
-    <AnimatedBox
-      style={style}
-      height="100%"
-      width="100%"
-      position="absolute"
-      left={0}
-      right={0}
-      bottom={0}
-      top={0}
-      justify-content="center"
-    >
-      <Box align-self="center" background-color="red">
-        <Text>Hello World</Text>
-        <Button label="Click here" onPress={() => console.log('Clicked')} />
+    <Portal>
+      <Box
+        height="100%"
+        width="100%"
+        position="absolute"
+        left={0}
+        right={0}
+        bottom={0}
+        top={0}
+        justify-content="space-between"
+      >
+        <AnimatedBox
+          style={style}
+          background-color={OVERLAY_COLOR}
+          pt={(StatusBar.currentHeight ?? 0) + theme.style.spacing.s}
+          pb="s"
+          px="m"
+        >
+          <Stack flex-direction="row" space="s" justify-content="space-between">
+            <IconButton
+              icon={<Icon type="font" name="arrow-left" />}
+              onPress={handleOnBack}
+              color={OVERLAY_TEXT_SECONDARY}
+            />
+            <Stack flex-direction="row" space="s">
+              <IconButton
+                onPress={handleOnBookmark}
+                icon={
+                  <Icon
+                    type="font"
+                    name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
+                  />
+                }
+                color={OVERLAY_TEXT_SECONDARY}
+              />
+              <IconButton
+                icon={<Icon type="font" name="cog" />}
+                color={OVERLAY_TEXT_SECONDARY}
+              />
+            </Stack>
+          </Stack>
+          <Text numberOfLines={1} color={OVERLAY_TEXT_PRIMARY}>
+            {mangaTitle}
+          </Text>
+          <Text numberOfLines={1} color={OVERLAY_TEXT_SECONDARY}>
+            {chapter.name}
+          </Text>
+        </AnimatedBox>
+        <Box
+          position="absolute"
+          bottom={theme.style.spacing.xl}
+          background-color="red"
+          left={0}
+          right={0}
+          align-self="center"
+        >
+          <Text>{totalPages}</Text>
+        </Box>
+        <AnimatedStack
+          style={style}
+          flex-direction="row"
+          space="s"
+          background-color={OVERLAY_COLOR}
+          justify-content="space-evenly"
+          py="s"
+          px="m"
+        >
+          <IconButton
+            icon={<Icon type="font" name="phone-rotate-portrait" />}
+          />
+          <IconButton
+            icon={<Icon type="font" name="image-filter-center-focus" />}
+          />
+          <IconButton icon={<Icon type="font" name="image" />} />
+          <IconButton icon={<Icon type="font" name="book-open-variant" />} />
+        </AnimatedStack>
       </Box>
-    </AnimatedBox>
+    </Portal>
   );
 };
 

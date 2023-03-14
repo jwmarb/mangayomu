@@ -6,7 +6,7 @@ export interface IChapterSchema extends MangaChapter {
   scrollPositionLandscape?: number;
   scrollPositionPortrait?: number;
   indexPage?: number;
-  dateRead?: string;
+  dateRead?: number;
   language?: ISOLangCode;
   _mangaId: string;
   _id: string;
@@ -17,9 +17,9 @@ export class ChapterSchema extends Realm.Object<IChapterSchema> {
   scrollPositionLandscape!: number;
   scrollPositionPortrait!: number;
   indexPage!: number;
-  dateRead?: string;
+  dateRead?: number;
   link!: string;
-  name?: string | null;
+  name!: string;
   index!: number;
   date!: string;
   language?: ISOLangCode;
@@ -32,7 +32,7 @@ export class ChapterSchema extends Realm.Object<IChapterSchema> {
     properties: {
       _id: 'string',
       _realmId: 'string',
-      name: 'string?',
+      name: 'string',
       index: 'int',
       date: 'string',
       _mangaId: 'string',
@@ -40,7 +40,7 @@ export class ChapterSchema extends Realm.Object<IChapterSchema> {
       scrollPositionLandscape: { type: 'int', default: 0 },
       scrollPositionPortrait: { type: 'int', default: 0 },
       indexPage: { type: 'int', default: 0 },
-      dateRead: 'string?',
+      dateRead: 'int?',
       link: 'string',
     },
     primaryKey: '_id',

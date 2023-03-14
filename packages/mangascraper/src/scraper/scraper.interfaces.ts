@@ -249,7 +249,7 @@ export declare interface MangaChapter {
   /**
    * The name of the chapter
    */
-  name?: string | null;
+  name: string;
 
   /**
    * The index the chapter belongs to in the array

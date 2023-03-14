@@ -1,11 +1,15 @@
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
 import { RootStackProps } from '@navigators/Root/Root.interfaces';
-import { fetchPagesByChapter, resetReaderState } from '@redux/slices/reader';
+import {
+  fetchPagesByChapter,
+  resetReaderState,
+  setCurrentChapter,
+} from '@redux/slices/reader';
 import { ReadingDirection } from '@redux/slices/settings';
 
 const mapStateToProps = (state: AppState, props: RootStackProps<'Reader'>) => ({
-  chapter: props.route.params.chapter,
+  chapter: state.reader.currentChapter ?? props.route.params.chapter,
   backgroundColor: state.settings.reader.backgroundColor,
   notifyOnLastChapter: state.settings.reader.notifyOnLastChapter,
   manga: props.route.params.manga,
@@ -18,6 +22,7 @@ const mapStateToProps = (state: AppState, props: RootStackProps<'Reader'>) => ({
 const connector = connect(mapStateToProps, {
   fetchPagesByChapter,
   resetReaderState,
+  setCurrentChapter,
 });
 
 export type ConnectedReaderProps = ConnectedProps<typeof connector>;

@@ -1,6 +1,12 @@
 import Box from '@components/Box';
+import Progress from '@components/Progress';
 import Text from '@components/Text';
-import { useLocalObject, useObject } from '@database/main';
+import {
+  useLocalObject,
+  useLocalRealm,
+  useObject,
+  useRealm,
+} from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import useMangaSource from '@hooks/useMangaSource';
@@ -8,7 +14,7 @@ import { Page } from '@redux/slices/reader/reader';
 import ChapterPage from '@screens/Reader/components/ChapterPage';
 import Overlay from '@screens/Reader/components/Overlay';
 import React from 'react';
-import { ListRenderItem, useWindowDimensions } from 'react-native';
+import { ListRenderItem, StatusBar, useWindowDimensions } from 'react-native';
 import {
   FlatList,
   Gesture,
@@ -36,12 +42,15 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     chapter: chapterKey,
     notifyOnLastChapter,
     resetReaderState,
+    setCurrentChapter,
     horizontal,
     pages,
     backgroundColor,
     fetchPagesByChapter,
     manga: mangaKey,
   } = props;
+  const realm = useRealm();
+  const localRealm = useLocalRealm();
   const manga = useObject(MangaSchema, mangaKey);
   const chapter = useLocalObject(ChapterSchema, chapterKey);
   if (manga == null)
@@ -89,16 +98,52 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   // }, [source])
 
   React.useEffect(() => {
+    setCurrentChapter(chapterKey);
+    localRealm.write(() => {
+      chapter.dateRead = Date.now();
+    });
+    realm.write(() => {
+      manga.currentlyReadingChapter = {
+        _id: chapter._id,
+        index: chapter.indexPage,
+      };
+    });
+
     fetchPagesByChapter({ chapter, source });
     return () => {
       resetReaderState();
     };
   }, []);
 
+  const renderItem: ListRenderItem<Page> = React.useCallback(
+    ({ item }) => {
+      switch (item.type) {
+        case 'PAGE':
+          return <ChapterPage page={item} tapGesture={tapGesture} />;
+        default:
+          return null;
+      }
+    },
+    [tapGesture],
+  );
+
   return (
     <>
-      <Overlay opacity={overlayOpacity} active={active} />
       <FlatList
+        ListHeaderComponent={
+          <Overlay
+            manga={manga}
+            chapter={chapter}
+            opacity={overlayOpacity}
+            active={active}
+            mangaTitle={manga.title}
+          />
+        }
+        ListEmptyComponent={
+          <Box flex-grow align-items="center" justify-content="center">
+            <Progress />
+          </Box>
+        }
         updateCellsBatchingPeriod={10}
         maxToRenderPerBatch={7}
         windowSize={9}
@@ -111,15 +156,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       />
     </>
   );
-};
-
-const renderItem: ListRenderItem<Page> = ({ item }) => {
-  switch (item.type) {
-    case 'PAGE':
-      return <ChapterPage page={item} />;
-    default:
-      return null;
-  }
 };
 
 const keyExtractor = (p: Page, i: number) => `${i}`;

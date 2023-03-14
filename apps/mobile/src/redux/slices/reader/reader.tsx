@@ -21,6 +21,7 @@ interface ReaderState {
   pages: Page[];
   loading: boolean;
   chapterInfo: Record<string, ReaderChapterInfo>;
+  currentChapter: string | null;
 }
 
 interface FetchPagesByChapterPayload {
@@ -32,6 +33,7 @@ const initialReaderState: ReaderState = {
   pages: [],
   loading: true,
   chapterInfo: {},
+  currentChapter: null,
 };
 
 export const fetchPagesByChapter = createAsyncThunk(
@@ -41,6 +43,7 @@ export const fetchPagesByChapter = createAsyncThunk(
       const response = await payload.source.getPages(payload.chapter);
       return {
         data: response,
+        chapter: payload.chapter,
       };
     } catch (e) {
       return {
@@ -60,10 +63,18 @@ const readerSlice = createSlice({
       state.chapterInfo = {};
       state.loading = true;
       state.pages = [];
+      state.currentChapter = null;
+    },
+    setCurrentChapter: (state, action: PayloadAction<string>) => {
+      state.currentChapter = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchPagesByChapter.fulfilled, (state, action) => {
+      state.chapterInfo[action.payload.chapter.link] = {
+        numberOfPages: action.payload.data.length,
+        offsetIndex: state.pages.length - 1,
+      };
       for (let i = 0; i < action.payload.data.length; i++) {
         state.pages.push({
           type: 'PAGE',
@@ -87,6 +98,6 @@ const readerSlice = createSlice({
   },
 });
 
-export const { resetReaderState } = readerSlice.actions;
+export const { resetReaderState, setCurrentChapter } = readerSlice.actions;
 
 export default readerSlice.reducer;
