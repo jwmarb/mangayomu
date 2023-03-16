@@ -5,9 +5,11 @@ import Animated, {
   Easing,
   FadeIn,
   FadeOut,
+  interpolate,
   runOnJS,
   useAnimatedReaction,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
@@ -26,10 +28,13 @@ import { ChapterSchema } from '@database/schemas/Chapter';
 import { IMangaSchema, MangaSchema } from '@database/schemas/Manga';
 import Realm from 'realm';
 import displayMessage from '@helpers/displayMessage';
+import { moderateScale } from 'react-native-size-matters';
 
-const OVERLAY_COLOR = 'rgba(0, 0, 0, 0.35)';
+const OVERLAY_COLOR = 'rgba(0, 0, 0, 0.5)';
 const OVERLAY_TEXT_PRIMARY = { custom: 'rgba(255, 255, 255, 1)' };
 const OVERLAY_TEXT_SECONDARY = { custom: 'rgba(255, 255, 255, 0.7)' };
+
+const translateYOffset = moderateScale(-32);
 
 const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   const {
@@ -42,6 +47,9 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
     totalPages,
   } = props;
   const realm = useRealm();
+  const translateY = useDerivedValue(() =>
+    interpolate(opacity.value, [0, 1], [0, translateYOffset]),
+  );
   const [isBookmarked, setIsBookmarked] = React.useState<boolean>(
     manga.inLibrary,
   );
@@ -61,6 +69,9 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
 
   const style = useAnimatedStyle(() => ({
     opacity: opacity.value,
+  }));
+  const pageCounterStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
   }));
 
   const navigation = useRootNavigation();
@@ -130,34 +141,39 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
             {chapter.name}
           </Text>
         </AnimatedBox>
-        <Box
-          position="absolute"
-          bottom={theme.style.spacing.xl}
-          background-color="red"
-          left={0}
-          right={0}
-          align-self="center"
-        >
-          <Text>{totalPages}</Text>
-        </Box>
-        <AnimatedStack
-          style={style}
-          flex-direction="row"
-          space="s"
-          background-color={OVERLAY_COLOR}
-          justify-content="space-evenly"
+        {totalPages != null && (
+          <AnimatedBox
+            style={pageCounterStyle}
+            position="absolute"
+            bottom={theme.style.spacing.xl}
+            background-color={OVERLAY_COLOR}
+            align-self="center"
+            py={moderateScale(2)}
+            px="s"
+            border-radius={moderateScale(4)}
+          >
+            <Text bold>
+              {page} / {totalPages}
+            </Text>
+          </AnimatedBox>
+        )}
+        <AnimatedBox
           py="s"
           px="m"
+          background-color={OVERLAY_COLOR}
+          style={style}
         >
-          <IconButton
-            icon={<Icon type="font" name="phone-rotate-portrait" />}
-          />
-          <IconButton
-            icon={<Icon type="font" name="image-filter-center-focus" />}
-          />
-          <IconButton icon={<Icon type="font" name="image" />} />
-          <IconButton icon={<Icon type="font" name="book-open-variant" />} />
-        </AnimatedStack>
+          <Stack flex-direction="row" space="s" justify-content="space-evenly">
+            <IconButton
+              icon={<Icon type="font" name="phone-rotate-portrait" />}
+            />
+            <IconButton
+              icon={<Icon type="font" name="image-filter-center-focus" />}
+            />
+            <IconButton icon={<Icon type="font" name="image" />} />
+            <IconButton icon={<Icon type="font" name="book-open-variant" />} />
+          </Stack>
+        </AnimatedBox>
       </Box>
     </Portal>
   );

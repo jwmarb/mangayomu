@@ -14,7 +14,16 @@ import { Page } from '@redux/slices/reader/reader';
 import ChapterPage from '@screens/Reader/components/ChapterPage';
 import Overlay from '@screens/Reader/components/Overlay';
 import React from 'react';
-import { ListRenderItem, StatusBar, useWindowDimensions } from 'react-native';
+import {
+  Dimensions,
+  ListRenderItem,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  StatusBar,
+  useWindowDimensions,
+  ViewabilityConfigCallbackPairs,
+  ViewToken,
+} from 'react-native';
 import {
   FlatList,
   Gesture,
@@ -127,6 +136,45 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     [tapGesture],
   );
 
+  const handleOnViewableItemsChanged = (info: {
+    viewableItems: ViewToken[];
+    changed: ViewToken[];
+  }) => {
+    const page = info.viewableItems.shift();
+    if (page != null) {
+      const { index } = page;
+      if (index != null) {
+        realm.write(() => {
+          manga.currentlyReadingChapter = {
+            _id: chapter._id,
+            index,
+          };
+        });
+        localRealm.write(() => {
+          chapter.indexPage = index;
+        });
+      }
+    }
+  };
+  const viewabilityConfigCallbackPairs =
+    React.useRef<ViewabilityConfigCallbackPairs>([
+      {
+        onViewableItemsChanged: handleOnViewableItemsChanged,
+        viewabilityConfig: { viewAreaCoveragePercentThreshold: 50 },
+      },
+    ]);
+
+  const handleOnScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    // const { width, height } = e.nativeEvent.layoutMeasurement;
+    // if (width > height) {
+    //   // Landscape
+    //   console.log('Landscape ', width, height);
+    // } else {
+    //   // Portrait
+    //   console.log('Portrait ', width, height);
+    // }
+  };
+
   return (
     <>
       <FlatList
@@ -145,6 +193,8 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
           </Box>
         }
         updateCellsBatchingPeriod={10}
+        onScroll={handleOnScroll}
+        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
         maxToRenderPerBatch={7}
         windowSize={9}
         horizontal={horizontal}

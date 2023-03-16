@@ -5,17 +5,20 @@ import FastImage, {
   OnLoadEvent,
 } from 'react-native-fast-image';
 import { ChapterPageProps } from './ChapterPage.interfaces';
-import WebView from 'react-native-webview';
+import WebView, { WebViewMessageEvent } from 'react-native-webview';
 import Box, { AnimatedBox } from '@components/Box';
 import Text from '@components/Text';
 import Progress from '@components/Progress';
 import { useTheme } from '@emotion/react';
 import { StatusBar } from 'react-native';
 import Animated, {
+  useAnimatedReaction,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
 import { GestureDetector } from 'react-native-gesture-handler';
+import useMountedEffect from '@hooks/useMountedEffect';
 
 const AnimatedFastImage = Animated.createAnimatedComponent(
   FastImage as React.FC<FastImageProps>,
@@ -28,6 +31,7 @@ const ChapterPage: React.FC<ChapterPageProps> = (props) => {
     width: number;
     height: number;
   }>({ width, height });
+  const [error, setError] = React.useState<boolean>(false);
   const scale = React.useMemo(
     () => width / imageDimensions.width,
     [width, imageDimensions.width],
@@ -56,26 +60,91 @@ const ChapterPage: React.FC<ChapterPageProps> = (props) => {
     opacity: loadingOpacity.value,
   }));
   const { page } = props.page;
-  function handleOnLoadEnd() {
+
+  function loadEnd() {
+    console.log('loadEnd() called');
     opacity.value = 1;
     loadingOpacity.value = 0;
   }
+
   function handleOnLoad(e: OnLoadEvent) {
     setImageDimensions({
       width: e.nativeEvent.width,
       height: e.nativeEvent.height,
     });
   }
+
+  // useAnimatedReaction(
+  //   () => opacity.value,
+  //   (result) => {
+  //     console.log('opacity = ' + result);
+  //   },
+  // );
+
+  // function handleOnMessage(e: WebViewMessageEvent) {
+  //   const parsed: ParsedWebViewData = JSON.parse(e.nativeEvent.data);
+
+  //   switch (parsed.type) {
+  //     case 'load':
+  //       console.log('setImageDimensions called');
+  //       setImageDimensions({
+  //         width: parsed.width,
+  //         height: parsed.height,
+  //       });
+
+  //       break;
+  //     case 'error':
+  //       setError(true);
+  //       break;
+  //   }
+  // }
+  // useMountedEffect(() => {
+  //   loadEnd();
+  // }, [imageDimensions]);
+
+  // const webViewRef = React.useRef<WebView>(null);
+
+  // return (
+  //   <AnimatedBox style={fastImageStyle}>
+  //     <WebView
+  //       ref={webViewRef}
+  //       onMessage={handleOnMessage}
+  //       injectedJavaScriptBeforeContentLoaded={`
+  //         var img = document.getElementById("page");
+  //         img.addEventListener("error", function (err) {
+  //           window.ReactNativeWebView.postMessage(JSON.stringify({ type: "error" }));
+  //         });
+  //         img.addEventListener("load", function () {
+  //           window.ReactNativeWebView.postMessage(JSON.stringify({ type: "load", width: img.naturalWidth, height: img.naturalHeight }));
+  //         })
+  //       `}
+  //       source={{
+  //         html: `
+  //         <html>
+  //           <head>
+  //             <meta name="viewport" content="initial-scale=0.5, maximum-scale=2.0">
+  //           <head />
+  //           <body style="margin: 0;">
+  //             <img src="${page}" width="100%" id="page" />
+  //           </body>
+  //         </html>
+  //       `,
+  //       }}
+  //     />
+  //   </AnimatedBox>
+  // );
+
   return (
     <GestureDetector gesture={tapGesture}>
-      <Box align-self="center">
+      <Box justify-content="center">
         <AnimatedFastImage
           source={{ uri: page }}
           style={fastImageStyle}
           resizeMode="contain"
-          onLoadEnd={handleOnLoadEnd}
+          onLoadEnd={loadEnd}
           onLoad={handleOnLoad}
         />
+
         <AnimatedBox
           position="absolute"
           align-items="center"
@@ -93,5 +162,9 @@ const ChapterPage: React.FC<ChapterPageProps> = (props) => {
     </GestureDetector>
   );
 };
+
+type ParsedWebViewData =
+  | { type: 'load'; width: number; height: number }
+  | { type: 'error' };
 
 export default React.memo(ChapterPage);
