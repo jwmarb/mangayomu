@@ -22,6 +22,7 @@ const Button: React.FC<ButtonProps> = (props) => {
   const theme = useTheme();
   return (
     <BaseButton
+      disallowInterruption
       enabled={!disabled}
       style={{
         borderRadius: theme.style.borderRadius,
