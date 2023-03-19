@@ -29,6 +29,8 @@ import { IMangaSchema, MangaSchema } from '@database/schemas/Manga';
 import Realm from 'realm';
 import displayMessage from '@helpers/displayMessage';
 import { moderateScale } from 'react-native-size-matters';
+import { Menu, MenuItem } from '@components/Menu';
+import { ReadingDirection } from '@redux/slices/settings';
 
 const OVERLAY_COLOR = 'rgba(0, 0, 0, 0.5)';
 const OVERLAY_TEXT_PRIMARY = { custom: 'rgba(255, 255, 255, 1)' };
@@ -152,7 +154,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
             px="s"
             border-radius={moderateScale(4)}
           >
-            <Text bold>
+            <Text bold variant="badge">
               {page} / {totalPages}
             </Text>
           </AnimatedBox>
@@ -171,7 +173,17 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
               icon={<Icon type="font" name="image-filter-center-focus" />}
             />
             <IconButton icon={<Icon type="font" name="image" />} />
-            <IconButton icon={<Icon type="font" name="book-open-variant" />} />
+            <Menu
+              trigger={
+                <IconButton
+                  icon={<Icon type="font" name="book-open-variant" />}
+                />
+              }
+            >
+              {Object.entries(ReadingDirection).map(([key, value]) => (
+                <MenuItem key={key}>{value}</MenuItem>
+              ))}
+            </Menu>
           </Stack>
         </AnimatedBox>
       </Box>

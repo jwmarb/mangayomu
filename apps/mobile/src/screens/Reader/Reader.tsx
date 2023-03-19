@@ -46,6 +46,15 @@ const styles = ScaledSheet.create({
   },
 });
 
+export interface ReaderContextState {
+  mangaKey?: string;
+}
+
+const ReaderContext = React.createContext<ReaderContextState>({
+  mangaKey: undefined,
+});
+export const useReaderContext = () => React.useContext(ReaderContext);
+
 const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const {
     chapter: chapterKey,
@@ -179,13 +188,15 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     <>
       <FlatList
         ListHeaderComponent={
-          <Overlay
-            manga={manga}
-            chapter={chapter}
-            opacity={overlayOpacity}
-            active={active}
-            mangaTitle={manga.title}
-          />
+          <ReaderContext.Provider value={{ mangaKey }}>
+            <Overlay
+              manga={manga}
+              chapter={chapter}
+              opacity={overlayOpacity}
+              active={active}
+              mangaTitle={manga.title}
+            />
+          </ReaderContext.Provider>
         }
         ListEmptyComponent={
           <Box flex-grow align-items="center" justify-content="center">

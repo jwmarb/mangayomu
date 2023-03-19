@@ -12,19 +12,25 @@ import Progress from '@components/Progress';
 import { useTheme } from '@emotion/react';
 import { StatusBar } from 'react-native';
 import Animated, {
+  runOnJS,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
+  withTiming,
 } from 'react-native-reanimated';
 import { GestureDetector } from 'react-native-gesture-handler';
 import useMountedEffect from '@hooks/useMountedEffect';
+import connector, { ConnectedChapterPageProps } from './ChapterPage.redux';
+import Icon from '@components/Icon';
+import { moderateScale } from 'react-native-size-matters';
+import Stack from '@components/Stack';
+import Hyperlink from '@components/Hyperlink';
+import Button from '@components/Button';
+import Divider from '@components/Divider';
 
-const AnimatedFastImage = Animated.createAnimatedComponent(
-  FastImage as React.FC<FastImageProps>,
-);
-
-const ChapterPage: React.FC<ChapterPageProps> = (props) => {
+const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
+  const { backgroundColor } = props;
   const { width, height } = useWindowDimensions();
   const { tapGesture } = props;
   // const [imageDimensions, setImageDimensions] = React.useState<{
@@ -91,12 +97,11 @@ const ChapterPage: React.FC<ChapterPageProps> = (props) => {
 
   function handleOnMessage(e: WebViewMessageEvent) {
     const parsed: ParsedWebViewData = JSON.parse(e.nativeEvent.data);
-    loadEnd();
     switch (parsed.type) {
       case 'load':
-        console.log(parsed.width, parsed.height, page);
         imageWidth.value = parsed.width;
         imageHeight.value = parsed.height;
+        opacity.value = 1;
         // setImageDimensions({
         //   width: parsed.width,
         //   height: parsed.height,
@@ -107,29 +112,39 @@ const ChapterPage: React.FC<ChapterPageProps> = (props) => {
         setError(true);
         break;
     }
+    loadingOpacity.value = 0;
   }
+
   // useMountedEffect(() => {
   //   loadEnd();
   // }, [imageDimensions]);
 
   const webViewRef = React.useRef<WebView>(null);
+  function handleOnReload() {
+    setError(false);
+    loadingOpacity.value = 1;
+    opacity.value = 0;
+    webViewRef.current?.reload();
+  }
 
   return (
-    <Box
-      width={width}
-      height={height + (StatusBar.currentHeight ?? 0)}
-      justify-content="center"
-    >
-      <AnimatedBox style={fastImageStyle}>
-        <WebView
-          useWebView2
-          ref={webViewRef}
-          onMessage={handleOnMessage}
-          injectedJavaScript={`
+    <GestureDetector gesture={tapGesture}>
+      <Box
+        width={width}
+        height={height + (StatusBar.currentHeight ?? 0)}
+        justify-content="center"
+      >
+        <AnimatedBox style={fastImageStyle}>
+          <WebView
+            useWebView2
+            ref={webViewRef}
+            onMessage={handleOnMessage}
+            scalesPageToFit={false}
+            injectedJavaScript={`
           var img = document.getElementById("page");
           if (img.naturalWidth !== 0 && img.naturalHeight !== 0) window.ReactNativeWebView.postMessage(JSON.stringify({ type: "load", width: img.naturalWidth, height: img.naturalHeight }));
         `}
-          injectedJavaScriptBeforeContentLoaded={`
+            injectedJavaScriptBeforeContentLoaded={`
           var img = document.getElementById("page");
           img.addEventListener("error", function (err) {
             window.ReactNativeWebView.postMessage(JSON.stringify({ type: "error" }));
@@ -138,21 +153,68 @@ const ChapterPage: React.FC<ChapterPageProps> = (props) => {
             window.ReactNativeWebView.postMessage(JSON.stringify({ type: "load", width: img.naturalWidth, height: img.naturalHeight }));
           })
         `}
-          source={{
-            html: `
+            source={{
+              html: `
           <html>
             <head>
-              <meta name="viewport" content="initial-scale=1, maximum-scale=1.0">
+              <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
             <head />
-            <body style="margin: 0;">
+            <body style="margin: 0;display: flex;flex-direction: row;justify-content: center;align-items: center;background-color: ${backgroundColor}">
               <img src="${page}" width="${width}" id="page" style="object-fit: contain;"  />
             </body>
           </html>
         `,
-          }}
-        />
-      </AnimatedBox>
-    </Box>
+            }}
+          />
+        </AnimatedBox>
+        <AnimatedBox
+          position="absolute"
+          align-items="center"
+          flex-grow
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          justify-content="center"
+          style={animatedLoadingStyle}
+        >
+          <Progress />
+        </AnimatedBox>
+        {error && (
+          <Stack
+            space="s"
+            position="absolute"
+            align-items="center"
+            flex-grow
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            justify-content="center"
+            mx="m"
+          >
+            <Icon
+              type="font"
+              name="wifi-alert"
+              color="textSecondary"
+              size={moderateScale(128)}
+            />
+            <Text align="center">There was an error loading this page.</Text>
+            <Stack space="s" mx="m" mt="s">
+              <Button
+                onPress={handleOnReload}
+                label="Reload page"
+                variant="contained"
+                icon={<Icon type="font" name="refresh" />}
+              />
+              <Hyperlink url={page} align="center">
+                Open page in browser
+              </Hyperlink>
+            </Stack>
+          </Stack>
+        )}
+      </Box>
+    </GestureDetector>
   );
 
   // return (
@@ -188,4 +250,4 @@ type ParsedWebViewData =
   | { type: 'load'; width: number; height: number }
   | { type: 'error' };
 
-export default React.memo(ChapterPage);
+export default connector(React.memo(ChapterPage));
