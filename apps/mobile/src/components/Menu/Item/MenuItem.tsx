@@ -6,7 +6,7 @@ import { MenuOption } from 'react-native-popup-menu';
 import { moderateScale } from 'react-native-size-matters';
 import { MenuItemProps } from './MenuItem.interfaces';
 
-const MenuItem: React.FC<MenuItemProps> = (props) => {
+function MenuItem<T>(props: MenuItemProps<T>) {
   const {
     children,
     onPress = () => void 0,
@@ -36,6 +36,6 @@ const MenuItem: React.FC<MenuItemProps> = (props) => {
       </Stack>
     </MenuOption>
   );
-};
+}
 
 export default MenuItem;
