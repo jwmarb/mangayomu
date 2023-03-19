@@ -1,6 +1,10 @@
 import { BOOK_COVER_RATIO } from '@components/Book';
+import { IMangaSchema, MangaSchema } from '@database/schemas/Manga';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { moderateScale } from 'react-native-size-matters';
+import Realm from 'realm';
+import React from 'react';
+import { useObject, useRealm } from '@database/main';
 
 export enum ReadingDirection {
   LEFT_TO_RIGHT = 'Left to right',
@@ -133,12 +137,19 @@ const settingsSlice = createSlice({
           action.payload.height * 0.025,
         );
       }
+
       // if (state.book.title.autoLetterSpacing) {
       //   state.book.title.letterSpacing = -state.book.width / moderateScale(30);
       // }
       // if (state.book.autoHeight) {
       //   state.book.height = state.book.width * AUTO_HEIGHT_SCALAR;
       // }
+    },
+    setGlobalReadingDirection: (
+      state,
+      action: PayloadAction<ReadingDirection>,
+    ) => {
+      state.reader.readingDirection = action.payload;
     },
     toggleAutoLetterSpacing: (state) => {
       state.book.title.autoLetterSpacing = !state.book.title.autoLetterSpacing;
@@ -177,6 +188,71 @@ export const {
   setTitleAlignment,
   setTitleFontSize,
   setBookStyle,
+  setGlobalReadingDirection,
 } = settingsSlice.actions;
+
+export function useReaderSetting<
+  T extends keyof IMangaSchema,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Payload extends ((val: IMangaSchema[T]) => any) | (string | undefined),
+>(
+  key: T,
+  globalSettingValue: Exclude<IMangaSchema[T], 'Use global setting'>,
+  payload: Payload,
+): Payload extends string | undefined
+  ? [IMangaSchema[T], (val: IMangaSchema[T]) => void]
+  : [
+      Exclude<IMangaSchema[T], 'Use global setting'>,
+      (val: Exclude<IMangaSchema[T], 'Use global setting'>) => void,
+    ] {
+  if (typeof payload === 'function') return [globalSettingValue, payload];
+  if (payload == null) {
+    console.warn(
+      `Undefined key was passed into useReaderSetting. The key that was supposed to be used was ${key}`,
+    );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return [globalSettingValue, payload] as any;
+  }
+  const realm = useRealm();
+  const manga = useObject(MangaSchema, payload);
+  const setter = React.useCallback(
+    (val: IMangaSchema[T]) => {
+      if (manga == null) {
+        console.error(
+          `Tried to set a value in an non-existant manga object with the key ${payload}.`,
+        );
+        return;
+      }
+      realm.write(() => {
+        (manga as IMangaSchema)[key] = val;
+      });
+    },
+    [manga, key],
+  );
+  if (manga == null) {
+    console.warn(
+      `The provided key returned an undefined value.\nmangaKey = ${payload}`,
+    );
+    return [globalSettingValue, setter];
+  }
+  const [setting, setSetting] = React.useState<IMangaSchema[T]>(
+    manga[key as keyof MangaSchema] === 'Use global setting'
+      ? globalSettingValue
+      : (manga[key as keyof MangaSchema] as IMangaSchema[T]),
+  );
+  React.useEffect(() => {
+    const callback: Realm.ObjectChangeCallback<IMangaSchema> = (change) => {
+      if (change[key] === 'Use global setting') setSetting(globalSettingValue);
+      else setSetting(change[key]);
+    };
+    manga.addListener(callback);
+    return () => {
+      manga.removeListener(callback);
+    };
+  }, [globalSettingValue]);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return [setting, setter] as any;
+}
 
 export default settingsSlice.reducer;
