@@ -20,6 +20,11 @@ import displayMessage from '@helpers/displayMessage';
 import integrateSortedList from '@helpers/integrateSortedList';
 import NetInfo, { useNetInfo } from '@react-native-community/netinfo';
 import { useUser } from '@realm/react';
+import {
+  ImageScaling,
+  ReadingDirection,
+  ZoomStartPosition,
+} from '@redux/slices/settings';
 
 export const MangaRatingSchema: Realm.ObjectSchema = {
   name: 'MangaRating',
@@ -88,6 +93,9 @@ export interface IMangaSchema
   inLibrary: boolean;
   selectedLanguage: ISOLangCode | 'Use default language';
   availableLanguages: ISOLangCode[];
+  readerDirection: ReadingDirection | 'Use global setting';
+  readerZoomStartDirection: ZoomStartPosition | 'Use global setting';
+  readerImageScaling: ImageScaling | 'Use global setting';
   _id: string;
   _realmId: string;
 }
@@ -113,6 +121,9 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   reversedSort!: boolean;
   selectedLanguage!: ISOLangCode | 'Use default language';
   availableLanguages!: ISOLangCode[];
+  readerDirection!: ReadingDirection | 'Use global setting';
+  readerZoomStartDirection!: ZoomStartPosition | 'Use global setting';
+  readerImageScaling!: ImageScaling | 'Use global setting';
   _id!: string;
   _realmId!: string;
 
@@ -141,6 +152,12 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
       reversedSort: { type: 'bool', default: true },
       selectedLanguage: { type: 'string', default: 'Use default language' },
       availableLanguages: 'string[]',
+      readerDirection: { type: 'string', default: 'Use global setting' },
+      readerZoomStartDirection: {
+        type: 'string',
+        default: 'Use global setting',
+      },
+      readerImageScaling: { type: 'string', default: 'Use global setting' },
     },
     primaryKey: '_id',
   };

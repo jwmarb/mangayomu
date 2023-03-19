@@ -20,7 +20,7 @@ export const { useObject, useQuery, useRealm, RealmProvider } =
       MangaStatusSchema,
       MangaReadingChapter,
     ],
-    schemaVersion: 36,
+    schemaVersion: 37,
   });
 
 export const {
