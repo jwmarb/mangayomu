@@ -10,6 +10,7 @@ import { ChapterSchema } from '@database/schemas/Chapter';
 import { AppState } from '@redux/main';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { PageSchema } from '@database/schemas/Page';
 export * from './providers/UserProvider';
 // export * from './providers/RealmProvider';
 export const { useObject, useQuery, useRealm, RealmProvider } =
@@ -29,7 +30,7 @@ export const {
   useQuery: useLocalQuery,
   useRealm: useLocalRealm,
 } = createRealmContext({
-  schema: [ChapterSchema],
-  schemaVersion: 3,
+  schema: [ChapterSchema, PageSchema],
+  schemaVersion: 4,
   path: Realm.defaultPath.replace('default.realm', 'local.realm'),
 });
