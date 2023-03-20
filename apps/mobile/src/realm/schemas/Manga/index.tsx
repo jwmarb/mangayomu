@@ -22,6 +22,7 @@ import NetInfo, { useNetInfo } from '@react-native-community/netinfo';
 import { useUser } from '@realm/react';
 import {
   ImageScaling,
+  ReaderScreenOrientation,
   ReadingDirection,
   ZoomStartPosition,
 } from '@redux/slices/settings';
@@ -94,8 +95,9 @@ export interface IMangaSchema
   selectedLanguage: ISOLangCode | 'Use default language';
   availableLanguages: ISOLangCode[];
   readerDirection: ReadingDirection | 'Use global setting';
-  readerZoomStartDirection: ZoomStartPosition | 'Use global setting';
+  readerZoomStartPosition: ZoomStartPosition | 'Use global setting';
   readerImageScaling: ImageScaling | 'Use global setting';
+  readerLockOrientation: ReaderScreenOrientation | 'Use global setting';
   _id: string;
   _realmId: string;
 }
@@ -122,8 +124,9 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   selectedLanguage!: ISOLangCode | 'Use default language';
   availableLanguages!: ISOLangCode[];
   readerDirection!: ReadingDirection | 'Use global setting';
-  readerZoomStartDirection!: ZoomStartPosition | 'Use global setting';
+  readerZoomStartPosition!: ZoomStartPosition | 'Use global setting';
   readerImageScaling!: ImageScaling | 'Use global setting';
+  readerLockOrientation!: ReaderScreenOrientation | 'Use global setting';
   _id!: string;
   _realmId!: string;
 
@@ -153,10 +156,11 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
       selectedLanguage: { type: 'string', default: 'Use default language' },
       availableLanguages: 'string[]',
       readerDirection: { type: 'string', default: 'Use global setting' },
-      readerZoomStartDirection: {
+      readerZoomStartPosition: {
         type: 'string',
         default: 'Use global setting',
       },
+      readerLockOrientation: { type: 'string', default: 'Use global setting' }, // mobile property only
       readerImageScaling: { type: 'string', default: 'Use global setting' },
     },
     primaryKey: '_id',
