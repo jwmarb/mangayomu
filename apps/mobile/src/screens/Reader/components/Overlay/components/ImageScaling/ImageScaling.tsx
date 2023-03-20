@@ -8,6 +8,7 @@ import connector, { ConnectedImageScalingProps } from './ImageScaling.redux';
 import { Menu, MenuItem } from '@components/Menu';
 import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
+import { OVERLAY_TEXT_SECONDARY } from '@screens/Reader/components/Overlay/Overlay';
 
 const ImageScaling: React.FC<ConnectedImageScalingProps> = (props) => {
   const { globalImageScaling } = props;
@@ -20,7 +21,10 @@ const ImageScaling: React.FC<ConnectedImageScalingProps> = (props) => {
   return (
     <Menu
       trigger={
-        <IconButton icon={<Icon type="font" name="book-open-variant" />} />
+        <IconButton
+          icon={<Icon type="font" name="image" />}
+          color={OVERLAY_TEXT_SECONDARY}
+        />
       }
     >
       {Object.entries(ImageScalingEnum).map(([key, value]) => (
@@ -33,7 +37,11 @@ const ImageScaling: React.FC<ConnectedImageScalingProps> = (props) => {
           {value}
         </MenuItem>
       ))}
-      <MenuItem optionKey="Use global setting" onSelect={setImageScaling}>
+      <MenuItem
+        optionKey="Use global setting"
+        onSelect={setImageScaling}
+        color={imageScaling === 'Use global setting' ? 'primary' : undefined}
+      >
         Use global setting
       </MenuItem>
     </Menu>

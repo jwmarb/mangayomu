@@ -4,7 +4,12 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type Page = ChapterError | ChapterPage | NoMorePages;
 
-export type ChapterPage = { type: 'PAGE'; page: string; pageNumber: number };
+export type ChapterPage = {
+  type: 'PAGE';
+  page: string;
+  pageNumber: number;
+  chapter: string;
+};
 export type NoMorePages = { type: 'NO_MORE_PAGES' };
 export type ChapterError = {
   type: 'CHAPTER_ERROR';
@@ -80,6 +85,7 @@ const readerSlice = createSlice({
           type: 'PAGE',
           page: action.payload.data[i],
           pageNumber: i + 1,
+          chapter: action.payload.chapter.link,
         });
       }
       state.loading = false;

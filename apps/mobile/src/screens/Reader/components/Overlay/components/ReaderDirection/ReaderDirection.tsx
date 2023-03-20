@@ -8,6 +8,10 @@ import { Menu, MenuItem } from '@components/Menu';
 import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
 import { ReadingDirection, useReaderSetting } from '@redux/slices/settings';
+import {
+  OVERLAY_TEXT_PRIMARY,
+  OVERLAY_TEXT_SECONDARY,
+} from '@screens/Reader/components/Overlay/Overlay';
 
 const ReaderDirection: React.FC<ConnectedReaderDirectionProps> = (props) => {
   const { globalReadingDirection } = props;
@@ -21,7 +25,10 @@ const ReaderDirection: React.FC<ConnectedReaderDirectionProps> = (props) => {
   return (
     <Menu
       trigger={
-        <IconButton icon={<Icon type="font" name="book-open-variant" />} />
+        <IconButton
+          icon={<Icon type="font" name="book-open-variant" />}
+          color={OVERLAY_TEXT_SECONDARY}
+        />
       }
     >
       {Object.entries(ReadingDirection).map(([key, value]) => (
@@ -34,7 +41,13 @@ const ReaderDirection: React.FC<ConnectedReaderDirectionProps> = (props) => {
           {value}
         </MenuItem>
       ))}
-      <MenuItem optionKey="Use global setting" onSelect={setReadingDirection}>
+      <MenuItem
+        optionKey="Use global setting"
+        onSelect={setReadingDirection}
+        color={
+          readingDirection === 'Use global setting' ? 'primary' : undefined
+        }
+      >
         Use global setting
       </MenuItem>
     </Menu>

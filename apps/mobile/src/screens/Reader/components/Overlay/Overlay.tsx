@@ -20,7 +20,6 @@ import { Portal } from '@gorhom/portal';
 import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
 import useRootNavigation from '@hooks/useRootNavigation';
-import { StatusBar } from 'react-native';
 import { useTheme } from '@emotion/react';
 import Stack, { AnimatedStack } from '@components/Stack';
 import { useLocalObject, useObject, useRealm } from '@database/main';
@@ -31,10 +30,15 @@ import displayMessage from '@helpers/displayMessage';
 import { moderateScale } from 'react-native-size-matters';
 import { Menu, MenuItem } from '@components/Menu';
 import { ReadingDirection } from '@redux/slices/settings';
+import ReaderDirection from '@screens/Reader/components/Overlay/components/ReaderDirection';
+import { ReaderContext } from '@screens/Reader/Reader';
+import ImageScaling from '@screens/Reader/components/Overlay/components/ImageScaling';
+import ZoomStartPosition from '@screens/Reader/components/Overlay/components/ZoomStartPosition';
+import DeviceOrientation from '@screens/Reader/components/Overlay/components/DeviceOrientation';
 
-const OVERLAY_COLOR = 'rgba(0, 0, 0, 0.5)';
-const OVERLAY_TEXT_PRIMARY = { custom: 'rgba(255, 255, 255, 1)' };
-const OVERLAY_TEXT_SECONDARY = { custom: 'rgba(255, 255, 255, 0.7)' };
+export const OVERLAY_COLOR = 'rgba(0, 0, 0, 0.5)';
+export const OVERLAY_TEXT_PRIMARY = { custom: 'rgba(255, 255, 255, 1)' };
+export const OVERLAY_TEXT_SECONDARY = { custom: 'rgba(255, 255, 255, 0.7)' };
 
 const translateYOffset = moderateScale(-32);
 
@@ -94,6 +98,29 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
     });
   }
 
+  const topOverlayTranslation = useDerivedValue(() =>
+    interpolate(opacity.value, [0, 1], [-64, 0]),
+  );
+  const bottomOverlayTranslation = useDerivedValue(() =>
+    interpolate(opacity.value, [0, 1], [64, 0]),
+  );
+
+  const animatedTopOverlayStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: topOverlayTranslation.value }],
+  }));
+  const topOverlayStyle = React.useMemo(
+    () => [animatedTopOverlayStyle, style],
+    [animatedTopOverlayStyle, style],
+  );
+
+  const animatedBottomOverlayStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: bottomOverlayTranslation.value }],
+  }));
+  const bottomOverlayStyle = React.useMemo(
+    () => [animatedBottomOverlayStyle, style],
+    [style, animatedBottomOverlayStyle],
+  );
+
   return (
     <Portal>
       <Box
@@ -107,9 +134,9 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
         justify-content="space-between"
       >
         <AnimatedBox
-          style={style}
+          style={topOverlayStyle}
           background-color={OVERLAY_COLOR}
-          pt={(StatusBar.currentHeight ?? 0) + theme.style.spacing.s}
+          pt={theme.style.spacing.s}
           pb="s"
           px="m"
         >
@@ -154,37 +181,28 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
             px="s"
             border-radius={moderateScale(4)}
           >
-            <Text bold variant="badge">
+            <Text bold variant="badge" color={OVERLAY_TEXT_PRIMARY}>
               {page} / {totalPages}
             </Text>
           </AnimatedBox>
         )}
         <AnimatedBox
-          py="s"
           px="m"
           background-color={OVERLAY_COLOR}
-          style={style}
+          style={bottomOverlayStyle}
         >
-          <Stack flex-direction="row" space="s" justify-content="space-evenly">
-            <IconButton
-              icon={<Icon type="font" name="phone-rotate-portrait" />}
-            />
-            <IconButton
-              icon={<Icon type="font" name="image-filter-center-focus" />}
-            />
-            <IconButton icon={<Icon type="font" name="image" />} />
-            <Menu
-              trigger={
-                <IconButton
-                  icon={<Icon type="font" name="book-open-variant" />}
-                />
-              }
+          <ReaderContext.Provider value={{ mangaKey: manga._id }}>
+            <Stack
+              flex-direction="row"
+              space="s"
+              justify-content="space-evenly"
             >
-              {Object.entries(ReadingDirection).map(([key, value]) => (
-                <MenuItem key={key}>{value}</MenuItem>
-              ))}
-            </Menu>
-          </Stack>
+              <DeviceOrientation />
+              <ZoomStartPosition />
+              <ImageScaling />
+              <ReaderDirection />
+            </Stack>
+          </ReaderContext.Provider>
         </AnimatedBox>
       </Box>
     </Portal>
