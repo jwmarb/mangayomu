@@ -6,8 +6,12 @@ import { MangaSchema } from '@database/schemas/Manga';
 
 export interface OverlayProps extends React.PropsWithChildren {
   opacity: SharedValue<number>;
-  active: boolean;
+  currentPage: number;
   mangaTitle: string;
   chapter: ChapterSchema & Realm.Object<ChapterSchema, never>;
   manga: MangaSchema & Realm.Object<MangaSchema, never>;
+}
+
+export interface ReaderSettingProps {
+  type?: 'button' | 'setting';
 }

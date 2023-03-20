@@ -6,10 +6,7 @@ import { ChapterPageProps } from '@screens/Reader/components/ChapterPage/Chapter
 const mapStateToProps = (
   state: AppState,
   props: React.PropsWithChildren<ChapterPageProps>,
-) => ({
-  ...props,
-  backgroundColor: state.settings.reader.backgroundColor,
-});
+) => props;
 
 const connector = connect(mapStateToProps);
 

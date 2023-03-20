@@ -35,6 +35,10 @@ import { ReaderContext } from '@screens/Reader/Reader';
 import ImageScaling from '@screens/Reader/components/Overlay/components/ImageScaling';
 import ZoomStartPosition from '@screens/Reader/components/Overlay/components/ZoomStartPosition';
 import DeviceOrientation from '@screens/Reader/components/Overlay/components/DeviceOrientation';
+import { FullWindowOverlay } from 'react-native-screens';
+import { StyleSheet } from 'react-native';
+import ReaderSettingsMenu from '@screens/Reader/components/ReaderSettingsMenu';
+import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 
 export const OVERLAY_COLOR = 'rgba(0, 0, 0, 0.5)';
 export const OVERLAY_TEXT_PRIMARY = { custom: 'rgba(255, 255, 255, 1)' };
@@ -45,7 +49,8 @@ const translateYOffset = moderateScale(-32);
 const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   const {
     opacity,
-    active,
+    showPageNumber,
+    currentPage: page,
     mangaTitle,
     chapter,
     manga,
@@ -59,12 +64,9 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   const [isBookmarked, setIsBookmarked] = React.useState<boolean>(
     manga.inLibrary,
   );
-  const [page, setPage] = React.useState<number>(1);
   React.useEffect(() => {
     const callback: Realm.ObjectChangeCallback<IMangaSchema> = (change) => {
       setIsBookmarked(change.inLibrary);
-      if (change.currentlyReadingChapter)
-        setPage(change.currentlyReadingChapter.index + 1);
     };
     manga.addListener(callback);
     return () => {
@@ -120,10 +122,16 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
     () => [animatedBottomOverlayStyle, style],
     [style, animatedBottomOverlayStyle],
   );
+  const ref = React.useRef<BottomSheetMethods>(null);
+  function handleOnOpenSettingsMenu() {
+    ref.current?.snapToIndex(1);
+  }
 
   return (
     <Portal>
+      <ReaderSettingsMenu ref={ref} mangaKey={manga._id} />
       <Box
+        z-index={-1}
         height="100%"
         width="100%"
         position="absolute"
@@ -160,6 +168,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
               <IconButton
                 icon={<Icon type="font" name="cog" />}
                 color={OVERLAY_TEXT_SECONDARY}
+                onPress={handleOnOpenSettingsMenu}
               />
             </Stack>
           </Stack>
@@ -170,7 +179,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
             {chapter.name}
           </Text>
         </AnimatedBox>
-        {totalPages != null && (
+        {totalPages != null && showPageNumber && (
           <AnimatedBox
             style={pageCounterStyle}
             position="absolute"

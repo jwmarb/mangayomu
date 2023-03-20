@@ -28,17 +28,31 @@ import Stack from '@components/Stack';
 import Hyperlink from '@components/Hyperlink';
 import Button from '@components/Button';
 import Divider from '@components/Divider';
+import { useLocalObject, useLocalRealm } from '@database/main';
+import { ChapterSchema } from '@database/schemas/Chapter';
+import { PageSchema } from '@database/schemas/Page';
+
+function removeURLParams(url: string) {
+  const startParam = url.indexOf('?');
+  if (startParam === -1) return url;
+  return url.substring(0, startParam);
+}
 
 const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
-  const { backgroundColor } = props;
+  const { mangaKey } = props;
   const { width, height } = useWindowDimensions();
   const { tapGesture } = props;
+  const { page: pageKey, chapter: chapterKey } = props.page;
+  const localRealm = useLocalRealm();
+  const parsedPageKey = removeURLParams(pageKey);
+  const page = useLocalObject(PageSchema, parsedPageKey);
+
   // const [imageDimensions, setImageDimensions] = React.useState<{
   //   width: number;
   //   height: number;
   // }>({ width, height });
-  const imageWidth = useSharedValue(width);
-  const imageHeight = useSharedValue(height);
+  const imageWidth = useSharedValue(page?.width ?? width);
+  const imageHeight = useSharedValue(page?.height ?? height);
   const [error, setError] = React.useState<boolean>(false);
   // const scale = React.useMemo(
   //   () => width / imageDimensions.width,
@@ -72,7 +86,6 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   const animatedLoadingStyle = useAnimatedStyle(() => ({
     opacity: loadingOpacity.value,
   }));
-  const { page } = props.page;
 
   function loadEnd() {
     opacity.value = 1;
@@ -88,32 +101,52 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     // });
   }
 
-  // useAnimatedReaction(
-  //   () => opacity.value,
-  //   (result) => {
-  //     console.log('opacity = ' + result);
-  //   },
-  // );
-
-  function handleOnMessage(e: WebViewMessageEvent) {
-    const parsed: ParsedWebViewData = JSON.parse(e.nativeEvent.data);
-    switch (parsed.type) {
-      case 'load':
-        imageWidth.value = parsed.width;
-        imageHeight.value = parsed.height;
-        opacity.value = 1;
-        // setImageDimensions({
-        //   width: parsed.width,
-        //   height: parsed.height,
-        // });
-
-        break;
-      case 'error':
-        setError(true);
-        break;
-    }
-    loadingOpacity.value = 0;
+  function writeImageDimensionsLocally(
+    parsedWidth: number,
+    parsedHeight: number,
+  ) {
+    localRealm.write(() => {
+      localRealm.create<PageSchema>(
+        'Page',
+        {
+          _id: parsedPageKey,
+          _chapterId: chapterKey,
+          _mangaId: mangaKey,
+          width: parsedWidth,
+          height: parsedHeight,
+        },
+        Realm.UpdateMode.Modified,
+      );
+    });
   }
+
+  React.useEffect(() => {
+    return () => {
+      const isScreenDimension =
+        imageWidth.value === width && imageHeight.value === height;
+      if (!isScreenDimension)
+        writeImageDimensionsLocally(imageWidth.value, imageHeight.value);
+    };
+  }, []);
+
+  const handleOnMessage = React.useCallback(
+    (e: WebViewMessageEvent) => {
+      const parsed: ParsedWebViewData = JSON.parse(e.nativeEvent.data);
+      switch (parsed.type) {
+        case 'load':
+          imageWidth.value = parsed.width;
+          imageHeight.value = parsed.height;
+          opacity.value = 1;
+
+          break;
+        case 'error':
+          setError(true);
+          break;
+      }
+      loadingOpacity.value = 0;
+    },
+    [setError],
+  );
 
   // useMountedEffect(() => {
   //   loadEnd();
@@ -127,24 +160,26 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     webViewRef.current?.reload();
   }
 
+  // useMountedEffect(() => {
+  //   webViewRef.current?.reload();
+  // }, [backgroundColor]);
+
   return (
     <GestureDetector gesture={tapGesture}>
-      <Box
-        width={width}
-        height={height + (StatusBar.currentHeight ?? 0)}
-        justify-content="center"
-      >
+      <Box width={width} minHeight={height} justify-content="center">
         <AnimatedBox style={fastImageStyle}>
-          <WebView
-            useWebView2
-            ref={webViewRef}
-            onMessage={handleOnMessage}
-            scalesPageToFit={false}
-            injectedJavaScript={`
+          {React.useMemo(
+            () => (
+              <WebView
+                useWebView2
+                ref={webViewRef}
+                onMessage={handleOnMessage}
+                scalesPageToFit={false}
+                injectedJavaScript={`
           var img = document.getElementById("page");
           if (img.naturalWidth !== 0 && img.naturalHeight !== 0) window.ReactNativeWebView.postMessage(JSON.stringify({ type: "load", width: img.naturalWidth, height: img.naturalHeight }));
         `}
-            injectedJavaScriptBeforeContentLoaded={`
+                injectedJavaScriptBeforeContentLoaded={`
           var img = document.getElementById("page");
           img.addEventListener("error", function (err) {
             window.ReactNativeWebView.postMessage(JSON.stringify({ type: "error" }));
@@ -153,19 +188,22 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
             window.ReactNativeWebView.postMessage(JSON.stringify({ type: "load", width: img.naturalWidth, height: img.naturalHeight }));
           })
         `}
-            source={{
-              html: `
+                source={{
+                  html: `
           <html>
             <head>
               <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
             <head />
-            <body style="margin: 0;display: flex;flex-direction: row;justify-content: center;align-items: center;background-color: ${backgroundColor}">
-              <img src="${page}" width="${width}" id="page" style="object-fit: contain;"  />
+            <body style="margin: 0;display: flex;flex-direction: row;justify-content: center;align-items: center;background-color: rgba(0, 0, 0, 0);">
+              <img src="${pageKey}" width="100%" id="page" style="object-fit: contain;"  />
             </body>
           </html>
         `,
-            }}
-          />
+                }}
+              />
+            ),
+            [handleOnMessage, pageKey],
+          )}
         </AnimatedBox>
         <AnimatedBox
           position="absolute"
@@ -207,7 +245,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
                 variant="contained"
                 icon={<Icon type="font" name="refresh" />}
               />
-              <Hyperlink url={page} align="center">
+              <Hyperlink url={pageKey} align="center">
                 Open page in browser
               </Hyperlink>
             </Stack>

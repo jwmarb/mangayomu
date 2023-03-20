@@ -151,11 +151,38 @@ const settingsSlice = createSlice({
     ) => {
       state.reader.readingDirection = action.payload;
     },
+    setLockedDeviceOrientation: (
+      state,
+      action: PayloadAction<ReaderScreenOrientation>,
+    ) => {
+      state.reader.lockOrientation = action.payload;
+    },
+    setGlobalZoomStartPosition: (
+      state,
+      action: PayloadAction<ZoomStartPosition>,
+    ) => {
+      state.reader.zoomStartPosition = action.payload;
+    },
+    setGlobalImageScaling: (state, action: PayloadAction<ImageScaling>) => {
+      state.reader.imageScaling = action.payload;
+    },
+    toggleShowPageNumber: (state) => {
+      state.reader.showPageNumber = !state.reader.showPageNumber;
+    },
+    toggleNotifyOnLastChapter: (state) => {
+      state.reader.notifyOnLastChapter = !state.reader.notifyOnLastChapter;
+    },
     toggleAutoLetterSpacing: (state) => {
       state.book.title.autoLetterSpacing = !state.book.title.autoLetterSpacing;
     },
     setBookLetterSpacing: (state, action: PayloadAction<number>) => {
       state.book.title.letterSpacing = action.payload;
+    },
+    setReaderBackgroundColor: (
+      state,
+      action: PayloadAction<ReaderBackgroundColor>,
+    ) => {
+      state.reader.backgroundColor = action.payload;
     },
     toggleAutoBookHeight: (state) => {
       state.book.autoHeight = !state.book.autoHeight;
@@ -189,17 +216,23 @@ export const {
   setTitleFontSize,
   setBookStyle,
   setGlobalReadingDirection,
+  setLockedDeviceOrientation,
+  setGlobalZoomStartPosition,
+  setGlobalImageScaling,
+  toggleNotifyOnLastChapter,
+  setReaderBackgroundColor,
+  toggleShowPageNumber,
 } = settingsSlice.actions;
 
 export function useReaderSetting<
   T extends keyof IMangaSchema,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Payload extends ((val: IMangaSchema[T]) => any) | (string | undefined),
+  Payload extends ((val: IMangaSchema[T]) => any) | string,
 >(
   key: T,
   globalSettingValue: Exclude<IMangaSchema[T], 'Use global setting'>,
   payload: Payload,
-): Payload extends string | undefined
+): Payload extends string
   ? [IMangaSchema[T], (val: IMangaSchema[T]) => void]
   : [
       Exclude<IMangaSchema[T], 'Use global setting'>,
@@ -235,15 +268,12 @@ export function useReaderSetting<
     );
     return [globalSettingValue, setter];
   }
-  const [setting, setSetting] = React.useState<IMangaSchema[T]>(
-    manga[key as keyof MangaSchema] === 'Use global setting'
-      ? globalSettingValue
-      : (manga[key as keyof MangaSchema] as IMangaSchema[T]),
-  );
+  const [setting, setSetting] = React.useState<
+    IMangaSchema[T] | 'Use global setting'
+  >(manga[key as keyof MangaSchema] as IMangaSchema[T] | 'Use global setting');
   React.useEffect(() => {
     const callback: Realm.ObjectChangeCallback<IMangaSchema> = (change) => {
-      if (change[key] === 'Use global setting') setSetting(globalSettingValue);
-      else setSetting(change[key]);
+      setSetting(change[key]);
     };
     manga.addListener(callback);
     return () => {
