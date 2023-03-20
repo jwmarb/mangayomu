@@ -40,6 +40,7 @@ const IconButton: React.FC<IconButtonProps> = (props) => {
       border-radius={10000}
     >
       <BorderlessButton
+        disallowInterruption
         style={borderlessButtonStyle}
         rippleColor={rippleColor}
         {...rest}
