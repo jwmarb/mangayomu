@@ -455,8 +455,8 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
                     space="s"
                     flex-direction="row"
                     flex-wrap="wrap"
-                    mx="m"
-                    justify-content="space-between"
+                    align-items="center"
+                    justify-content="space-evenly"
                   >
                     {MangaLoadingList}
                   </Stack>
