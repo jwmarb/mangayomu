@@ -14,6 +14,7 @@ import CustomTabs from '@components/CustomTabs';
 import Filters from './Tabs/Filters';
 import Sort from '@screens/Welcome/components/MainSourceSelector/components/Header/Tabs/Sort';
 import { Menu, MenuItem } from '@components/Menu';
+import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 
 const Header: React.FC<ConnectedHeaderProps> = ({
   setQuery,
@@ -74,16 +75,25 @@ const Header: React.FC<ConnectedHeaderProps> = ({
           onChangeText={setQuery}
         />
       </Stack>
-      <CustomBottomSheet ref={bottomSheet}>
+      <MangaSourceSelectorFilters ref={bottomSheet} />
+    </>
+  );
+};
+
+export const MangaSourceSelectorFilters = React.forwardRef<BottomSheetMethods>(
+  (props, ref) => {
+    const [index, setIndex] = React.useState<number>(0);
+    return (
+      <CustomBottomSheet ref={ref}>
         <CustomTabs
           navigationState={{ index, routes }}
           renderScene={renderScene}
           onIndexChange={setIndex}
         />
       </CustomBottomSheet>
-    </>
-  );
-};
+    );
+  },
+);
 
 const renderScene = SceneMap({
   filters: Filters,
