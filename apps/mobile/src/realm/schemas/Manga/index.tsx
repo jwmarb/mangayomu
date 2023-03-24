@@ -251,6 +251,8 @@ export const useManga = (
             (copy as ChapterSchema)._mangaId = meta.link;
             (copy as ChapterSchema)._id = x.link;
             (copy as ChapterSchema)._realmId = currentUser.id;
+            (copy as ChapterSchema).language =
+              (x as MangaMultilingualChapter).language ?? 'en';
 
             cloudRealm.create<ChapterSchema>(
               'Chapter',

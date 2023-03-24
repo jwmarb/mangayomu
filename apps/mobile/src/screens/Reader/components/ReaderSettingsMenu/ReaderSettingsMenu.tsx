@@ -15,7 +15,7 @@ const ReaderSettingsMenu: React.ForwardRefRenderFunction<
   const [index, setIndex] = React.useState<number>(0);
   const { mangaKey } = props;
   return (
-    <CustomBottomSheet ref={ref}>
+    <CustomBottomSheet ref={ref} showIndicator={false}>
       <CustomTabs
         navigationState={{ index, routes }}
         onIndexChange={setIndex}

@@ -5,6 +5,7 @@ import Realm from 'realm';
 export interface IChapterSchema extends MangaChapter {
   scrollPositionLandscape?: number;
   scrollPositionPortrait?: number;
+  numberOfPages?: number;
   indexPage?: number;
   dateRead?: number;
   language?: ISOLangCode;
@@ -17,6 +18,7 @@ export class ChapterSchema extends Realm.Object<IChapterSchema> {
   scrollPositionLandscape!: number;
   scrollPositionPortrait!: number;
   indexPage!: number;
+  numberOfPages?: number;
   dateRead?: number;
   link!: string;
   name!: string;
@@ -36,6 +38,7 @@ export class ChapterSchema extends Realm.Object<IChapterSchema> {
       index: 'int',
       date: 'string',
       _mangaId: 'string',
+      numberOfPages: 'int?',
       language: { type: 'string', default: 'en' },
       scrollPositionLandscape: { type: 'int', default: 0 },
       scrollPositionPortrait: { type: 'int', default: 0 },

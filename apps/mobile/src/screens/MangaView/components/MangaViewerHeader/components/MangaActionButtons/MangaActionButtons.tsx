@@ -3,6 +3,9 @@ import Button from '@components/Button';
 import Icon from '@components/Icon';
 import Progress from '@components/Progress';
 import Stack from '@components/Stack';
+import { useLocalObject, useLocalRealm } from '@database/main';
+import { ChapterSchema } from '@database/schemas/Chapter';
+import useRootNavigation from '@hooks/useRootNavigation';
 import React from 'react';
 import { moderateScale } from 'react-native-size-matters';
 import { MangaActionButtonsProps } from './MangaActionButtons.interfaces';
@@ -14,7 +17,23 @@ const buttonLoading = {
 } as const;
 
 const MangaActionButtons: React.FC<MangaActionButtonsProps> = (props) => {
-  const { onBookmark, inLibrary, loading } = props;
+  const {
+    onBookmark,
+    inLibrary,
+    loading,
+    mangaKey,
+    currentlyReadingChapterKey,
+    firstChapterKey,
+  } = props;
+  const navigation = useRootNavigation();
+  const localRealm = useLocalRealm();
+  function handleOnRead() {
+    if (mangaKey != null && firstChapterKey != null)
+      navigation.navigate('Reader', {
+        chapter: currentlyReadingChapterKey ?? firstChapterKey,
+        manga: mangaKey,
+      });
+  }
   return (
     <Stack
       space="s"
@@ -26,10 +45,17 @@ const MangaActionButtons: React.FC<MangaActionButtonsProps> = (props) => {
     >
       <Box maxWidth={moderateScale(480)} flex-grow>
         <Button
+          onPress={handleOnRead}
           {...(loading
             ? buttonLoading
             : {
-                label: 'Read',
+                label:
+                  currentlyReadingChapterKey != null
+                    ? localRealm.objectForPrimaryKey(
+                        ChapterSchema,
+                        currentlyReadingChapterKey,
+                      )?.name
+                    : 'Read',
                 variant: 'contained',
                 icon: <Icon type="font" name="book" />,
               })}

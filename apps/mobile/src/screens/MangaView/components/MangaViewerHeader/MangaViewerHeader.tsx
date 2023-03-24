@@ -43,6 +43,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
     scrollViewStyle,
     status,
     error,
+    firstChapterKey,
     numberOfSelectedLanguageChapters,
     onBookmark,
     onOpenMenu,
@@ -83,6 +84,9 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
               <MangaRating data={meta?.rating} loading={isLoading} />
             </Stack>
             <MangaActionButtons
+              mangaKey={meta?._id}
+              currentlyReadingChapterKey={meta?.currentlyReadingChapter?._id}
+              firstChapterKey={firstChapterKey}
               loading={isLoading}
               onBookmark={onBookmark}
               inLibrary={meta?.inLibrary}

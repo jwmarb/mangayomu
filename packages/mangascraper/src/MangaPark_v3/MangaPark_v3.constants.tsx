@@ -4,6 +4,7 @@ import { GENRES } from './MangaPark_v3.helpers';
 
 const MANGAPARKV3_GENRES = [
   '_4_koma',
+  '4_koma',
   'action',
   'adaptation',
   'adult',
@@ -233,6 +234,7 @@ const filters = createSchema(
         smut: 'Smut',
         hentai: 'Hentai',
         _4_koma: '4-Koma',
+        '4_koma': '4-Koma',
         action: 'Action',
         adaptation: 'Adaptation',
         adventure: 'Adventure',

@@ -7,7 +7,7 @@ import { RectButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import { RowChapterProps } from './RowChapter.interfaces';
 import { format, formatDistanceToNow } from 'date-fns';
-import { useLocalRealm } from '@database/main';
+import { useLocalObject, useLocalRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useRootNavigation from '@hooks/useRootNavigation';
 
@@ -17,12 +17,9 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
   if ('loading' in props) return null;
   const { rowChapterKey } = props;
   const navigation = useRootNavigation();
-  const cloudRealm = useLocalRealm();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const rowChapter = cloudRealm.objectForPrimaryKey<ChapterSchema>(
-    'Chapter',
-    rowChapterKey,
-  )!;
+  const rowChapter = useLocalObject(ChapterSchema, rowChapterKey)!;
+
   const parsed = Date.parse(rowChapter.date);
   const isRecent = Date.now() - 6.048e7 < parsed;
   const isWithinWeek = Date.now() - 6.048e8 < parsed;
@@ -52,12 +49,19 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
           <Checkbox checked />
         </Box> */}
         <Box align-self="center">
-          <Text
-            color={rowChapter.dateRead ? 'disabled' : 'textPrimary'}
-            bold={!rowChapter.dateRead}
-          >
-            {rowChapter.name}
-          </Text>
+          <Stack space="s" flex-direction="row">
+            <Text
+              color={rowChapter.dateRead ? 'disabled' : 'textPrimary'}
+              bold={!rowChapter.dateRead}
+            >
+              {rowChapter.name}
+            </Text>
+            {rowChapter.dateRead && props.isReading && (
+              <Text color="primary" variant="book-title">
+                ({rowChapter.indexPage + 1} / {rowChapter.numberOfPages})
+              </Text>
+            )}
+          </Stack>
           <Text color={isRecent ? 'secondary' : 'textSecondary'}>
             {formattedDate}
           </Text>

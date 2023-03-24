@@ -21,7 +21,9 @@ const mapStateToProps = (state: AppState, props: RootStackProps<'Reader'>) => ({
     state.settings.reader.readingDirection === ReadingDirection.RIGHT_TO_LEFT,
   pagingEnabled:
     state.settings.reader.readingDirection !== ReadingDirection.WEBTOON,
-  loading: state.reader.loading,
+  globalReadingDirection: state.settings.reader.readingDirection,
+  globalDeviceOrientation: state.settings.reader.lockOrientation,
+  chapterInfo: state.reader.chapterInfo,
 });
 
 const connector = connect(mapStateToProps, {

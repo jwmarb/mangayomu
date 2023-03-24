@@ -9,4 +9,5 @@ export interface CustomBottomSheetProps
   children: React.ReactNode | React.ReactNode[];
   header?: React.ReactNode;
   onOpen?: () => void;
+  showIndicator?: boolean;
 }

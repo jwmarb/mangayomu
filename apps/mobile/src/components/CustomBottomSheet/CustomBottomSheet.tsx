@@ -16,7 +16,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { Portal } from '@gorhom/portal';
-import Box from '@components/Box';
+import Box, { AnimatedBox } from '@components/Box';
 import Text from '@components/Text';
 
 const CustomHandle: React.FC<BottomSheetHandleProps> = ({ animatedIndex }) => {
@@ -59,6 +59,7 @@ const CustomBottomSheet: React.ForwardRefRenderFunction<
     header,
     handleComponent = CustomHandle,
     onOpen = () => void 0,
+    showIndicator = true,
     ...rest
   } = props;
   const bottomSheet = React.useRef<BottomSheet>(null);
@@ -119,19 +120,14 @@ const CustomBottomSheet: React.ForwardRefRenderFunction<
         backdropComponent={BottomSheetBackdrop}
         snapPoints={snapPoints}
         enablePanDownToClose={enablePanDownToClose}
-        handleComponent={handleComponent}
+        handleComponent={showIndicator ? handleComponent : null}
         backgroundStyle={styledBackground}
         {...rest}
       >
         {header && (
-          <Box
-            as={Animated.View}
-            style={headerStyle}
-            p="m"
-            background-color="paper"
-          >
+          <AnimatedBox style={headerStyle} p="m" background-color="paper">
             {header}
-          </Box>
+          </AnimatedBox>
         )}
         {children}
       </BottomSheet>

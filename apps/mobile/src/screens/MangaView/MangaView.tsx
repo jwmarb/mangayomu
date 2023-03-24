@@ -156,6 +156,14 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
     [manga?.chapters, manga?.selectedLanguage],
   );
 
+  const firstChapter = React.useMemo(
+    () =>
+      selectedLanguageChapters.filtered(
+        `index == ${selectedLanguageChapters.length - 1}`,
+      )[0],
+    [selectedLanguageChapters],
+  );
+
   function handleOnRefresh() {
     setRefreshing(true);
   }
@@ -169,6 +177,16 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
       }
     }
   }, [refreshing]);
+
+  const renderItem: ListRenderItem<string> = React.useCallback(
+    ({ item }) => (
+      <RowChapter
+        rowChapterKey={item}
+        isReading={manga?.currentlyReadingChapter?._id === item}
+      />
+    ),
+    [manga?.currentlyReadingChapter?._id],
+  );
 
   if (manga == null && internetStatus === 'offline')
     return (
@@ -231,6 +249,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
         }
         ListHeaderComponent={
           <MangaViewerHeader
+            firstChapterKey={firstChapter?._id}
             onOpenMenu={handleOnOpenMenu}
             numberOfSelectedLanguageChapters={selectedLanguageChapters.length}
             onBookmark={handleOnBookmark}
@@ -261,9 +280,5 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
     </>
   );
 };
-
-const renderItem: ListRenderItem<string> = ({ item }) => (
-  <RowChapter rowChapterKey={item} />
-);
 
 export default connector(MangaView);

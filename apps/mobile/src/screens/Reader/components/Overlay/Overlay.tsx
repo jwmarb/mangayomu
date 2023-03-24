@@ -39,6 +39,7 @@ import { FullWindowOverlay } from 'react-native-screens';
 import { StyleSheet } from 'react-native';
 import ReaderSettingsMenu from '@screens/Reader/components/ReaderSettingsMenu';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
+import ImageMenu from '@screens/Reader/components/ImageMenu';
 
 export const OVERLAY_COLOR = 'rgba(0, 0, 0, 0.5)';
 export const OVERLAY_TEXT_PRIMARY = { custom: 'rgba(255, 255, 255, 1)' };
@@ -56,6 +57,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
     manga,
     addIfNewSourceToLibrary,
     totalPages,
+    imageMenuRef,
   } = props;
   const realm = useRealm();
   const translateY = useDerivedValue(() =>
@@ -130,8 +132,10 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   return (
     <Portal>
       <ReaderSettingsMenu ref={ref} mangaKey={manga._id} />
+      <ImageMenu ref={imageMenuRef} />
       <Box
         z-index={-1}
+        pointerEvents="box-none"
         height="100%"
         width="100%"
         position="absolute"
@@ -179,7 +183,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
             {chapter.name}
           </Text>
         </AnimatedBox>
-        {totalPages != null && showPageNumber && (
+        {page && totalPages && showPageNumber ? (
           <AnimatedBox
             style={pageCounterStyle}
             position="absolute"
@@ -194,7 +198,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
               {page} / {totalPages}
             </Text>
           </AnimatedBox>
-        )}
+        ) : undefined}
         <AnimatedBox
           px="m"
           background-color={OVERLAY_COLOR}
