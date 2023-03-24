@@ -20,7 +20,6 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
   // const mangas = useQuery(MangaSchema);
   const realm = useRealm();
   const currentUser = useUser();
-  const { user } = useAuth0();
 
   // const callback: Realm.CollectionChangeCallback<
   //   MangaSchema & Realm.Object<unknown, never>
@@ -32,11 +31,11 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
   // }, []);
 
   React.useEffect(() => {
-    if (enableCloud && user != null && currentUser != null) {
-      realm.syncSession?.resume();
-      realm.syncSession?.downloadAllServerChanges();
-    } else realm.syncSession?.pause();
-  }, [enableCloud, user, currentUser]);
+    if (currentUser != null) {
+      if (enableCloud) realm.syncSession?.resume();
+      else realm.syncSession?.pause();
+    }
+  }, [enableCloud, currentUser]);
 
   React.useEffect(() => {
     (async () => {
