@@ -16,7 +16,12 @@ import {
   useRealm,
 } from '@database/main';
 import displayMessage from '@helpers/displayMessage';
-import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import {
+  Linking,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Share,
+} from 'react-native';
 import Animated, {
   FadeInDown,
   FadeInUp,
@@ -84,22 +89,41 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
       backButtonStyle: buttonStyle,
       backButtonRippleColor: theme.palette.action.ripple,
       loading: status === 'loading',
-      headerRight:
-        manga == null ? undefined : (
+      headerRight: (
+        <>
+          {manga == null ? undefined : (
+            <IconButton
+              color={{ custom: theme.palette.mangaViewerBackButtonColor }}
+              rippleColor={theme.palette.action.ripple}
+              animated
+              onPress={handleOnBookmark}
+              icon={
+                <Icon
+                  type="font"
+                  name={manga?.inLibrary ? 'bookmark' : 'bookmark-outline'}
+                  style={buttonStyle}
+                />
+              }
+            />
+          )}
           <IconButton
             color={{ custom: theme.palette.mangaViewerBackButtonColor }}
             rippleColor={theme.palette.action.ripple}
             animated
-            onPress={handleOnBookmark}
-            icon={
-              <Icon
-                type="font"
-                name={manga?.inLibrary ? 'bookmark' : 'bookmark-outline'}
-                style={buttonStyle}
-              />
-            }
+            icon={<Icon type="font" name="web" />}
+            onPress={async () => {
+              const canOpenURL = await Linking.canOpenURL(params.link);
+              if (canOpenURL) Linking.openURL(params.link);
+            }}
+            onLongPress={async () => {
+              await Share.share({
+                url: params.link,
+                message: params.link,
+              });
+            }}
           />
-        ),
+        </>
+      ),
       dependencies: [theme, manga?.inLibrary, manga == null],
     });
 
