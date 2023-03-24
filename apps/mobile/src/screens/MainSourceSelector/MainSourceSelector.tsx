@@ -21,20 +21,7 @@ import IconButton from '@components/IconButton';
 import Stack from '@components/Stack';
 import { MangaSourceSelectorFilters } from '@screens/Welcome/components/MainSourceSelector/components/Header/Header';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
-const state = [
-  ...MangaHost.getListSources(),
-  ...MangaHost.getListSources(),
-  ...MangaHost.getListSources(),
-  ...MangaHost.getListSources(),
-  ...MangaHost.getListSources(),
-  ...MangaHost.getListSources(),
-  ...MangaHost.getListSources(),
-  ...MangaHost.getListSources(),
-  ...MangaHost.getListSources(),
-  ...MangaHost.getListSources(),
-  ...MangaHost.getListSources(),
-  ...MangaHost.getListSources(),
-];
+const state = MangaHost.getListSources();
 
 const MainSourceSelector: React.FC<ConnectedMainSourceSelectorProps> = (
   props,
