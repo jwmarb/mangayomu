@@ -12,17 +12,15 @@ import { ScrollView } from 'react-native-gesture-handler';
 const Settings: React.FC = (props) => {
   const { onScroll, contentContainerStyle, scrollViewStyle } =
     useCollapsibleHeader({ headerTitle: 'Settings' });
-  const ref = React.useRef<BottomSheetMethods>(null);
   const navigation = useRootNavigation();
   const handleOnAppearance = React.useCallback(() => {
     navigation.navigate('Appearance');
   }, [navigation]);
   const handleOnSource = React.useCallback(() => {
-    ref.current?.snapToIndex(1);
-  }, []);
+    navigation.navigate('MainSourceSelector');
+  }, [navigation]);
   return (
     <>
-      <MainSourceSelector ref={ref} />
       <ScrollView
         onScroll={onScroll}
         contentContainerStyle={contentContainerStyle}
