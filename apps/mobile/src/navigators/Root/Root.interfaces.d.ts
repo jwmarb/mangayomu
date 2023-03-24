@@ -21,6 +21,7 @@ export type RootStackParamList = {
     chapter: string; // The key of the chapter
     manga: string; // The key of the manga
   };
+  MainSourceSelector: undefined;
 };
 
 export type RootStackProps<T extends keyof RootStackParamList> =

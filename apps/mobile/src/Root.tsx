@@ -12,6 +12,7 @@ import InfiniteMangaList from '@screens/InfiniteMangaList';
 import Settings from '@screens/Settings';
 import Appearance from '@screens/Appearance';
 import Reader from '@screens/Reader';
+import MainSourceSelector from '@screens/MainSourceSelector/MainSourceSelector';
 
 const mapStateToProps = (state: AppState) => ({
   showWelcomeScreen: state.__initial__.firstTimeUser,
@@ -45,6 +46,10 @@ const Root: React.FC<RootProps> = ({ showWelcomeScreen }) => {
         name="Reader"
         component={Reader}
         options={{ headerShown: false }}
+      />
+      <RootStack.Screen
+        name="MainSourceSelector"
+        component={MainSourceSelector}
       />
     </RootStack.Navigator>
   );
