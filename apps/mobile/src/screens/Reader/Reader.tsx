@@ -554,7 +554,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
             showsHorizontalScrollIndicator={false}
             getItemLayout={getItemLayout}
             onScroll={handleOnScroll}
-            windowSize={7}
+            windowSize={13}
             viewabilityConfigCallbackPairs={
               viewabilityConfigCallbackPairs.current
             }
