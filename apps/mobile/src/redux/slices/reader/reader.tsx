@@ -7,6 +7,7 @@ import { AppState } from '@redux/main';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { removeURLParams } from '@screens/Reader/components/ChapterPage/ChapterPage';
 import { Image } from 'react-native';
+import FastImage from 'react-native-fast-image';
 
 export type Page = ChapterError | ChapterPage | NoMorePages | TransitionPage;
 export type TransitionPage = {
@@ -79,6 +80,7 @@ export const fetchPagesByChapter = createAsyncThunk(
   async (payload: FetchPagesByChapterPayload) => {
     try {
       const response = await payload.source.getPages(payload.chapter);
+      FastImage.preload(response.map((x) => ({ uri: x })));
       const data = await Promise.all(
         response.map(async (uri) => {
           const localPage = payload.localRealm.objectForPrimaryKey(
