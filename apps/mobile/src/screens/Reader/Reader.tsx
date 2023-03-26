@@ -38,7 +38,6 @@ import {
 } from '@screens/Reader/Reader.helpers';
 import React from 'react';
 import {
-  ListRenderItem,
   NativeScrollEvent,
   NativeSyntheticEvent,
   useWindowDimensions,
@@ -59,6 +58,7 @@ import connector, { ConnectedReaderProps } from './Reader.redux';
 import Orientation from 'react-native-orientation-locker';
 import ChapterError from '@screens/Reader/components/ChapterError';
 import { ChapterErrorContext } from '@screens/Reader/components/ChapterError/ChapterError';
+import { FlashList, ListRenderItem } from '@shopify/flash-list';
 const styles = ScaledSheet.create({
   container: {
     minHeight: '100%',
@@ -147,44 +147,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   React.useEffect(() => {
     chapterInfo.current = _chapterInfo;
   }, [_chapterInfo]);
-  chapterKeyEffect({
-    chapterKey,
-    localRealm,
-    setChapter,
-    chapterRef,
-    indexOffset,
-    getOffset,
-    scrollPositionLandscape,
-    scrollPositionPortrait,
-    isOnChapterError,
-  });
-  // readerPreviousChapterScrollPositionHandler({
-  //   forceScrollToOffset,
-  //   pagesRef,
-  //   pages,
-  //   indexOffset,
-  //   chapterKey,
-  //   index,
-  //   scrollPositionLandscapeUnsafe,
-  //   scrollPositionPortraitUnsafe,
-  //   getOffset,
-  // });
-
-  const [shouldTrackScrollPosition, _setShouldTrackScrollPosition] =
-    React.useState<boolean>(false);
-  const setShouldTrackScrollPosition = React.useCallback(
-    (value: boolean) => {
-      if (value) transitionPageOpacity.value = 1;
-      else transitionPageOpacity.value = 0;
-      _setShouldTrackScrollPosition(value);
-      shouldTrackScrollPositionRef.current = value;
-    },
-    [_setShouldTrackScrollPosition],
-  );
-
-  const [currentPage, setCurrentPage] = React.useState<number>(
-    _chapter.indexPage + 1,
-  );
   const reversed = React.useMemo(
     () =>
       manga.readerDirection != null
@@ -230,6 +192,45 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
           : manga.readerDirection
         : ReadingDirection.RIGHT_TO_LEFT,
     [manga.readerDirection, globalReadingDirection],
+  );
+
+  chapterKeyEffect({
+    chapterKey,
+    localRealm,
+    setChapter,
+    chapterRef,
+    indexOffset,
+    getOffset,
+    scrollPositionLandscape,
+    scrollPositionPortrait,
+    isOnChapterError,
+  });
+  readerPreviousChapterScrollPositionHandler({
+    forceScrollToOffset,
+    pagesRef,
+    pages,
+    indexOffset,
+    chapterKey,
+    index,
+    scrollPositionLandscapeUnsafe,
+    scrollPositionPortraitUnsafe,
+    getOffset,
+  });
+
+  const [shouldTrackScrollPosition, _setShouldTrackScrollPosition] =
+    React.useState<boolean>(false);
+  const setShouldTrackScrollPosition = React.useCallback(
+    (value: boolean) => {
+      if (value) transitionPageOpacity.value = 1;
+      else transitionPageOpacity.value = 0;
+      _setShouldTrackScrollPosition(value);
+      shouldTrackScrollPositionRef.current = value;
+    },
+    [_setShouldTrackScrollPosition],
+  );
+
+  const [currentPage, setCurrentPage] = React.useState<number>(
+    _chapter.indexPage + 1,
   );
   const source = useMangaSource(manga.source);
   const imageMenuRef = React.useRef<ImageMenuMethods>(null);
@@ -285,44 +286,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     return interval;
   }
 
-  function getOffset(startIndex = 0, toIndex: number = index.current) {
-    switch (readingDirection) {
-      case ReadingDirection.WEBTOON: {
-        let offset = 0;
-        for (let i = startIndex; i < toIndex; i++) {
-          const curr = pagesRef.current[i];
-          if (curr == null) {
-            console.error(
-              `page at index ${i} does not exist. startIndex = ${startIndex}. toIndex = ${toIndex}. pages length = ${pagesRef.current.length}`,
-            );
-            console.log(JSON.stringify(pagesRef.current, null, 2));
-          }
-          switch (curr.type) {
-            case 'PAGE': {
-              offset += curr.height * (width / curr.width);
-              break;
-            }
-            default:
-              offset += height;
-              break;
-          }
-        }
-
-        return offset;
-      }
-      case ReadingDirection.RIGHT_TO_LEFT:
-      case ReadingDirection.LEFT_TO_RIGHT:
-        return width * (toIndex - startIndex);
-      case ReadingDirection.VERTICAL:
-        return height * (toIndex - startIndex);
-      default:
-        console.warn(
-          `No method of returning to index after reading direction switch for ${readingDirection}`,
-        );
-        return 0;
-    }
-  }
-
   readerInitializer({
     _chapter,
     readableChapters,
@@ -375,6 +338,44 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     _chapter,
     currentPage,
   });
+
+  function getOffset(startIndex = 0, toIndex: number = index.current) {
+    switch (readingDirection) {
+      case ReadingDirection.WEBTOON: {
+        let offset = 0;
+        for (let i = startIndex; i < toIndex; i++) {
+          const curr = pagesRef.current[i];
+          if (curr == null) {
+            console.error(
+              `page at index ${i} does not exist. startIndex = ${startIndex}. toIndex = ${toIndex}. pages length = ${pagesRef.current.length}`,
+            );
+            console.log(JSON.stringify(pagesRef.current, null, 2));
+          }
+          switch (curr.type) {
+            case 'PAGE': {
+              offset += curr.height * (width / curr.width);
+              break;
+            }
+            default:
+              offset += height;
+              break;
+          }
+        }
+
+        return offset;
+      }
+      case ReadingDirection.RIGHT_TO_LEFT:
+      case ReadingDirection.LEFT_TO_RIGHT:
+        return width * (toIndex - startIndex);
+      case ReadingDirection.VERTICAL:
+        return height * (toIndex - startIndex);
+      default:
+        console.warn(
+          `No method of returning to index after reading direction switch for ${readingDirection}`,
+        );
+        return 0;
+    }
+  }
 
   const handleOnViewableItemsChanged = async (info: {
     viewableItems: ViewToken[];
@@ -559,8 +560,49 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     [readingDirection, horizontal, width, height],
   );
 
+  const estimatedListSize = (() => {
+    switch (readingDirection) {
+      case ReadingDirection.LEFT_TO_RIGHT:
+      case ReadingDirection.RIGHT_TO_LEFT:
+        return { width: width * pagesRef.current.length, height };
+      case ReadingDirection.VERTICAL:
+        return { width, height: height * pagesRef.current.length };
+      case ReadingDirection.WEBTOON:
+        return { width, height: getOffset(0, pagesRef.current.length - 1) };
+    }
+  })();
+
+  function getItemSize(item: Page) {
+    switch (readingDirection) {
+      case ReadingDirection.LEFT_TO_RIGHT:
+      case ReadingDirection.RIGHT_TO_LEFT:
+        return width;
+      case ReadingDirection.VERTICAL:
+        return height;
+      case ReadingDirection.WEBTOON:
+        switch (item.type) {
+          case 'PAGE':
+            return item.height * (width / item.width);
+          default:
+            return height;
+        }
+    }
+  }
+
+  function overrideItemLayout(
+    layout: {
+      span?: number | undefined;
+      size?: number | undefined;
+    },
+    item: Page,
+  ) {
+    layout.size = getItemSize(item);
+  }
+
   return (
-    <ChapterPageContext.Provider value={{ imageMenuRef, tapGesture }}>
+    <ChapterPageContext.Provider
+      value={{ imageMenuRef, tapGesture, readingDirection }}
+    >
       <TransitionPageContext.Provider
         value={{
           availableChapters: readableChapters,
@@ -581,7 +623,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
           }}
         >
           <GestureDetector gesture={tapGesture}>
-            <FlatList
+            <FlashList
               ref={flatListRef}
               ListHeaderComponent={
                 <Overlay
@@ -598,23 +640,27 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                   <Progress />
                 </Box>
               }
-              updateCellsBatchingPeriod={10}
+              // updateCellsBatchingPeriod={10}
               showsVerticalScrollIndicator={false}
               showsHorizontalScrollIndicator={false}
-              getItemLayout={getItemLayout}
+              // getItemLayout={getItemLayout}
               onScroll={handleOnScroll}
-              windowSize={13}
+              // windowSize={13}
               viewabilityConfigCallbackPairs={
                 viewabilityConfigCallbackPairs.current
               }
-              maxToRenderPerBatch={50}
+              estimatedItemSize={horizontal ? width : height}
+              estimatedListSize={estimatedListSize}
+              getItemType={getItemType}
+              // maxToRenderPerBatch={50}
+              overrideItemLayout={overrideItemLayout}
               horizontal={horizontal}
               data={pages}
               inverted={reversed}
               renderItem={renderItem}
               keyExtractor={keyExtractor}
               pagingEnabled={pagingEnabled}
-              contentContainerStyle={contentContainerStyle}
+              // contentContainerStyle={contentContainerStyle}
             />
           </GestureDetector>
         </ChapterErrorContext.Provider>
@@ -622,6 +668,12 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     </ChapterPageContext.Provider>
   );
 };
+
+const getItemType: (
+  item: Page,
+  index: number,
+  extraData?: any,
+) => string | number | undefined = (item) => item.type;
 
 const keyExtractor = (p: Page) => {
   switch (p.type) {

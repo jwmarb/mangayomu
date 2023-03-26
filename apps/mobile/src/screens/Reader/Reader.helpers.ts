@@ -12,6 +12,7 @@ import {
   ReadingDirection,
 } from '@redux/slices/settings';
 import { ActionCreatorWithPayload } from '@reduxjs/toolkit';
+import { FlashList } from '@shopify/flash-list';
 import React from 'react';
 import {
   AppState,
@@ -497,7 +498,7 @@ export function initializeReaderRefs(args: InitializeReaderRefsArguments) {
   const indexOffset = React.useRef<
     Record<string, { start: number; end: number }>
   >({});
-  const flatListRef = React.useRef<FlatList>(null);
+  const flatListRef = React.useRef<FlashList<any>>(null);
   const index = React.useRef<number>(_chapter.indexPage);
   return {
     scrollPositionLandscape,
