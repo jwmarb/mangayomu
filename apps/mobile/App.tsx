@@ -6,7 +6,13 @@
  */
 
 import React from 'react';
-import { StatusBar, Text, useColorScheme } from 'react-native';
+import {
+  AppState,
+  AppStateStatus,
+  StatusBar,
+  Text,
+  useColorScheme,
+} from 'react-native';
 
 import {
   NavigationContainer,
@@ -118,6 +124,19 @@ function App(): JSX.Element {
 
     [mode],
   );
+
+  React.useEffect(() => {
+    function handleMemoryWarning(e: AppStateStatus) {
+      console.log(`memoryWarning:: ${e}`);
+    }
+    const subscription = AppState.addEventListener(
+      'memoryWarning',
+      handleMemoryWarning,
+    );
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   return (
     <>
