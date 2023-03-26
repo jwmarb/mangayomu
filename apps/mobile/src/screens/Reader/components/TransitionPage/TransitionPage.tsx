@@ -68,7 +68,7 @@ const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
       case ReaderBackgroundColor.WHITE:
         return { custom: 'rgba(0, 0, 0, 0.6)' };
     }
-  }, []);
+  }, [backgroundColor]);
   const { width, height } = useWindowDimensions();
   const previous = useLocalObject(ChapterSchema, page.previous._id);
   const next = useLocalObject(ChapterSchema, page.next._id);
@@ -98,52 +98,54 @@ const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
     })();
   }, []);
   return (
-    <GestureDetector gesture={tapGesture}>
-      <AnimatedStack
-        space="s"
-        style={style}
-        width={width}
-        height={height}
-        justify-content="center"
-        align-items="center"
-        px="m"
-        py="s"
-      >
-        {loading && <Progress />}
-        {isNext && (
-          <>
-            <Text color={textColorSecondary}>
-              <Text color={textColor} bold>
-                Next:
-              </Text>{' '}
-              {next?.name}
-            </Text>
-            <Text color={textColorSecondary}>
-              <Text color={textColor} bold>
-                Current:
-              </Text>{' '}
-              {currentChapter.name}
-            </Text>
-          </>
-        )}
-        {isPrevious && (
-          <>
-            <Text color={textColorSecondary}>
-              <Text color={textColor} bold>
-                Current:
-              </Text>{' '}
-              {currentChapter.name}
-            </Text>
-            <Text color={textColorSecondary}>
-              <Text color={textColor} bold>
-                Previous:
-              </Text>{' '}
-              {previous?.name}
-            </Text>
-          </>
-        )}
-      </AnimatedStack>
-    </GestureDetector>
+    <Box background-color={backgroundColor.toLowerCase()}>
+      <GestureDetector gesture={tapGesture}>
+        <AnimatedStack
+          space="s"
+          style={style}
+          width={width}
+          height={height}
+          justify-content="center"
+          align-items="center"
+          px="m"
+          py="s"
+        >
+          {loading && <Progress />}
+          {isNext && (
+            <>
+              <Text color={textColorSecondary}>
+                <Text color={textColor} bold>
+                  Next:
+                </Text>{' '}
+                {next?.name}
+              </Text>
+              <Text color={textColorSecondary}>
+                <Text color={textColor} bold>
+                  Current:
+                </Text>{' '}
+                {currentChapter.name}
+              </Text>
+            </>
+          )}
+          {isPrevious && (
+            <>
+              <Text color={textColorSecondary}>
+                <Text color={textColor} bold>
+                  Current:
+                </Text>{' '}
+                {currentChapter.name}
+              </Text>
+              <Text color={textColorSecondary}>
+                <Text color={textColor} bold>
+                  Previous:
+                </Text>{' '}
+                {previous?.name}
+              </Text>
+            </>
+          )}
+        </AnimatedStack>
+      </GestureDetector>
+    </Box>
   );
 };
 
