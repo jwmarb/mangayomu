@@ -57,6 +57,8 @@ import {
 import { ScaledSheet } from 'react-native-size-matters';
 import connector, { ConnectedReaderProps } from './Reader.redux';
 import Orientation from 'react-native-orientation-locker';
+import ChapterError from '@screens/Reader/components/ChapterError';
+import { ChapterErrorContext } from '@screens/Reader/components/ChapterError/ChapterError';
 const styles = ScaledSheet.create({
   container: {
     minHeight: '100%',
@@ -106,6 +108,9 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     );
 
   const [chapter, setChapter] = React.useState(_chapter);
+  const [isOnChapterError, setIsOnChapterError] = React.useState<
+    boolean | null
+  >(null); // initialized on null because it is not known whether or not there is an error
   const readableChapters = React.useMemo(
     () =>
       [
@@ -151,62 +156,79 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     getOffset,
     scrollPositionLandscape,
     scrollPositionPortrait,
+    isOnChapterError,
   });
-  readerPreviousChapterScrollPositionHandler({
-    forceScrollToOffset,
-    pagesRef,
-    pages,
-    indexOffset,
-    chapterKey,
-    index,
-    scrollPositionLandscapeUnsafe,
-    scrollPositionPortraitUnsafe,
-    getOffset,
-  });
+  // readerPreviousChapterScrollPositionHandler({
+  //   forceScrollToOffset,
+  //   pagesRef,
+  //   pages,
+  //   indexOffset,
+  //   chapterKey,
+  //   index,
+  //   scrollPositionLandscapeUnsafe,
+  //   scrollPositionPortraitUnsafe,
+  //   getOffset,
+  // });
+
   const [shouldTrackScrollPosition, _setShouldTrackScrollPosition] =
     React.useState<boolean>(false);
-  function setShouldTrackScrollPosition(value: boolean) {
-    if (value) transitionPageOpacity.value = 1;
-    else transitionPageOpacity.value = 0;
-    _setShouldTrackScrollPosition(value);
-    shouldTrackScrollPositionRef.current = value;
-  }
+  const setShouldTrackScrollPosition = React.useCallback(
+    (value: boolean) => {
+      if (value) transitionPageOpacity.value = 1;
+      else transitionPageOpacity.value = 0;
+      _setShouldTrackScrollPosition(value);
+      shouldTrackScrollPositionRef.current = value;
+    },
+    [_setShouldTrackScrollPosition],
+  );
 
-  const [currentPage, setCurrentPage] = React.useState<number>(0);
+  const [currentPage, setCurrentPage] = React.useState<number>(
+    _chapter.indexPage + 1,
+  );
   const reversed = React.useMemo(
     () =>
-      manga.readerDirection === 'Use global setting'
-        ? globalReversed
-        : manga.readerDirection === ReadingDirection.RIGHT_TO_LEFT,
+      manga.readerDirection != null
+        ? manga.readerDirection === 'Use global setting'
+          ? globalReversed
+          : manga.readerDirection === ReadingDirection.RIGHT_TO_LEFT
+        : true,
     [manga.readerDirection, globalReversed],
   );
   const lockOrientation = React.useMemo(
     () =>
-      manga.readerLockOrientation === 'Use global setting'
-        ? globalDeviceOrientation
-        : manga.readerLockOrientation,
+      manga.readerLockOrientation != null
+        ? manga.readerLockOrientation === 'Use global setting'
+          ? globalDeviceOrientation
+          : manga.readerLockOrientation
+        : ReaderScreenOrientation.FREE,
     [globalDeviceOrientation, manga.readerLockOrientation],
   );
   const horizontal = React.useMemo(
     () =>
-      manga.readerDirection === 'Use global setting'
-        ? globalHorizontal
-        : manga.readerDirection === ReadingDirection.RIGHT_TO_LEFT ||
-          manga.readerDirection === ReadingDirection.LEFT_TO_RIGHT,
+      manga.readerDirection != null
+        ? manga.readerDirection === 'Use global setting'
+          ? globalHorizontal
+          : manga.readerDirection === ReadingDirection.RIGHT_TO_LEFT ||
+            manga.readerDirection === ReadingDirection.LEFT_TO_RIGHT
+        : true,
     [manga.readerDirection, globalHorizontal],
   );
   const pagingEnabled = React.useMemo(
     () =>
-      manga.readerDirection === 'Use global setting'
-        ? globalPagingEnabled
-        : manga.readerDirection !== ReadingDirection.WEBTOON,
+      manga.readerDirection != null
+        ? manga.readerDirection === 'Use global setting'
+          ? globalPagingEnabled
+          : manga.readerDirection !== ReadingDirection.WEBTOON
+        : true,
     [manga.readerDirection, globalPagingEnabled],
   );
   const readingDirection = React.useMemo(
     () =>
-      manga.readerDirection === 'Use global setting'
-        ? globalReadingDirection
-        : manga.readerDirection,
+      manga.readerDirection != null
+        ? manga.readerDirection === 'Use global setting'
+          ? globalReadingDirection
+          : manga.readerDirection
+        : ReadingDirection.RIGHT_TO_LEFT,
     [manga.readerDirection, globalReadingDirection],
   );
   const source = useMangaSource(manga.source);
@@ -320,6 +342,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   });
 
   readerScrollPositionInitialHandler({
+    setShouldTrackScrollPosition,
     forceScrollToOffset,
     shouldTrackScrollPosition,
     _chapter,
@@ -335,6 +358,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     chapterRef,
     realm,
     manga,
+    isOnChapterError,
   });
 
   scrollPositionReadingDirectionChangeHandler({
@@ -362,6 +386,24 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       index.current = page.index ?? index.current;
       // console.log(JSON.stringify(indexOffset, null, 2));
       // console.log(`Current index page: ${index.current}`);
+      if (
+        item.type === 'CHAPTER_ERROR' &&
+        shouldTrackScrollPositionRef.current
+      ) {
+        setIsOnChapterError(true);
+        const chapter = localRealm.objectForPrimaryKey(
+          ChapterSchema,
+          item.chapter,
+        );
+        if (chapter && chapterRef.current.index + 1 === chapter.index)
+          setCurrentPage(1);
+        if (
+          chapter &&
+          chapterRef.current.index - 1 === chapter.index &&
+          chapterRef.current.numberOfPages
+        )
+          setCurrentPage(chapterRef.current.numberOfPages);
+      } else setIsOnChapterError(false);
       if (item.type === 'PAGE' && shouldTrackScrollPositionRef.current) {
         setCurrentPage(item.pageNumber);
         if (item.chapter !== chapterRef.current._id)
@@ -400,7 +442,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
               source,
               offsetIndex: indexOffset,
             });
-            console.log(`fetching next chapter: ${p._id}`);
           }
         } else if (chapterRef.current.index + 1 === item.previous.index) {
           setCurrentPage(1);
@@ -414,7 +455,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
             !chapterInfo.current[item.previous._id]?.alreadyFetched &&
             !chapterInfo.current[item.previous._id]?.loading
           ) {
-            console.log(`fetching previous chapter: ${p._id}`);
             await fetchPagesByChapter({
               chapter: p,
               availableChapters: readableChapters,
@@ -506,6 +546,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
           };
         case ReadingDirection.LEFT_TO_RIGHT:
         case ReadingDirection.RIGHT_TO_LEFT:
+        default:
           return { index, offset: width * index, length: width };
         case ReadingDirection.VERTICAL:
           return {
@@ -531,43 +572,52 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
           transitionPageStyle,
         }}
       >
-        <GestureDetector gesture={tapGesture}>
-          <FlatList
-            ref={flatListRef}
-            ListHeaderComponent={
-              <Overlay
-                imageMenuRef={imageMenuRef}
-                currentPage={currentPage}
-                manga={manga}
-                chapter={chapter}
-                opacity={overlayOpacity}
-                mangaTitle={manga.title}
-              />
-            }
-            ListEmptyComponent={
-              <Box flex-grow align-items="center" justify-content="center">
-                <Progress />
-              </Box>
-            }
-            updateCellsBatchingPeriod={10}
-            showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}
-            getItemLayout={getItemLayout}
-            onScroll={handleOnScroll}
-            windowSize={13}
-            viewabilityConfigCallbackPairs={
-              viewabilityConfigCallbackPairs.current
-            }
-            maxToRenderPerBatch={50}
-            horizontal={horizontal}
-            data={pages}
-            inverted={reversed}
-            renderItem={renderItem}
-            keyExtractor={keyExtractor}
-            pagingEnabled={pagingEnabled}
-            contentContainerStyle={contentContainerStyle}
-          />
-        </GestureDetector>
+        <ChapterErrorContext.Provider
+          value={{
+            availableChapters: readableChapters,
+            localRealm,
+            offsetIndex: indexOffset,
+            source,
+          }}
+        >
+          <GestureDetector gesture={tapGesture}>
+            <FlatList
+              ref={flatListRef}
+              ListHeaderComponent={
+                <Overlay
+                  imageMenuRef={imageMenuRef}
+                  currentPage={currentPage}
+                  manga={manga}
+                  chapter={chapter}
+                  opacity={overlayOpacity}
+                  mangaTitle={manga.title}
+                />
+              }
+              ListEmptyComponent={
+                <Box flex-grow align-items="center" justify-content="center">
+                  <Progress />
+                </Box>
+              }
+              updateCellsBatchingPeriod={10}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+              getItemLayout={getItemLayout}
+              onScroll={handleOnScroll}
+              windowSize={13}
+              viewabilityConfigCallbackPairs={
+                viewabilityConfigCallbackPairs.current
+              }
+              maxToRenderPerBatch={50}
+              horizontal={horizontal}
+              data={pages}
+              inverted={reversed}
+              renderItem={renderItem}
+              keyExtractor={keyExtractor}
+              pagingEnabled={pagingEnabled}
+              contentContainerStyle={contentContainerStyle}
+            />
+          </GestureDetector>
+        </ChapterErrorContext.Provider>
       </TransitionPageContext.Provider>
     </ChapterPageContext.Provider>
   );
@@ -594,8 +644,8 @@ const renderItem: ListRenderItem<Page> = ({ item }) => {
       return <TransitionPage page={item} />;
     case 'NO_MORE_PAGES':
       return <NoMorePages />;
-    default:
-      return null;
+    case 'CHAPTER_ERROR':
+      return <ChapterError error={item} />;
   }
 };
 

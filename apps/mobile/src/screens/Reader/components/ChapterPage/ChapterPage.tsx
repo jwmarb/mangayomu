@@ -89,6 +89,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   }
   function handleOnError() {
     setError(true);
+    loadingOpacity.value = 0;
   }
 
   const holdGesture = React.useMemo(
@@ -187,7 +188,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
                 variant="contained"
                 icon={<Icon type="font" name="refresh" />}
               />
-              <Hyperlink url={pageKey} align="center">
+              <Hyperlink url={pageKey} align="center" variant="book-title">
                 Open page in browser
               </Hyperlink>
             </Stack>

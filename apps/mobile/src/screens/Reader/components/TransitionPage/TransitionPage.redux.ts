@@ -10,6 +10,9 @@ const mapStateToProps = (state: AppState, props: TransitionPageProps) => {
     transitioningPageState: state.reader.chapterInfo[props.page.next._id] as
       | ReaderChapterInfo
       | undefined,
+    isLeadingTransitionPage:
+      props.page.next._id in state.reader.chapterInfo === false &&
+      props.page.previous._id === state.reader.currentChapter,
   };
 };
 

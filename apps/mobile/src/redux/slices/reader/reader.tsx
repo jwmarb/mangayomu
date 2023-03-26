@@ -54,6 +54,7 @@ export interface FetchPagesByChapterPayload {
   offsetIndex: React.MutableRefObject<
     Record<string, { start: number; end: number }>
   >;
+  mockSuccess?: boolean; // remove later
 }
 
 const initialReaderState: ReaderState = {
@@ -117,7 +118,6 @@ export const fetchPagesByChapter = createAsyncThunk(
         data,
       };
     } catch (e) {
-      console.error(e);
       return {
         type: 'error' as const,
         error: e,
@@ -154,6 +154,7 @@ const readerSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchPagesByChapter.fulfilled, (state, action) => {
       if (action.payload == null) return;
+
       const previousChapter:
         | (ChapterSchema & Realm.Object<ChapterSchema, never>)
         | undefined =
@@ -162,6 +163,36 @@ const readerSlice = createSlice({
         | (ChapterSchema & Realm.Object<ChapterSchema, never>)
         | undefined =
         action.meta.arg.availableChapters[action.meta.arg.chapter.index - 1];
+      if (action.payload.type === 'error') {
+        if (state.pages.length === 0) {
+          state.pages[0] = {
+            type: 'CHAPTER_ERROR',
+            error: getErrorMessage(action.payload.error),
+            chapter: action.meta.arg.chapter._id,
+          };
+        } else if (
+          previousChapter != null &&
+          previousChapter._id in state.chapterInfo
+        ) {
+          state.pages[state.pages.length - 1] = {
+            type: 'CHAPTER_ERROR',
+            error: getErrorMessage(action.payload.error),
+            chapter: action.meta.arg.chapter._id,
+          };
+        } else if (
+          nextChapter != null &&
+          nextChapter._id in state.chapterInfo
+        ) {
+          state.pages[0] = {
+            type: 'CHAPTER_ERROR',
+            error: getErrorMessage(action.payload.error),
+            chapter: action.meta.arg.chapter._id,
+          };
+        }
+        state.loading = false;
+        delete state.chapterInfo[action.meta.arg.chapter._id];
+        return;
+      }
       state.chapterInfo[action.meta.arg.chapter._id] = {
         numberOfPages: action.payload.data.length,
         previousChapter: previousChapter?._id ?? null,
@@ -173,11 +204,16 @@ const readerSlice = createSlice({
           action.meta.arg.chapter.numberOfPages = action.payload.data.length;
       });
 
-      if (state.pages.length === 0) {
+      if (
+        state.pages.length === 0 ||
+        (state.pages.length === 1 && state.pages[0].type === 'CHAPTER_ERROR')
+      ) {
         action.meta.arg.offsetIndex.current[action.meta.arg.chapter._id] = {
           start: previousChapter == null ? 0 : 1,
           end: action.payload.data.length - (previousChapter == null ? 1 : 0),
         };
+        if (state.pages.length === 1 && state.pages[0].type === 'CHAPTER_ERROR')
+          state.pages = [];
 
         if (previousChapter != null)
           state.pages.push({
@@ -222,6 +258,19 @@ const readerSlice = createSlice({
             start: state.pages.length,
             end: state.pages.length + action.payload.data.length - 1,
           };
+
+          if (state.pages[state.pages.length - 1].type === 'CHAPTER_ERROR')
+            state.pages[state.pages.length - 1] = {
+              type: 'TRANSITION_PAGE',
+              next: {
+                _id: action.meta.arg.chapter._id,
+                index: action.meta.arg.chapter.index,
+              },
+              previous: {
+                _id: previousChapter._id,
+                index: previousChapter.index,
+              },
+            };
 
           for (let i = 0; i < action.payload.data.length; i++) {
             state.pages.push({
@@ -277,19 +326,28 @@ const readerSlice = createSlice({
             start: 0,
             end: action.payload.data.length - 1,
           };
+          if (state.pages[0].type === 'CHAPTER_ERROR')
+            state.pages[0] = {
+              type: 'TRANSITION_PAGE',
+              previous: {
+                _id: action.meta.arg.chapter._id,
+                index: action.meta.arg.chapter.index,
+              },
+              next: { _id: nextChapter._id, index: nextChapter.index },
+            };
           state.pages = newArray.concat(state.pages);
         }
       }
       state.loading = false;
     });
-    builder.addCase(fetchPagesByChapter.rejected, (state, action) => {
-      state.pages.push({
-        type: 'CHAPTER_ERROR',
-        error: getErrorMessage((action.payload as any).error),
-        chapter: (action.payload as any).chapter,
-      });
-      state.loading = false;
-    });
+    // builder.addCase(fetchPagesByChapter.rejected, (state, action) => {
+    //   state.pages.push({
+    //     type: 'CHAPTER_ERROR',
+    //     error: getErrorMessage((action.payload as any).error),
+    //     chapter: action.meta.arg.chapter._id,
+    //   });
+    //   state.loading = false;
+    // });
     builder.addCase(fetchPagesByChapter.pending, (state, action) => {
       if (action.meta.arg.chapter._id in state.chapterInfo === false) {
         state.chapterInfo[action.meta.arg.chapter._id] = {

@@ -50,6 +50,8 @@ type ReaderScrollPositionInitialHandlerArguments = {
     ChapterSchema & Realm.Object<ChapterSchema, never>
   >;
   forceScrollToOffset(offset: number): NodeJS.Timer;
+  isOnChapterError: boolean | null;
+  setShouldTrackScrollPosition: (value: boolean) => void;
 };
 export function readerScrollPositionInitialHandler(
   arg: ReaderScrollPositionInitialHandlerArguments,
@@ -69,8 +71,18 @@ export function readerScrollPositionInitialHandler(
     forceScrollToOffset,
     readableChapters,
     horizontal,
+    isOnChapterError,
+    setShouldTrackScrollPosition,
   } = arg;
   function saveScrollPosition() {
+    if (isOnChapterError || isOnChapterError == null) {
+      console.log(
+        isOnChapterError === true
+          ? 'The user is on a chapter error, therefore saving scroll position on that chapter will not occur.'
+          : 'The user is on a chapter error, however, it has a null value. No saving scroll position will take place.',
+      );
+      return;
+    }
     const startOffset = getOffset(
       0,
       indexOffset.current[chapterRef.current._id].start,
@@ -100,12 +112,16 @@ export function readerScrollPositionInitialHandler(
   }
   React.useEffect(() => {
     if (!shouldTrackScrollPosition) {
-      // Detect whether the selected chapter is NOT the first chapter and has not been read
-      if (
-        chapterRef.current.index < readableChapters.length - 1 &&
-        (chapterRef.current.scrollPositionLandscape === 0 ||
-          chapterRef.current.scrollPositionPortrait === 0)
-      ) {
+      const isInFirstChapter =
+        chapterRef.current.index < readableChapters.length - 1;
+      const hasNoSavedScrollPosition =
+        chapterRef.current.scrollPositionLandscape === 0 ||
+        chapterRef.current.scrollPositionPortrait === 0;
+      /**
+       * Detect whether the selected chapter is NOT the first chapter and has not been read
+       */
+
+      if (isInFirstChapter && hasNoSavedScrollPosition) {
         const interval = forceScrollToOffset(horizontal ? width : height); // Start the reader at this offset to avoid starting at the transition page
         return () => {
           clearInterval(interval);
@@ -371,6 +387,7 @@ type ChapterKeyEffectArguments = Pick<
   | 'indexOffset'
   | 'scrollPositionLandscape'
   | 'scrollPositionPortrait'
+  | 'isOnChapterError'
 > &
   Pick<ReaderPreviousChapterScrollPositionHandlerArguments, 'chapterKey'> & {
     setChapter: (
@@ -387,6 +404,7 @@ export function chapterKeyEffect(args: ChapterKeyEffectArguments) {
     getOffset,
     scrollPositionLandscape,
     scrollPositionPortrait,
+    isOnChapterError,
   } = args;
   React.useEffect(() => {
     const newChapter = localRealm.objectForPrimaryKey(
@@ -397,11 +415,26 @@ export function chapterKeyEffect(args: ChapterKeyEffectArguments) {
       localRealm.write(() => {
         newChapter.dateRead = Date.now();
       });
+      /**
+       * Whenever a user changes chapters, this code block will run and save the scroll position on the former chapter. This will NOT save scroll position on the current chapter (aka the chapter the user has switched to).
+       */
       if (chapterRef.current._id !== chapterKey) {
+        // if (isOnChapterError) {
+        //   console.log(
+        //     `Skipped saving scroll position for ${chapterRef.current._id} because the chapter the user was on has an error.`,
+        //   );
+        //   return;
+        // }
+        // console.log(`Saving scroll position on ${chapterRef.current._id}`);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const previousChapter = localRealm.objectForPrimaryKey(
           ChapterSchema,
           chapterRef.current._id,
+        )!;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const beforeAppendingStateChapter = localRealm.objectForPrimaryKey(
+          ChapterSchema,
+          chapterKey,
         )!;
         const startOffset = getOffset(
           0,
@@ -413,6 +446,19 @@ export function chapterKeyEffect(args: ChapterKeyEffectArguments) {
         );
 
         localRealm.write(() => {
+          if (
+            previousChapter.index - 1 === beforeAppendingStateChapter.index &&
+            previousChapter.numberOfPages != null
+          ) {
+            // this means "beforeAppendingStateChapter" is the next chapter of "previousChapter"
+            previousChapter.indexPage = previousChapter.numberOfPages - 1;
+          } else if (
+            previousChapter.index + 1 ===
+            beforeAppendingStateChapter.index
+          ) {
+            // this means "beforeAppendingStateChapter" is the previous chapter of "previousChapter"
+            previousChapter.indexPage = 0;
+          }
           previousChapter.scrollPositionLandscape = Math.min(
             Math.max(scrollPositionLandscape.current - startOffset, 0),
             endOffset,

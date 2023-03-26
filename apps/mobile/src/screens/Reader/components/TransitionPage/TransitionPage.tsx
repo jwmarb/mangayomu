@@ -30,7 +30,13 @@ const useTransitionPageContext = () => {
 };
 
 const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
-  const { page, loading, fetchPagesByChapter, transitioningPageState } = props;
+  const {
+    page,
+    loading,
+    fetchPagesByChapter,
+    transitioningPageState,
+    isLeadingTransitionPage,
+  } = props;
   const {
     tapGesture,
     backgroundColor,
@@ -66,33 +72,31 @@ const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
   const { width, height } = useWindowDimensions();
   const previous = useLocalObject(ChapterSchema, page.previous._id);
   const next = useLocalObject(ChapterSchema, page.next._id);
-  // React.useEffect(() => {
-  //   (async () => {
-  //     if (
-  //       isLeadingTransitionPage &&
-  //       next != null &&
-  //       !fetching.has(next._id) &&
-  //       !transitioningPageState?.alreadyFetched &&
-  //       !transitioningPageState?.loading
-  //     ) {
-  //       fetching.add(next._id);
-  //       console.log(
-  //         `${next._id} is the leading transition page and is now fetching.`,
-  //       );
-  //       try {
-  //         await fetchPagesByChapter({
-  //           chapter: next,
-  //           source,
-  //           offsetIndex,
-  //           availableChapters,
-  //           localRealm,
-  //         });
-  //       } finally {
-  //         fetching.delete(next._id);
-  //       }
-  //     }
-  //   })();
-  // }, []);
+  React.useEffect(() => {
+    (async () => {
+      if (
+        isLeadingTransitionPage &&
+        next != null &&
+        !fetching.has(next._id) &&
+        !transitioningPageState?.alreadyFetched &&
+        !transitioningPageState?.loading
+      ) {
+        fetching.add(next._id);
+
+        try {
+          await fetchPagesByChapter({
+            chapter: next,
+            source,
+            offsetIndex,
+            availableChapters,
+            localRealm,
+          });
+        } finally {
+          fetching.delete(next._id);
+        }
+      }
+    })();
+  }, []);
   return (
     <GestureDetector gesture={tapGesture}>
       <AnimatedStack
