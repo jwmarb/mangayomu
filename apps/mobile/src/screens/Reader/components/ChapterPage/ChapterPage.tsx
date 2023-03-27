@@ -1,5 +1,5 @@
 import React from 'react';
-import { useWindowDimensions } from 'react-native';
+import { Image, useWindowDimensions } from 'react-native';
 import FastImage, {
   FastImageProps,
   OnLoadEvent,
@@ -189,7 +189,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
           ) : (
             <>
               {!error && (
-                <FastImage
+                <Image
                   // onLoadStart={handleOnLoadStart}
                   source={{
                     uri: pageKey,

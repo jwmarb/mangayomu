@@ -560,7 +560,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     [readingDirection, horizontal, width, height],
   );
 
-  const estimatedListSize = (() => {
+  const estimatedListSize = React.useMemo(() => {
     switch (readingDirection) {
       case ReadingDirection.LEFT_TO_RIGHT:
       case ReadingDirection.RIGHT_TO_LEFT:
@@ -570,7 +570,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       case ReadingDirection.WEBTOON:
         return { width, height: getOffset(0, pagesRef.current.length - 1) };
     }
-  })();
+  }, [width, height, pages.length, readingDirection]);
 
   function getItemSize(item: Page) {
     switch (readingDirection) {
@@ -636,7 +636,13 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                 />
               }
               ListEmptyComponent={
-                <Box flex-grow align-items="center" justify-content="center">
+                <Box
+                  flex-grow
+                  align-items="center"
+                  justify-content="center"
+                  width={width}
+                  height={height}
+                >
                   <Progress />
                 </Box>
               }

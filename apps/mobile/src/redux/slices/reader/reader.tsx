@@ -82,7 +82,7 @@ export const fetchPagesByChapter = createAsyncThunk(
     try {
       const response = await payload.source.getPages(payload.chapter);
       FastImage.preload(response.map((x) => ({ uri: x })));
-      const data = await Promise.all(
+      const dimensions = Promise.all(
         response.map(async (uri) => {
           const localPage = payload.localRealm.objectForPrimaryKey(
             PageSchema,
@@ -112,6 +112,10 @@ export const fetchPagesByChapter = createAsyncThunk(
           };
         }),
       );
+      const preload = Promise.all(
+        response.map(async (uri) => Image.prefetch(uri)),
+      );
+      const [data] = await Promise.all([dimensions, preload]);
 
       return {
         type: 'response' as const,
