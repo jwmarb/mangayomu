@@ -73,8 +73,8 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   const [error, setError] = React.useState<boolean>(false);
   /**
    * In the case of very large images which can be observed in some webtoons (e.g. images that exceed the device's height by 5-8 times),
-   * FastImage is unable to load them and will cause the device to crash. As a workaround, the page will fallback to using WebView, which is
-   * much slower, however, maintains the image quality FastImage provides.
+   * Image performs downsampling on the image, reducing its quality that could make its text unreadable or its content uncomprehensible. As a workaround, the page will fallback to using WebView, which is
+   * much slower, however, maintains the best image quality.
    */
   const fallbackToWebView = stylizedHeight / height > 1;
 
