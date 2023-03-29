@@ -76,7 +76,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
    * FastImage is unable to load them and will cause the device to crash. As a workaround, the page will fallback to using WebView, which is
    * much slower, however, maintains the image quality FastImage provides.
    */
-  const fallbackToWebView = imageHeight / height > 2;
+  const fallbackToWebView = stylizedHeight / height > 1;
 
   // const loadingOpacity = useSharedValue(1);
   const visibleWithoutErrorOpacity = useSharedValue(1); // for WebView only
