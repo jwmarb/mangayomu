@@ -5,9 +5,13 @@ import { getErrorMessage } from '@helpers/getErrorMessage';
 import { MangaChapter, MangaHost } from '@mangayomu/mangascraper';
 import { AppState } from '@redux/main';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { removeURLParams } from '@screens/Reader/components/ChapterPage/ChapterPage';
-import { Image } from 'react-native';
+import {
+  getFileExtension,
+  removeURLParams,
+} from '@screens/Reader/components/ChapterPage/ChapterPage';
+import { Dimensions, Image, Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import RNFetchBlob from 'rn-fetch-blob';
 
 export type Page = ChapterError | ChapterPage | NoMorePages | TransitionPage;
 export type TransitionPage = {
@@ -18,10 +22,12 @@ export type TransitionPage = {
 export type ChapterPage = {
   type: 'PAGE';
   page: string;
+  // localPageUri: string;
   pageNumber: number;
   chapter: string;
   width: number;
   height: number;
+  error?: boolean;
 };
 export type NoMorePages = { type: 'NO_MORE_PAGES' };
 export type ChapterError = {
@@ -41,9 +47,15 @@ export interface ReaderChapterInfo {
 interface ReaderState {
   pages: Page[];
   loading: boolean;
-
+  isOnChapterError: boolean | null;
   chapterInfo: Record<string, ReaderChapterInfo>;
   currentChapter: string | null;
+  pageInDisplay: {
+    parsedKey: string;
+    url: string;
+  } | null;
+  showTransitionPage: boolean;
+  isMounted: boolean;
 }
 
 export interface FetchPagesByChapterPayload {
@@ -54,6 +66,7 @@ export interface FetchPagesByChapterPayload {
   offsetIndex: React.MutableRefObject<
     Record<string, { start: number; end: number }>
   >;
+  fetchedPreviousChapter?: React.MutableRefObject<boolean>;
   mockSuccess?: boolean; // remove later
 }
 
@@ -62,6 +75,10 @@ const initialReaderState: ReaderState = {
   loading: true,
   chapterInfo: {},
   currentChapter: null,
+  pageInDisplay: null,
+  isOnChapterError: null,
+  showTransitionPage: false,
+  isMounted: false,
 };
 
 function getImageSizeAsync(
@@ -81,13 +98,26 @@ export const fetchPagesByChapter = createAsyncThunk(
   async (payload: FetchPagesByChapterPayload) => {
     try {
       const response = await payload.source.getPages(payload.chapter);
-      FastImage.preload(response.map((x) => ({ uri: x })));
+      const preload = Promise.all(response.map((x) => Image.prefetch(x)));
       const dimensions = Promise.all(
         response.map(async (uri) => {
           const localPage = payload.localRealm.objectForPrimaryKey(
             PageSchema,
             removeURLParams(uri),
           );
+          // const path =
+          //   RNFetchBlob.fs.dirs['CacheDir'] + payload.source.getName() + uri.substring(uri.lastIndexOf('/'), uri.indexOf('?'));
+
+          // const imageExists = await RNFetchBlob.fs.exists(path);
+          // const base64 = `data:image/${getFileExtension(uri)};base64,${
+          //   imageExists
+          //     ? ((await RNFetchBlob.fs.readFile(path, 'base64')) as string)
+          //     : await RNFetchBlob.config({
+          //         path,
+          //       })
+          //         .fetch('GET', uri)
+          //         .then((res) => res.base64() as string)
+          // }`;
           if (localPage == null) {
             const { width, height } = await getImageSizeAsync(uri);
             payload.localRealm.write(() => {
@@ -103,18 +133,23 @@ export const fetchPagesByChapter = createAsyncThunk(
                 Realm.UpdateMode.Modified,
               );
             });
-            return { width, height, url: uri };
+
+            return {
+              width,
+              height,
+              url: uri,
+              // localPath: base64
+            };
           }
           return {
             url: uri,
             width: localPage.width,
             height: localPage.height,
+            // localPath: base64,
           };
         }),
       );
-      const preload = Promise.all(
-        response.map(async (uri) => Image.prefetch(uri)),
-      );
+
       const [data] = await Promise.all([dimensions, preload]);
 
       return {
@@ -141,9 +176,28 @@ const readerSlice = createSlice({
       state.loading = true;
       state.pages = [];
       state.currentChapter = null;
+      state.isOnChapterError = null;
+      state.showTransitionPage = false;
+      state.pageInDisplay = null;
+      state.isMounted = false;
+    },
+    setIsMounted: (state, action: PayloadAction<boolean>) => {
+      state.isMounted = action.payload;
+    },
+    setPageInDisplay: (
+      state,
+      action: PayloadAction<{ parsedKey: string; url: string }>,
+    ) => {
+      state.pageInDisplay = action.payload;
     },
     setCurrentChapter: (state, action: PayloadAction<string>) => {
       state.currentChapter = action.payload;
+    },
+    setIsOnChapterError: (state, action: PayloadAction<boolean>) => {
+      state.isOnChapterError = action.payload;
+    },
+    setShowTransitionPage: (state, action: PayloadAction<boolean>) => {
+      state.showTransitionPage = action.payload;
     },
     startFetchingChapter: (state, action: PayloadAction<string>) => {
       if (!state.chapterInfo[action.payload].alreadyFetched)
@@ -154,10 +208,18 @@ const readerSlice = createSlice({
           alreadyFetched: false,
         };
     },
+    setPageError: (
+      state,
+      action: PayloadAction<{ index: number; value: boolean }>,
+    ) => {
+      (state.pages[action.payload.index] as ChapterPage).error =
+        action.payload.value;
+      state.pages = [...state.pages];
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchPagesByChapter.fulfilled, (state, action) => {
-      if (action.payload == null) return;
+      if (action.payload == null || !state.isMounted) return;
 
       const previousChapter:
         | (ChapterSchema & Realm.Object<ChapterSchema, never>)
@@ -168,6 +230,7 @@ const readerSlice = createSlice({
         | undefined =
         action.meta.arg.availableChapters[action.meta.arg.chapter.index - 1];
       if (action.payload.type === 'error') {
+        state.isOnChapterError = true;
         if (state.pages.length === 0) {
           state.pages[0] = {
             type: 'CHAPTER_ERROR',
@@ -212,6 +275,7 @@ const readerSlice = createSlice({
         state.pages.length === 0 ||
         (state.pages.length === 1 && state.pages[0].type === 'CHAPTER_ERROR')
       ) {
+        state.isOnChapterError = false;
         action.meta.arg.offsetIndex.current[action.meta.arg.chapter._id] = {
           start: previousChapter == null ? 0 : 1,
           end: action.payload.data.length - (previousChapter == null ? 1 : 0),
@@ -239,6 +303,7 @@ const readerSlice = createSlice({
             height: action.payload.data[i].height,
             pageNumber: i + 1,
             chapter: action.meta.arg.chapter.link,
+            // localPageUri: action.payload.data[i].localPath,
           });
         }
         if (nextChapter != null)
@@ -284,6 +349,7 @@ const readerSlice = createSlice({
               height: action.payload.data[i].height,
               pageNumber: i + 1,
               chapter: action.meta.arg.chapter.link,
+              // localPageUri: action.payload.data[i].localPath,
             });
           }
           if (nextChapter != null)
@@ -298,6 +364,11 @@ const readerSlice = createSlice({
           else state.pages.push({ type: 'NO_MORE_PAGES' });
         }
         if (nextChapter != null && nextChapter.link in state.chapterInfo) {
+          if (action.meta.arg.fetchedPreviousChapter == null)
+            throw Error(
+              'When fetching a previous chapter, fetchedPreviousChapter must be passed.',
+            );
+          action.meta.arg.fetchedPreviousChapter.current = true;
           // Assume this is the PREVIOUS chapter we are fetching
           const newArray: Page[] = [];
           if (previousChapter != null)
@@ -320,6 +391,7 @@ const readerSlice = createSlice({
               height: action.payload.data[i].height,
               pageNumber: i + 1,
               chapter: action.meta.arg.chapter.link,
+              // localPageUri: action.payload.data[i].localPath,
             });
           }
           for (const key in action.meta.arg.offsetIndex.current) {
@@ -353,7 +425,10 @@ const readerSlice = createSlice({
     //   state.loading = false;
     // });
     builder.addCase(fetchPagesByChapter.pending, (state, action) => {
-      if (action.meta.arg.chapter._id in state.chapterInfo === false) {
+      if (
+        action.meta.arg.chapter._id in state.chapterInfo === false &&
+        state.isMounted
+      ) {
         state.chapterInfo[action.meta.arg.chapter._id] = {
           loading: true,
           numberOfPages: 0,
@@ -366,7 +441,15 @@ const readerSlice = createSlice({
   },
 });
 
-export const { resetReaderState, setCurrentChapter, startFetchingChapter } =
-  readerSlice.actions;
+export const {
+  resetReaderState,
+  setCurrentChapter,
+  startFetchingChapter,
+  setIsOnChapterError,
+  setShowTransitionPage,
+  setPageError,
+  setIsMounted,
+  setPageInDisplay,
+} = readerSlice.actions;
 
 export default readerSlice.reducer;

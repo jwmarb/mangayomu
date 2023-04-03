@@ -1,6 +1,6 @@
 import Box, { AnimatedBox } from '@components/Box';
 import Progress from '@components/Progress';
-import { AnimatedStack } from '@components/Stack';
+import Stack, { AnimatedStack } from '@components/Stack';
 import Text from '@components/Text';
 import { useLocalObject, useLocalRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
@@ -13,6 +13,7 @@ import {
 import React from 'react';
 import { useWindowDimensions } from 'react-native';
 import { GestureDetector } from 'react-native-gesture-handler';
+import { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import connector, {
   ConnectedTransitionPageProps,
 } from './TransitionPage.redux';
@@ -41,13 +42,13 @@ const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
     tapGesture,
     backgroundColor,
     currentChapter,
-    transitionPageStyle: style,
+    showTransitionPage,
     availableChapters,
     source,
     offsetIndex,
   } = useTransitionPageContext();
-  const isPrevious = props.page.previous.index === currentChapter.index + 1;
-  const isNext = props.page.next.index === currentChapter.index - 1;
+  const isPrevious = props.page.previous.index > currentChapter.index;
+  const isNext = props.page.next.index < currentChapter.index;
   const theme = useTheme();
   const localRealm = useLocalRealm();
   const textColor = React.useMemo(() => {
@@ -97,12 +98,13 @@ const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
       }
     })();
   }, []);
+
   return (
     <Box background-color={backgroundColor.toLowerCase()}>
       <GestureDetector gesture={tapGesture}>
-        <AnimatedStack
+        <Stack
           space="s"
-          style={style}
+          // style={style}
           width={width}
           height={height}
           justify-content="center"
@@ -110,40 +112,44 @@ const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
           px="m"
           py="s"
         >
-          {loading && <Progress />}
-          {isNext && (
+          {showTransitionPage && (
             <>
-              <Text color={textColorSecondary}>
-                <Text color={textColor} bold>
-                  Next:
-                </Text>{' '}
-                {next?.name}
-              </Text>
-              <Text color={textColorSecondary}>
-                <Text color={textColor} bold>
-                  Current:
-                </Text>{' '}
-                {currentChapter.name}
-              </Text>
+              {loading && <Progress />}
+              {isNext && (
+                <>
+                  <Text color={textColorSecondary}>
+                    <Text color={textColor} bold>
+                      Next:
+                    </Text>{' '}
+                    {next?.name}
+                  </Text>
+                  <Text color={textColorSecondary}>
+                    <Text color={textColor} bold>
+                      Current:
+                    </Text>{' '}
+                    {currentChapter.name}
+                  </Text>
+                </>
+              )}
+              {isPrevious && (
+                <>
+                  <Text color={textColorSecondary}>
+                    <Text color={textColor} bold>
+                      Current:
+                    </Text>{' '}
+                    {currentChapter.name}
+                  </Text>
+                  <Text color={textColorSecondary}>
+                    <Text color={textColor} bold>
+                      Previous:
+                    </Text>{' '}
+                    {previous?.name}
+                  </Text>
+                </>
+              )}
             </>
           )}
-          {isPrevious && (
-            <>
-              <Text color={textColorSecondary}>
-                <Text color={textColor} bold>
-                  Current:
-                </Text>{' '}
-                {currentChapter.name}
-              </Text>
-              <Text color={textColorSecondary}>
-                <Text color={textColor} bold>
-                  Previous:
-                </Text>{' '}
-                {previous?.name}
-              </Text>
-            </>
-          )}
-        </AnimatedStack>
+        </Stack>
       </GestureDetector>
     </Box>
   );

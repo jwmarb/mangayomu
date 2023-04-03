@@ -15,6 +15,7 @@ import { ActionCreatorWithPayload } from '@reduxjs/toolkit';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
 import {
+  Alert,
   AppState,
   Dimensions,
   FlatList,
@@ -25,6 +26,8 @@ import Orientation from 'react-native-orientation-locker';
 import { SharedValue } from 'react-native-reanimated';
 import Realm from 'realm';
 
+type ForceScrollToOffset = (offset: number) => void;
+
 type ReaderScrollPositionInitialHandlerArguments = {
   shouldTrackScrollPosition: boolean;
   _chapter: ChapterSchema & Realm.Object<ChapterSchema, never>;
@@ -32,7 +35,6 @@ type ReaderScrollPositionInitialHandlerArguments = {
   horizontal: boolean;
   scrollPositionLandscape: React.MutableRefObject<number>;
   scrollPositionPortrait: React.MutableRefObject<number>;
-  transitionPageOpacity: SharedValue<number>;
   indexOffset: React.MutableRefObject<
     Record<
       string,
@@ -50,9 +52,10 @@ type ReaderScrollPositionInitialHandlerArguments = {
   chapterRef: React.MutableRefObject<
     ChapterSchema & Realm.Object<ChapterSchema, never>
   >;
-  forceScrollToOffset(offset: number): NodeJS.Timer;
+  forceScrollToOffset: ForceScrollToOffset;
   isOnChapterError: boolean | null;
   setShouldTrackScrollPosition: (value: boolean) => void;
+  pages: Page[];
 };
 export function readerScrollPositionInitialHandler(
   arg: ReaderScrollPositionInitialHandlerArguments,
@@ -65,7 +68,6 @@ export function readerScrollPositionInitialHandler(
     localRealm,
     getOffset,
     indexOffset,
-    transitionPageOpacity,
     scrollPositionLandscape,
     scrollPositionPortrait,
     shouldTrackScrollPosition,
@@ -74,6 +76,7 @@ export function readerScrollPositionInitialHandler(
     horizontal,
     isOnChapterError,
     setShouldTrackScrollPosition,
+    pages,
   } = arg;
   function saveScrollPosition() {
     if (isOnChapterError || isOnChapterError == null) {
@@ -112,22 +115,17 @@ export function readerScrollPositionInitialHandler(
     });
   }
   React.useEffect(() => {
-    if (!shouldTrackScrollPosition) {
-      const isInFirstChapter =
-        chapterRef.current.index < readableChapters.length - 1;
+    if (pages.length > 0) {
       const hasNoSavedScrollPosition =
         chapterRef.current.scrollPositionLandscape === 0 ||
         chapterRef.current.scrollPositionPortrait === 0;
-      /**
-       * Detect whether the selected chapter is NOT the first chapter and has not been read
-       */
 
-      if (isInFirstChapter && hasNoSavedScrollPosition) {
-        const interval = forceScrollToOffset(horizontal ? width : height); // Start the reader at this offset to avoid starting at the transition page
-        return () => {
-          clearInterval(interval);
-        };
-      } else {
+      /**
+       * If the user has a saved scroll position, it should return to the saved scroll position.
+       *
+       * This code block is experimental but will be kept in the future. There is no need for this code block unless the user is on WEBTOON mode.
+       */
+      if (!hasNoSavedScrollPosition) {
         /**
          * Setting a transition page offset initially is important to prevent the reader from starting at the transition page.
          * This will set to a value depending if the chapter is the first chapter or not.
@@ -155,23 +153,25 @@ export function readerScrollPositionInitialHandler(
          * After the offset has been initialized, start scrolling back to the saved scroll position
          */
         if (width > height) {
-          const interval = forceScrollToOffset(
+          // const interval =
+          forceScrollToOffset(
             chapterRef.current.scrollPositionLandscape + transitionPageOffset,
           ); // Scrolls to landscape scroll position because the user is in landscape mode
-          return () => {
-            clearInterval(interval);
-          };
+          // return () => {
+          //   clearInterval(interval);
+          // };
         } else {
-          const interval = forceScrollToOffset(
+          console.log('Scrolling back to saved position');
+          // const interval =
+          forceScrollToOffset(
             chapterRef.current.scrollPositionPortrait + transitionPageOffset,
           ); // Scrolls to portrait scroll position because the useer is in portrait mode
-          return () => {
-            clearInterval(interval);
-          };
+          // return () => {
+          //   clearInterval(interval);
+          // };
         }
       }
-    } else {
-      transitionPageOpacity.value = 1;
+      setShouldTrackScrollPosition(true);
       const listener = AppState.addEventListener('change', (appState) => {
         switch (appState) {
           case 'background':
@@ -186,7 +186,7 @@ export function readerScrollPositionInitialHandler(
         saveScrollPosition();
       };
     }
-  }, [shouldTrackScrollPosition]);
+  }, [pages.length === 0]);
 }
 
 type ReaderPreviousChapterScrollPositionHandlerArguments = {
@@ -206,7 +206,8 @@ type ReaderPreviousChapterScrollPositionHandlerArguments = {
   scrollPositionLandscapeUnsafe: React.MutableRefObject<number>;
   scrollPositionPortraitUnsafe: React.MutableRefObject<number>;
   getOffset(startIndex?: number, toIndex?: number): number;
-  forceScrollToOffset(offset: number): NodeJS.Timer;
+  forceScrollToOffset: ForceScrollToOffset;
+  fetchedPreviousChapter: React.MutableRefObject<boolean>;
 };
 export function readerPreviousChapterScrollPositionHandler(
   arg: ReaderPreviousChapterScrollPositionHandlerArguments,
@@ -221,28 +222,27 @@ export function readerPreviousChapterScrollPositionHandler(
     scrollPositionLandscapeUnsafe,
     scrollPositionPortraitUnsafe,
     forceScrollToOffset,
+    fetchedPreviousChapter,
   } = arg;
   const { width, height } = useWindowDimensions();
   React.useEffect(() => {
-    const pageOnScreen = pagesRef.current[index.current];
     pagesRef.current = pages;
-    if (
-      chapterKey in indexOffset.current &&
-      pagesRef.current[index.current] != null &&
-      pageOnScreen != null &&
-      pagesRef.current[index.current] !== pageOnScreen
-    ) {
+    if (fetchedPreviousChapter.current) {
       const offset =
-        getOffset(0, indexOffset.current[chapterKey].start) +
+        getOffset(0, indexOffset.current[chapterKey].start - 1) + // Subtract 1 to include the transition page
         (width > height
           ? scrollPositionLandscapeUnsafe
           : scrollPositionPortraitUnsafe
         ).current;
 
-      const interval = forceScrollToOffset(offset);
-      return () => {
-        clearInterval(interval);
-      };
+      console.log('Previous chapter detected. Scrolling to offset...');
+      Alert.alert('debug', 'Previous chapter detected. Scrolling to offset...');
+      fetchedPreviousChapter.current = false;
+      // const interval =
+      forceScrollToOffset(offset);
+      // return () => {
+      //   clearInterval(interval);
+      // };
     }
   }, [pages]);
 }
@@ -271,7 +271,8 @@ interface ReaderInitializerArguments
   fetchPagesByChapter: (arg: FetchPagesByChapterPayload) => Promise<any>;
   source: MangaHost;
   resetReaderState: () => void;
-  forceScrollToOffset(offset: number): NodeJS.Timer;
+  forceScrollToOffset: ForceScrollToOffset;
+  setIsMounted: (val: boolean) => void;
 }
 export function readerInitializer(args: ReaderInitializerArguments) {
   const {
@@ -290,20 +291,23 @@ export function readerInitializer(args: ReaderInitializerArguments) {
     localRealm,
     _chapter,
     forceScrollToOffset,
+    setIsMounted,
   } = args;
   React.useEffect(() => {
     const listener = Dimensions.addEventListener('change', ({ window }) => {
       if (readingDirection !== ReadingDirection.WEBTOON) {
-        const interval = forceScrollToOffset(
+        // const interval =
+        forceScrollToOffset(
           (window.width > window.height
             ? scrollPositionLandscapeUnsafe
             : scrollPositionPortraitUnsafe
           ).current,
         );
-        setTimeout(() => clearInterval(interval), 50);
+        // setTimeout(() => clearInterval(interval), 50);
       }
     });
 
+    setIsMounted(true); // no need to put this in cleanup function because this will be handled by resetReaderState();
     setCurrentChapter(chapterKey);
     localRealm.write(() => {
       _chapter.dateRead = Date.now();
@@ -345,10 +349,11 @@ export function scrollPositionReadingDirectionChangeHandler(
 
   React.useEffect(() => {
     if (mounted.current) {
-      const interval = forceScrollToOffset(getOffset());
-      return () => {
-        clearInterval(interval);
-      };
+      // const interval =
+      forceScrollToOffset(getOffset());
+      // return () => {
+      //   clearInterval(interval);
+      // };
     } else mounted.current = true;
   }, [horizontal]);
 }
@@ -489,6 +494,8 @@ export function initializeReaderRefs(args: InitializeReaderRefsArguments) {
   const scrollPositionPortraitUnsafe = React.useRef<number>(0);
   const scrollPositionLandscapeUnsafe = React.useRef<number>(0);
 
+  const fetchedPreviousChapter = React.useRef<boolean>(false);
+
   const chapterRef = React.useRef<
     ChapterSchema & Realm.Object<ChapterSchema, never>
   >(_chapter);
@@ -512,6 +519,7 @@ export function initializeReaderRefs(args: InitializeReaderRefsArguments) {
     indexOffset,
     flatListRef,
     index,
+    fetchedPreviousChapter,
   };
 }
 

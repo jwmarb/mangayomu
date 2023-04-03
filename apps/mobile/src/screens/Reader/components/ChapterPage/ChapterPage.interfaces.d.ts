@@ -5,10 +5,10 @@ import { TapGesture } from 'react-native-gesture-handler';
 
 export interface ChapterPageProps {
   page: ChapterPage;
+  index: number;
 }
 
 export interface ChapterPageContextState {
   tapGesture: TapGesture;
   imageMenuRef: React.RefObject<ImageMenuMethods>;
-  readingDirection: ReadingDirection;
 }

@@ -15,7 +15,7 @@ export interface TransitionPageContextState {
   tapGesture: TapGesture;
   backgroundColor: ReaderBackgroundColor;
   currentChapter: ChapterSchema;
-  transitionPageStyle: { opacity: number };
+  showTransitionPage: boolean;
   availableChapters: (ChapterSchema & Realm.Object<ChapterSchema, never>)[];
   source: MangaHost;
   offsetIndex: React.MutableRefObject<

@@ -44,6 +44,7 @@ import {
   ViewabilityConfigCallbackPairs,
   ViewToken,
   FlatList,
+  // ListRenderItem,
 } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import {
@@ -78,7 +79,13 @@ export const useReaderContext = () => React.useContext(ReaderContext);
 const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const {
     chapter: chapterKey,
+    showTransitionPage,
+    setShowTransitionPage,
     notifyOnLastChapter,
+    pageInDisplay,
+    setIsOnChapterError,
+    setPageInDisplay,
+    isOnChapterError,
     reversed: globalReversed,
     pagingEnabled: globalPagingEnabled,
     resetReaderState,
@@ -91,6 +98,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     chapterInfo: _chapterInfo,
     globalReadingDirection,
     globalDeviceOrientation,
+    setIsMounted,
   } = props;
   const realm = useRealm();
   const { width, height } = useWindowDimensions();
@@ -108,9 +116,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     );
 
   const [chapter, setChapter] = React.useState(_chapter);
-  const [isOnChapterError, setIsOnChapterError] = React.useState<
-    boolean | null
-  >(null); // initialized on null because it is not known whether or not there is an error
+
   const readableChapters = React.useMemo(
     () =>
       [
@@ -135,15 +141,9 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     indexOffset,
     flatListRef,
     index,
+    fetchedPreviousChapter,
   } = initializeReaderRefs({ _chapter, _chapterInfo, pages });
 
-  const transitionPageOpacity = useSharedValue(0);
-  const transitionPageStyle = useAnimatedStyle(
-    () => ({
-      opacity: transitionPageOpacity.value,
-    }),
-    [],
-  );
   React.useEffect(() => {
     chapterInfo.current = _chapterInfo;
   }, [_chapterInfo]);
@@ -215,18 +215,18 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     scrollPositionLandscapeUnsafe,
     scrollPositionPortraitUnsafe,
     getOffset,
+    fetchedPreviousChapter,
   });
 
   const [shouldTrackScrollPosition, _setShouldTrackScrollPosition] =
     React.useState<boolean>(false);
   const setShouldTrackScrollPosition = React.useCallback(
     (value: boolean) => {
-      if (value) transitionPageOpacity.value = 1;
-      else transitionPageOpacity.value = 0;
+      setTimeout(() => setShowTransitionPage(value), 15);
       _setShouldTrackScrollPosition(value);
       shouldTrackScrollPositionRef.current = value;
     },
-    [_setShouldTrackScrollPosition],
+    [_setShouldTrackScrollPosition, setShowTransitionPage],
   );
 
   const [currentPage, setCurrentPage] = React.useState<number>(
@@ -267,23 +267,10 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   handleOrientation(lockOrientation);
 
   function forceScrollToOffset(offset: number) {
-    setShouldTrackScrollPosition(false);
-    const interval = setInterval(() => {
-      flatListRef.current?.scrollToOffset({ offset, animated: false });
-      if (
-        width > height &&
-        15 >= Math.abs(scrollPositionLandscapeUnsafe.current - offset)
-      ) {
-        setShouldTrackScrollPosition(true);
-        clearInterval(interval);
-      } else if (
-        15 >= Math.abs(scrollPositionPortraitUnsafe.current - offset)
-      ) {
-        setShouldTrackScrollPosition(true);
-        clearInterval(interval);
-      }
-    });
-    return interval;
+    setTimeout(
+      () => flatListRef.current?.scrollToOffset({ offset, animated: false }),
+      0,
+    );
   }
 
   readerInitializer({
@@ -302,6 +289,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     resetReaderState,
     chapterKey,
     forceScrollToOffset,
+    setIsMounted,
   });
 
   readerScrollPositionInitialHandler({
@@ -313,7 +301,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     horizontal,
     scrollPositionLandscape,
     scrollPositionPortrait,
-    transitionPageOpacity,
     indexOffset,
     getOffset,
     localRealm,
@@ -322,6 +309,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     realm,
     manga,
     isOnChapterError,
+    pages,
   });
 
   scrollPositionReadingDirectionChangeHandler({
@@ -405,6 +393,13 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
         )
           setCurrentPage(chapterRef.current.numberOfPages);
       } else setIsOnChapterError(false);
+      if (item.type === 'PAGE') {
+        setPageInDisplay({
+          parsedKey: removeURLParams(item.page),
+          url: item.page,
+        });
+      }
+
       if (item.type === 'PAGE' && shouldTrackScrollPositionRef.current) {
         setCurrentPage(item.pageNumber);
         if (item.chapter !== chapterRef.current._id)
@@ -436,6 +431,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
             !chapterInfo.current[item.next._id]?.alreadyFetched &&
             !chapterInfo.current[item.next._id]?.loading
           ) {
+            console.log('Fetching next chapter...');
             await fetchPagesByChapter({
               chapter: p,
               availableChapters: readableChapters,
@@ -456,12 +452,14 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
             !chapterInfo.current[item.previous._id]?.alreadyFetched &&
             !chapterInfo.current[item.previous._id]?.loading
           ) {
+            console.log('Fetching previous chapter...');
             await fetchPagesByChapter({
               chapter: p,
               availableChapters: readableChapters,
               localRealm,
               source,
               offsetIndex: indexOffset,
+              fetchedPreviousChapter,
             });
           }
         }
@@ -476,6 +474,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
         viewabilityConfig: {
           viewAreaCoveragePercentThreshold: 99,
           waitForInteraction: false,
+          minimumViewTime: 0,
         },
       },
     ]);
@@ -511,54 +510,54 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     }
   };
 
-  const getItemLayout = React.useCallback(
-    (data: Page[] | null | undefined, index: number) => {
-      if (data == null)
-        return {
-          index,
-          offset: (horizontal ? width : height) * index,
-          length: horizontal ? width : height,
-        };
+  // const getItemLayout = React.useCallback(
+  //   (data: Page[] | null | undefined, index: number) => {
+  //     if (data == null)
+  //       return {
+  //         index,
+  //         offset: (horizontal ? width : height) * index,
+  //         length: horizontal ? width : height,
+  //       };
 
-      switch (readingDirection) {
-        case ReadingDirection.WEBTOON:
-          // eslint-disable-next-line no-case-declarations
-          const page = data[index];
-          // eslint-disable-next-line no-case-declarations
-          let offset = 0;
-          for (let i = 0; i < index; i++) {
-            const p = data[i];
-            switch (p.type) {
-              case 'PAGE':
-                offset += p.height * (width / p.width);
-                break;
-              default:
-                offset += height;
-                break;
-            }
-          }
-          return {
-            index,
-            offset,
-            length:
-              page.type === 'PAGE'
-                ? page.height * (width / page.width)
-                : height,
-          };
-        case ReadingDirection.LEFT_TO_RIGHT:
-        case ReadingDirection.RIGHT_TO_LEFT:
-        default:
-          return { index, offset: width * index, length: width };
-        case ReadingDirection.VERTICAL:
-          return {
-            index,
-            offset: height * index,
-            length: height,
-          };
-      }
-    },
-    [readingDirection, horizontal, width, height],
-  );
+  //     switch (readingDirection) {
+  //       case ReadingDirection.WEBTOON:
+  //         // eslint-disable-next-line no-case-declarations
+  //         const page = data[index];
+  //         // eslint-disable-next-line no-case-declarations
+  //         let offset = 0;
+  //         for (let i = 0; i < index; i++) {
+  //           const p = data[i];
+  //           switch (p.type) {
+  //             case 'PAGE':
+  //               offset += p.height * (width / p.width);
+  //               break;
+  //             default:
+  //               offset += height;
+  //               break;
+  //           }
+  //         }
+  //         return {
+  //           index,
+  //           offset,
+  //           length:
+  //             page.type === 'PAGE'
+  //               ? page.height * (width / page.width)
+  //               : height,
+  //         };
+  //       case ReadingDirection.LEFT_TO_RIGHT:
+  //       case ReadingDirection.RIGHT_TO_LEFT:
+  //       default:
+  //         return { index, offset: width * index, length: width };
+  //       case ReadingDirection.VERTICAL:
+  //         return {
+  //           index,
+  //           offset: height * index,
+  //           length: height,
+  //         };
+  //     }
+  //   },
+  //   [readingDirection, horizontal, width, height],
+  // );
 
   const estimatedListSize = React.useMemo(() => {
     switch (readingDirection) {
@@ -599,75 +598,100 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     layout.size = getItemSize(item);
   }
 
+  const isOnFirstChapter =
+    readableChapters[readableChapters.length - 1].index === _chapter.index;
+
   return (
     <ChapterPageContext.Provider
-      value={{ imageMenuRef, tapGesture, readingDirection }}
+      value={React.useMemo(() => ({ imageMenuRef, tapGesture }), [tapGesture])}
     >
       <TransitionPageContext.Provider
-        value={{
-          availableChapters: readableChapters,
-          backgroundColor,
-          currentChapter: chapter,
-          offsetIndex: indexOffset,
-          source,
-          tapGesture,
-          transitionPageStyle,
-        }}
-      >
-        <ChapterErrorContext.Provider
-          value={{
+        value={React.useMemo(
+          () => ({
             availableChapters: readableChapters,
-            localRealm,
+            backgroundColor,
+            currentChapter: chapter,
             offsetIndex: indexOffset,
             source,
-          }}
+            tapGesture,
+            showTransitionPage,
+          }),
+          [
+            readableChapters,
+            backgroundColor,
+            chapterKey,
+            indexOffset,
+            source,
+            tapGesture,
+            showTransitionPage,
+          ],
+        )}
+      >
+        <ChapterErrorContext.Provider
+          value={React.useMemo(
+            () => ({
+              availableChapters: readableChapters,
+              localRealm,
+              offsetIndex: indexOffset,
+              source,
+            }),
+            [readableChapters, localRealm, indexOffset, source],
+          )}
         >
+          <Overlay
+            imageMenuRef={imageMenuRef}
+            currentPage={currentPage}
+            manga={manga}
+            chapter={chapter}
+            opacity={overlayOpacity}
+            mangaTitle={manga.title}
+          />
           <GestureDetector gesture={tapGesture}>
-            <FlashList
-              ref={flatListRef}
-              ListHeaderComponent={
-                <Overlay
-                  imageMenuRef={imageMenuRef}
-                  currentPage={currentPage}
-                  manga={manga}
-                  chapter={chapter}
-                  opacity={overlayOpacity}
-                  mangaTitle={manga.title}
-                />
-              }
-              ListEmptyComponent={
-                <Box
-                  flex-grow
-                  align-items="center"
-                  justify-content="center"
-                  width={width}
-                  height={height}
-                >
-                  <Progress />
-                </Box>
-              }
-              // updateCellsBatchingPeriod={10}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-              // getItemLayout={getItemLayout}
-              onScroll={handleOnScroll}
-              // windowSize={13}
-              viewabilityConfigCallbackPairs={
-                viewabilityConfigCallbackPairs.current
-              }
-              estimatedItemSize={horizontal ? width : height}
-              estimatedListSize={estimatedListSize}
-              getItemType={getItemType}
-              // maxToRenderPerBatch={50}
-              overrideItemLayout={overrideItemLayout}
-              horizontal={horizontal}
-              data={pages}
-              inverted={reversed}
-              renderItem={renderItem}
-              keyExtractor={keyExtractor}
-              pagingEnabled={pagingEnabled}
-              // contentContainerStyle={contentContainerStyle}
-            />
+            {pages.length === 0 ? (
+              <Box
+                flex-grow
+                align-items="center"
+                justify-content="center"
+                width={width}
+                height={height}
+                background-color={backgroundColor.toLowerCase()}
+              >
+                <Progress />
+              </Box>
+            ) : (
+              <FlashList
+                ref={flatListRef}
+                // FlatList Props
+                // updateCellsBatchingPeriod={100}
+                // getItemLayout={getItemLayout}
+                // windowSize={13}
+                // maxToRenderPerBatch={50}
+                // contentContainerStyle={contentContainerStyle}
+
+                // FlashList props
+                estimatedFirstItemOffset={
+                  !isOnFirstChapter ? (horizontal ? width : height) : 0
+                }
+                initialScrollIndex={_chapter.indexPage}
+                drawDistance={horizontal ? width : height}
+                estimatedItemSize={horizontal ? width : height}
+                estimatedListSize={estimatedListSize}
+                getItemType={getItemType}
+                overrideItemLayout={overrideItemLayout}
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
+                onScroll={handleOnScroll}
+                viewabilityConfigCallbackPairs={
+                  viewabilityConfigCallbackPairs.current
+                }
+                horizontal={horizontal}
+                data={pages}
+                inverted={reversed}
+                renderItem={renderItem}
+                keyExtractor={keyExtractor}
+                pagingEnabled={pagingEnabled}
+              />
+            )}
           </GestureDetector>
         </ChapterErrorContext.Provider>
       </TransitionPageContext.Provider>
@@ -694,10 +718,10 @@ const keyExtractor = (p: Page) => {
   }
 };
 
-const renderItem: ListRenderItem<Page> = ({ item }) => {
+const renderItem: ListRenderItem<Page> = ({ item, index }) => {
   switch (item.type) {
     case 'PAGE':
-      return <ChapterPage page={item} />;
+      return <ChapterPage page={item} index={index} />;
     case 'TRANSITION_PAGE':
       return <TransitionPage page={item} />;
     case 'NO_MORE_PAGES':

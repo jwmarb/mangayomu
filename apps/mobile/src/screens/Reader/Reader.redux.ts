@@ -5,6 +5,10 @@ import {
   fetchPagesByChapter,
   resetReaderState,
   setCurrentChapter,
+  setIsOnChapterError,
+  setShowTransitionPage,
+  setPageInDisplay,
+  setIsMounted,
 } from '@redux/slices/reader';
 import { ReadingDirection } from '@redux/slices/settings';
 
@@ -24,12 +28,19 @@ const mapStateToProps = (state: AppState, props: RootStackProps<'Reader'>) => ({
   globalReadingDirection: state.settings.reader.readingDirection,
   globalDeviceOrientation: state.settings.reader.lockOrientation,
   chapterInfo: state.reader.chapterInfo,
+  isOnChapterError: state.reader.isOnChapterError,
+  showTransitionPage: state.reader.showTransitionPage,
+  pageInDisplay: state.reader.pageInDisplay,
 });
 
 const connector = connect(mapStateToProps, {
   fetchPagesByChapter,
   resetReaderState,
   setCurrentChapter,
+  setIsOnChapterError,
+  setShowTransitionPage,
+  setPageInDisplay,
+  setIsMounted,
 });
 
 export type ConnectedReaderProps = ConnectedProps<typeof connector>;

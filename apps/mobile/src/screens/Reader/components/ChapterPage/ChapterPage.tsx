@@ -42,6 +42,12 @@ export function removeURLParams(url: string) {
   return url.substring(0, startParam);
 }
 
+export function getFileExtension(url: string) {
+  const found = url.match(/jpe?g|png|gif|bmp|webp/g);
+  if (found == null) throw Error(`Unknown file extension. Input was ${url}`);
+  return found[0];
+}
+
 export const ChapterPageContext = React.createContext<
   ChapterPageContextState | undefined
 >(undefined);
@@ -52,17 +58,15 @@ const useChapterPageContext = () => {
   return ctx;
 };
 
-const AnimatedFastImage = Animated.createAnimatedComponent(
-  FastImage as React.FC<FastImageProps>,
-);
-
 const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
-  const { imageMenuRef, tapGesture, readingDirection } =
-    useChapterPageContext();
+  const { imageMenuRef, tapGesture } = useChapterPageContext();
   const { width, height } = useWindowDimensions();
-  const { page: pageKey } = props.page;
+  const {
+    page: pageKey,
+    error,
+    // localPageUri
+  } = props.page;
   const { backgroundColor } = props;
-  const parsedPageKey = removeURLParams(pageKey);
   const webViewRef = React.useRef<WebView>(null);
   const imageWidth = props.page.width;
   const imageHeight = props.page.height;
@@ -70,7 +74,6 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   const stylizedHeight = ReadingDirection.WEBTOON
     ? scale * imageHeight
     : height;
-  const [error, setError] = React.useState<boolean>(false);
   /**
    * In the case of very large images which can be observed in some webtoons (e.g. images that exceed the device's height by 5-8 times),
    * Image performs downsampling on the image, reducing its quality that could make its text unreadable or its content uncomprehensible. As a workaround, the page will fallback to using WebView, which is
@@ -103,7 +106,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   // }));
 
   function handleOnReload() {
-    setError(false);
+    // setError(false);
     // loadingOpacity.value = fallbackToWebView ? 0 : 1;
     visibleWithoutErrorOpacity.value = 1;
     webViewRef.current?.reload();
@@ -116,7 +119,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   //   loadingOpacity.value = 1;
   // }
   function handleOnError() {
-    setError(true);
+    // setError(true);
     // loadingOpacity.value = 0;
     visibleWithoutErrorOpacity.value = 0;
   }
@@ -124,8 +127,8 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   const holdGesture = React.useMemo(
     () =>
       Gesture.LongPress().onStart(() => {
-        if (imageMenuRef.current != null)
-          runOnJS(imageMenuRef.current.open)(parsedPageKey, pageKey);
+        if (imageMenuRef.current != null) runOnJS(imageMenuRef.current.open)();
+        // parsedPageKey, pageKey
       }),
     [],
   );
@@ -156,6 +159,18 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     >
       <GestureDetector gesture={gestures}>
         <Box style={style} align-self="center">
+          {/* {!error && (
+            <Image
+              // onLoadStart={handleOnLoadStart}
+              source={{
+                uri: pageKey,
+              }}
+              style={style}
+              // onLoadEnd={handleOnLoadEnd}
+              onError={handleOnError}
+              resizeMode={FastImage.resizeMode.contain}
+            />
+          )} */}
           {fallbackToWebView ? (
             <AnimatedBox style={webViewStyle}>
               <WebView
