@@ -10,6 +10,7 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { Portal } from '@gorhom/portal';
 import displayMessage from '@helpers/displayMessage';
+import useBoolean from '@hooks/useBoolean';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import React from 'react';
 import {
@@ -18,6 +19,7 @@ import {
   useWindowDimensions,
   PermissionsAndroid,
   Platform,
+  Linking,
 } from 'react-native';
 import {
   RectButton,
@@ -35,13 +37,15 @@ import {
 import { moderateScale } from 'react-native-size-matters';
 import RNFetchBlob from 'rn-fetch-blob';
 import { ImageMenuMethods } from './ImageMenu.interfaces';
-const ImageMenu: React.ForwardRefRenderFunction<ImageMenuMethods> = (
-  props,
-  ref,
-) => {
+import connector, { ConnectedImageMenuProps } from './ImageMenu.redux';
+const ImageMenu: React.ForwardRefRenderFunction<
+  ImageMenuMethods,
+  ConnectedImageMenuProps
+> = (props, ref) => {
   const localRealm = useLocalRealm();
   const theme = useTheme();
   const { width, height } = useWindowDimensions();
+  const [open, toggle] = useBoolean();
   const [page, setPage] = React.useState<PageSchema>();
   const [url, setURL] = React.useState<string>();
   const [containerHeight, setContainerHeight] = React.useState<number>(2000);
@@ -62,21 +66,30 @@ const ImageMenu: React.ForwardRefRenderFunction<ImageMenuMethods> = (
     backgroundColor: backgroundColor.value,
   }));
   React.useImperativeHandle(ref, () => ({
-    open(pageKey, pageURL) {
-      setPage(localRealm.objectForPrimaryKey(PageSchema, pageKey));
+    open() {
+      toggle(true);
       translationY.value = withTiming(0, {
         duration: 150,
         easing: Easing.ease,
       });
-      setURL(pageURL);
       ReactNativeHapticFeedback.trigger('impactHeavy', {
         enableVibrateFallback: true,
       });
     },
   }));
+  React.useEffect(() => {
+    if (props.pageInDisplay) {
+      setURL(props.pageInDisplay.url);
+      setPage(
+        localRealm.objectForPrimaryKey(
+          PageSchema,
+          props.pageInDisplay.parsedKey,
+        ),
+      );
+    }
+  }, [props.pageInDisplay]);
   function handleOnClose() {
-    setPage(undefined);
-    setURL(undefined);
+    toggle(false);
     translationY.value = withTiming(containerHeight, {
       duration: 150,
       easing: Easing.ease,
@@ -134,6 +147,12 @@ const ImageMenu: React.ForwardRefRenderFunction<ImageMenuMethods> = (
   function handleOnLongPressSaveImage() {
     displayMessage('Save image');
   }
+  function handleOnLongPressViewInBrowser() {
+    displayMessage('View in browser');
+  }
+  async function handleOnViewInBrowser() {
+    if (url && (await Linking.canOpenURL(url))) await Linking.openURL(url);
+  }
   function handleOnLayout(e: LayoutChangeEvent) {
     setContainerHeight(e.nativeEvent.layout.height);
     translationY.value = e.nativeEvent.layout.height;
@@ -146,7 +165,7 @@ const ImageMenu: React.ForwardRefRenderFunction<ImageMenuMethods> = (
         right={0}
         bottom={0}
         top={0}
-        pointerEvents={page != null ? 'auto' : 'none'}
+        pointerEvents={open ? 'auto' : 'none'}
       >
         <TouchableWithoutFeedback onPress={handleOnClose}>
           <AnimatedBox
@@ -198,6 +217,21 @@ const ImageMenu: React.ForwardRefRenderFunction<ImageMenuMethods> = (
                   <Text variant="button">Share</Text>
                 </Stack>
               </RectButton>
+              <RectButton
+                rippleColor={theme.palette.action.ripple}
+                onPress={handleOnViewInBrowser}
+                onLongPress={handleOnLongPressViewInBrowser}
+              >
+                <Stack
+                  space="l"
+                  m="m"
+                  flex-direction="row"
+                  align-items="center"
+                >
+                  <Icon type="font" name="web" size={moderateScale(24)} />
+                  <Text variant="button">Open in browser</Text>
+                </Stack>
+              </RectButton>
             </AnimatedBox>
           </AnimatedBox>
         </TouchableWithoutFeedback>
@@ -206,4 +240,4 @@ const ImageMenu: React.ForwardRefRenderFunction<ImageMenuMethods> = (
   );
 };
 
-export default React.memo(React.forwardRef(ImageMenu));
+export default connector(React.forwardRef(ImageMenu));
