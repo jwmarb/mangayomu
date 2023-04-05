@@ -3,7 +3,7 @@ import Box from '@components/Box';
 import { useTheme } from '@emotion/react';
 import useMountedEffect from '@hooks/useMountedEffect';
 import { Manga } from '@mangayomu/mangascraper';
-import { ListRenderItem } from '@shopify/flash-list';
+import { ListRenderItem, ListRenderItemInfo } from '@shopify/flash-list';
 import React from 'react';
 import { Dimensions, useWindowDimensions } from 'react-native';
 
@@ -14,23 +14,41 @@ const Item: React.FC<{ item: Omit<Manga, 'index'> }> = React.memo(
     </Box>
   ),
 );
+function keyExtractor<T extends Omit<Manga, 'index'>>(i: T, index: number) {
+  return i.link + index;
+}
+function renderItem<T extends Omit<Manga, 'index'>>({
+  item,
+}: ListRenderItemInfo<T>) {
+  return <Item item={item} />;
+}
 
-export default function useMangaFlashlistLayout<
-  T extends Omit<Manga, 'index'> = Manga,
->(bookDimensions: { width: number; height: number }) {
-  const keyExtractor = React.useCallback(
-    (i: T, index: number) => i.link + index,
-    [],
-  );
-
-  const renderItem: ListRenderItem<T> = React.useCallback(
-    ({ item }) => <Item item={item} />,
-    [],
-  );
-
-  const { width } = useWindowDimensions();
+export default function useMangaFlashlistLayout(
+  bookDimensions: { width: number; height: number },
+  dataLength: number,
+) {
+  const { width, height } = useWindowDimensions();
   const theme = useTheme();
   const padding = 2 * theme.style.spacing.s;
+  const estimatedItemSize = bookDimensions.height + padding;
+  const estimatedListSize = React.useMemo(
+    () => ({
+      width,
+      height: Math.min(
+        (bookDimensions.height + padding) *
+          (dataLength / (width / (bookDimensions.width + padding))),
+        height,
+      ),
+    }),
+    [
+      width,
+      height,
+      bookDimensions.height,
+      padding,
+      dataLength,
+      bookDimensions.width,
+    ],
+  );
   const [columns, setColumns] = React.useState<number>(
     Math.round(width / (bookDimensions.width + padding)),
   );
@@ -51,11 +69,21 @@ export default function useMangaFlashlistLayout<
     };
   }, []);
 
+  function overrideItemLayout(layout: {
+    span?: number | undefined;
+    size?: number | undefined;
+  }) {
+    layout.size = estimatedItemSize;
+  }
+
   return {
     columns,
     key: columns,
-    estimatedItemSize: bookDimensions.height + padding,
+    estimatedItemSize,
+    overrideItemLayout,
     keyExtractor,
+    drawDistance: height * 0.5,
     renderItem,
+    estimatedListSize,
   };
 }

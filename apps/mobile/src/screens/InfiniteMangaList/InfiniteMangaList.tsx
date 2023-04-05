@@ -175,11 +175,22 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
   );
 
   const [showSearchBar, toggle] = React.useReducer(reducer, !!initialQuery);
-  const { estimatedItemSize, keyExtractor, renderItem, columns, key } =
-    useMangaFlashlistLayout({
+  const {
+    estimatedItemSize,
+    keyExtractor,
+    renderItem,
+    columns,
+    key,
+    estimatedListSize,
+    overrideItemLayout,
+    drawDistance,
+  } = useMangaFlashlistLayout(
+    {
       width: bookWidth,
       height: bookHeight,
-    });
+    },
+    mangas.length,
+  );
   async function handleOnSubmitEditing(
     e: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
   ) {
@@ -441,7 +452,10 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
   return (
     <>
       <FlashList
+        drawDistance={drawDistance}
         onEndReached={handleOnReachedEnd}
+        estimatedListSize={estimatedListSize}
+        overrideItemLayout={overrideItemLayout}
         onEndReachedThreshold={0.2}
         data={mangas}
         ListHeaderComponent={<Box style={scrollViewStyle} />}

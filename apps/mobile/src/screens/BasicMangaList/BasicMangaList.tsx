@@ -11,15 +11,29 @@ const BasicMangaList: React.FC<ConnectedBasicMangaListProps> = (props) => {
   const { mangas, title, bookHeight, bookWidth } = props;
   const { onScroll, contentContainerStyle, scrollViewStyle } =
     useCollapsibleHeader({ headerTitle: title });
-  const { estimatedItemSize, columns, renderItem, keyExtractor, key } =
-    useMangaFlashlistLayout({
+  const {
+    estimatedItemSize,
+    columns,
+    renderItem,
+    keyExtractor,
+    key,
+    estimatedListSize,
+    overrideItemLayout,
+    drawDistance,
+  } = useMangaFlashlistLayout(
+    {
       width: bookWidth,
       height: bookHeight,
-    });
+    },
+    mangas.length,
+  );
 
   return (
     <FlashList
+      drawDistance={drawDistance}
       estimatedItemSize={estimatedItemSize}
+      // estimatedListSize={estimatedListSize}
+      overrideItemLayout={overrideItemLayout}
       data={mangas}
       key={key}
       numColumns={columns}

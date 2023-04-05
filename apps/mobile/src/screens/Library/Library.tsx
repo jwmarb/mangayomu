@@ -99,11 +99,22 @@ const Library: React.FC<ConnectedLibraryProps> = ({
       ),
     [sortedData, query],
   );
-  const { renderItem, keyExtractor, estimatedItemSize, columns, key } =
-    useMangaFlashlistLayout<MangaSchema>({
+  const {
+    renderItem,
+    keyExtractor,
+    estimatedItemSize,
+    estimatedListSize,
+    columns,
+    key,
+    overrideItemLayout,
+    drawDistance,
+  } = useMangaFlashlistLayout(
+    {
       width: bookWidth,
       height: bookHeight,
-    });
+    },
+    data.length,
+  );
   const { scrollViewStyle, contentContainerStyle, onScroll } =
     useCollapsibleTabHeader({
       headerTitle: 'Library',
@@ -182,6 +193,9 @@ const Library: React.FC<ConnectedLibraryProps> = ({
           <>{data.length > 0 && <Box style={contentContainerStyle} />}</>
         }
         estimatedItemSize={estimatedItemSize}
+        estimatedListSize={estimatedListSize}
+        overrideItemLayout={overrideItemLayout}
+        drawDistance={drawDistance}
         ListEmptyComponent={
           <ListEmptyComponent
             libraryIsEmpty={mangasInLibrary.length === 0}

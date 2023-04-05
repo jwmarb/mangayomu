@@ -647,51 +647,53 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
             mangaTitle={manga.title}
           />
           <GestureDetector gesture={tapGesture}>
-            {pages.length === 0 ? (
-              <Box
-                flex-grow
-                align-items="center"
-                justify-content="center"
-                width={width}
-                height={height}
-                background-color={backgroundColor.toLowerCase()}
-              >
-                <Progress />
-              </Box>
-            ) : (
-              <FlashList
-                ref={flatListRef}
-                // FlatList Props
-                // updateCellsBatchingPeriod={100}
-                // getItemLayout={getItemLayout}
-                // windowSize={13}
-                // maxToRenderPerBatch={50}
-                // contentContainerStyle={contentContainerStyle}
+            <Box>
+              {pages.length === 0 ? (
+                <Box
+                  flex-grow
+                  align-items="center"
+                  justify-content="center"
+                  width={width}
+                  height={height}
+                  background-color={backgroundColor.toLowerCase()}
+                >
+                  <Progress />
+                </Box>
+              ) : (
+                <FlashList
+                  ref={flatListRef}
+                  // FlatList Props
+                  // updateCellsBatchingPeriod={100}
+                  // getItemLayout={getItemLayout}
+                  // windowSize={13}
+                  // maxToRenderPerBatch={50}
+                  // contentContainerStyle={contentContainerStyle}
 
-                // FlashList props
-                estimatedFirstItemOffset={
-                  !isOnFirstChapter ? (horizontal ? width : height) : 0
-                }
-                initialScrollIndex={_chapter.indexPage}
-                drawDistance={horizontal ? width : height}
-                estimatedItemSize={horizontal ? width : height}
-                estimatedListSize={estimatedListSize}
-                getItemType={getItemType}
-                overrideItemLayout={overrideItemLayout}
-                showsVerticalScrollIndicator={false}
-                showsHorizontalScrollIndicator={false}
-                onScroll={handleOnScroll}
-                viewabilityConfigCallbackPairs={
-                  viewabilityConfigCallbackPairs.current
-                }
-                horizontal={horizontal}
-                data={pages}
-                inverted={reversed}
-                renderItem={renderItem}
-                keyExtractor={keyExtractor}
-                pagingEnabled={pagingEnabled}
-              />
-            )}
+                  // FlashList props
+                  estimatedFirstItemOffset={
+                    !isOnFirstChapter ? (horizontal ? width : height) : 0
+                  }
+                  initialScrollIndex={_chapter.indexPage}
+                  drawDistance={horizontal ? width : height}
+                  estimatedItemSize={horizontal ? width : height}
+                  estimatedListSize={estimatedListSize}
+                  getItemType={getItemType}
+                  overrideItemLayout={overrideItemLayout}
+                  showsVerticalScrollIndicator={false}
+                  showsHorizontalScrollIndicator={false}
+                  onScroll={handleOnScroll}
+                  viewabilityConfigCallbackPairs={
+                    viewabilityConfigCallbackPairs.current
+                  }
+                  horizontal={horizontal}
+                  data={pages}
+                  inverted={reversed}
+                  renderItem={renderItem}
+                  keyExtractor={keyExtractor}
+                  pagingEnabled={pagingEnabled}
+                />
+              )}
+            </Box>
           </GestureDetector>
         </ChapterErrorContext.Provider>
       </TransitionPageContext.Provider>
