@@ -95,7 +95,7 @@ const Browse: React.FC<ConnectedBrowseProps> = (props) => {
         <Box mx="m">
           <Stack space="s" flex-direction="row">
             <Input
-              value={query}
+              defaultValue={query}
               onChangeText={setQuery}
               expanded
               onSubmitEditing={handleOnSubmitEditing}
