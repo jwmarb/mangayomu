@@ -5,6 +5,7 @@ import Text from '@components/Text';
 import { useLocalObject, useLocalRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { useTheme } from '@emotion/react';
+import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
 import { ReaderBackgroundColor } from '@redux/slices/settings';
 import {
   TransitionPageContextState,
@@ -47,29 +48,12 @@ const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
     source,
     offsetIndex,
   } = useTransitionPageContext();
+  const { background, textPrimary, textSecondary } =
+    useReaderBackgroundColor(backgroundColor);
   const isPrevious = props.page.previous.index > currentChapter.index;
   const isNext = props.page.next.index < currentChapter.index;
-  const theme = useTheme();
   const localRealm = useLocalRealm();
-  const textColor = React.useMemo(() => {
-    switch (backgroundColor) {
-      case ReaderBackgroundColor.BLACK:
-        return { custom: theme.helpers.getContrastText('#000000') };
-      case ReaderBackgroundColor.WHITE:
-        return { custom: theme.helpers.getContrastText('rgb(255, 255, 255)') };
-      case ReaderBackgroundColor.GRAY:
-        return { custom: theme.helpers.getContrastText('rgb(128,128,128)') };
-    }
-  }, [backgroundColor, theme]);
-  const textColorSecondary = React.useMemo(() => {
-    switch (backgroundColor) {
-      case ReaderBackgroundColor.BLACK:
-        return { custom: 'rgba(255, 255, 255, 0.7)' };
-      case ReaderBackgroundColor.GRAY:
-      case ReaderBackgroundColor.WHITE:
-        return { custom: 'rgba(0, 0, 0, 0.6)' };
-    }
-  }, [backgroundColor]);
+
   const { width, height } = useWindowDimensions();
   const previous = useLocalObject(ChapterSchema, page.previous._id);
   const next = useLocalObject(ChapterSchema, page.next._id);
@@ -100,7 +84,7 @@ const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
   }, []);
 
   return (
-    <Box background-color={backgroundColor.toLowerCase()}>
+    <Box background-color={background}>
       <GestureDetector gesture={tapGesture}>
         <Stack
           space="s"
@@ -117,14 +101,14 @@ const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
               {loading && <Progress />}
               {isNext && (
                 <>
-                  <Text color={textColorSecondary}>
-                    <Text color={textColor} bold>
+                  <Text color={textSecondary}>
+                    <Text color={textPrimary} bold>
                       Next:
                     </Text>{' '}
                     {next?.name}
                   </Text>
-                  <Text color={textColorSecondary}>
-                    <Text color={textColor} bold>
+                  <Text color={textSecondary}>
+                    <Text color={textPrimary} bold>
                       Current:
                     </Text>{' '}
                     {currentChapter.name}
@@ -133,14 +117,14 @@ const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
               )}
               {isPrevious && (
                 <>
-                  <Text color={textColorSecondary}>
-                    <Text color={textColor} bold>
+                  <Text color={textSecondary}>
+                    <Text color={textPrimary} bold>
                       Current:
                     </Text>{' '}
                     {currentChapter.name}
                   </Text>
-                  <Text color={textColorSecondary}>
-                    <Text color={textColor} bold>
+                  <Text color={textSecondary}>
+                    <Text color={textPrimary} bold>
                       Previous:
                     </Text>{' '}
                     {previous?.name}
