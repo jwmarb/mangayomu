@@ -4,7 +4,10 @@ import React from 'react';
 import { ChapterErrorProps } from '@screens/Reader/components/ChapterError/ChapterError.interfaces';
 import { fetchPagesByChapter } from '@redux/slices/reader';
 
-const mapStateToProps = (state: AppState, props: ChapterErrorProps) => props;
+const mapStateToProps = (state: AppState, props: ChapterErrorProps) => ({
+  ...props,
+  backgroundColor: state.settings.reader.backgroundColor,
+});
 
 const connector = connect(mapStateToProps, { fetchPagesByChapter });
 

@@ -8,6 +8,7 @@ import Text from '@components/Text';
 import { useLocalObject } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useBoolean from '@hooks/useBoolean';
+import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
 import { ChapterErrorContextState } from '@screens/Reader/components/ChapterError/ChapterError.interfaces';
 import React from 'react';
 import { useWindowDimensions } from 'react-native';
@@ -28,9 +29,11 @@ const wait = (ms: number) =>
 
 const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
   const { error, chapter: chapterKey } = props.error;
-  const { fetchPagesByChapter } = props;
+  const { fetchPagesByChapter, backgroundColor } = props;
   const { localRealm, availableChapters, offsetIndex, source } =
     useChapterErrorContext();
+  const { background, textPrimary, textSecondary } =
+    useReaderBackgroundColor(backgroundColor);
   const { width, height } = useWindowDimensions();
   const [loading, toggle] = useBoolean();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -55,6 +58,7 @@ const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
   return (
     <Stack
       space="s"
+      background-color={background}
       width={width}
       height={height}
       align-items="center"
@@ -65,15 +69,15 @@ const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
       <Icon
         type="font"
         name="wifi-cancel"
-        color="textSecondary"
+        color={textSecondary}
         size={moderateScale(128)}
       />
       <Box>
-        <Text align="center" variant="header" bold>
+        <Text align="center" variant="header" bold color={textPrimary}>
           Failed to load chapter
         </Text>
-        <Text align="center" color="textSecondary">
-          <Text bold color="textSecondary">
+        <Text align="center" color={textSecondary}>
+          <Text bold color={textSecondary}>
             {chapter.name}
           </Text>{' '}
           {error
