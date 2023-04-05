@@ -647,19 +647,19 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
             mangaTitle={manga.title}
           />
           <GestureDetector gesture={tapGesture}>
-            <Box>
-              {pages.length === 0 ? (
-                <Box
-                  flex-grow
-                  align-items="center"
-                  justify-content="center"
-                  width={width}
-                  height={height}
-                  background-color={backgroundColor.toLowerCase()}
-                >
-                  <Progress />
-                </Box>
-              ) : (
+            {pages.length === 0 ? (
+              <Box
+                flex-grow
+                align-items="center"
+                justify-content="center"
+                width={width}
+                height={height}
+                background-color={backgroundColor.toLowerCase()}
+              >
+                <Progress />
+              </Box>
+            ) : (
+              <Box minWidth={width} minHeight={height}>
                 <FlashList
                   ref={flatListRef}
                   // FlatList Props
@@ -692,8 +692,8 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                   keyExtractor={keyExtractor}
                   pagingEnabled={pagingEnabled}
                 />
-              )}
-            </Box>
+              </Box>
+            )}
           </GestureDetector>
         </ChapterErrorContext.Provider>
       </TransitionPageContext.Provider>
