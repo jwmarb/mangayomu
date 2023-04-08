@@ -29,6 +29,7 @@ import axios from 'axios';
 import { MangaParkV3Filter, MANGAPARKV3_INFO } from './MangaPark_v3.constants';
 
 class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
+  private static API_ROUTE = 'https://mangapark.net/apo/';
   public async getPages(chapter: MangaChapter): Promise<string[]> {
     const _$ = await super.route({ url: chapter.link });
     const $ = await super.route(
@@ -49,7 +50,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
     const {
       data: { data },
     } = await axios.post<MangaParkV3HotMangas>(
-      'https://api.mangapark.net/apo/?csr=1',
+      MangaParkV3.API_ROUTE,
       {
         query:
           'query get_content_browse_latest($select: ComicLatestSelect) {\n  get_content_browse_latest(select: $select) {\n    items {\n      comic {\n        data {\n          name\n          urlPath\n          imageCoverUrl\n        }\n      }\n    }\n  }\n}\n',
@@ -78,7 +79,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
     const {
       data: { data },
     } = await axios.post<MangaParkV3HotMangas>(
-      'https://api.mangapark.net/apo/?csr=1/',
+      MangaParkV3.API_ROUTE,
       {
         query:
           'query get_content_browse_latest($select: ComicLatestSelect) {\n  get_content_browse_latest(select: $select) {\n    items {\n      comic {\n        data {\n          name\n          urlPath\n          imageCoverUrl\n        }\n      }\n    }\n  }\n}\n',
@@ -114,32 +115,29 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
             get_content_browse_search: { items },
           },
         },
-      } = await axios.post<MangaParkV3SearchManga>(
-        'https://mangapark.net/apo/',
-        {
-          operationName: 'get_content_browse_search',
-          query:
-            'query get_content_browse_search($select: ComicSearchSelect) {\n  get_content_browse_search(select: $select) {\n    items {\n      data {\n        name\n        urlPath\n        imageCoverUrl\n      }\n    }\n  }\n}\n',
-          variables: {
-            select: {
-              chapCount: VIEW_CHAPTERS[filters['Number of Chapters'].value],
-              excGenres: filters.Genres.exclude.concat(
-                filters.Type.exclude.map((x) => TYPE[x]),
-              ),
-              incGenres: filters.Genres.include.concat(
-                filters.Type.include.map((x) => TYPE[x]),
-              ),
-              oficStatus:
-                OFFICIAL_WORK_STATUS[filters['Original Work Status'].value],
-              origLang:
-                ORIGINAL_WORK_LANGUAGE[filters['Original Work Language'].value],
-              page: super.getPage(),
-              sort: ORDER_BY[filters['Order by'].value],
-              word: query,
-            },
+      } = await axios.post<MangaParkV3SearchManga>(MangaParkV3.API_ROUTE, {
+        operationName: 'get_content_browse_search',
+        query:
+          'query get_content_browse_search($select: ComicSearchSelect) {\n  get_content_browse_search(select: $select) {\n    items {\n      data {\n        name\n        urlPath\n        imageCoverUrl\n      }\n    }\n  }\n}\n',
+        variables: {
+          select: {
+            chapCount: VIEW_CHAPTERS[filters['Number of Chapters'].value],
+            excGenres: filters.Genres.exclude.concat(
+              filters.Type.exclude.map((x) => TYPE[x]),
+            ),
+            incGenres: filters.Genres.include.concat(
+              filters.Type.include.map((x) => TYPE[x]),
+            ),
+            oficStatus:
+              OFFICIAL_WORK_STATUS[filters['Original Work Status'].value],
+            origLang:
+              ORIGINAL_WORK_LANGUAGE[filters['Original Work Language'].value],
+            page: super.getPage(),
+            sort: ORDER_BY[filters['Order by'].value],
+            word: query,
           },
         },
-      );
+      });
       return items.map(
         ({ data }, index): Manga => ({
           imageCover: data.imageCoverUrl,
@@ -156,7 +154,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
           get_content_browse_search: { items },
         },
       },
-    } = await axios.post<MangaParkV3SearchManga>('https://mangapark.net/apo/', {
+    } = await axios.post<MangaParkV3SearchManga>(MangaParkV3.API_ROUTE, {
       operationName: 'get_content_browse_search',
       query:
         'query get_content_browse_search($select: ComicSearchSelect) {\n  get_content_browse_search(select: $select) {\n    items {\n      data {\n        name\n        urlPath\n        imageCoverUrl\n      }\n    }\n  }\n}\n',
