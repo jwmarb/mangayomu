@@ -99,6 +99,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     globalReadingDirection,
     globalDeviceOrientation,
     setIsMounted,
+    addMangaToHistory,
   } = props;
   const realm = useRealm();
   const { width, height } = useWindowDimensions();
@@ -204,6 +205,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     scrollPositionLandscape,
     scrollPositionPortrait,
     isOnChapterError,
+    addMangaToHistory,
   });
   readerPreviousChapterScrollPositionHandler({
     forceScrollToOffset,

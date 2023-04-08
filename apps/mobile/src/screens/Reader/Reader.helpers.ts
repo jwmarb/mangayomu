@@ -2,6 +2,7 @@
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import { MangaHost } from '@mangayomu/mangascraper';
+import { addMangaToHistory } from '@redux/slices/history';
 import {
   FetchPagesByChapterPayload,
   Page,
@@ -399,6 +400,7 @@ type ChapterKeyEffectArguments = Pick<
     setChapter: (
       value: ChapterSchema & Realm.Object<ChapterSchema, never>,
     ) => void;
+    addMangaToHistory: typeof addMangaToHistory;
   };
 export function chapterKeyEffect(args: ChapterKeyEffectArguments) {
   const {
@@ -410,6 +412,7 @@ export function chapterKeyEffect(args: ChapterKeyEffectArguments) {
     getOffset,
     scrollPositionLandscape,
     scrollPositionPortrait,
+    addMangaToHistory,
     isOnChapterError,
   } = args;
   React.useEffect(() => {
@@ -418,6 +421,7 @@ export function chapterKeyEffect(args: ChapterKeyEffectArguments) {
       chapterKey,
     );
     if (newChapter != null) {
+      addMangaToHistory({ chapter: chapterKey, manga: newChapter._mangaId });
       localRealm.write(() => {
         newChapter.dateRead = Date.now();
       });

@@ -10,6 +10,7 @@ import {
   setPageInDisplay,
   setIsMounted,
 } from '@redux/slices/reader';
+import { addMangaToHistory } from '@redux/slices/history';
 import { ReadingDirection } from '@redux/slices/settings';
 
 const mapStateToProps = (state: AppState, props: RootStackProps<'Reader'>) => ({
@@ -41,6 +42,7 @@ const connector = connect(mapStateToProps, {
   setShowTransitionPage,
   setPageInDisplay,
   setIsMounted,
+  addMangaToHistory,
 });
 
 export type ConnectedReaderProps = ConnectedProps<typeof connector>;
