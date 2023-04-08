@@ -20,7 +20,10 @@ import { format } from 'date-fns';
 import React from 'react';
 import { Alert, useWindowDimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { RectButton } from 'react-native-gesture-handler';
+import {
+  RectButton,
+  TouchableWithoutFeedback,
+} from 'react-native-gesture-handler';
 import { ScaledSheet } from 'react-native-size-matters';
 
 const styles = ScaledSheet.create({
@@ -70,6 +73,9 @@ const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
       });
     else if (manga != null) navigation.navigate('MangaView', manga);
   }
+  function handleOnPressCover() {
+    if (manga != null) navigation.navigate('MangaView', manga);
+  }
   return (
     <RectButton
       rippleColor={theme.palette.action.ripple}
@@ -89,11 +95,16 @@ const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
               align-items="center"
               flex-shrink
             >
-              <FastImage
-                source={{ uri: manga.imageCover }}
-                style={styles.cover}
-                resizeMode={FastImage.resizeMode.center}
-              />
+              <TouchableWithoutFeedback
+                disallowInterruption
+                onPress={handleOnPressCover}
+              >
+                <FastImage
+                  source={{ uri: manga.imageCover }}
+                  style={styles.cover}
+                  resizeMode={FastImage.resizeMode.center}
+                />
+              </TouchableWithoutFeedback>
               <Box align-self="center" flex-shrink>
                 <Text bold variant="book-title" numberOfLines={2}>
                   {manga.title}
