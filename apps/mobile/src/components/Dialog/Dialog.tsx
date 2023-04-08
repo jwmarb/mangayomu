@@ -87,6 +87,7 @@ const Dialog: React.ForwardRefRenderFunction<DialogMethods> = (props, ref) => {
             flex-shrink
             align-self="center"
             p="m"
+            m="m"
             border-radius="@theme"
           >
             <Stack space="s">
