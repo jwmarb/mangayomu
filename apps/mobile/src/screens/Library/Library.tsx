@@ -23,6 +23,7 @@ import Checkbox from '@components/Checkbox';
 import Badge from '@components/Badge';
 import Input from '@components/Input';
 import { MangaHost } from '@mangayomu/mangascraper';
+import useMountedEffect from '@hooks/useMountedEffect';
 
 const Library: React.FC<ConnectedLibraryProps> = ({
   sortBy,
@@ -92,13 +93,24 @@ const Library: React.FC<ConnectedLibraryProps> = ({
       ),
     [sortBy, reversed, mangasInLibrary.length, applyFilters],
   );
-  const data = React.useMemo(
-    () =>
-      sortedData.filter((x) =>
-        x.title.toLowerCase().includes(query.toLowerCase()),
-      ),
-    [sortedData, query],
-  );
+  const [data, setData] = React.useState(sortedData);
+  useMountedEffect(() => {
+    if (query.length > 0) {
+      const timeout = setTimeout(
+        () =>
+          setData(
+            sortedData.filter((x) =>
+              x.title.toLowerCase().includes(query.toLowerCase()),
+            ),
+          ),
+        300,
+      );
+      return () => {
+        clearTimeout(timeout);
+      };
+    } else setData(sortedData);
+  }, [sortedData, query]);
+
   const {
     renderItem,
     keyExtractor,
