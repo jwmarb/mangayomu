@@ -15,7 +15,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import Text from '@components/Text';
 import Button from '@components/Button';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  Gesture,
+  GestureDetector,
+  TouchableWithoutFeedback,
+} from 'react-native-gesture-handler';
 import { Portal } from '@gorhom/portal';
 import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
@@ -88,6 +92,10 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
 
   function handleOnBack() {
     if (navigation.canGoBack()) navigation.goBack();
+  }
+
+  function handleOnPressTitle() {
+    navigation.navigate('MangaView', manga);
   }
 
   function handleOnBookmark() {
@@ -176,9 +184,11 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
               />
             </Stack>
           </Stack>
-          <Text numberOfLines={1} color={OVERLAY_TEXT_PRIMARY}>
-            {mangaTitle}
-          </Text>
+          <TouchableWithoutFeedback onPress={handleOnPressTitle}>
+            <Text numberOfLines={1} color={OVERLAY_TEXT_PRIMARY}>
+              {mangaTitle}
+            </Text>
+          </TouchableWithoutFeedback>
           <Text numberOfLines={1} color={OVERLAY_TEXT_SECONDARY}>
             {chapter.name}
           </Text>
