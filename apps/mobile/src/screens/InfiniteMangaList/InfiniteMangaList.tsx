@@ -454,7 +454,6 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
       <FlashList
         drawDistance={drawDistance}
         onEndReached={handleOnReachedEnd}
-        estimatedListSize={estimatedListSize}
         overrideItemLayout={overrideItemLayout}
         onEndReachedThreshold={0.2}
         data={mangas}
