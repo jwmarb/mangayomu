@@ -40,6 +40,7 @@ import {
 import { UserProvider, AppProvider } from '@realm/react';
 import { REACT_APP_REALM_ID } from '@env';
 import { RealmEffect } from '@database/providers/RealmProvider';
+import DialogProvider from '@components/Dialog/DialogProvider';
 enableFreeze(true);
 enum Auth0 {
   DOMAIN = 'dev-wq6wbghv.us.auth0.com',
@@ -159,13 +160,15 @@ function App(): JSX.Element {
                       <RealmEffect>
                         <ThemeProvider theme={theme}>
                           <MenuProvider>
-                            <PortalProvider>
-                              <NavigationContainer
-                                theme={theme.__react_navigation__}
-                              >
-                                <Root />
-                              </NavigationContainer>
-                            </PortalProvider>
+                            <DialogProvider>
+                              <PortalProvider>
+                                <NavigationContainer
+                                  theme={theme.__react_navigation__}
+                                >
+                                  <Root />
+                                </NavigationContainer>
+                              </PortalProvider>
+                            </DialogProvider>
                           </MenuProvider>
                         </ThemeProvider>
                       </RealmEffect>
