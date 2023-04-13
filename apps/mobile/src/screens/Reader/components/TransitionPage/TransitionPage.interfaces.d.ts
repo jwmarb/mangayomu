@@ -16,15 +16,4 @@ export interface TransitionPageContextState {
   backgroundColor: ReaderBackgroundColor;
   currentChapter: ChapterSchema;
   showTransitionPage: boolean;
-  availableChapters: (ChapterSchema & Realm.Object<ChapterSchema, never>)[];
-  source: MangaHost;
-  offsetIndex: React.MutableRefObject<
-    Record<
-      string,
-      {
-        start: number;
-        end: number;
-      }
-    >
-  >;
 }

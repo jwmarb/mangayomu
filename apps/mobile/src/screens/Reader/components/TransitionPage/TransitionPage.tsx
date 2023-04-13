@@ -32,56 +32,17 @@ const useTransitionPageContext = () => {
 };
 
 const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
-  const {
-    page,
-    loading,
-    fetchPagesByChapter,
-    transitioningPageState,
-    isLeadingTransitionPage,
-  } = props;
-  const {
-    tapGesture,
-    backgroundColor,
-    currentChapter,
-    showTransitionPage,
-    availableChapters,
-    source,
-    offsetIndex,
-  } = useTransitionPageContext();
+  const { page, loading } = props;
+  const { tapGesture, backgroundColor, currentChapter, showTransitionPage } =
+    useTransitionPageContext();
   const { background, textPrimary, textSecondary } =
     useReaderBackgroundColor(backgroundColor);
   const isPrevious = props.page.previous.index > currentChapter.index;
   const isNext = props.page.next.index < currentChapter.index;
-  const localRealm = useLocalRealm();
 
   const { width, height } = useWindowDimensions();
   const previous = useLocalObject(ChapterSchema, page.previous._id);
   const next = useLocalObject(ChapterSchema, page.next._id);
-  React.useEffect(() => {
-    (async () => {
-      if (
-        isLeadingTransitionPage &&
-        next != null &&
-        !fetching.has(next._id) &&
-        !transitioningPageState?.alreadyFetched &&
-        !transitioningPageState?.loading
-      ) {
-        fetching.add(next._id);
-
-        try {
-          await fetchPagesByChapter({
-            chapter: next,
-            source,
-            offsetIndex,
-            availableChapters,
-            localRealm,
-          });
-        } finally {
-          fetching.delete(next._id);
-        }
-      }
-    })();
-  }, []);
 
   return (
     <Box background-color={background}>
