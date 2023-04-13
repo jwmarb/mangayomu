@@ -81,12 +81,14 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
    *
    * EDIT: Webview should no longer be used due to its instability. Extremely long panels crashes the app.
    */
-  // const fallbackToWebView = stylizedHeight / height > 1;
+  const fallbackToWebView = stylizedHeight / height > 1;
 
   /**
    * When an image's dimensions are larger than normal, React Native's built-in Image component downsamples the image to the point it becomes unreadable (because of Fresco). A workaround for this is to use FastImage.
+   *
+   * NOTE: FastImage's image quality is noticeably worst than WebView
    */
-  const fallBackToFastImage = stylizedHeight / height > 1;
+  // const fallBackToFastImage = stylizedHeight / height > 1;
   const visibleWithoutErrorOpacity = useSharedValue(1); // for WebView only
 
   const style = React.useMemo(
@@ -176,47 +178,47 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
               resizeMode={FastImage.resizeMode.contain}
             />
           )} */}
-          {fallBackToFastImage ? (
-            //       <AnimatedBox style={webViewStyle}>
-            //         <WebView
-            //           androidLayerType="hardware"
-            //           ref={webViewRef}
-            //           onMessage={handleOnMessage}
-            //           //         injectedJavaScript={`
-            //           //   var img = document.getElementById("page");
-            //           //   if (img.naturalWidth !== 0 && img.naturalHeight !== 0) window.ReactNativeWebView.postMessage(JSON.stringify({ type: "load", width: img.naturalWidth, height: img.naturalHeight }));
-            //           // `}
-            //           injectedJavaScriptBeforeContentLoaded={`
-            //        var img = document.getElementById("page");
-            //        img.addEventListener("error", function (err) {
-            //          window.ReactNativeWebView.postMessage(JSON.stringify({ type: "error" }));
-            //        });
-            //        img.addEventListener("load", function () {
-            //          window.ReactNativeWebView.postMessage(JSON.stringify({ type: "load", width: img.naturalWidth, height: img.naturalHeight }));
-            //        })
-            //      `}
-            //           source={{
-            //             html: `
-            //    <html>
-            //      <body style="margin: 0;background-color: ${backgroundColor};">
-            //        <img src="${pageKey}" width="100%" id="page" style="object-fit: contain;"  />
-            //      </body>
-            //    </html>
-            //  `,
-            //           }}
-            //         />
-            //       </AnimatedBox>
-            <>
-              {!error && (
-                <FastImage
-                  source={{ uri: pageKey }}
-                  style={style}
-                  onError={handleOnError}
-                  resizeMode={FastImage.resizeMode.contain}
-                />
-              )}
-            </>
+          {fallbackToWebView ? (
+            <AnimatedBox style={webViewStyle}>
+              <WebView
+                useWebView2
+                ref={webViewRef}
+                onMessage={handleOnMessage}
+                //         injectedJavaScript={`
+                //   var img = document.getElementById("page");
+                //   if (img.naturalWidth !== 0 && img.naturalHeight !== 0) window.ReactNativeWebView.postMessage(JSON.stringify({ type: "load", width: img.naturalWidth, height: img.naturalHeight }));
+                // `}
+                injectedJavaScriptBeforeContentLoaded={`
+                   var img = document.getElementById("page");
+                   img.addEventListener("error", function (err) {
+                     window.ReactNativeWebView.postMessage(JSON.stringify({ type: "error" }));
+                   });
+                   img.addEventListener("load", function () {
+                     window.ReactNativeWebView.postMessage(JSON.stringify({ type: "load", width: img.naturalWidth, height: img.naturalHeight }));
+                   })
+                 `}
+                source={{
+                  html: `
+               <html>
+                 <body style="margin: 0;background-color: ${backgroundColor};">
+                   <img src="${pageKey}" width="100%" id="page" style="object-fit: contain;"  />
+                 </body>
+               </html>
+             `,
+                }}
+              />
+            </AnimatedBox>
           ) : (
+            // <>
+            //   {!error && (
+            //     <FastImage
+            //       source={{ uri: pageKey }}
+            //       style={style}
+            //       onError={handleOnError}
+            //       resizeMode={FastImage.resizeMode.contain}
+            //     />
+            //   )}
+            // </>
             <>
               {!error && (
                 <Image
