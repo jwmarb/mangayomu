@@ -70,14 +70,13 @@ const historySlice = createSlice({
             date: dateNow,
           });
         } else {
-          const sortedList = integrateSortedList(recentSection.data, (a, b) =>
-            a.manga.localeCompare(b.manga),
+          const sortedList = integrateSortedList(
+            recentSection.data,
+            (a, b) => a.date - b.date,
           );
-          const index = sortedList.indexOf({
-            manga: action.payload.manga,
-            chapter: action.payload.chapter,
-            date: dateNow,
-          });
+          const index = recentSection.data.findIndex(
+            (x) => x.manga === action.payload.manga,
+          ); // Linear search is more than sufficient enough here
           if (index === -1)
             sortedList.add({
               manga: action.payload.manga,
