@@ -31,8 +31,15 @@ const History: React.FC<ConnectedHistoryProps> = ({
   clearMangaHistory,
 }) => {
   const dialog = useDialog();
-  const [parsedSections, setParsedSections] =
-    React.useState<HistorySection[]>(sections);
+  const [parsedSections, setParsedSections] = React.useState<HistorySection[]>(
+    () => {
+      const copy: HistorySection[] = [];
+      for (let i = sections.length - 1; i >= 0; i--) {
+        copy.push(sections[i]);
+      }
+      return copy;
+    },
+  );
   const [show, setShow] = useBoolean();
   const [query, setQuery] = React.useState<string>('');
   const realm = useRealm();
@@ -142,7 +149,14 @@ const History: React.FC<ConnectedHistoryProps> = ({
       return () => {
         clearTimeout(timeout);
       };
-    } else setParsedSections(sections);
+    } else
+      setParsedSections(() => {
+        const copy: HistorySection[] = [];
+        for (let i = sections.length - 1; i >= 0; i--) {
+          copy.push(sections[i]);
+        }
+        return copy;
+      });
   }, [query, sections]);
   if (sections.length === 0)
     return (
