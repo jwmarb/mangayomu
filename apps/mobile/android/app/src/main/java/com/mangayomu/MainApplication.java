@@ -7,6 +7,13 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.react.modules.fresco.FrescoModule;
+import com.facebook.react.shell.MainPackageConfig;
+import com.facebook.react.shell.MainReactPackage;
+import com.facebook.react.bridge.ReactContext;
+import android.content.Context;
 import com.facebook.soloader.SoLoader;
 import java.util.List;
 
@@ -25,6 +32,7 @@ public class MainApplication extends Application implements ReactApplication {
       // Packages that cannot be autolinked yet can be added manually here, for
       // example:
       // packages.add(new MyReactNativePackage());
+
       return packages;
     }
 
@@ -52,6 +60,13 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+
+    ImagePipelineConfig pipelineConfig = ImagePipelineConfig.newBuilder(this)
+        .setResizeAndRotateEnabledForNetwork(false)
+        .setDownsampleEnabled(false)
+        .build();
+
+    Fresco.initialize(this, pipelineConfig);
     SoLoader.init(this, /* native exopackage */ false);
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we load the native entry point for
