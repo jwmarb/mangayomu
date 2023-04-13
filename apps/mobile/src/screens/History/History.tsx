@@ -118,7 +118,7 @@ const History: React.FC<ConnectedHistoryProps> = ({
         () =>
           setParsedSections(() => {
             const copy: HistorySection[] = [];
-            for (let i = 0; i < sections.length; i++) {
+            for (let i = sections.length - 1; i >= 0; i--) {
               const mangasCopy: MangaHistory[] = [];
               for (let k = 0; k < sections[i].data.length; k++) {
                 const mangaInDatabase = realm.objectForPrimaryKey(
