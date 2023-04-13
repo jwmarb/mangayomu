@@ -400,6 +400,29 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
           parsedKey: removeURLParams(item.page),
           url: item.page,
         });
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const pageChapter = localRealm.objectForPrimaryKey(
+          ChapterSchema,
+          item.chapter,
+        )!; // This will never be null
+        /**
+         * This code block will fetch the next chapter immediately
+         */
+        if (
+          pageChapter.index !== 0 &&
+          !chapterInfo.current[readableChapters[pageChapter.index - 1]._id]
+            ?.alreadyFetched &&
+          !chapterInfo.current[readableChapters[pageChapter.index - 1]._id]
+            ?.loading
+        ) {
+          await fetchPagesByChapter({
+            chapter: readableChapters[pageChapter.index - 1],
+            availableChapters: readableChapters,
+            localRealm,
+            source,
+            offsetIndex: indexOffset,
+          });
+        }
       }
 
       if (item.type === 'PAGE' && shouldTrackScrollPositionRef.current) {
@@ -419,6 +442,11 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
         item.type === 'TRANSITION_PAGE' &&
         shouldTrackScrollPositionRef.current
       ) {
+        /**
+         * User should decide to fetch on transition page
+         * But for better UX, fetch the next chapter immediately...
+         * In the case the next chapter is not fetched, however, this will run when the user reaches this
+         */
         if (
           chapterRef.current.numberOfPages != null &&
           chapterRef.current.index - 1 === item.next.index
@@ -561,18 +589,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   //   [readingDirection, horizontal, width, height],
   // );
 
-  const estimatedListSize = React.useMemo(() => {
-    switch (readingDirection) {
-      case ReadingDirection.LEFT_TO_RIGHT:
-      case ReadingDirection.RIGHT_TO_LEFT:
-        return { width: width * pagesRef.current.length, height };
-      case ReadingDirection.VERTICAL:
-        return { width, height: height * pagesRef.current.length };
-      case ReadingDirection.WEBTOON:
-        return { width, height: getOffset(0, pagesRef.current.length - 1) };
-    }
-  }, [width, height, pages.length, readingDirection]);
-
   function getItemSize(item: Page) {
     switch (readingDirection) {
       case ReadingDirection.LEFT_TO_RIGHT:
@@ -610,23 +626,12 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       <TransitionPageContext.Provider
         value={React.useMemo(
           () => ({
-            availableChapters: readableChapters,
             backgroundColor,
             currentChapter: chapter,
-            offsetIndex: indexOffset,
-            source,
             tapGesture,
             showTransitionPage,
           }),
-          [
-            readableChapters,
-            backgroundColor,
-            chapterKey,
-            indexOffset,
-            source,
-            tapGesture,
-            showTransitionPage,
-          ],
+          [backgroundColor, chapterKey, tapGesture, showTransitionPage],
         )}
       >
         <ChapterErrorContext.Provider
@@ -678,7 +683,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                   initialScrollIndex={_chapter.indexPage}
                   drawDistance={horizontal ? width : height}
                   estimatedItemSize={horizontal ? width : height}
-                  estimatedListSize={estimatedListSize}
                   getItemType={getItemType}
                   overrideItemLayout={overrideItemLayout}
                   showsVerticalScrollIndicator={false}
