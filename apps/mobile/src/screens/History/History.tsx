@@ -23,6 +23,7 @@ import useBoolean from '@hooks/useBoolean';
 import Input from '@components/Input';
 import { useRealm } from '@database/main';
 import { MangaSchema } from '@database/schemas/Manga';
+import reverseArray from '@helpers/reverseArray';
 
 const History: React.FC<ConnectedHistoryProps> = ({
   sections,
@@ -32,13 +33,7 @@ const History: React.FC<ConnectedHistoryProps> = ({
 }) => {
   const dialog = useDialog();
   const [parsedSections, setParsedSections] = React.useState<HistorySection[]>(
-    () => {
-      const copy: HistorySection[] = [];
-      for (let i = sections.length - 1; i >= 0; i--) {
-        copy.push(sections[i]);
-      }
-      return copy;
-    },
+    reverseArray(sections),
   );
   const [show, setShow] = useBoolean();
   const [query, setQuery] = React.useState<string>('');
@@ -149,14 +144,7 @@ const History: React.FC<ConnectedHistoryProps> = ({
       return () => {
         clearTimeout(timeout);
       };
-    } else
-      setParsedSections(() => {
-        const copy: HistorySection[] = [];
-        for (let i = sections.length - 1; i >= 0; i--) {
-          copy.push(sections[i]);
-        }
-        return copy;
-      });
+    } else setParsedSections(reverseArray(sections));
   }, [query, sections]);
   if (sections.length === 0)
     return (
