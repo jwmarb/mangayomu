@@ -83,12 +83,14 @@ const historySlice = createSlice({
               chapter: action.payload.chapter,
               date: dateNow,
             });
-          else
+          else {
             recentSection.data[index] = {
               manga: action.payload.manga,
               chapter: action.payload.chapter,
               date: dateNow,
             }; // It is OK to replace this because the `manga` will stay the same. The only thing changing is the chapter
+            sortedList.insertionSort();
+          }
         }
       }
     },
