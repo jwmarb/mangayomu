@@ -67,5 +67,21 @@ export default function integrateSortedList<T>(
         );
       return binary.search(arr, item, comparator);
     },
+    /**
+     * Sorts the array using insertion sort. Best for nearly-sorted arrays
+     */
+    insertionSort() {
+      const n = arr.length;
+      for (let i = 0; i < n; i++) {
+        const current = arr[i];
+        let j = i - 1;
+
+        while (j > -1 && comparator(current, arr[j]) < 0) {
+          arr[j + 1] = arr[j];
+          j--;
+        }
+        arr[j + 1] = current;
+      }
+    },
   };
 }
