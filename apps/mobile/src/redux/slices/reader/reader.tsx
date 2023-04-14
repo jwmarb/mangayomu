@@ -53,6 +53,7 @@ interface ReaderState {
   pageInDisplay: {
     parsedKey: string;
     url: string;
+    chapter: string;
   } | null;
   showTransitionPage: boolean;
   isMounted: boolean;
@@ -186,7 +187,11 @@ const readerSlice = createSlice({
     },
     setPageInDisplay: (
       state,
-      action: PayloadAction<{ parsedKey: string; url: string }>,
+      action: PayloadAction<{
+        parsedKey: string;
+        url: string;
+        chapter: string;
+      }>,
     ) => {
       state.pageInDisplay = action.payload;
     },
