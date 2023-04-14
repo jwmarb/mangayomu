@@ -59,7 +59,8 @@ const useChapterPageContext = () => {
 };
 
 const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
-  const { imageMenuRef, tapGesture } = useChapterPageContext();
+  const { imageMenuRef, tapGesture, readingDirection } =
+    useChapterPageContext();
   const { width, height } = useWindowDimensions();
   const {
     page: pageKey,
@@ -163,6 +164,9 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
       background-color={backgroundColor}
       justify-content="center"
       align-items="center"
+      height={
+        readingDirection !== ReadingDirection.WEBTOON ? height : undefined
+      }
     >
       <GestureDetector gesture={gestures}>
         <Box style={style} align-self="center">

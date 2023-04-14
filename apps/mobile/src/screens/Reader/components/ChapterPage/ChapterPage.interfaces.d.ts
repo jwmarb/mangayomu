@@ -11,4 +11,5 @@ export interface ChapterPageProps {
 export interface ChapterPageContextState {
   tapGesture: TapGesture;
   imageMenuRef: React.RefObject<ImageMenuMethods>;
+  readingDirection: ReadingDirection;
 }
