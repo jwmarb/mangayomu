@@ -367,6 +367,36 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     }
   }
 
+  React.useEffect(() => {
+    if (pageInDisplay != null) {
+      (async () => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const pageChapter = localRealm.objectForPrimaryKey(
+          ChapterSchema,
+          pageInDisplay.chapter,
+        )!; // This will never be null
+        /**
+         * This code block will fetch the next chapter immediately
+         */
+        if (
+          pageChapter.index !== 0 &&
+          !chapterInfo.current[readableChapters[pageChapter.index - 1]._id]
+            ?.alreadyFetched &&
+          !chapterInfo.current[readableChapters[pageChapter.index - 1]._id]
+            ?.loading
+        ) {
+          await fetchPagesByChapter({
+            chapter: readableChapters[pageChapter.index - 1],
+            availableChapters: readableChapters,
+            localRealm,
+            source,
+            offsetIndex: indexOffset,
+          });
+        }
+      })();
+    }
+  }, [pageInDisplay]);
+
   const handleOnViewableItemsChanged = async (info: {
     viewableItems: ViewToken[];
     changed: ViewToken[];
@@ -399,30 +429,8 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
         setPageInDisplay({
           parsedKey: removeURLParams(item.page),
           url: item.page,
+          chapter: item.chapter,
         });
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const pageChapter = localRealm.objectForPrimaryKey(
-          ChapterSchema,
-          item.chapter,
-        )!; // This will never be null
-        /**
-         * This code block will fetch the next chapter immediately
-         */
-        if (
-          pageChapter.index !== 0 &&
-          !chapterInfo.current[readableChapters[pageChapter.index - 1]._id]
-            ?.alreadyFetched &&
-          !chapterInfo.current[readableChapters[pageChapter.index - 1]._id]
-            ?.loading
-        ) {
-          await fetchPagesByChapter({
-            chapter: readableChapters[pageChapter.index - 1],
-            availableChapters: readableChapters,
-            localRealm,
-            source,
-            offsetIndex: indexOffset,
-          });
-        }
       }
 
       if (item.type === 'PAGE' && shouldTrackScrollPositionRef.current) {
@@ -621,7 +629,10 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
 
   return (
     <ChapterPageContext.Provider
-      value={React.useMemo(() => ({ imageMenuRef, tapGesture }), [tapGesture])}
+      value={React.useMemo(
+        () => ({ imageMenuRef, tapGesture, readingDirection }),
+        [tapGesture, readingDirection],
+      )}
     >
       <TransitionPageContext.Provider
         value={React.useMemo(
