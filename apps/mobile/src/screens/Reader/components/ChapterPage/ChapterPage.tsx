@@ -62,11 +62,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   const { imageMenuRef, tapGesture, readingDirection } =
     useChapterPageContext();
   const { width, height } = useWindowDimensions();
-  const {
-    page: pageKey,
-    error,
-    // localPageUri
-  } = props.page;
+  const { page: pageKey, error, localPageUri } = props.page;
   const { backgroundColor } = props;
   const webViewRef = React.useRef<WebView>(null);
   const imageWidth = props.page.width;
@@ -185,7 +181,11 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
           {fallbackToWebView ? (
             <AnimatedBox style={webViewStyle}>
               <WebView
+                scrollEnabled={false}
+                scalesPageToFit={false}
+                setBuiltInZoomControls={false}
                 useWebView2
+                pointerEvents="none"
                 ref={webViewRef}
                 onMessage={handleOnMessage}
                 //         injectedJavaScript={`
@@ -203,11 +203,14 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
                  `}
                 source={{
                   html: `
-               <html>
-                 <body style="margin: 0;background-color: ${backgroundColor};">
-                   <img src="${pageKey}" width="100%" id="page" style="object-fit: contain;"  />
-                 </body>
-               </html>
+                <html>
+                  <head>
+                    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
+                  </head>
+                  <body style="margin: 0;background-color: ${backgroundColor};">
+                    <img src="${localPageUri}" id="page" style="object-fit: contain;width: ${style.width}px;height: ${style.height}"  />
+                  </body>
+                </html>
              `,
                 }}
               />
@@ -228,7 +231,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
                 <Image
                   // onLoadStart={handleOnLoadStart}
                   source={{
-                    uri: pageKey,
+                    uri: localPageUri,
                   }}
                   style={style}
                   // onLoadEnd={handleOnLoadEnd}
