@@ -22,7 +22,7 @@ export type TransitionPage = {
 export type ChapterPage = {
   type: 'PAGE';
   page: string;
-  // localPageUri: string;
+  localPageUri: string;
   pageNumber: number;
   chapter: string;
   width: number;
@@ -61,6 +61,7 @@ interface ReaderState {
 
 export interface FetchPagesByChapterPayload {
   chapter: ChapterSchema; // this is the chapter to fetch pages from
+  manga: MangaSchema;
   availableChapters: (ChapterSchema & Realm.Object<ChapterSchema, never>)[];
   localRealm: Realm;
   source: MangaHost;
@@ -94,6 +95,10 @@ function getImageSizeAsync(
   });
 }
 
+function encodePathName(uri: string) {
+  return uri.replace(/[^A-Za-z0-9\s-]/g, '');
+}
+
 export const fetchPagesByChapter = createAsyncThunk(
   'reader/fetchPagesByChapter',
   async (payload: FetchPagesByChapterPayload) => {
@@ -101,26 +106,42 @@ export const fetchPagesByChapter = createAsyncThunk(
       const response = await payload.source.getPages(payload.chapter);
       const preload = Promise.all(response.map((x) => Image.prefetch(x)));
       const dimensions = Promise.all(
-        response.map(async (uri) => {
+        response.map(async (uri, index) => {
           const localPage = payload.localRealm.objectForPrimaryKey(
             PageSchema,
             removeURLParams(uri),
           );
-          // const path =
-          //   RNFetchBlob.fs.dirs['CacheDir'] + payload.source.getName() + uri.substring(uri.lastIndexOf('/'), uri.indexOf('?'));
 
-          // const imageExists = await RNFetchBlob.fs.exists(path);
-          // const base64 = `data:image/${getFileExtension(uri)};base64,${
-          //   imageExists
-          //     ? ((await RNFetchBlob.fs.readFile(path, 'base64')) as string)
-          //     : await RNFetchBlob.config({
-          //         path,
-          //       })
-          //         .fetch('GET', uri)
-          //         .then((res) => res.base64() as string)
-          // }`;
+          const fileExtension = getFileExtension(uri);
+          /**
+           * Download image locally
+           */
+          const path =
+            RNFetchBlob.fs.dirs['CacheDir'] +
+            '/' +
+            payload.source.getName() +
+            '/' +
+            encodePathName(payload.manga.title) +
+            '/' +
+            encodePathName(payload.chapter.name) +
+            '/' +
+            index +
+            `.${fileExtension}`;
+
+          console.log(path);
+
+          const imageExists = await RNFetchBlob.fs.exists(path);
+          const base64 = `data:image/${fileExtension};base64,${
+            imageExists
+              ? ((await RNFetchBlob.fs.readFile(path, 'base64')) as string)
+              : await RNFetchBlob.config({
+                  path,
+                })
+                  .fetch('GET', uri)
+                  .then((res) => res.base64() as string)
+          }`;
           if (localPage == null) {
-            const { width, height } = await getImageSizeAsync(uri);
+            const { width, height } = await getImageSizeAsync(base64);
             payload.localRealm.write(() => {
               payload.localRealm.create<PageSchema>(
                 'Page',
@@ -139,14 +160,14 @@ export const fetchPagesByChapter = createAsyncThunk(
               width,
               height,
               url: uri,
-              // localPath: base64
+              localPath: base64,
             };
           }
           return {
             url: uri,
             width: localPage.width,
             height: localPage.height,
-            // localPath: base64,
+            localPath: base64,
           };
         }),
       );
@@ -308,7 +329,7 @@ const readerSlice = createSlice({
             height: action.payload.data[i].height,
             pageNumber: i + 1,
             chapter: action.meta.arg.chapter.link,
-            // localPageUri: action.payload.data[i].localPath,
+            localPageUri: action.payload.data[i].localPath,
           });
         }
         if (nextChapter != null)
@@ -354,7 +375,7 @@ const readerSlice = createSlice({
               height: action.payload.data[i].height,
               pageNumber: i + 1,
               chapter: action.meta.arg.chapter.link,
-              // localPageUri: action.payload.data[i].localPath,
+              localPageUri: action.payload.data[i].localPath,
             });
           }
           if (nextChapter != null)
@@ -396,7 +417,7 @@ const readerSlice = createSlice({
               height: action.payload.data[i].height,
               pageNumber: i + 1,
               chapter: action.meta.arg.chapter.link,
-              // localPageUri: action.payload.data[i].localPath,
+              localPageUri: action.payload.data[i].localPath,
             });
           }
           for (const key in action.meta.arg.offsetIndex.current) {
