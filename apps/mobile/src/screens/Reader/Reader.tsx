@@ -391,6 +391,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
             localRealm,
             source,
             offsetIndex: indexOffset,
+            manga,
           });
         }
       })();
@@ -476,6 +477,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
               localRealm,
               source,
               offsetIndex: indexOffset,
+              manga,
             });
           }
         } else if (chapterRef.current.index + 1 === item.previous.index) {
@@ -498,6 +500,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
               source,
               offsetIndex: indexOffset,
               fetchedPreviousChapter,
+              manga,
             });
           }
         }
@@ -686,7 +689,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                   // windowSize={13}
                   // maxToRenderPerBatch={50}
                   // contentContainerStyle={contentContainerStyle}
-
+                  // initialScrollIndex={_chapter.indexPage}
                   // FlashList props
                   estimatedFirstItemOffset={
                     !isOnFirstChapter ? (horizontal ? width : height) : 0

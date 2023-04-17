@@ -326,6 +326,7 @@ export function readerInitializer(args: ReaderInitializerArguments) {
       availableChapters: readableChapters,
       localRealm,
       offsetIndex: indexOffset,
+      manga,
     });
     StatusBar.setHidden(true);
     return () => {
