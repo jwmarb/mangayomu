@@ -128,8 +128,6 @@ export const fetchPagesByChapter = createAsyncThunk(
             index +
             `.${fileExtension}`;
 
-          console.log(path);
-
           const imageExists = await RNFetchBlob.fs.exists(path);
           const base64 = `data:image/${fileExtension};base64,${
             imageExists
