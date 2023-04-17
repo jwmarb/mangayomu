@@ -11,7 +11,10 @@ import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import { PageSchema } from '@database/schemas/Page';
 import useMangaSource from '@hooks/useMangaSource';
-import { Page } from '@redux/slices/reader/reader';
+import {
+  fetchPagesByChapter as _fetchPagesByChapter,
+  Page,
+} from '@redux/slices/reader/reader';
 import {
   ReaderScreenOrientation,
   ReadingDirection,
@@ -60,6 +63,8 @@ import Orientation from 'react-native-orientation-locker';
 import ChapterError from '@screens/Reader/components/ChapterError';
 import { ChapterErrorContext } from '@screens/Reader/components/ChapterError/ChapterError';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
+import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '@redux/main';
 const styles = ScaledSheet.create({
   container: {
     minHeight: '100%',
@@ -93,7 +98,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     horizontal: globalHorizontal,
     pages,
     backgroundColor,
-    fetchPagesByChapter,
     manga: mangaKey,
     chapterInfo: _chapterInfo,
     globalReadingDirection,
@@ -102,6 +106,10 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     addMangaToHistory,
   } = props;
   const realm = useRealm();
+  const dispatch = useAppDispatch();
+  const fetchPagesByChapter = (
+    ...args: Parameters<typeof _fetchPagesByChapter>
+  ) => dispatch(_fetchPagesByChapter(...args));
   const { width, height } = useWindowDimensions();
   const localRealm = useLocalRealm();
   const manga = useObject(MangaSchema, mangaKey);
@@ -385,7 +393,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
           !chapterInfo.current[readableChapters[pageChapter.index - 1]._id]
             ?.loading
         ) {
-          await fetchPagesByChapter({
+          const promise = fetchPagesByChapter({
             chapter: readableChapters[pageChapter.index - 1],
             availableChapters: readableChapters,
             localRealm,
@@ -393,6 +401,9 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
             offsetIndex: indexOffset,
             manga,
           });
+          return () => {
+            promise.abort();
+          };
         }
       })();
     }

@@ -35,7 +35,6 @@ const mapStateToProps = (state: AppState, props: RootStackProps<'Reader'>) => ({
 });
 
 const connector = connect(mapStateToProps, {
-  fetchPagesByChapter,
   resetReaderState,
   setCurrentChapter,
   setIsOnChapterError,

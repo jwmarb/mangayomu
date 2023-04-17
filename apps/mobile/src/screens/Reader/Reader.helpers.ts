@@ -269,7 +269,9 @@ interface ReaderInitializerArguments
   };
   realm: Realm;
   manga: MangaSchema & Realm.Object<MangaSchema, never>;
-  fetchPagesByChapter: (arg: FetchPagesByChapterPayload) => Promise<any>;
+  fetchPagesByChapter: (
+    arg: FetchPagesByChapterPayload,
+  ) => Promise<any> & { abort: () => void };
   source: MangaHost;
   resetReaderState: () => void;
   forceScrollToOffset: ForceScrollToOffset;
@@ -320,7 +322,7 @@ export function readerInitializer(args: ReaderInitializerArguments) {
       };
     });
 
-    fetchPagesByChapter({
+    const promise = fetchPagesByChapter({
       chapter: _chapter,
       source,
       availableChapters: readableChapters,
@@ -330,6 +332,7 @@ export function readerInitializer(args: ReaderInitializerArguments) {
     });
     StatusBar.setHidden(true);
     return () => {
+      promise.abort();
       Orientation.unlockAllOrientations();
       resetReaderState();
       listener.remove();
