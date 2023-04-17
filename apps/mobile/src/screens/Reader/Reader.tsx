@@ -14,6 +14,7 @@ import useMangaSource from '@hooks/useMangaSource';
 import {
   fetchPagesByChapter as _fetchPagesByChapter,
   Page,
+  TransitionPage as ITransitionPage,
 } from '@redux/slices/reader/reader';
 import {
   ReaderScreenOrientation,
@@ -125,6 +126,8 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     );
 
   const [chapter, setChapter] = React.useState(_chapter);
+  const [transitionPage, setTransitionPage] =
+    React.useState<ITransitionPage | null>(null);
 
   const readableChapters = React.useMemo(
     () =>
@@ -409,6 +412,72 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     }
   }, [pageInDisplay]);
 
+  React.useEffect(() => {
+    /**
+     * User should decide to fetch on transition page
+     * But for better UX, fetch the next chapter immediately...
+     * In the case the next chapter is not fetched, however, this will run when the user reaches this
+     */
+    if (
+      transitionPage != null &&
+      chapterRef.current.numberOfPages != null &&
+      chapterRef.current.index - 1 === transitionPage.next.index
+    ) {
+      setCurrentPage(chapterRef.current.numberOfPages);
+      const p = localRealm.objectForPrimaryKey(
+        ChapterSchema,
+        transitionPage.next._id,
+      );
+      if (
+        p != null &&
+        !chapterInfo.current[transitionPage.next._id]?.alreadyFetched &&
+        !chapterInfo.current[transitionPage.next._id]?.loading
+      ) {
+        console.log('Fetching next chapter...');
+        const promise = fetchPagesByChapter({
+          chapter: p,
+          availableChapters: readableChapters,
+          localRealm,
+          source,
+          offsetIndex: indexOffset,
+          manga,
+        });
+        return () => {
+          promise.abort();
+        };
+      }
+    } else if (
+      transitionPage != null &&
+      chapterRef.current.index + 1 === transitionPage.previous.index
+    ) {
+      setCurrentPage(1);
+      // asynchronous fetch previous chapter here
+      const p = localRealm.objectForPrimaryKey(
+        ChapterSchema,
+        transitionPage.previous._id,
+      );
+      if (
+        p != null &&
+        !chapterInfo.current[transitionPage.previous._id]?.alreadyFetched &&
+        !chapterInfo.current[transitionPage.previous._id]?.loading
+      ) {
+        console.log('Fetching previous chapter...');
+        const promise = fetchPagesByChapter({
+          chapter: p,
+          availableChapters: readableChapters,
+          localRealm,
+          source,
+          offsetIndex: indexOffset,
+          fetchedPreviousChapter,
+          manga,
+        });
+        return () => {
+          promise.abort();
+        };
+      }
+    }
+  }, [transitionPage]);
+
   const handleOnViewableItemsChanged = async (info: {
     viewableItems: ViewToken[];
     changed: ViewToken[];
@@ -462,59 +531,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
         item.type === 'TRANSITION_PAGE' &&
         shouldTrackScrollPositionRef.current
       ) {
-        /**
-         * User should decide to fetch on transition page
-         * But for better UX, fetch the next chapter immediately...
-         * In the case the next chapter is not fetched, however, this will run when the user reaches this
-         */
-        if (
-          chapterRef.current.numberOfPages != null &&
-          chapterRef.current.index - 1 === item.next.index
-        ) {
-          setCurrentPage(chapterRef.current.numberOfPages);
-          const p = localRealm.objectForPrimaryKey(
-            ChapterSchema,
-            item.next._id,
-          );
-          if (
-            p != null &&
-            !chapterInfo.current[item.next._id]?.alreadyFetched &&
-            !chapterInfo.current[item.next._id]?.loading
-          ) {
-            console.log('Fetching next chapter...');
-            await fetchPagesByChapter({
-              chapter: p,
-              availableChapters: readableChapters,
-              localRealm,
-              source,
-              offsetIndex: indexOffset,
-              manga,
-            });
-          }
-        } else if (chapterRef.current.index + 1 === item.previous.index) {
-          setCurrentPage(1);
-          // asynchronous fetch previous chapter here
-          const p = localRealm.objectForPrimaryKey(
-            ChapterSchema,
-            item.previous._id,
-          );
-          if (
-            p != null &&
-            !chapterInfo.current[item.previous._id]?.alreadyFetched &&
-            !chapterInfo.current[item.previous._id]?.loading
-          ) {
-            console.log('Fetching previous chapter...');
-            await fetchPagesByChapter({
-              chapter: p,
-              availableChapters: readableChapters,
-              localRealm,
-              source,
-              offsetIndex: indexOffset,
-              fetchedPreviousChapter,
-              manga,
-            });
-          }
-        }
+        setTransitionPage(item);
       }
     }
   };
