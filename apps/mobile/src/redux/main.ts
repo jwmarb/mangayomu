@@ -20,6 +20,7 @@ import { BrowseReducer } from '@redux/slices/browse';
 import { SettingsReducer } from '@redux/slices/settings';
 import { ReaderReducer } from '@redux/slices/reader';
 import { HistoryReducer } from '@redux/slices/history';
+import { useDispatch } from 'react-redux';
 
 const reducers = combineReducers({
   __initial__: __initialReducer__,
@@ -64,3 +65,4 @@ export const persistor = persistStore(store);
 
 export type AppState = ReturnType<typeof reducers>;
 export type AppDispatch = typeof store.dispatch;
+export const useAppDispatch = () => useDispatch<AppDispatch>();
