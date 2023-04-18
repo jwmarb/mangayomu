@@ -6,6 +6,7 @@ import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import GlobalReaderSettings from '@screens/Reader/components/ReaderSettingsMenu/components/GlobalReaderSettings';
 import LocalReaderSettings from '@screens/Reader/components/ReaderSettingsMenu/components/LocalReaderSettings';
 import { ReaderSettingsMenuProps } from '@screens/Reader/components/ReaderSettingsMenu/ReaderSettingsMenu.interfaces';
+import Advanced from './components/Advanced';
 import React from 'react';
 
 const ReaderSettingsMenu: React.ForwardRefRenderFunction<
@@ -25,6 +26,8 @@ const ReaderSettingsMenu: React.ForwardRefRenderFunction<
               return <LocalReaderSettings mangaKey={mangaKey} />;
             case 'global':
               return <GlobalReaderSettings />;
+            case 'advanced':
+              return <Advanced />;
           }
         }}
       />
@@ -34,6 +37,7 @@ const ReaderSettingsMenu: React.ForwardRefRenderFunction<
 const routes = [
   { key: 'local', title: 'For this series' },
   { key: 'global', title: 'Global' },
+  { key: 'advanced', title: 'Advanced' },
 ];
 
 export default React.memo(React.forwardRef(ReaderSettingsMenu));

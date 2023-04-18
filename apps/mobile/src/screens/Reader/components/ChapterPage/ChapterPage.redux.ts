@@ -8,6 +8,7 @@ const mapStateToProps = (
   props: React.PropsWithChildren<ChapterPageProps>,
 ) => ({
   backgroundColor: state.settings.reader.backgroundColor.toLowerCase(),
+  imageComponentType: state.settings.reader.advanced.imageComponent,
   ...props,
 });
 

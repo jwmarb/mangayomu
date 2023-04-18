@@ -51,6 +51,13 @@ export enum TitleAlignment {
   END = 'right',
 }
 
+export enum ReaderImageComponent {
+  WEBVIEW = 'WebView',
+  IMAGE = 'Image',
+  FAST_IMAGE = 'FastImage',
+  AUTO = 'Auto (recommended)',
+}
+
 export interface SettingsState {
   cloud: {
     enabled: boolean;
@@ -66,6 +73,9 @@ export interface SettingsState {
     imageScaling: ImageScaling;
     readingDirection: ReadingDirection;
     zoomStartPosition: ZoomStartPosition;
+    advanced: {
+      imageComponent: ReaderImageComponent;
+    };
   };
   book: {
     width: number;
@@ -98,6 +108,9 @@ const initialSettingsState: SettingsState = {
     imageScaling: ImageScaling.SMART_FIT,
     readingDirection: ReadingDirection.RIGHT_TO_LEFT,
     zoomStartPosition: ZoomStartPosition.AUTOMATIC,
+    advanced: {
+      imageComponent: ReaderImageComponent.AUTO,
+    },
   },
   book: {
     width: moderateScale(110),
@@ -120,6 +133,15 @@ const settingsSlice = createSlice({
   name: 'settings',
   initialState: initialSettingsState,
   reducers: {
+    setReaderImageComponent: (
+      state,
+      action: PayloadAction<ReaderImageComponent>,
+    ) => {
+      if (state.reader.advanced == null)
+        state.reader.advanced = { imageComponent: action.payload };
+      state.reader.advanced.imageComponent = action.payload;
+    },
+
     toggleCloudSync: (state, action: PayloadAction<boolean | undefined>) => {
       if (action.payload != null) state.cloud.enabled = action.payload;
       else state.cloud.enabled = !state.cloud.enabled;
@@ -222,6 +244,7 @@ export const {
   toggleNotifyOnLastChapter,
   setReaderBackgroundColor,
   toggleShowPageNumber,
+  setReaderImageComponent,
 } = settingsSlice.actions;
 
 export function useReaderSetting<
