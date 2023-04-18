@@ -26,6 +26,7 @@ import {
 import Orientation from 'react-native-orientation-locker';
 import { SharedValue } from 'react-native-reanimated';
 import Realm from 'realm';
+import { Immersive } from 'react-native-immersive';
 
 type ForceScrollToOffset = (offset: number) => void;
 
@@ -330,13 +331,13 @@ export function readerInitializer(args: ReaderInitializerArguments) {
       offsetIndex: indexOffset,
       manga,
     });
-    StatusBar.setHidden(true);
+    Immersive.on();
     return () => {
+      Immersive.off();
       promise.abort();
       Orientation.unlockAllOrientations();
       resetReaderState();
       listener.remove();
-      StatusBar.setHidden(false);
     };
   }, []);
 }
