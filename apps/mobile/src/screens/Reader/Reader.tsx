@@ -708,7 +708,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                 <Progress />
               </Box>
             ) : (
-              <Box minWidth={width} minHeight={height}>
+              <Box minWidth={width} minHeight={height} height="100%">
                 <FlashList
                   ref={flatListRef}
                   // FlatList Props
