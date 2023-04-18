@@ -78,7 +78,7 @@ const TabBarItem = React.memo(function (props: {
       }}
       style={{ width: width / numOfRoutes }}
     >
-      <Box mx="xl" my="m">
+      <Box m="m">
         <Text
           as={Animated.Text}
           align="center"
