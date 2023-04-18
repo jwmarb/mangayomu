@@ -34,7 +34,7 @@ import Divider from '@components/Divider';
 import { useLocalObject, useLocalRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { PageSchema } from '@database/schemas/Page';
-import { ReadingDirection } from '@redux/slices/settings';
+import { ReaderImageComponent, ReadingDirection } from '@redux/slices/settings';
 
 export function removeURLParams(url: string) {
   const startParam = url.indexOf('?');
@@ -63,7 +63,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     useChapterPageContext();
   const { width, height } = useWindowDimensions();
   const { page: pageKey, error, localPageUri } = props.page;
-  const { backgroundColor } = props;
+  const { backgroundColor, imageComponentType } = props;
   const webViewRef = React.useRef<WebView>(null);
   const imageWidth = props.page.width;
   const imageHeight = props.page.height;
@@ -154,6 +154,76 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     }
   };
 
+  const WebViewImageElement = (
+    <AnimatedBox style={webViewStyle}>
+      <WebView
+        scrollEnabled={false}
+        scalesPageToFit={false}
+        setBuiltInZoomControls={false}
+        useWebView2
+        pointerEvents="none"
+        ref={webViewRef}
+        onMessage={handleOnMessage}
+        injectedJavaScriptBeforeContentLoaded={`
+       var img = document.getElementById("page");
+       img.addEventListener("error", function (err) {
+         window.ReactNativeWebView.postMessage(JSON.stringify({ type: "error" }));
+       });
+       img.addEventListener("load", function () {
+         window.ReactNativeWebView.postMessage(JSON.stringify({ type: "load", width: img.naturalWidth, height: img.naturalHeight }));
+       })
+     `}
+        source={{
+          html: `
+    <html>
+      <head>
+        <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
+      </head>
+      <body style="margin: 0;background-color: ${backgroundColor};">
+        <img src="${localPageUri}" id="page" style="object-fit: cover;width: ${style.width}px;height: ${style.height}px"  />
+      </body>
+    </html>
+ `,
+        }}
+      />
+    </AnimatedBox>
+  );
+
+  const ImageElement = (
+    <Image
+      source={{
+        uri: localPageUri,
+      }}
+      style={style}
+      onError={handleOnError}
+      resizeMode={FastImage.resizeMode.contain}
+    />
+  );
+
+  const FastImageElement = (
+    <FastImage
+      source={{
+        uri: localPageUri,
+      }}
+      style={style}
+      onError={handleOnError}
+    />
+  );
+
+  const renderComponent = React.useMemo(() => {
+    if (error) return null;
+    switch (imageComponentType) {
+      case ReaderImageComponent.AUTO:
+        return fallbackToWebView ? WebViewImageElement : ImageElement;
+      case ReaderImageComponent.FAST_IMAGE:
+        return FastImageElement;
+      case ReaderImageComponent.IMAGE:
+        return ImageElement;
+      case ReaderImageComponent.WEBVIEW:
+        return WebViewImageElement;
+    }
+  }, [imageComponentType, error]);
+
   return (
     <Box
       flex-grow
@@ -166,81 +236,6 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     >
       <GestureDetector gesture={gestures}>
         <Box style={style} align-self="center">
-          {/* {!error && (
-            <Image
-              // onLoadStart={handleOnLoadStart}
-              source={{
-                uri: pageKey,
-              }}
-              style={style}
-              // onLoadEnd={handleOnLoadEnd}
-              onError={handleOnError}
-              resizeMode={FastImage.resizeMode.contain}
-            />
-          )} */}
-          {fallbackToWebView ? (
-            <AnimatedBox style={webViewStyle}>
-              <WebView
-                scrollEnabled={false}
-                scalesPageToFit={false}
-                setBuiltInZoomControls={false}
-                useWebView2
-                pointerEvents="none"
-                ref={webViewRef}
-                onMessage={handleOnMessage}
-                //         injectedJavaScript={`
-                //   var img = document.getElementById("page");
-                //   if (img.naturalWidth !== 0 && img.naturalHeight !== 0) window.ReactNativeWebView.postMessage(JSON.stringify({ type: "load", width: img.naturalWidth, height: img.naturalHeight }));
-                // `}
-                injectedJavaScriptBeforeContentLoaded={`
-                   var img = document.getElementById("page");
-                   img.addEventListener("error", function (err) {
-                     window.ReactNativeWebView.postMessage(JSON.stringify({ type: "error" }));
-                   });
-                   img.addEventListener("load", function () {
-                     window.ReactNativeWebView.postMessage(JSON.stringify({ type: "load", width: img.naturalWidth, height: img.naturalHeight }));
-                   })
-                 `}
-                source={{
-                  html: `
-                <html>
-                  <head>
-                    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
-                  </head>
-                  <body style="margin: 0;background-color: ${backgroundColor};">
-                    <img src="${localPageUri}" id="page" style="object-fit: contain;width: ${style.width}px;height: ${style.height}"  />
-                  </body>
-                </html>
-             `,
-                }}
-              />
-            </AnimatedBox>
-          ) : (
-            // <>
-            //   {!error && (
-            //     <FastImage
-            //       source={{ uri: pageKey }}
-            //       style={style}
-            //       onError={handleOnError}
-            //       resizeMode={FastImage.resizeMode.contain}
-            //     />
-            //   )}
-            // </>
-            <>
-              {!error && (
-                <Image
-                  // onLoadStart={handleOnLoadStart}
-                  source={{
-                    uri: localPageUri,
-                  }}
-                  style={style}
-                  // onLoadEnd={handleOnLoadEnd}
-                  onError={handleOnError}
-                  resizeMode={FastImage.resizeMode.contain}
-                />
-              )}
-            </>
-          )}
           {/* <AnimatedBox
           position="absolute"
           align-items="center"
@@ -267,6 +262,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
             </Text>
           </Box>
         </AnimatedBox> */}
+          {renderComponent}
           {error && (
             <Stack
               style={style}
