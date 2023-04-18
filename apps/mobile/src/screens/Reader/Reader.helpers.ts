@@ -5,6 +5,7 @@ import { MangaHost } from '@mangayomu/mangascraper';
 import { addMangaToHistory } from '@redux/slices/history';
 import {
   FetchPagesByChapterPayload,
+  getCachedReaderPages,
   Page,
   ReaderChapterInfo,
 } from '@redux/slices/reader';
@@ -26,6 +27,7 @@ import {
 import Orientation from 'react-native-orientation-locker';
 import { SharedValue } from 'react-native-reanimated';
 import Realm from 'realm';
+import RNFetchBlob from 'rn-fetch-blob';
 
 type ForceScrollToOffset = (offset: number) => void;
 
@@ -332,6 +334,8 @@ export function readerInitializer(args: ReaderInitializerArguments) {
     });
     StatusBar.setHidden(true);
     return () => {
+      const readerImageCachePath = getCachedReaderPages(source);
+      RNFetchBlob.fs.unlink(readerImageCachePath);
       promise.abort();
       Orientation.unlockAllOrientations();
       resetReaderState();

@@ -99,6 +99,10 @@ function encodePathName(uri: string) {
   return uri.replace(/[^A-Za-z0-9\s-]/g, '');
 }
 
+export function getCachedReaderPages(source: MangaHost) {
+  return RNFetchBlob.fs.dirs['CacheDir'] + '/' + source.getName() + '/';
+}
+
 export const fetchPagesByChapter = createAsyncThunk(
   'reader/fetchPagesByChapter',
   async (payload: FetchPagesByChapterPayload) => {
@@ -128,16 +132,14 @@ export const fetchPagesByChapter = createAsyncThunk(
             index +
             `.${fileExtension}`;
 
-          const imageExists = await RNFetchBlob.fs.exists(path);
-          const base64 = `data:image/${fileExtension};base64,${
-            imageExists
-              ? ((await RNFetchBlob.fs.readFile(path, 'base64')) as string)
-              : await RNFetchBlob.config({
-                  path,
-                })
-                  .fetch('GET', uri)
-                  .then((res) => res.base64() as string)
-          }`;
+          const base64 = `data:image/${fileExtension};base64,${await RNFetchBlob.config(
+            {
+              path,
+            },
+          )
+            .fetch('GET', uri)
+            .then((res) => res.base64() as string)}`;
+
           if (localPage == null) {
             const { width, height } = await getImageSizeAsync(base64);
             payload.localRealm.write(() => {
