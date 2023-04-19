@@ -9,6 +9,7 @@ import { useLocalObject } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useBoolean from '@hooks/useBoolean';
 import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
+import useScreenDimensions from '@hooks/useScreenDimensions';
 import { ChapterErrorContextState } from '@screens/Reader/components/ChapterError/ChapterError.interfaces';
 import React from 'react';
 import { useWindowDimensions } from 'react-native';
@@ -30,11 +31,11 @@ const wait = (ms: number) =>
 const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
   const { error, chapter: chapterKey } = props.error;
   const { fetchPagesByChapter, backgroundColor } = props;
-  const { localRealm, availableChapters, offsetIndex, source } =
+  const { localRealm, availableChapters, offsetIndex, source, manga } =
     useChapterErrorContext();
   const { background, textPrimary, textSecondary } =
     useReaderBackgroundColor(backgroundColor);
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useScreenDimensions();
   const [loading, toggle] = useBoolean();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const chapter = useLocalObject(ChapterSchema, chapterKey)!;
@@ -49,6 +50,7 @@ const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
           offsetIndex,
           source,
           mockSuccess: true,
+          manga,
         });
       } finally {
         toggle(false);

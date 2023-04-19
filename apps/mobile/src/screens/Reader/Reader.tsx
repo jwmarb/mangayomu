@@ -44,7 +44,6 @@ import React from 'react';
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
-  useWindowDimensions,
   ViewabilityConfigCallbackPairs,
   ViewToken,
   FlatList,
@@ -66,6 +65,8 @@ import { ChapterErrorContext } from '@screens/Reader/components/ChapterError/Cha
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { useDispatch } from 'react-redux';
 import { useAppDispatch } from '@redux/main';
+import useImmersiveMode from '@hooks/useImmersiveMode';
+import useScreenDimensions from '@hooks/useScreenDimensions';
 const styles = ScaledSheet.create({
   container: {
     minHeight: '100%',
@@ -106,12 +107,13 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     setIsMounted,
     addMangaToHistory,
   } = props;
+  const [showStatusAndNavBar, hideStatusAndNavBar] = useImmersiveMode();
   const realm = useRealm();
   const dispatch = useAppDispatch();
   const fetchPagesByChapter = (
     ...args: Parameters<typeof _fetchPagesByChapter>
   ) => dispatch(_fetchPagesByChapter(...args));
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useScreenDimensions();
   const localRealm = useLocalRealm();
   const manga = useObject(MangaSchema, mangaKey);
   const _chapter = useLocalObject(ChapterSchema, chapterKey);
@@ -262,11 +264,13 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       Gesture.Tap()
         .onStart(() => {
           if (overlayOpacity.value > 0) {
+            runOnJS(hideStatusAndNavBar)();
             overlayOpacity.value = withTiming(0, {
               duration: 150,
               easing: Easing.ease,
             });
           } else {
+            runOnJS(showStatusAndNavBar)();
             overlayOpacity.value = withTiming(1, {
               duration: 150,
               easing: Easing.ease,
@@ -579,54 +583,54 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     }
   };
 
-  // const getItemLayout = React.useCallback(
-  //   (data: Page[] | null | undefined, index: number) => {
-  //     if (data == null)
-  //       return {
-  //         index,
-  //         offset: (horizontal ? width : height) * index,
-  //         length: horizontal ? width : height,
-  //       };
+  const getItemLayout = React.useCallback(
+    (data: Page[] | null | undefined, index: number) => {
+      if (data == null)
+        return {
+          index,
+          offset: (horizontal ? width : height) * index,
+          length: horizontal ? width : height,
+        };
 
-  //     switch (readingDirection) {
-  //       case ReadingDirection.WEBTOON:
-  //         // eslint-disable-next-line no-case-declarations
-  //         const page = data[index];
-  //         // eslint-disable-next-line no-case-declarations
-  //         let offset = 0;
-  //         for (let i = 0; i < index; i++) {
-  //           const p = data[i];
-  //           switch (p.type) {
-  //             case 'PAGE':
-  //               offset += p.height * (width / p.width);
-  //               break;
-  //             default:
-  //               offset += height;
-  //               break;
-  //           }
-  //         }
-  //         return {
-  //           index,
-  //           offset,
-  //           length:
-  //             page.type === 'PAGE'
-  //               ? page.height * (width / page.width)
-  //               : height,
-  //         };
-  //       case ReadingDirection.LEFT_TO_RIGHT:
-  //       case ReadingDirection.RIGHT_TO_LEFT:
-  //       default:
-  //         return { index, offset: width * index, length: width };
-  //       case ReadingDirection.VERTICAL:
-  //         return {
-  //           index,
-  //           offset: height * index,
-  //           length: height,
-  //         };
-  //     }
-  //   },
-  //   [readingDirection, horizontal, width, height],
-  // );
+      switch (readingDirection) {
+        case ReadingDirection.WEBTOON:
+          // eslint-disable-next-line no-case-declarations
+          const page = data[index];
+          // eslint-disable-next-line no-case-declarations
+          let offset = 0;
+          for (let i = 0; i < index; i++) {
+            const p = data[i];
+            switch (p.type) {
+              case 'PAGE':
+                offset += p.height * (width / p.width);
+                break;
+              default:
+                offset += height;
+                break;
+            }
+          }
+          return {
+            index,
+            offset,
+            length:
+              page.type === 'PAGE'
+                ? page.height * (width / page.width)
+                : height,
+          };
+        case ReadingDirection.LEFT_TO_RIGHT:
+        case ReadingDirection.RIGHT_TO_LEFT:
+        default:
+          return { index, offset: width * index, length: width };
+        case ReadingDirection.VERTICAL:
+          return {
+            index,
+            offset: height * index,
+            length: height,
+          };
+      }
+    },
+    [readingDirection, horizontal, width, height],
+  );
 
   function getItemSize(item: Page) {
     switch (readingDirection) {
@@ -683,8 +687,9 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
               localRealm,
               offsetIndex: indexOffset,
               source,
+              manga,
             }),
-            [readableChapters, localRealm, indexOffset, source],
+            [readableChapters, localRealm, indexOffset, source, mangaKey],
           )}
         >
           <Overlay
@@ -712,7 +717,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                 <FlashList
                   ref={flatListRef}
                   // FlatList Props
-                  // updateCellsBatchingPeriod={100}
+                  // updateCellsBatchingPeriod={10}
                   // getItemLayout={getItemLayout}
                   // windowSize={13}
                   // maxToRenderPerBatch={50}
@@ -753,7 +758,14 @@ const getItemType: (
   item: Page,
   index: number,
   extraData?: any,
-) => string | number | undefined = (item) => item.type;
+) => string | number | undefined = (item) => {
+  switch (item.type) {
+    case 'PAGE':
+      return item.page;
+    default:
+      return item.type;
+  }
+};
 
 const keyExtractor = (p: Page) => {
   switch (p.type) {

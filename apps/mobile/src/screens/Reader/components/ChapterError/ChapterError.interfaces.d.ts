@@ -1,4 +1,5 @@
 import { ChapterSchema } from '@database/schemas/Chapter';
+import { MangaSchema } from '@database/schemas/Manga';
 import { MangaHost } from '@mangayomu/mangascraper';
 import { ChapterError } from '@redux/slices/reader';
 import React from 'react';
@@ -15,4 +16,5 @@ export interface ChapterErrorContextState {
   offsetIndex: React.MutableRefObject<
     Record<string, { start: number; end: number }>
   >;
+  manga: MangaSchema;
 }

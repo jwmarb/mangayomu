@@ -16,19 +16,13 @@ import {
 import { ActionCreatorWithPayload } from '@reduxjs/toolkit';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
-import {
-  Alert,
-  AppState,
-  Dimensions,
-  FlatList,
-  StatusBar,
-  useWindowDimensions,
-} from 'react-native';
+import { Alert, AppState, Dimensions, FlatList } from 'react-native';
 import Orientation from 'react-native-orientation-locker';
 import { SharedValue } from 'react-native-reanimated';
 import Realm from 'realm';
 import RNFetchBlob from 'rn-fetch-blob';
 import { Immersive } from 'react-native-immersive';
+import useScreenDimensions from '@hooks/useScreenDimensions';
 
 type ForceScrollToOffset = (offset: number) => void;
 
@@ -64,7 +58,7 @@ type ReaderScrollPositionInitialHandlerArguments = {
 export function readerScrollPositionInitialHandler(
   arg: ReaderScrollPositionInitialHandlerArguments,
 ) {
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useScreenDimensions();
   const {
     _chapter,
     chapterRef,
@@ -228,7 +222,7 @@ export function readerPreviousChapterScrollPositionHandler(
     forceScrollToOffset,
     fetchedPreviousChapter,
   } = arg;
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useScreenDimensions();
   React.useEffect(() => {
     pagesRef.current = pages;
     if (fetchedPreviousChapter.current) {

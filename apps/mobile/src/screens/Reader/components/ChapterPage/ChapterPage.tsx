@@ -35,6 +35,8 @@ import { useLocalObject, useLocalRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { PageSchema } from '@database/schemas/Page';
 import { ReaderImageComponent, ReadingDirection } from '@redux/slices/settings';
+import { useIsFocused } from '@react-navigation/native';
+import useScreenDimensions from '@hooks/useScreenDimensions';
 
 export function removeURLParams(url: string) {
   const startParam = url.indexOf('?');
@@ -61,9 +63,10 @@ const useChapterPageContext = () => {
 const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   const { imageMenuRef, tapGesture, readingDirection } =
     useChapterPageContext();
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useScreenDimensions();
   const { page: pageKey, error, localPageUri } = props.page;
   const { backgroundColor, imageComponentType } = props;
+  const isFocused = useIsFocused();
   const webViewRef = React.useRef<WebView>(null);
   const imageWidth = props.page.width;
   const imageHeight = props.page.height;
@@ -155,16 +158,18 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   };
 
   const WebViewImageElement = (
-    <AnimatedBox style={webViewStyle}>
-      <WebView
-        scrollEnabled={false}
-        scalesPageToFit={false}
-        setBuiltInZoomControls={false}
-        useWebView2
-        pointerEvents="none"
-        ref={webViewRef}
-        onMessage={handleOnMessage}
-        injectedJavaScriptBeforeContentLoaded={`
+    <AnimatedBox style={webViewStyle} renderToHardwareTextureAndroid>
+      {isFocused && (
+        <WebView
+          style={{ opacity: 0.99 }}
+          scrollEnabled={false}
+          scalesPageToFit={false}
+          setBuiltInZoomControls={false}
+          useWebView2
+          pointerEvents="none"
+          ref={webViewRef}
+          onMessage={handleOnMessage}
+          injectedJavaScriptBeforeContentLoaded={`
        var img = document.getElementById("page");
        img.addEventListener("error", function (err) {
          window.ReactNativeWebView.postMessage(JSON.stringify({ type: "error" }));
@@ -173,8 +178,8 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
          window.ReactNativeWebView.postMessage(JSON.stringify({ type: "load", width: img.naturalWidth, height: img.naturalHeight }));
        })
      `}
-        source={{
-          html: `
+          source={{
+            html: `
     <html>
       <head>
         <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
@@ -184,8 +189,9 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
       </body>
     </html>
  `,
-        }}
-      />
+          }}
+        />
+      )}
     </AnimatedBox>
   );
 

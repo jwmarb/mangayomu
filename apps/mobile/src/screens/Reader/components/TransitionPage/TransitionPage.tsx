@@ -6,6 +6,7 @@ import { useLocalObject, useLocalRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { useTheme } from '@emotion/react';
 import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
+import useScreenDimensions from '@hooks/useScreenDimensions';
 import { ReaderBackgroundColor } from '@redux/slices/settings';
 import {
   TransitionPageContextState,
@@ -40,7 +41,7 @@ const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
   const isPrevious = props.page.previous.index > currentChapter.index;
   const isNext = props.page.next.index < currentChapter.index;
 
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useScreenDimensions();
   const previous = useLocalObject(ChapterSchema, page.previous._id);
   const next = useLocalObject(ChapterSchema, page.next._id);
 

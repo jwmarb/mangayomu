@@ -20,6 +20,8 @@ import {
   PermissionsAndroid,
   Platform,
   Linking,
+  Dimensions,
+  StatusBar,
 } from 'react-native';
 import {
   RectButton,
@@ -44,7 +46,21 @@ const ImageMenu: React.ForwardRefRenderFunction<
 > = (props, ref) => {
   const localRealm = useLocalRealm();
   const theme = useTheme();
-  const { width, height } = useWindowDimensions();
+  const [width, setWidth] = React.useState<number>(
+    Dimensions.get('screen').width,
+  );
+  const [height, setHeight] = React.useState<number>(
+    Dimensions.get('screen').height,
+  );
+  React.useEffect(() => {
+    const p = Dimensions.addEventListener('change', ({ screen }) => {
+      setWidth(screen.width);
+      setHeight(screen.height);
+    });
+    return () => {
+      p.remove();
+    };
+  }, []);
   const [open, toggle] = useBoolean();
   const [page, setPage] = React.useState<PageSchema>();
   const [url, setURL] = React.useState<string>();
