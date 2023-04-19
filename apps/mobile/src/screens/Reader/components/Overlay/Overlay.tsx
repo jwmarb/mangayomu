@@ -50,7 +50,7 @@ export const OVERLAY_COLOR = 'rgba(0, 0, 0, 0.5)';
 export const OVERLAY_TEXT_PRIMARY = { custom: 'rgba(255, 255, 255, 1)' };
 export const OVERLAY_TEXT_SECONDARY = { custom: 'rgba(255, 255, 255, 0.7)' };
 
-const translateYOffset = moderateScale(-32);
+const translateYOffset = moderateScale(-32) - NavigationBar.currentHeight;
 
 const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   const {
@@ -198,7 +198,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
           <AnimatedBox
             style={pageCounterStyle}
             position="absolute"
-            bottom={theme.style.spacing.xl + NavigationBar.currentHeight}
+            bottom={theme.style.spacing.xl}
             background-color={OVERLAY_COLOR}
             align-self="center"
             py={moderateScale(2)}
