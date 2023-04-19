@@ -677,7 +677,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
             tapGesture,
             showTransitionPage,
           }),
-          [backgroundColor, chapterKey, tapGesture, showTransitionPage],
+          [backgroundColor, chapter, tapGesture, showTransitionPage],
         )}
       >
         <ChapterErrorContext.Provider
@@ -689,7 +689,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
               source,
               manga,
             }),
-            [readableChapters, localRealm, indexOffset, source, mangaKey],
+            [readableChapters, localRealm, indexOffset, source, manga],
           )}
         >
           <Overlay
@@ -758,14 +758,7 @@ const getItemType: (
   item: Page,
   index: number,
   extraData?: any,
-) => string | number | undefined = (item) => {
-  switch (item.type) {
-    case 'PAGE':
-      return item.page;
-    default:
-      return item.type;
-  }
-};
+) => string | number | undefined = (item) => item.type;
 
 const keyExtractor = (p: Page) => {
   switch (p.type) {

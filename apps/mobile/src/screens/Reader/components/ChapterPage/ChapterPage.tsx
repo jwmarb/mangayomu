@@ -216,7 +216,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     />
   );
 
-  const renderComponent = React.useMemo(() => {
+  const renderComponent = () => {
     if (error) return null;
     switch (imageComponentType) {
       case ReaderImageComponent.AUTO:
@@ -228,7 +228,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
       case ReaderImageComponent.WEBVIEW:
         return WebViewImageElement;
     }
-  }, [imageComponentType, error]);
+  };
 
   return (
     <Box
@@ -268,7 +268,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
             </Text>
           </Box>
         </AnimatedBox> */}
-          {renderComponent}
+          {renderComponent()}
           {error && (
             <Stack
               style={style}
