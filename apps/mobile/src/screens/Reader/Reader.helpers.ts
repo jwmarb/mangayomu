@@ -21,7 +21,6 @@ import Orientation from 'react-native-orientation-locker';
 import { SharedValue } from 'react-native-reanimated';
 import Realm from 'realm';
 import RNFetchBlob from 'rn-fetch-blob';
-import { Immersive } from 'react-native-immersive';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 
 type ForceScrollToOffset = (offset: number) => void;
