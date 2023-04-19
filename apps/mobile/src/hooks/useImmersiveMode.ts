@@ -8,7 +8,7 @@ import React from 'react';
 import { StatusBar } from 'react-native';
 
 const COLORS = {
-  [ReaderBackgroundColor.GRAY]: 'rgb(128, 128, 128)',
+  [ReaderBackgroundColor.GRAY]: '#808080',
   [ReaderBackgroundColor.BLACK]: '#000000',
   [ReaderBackgroundColor.WHITE]: '#FFFFFF',
 };
