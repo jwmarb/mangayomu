@@ -96,7 +96,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   }
 
   function handleOnPressTitle() {
-    navigation.navigate('MangaView', manga);
+    navigation.replace('MangaView', manga);
   }
 
   function handleOnBookmark() {
