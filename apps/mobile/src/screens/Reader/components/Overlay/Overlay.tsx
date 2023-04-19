@@ -40,10 +40,11 @@ import ImageScaling from '@screens/Reader/components/Overlay/components/ImageSca
 import ZoomStartPosition from '@screens/Reader/components/Overlay/components/ZoomStartPosition';
 import DeviceOrientation from '@screens/Reader/components/Overlay/components/DeviceOrientation';
 import { FullWindowOverlay } from 'react-native-screens';
-import { StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import ReaderSettingsMenu from '@screens/Reader/components/ReaderSettingsMenu';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import ImageMenu from '@screens/Reader/components/ImageMenu';
+import { NavigationBar } from '@theme/index';
 
 export const OVERLAY_COLOR = 'rgba(0, 0, 0, 0.5)';
 export const OVERLAY_TEXT_PRIMARY = { custom: 'rgba(255, 255, 255, 1)' };
@@ -156,7 +157,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
         <AnimatedBox
           style={topOverlayStyle}
           background-color={OVERLAY_COLOR}
-          pt={theme.style.spacing.s}
+          pt={theme.style.spacing.s + (StatusBar.currentHeight ?? 0)}
           pb="s"
           px="m"
         >
@@ -197,7 +198,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
           <AnimatedBox
             style={pageCounterStyle}
             position="absolute"
-            bottom={theme.style.spacing.xl}
+            bottom={theme.style.spacing.xl + NavigationBar.currentHeight}
             background-color={OVERLAY_COLOR}
             align-self="center"
             py={moderateScale(2)}
@@ -211,6 +212,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
         ) : undefined}
         <AnimatedBox
           px="m"
+          pb={NavigationBar.currentHeight}
           background-color={OVERLAY_COLOR}
           style={bottomOverlayStyle}
         >
