@@ -326,11 +326,9 @@ export function readerInitializer(args: ReaderInitializerArguments) {
       offsetIndex: indexOffset,
       manga,
     });
-    Immersive.on();
     return () => {
       const readerImageCachePath = getCachedReaderPages(source);
       RNFetchBlob.fs.unlink(readerImageCachePath);
-      Immersive.off();
       promise.abort();
       Orientation.unlockAllOrientations();
       resetReaderState();
