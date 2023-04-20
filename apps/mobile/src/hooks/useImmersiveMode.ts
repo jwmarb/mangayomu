@@ -17,21 +17,8 @@ export default function useImmersiveMode(
   backgroundColor: ReaderBackgroundColor,
 ) {
   const theme = useTheme();
-  const [visible, toggle] = useBoolean();
 
-  function show() {
-    toggle(true);
-    NavigationBar.show();
-    StatusBar.setHidden(false);
-  }
-
-  function hide() {
-    toggle(false);
-    NavigationBar.hide();
-    StatusBar.setHidden(true);
-  }
-
-  React.useEffect(() => {
+  function changeColors() {
     StatusBar.setBarStyle(
       backgroundColor === ReaderBackgroundColor.BLACK
         ? 'light-content'
@@ -42,7 +29,22 @@ export default function useImmersiveMode(
       COLORS[backgroundColor],
       backgroundColor === ReaderBackgroundColor.BLACK,
     );
-  }, [backgroundColor, visible]);
+  }
+
+  function show() {
+    NavigationBar.show();
+    StatusBar.setHidden(false);
+    changeColors();
+  }
+
+  function hide() {
+    NavigationBar.hide();
+    StatusBar.setHidden(true);
+  }
+
+  React.useEffect(() => {
+    changeColors();
+  }, [backgroundColor]);
 
   React.useEffect(() => {
     hide();
