@@ -13,12 +13,11 @@ const COLORS = {
   [ReaderBackgroundColor.WHITE]: '#FFFFFF',
 };
 
-export default function useImmersiveMode() {
+export default function useImmersiveMode(
+  backgroundColor: ReaderBackgroundColor,
+) {
   const theme = useTheme();
   const [visible, toggle] = useBoolean();
-  const backgroundColor = useAppSelector(
-    (state) => state.settings.reader.backgroundColor,
-  );
 
   function show() {
     toggle(true);

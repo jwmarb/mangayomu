@@ -183,9 +183,13 @@ export function readerScrollPositionInitialHandler(
             break;
         }
       });
+      const timer = setInterval(() => {
+        saveScrollPosition();
+      }, 1000);
 
       return () => {
         scrollHelper.current.stopScrollingToOffset();
+        clearInterval(timer);
         listener.remove();
         saveScrollPosition();
       };
@@ -212,6 +216,7 @@ type ReaderPreviousChapterScrollPositionHandlerArguments = {
   getOffset(startIndex?: number, toIndex?: number): number;
   forceScrollToOffset: ForceScrollToOffset;
   fetchedPreviousChapter: React.MutableRefObject<boolean>;
+  memoizedOffsets: React.MutableRefObject<number[]>;
 };
 export function readerPreviousChapterScrollPositionHandler(
   arg: ReaderPreviousChapterScrollPositionHandlerArguments,
@@ -223,6 +228,7 @@ export function readerPreviousChapterScrollPositionHandler(
     indexOffset,
     chapterKey,
     index,
+    memoizedOffsets,
     scrollPositionLandscapeUnsafe,
     scrollPositionPortraitUnsafe,
     forceScrollToOffset,
@@ -232,6 +238,7 @@ export function readerPreviousChapterScrollPositionHandler(
   React.useEffect(() => {
     pagesRef.current = pages;
     if (fetchedPreviousChapter.current) {
+      memoizedOffsets.current = []; // fetching previous chapter renders the current memoized offsets redundant and outdated
       const offset =
         getOffset(0, indexOffset.current[chapterKey].start - 1) + // Subtract 1 to include the transition page
         (width > height
@@ -508,6 +515,7 @@ export function initializeReaderRefs(args: InitializeReaderRefsArguments) {
   const scrollPositionLandscapeUnsafe = React.useRef<number>(0);
 
   const fetchedPreviousChapter = React.useRef<boolean>(false);
+  const memoizedOffsets = React.useRef<number[]>([]);
 
   const chapterRef = React.useRef<
     ChapterSchema & Realm.Object<ChapterSchema, never>
@@ -533,6 +541,7 @@ export function initializeReaderRefs(args: InitializeReaderRefsArguments) {
     flatListRef,
     index,
     fetchedPreviousChapter,
+    memoizedOffsets,
   };
 }
 
