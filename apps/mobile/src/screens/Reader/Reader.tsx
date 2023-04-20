@@ -309,9 +309,26 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     setIsMounted,
   });
 
+  const persistentForceScrollToOffset = () => {
+    let interval: NodeJS.Timer | null = null;
+    return {
+      scrollToOffset(offset: number) {
+        interval = setInterval(() => {
+          flatListRef.current?.scrollToOffset({ offset });
+        });
+      },
+      stopScrollingToOffset() {
+        if (interval != null) {
+          clearInterval(interval);
+          interval = null;
+        }
+      },
+    };
+  };
+
   readerScrollPositionInitialHandler({
     setShouldTrackScrollPosition,
-    forceScrollToOffset,
+    persistentForceScrollToOffset,
     shouldTrackScrollPosition,
     _chapter,
     readableChapters,

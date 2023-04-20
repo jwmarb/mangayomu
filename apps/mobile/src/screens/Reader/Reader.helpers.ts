@@ -49,10 +49,13 @@ type ReaderScrollPositionInitialHandlerArguments = {
   chapterRef: React.MutableRefObject<
     ChapterSchema & Realm.Object<ChapterSchema, never>
   >;
-  forceScrollToOffset: ForceScrollToOffset;
   isOnChapterError: boolean | null;
   setShouldTrackScrollPosition: (value: boolean) => void;
   pages: Page[];
+  persistentForceScrollToOffset: () => {
+    scrollToOffset: (position: number) => void;
+    stopScrollingToOffset: () => void;
+  };
 };
 export function readerScrollPositionInitialHandler(
   arg: ReaderScrollPositionInitialHandlerArguments,
@@ -68,13 +71,16 @@ export function readerScrollPositionInitialHandler(
     scrollPositionLandscape,
     scrollPositionPortrait,
     shouldTrackScrollPosition,
-    forceScrollToOffset,
+    persistentForceScrollToOffset,
     readableChapters,
     horizontal,
     isOnChapterError,
     setShouldTrackScrollPosition,
     pages,
   } = arg;
+  const scrollHelper = React.useRef<
+    ReturnType<typeof persistentForceScrollToOffset>
+  >(persistentForceScrollToOffset());
   function saveScrollPosition() {
     if (isOnChapterError || isOnChapterError == null) {
       console.log(
@@ -151,7 +157,7 @@ export function readerScrollPositionInitialHandler(
          */
         if (width > height) {
           // const interval =
-          forceScrollToOffset(
+          scrollHelper.current.scrollToOffset(
             chapterRef.current.scrollPositionLandscape + transitionPageOffset,
           ); // Scrolls to landscape scroll position because the user is in landscape mode
           // return () => {
@@ -160,7 +166,7 @@ export function readerScrollPositionInitialHandler(
         } else {
           console.log('Scrolling back to saved position');
           // const interval =
-          forceScrollToOffset(
+          scrollHelper.current.scrollToOffset(
             chapterRef.current.scrollPositionPortrait + transitionPageOffset,
           ); // Scrolls to portrait scroll position because the useer is in portrait mode
           // return () => {
@@ -179,6 +185,7 @@ export function readerScrollPositionInitialHandler(
       });
 
       return () => {
+        scrollHelper.current.stopScrollingToOffset();
         listener.remove();
         saveScrollPosition();
       };
@@ -339,8 +346,10 @@ export function readerInitializer(args: ReaderInitializerArguments) {
 
 type ScrollPositionReadingDirectionChangeHandlerArguments = Pick<
   ReaderScrollPositionInitialHandlerArguments,
-  'getOffset' | 'horizontal' | 'forceScrollToOffset'
->;
+  'getOffset' | 'horizontal'
+> & {
+  forceScrollToOffset: ForceScrollToOffset;
+};
 
 export function scrollPositionReadingDirectionChangeHandler(
   args: ScrollPositionReadingDirectionChangeHandlerArguments,
