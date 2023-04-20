@@ -318,6 +318,13 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       scrollToOffset(offset: number) {
         interval = setInterval(() => {
           flatListRef.current?.scrollToOffset({ offset });
+          if (
+            width > height &&
+            offset - scrollPositionLandscapeUnsafe.current <= 100
+          )
+            this.stopScrollingToOffset();
+          else if (offset - scrollPositionPortraitUnsafe.current <= 100)
+            this.stopScrollingToOffset();
         });
       },
       stopScrollingToOffset() {
@@ -738,7 +745,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
             tapGesture,
             showTransitionPage,
           }),
-          [backgroundColor, chapter, tapGesture, showTransitionPage],
+          [backgroundColor, chapter._id, tapGesture, showTransitionPage],
         )}
       >
         <ChapterErrorContext.Provider
