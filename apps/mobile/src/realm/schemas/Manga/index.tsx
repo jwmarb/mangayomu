@@ -297,6 +297,16 @@ export const useManga = (
               genres: meta.genres as unknown as Set<string>,
               chapters,
               availableLanguages,
+              readerDirection: meta.genres.some((genre) => {
+                const formatted = genre.toLowerCase();
+                return (
+                  formatted === 'manhwa' ||
+                  formatted === 'manhua' ||
+                  formatted === 'webtoon'
+                );
+              })
+                ? ReadingDirection.WEBTOON
+                : 'Use global setting',
               modifyNewChaptersCount: mangaObject
                 ? mangaObject.modifyNewChaptersCount +
                   (meta.chapters.length - mangaObject.chapters.length)
