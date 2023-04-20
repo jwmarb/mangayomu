@@ -107,7 +107,8 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     setIsMounted,
     addMangaToHistory,
   } = props;
-  const [showStatusAndNavBar, hideStatusAndNavBar] = useImmersiveMode();
+  const [showStatusAndNavBar, hideStatusAndNavBar] =
+    useImmersiveMode(backgroundColor);
   const realm = useRealm();
   const dispatch = useAppDispatch();
   const fetchPagesByChapter = (
@@ -155,6 +156,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     indexOffset,
     flatListRef,
     index,
+    memoizedOffsets,
     fetchedPreviousChapter,
   } = initializeReaderRefs({ _chapter, _chapterInfo, pages });
 
@@ -231,6 +233,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     scrollPositionPortraitUnsafe,
     getOffset,
     fetchedPreviousChapter,
+    memoizedOffsets,
   });
 
   const [shouldTrackScrollPosition, _setShouldTrackScrollPosition] =
@@ -345,29 +348,70 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   });
 
   function getOffset(startIndex = 0, toIndex: number = index.current) {
+    if (toIndex < startIndex)
+      throw Error('toIndex cannot be less than startIndex');
+    if (toIndex > pagesRef.current.length - 1)
+      throw Error('toIndex cannot exceed the list length');
     switch (readingDirection) {
       case ReadingDirection.WEBTOON: {
-        let offset = 0;
-        for (let i = startIndex; i < toIndex; i++) {
-          const curr = pagesRef.current[i];
-          if (curr == null) {
-            console.error(
-              `page at index ${i} does not exist. startIndex = ${startIndex}. toIndex = ${toIndex}. pages length = ${pagesRef.current.length}`,
-            );
-            console.log(JSON.stringify(pagesRef.current, null, 2));
-          }
-          switch (curr.type) {
-            case 'PAGE': {
-              offset += curr.height * (width / curr.width);
-              break;
+        if (memoizedOffsets.current.length === 0) {
+          let offset = 0;
+          memoizedOffsets.current[0] = 0;
+          for (let i = 0; i < pagesRef.current.length; i++) {
+            const curr = pagesRef.current[i];
+            if (curr == null) {
+              console.error(
+                `page at index ${i} does not exist. startIndex = ${startIndex}. toIndex = ${toIndex}. pages length = ${pagesRef.current.length}`,
+              );
+              console.log(JSON.stringify(pagesRef.current, null, 2));
             }
-            default:
-              offset += height;
-              break;
+            switch (curr.type) {
+              case 'PAGE': {
+                offset += curr.height * (width / curr.width);
+                break;
+              }
+              default:
+                offset += height;
+                break;
+            }
+            memoizedOffsets.current[i + 1] = offset;
+          }
+        } else if (
+          toIndex < pagesRef.current.length &&
+          memoizedOffsets.current.length <= toIndex
+        ) {
+          // memoizedOffsets.length < pagesRef.current.length, so we need to calculate the new scroll positions
+
+          let offset =
+            memoizedOffsets.current[memoizedOffsets.current.length - 1];
+          for (
+            let i = memoizedOffsets.current.length;
+            i < pagesRef.current.length;
+            i++
+          ) {
+            const curr = pagesRef.current[i];
+            if (curr == null) {
+              console.error(
+                `page at index ${i} does not exist. startIndex = ${startIndex}. toIndex = ${toIndex}. pages length = ${pagesRef.current.length}`,
+              );
+              console.log(JSON.stringify(pagesRef.current, null, 2));
+            }
+            switch (curr.type) {
+              case 'PAGE': {
+                offset += curr.height * (width / curr.width);
+                break;
+              }
+              default:
+                offset += height;
+                break;
+            }
+            memoizedOffsets.current[i] = offset;
           }
         }
 
-        return offset;
+        return (
+          memoizedOffsets.current[toIndex] - memoizedOffsets.current[startIndex]
+        );
       }
       case ReadingDirection.RIGHT_TO_LEFT:
       case ReadingDirection.LEFT_TO_RIGHT:
