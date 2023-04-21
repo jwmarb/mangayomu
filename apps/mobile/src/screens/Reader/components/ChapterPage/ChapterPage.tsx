@@ -37,6 +37,8 @@ import { PageSchema } from '@database/schemas/Page';
 import { ReaderImageComponent, ReadingDirection } from '@redux/slices/settings';
 import { useIsFocused } from '@react-navigation/native';
 import useScreenDimensions from '@hooks/useScreenDimensions';
+import useDialog from '@hooks/useDialog';
+import RNFetchBlob from 'rn-fetch-blob';
 
 export function removeURLParams(url: string) {
   const startParam = url.indexOf('?');
@@ -60,13 +62,25 @@ const useChapterPageContext = () => {
   return ctx;
 };
 
+function encodePathName(uri: string) {
+  return uri.replace(/[^A-Za-z0-9\s-]/g, '');
+}
+
 const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
-  const { imageMenuRef, tapGesture, readingDirection } =
+  const { imageMenuRef, tapGesture, readingDirection, sourceName, mangaTitle } =
     useChapterPageContext();
   const { width, height } = useScreenDimensions();
-  const { page: pageKey, error, localPageUri } = props.page;
-  const { backgroundColor, imageComponentType } = props;
+  const { page: pageKey, chapter } = props.page;
+  const {
+    backgroundColor,
+    imageComponentType,
+    setPageError,
+    index,
+    extendedPageState,
+    setLocalPageURI,
+  } = props;
   const isFocused = useIsFocused();
+  const localRealm = useLocalRealm();
   const webViewRef = React.useRef<WebView>(null);
   const imageWidth = props.page.width;
   const imageHeight = props.page.height;
@@ -89,21 +103,11 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
    * NOTE: FastImage's image quality is noticeably worst than WebView
    */
   // const fallBackToFastImage = stylizedHeight / height > 1;
-  const visibleWithoutErrorOpacity = useSharedValue(1); // for WebView only
 
   const style = React.useMemo(
     () => ({
       width,
       height: stylizedHeight,
-    }),
-    [width, stylizedHeight],
-  );
-
-  const webViewStyle = useAnimatedStyle(
-    () => ({
-      width,
-      height: stylizedHeight,
-      opacity: visibleWithoutErrorOpacity.value,
     }),
     [width, stylizedHeight],
   );
@@ -115,7 +119,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   function handleOnReload() {
     // setError(false);
     // loadingOpacity.value = fallbackToWebView ? 0 : 1;
-    visibleWithoutErrorOpacity.value = 1;
+    setPageError({ pageKey, value: false });
     webViewRef.current?.reload();
   }
 
@@ -128,7 +132,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   function handleOnError() {
     // setError(true);
     // loadingOpacity.value = 0;
-    visibleWithoutErrorOpacity.value = 0;
+    setPageError({ pageKey, value: true });
   }
 
   const holdGesture = React.useMemo(
@@ -158,7 +162,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   };
 
   const WebViewImageElement = (
-    <AnimatedBox style={webViewStyle} renderToHardwareTextureAndroid>
+    <AnimatedBox style={style} renderToHardwareTextureAndroid>
       {isFocused && (
         <WebView
           style={{ opacity: 0.99 }}
@@ -185,7 +189,11 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
         <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
       </head>
       <body style="margin: 0;background-color: ${backgroundColor};">
-        <img src="${localPageUri}" id="page" style="object-fit: cover;width: ${style.width}px;height: ${style.height}px"  />
+        <img src="${
+          extendedPageState?.localPageUri ?? pageKey
+        }" id="page" style="object-fit: cover;width: ${style.width}px;height: ${
+              style.height
+            }px"  />
       </body>
     </html>
  `,
@@ -198,7 +206,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   const ImageElement = (
     <Image
       source={{
-        uri: localPageUri,
+        uri: extendedPageState?.localPageUri ?? pageKey,
       }}
       style={style}
       onError={handleOnError}
@@ -209,7 +217,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   const FastImageElement = (
     <FastImage
       source={{
-        uri: localPageUri,
+        uri: extendedPageState?.localPageUri ?? pageKey,
       }}
       style={style}
       onError={handleOnError}
@@ -217,7 +225,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   );
 
   const renderComponent = () => {
-    if (error) return null;
+    if (extendedPageState?.error) return null;
     switch (imageComponentType) {
       case ReaderImageComponent.AUTO:
         return fallbackToWebView ? WebViewImageElement : ImageElement;
@@ -229,6 +237,45 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
         return WebViewImageElement;
     }
   };
+
+  React.useEffect(() => {
+    (async () => {
+      if (
+        extendedPageState &&
+        extendedPageState.retries === 1 &&
+        !extendedPageState.error
+      ) {
+        const fileExtension = getFileExtension(pageKey);
+        /**
+         * Download image locally
+         */
+        const path =
+          RNFetchBlob.fs.dirs['CacheDir'] +
+          '/' +
+          sourceName +
+          '/' +
+          encodePathName(mangaTitle) +
+          '/' +
+          encodePathName(
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            localRealm.objectForPrimaryKey(ChapterSchema, chapter)!.name,
+          ) +
+          '/' +
+          index +
+          `.${fileExtension}`;
+
+        const base64 = `data:image/${fileExtension};base64,${await RNFetchBlob.config(
+          {
+            path,
+          },
+        )
+          .fetch('GET', pageKey)
+          .then((res) => res.base64() as string)}`;
+
+        setLocalPageURI({ pageKey, value: base64 });
+      }
+    })();
+  }, [extendedPageState?.retries, extendedPageState?.error]);
 
   return (
     <Box
@@ -269,7 +316,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
           </Box>
         </AnimatedBox> */}
           {renderComponent()}
-          {error && (
+          {extendedPageState?.error && (
             <Stack
               style={style}
               space="s"

@@ -12,6 +12,7 @@ import { MangaSchema } from '@database/schemas/Manga';
 import { PageSchema } from '@database/schemas/Page';
 import useMangaSource from '@hooks/useMangaSource';
 import {
+  ExtendedReaderState,
   fetchPagesByChapter as _fetchPagesByChapter,
   Page,
   TransitionPage as ITransitionPage,
@@ -106,6 +107,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     globalDeviceOrientation,
     setIsMounted,
     addMangaToHistory,
+    extendedState,
   } = props;
   const [showStatusAndNavBar, hideStatusAndNavBar] =
     useImmersiveMode(backgroundColor);
@@ -733,8 +735,14 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   return (
     <ChapterPageContext.Provider
       value={React.useMemo(
-        () => ({ imageMenuRef, tapGesture, readingDirection }),
-        [tapGesture, readingDirection],
+        () => ({
+          imageMenuRef,
+          tapGesture,
+          readingDirection,
+          sourceName: source.getName(),
+          mangaTitle: manga.title,
+        }),
+        [tapGesture, readingDirection, source.getName(), manga.title],
       )}
     >
       <TransitionPageContext.Provider
@@ -792,6 +800,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                   // contentContainerStyle={contentContainerStyle}
                   // initialScrollIndex={_chapter.indexPage}
                   // FlashList props
+                  extraData={extendedState}
                   estimatedFirstItemOffset={
                     !isOnFirstChapter ? (horizontal ? width : height) : 0
                   }
@@ -841,10 +850,21 @@ const keyExtractor = (p: Page) => {
   }
 };
 
-const renderItem: ListRenderItem<Page> = ({ item, index }) => {
+const renderItem: ListRenderItem<Page> = ({
+  item,
+  index,
+  extraData: _extraData,
+}) => {
+  const extraData: ExtendedReaderState = _extraData;
   switch (item.type) {
     case 'PAGE':
-      return <ChapterPage page={item} index={index} />;
+      return (
+        <ChapterPage
+          page={item}
+          index={index}
+          extendedPageState={extraData[item.page]}
+        />
+      );
     case 'TRANSITION_PAGE':
       return <TransitionPage page={item} />;
     case 'NO_MORE_PAGES':

@@ -32,6 +32,7 @@ const mapStateToProps = (state: AppState, props: RootStackProps<'Reader'>) => ({
   isOnChapterError: state.reader.isOnChapterError,
   showTransitionPage: state.reader.showTransitionPage,
   pageInDisplay: state.reader.pageInDisplay,
+  extendedState: state.reader.extendedState,
 });
 
 const connector = connect(mapStateToProps, {

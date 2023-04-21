@@ -22,12 +22,10 @@ export type TransitionPage = {
 export type ChapterPage = {
   type: 'PAGE';
   page: string;
-  localPageUri: string;
   pageNumber: number;
   chapter: string;
   width: number;
   height: number;
-  error?: boolean;
 };
 export type NoMorePages = { type: 'NO_MORE_PAGES' };
 export type ChapterError = {
@@ -44,11 +42,25 @@ export interface ReaderChapterInfo {
   // shouldFetch: boolean // if this is false, fallback to onViewableItemsChanged. Otherwise fetch when transition page is mounted.
 }
 
+export interface ExtendedReaderPageState {
+  error: boolean;
+  retries: number;
+  localPageUri?: string;
+}
+
+const initialExtendedState: ExtendedReaderPageState = {
+  error: false,
+  retries: 0,
+};
+
+export type ExtendedReaderState = ReaderState['extendedState'];
+
 interface ReaderState {
   pages: Page[];
   loading: boolean;
   isOnChapterError: boolean | null;
   chapterInfo: Record<string, ReaderChapterInfo>;
+  extendedState: Record<string, ExtendedReaderPageState | undefined>;
   currentChapter: string | null;
   pageInDisplay: {
     parsedKey: string;
@@ -76,6 +88,7 @@ const initialReaderState: ReaderState = {
   pages: [],
   loading: true,
   chapterInfo: {},
+  extendedState: {},
   currentChapter: null,
   pageInDisplay: null,
   isOnChapterError: null,
@@ -95,10 +108,6 @@ function getImageSizeAsync(
   });
 }
 
-function encodePathName(uri: string) {
-  return uri.replace(/[^A-Za-z0-9\s-]/g, '');
-}
-
 export function getCachedReaderPages(source: MangaHost) {
   return RNFetchBlob.fs.dirs['CacheDir'] + '/' + source.getName() + '/';
 }
@@ -116,32 +125,32 @@ export const fetchPagesByChapter = createAsyncThunk(
             removeURLParams(uri),
           );
 
-          const fileExtension = getFileExtension(uri);
-          /**
-           * Download image locally
-           */
-          const path =
-            RNFetchBlob.fs.dirs['CacheDir'] +
-            '/' +
-            payload.source.getName() +
-            '/' +
-            encodePathName(payload.manga.title) +
-            '/' +
-            encodePathName(payload.chapter.name) +
-            '/' +
-            index +
-            `.${fileExtension}`;
+          // const fileExtension = getFileExtension(uri);
+          // /**
+          //  * Download image locally
+          //  */
+          // const path =
+          //   RNFetchBlob.fs.dirs['CacheDir'] +
+          //   '/' +
+          //   payload.source.getName() +
+          //   '/' +
+          //   encodePathName(payload.manga.title) +
+          //   '/' +
+          //   encodePathName(payload.chapter.name) +
+          //   '/' +
+          //   index +
+          //   `.${fileExtension}`;
 
-          const base64 = `data:image/${fileExtension};base64,${await RNFetchBlob.config(
-            {
-              path,
-            },
-          )
-            .fetch('GET', uri)
-            .then((res) => res.base64() as string)}`;
+          // const base64 = `data:image/${fileExtension};base64,${await RNFetchBlob.config(
+          //   {
+          //     path,
+          //   },
+          // )
+          //   .fetch('GET', uri)
+          //   .then((res) => res.base64() as string)}`;
 
           if (localPage == null) {
-            const { width, height } = await getImageSizeAsync(base64);
+            const { width, height } = await getImageSizeAsync(uri);
             payload.localRealm.write(() => {
               payload.localRealm.create<PageSchema>(
                 'Page',
@@ -160,14 +169,14 @@ export const fetchPagesByChapter = createAsyncThunk(
               width,
               height,
               url: uri,
-              localPath: base64,
+              // localPath: base64,
             };
           }
           return {
             url: uri,
             width: localPage.width,
             height: localPage.height,
-            localPath: base64,
+            // localPath: base64,
           };
         }),
       );
@@ -236,11 +245,26 @@ const readerSlice = createSlice({
     },
     setPageError: (
       state,
-      action: PayloadAction<{ index: number; value: boolean }>,
+      action: PayloadAction<{ pageKey: string; value: boolean }>,
     ) => {
-      (state.pages[action.payload.index] as ChapterPage).error =
-        action.payload.value;
-      state.pages = [...state.pages];
+      state.extendedState[action.payload.pageKey] = {
+        ...(state.extendedState[action.payload.pageKey] ??
+          initialExtendedState),
+        error: action.payload.value,
+      };
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      if (!action.payload.value)
+        state.extendedState[action.payload.pageKey]!.retries++;
+    },
+    setLocalPageURI: (
+      state,
+      action: PayloadAction<{ pageKey: string; value: string }>,
+    ) => {
+      state.extendedState[action.payload.pageKey] = {
+        ...(state.extendedState[action.payload.pageKey] ??
+          initialExtendedState),
+        localPageUri: action.payload.value,
+      };
     },
   },
   extraReducers: (builder) => {
@@ -329,7 +353,7 @@ const readerSlice = createSlice({
             height: action.payload.data[i].height,
             pageNumber: i + 1,
             chapter: action.meta.arg.chapter.link,
-            localPageUri: action.payload.data[i].localPath,
+            // localPageUri: action.payload.data[i].localPath,
           });
         }
         if (nextChapter != null)
@@ -375,7 +399,7 @@ const readerSlice = createSlice({
               height: action.payload.data[i].height,
               pageNumber: i + 1,
               chapter: action.meta.arg.chapter.link,
-              localPageUri: action.payload.data[i].localPath,
+              // localPageUri: action.payload.data[i].localPath,
             });
           }
           if (nextChapter != null)
@@ -417,7 +441,7 @@ const readerSlice = createSlice({
               height: action.payload.data[i].height,
               pageNumber: i + 1,
               chapter: action.meta.arg.chapter.link,
-              localPageUri: action.payload.data[i].localPath,
+              // localPageUri: action.payload.data[i].localPath,
             });
           }
           for (const key in action.meta.arg.offsetIndex.current) {
@@ -476,6 +500,7 @@ export const {
   setPageError,
   setIsMounted,
   setPageInDisplay,
+  setLocalPageURI,
 } = readerSlice.actions;
 
 export default readerSlice.reducer;
