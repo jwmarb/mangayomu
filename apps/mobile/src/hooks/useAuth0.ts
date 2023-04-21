@@ -44,7 +44,7 @@ export default function useAuth0(): Auth0ContextInterface {
         console.error(e);
       } finally {
         try {
-          if (realmUser?.isLoggedIn) realmUser?.logOut();
+          if (realmUser?.isLoggedIn) await realmUser?.logOut();
           const credentials = await getCredentials();
           await app.logIn(Realm.Credentials.jwt(credentials.idToken!));
         } catch (e) {
