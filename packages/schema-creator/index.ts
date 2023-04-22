@@ -12,7 +12,9 @@ export type InclusiveExclusiveFilter<T> = {
    * }
    * ```
    */
-  map?: T extends PropertyKey ? Record<T, string> : never;
+  map?: T extends PropertyKey
+    ? Record<T | (string & Record<never, never>), string>
+    : never;
 };
 
 export type SortFilter<T> = {
