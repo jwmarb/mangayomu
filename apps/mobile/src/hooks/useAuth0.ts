@@ -47,7 +47,7 @@ export default function useAuth0(): Auth0ContextInterface {
       try {
         if (realmUser?.isLoggedIn) await realmUser?.logOut();
         const credentials = await getCredentials();
-        if (credentials.idToken != null)
+        if (credentials.idToken != null && credentials != null)
           await app.logIn(Realm.Credentials.jwt(credentials.idToken));
         else
           throw Error('Credentials is null. Check your internet connection.');
