@@ -42,20 +42,24 @@ export default function useAuth0(): Auth0ContextInterface {
         await _authorize(...params);
       } catch (e) {
         console.error(e);
+      }
+
+      try {
+        if (realmUser?.isLoggedIn) await realmUser?.logOut();
+        const credentials = await getCredentials();
+        if (credentials.idToken != null)
+          await app.logIn(Realm.Credentials.jwt(credentials.idToken));
+        else
+          throw Error('Credentials is null. Check your internet connection.');
+      } catch (e) {
+        console.error(e);
       } finally {
-        try {
-          if (realmUser?.isLoggedIn) await realmUser?.logOut();
-          const credentials = await getCredentials();
-          await app.logIn(Realm.Credentials.jwt(credentials.idToken!));
-        } catch (e) {
-          console.error(e);
-        } finally {
-          console.log('Authorized user through Auth0 and Realm');
-        }
+        console.log('Authorized user through Auth0 and Realm');
       }
     },
     [_authorize, getCredentials, app],
   );
+
   const clearSession = React.useCallback(async () => {
     if (realmUser == null) {
       console.warn('Tried to clearSession when realmUser does not exist');

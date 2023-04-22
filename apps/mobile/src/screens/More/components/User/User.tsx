@@ -7,13 +7,24 @@ import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useRealm } from '@database/main';
 import copyTextToClipboard from '@helpers/copyTextToClipboard';
+import { getErrorMessage } from '@helpers/getErrorMessage';
 import useAuth0 from '@hooks/useAuth0';
+import useDialog from '@hooks/useDialog';
 import { useUser } from '@realm/react';
 import React from 'react';
 import { moderateScale } from 'react-native-size-matters';
 
 const User: React.FC = () => {
-  const { user, authorize, clearSession } = useAuth0();
+  const { user, authorize, clearSession, error } = useAuth0();
+  const realm = useRealm();
+  const dialog = useDialog();
+  React.useEffect(() => {
+    if (error != null)
+      dialog.open({
+        title: 'There was an issue logging in',
+        message: `Auth0 threw an error: ${error?.message}`,
+      });
+  }, [error]);
   async function login() {
     try {
       await authorize({ scope: 'openid profile email' });
@@ -22,12 +33,26 @@ const User: React.FC = () => {
     }
   }
   const currentUser = useUser();
-  async function copyUserId() {
-    if (currentUser) copyTextToClipboard(currentUser.id);
+  async function displayUserId() {
+    if (currentUser) dialog.open({ title: 'User ID', message: currentUser.id });
   }
-  async function copyDeviceId() {
+  async function displayDeviceId() {
     if (currentUser && currentUser.deviceId)
-      copyTextToClipboard(currentUser.deviceId);
+      dialog.open({ title: 'Device ID', message: currentUser.deviceId });
+  }
+
+  async function handleOnForceSync() {
+    if (realm.syncSession)
+      try {
+        await realm.syncSession.downloadAllServerChanges();
+      } catch (e) {
+        dialog.open({ title: 'Failed to sync', message: getErrorMessage(e) });
+      } finally {
+        dialog.open({
+          title: 'Sync complete',
+          message: 'Downloaded all server changes success',
+        });
+      }
   }
 
   const subscriptionType = React.useMemo(() => {
@@ -61,13 +86,22 @@ const User: React.FC = () => {
         }
       >
         {user != null ? (
-          <MenuItem
-            color="secondary"
-            icon={<Icon type="font" name="logout" />}
-            onPress={clearSession}
-          >
-            Log out
-          </MenuItem>
+          <>
+            <MenuItem
+              color="secondary"
+              icon={<Icon type="font" name="logout" />}
+              onPress={clearSession}
+            >
+              Log out
+            </MenuItem>
+            <MenuItem
+              onPress={handleOnForceSync}
+              icon={<Icon type="font" name="sync" />}
+              color="primary"
+            >
+              Force sync
+            </MenuItem>
+          </>
         ) : (
           <MenuItem
             color="primary"
@@ -79,16 +113,16 @@ const User: React.FC = () => {
         )}
         <MenuItem
           icon={<Icon type="font" name="content-copy" />}
-          onPress={copyUserId}
+          onPress={displayUserId}
         >
-          Copy user id
+          Display user id
         </MenuItem>
         {currentUser?.deviceId && (
           <MenuItem
             icon={<Icon type="font" name="content-copy" />}
-            onPress={copyDeviceId}
+            onPress={displayDeviceId}
           >
-            Copy device id
+            Display device id
           </MenuItem>
         )}
       </Menu>
