@@ -6,8 +6,12 @@ import {
   SectionListRenderItem,
   useWindowDimensions,
 } from 'react-native';
-import SectionHeader from './components/SectionHeader';
-import MangaHistoryItem from '@screens/History/components/MangaHistoryItem';
+import SectionHeader, {
+  MANGA_HISTORY_SECTION_HEADER_HEIGHT,
+} from './components/SectionHeader';
+import MangaHistoryItem, {
+  MANGA_HISTORY_ITEM_HEIGHT,
+} from '@screens/History/components/MangaHistoryItem';
 import connector, { ConnectedHistoryProps } from './History.redux';
 import useCollapsibleTabHeader from '@hooks/useCollapsibleTabHeader';
 import IconButton from '@components/IconButton';
@@ -24,6 +28,7 @@ import Input from '@components/Input';
 import { useRealm } from '@database/main';
 import { MangaSchema } from '@database/schemas/Manga';
 import reverseArray from '@helpers/reverseArray';
+import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
 
 const History: React.FC<ConnectedHistoryProps> = ({
   sections,
@@ -146,6 +151,7 @@ const History: React.FC<ConnectedHistoryProps> = ({
       };
     } else setParsedSections(reverseArray(sections));
   }, [query, sections]);
+
   if (sections.length === 0)
     return (
       <Stack
@@ -172,6 +178,10 @@ const History: React.FC<ConnectedHistoryProps> = ({
   return (
     <SectionList
       onScroll={onScroll}
+      getItemLayout={getItemLayout}
+      maxToRenderPerBatch={20}
+      initialNumToRender={0}
+      windowSize={13}
       contentContainerStyle={contentContainerStyle}
       style={scrollViewStyle}
       sections={parsedSections}
@@ -180,6 +190,18 @@ const History: React.FC<ConnectedHistoryProps> = ({
       renderItem={renderItem}
     />
   );
+};
+
+const getItemLayout = sectionListGetItemLayout({
+  getItemHeight: () => MANGA_HISTORY_ITEM_HEIGHT,
+  getSectionHeaderHeight: () => MANGA_HISTORY_SECTION_HEADER_HEIGHT,
+}) as unknown as (
+  data: SectionListData<MangaHistory, HistorySection>[] | null,
+  index: number,
+) => {
+  length: number;
+  offset: number;
+  index: number;
 };
 
 const renderSectionHeader: (info: {

@@ -11209,6 +11209,11 @@ react-native-screens@^3.19.0:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
 
+react-native-section-list-get-item-layout@^2.2.3:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/react-native-section-list-get-item-layout/-/react-native-section-list-get-item-layout-2.2.3.tgz#152a8efdcb3847dbcbeb04cd2d0de4312d3d2fcb"
+  integrity sha512-fzCW5SiYP6qCZyDHebaElHonIFr8NFrZK9JDkxFLnpxMJih4d+HQ4rHyOs0Z4Gb/FjyCVbRH7RtEnjeQ0XffMg==
+
 react-native-simple-toast@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/react-native-simple-toast/-/react-native-simple-toast-2.0.0.tgz#08f664acaaf1018fe0386aed5b3b38462ba09f83"

@@ -29,7 +29,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import { ScaledSheet } from 'react-native-size-matters';
+import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 
 const styles = ScaledSheet.create({
   cover: {
@@ -41,6 +41,8 @@ const styles = ScaledSheet.create({
     borderRadius: '8@ms',
   },
 });
+
+export const MANGA_HISTORY_ITEM_HEIGHT = moderateScale(100);
 
 const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
   const { item, deleteMangaFromHistory, sectionDate } = props;
@@ -113,7 +115,12 @@ const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
       onLongPress={handleOnLongPress}
       onPress={handleOnPress}
     >
-      <Box px="m" py="s">
+      <Box
+        px="m"
+        py="s"
+        height={MANGA_HISTORY_ITEM_HEIGHT}
+        justify-content="center"
+      >
         {manga == null && <Text color="error">{item.manga} is undefined</Text>}
         {chapter == null && (
           <Text color="error">{item.chapter} is undefined</Text>
