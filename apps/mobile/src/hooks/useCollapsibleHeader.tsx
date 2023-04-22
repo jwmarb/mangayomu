@@ -3,6 +3,7 @@ import { BoxProps } from '@components/Box/Box.interfaces';
 import Icon from '@components/Icon';
 import IconButton, { generateRippleColor } from '@components/IconButton';
 import { IconButtonProps } from '@components/IconButton/IconButton.interfaces';
+import LoadingBar from '@components/LoadingBar';
 import { NAVHEADER_HEIGHT, NavStyles } from '@components/NavHeader';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
@@ -133,11 +134,11 @@ export default function useCollapsibleHeader(
   const {
     headerRight,
     headerTitle,
-    dependencies = [],
     backButtonColor,
     backButtonStyle,
     backButtonRippleColor,
-    loading,
+    loading = false,
+    dependencies = [],
     showBackButton = true,
     headerLeftProps,
     headerRightProps,
@@ -148,12 +149,9 @@ export default function useCollapsibleHeader(
   const navigation = useRootNavigation();
   const translateY = useSharedValue(0);
   const scrollPosition = useSharedValue(0);
-  const { width } = useWindowDimensions();
   const opacity = useDerivedValue(() =>
     interpolate(translateY.value, [-NAVHEADER_HEIGHT, 0], [0, 1]),
   );
-  const loadingOpacity = useSharedValue(0);
-  const loadingBarTranslateX = useSharedValue(0);
   const backgroundColor = useDerivedValue(() =>
     interpolateColor(
       scrollPosition.value,
@@ -161,40 +159,6 @@ export default function useCollapsibleHeader(
       ['transparent', theme.palette.background.default],
     ),
   );
-
-  React.useLayoutEffect(() => {
-    if (loading) {
-      loadingOpacity.value = withTiming(1, {
-        duration: 150,
-        easing: Easing.ease,
-      });
-      loadingBarTranslateX.value = withRepeat(
-        withSequence(
-          withTiming(width * 1.3, { duration: 1500, easing: Easing.linear }),
-        ),
-        -1,
-      );
-    } else {
-      loadingOpacity.value = withTiming(0, {
-        duration: 150,
-        easing: Easing.ease,
-      });
-      cancelAnimation(loadingBarTranslateX);
-      loadingBarTranslateX.value = 0;
-    }
-
-    return () => {
-      cancelAnimation(loadingOpacity);
-      cancelAnimation(loadingBarTranslateX);
-    };
-  }, [loading, width]);
-
-  const loadingStyle = useAnimatedStyle(() => ({
-    opacity: loadingOpacity.value,
-  }));
-  const loadingBarStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: loadingBarTranslateX.value }],
-  }));
 
   function velocityHandler(velocity?: NativeScrollVelocity) {
     if (velocity)
@@ -261,32 +225,11 @@ export default function useCollapsibleHeader(
             headerRightProps={headerRightProps}
             showHeaderRight={showHeaderRight}
           />
-          <Box
-            position="absolute"
-            top={0}
-            left={0}
-            right={0}
-            as={Animated.View}
-            style={loadingStyle}
-            height={moderateScale(3)}
-            width="100%"
-            background-color="disabled"
-          >
-            <Box
-              position="absolute"
-              top={0}
-              left="-30%"
-              as={Animated.View}
-              width="30%"
-              height={moderateScale(3)}
-              background-color="primary"
-              style={loadingBarStyle}
-            />
-          </Box>
+          <LoadingBar loading={loading} />
         </>
       ),
     });
-  }, dependencies);
+  }, [...dependencies, loading]);
 
   return {
     onScroll,
