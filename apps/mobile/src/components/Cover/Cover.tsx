@@ -1,4 +1,4 @@
-import Box from '@components/Box';
+import Box, { AnimatedBox } from '@components/Box';
 import connector, { ConnectedCoverProps } from '@components/Cover/Cover.redux';
 import Progress from '@components/Progress';
 import { useTheme } from '@emotion/react';
@@ -43,6 +43,7 @@ const Cover: React.FC<ConnectedCoverProps> = (props) => {
     children,
   } = props;
   const opacity = useSharedValue(0);
+  const loadingOpacity = useSharedValue(0);
   const theme = useTheme();
   const imageStyle = React.useMemo(
     () => ({
@@ -70,19 +71,34 @@ const Cover: React.FC<ConnectedCoverProps> = (props) => {
     opacity.value = 1;
   }
 
+  function handleOnLoadStart() {
+    loadingOpacity.value = 1;
+  }
+
+  function handleOnLoadEnd() {
+    loadingOpacity.value = 0;
+  }
+
   const style = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
-  const loadingStyle = React.useMemo(
-    () => [combinedStyles, { backgroundColor: theme.palette.skeleton }],
+  const loadingStyle = useAnimatedStyle(() => ({
+    opacity: loadingOpacity.value,
+  }));
+  const combinedLoadingStyle = React.useMemo(
+    () => [
+      combinedStyles,
+      { backgroundColor: theme.palette.skeleton },
+      loadingStyle,
+    ],
     [imageStyle, theme.palette.skeleton, coverStyles.imageOverlay],
   );
 
   return (
     <>
-      <Box style={loadingStyle}>
+      <AnimatedBox style={combinedLoadingStyle}>
         <Progress />
-      </Box>
+      </AnimatedBox>
       <Animated.View style={style}>
         <FastImage
           source={require('@assets/No-Image-Placeholder.png')}
@@ -93,6 +109,8 @@ const Cover: React.FC<ConnectedCoverProps> = (props) => {
       </Animated.View>
       <FastImage
         source={{ uri: typeof cover === 'string' ? cover : cover?.imageCover }}
+        onLoadStart={handleOnLoadStart}
+        onLoadEnd={handleOnLoadEnd}
         style={imageStyle}
         onError={handleOnError}
       >
