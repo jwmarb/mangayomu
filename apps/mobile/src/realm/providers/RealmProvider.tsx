@@ -4,7 +4,7 @@ import {
   MangaStatusSchema,
 } from '../schemas/Manga';
 import { useQuery, useRealm } from '@database/main';
-import { useUser } from '@realm/react';
+import { useApp, useUser } from '@realm/react';
 import Realm from 'realm';
 import React from 'react';
 import { ChapterSchema } from '@database/schemas/Chapter';
@@ -47,12 +47,14 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
             .filtered(`_realmId == "${currentUser?.id}"`),
         );
       });
-      return async () => {
+    })();
+    return () => {
+      (async () => {
         await realm.subscriptions.update((sub) => {
           sub.removeAll();
         });
-      };
-    })();
+      })();
+    };
     // mangas.addListener(callback);
     // return () => {
     //   mangas.removeListener(callback);
