@@ -1,9 +1,10 @@
-import Badge from '@components/Badge';
+import Badge, { BadgeLocation } from '@components/Badge';
 import connector, { ConnectedBookProps } from '@components/Book/Book.redux';
 import Cover from '@components/Cover';
 import { coverStyles } from '@components/Cover/Cover';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
+import { MangaSchema } from '@database/schemas/Manga';
 import { useTheme } from '@emotion/react';
 import displayMessage from '@helpers/displayMessage';
 import vibrate from '@helpers/vibrate';
@@ -40,6 +41,10 @@ const Book: React.FC<ConnectedBookProps> = (props) => {
     paddingHorizontal,
   } = props;
   const navigation = useRootNavigation();
+  const dbManga =
+    '_id' in manga
+      ? (manga as MangaSchema & Realm.Object<MangaSchema, never>)
+      : null;
   const source = useMangaSource(manga);
 
   function handleOnPress() {
@@ -76,24 +81,31 @@ const Book: React.FC<ConnectedBookProps> = (props) => {
         rippleColor={theme.palette.action.ripple}
       >
         <Stack space="s" width={width} minHeight={height}>
-          <Badge type="image" uri={source.getIcon()} show>
-            <Cover cover={manga}>
-              <LinearGradient
-                colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
-                style={linearGradientStyle}
-              >
-                <Text
-                  style={textStyle}
-                  numberOfLines={2}
-                  bold={bold}
-                  align={align}
+          <Badge
+            type="number"
+            count={dbManga?.notifyNewChaptersCount ?? 0}
+            placement={BadgeLocation.TOP_LEFT}
+            color="primary"
+          >
+            <Badge type="image" uri={source.getIcon()} show>
+              <Cover cover={manga}>
+                <LinearGradient
+                  colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0, y: 1 }}
+                  style={linearGradientStyle}
                 >
-                  {manga.title}
-                </Text>
-              </LinearGradient>
-            </Cover>
+                  <Text
+                    style={textStyle}
+                    numberOfLines={2}
+                    bold={bold}
+                    align={align}
+                  >
+                    {manga.title}
+                  </Text>
+                </LinearGradient>
+              </Cover>
+            </Badge>
           </Badge>
         </Stack>
       </BaseButton>
@@ -107,8 +119,15 @@ const Book: React.FC<ConnectedBookProps> = (props) => {
       rippleColor={theme.palette.action.ripple}
     >
       <Stack space="s" width={width} minHeight={height}>
-        <Badge type="image" uri={source.getIcon()} show>
-          <Cover cover={manga} />
+        <Badge
+          type="number"
+          count={dbManga?.notifyNewChaptersCount ?? 0}
+          placement={BadgeLocation.TOP_LEFT}
+          color="primary"
+        >
+          <Badge type="image" uri={source.getIcon()} show>
+            <Cover cover={manga} />
+          </Badge>
         </Badge>
         <Text style={textStyle} numberOfLines={2} bold={bold} align={align}>
           {manga.title}
