@@ -43,18 +43,22 @@ export default function useAuth0(): Auth0ContextInterface {
       } catch (e) {
         console.error(e);
       }
-
       try {
-        if (realmUser?.isLoggedIn) await realmUser?.logOut();
         const credentials = await getCredentials();
-        if (credentials.idToken != null && credentials != null)
-          await app.logIn(Realm.Credentials.jwt(credentials.idToken));
-        else
-          throw Error('Credentials is null. Check your internet connection.');
+        if (
+          credentials != null &&
+          credentials.idToken != null &&
+          app.currentUser != null
+        ) {
+          const isAnonymousUser =
+            app.currentUser.identities[0].providerType === 'anon-user' &&
+            app.currentUser.identities.length === 1;
+          const realmCredentials = Realm.Credentials.jwt(credentials.idToken);
+          if (isAnonymousUser || !app.currentUser.isLoggedIn)
+            await app.logIn(realmCredentials);
+        } else throw Error('Failed to get user credentials.');
       } catch (e) {
         console.error(e);
-      } finally {
-        console.log('Authorized user through Auth0 and Realm');
       }
     },
     [_authorize, getCredentials, app, realmUser],
