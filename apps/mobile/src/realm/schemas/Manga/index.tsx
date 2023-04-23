@@ -112,7 +112,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   genres!: Set<string>;
   currentlyReadingChapter!: CurrentlyReadingChapter;
   dateAddedInLibrary?: number;
-  modifyNewChaptersCount!: number;
+  notifyNewChaptersCount!: number;
   chapters!: string[];
   sortChaptersBy!: keyof typeof SORT_CHAPTERS_BY;
   inLibrary!: boolean;
@@ -307,10 +307,7 @@ export const useManga = (
               })
                 ? ReadingDirection.WEBTOON
                 : 'Use global setting',
-              modifyNewChaptersCount: mangaObject
-                ? mangaObject.modifyNewChaptersCount +
-                  (meta.chapters.length - mangaObject.chapters.length)
-                : 0,
+              notifyNewChaptersCount: 0,
             },
             Realm.UpdateMode.Modified,
           );
