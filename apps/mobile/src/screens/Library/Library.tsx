@@ -1,8 +1,7 @@
-import { bookDimensions } from '@components/Book';
 import Box from '@components/Box';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
-import { useQuery } from '@database/main';
+import { useQuery, useRealm } from '@database/main';
 import { MangaSchema } from '@database/schemas/Manga';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import useCollapsibleTabHeader from '@hooks/useCollapsibleTabHeader';
@@ -24,6 +23,15 @@ import Badge from '@components/Badge';
 import Input from '@components/Input';
 import { MangaHost } from '@mangayomu/mangascraper';
 import useMountedEffect from '@hooks/useMountedEffect';
+import { RefreshControl } from 'react-native-gesture-handler';
+import useBoolean from '@hooks/useBoolean';
+
+import { useUser } from '@realm/react';
+import pLimit from 'p-limit';
+import integrateSortedList from '@helpers/integrateSortedList';
+import displayMessage from '@helpers/displayMessage';
+import { useIsFocused } from '@react-navigation/native';
+const limit = pLimit(1);
 
 const Library: React.FC<ConnectedLibraryProps> = ({
   sortBy,
@@ -35,6 +43,9 @@ const Library: React.FC<ConnectedLibraryProps> = ({
   bookWidth,
 }) => {
   const ref = React.useRef<BottomSheetMethods>(null);
+  const [refreshing, setRefreshing] = useBoolean();
+  const realm = useRealm();
+  const currentUser = useUser();
   const mangas = useQuery(MangaSchema);
   function handleOnPress() {
     ref.current?.snapToIndex(1);
@@ -74,6 +85,7 @@ const Library: React.FC<ConnectedLibraryProps> = ({
   }, [filters.Genres, filters.Sources]);
 
   const mangasInLibrary = mangas.filtered('inLibrary == true');
+  const isFocused = useIsFocused();
   const [showSearchBar, setShowSearchBar] = React.useState<boolean>(false);
   const [query, setQuery] = React.useState<string>('');
   function handleOnShowSearchBar() {
@@ -167,6 +179,7 @@ const Library: React.FC<ConnectedLibraryProps> = ({
           />
         </Badge>
       ),
+      loading: refreshing,
       headerRightProps: { 'flex-shrink': true },
       dependencies: [
         mangasInLibrary.length > 0,
@@ -176,21 +189,80 @@ const Library: React.FC<ConnectedLibraryProps> = ({
       ],
     });
 
+  React.useEffect(() => {
+    (async () => {
+      if (refreshing) {
+        displayMessage('Fetching updates...');
+        let numberOfUpdates = 0;
+        const updates = mangasInLibrary.map((manga) =>
+          limit(async () => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const host = MangaHost.getAvailableSources().get(manga.source)!;
+            const meta = await host.getMeta(manga);
+            if (meta.chapters.length !== manga.chapters.length) {
+              numberOfUpdates++;
+              realm.write(() => {
+                realm.create<MangaSchema>(
+                  MangaSchema,
+                  {
+                    _id: meta.link,
+                    _realmId: currentUser?.id,
+                    notifyNewChaptersCount:
+                      manga.notifyNewChaptersCount +
+                      (meta.chapters.length - manga.chapters.length),
+                    description: meta.description,
+                    genres: meta.genres as unknown as Set<string>,
+                    imageCover: meta.imageCover,
+                    index: meta.index,
+                    source: meta.source,
+                    title: meta.title,
+                    chapters: meta.chapters.map((x) => x.link),
+                  },
+                  Realm.UpdateMode.Modified,
+                );
+              });
+              if (
+                sortBy === 'Number of updates' ||
+                sortBy === 'Number of available chapters (multilingual)'
+              )
+                setData((prev) => {
+                  integrateSortedList(
+                    prev,
+                    SORT_LIBRARY_BY[sortBy],
+                  ).insertionSort();
+                  return [...prev];
+                });
+            }
+          }),
+        );
+        try {
+          await Promise.all(updates);
+        } finally {
+          setRefreshing(false);
+          if (numberOfUpdates > 0)
+            displayMessage(
+              `Successfully updated ${numberOfUpdates} manga${
+                numberOfUpdates !== 1 ? 's' : ''
+              }.`,
+            );
+          else displayMessage('No updates were found.');
+        }
+      }
+    })();
+  }, [refreshing]);
+
   return (
     <>
-      {/* <Box
-        position="absolute"
-        top={0}
-        left={0}
-        right={0}
-        bottom={0}
-        z-index={1000}
-      >
-        <Animated.View style={inputStyle}>
-          
-        </Animated.View>
-      </Box> */}
       <FlashList
+        extraData={isFocused}
+        refreshControl={
+          <RefreshControl
+            refreshing={false}
+            onRefresh={() => {
+              setRefreshing(true);
+            }}
+          />
+        }
         onScroll={onScroll}
         onMomentumScrollEnd={onScroll}
         data={data}
