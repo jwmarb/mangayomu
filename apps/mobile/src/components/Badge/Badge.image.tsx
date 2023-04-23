@@ -26,9 +26,8 @@ const styles = ScaledSheet.create({
 });
 
 const ImageBadge: React.FC<ImageBadgeProps> = (props) => {
-  const { show, children, uri } = props;
-  const style = useBadgeLayoutAnimation(show);
-  const theme = useTheme();
+  const { show = false, children, uri, placement } = props;
+  const style = useBadgeLayoutAnimation(show, placement);
 
   return (
     <Box>

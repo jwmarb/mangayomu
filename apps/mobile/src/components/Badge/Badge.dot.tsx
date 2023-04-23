@@ -1,18 +1,13 @@
 import { useBadgeLayoutAnimation } from '@components/Badge/Badge.helpers';
 import Box from '@components/Box';
 import React from 'react';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { ScaledSheet } from 'react-native-size-matters';
 import { DotBadgeProps } from './Badge.interfaces';
 
 const DotBadge: React.FC<DotBadgeProps> = (props) => {
-  const { show, children, color = 'textPrimary' } = props;
-  const style = useBadgeLayoutAnimation(show);
+  const { show = false, children, color = 'textPrimary', placement } = props;
+  const style = useBadgeLayoutAnimation(show, placement);
 
   const animatedStyle = React.useMemo(
     () => [style, styles.dot],

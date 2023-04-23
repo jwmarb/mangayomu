@@ -1,3 +1,4 @@
+import { BadgeLocation } from '@components/Badge';
 import { Colors } from '@mangayomu/theme';
 import React from 'react';
 
@@ -5,6 +6,7 @@ interface AbstractBadgeProps<T> extends React.PropsWithChildren {
   type: T;
   color?: Colors;
   show?: boolean;
+  placement?: BadgeLocation;
 }
 
 export interface NumberBadgeProps extends AbstractBadgeProps<'number'> {
