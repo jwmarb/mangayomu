@@ -57,7 +57,7 @@ export default function useAuth0(): Auth0ContextInterface {
         console.log('Authorized user through Auth0 and Realm');
       }
     },
-    [_authorize, getCredentials, app],
+    [_authorize, getCredentials, app, realmUser],
   );
 
   const clearSession = React.useCallback(async () => {
