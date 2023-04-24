@@ -1,8 +1,6 @@
 import Box from '@components/Box';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
-import { useQuery, useRealm } from '@database/main';
-import { MangaSchema } from '@database/schemas/Manga';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import useCollapsibleTabHeader from '@hooks/useCollapsibleTabHeader';
 import useMangaFlashlistLayout from '@hooks/useMangaFlashlistLayout';
@@ -14,24 +12,14 @@ import Text from '@components/Text';
 import { moderateScale } from 'react-native-size-matters';
 import { useWindowDimensions } from 'react-native';
 import Stack from '@components/Stack';
-import { inPlaceSort } from 'fast-sort';
 import connector, { ConnectedLibraryProps } from './Library.redux';
-import { SORT_LIBRARY_BY } from '@redux/slices/library';
-import { FilterState } from '@redux/slices/mainSourceSelector';
 import Checkbox from '@components/Checkbox';
 import Badge from '@components/Badge';
 import Input from '@components/Input';
-import { MangaHost } from '@mangayomu/mangascraper';
-import useMountedEffect from '@hooks/useMountedEffect';
 import { RefreshControl } from 'react-native-gesture-handler';
 import useBoolean from '@hooks/useBoolean';
 
-import { useUser } from '@realm/react';
-import pLimit from 'p-limit';
-import integrateSortedList from '@helpers/integrateSortedList';
-import displayMessage from '@helpers/displayMessage';
-import { useIsFocused } from '@react-navigation/native';
-const limit = pLimit(1);
+import { useLibraryData } from '@screens/Library/Library.hooks';
 
 const Library: React.FC<ConnectedLibraryProps> = ({
   sortBy,
@@ -44,50 +32,21 @@ const Library: React.FC<ConnectedLibraryProps> = ({
 }) => {
   const ref = React.useRef<BottomSheetMethods>(null);
   const [refreshing, setRefreshing] = useBoolean();
-  const realm = useRealm();
-  const currentUser = useUser();
-  const mangas = useQuery(MangaSchema);
+  const [showSearchBar, setShowSearchBar] = React.useState<boolean>(false);
+  const [query, setQuery] = React.useState<string>('');
+
   function handleOnPress() {
     ref.current?.snapToIndex(1);
   }
-  const applyFilters = React.useMemo(() => {
-    const ignoreGenres = new Set<string>();
-    const requireGenres = new Set<string>();
-    for (const x in filters.Genres) {
-      switch (filters.Genres[x]) {
-        case FilterState.EXCLUDE:
-          ignoreGenres.add(x);
-          break;
-        case FilterState.INCLUDE:
-          requireGenres.add(x);
-      }
-    }
-    return (manga: MangaSchema) => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const source = MangaHost.getAvailableSources().get(manga.source)!;
-      if (ignoreGenres.size > 0) {
-        for (const genre of ignoreGenres) {
-          if (
-            source.getGenre(genre) != null &&
-            manga.genres.has(source.getGenre(genre))
-          )
-            return false;
-        }
-      }
-      if (requireGenres.size > 0) {
-        for (const genre of requireGenres) {
-          if (source.getGenre(genre) == null) return false;
-          else if (!manga.genres.has(source.getGenre(genre))) return false;
-        }
-      }
-      return filters.Sources[manga.source];
-    };
-  }, [filters.Genres, filters.Sources]);
 
-  const mangasInLibrary = mangas.filtered('inLibrary == true');
-  const isFocused = useIsFocused();
-  const [showSearchBar, setShowSearchBar] = React.useState<boolean>(false);
-  const [query, setQuery] = React.useState<string>('');
+  const { data, mangasInLibrary } = useLibraryData({
+    sortBy,
+    reversed,
+    filters,
+    query,
+    refreshing,
+    setRefreshing,
+  });
   function handleOnShowSearchBar() {
     setShowSearchBar(true);
   }
@@ -95,34 +54,6 @@ const Library: React.FC<ConnectedLibraryProps> = ({
   function handleOnBack() {
     setShowSearchBar(false);
   }
-
-  const sortedData = React.useMemo(
-    () =>
-      inPlaceSort(mangasInLibrary.filter(applyFilters)).by(
-        reversed
-          ? { desc: SORT_LIBRARY_BY[sortBy] }
-          : { asc: SORT_LIBRARY_BY[sortBy] },
-      ),
-    [sortBy, reversed, mangasInLibrary.length, applyFilters],
-  );
-  const [data, setData] = React.useState(sortedData);
-  useMountedEffect(() => {
-    if (query.length > 0) {
-      const timeout = setTimeout(
-        () =>
-          setData(
-            sortedData.filter((x) =>
-              x.title.toLowerCase().includes(query.toLowerCase()),
-            ),
-          ),
-        300,
-      );
-      return () => {
-        clearTimeout(timeout);
-      };
-    } else setData(sortedData);
-  }, [sortedData, query]);
-
   const {
     renderItem,
     keyExtractor,
@@ -139,6 +70,7 @@ const Library: React.FC<ConnectedLibraryProps> = ({
     },
     data.length,
   );
+
   const { scrollViewStyle, contentContainerStyle, onScroll } =
     useCollapsibleTabHeader({
       headerTitle: 'Library',
@@ -189,72 +121,9 @@ const Library: React.FC<ConnectedLibraryProps> = ({
       ],
     });
 
-  React.useEffect(() => {
-    (async () => {
-      if (refreshing) {
-        displayMessage('Fetching updates...');
-        let numberOfUpdates = 0;
-        const updates = mangasInLibrary.map((manga) =>
-          limit(async () => {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const host = MangaHost.getAvailableSources().get(manga.source)!;
-            const meta = await host.getMeta(manga);
-            if (meta.chapters.length !== manga.chapters.length) {
-              numberOfUpdates++;
-              realm.write(() => {
-                realm.create<MangaSchema>(
-                  MangaSchema,
-                  {
-                    _id: meta.link,
-                    _realmId: currentUser?.id,
-                    notifyNewChaptersCount:
-                      manga.notifyNewChaptersCount +
-                      (meta.chapters.length - manga.chapters.length),
-                    description: meta.description,
-                    genres: meta.genres as unknown as Set<string>,
-                    imageCover: meta.imageCover,
-                    index: meta.index,
-                    source: meta.source,
-                    title: meta.title,
-                    chapters: meta.chapters.map((x) => x.link),
-                  },
-                  Realm.UpdateMode.Modified,
-                );
-              });
-              if (
-                sortBy === 'Number of updates' ||
-                sortBy === 'Number of available chapters (multilingual)'
-              )
-                setData((prev) => {
-                  integrateSortedList(
-                    prev,
-                    SORT_LIBRARY_BY[sortBy],
-                  ).insertionSort();
-                  return [...prev];
-                });
-            }
-          }),
-        );
-        try {
-          await Promise.all(updates);
-        } finally {
-          setRefreshing(false);
-          if (numberOfUpdates > 0)
-            displayMessage(
-              `Successfully updated ${numberOfUpdates} manga${
-                numberOfUpdates !== 1 ? 's' : ''
-              }.`,
-            );
-          else displayMessage('No updates were found.');
-        }
-      }
-    })();
-  }, [refreshing]);
-
   return (
     <>
       <FlashList
-        extraData={isFocused}
         refreshControl={
           <RefreshControl
             refreshing={false}

@@ -1,7 +1,9 @@
+import { HomeTabProps } from '@navigators/Home/Home.interfaces';
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: AppState, props: HomeTabProps<'Library'>) => ({
+  ...props,
   reversed: state.library.reversed,
   sortBy: state.library.sortBy,
   filters: state.library.filters,
