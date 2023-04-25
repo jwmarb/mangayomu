@@ -1,10 +1,7 @@
 import { NavStyles } from '@components/NavHeader';
 import { IMangaSchema, FetchMangaMetaStatus } from '@database/schemas/Manga';
 import { Manga } from '@mangayomu/mangascraper';
-import Realm from 'realm';
 import React from 'react';
-import { ChapterSchema } from '@database/schemas/Chapter';
-import { ISOLangCode } from '@mangayomu/language-codes';
 
 export interface MangaViewerHeaderProps extends React.PropsWithChildren {
   meta?: IMangaSchema;

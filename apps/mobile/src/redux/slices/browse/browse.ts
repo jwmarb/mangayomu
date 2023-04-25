@@ -66,30 +66,6 @@ const browseSlice = createSlice({
       }
       state.loading = true;
     },
-    appendUniversalSearchResults: (
-      state,
-      action: PayloadAction<{ source: string; results: Manga[] }>,
-    ) => {
-      if (state.inputSubmitted) {
-        state.states[action.payload.source].status = 'done';
-        state.states[action.payload.source].mangas = action.payload.results;
-        for (const source in state.states) {
-          if (state.states[source].status === 'loading') {
-            state.loading = true;
-            break;
-          } else state.loading = false;
-        }
-      }
-    },
-    errorUniversalSearchResults: (
-      state,
-      action: PayloadAction<{ source: string; error: unknown }>,
-    ) => {
-      state.states[action.payload.source].error = getErrorMessage(
-        action.payload.error,
-      );
-      state.states[action.payload.source].status = 'failed_with_errors';
-    },
     exitUniversalSearch: (state) => {
       state.states = {};
       state.inputSubmitted = false;
@@ -100,8 +76,6 @@ const browseSlice = createSlice({
 });
 export const {
   initializeUniversalSearch,
-  appendUniversalSearchResults,
-  errorUniversalSearchResults,
   exitUniversalSearch,
   universalSearchResultHandler,
   setQuery,

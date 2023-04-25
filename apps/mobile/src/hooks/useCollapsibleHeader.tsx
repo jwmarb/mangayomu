@@ -1,7 +1,7 @@
 import Box from '@components/Box';
 import { BoxProps } from '@components/Box/Box.interfaces';
 import Icon from '@components/Icon';
-import IconButton, { generateRippleColor } from '@components/IconButton';
+import IconButton from '@components/IconButton';
 import { IconButtonProps } from '@components/IconButton/IconButton.interfaces';
 import LoadingBar from '@components/LoadingBar';
 import { NAVHEADER_HEIGHT, NavStyles } from '@components/NavHeader';
@@ -15,24 +15,17 @@ import {
   NativeScrollEvent,
   NativeScrollVelocity,
   StyleProp,
-  useWindowDimensions,
   ViewStyle,
 } from 'react-native';
 import { NativeSyntheticEvent } from 'react-native';
 import Animated, {
-  cancelAnimation,
-  Easing,
   interpolate,
   interpolateColor,
   runOnUI,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
-  withRepeat,
-  withSequence,
-  withTiming,
 } from 'react-native-reanimated';
-import { moderateScale } from 'react-native-size-matters';
 
 export interface CollapsibleHeaderOptions {
   headerRight?: React.ReactNode;

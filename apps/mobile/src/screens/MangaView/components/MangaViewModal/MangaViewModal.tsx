@@ -15,7 +15,7 @@ const MangaViewModal: React.ForwardRefRenderFunction<
     <CustomBottomSheet ref={ref}>
       <CustomTabs
         navigationState={{ index, routes }}
-        renderScene={({ route, jumpTo }) => {
+        renderScene={({ route }) => {
           switch (route.key) {
             case 'sort':
               return (

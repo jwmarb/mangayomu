@@ -21,7 +21,6 @@ export function applyFilterState(value: boolean, s: FilterState) {
 export type MainSourceFilterKeys = keyof MainSourceSelectorState['filters'];
 
 interface MainSourceSelectorState {
-  index: number;
   reversed: boolean;
   sort: keyof typeof SORT_HOSTS_BY;
   query: string;
@@ -34,7 +33,6 @@ interface MainSourceSelectorState {
 }
 
 const initialMainSourceSelectorState: MainSourceSelectorState = {
-  index: 0,
   reversed: false,
   sort: 'Alphabetically',
   query: '',
@@ -82,9 +80,6 @@ const mainSourceSelectorSlice = createSlice({
         state.filters[action.payload],
       );
     },
-    setIndex: (state, action: PayloadAction<number>) => {
-      state.index = action.payload;
-    },
     setQuery: (state, action: PayloadAction<string>) => {
       state.query = action.payload;
     },
@@ -96,7 +91,6 @@ export const {
   toggleReverse,
   applyFilter,
   switchStateOfFilter,
-  setIndex,
   setQuery,
 } = mainSourceSelectorSlice.actions;
 export default mainSourceSelectorSlice.reducer;

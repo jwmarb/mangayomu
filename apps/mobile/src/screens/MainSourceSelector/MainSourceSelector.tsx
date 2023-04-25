@@ -2,7 +2,6 @@ import Box from '@components/Box';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import React from 'react';
 import { FlatList } from 'react-native-gesture-handler';
-import Header from '@screens/Welcome/components/MainSourceSelector/components/Header';
 import Item from '@screens/Welcome/components/MainSourceSelector/components/Item';
 import { ListRenderItem } from 'react-native';
 import connector, {
@@ -11,10 +10,8 @@ import connector, {
 import { MangaHost } from '@mangayomu/mangascraper';
 import { applyFilterState } from '@redux/slices/mainSourceSelector';
 import { SORT_HOSTS_BY } from '@redux/slices/host';
-import { Portal } from '@gorhom/portal';
 import Text from '@components/Text';
 import useBoolean from '@hooks/useBoolean';
-import Button from '@components/Button';
 import Input from '@components/Input';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';

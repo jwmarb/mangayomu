@@ -2,9 +2,7 @@ import Box from '@components/Box';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
 import Input from '@components/Input';
-import Progress from '@components/Progress';
 import Stack from '@components/Stack';
-import Text from '@components/Text';
 import useCollapsibleTabHeader from '@hooks/useCollapsibleTabHeader';
 import { MangaHost } from '@mangayomu/mangascraper';
 import React from 'react';
@@ -15,21 +13,12 @@ import {
   SectionListData,
   TextInputSubmitEditingEventData,
 } from 'react-native';
-import { FlatList, ScrollView, TextInput } from 'react-native-gesture-handler';
-import Animated, {
-  FadeIn,
-  FadeOut,
-  SequencedTransition,
-} from 'react-native-reanimated';
+import { ScrollView } from 'react-native-gesture-handler';
 import connector, { ConnectedBrowseProps } from './Browse.redux';
 import Item from './components/Item';
 import SectionHeader from './components/SectionHeader';
 
-import { useTheme } from '@emotion/react';
-import Button from '@components/Button';
 import MangaSearchResult from '@screens/Browse/components/MangaSearchResult';
-
-const reducer = (s: boolean) => !s;
 
 const Browse: React.FC<ConnectedBrowseProps> = (props) => {
   const {
@@ -37,13 +26,10 @@ const Browse: React.FC<ConnectedBrowseProps> = (props) => {
     pinnedSources,
     hostsWithUniversalSearch,
     initializeUniversalSearch,
-    appendUniversalSearchResults,
     inputSubmitted,
-    errorUniversalSearchResults,
     exitUniversalSearch,
     loading,
     universalSearchResultHandler,
-    searchStates,
     setQuery,
     initialQuery,
     query,

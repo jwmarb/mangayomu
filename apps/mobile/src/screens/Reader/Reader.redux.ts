@@ -2,7 +2,6 @@ import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
 import { RootStackProps } from '@navigators/Root/Root.interfaces';
 import {
-  fetchPagesByChapter,
   resetReaderState,
   setCurrentChapter,
   setIsOnChapterError,

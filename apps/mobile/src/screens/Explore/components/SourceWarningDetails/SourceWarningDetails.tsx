@@ -63,6 +63,7 @@ const styles = ScaledSheet.create({
 
 const MangaError: React.FC<{ item: SourceError }> = React.memo(
   ({ item: { source, error } }) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const host = MangaHost.getAvailableSources().get(source)!;
     return (
       <Stack flex-direction="row" space="m" m="s" align-items="center">

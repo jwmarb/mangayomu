@@ -19,8 +19,6 @@ import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 const Header: React.FC<ConnectedHeaderProps> = ({
   setQuery,
   numSelected,
-  index,
-  setIndex,
   totalSources,
   query,
   addAllSources,
@@ -81,7 +79,7 @@ const Header: React.FC<ConnectedHeaderProps> = ({
 };
 
 export const MangaSourceSelectorFilters = React.forwardRef<BottomSheetMethods>(
-  (props, ref) => {
+  (_, ref) => {
     const [index, setIndex] = React.useState<number>(0);
     return (
       <CustomBottomSheet ref={ref}>

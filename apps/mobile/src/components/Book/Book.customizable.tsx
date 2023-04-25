@@ -1,9 +1,8 @@
 import Badge from '@components/Badge';
 import { CustomizableBookProps } from '@components/Book/Book.interfaces';
-import Box from '@components/Box';
 import { CustomizableCover } from '@components/Cover/';
 import { AnimatedStack } from '@components/Stack';
-import Text, { AnimatedText } from '@components/Text';
+import { AnimatedText } from '@components/Text';
 import { useTheme } from '@emotion/react';
 import useMangaSource from '@hooks/useMangaSource';
 import { BookStyle } from '@redux/slices/settings';

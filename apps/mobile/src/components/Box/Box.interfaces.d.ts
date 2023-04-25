@@ -1,11 +1,6 @@
 import React from 'react';
 import { ViewStyle } from 'react-native';
-import {
-  ButtonColors,
-  Spacing,
-  BackgroundColors,
-  BackgroundColor,
-} from '@mangayomu/theme';
+import { Spacing } from '@mangayomu/theme';
 
 export interface Debuggable {
   debug?: boolean;

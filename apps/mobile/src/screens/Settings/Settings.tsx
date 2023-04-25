@@ -1,15 +1,12 @@
 import Divider from '@components/Divider';
 import Icon from '@components/Icon';
-import Text from '@components/Text';
-import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import useRootNavigation from '@hooks/useRootNavigation';
 import PressableListItem from '@screens/More/components/PressableListItem';
-import MainSourceSelector from '@screens/Welcome/components/MainSourceSelector';
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 
-const Settings: React.FC = (props) => {
+const Settings: React.FC = () => {
   const { onScroll, contentContainerStyle, scrollViewStyle } =
     useCollapsibleHeader({ headerTitle: 'Settings' });
   const navigation = useRootNavigation();

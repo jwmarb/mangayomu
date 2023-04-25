@@ -10,13 +10,9 @@ import connector, {
   ConnectedExploreProps,
 } from '@screens/Explore/Explore.redux';
 import React from 'react';
-import FastImage from 'react-native-fast-image';
 import Animated from 'react-native-reanimated';
-import { moderateScale } from 'react-native-size-matters';
 import {
-  ActivityIndicator,
   InteractionManager,
-  ListRenderItem,
   NativeSyntheticEvent,
   TextInputSubmitEditingEventData,
   useWindowDimensions,
@@ -24,13 +20,8 @@ import {
 import MainSourceSelector from '@screens/Welcome/components/MainSourceSelector';
 import Avatar from '@components/Avatar';
 import Badge from '@components/Badge';
-import NetInfo, { NetInfoStateType } from '@react-native-community/netinfo';
-import {
-  FlatList,
-  RefreshControl,
-  TextInput,
-} from 'react-native-gesture-handler';
-import { Manga } from '@mangayomu/mangascraper';
+import NetInfo from '@react-native-community/netinfo';
+import { RefreshControl, TextInput } from 'react-native-gesture-handler';
 import { HotMangaList } from '@screens/Explore/components/HotMangaList';
 import { LatestMangaList } from '@screens/Explore/components/LatestMangaList';
 import GenresList from '@screens/Explore/components/GenresList';
@@ -43,9 +34,6 @@ const Explore: React.FC<ConnectedExploreProps> = ({
   setExplorerState,
   explorerNetworkStateListenerHandler,
   refreshExplorerState,
-  networkStatus,
-  hotMangas,
-  latestMangas,
   loading,
   suspendRendering,
   internetStatus,

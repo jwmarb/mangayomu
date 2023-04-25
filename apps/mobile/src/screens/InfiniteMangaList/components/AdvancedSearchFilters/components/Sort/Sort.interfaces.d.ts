@@ -1,5 +1,4 @@
 import { SortFilter } from '@mangayomu/schema-creator';
-import React from 'react';
 
 export interface SortProps
   extends Omit<SortFilter<string>, 'type' | 'default'> {

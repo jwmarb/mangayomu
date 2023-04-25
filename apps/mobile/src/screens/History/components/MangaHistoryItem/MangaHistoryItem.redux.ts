@@ -1,6 +1,5 @@
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
-import React from 'react';
 import { MangaHistoryItemProps } from '@screens/History/components/MangaHistoryItem/MangaHistoryItem.interfaces';
 import { deleteMangaFromHistory } from '@redux/slices/history';
 

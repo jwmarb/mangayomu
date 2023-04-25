@@ -1,7 +1,5 @@
 import Box from '@components/Box';
 import { BoxProps } from '@components/Box/Box.interfaces';
-import Icon from '@components/Icon';
-import IconButton from '@components/IconButton';
 import LoadingBar from '@components/LoadingBar';
 import { NAVHEADER_HEIGHT, NavStyles } from '@components/NavHeader';
 import Stack from '@components/Stack';
@@ -14,24 +12,17 @@ import {
   NativeScrollEvent,
   NativeScrollVelocity,
   StyleProp,
-  useWindowDimensions,
   ViewStyle,
 } from 'react-native';
 import { NativeSyntheticEvent } from 'react-native';
 import Animated, {
-  cancelAnimation,
-  Easing,
   interpolate,
   interpolateColor,
   runOnUI,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
-  withRepeat,
-  withSequence,
-  withTiming,
 } from 'react-native-reanimated';
-import { moderateScale } from 'react-native-size-matters';
 
 export interface CollapsibleTabHeaderOptions {
   headerLeft?: React.ReactNode;
@@ -64,7 +55,6 @@ const CollapsibleBase = React.memo<
     headerLeft,
     headerRight,
     headerTitle = routeName,
-    header,
     showHeaderLeft,
     showHeaderRight,
     showHeaderCenter,

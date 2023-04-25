@@ -1,28 +1,12 @@
-import Box, { AnimatedBox } from '@components/Box';
+import Box from '@components/Box';
 import Button from '@components/Button';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import useBoolean from '@hooks/useBoolean';
-import { DialogContext } from '@hooks/useDialog';
 import React from 'react';
-import {
-  BackHandler,
-  Modal,
-  TouchableNativeFeedback,
-  useWindowDimensions,
-} from 'react-native';
-import {
-  Easing,
-  runOnJS,
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
-import {
-  gestureHandlerRootHOC,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
+import { Modal } from 'react-native';
+
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import {
   DialogAction,
   DialogMethods,
@@ -33,7 +17,6 @@ const actionsDefaultState: DialogAction[] = [{ text: 'Close' }];
 
 const Dialog: React.ForwardRefRenderFunction<DialogMethods> = (props, ref) => {
   const [show, setShow] = useBoolean();
-  const { width, height } = useWindowDimensions();
   const [actions, setActions] =
     React.useState<DialogAction[]>(actionsDefaultState);
   const [text, setText] = React.useState<string>('');

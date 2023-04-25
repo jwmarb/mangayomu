@@ -1,9 +1,7 @@
-import { Color, createTheme, DefaultTheme, Spacing } from '@mangayomu/theme';
+import { DefaultTheme } from '@mangayomu/theme';
 import '@emotion/react';
 import { css } from '@emotion/native';
-import { Theme as AppTheme } from '@emotion/react';
-import { helpers } from '@theme/helpers';
-import { moderateScale, scale } from 'react-native-size-matters';
+import { moderateScale } from 'react-native-size-matters';
 import { Theme as NavigationTheme } from '@react-navigation/native';
 
 export type TextVariants = keyof typeof typography;

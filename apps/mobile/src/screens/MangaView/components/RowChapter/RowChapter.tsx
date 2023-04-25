@@ -1,5 +1,4 @@
 import Box from '@components/Box';
-import Checkbox from '@components/Checkbox';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
@@ -7,7 +6,7 @@ import { RectButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import { RowChapterProps } from './RowChapter.interfaces';
 import { format, formatDistanceToNow } from 'date-fns';
-import { useLocalObject, useLocalRealm } from '@database/main';
+import { useLocalObject } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useRootNavigation from '@hooks/useRootNavigation';
 

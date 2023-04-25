@@ -1,13 +1,10 @@
 import Box, { AnimatedBox } from '@components/Box';
-import { CustomBottomSheet } from '@components/CustomBottomSheet';
 import Icon from '@components/Icon';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useLocalRealm } from '@database/main';
 import { PageSchema } from '@database/schemas/Page';
 import { useTheme } from '@emotion/react';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { Portal } from '@gorhom/portal';
 import displayMessage from '@helpers/displayMessage';
 import useBoolean from '@hooks/useBoolean';
@@ -16,12 +13,9 @@ import React from 'react';
 import {
   LayoutChangeEvent,
   Share,
-  useWindowDimensions,
-  PermissionsAndroid,
   Platform,
   Linking,
   Dimensions,
-  StatusBar,
 } from 'react-native';
 import {
   RectButton,

@@ -1,5 +1,4 @@
 import { MangaSchema } from '@database/schemas/Manga';
-import React from 'react';
 import Realm from 'realm';
 
 export interface LibraryFilterMenuProps {

@@ -1,9 +1,6 @@
 import Box from '@components/Box';
-import Button from '@components/Button';
 import Checkbox from '@components/Checkbox';
 import Hyperlink from '@components/Hyperlink';
-import Icon from '@components/Icon';
-import IconButton from '@components/IconButton';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
@@ -12,10 +9,9 @@ import connector, {
   ConnectedItemProps,
 } from '@screens/Welcome/components/MainSourceSelector/components/Item/Item.redux';
 import React from 'react';
-import { Linking } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { RectButton } from 'react-native-gesture-handler';
-import { moderateScale, ScaledSheet } from 'react-native-size-matters';
+import { ScaledSheet } from 'react-native-size-matters';
 
 const Item: React.FC<ConnectedItemProps> = React.memo(
   ({ item, addSource, isSelected, removeSource }) => {

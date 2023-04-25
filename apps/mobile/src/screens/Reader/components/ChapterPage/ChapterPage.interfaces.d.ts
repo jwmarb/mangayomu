@@ -1,4 +1,3 @@
-import { MangaHost } from '@mangayomu/mangascraper';
 import {
   ChapterPage,
   ExtendedReaderPageState,

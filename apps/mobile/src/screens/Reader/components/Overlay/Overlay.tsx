@@ -1,46 +1,30 @@
 import Box, { AnimatedBox } from '@components/Box';
 import React from 'react';
 import connector, { ConnectedOverlayProps } from './Overlay.redux';
-import Animated, {
-  Easing,
-  FadeIn,
-  FadeOut,
+import {
   interpolate,
-  runOnJS,
-  useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
-  useSharedValue,
-  withTiming,
 } from 'react-native-reanimated';
 import Text from '@components/Text';
-import Button from '@components/Button';
-import {
-  Gesture,
-  GestureDetector,
-  TouchableWithoutFeedback,
-} from 'react-native-gesture-handler';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { Portal } from '@gorhom/portal';
 import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { useTheme } from '@emotion/react';
-import Stack, { AnimatedStack } from '@components/Stack';
-import { useLocalObject, useObject, useRealm } from '@database/main';
-import { ChapterSchema } from '@database/schemas/Chapter';
-import { IMangaSchema, MangaSchema } from '@database/schemas/Manga';
+import Stack from '@components/Stack';
+import { useRealm } from '@database/main';
+import { IMangaSchema } from '@database/schemas/Manga';
 import Realm from 'realm';
 import displayMessage from '@helpers/displayMessage';
 import { moderateScale } from 'react-native-size-matters';
-import { Menu, MenuItem } from '@components/Menu';
-import { ReadingDirection } from '@redux/slices/settings';
 import ReaderDirection from '@screens/Reader/components/Overlay/components/ReaderDirection';
 import { ReaderContext } from '@screens/Reader/Reader';
 import ImageScaling from '@screens/Reader/components/Overlay/components/ImageScaling';
 import ZoomStartPosition from '@screens/Reader/components/Overlay/components/ZoomStartPosition';
 import DeviceOrientation from '@screens/Reader/components/Overlay/components/DeviceOrientation';
-import { FullWindowOverlay } from 'react-native-screens';
-import { StatusBar, StyleSheet } from 'react-native';
+import { StatusBar } from 'react-native';
 import ReaderSettingsMenu from '@screens/Reader/components/ReaderSettingsMenu';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import ImageMenu from '@screens/Reader/components/ImageMenu';

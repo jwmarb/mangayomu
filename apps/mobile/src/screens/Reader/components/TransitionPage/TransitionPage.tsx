@@ -1,26 +1,17 @@
-import Box, { AnimatedBox } from '@components/Box';
+import Box from '@components/Box';
 import Progress from '@components/Progress';
-import Stack, { AnimatedStack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Text from '@components/Text';
-import { useLocalObject, useLocalRealm } from '@database/main';
+import { useLocalObject } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
-import { useTheme } from '@emotion/react';
 import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
 import useScreenDimensions from '@hooks/useScreenDimensions';
-import { ReaderBackgroundColor } from '@redux/slices/settings';
-import {
-  TransitionPageContextState,
-  TransitionPageProps,
-} from '@screens/Reader/components/TransitionPage/TransitionPage.interfaces';
+import { TransitionPageContextState } from '@screens/Reader/components/TransitionPage/TransitionPage.interfaces';
 import React from 'react';
-import { useWindowDimensions } from 'react-native';
 import { GestureDetector } from 'react-native-gesture-handler';
-import { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import connector, {
   ConnectedTransitionPageProps,
 } from './TransitionPage.redux';
-
-const fetching = new Set<string>();
 
 export const TransitionPageContext = React.createContext<
   TransitionPageContextState | undefined

@@ -3,7 +3,6 @@ import Stack from '@components/Stack';
 import Tag from '@components/Tag';
 import useMangaSource from '@hooks/useMangaSource';
 import React from 'react';
-import { moderateScale } from 'react-native-size-matters';
 import { MangaGenresProps } from './MangaGenres.interfaces';
 
 const MangaGenres: React.FC<MangaGenresProps> = (props) => {

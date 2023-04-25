@@ -1,6 +1,5 @@
-import { bookDimensions, BOOK_COVER_RATIO } from '@components/Book';
+import { bookDimensions } from '@components/Book';
 import Box, { AnimatedBox } from '@components/Box';
-import Cover from '@components/Cover';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
 import Progress from '@components/Progress';
@@ -19,7 +18,6 @@ import connector, {
 } from '@screens/History/components/MangaHistoryItem/MangaHistoryItem.redux';
 import { format } from 'date-fns';
 import React from 'react';
-import { Alert, Image, useWindowDimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
   RectButton,
@@ -46,7 +44,6 @@ export const MANGA_HISTORY_ITEM_HEIGHT = moderateScale(100);
 
 const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
   const { item, deleteMangaFromHistory, sectionDate } = props;
-  const { width } = useWindowDimensions();
   const navigation = useRootNavigation();
   const manga = useObject(MangaSchema, item.manga);
   const chapter = useLocalObject(ChapterSchema, item.chapter);
@@ -58,6 +55,7 @@ const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
   function handleOnDeleteFromHistory() {
     dialog.open({
       title: 'Remove from history?',
+      // eslint-disable-next-line quotes
       message: "This will delete this manga's entry. Are you sure?",
       actions: [
         { text: 'Cancel' },

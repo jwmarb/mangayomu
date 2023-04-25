@@ -1,4 +1,4 @@
-import Box, { AnimatedBox } from '@components/Box';
+import { AnimatedBox } from '@components/Box';
 import connector, { ConnectedCoverProps } from '@components/Cover/Cover.redux';
 import Progress from '@components/Progress';
 import { useTheme } from '@emotion/react';

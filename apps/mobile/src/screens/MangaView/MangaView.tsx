@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import Box from '@components/Box';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
-import { RootStackProps } from '@navigators/Root/Root.interfaces';
 import { SORT_CHAPTERS_BY, useManga } from '@database/schemas/Manga';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import React from 'react';
@@ -9,12 +8,7 @@ import MangaViewerHeader from './components/MangaViewerHeader';
 import { useTheme } from '@emotion/react';
 import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
-import {
-  useLocalQuery,
-  useLocalRealm,
-  useQuery,
-  useRealm,
-} from '@database/main';
+import { useLocalQuery, useLocalRealm } from '@database/main';
 import displayMessage from '@helpers/displayMessage';
 import {
   Linking,
@@ -24,9 +18,7 @@ import {
 } from 'react-native';
 import Animated, {
   FadeInDown,
-  FadeInUp,
   FadeOutDown,
-  FadeOutUp,
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,

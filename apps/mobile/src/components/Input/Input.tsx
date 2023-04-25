@@ -1,9 +1,7 @@
 import Box from '@components/Box';
-import Button from '@components/Button';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
 import { InputBase } from '@components/Input/Input.base';
-import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import React from 'react';
 import { TextInput } from 'react-native-gesture-handler';

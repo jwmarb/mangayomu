@@ -13,12 +13,10 @@ import {
   ReaderScreenOrientation,
   ReadingDirection,
 } from '@redux/slices/settings';
-import { ActionCreatorWithPayload } from '@reduxjs/toolkit';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
-import { Alert, AppState, Dimensions, FlatList } from 'react-native';
+import { Alert, AppState, Dimensions } from 'react-native';
 import Orientation from 'react-native-orientation-locker';
-import { SharedValue } from 'react-native-reanimated';
 import Realm from 'realm';
 import RNFetchBlob from 'rn-fetch-blob';
 import useScreenDimensions from '@hooks/useScreenDimensions';
@@ -26,10 +24,7 @@ import useScreenDimensions from '@hooks/useScreenDimensions';
 type ForceScrollToOffset = (offset: number) => void;
 
 type ReaderScrollPositionInitialHandlerArguments = {
-  shouldTrackScrollPosition: boolean;
-  _chapter: ChapterSchema & Realm.Object<ChapterSchema, never>;
   readableChapters: (ChapterSchema & Realm.Object<ChapterSchema, never>)[];
-  horizontal: boolean;
   scrollPositionLandscape: React.MutableRefObject<number>;
   scrollPositionPortrait: React.MutableRefObject<number>;
   indexOffset: React.MutableRefObject<
@@ -62,7 +57,6 @@ export function readerScrollPositionInitialHandler(
 ) {
   const { width, height } = useScreenDimensions();
   const {
-    _chapter,
     chapterRef,
     readingDirection,
     localRealm,
@@ -70,10 +64,8 @@ export function readerScrollPositionInitialHandler(
     indexOffset,
     scrollPositionLandscape,
     scrollPositionPortrait,
-    shouldTrackScrollPosition,
     persistentForceScrollToOffset,
     readableChapters,
-    horizontal,
     isOnChapterError,
     setShouldTrackScrollPosition,
     pages,
@@ -210,7 +202,6 @@ type ReaderPreviousChapterScrollPositionHandlerArguments = {
     >
   >;
   chapterKey: string;
-  index: React.MutableRefObject<number>;
   scrollPositionLandscapeUnsafe: React.MutableRefObject<number>;
   scrollPositionPortraitUnsafe: React.MutableRefObject<number>;
   getOffset(startIndex?: number, toIndex?: number): number;
@@ -227,7 +218,6 @@ export function readerPreviousChapterScrollPositionHandler(
     pages,
     indexOffset,
     chapterKey,
-    index,
     memoizedOffsets,
     scrollPositionLandscapeUnsafe,
     scrollPositionPortraitUnsafe,
@@ -261,11 +251,7 @@ export function readerPreviousChapterScrollPositionHandler(
 interface ReaderInitializerArguments
   extends Pick<
       ReaderScrollPositionInitialHandlerArguments,
-      | 'readableChapters'
-      | 'localRealm'
-      | '_chapter'
-      | 'readingDirection'
-      | 'indexOffset'
+      'readableChapters' | 'localRealm' | 'readingDirection' | 'indexOffset'
     >,
     Pick<
       ReaderPreviousChapterScrollPositionHandlerArguments,
@@ -273,6 +259,7 @@ interface ReaderInitializerArguments
       | 'scrollPositionPortraitUnsafe'
       | 'chapterKey'
     > {
+  _chapter: ChapterSchema & Realm.Object<ChapterSchema, never>;
   setCurrentChapter: (payload: string) => {
     payload: string;
     type: 'reader/setCurrentChapter';
@@ -353,9 +340,10 @@ export function readerInitializer(args: ReaderInitializerArguments) {
 
 type ScrollPositionReadingDirectionChangeHandlerArguments = Pick<
   ReaderScrollPositionInitialHandlerArguments,
-  'getOffset' | 'horizontal'
+  'getOffset'
 > & {
   forceScrollToOffset: ForceScrollToOffset;
+  horizontal: boolean;
 };
 
 export function scrollPositionReadingDirectionChangeHandler(
@@ -381,9 +369,10 @@ type ReaderCurrentPageEffectArguments = Pick<
 > &
   Pick<
     ReaderScrollPositionInitialHandlerArguments,
-    'localRealm' | 'chapterRef' | '_chapter'
+    'localRealm' | 'chapterRef'
   > & {
     currentPage: number;
+    _chapter: ChapterSchema & Realm.Object<ChapterSchema, never>;
   };
 export function readerCurrentPageEffect(
   args: ReaderCurrentPageEffectArguments,
@@ -410,7 +399,6 @@ type ChapterKeyEffectArguments = Pick<
   | 'indexOffset'
   | 'scrollPositionLandscape'
   | 'scrollPositionPortrait'
-  | 'isOnChapterError'
 > &
   Pick<ReaderPreviousChapterScrollPositionHandlerArguments, 'chapterKey'> & {
     setChapter: (
@@ -429,7 +417,6 @@ export function chapterKeyEffect(args: ChapterKeyEffectArguments) {
     scrollPositionLandscape,
     scrollPositionPortrait,
     addMangaToHistory,
-    isOnChapterError,
   } = args;
   React.useEffect(() => {
     const newChapter = localRealm.objectForPrimaryKey(

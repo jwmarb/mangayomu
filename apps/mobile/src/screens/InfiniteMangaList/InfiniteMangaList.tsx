@@ -26,10 +26,7 @@ import {
   OptionFilter,
   SortFilter,
 } from '@mangayomu/schema-creator';
-import {
-  FilterState,
-  toggleBetweenFilters,
-} from '@redux/slices/mainSourceSelector';
+import { FilterState } from '@redux/slices/mainSourceSelector';
 import { InclusiveExclusiveFilter } from '@mangayomu/schema-creator';
 import { Manga } from '@mangayomu/mangascraper';
 import { StatusAPI } from '@redux/slices/explore';
@@ -181,7 +178,6 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
     renderItem,
     columns,
     key,
-    estimatedListSize,
     overrideItemLayout,
     drawDistance,
   } = useMangaFlashlistLayout(

@@ -1,7 +1,6 @@
 import { useBadgeLayoutAnimation } from '@components/Badge/Badge.helpers';
 import { ImageBadgeProps } from '@components/Badge/Badge.interfaces';
 import Box from '@components/Box';
-import { useTheme } from '@emotion/react';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 import Animated from 'react-native-reanimated';

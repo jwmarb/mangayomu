@@ -10,7 +10,6 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 import Animated, {
-  Easing,
   interpolateColor,
   useAnimatedStyle,
   useDerivedValue,

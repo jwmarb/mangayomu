@@ -3,15 +3,11 @@ import React from 'react';
 import connector, {
   ConnectedReaderDirectionProps,
 } from './ReaderDirection.redux';
-import Realm from 'realm';
 import { Menu, MenuItem } from '@components/Menu';
 import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
 import { ReadingDirection, useReaderSetting } from '@redux/slices/settings';
-import {
-  OVERLAY_TEXT_PRIMARY,
-  OVERLAY_TEXT_SECONDARY,
-} from '@screens/Reader/components/Overlay/Overlay';
+import { OVERLAY_TEXT_SECONDARY } from '@screens/Reader/components/Overlay/Overlay';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import Button from '@components/Button';

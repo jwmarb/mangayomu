@@ -4,7 +4,6 @@ import {
   SectionList,
   SectionListData,
   SectionListRenderItem,
-  useWindowDimensions,
 } from 'react-native';
 import SectionHeader, {
   MANGA_HISTORY_SECTION_HEADER_HEIGHT,

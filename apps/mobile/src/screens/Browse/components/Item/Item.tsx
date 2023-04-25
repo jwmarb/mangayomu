@@ -9,7 +9,6 @@ import useRootNavigation from '@hooks/useRootNavigation';
 import React from 'react';
 import { RectButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
-import { ItemProps } from './Item.interfaces';
 import connector, { ConnectedItemProps } from './Item.redux';
 
 const Item: React.FC<ConnectedItemProps> = ({

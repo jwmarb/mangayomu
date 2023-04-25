@@ -3,7 +3,7 @@ import Box from '@components/Box';
 import { useTheme } from '@emotion/react';
 import useMountedEffect from '@hooks/useMountedEffect';
 import { Manga } from '@mangayomu/mangascraper';
-import { ListRenderItem, ListRenderItemInfo } from '@shopify/flash-list';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 import React from 'react';
 import { Dimensions, useWindowDimensions } from 'react-native';
 

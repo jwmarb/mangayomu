@@ -9,7 +9,6 @@ import {
 } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaSchema } from '@database/schemas/Manga';
-import { PageSchema } from '@database/schemas/Page';
 import useMangaSource from '@hooks/useMangaSource';
 import {
   ExtendedReaderState,
@@ -47,33 +46,22 @@ import {
   NativeSyntheticEvent,
   ViewabilityConfigCallbackPairs,
   ViewToken,
-  FlatList,
   // ListRenderItem,
 } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import {
   Easing,
   runOnJS,
-  useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { ScaledSheet } from 'react-native-size-matters';
 import connector, { ConnectedReaderProps } from './Reader.redux';
-import Orientation from 'react-native-orientation-locker';
 import ChapterError from '@screens/Reader/components/ChapterError';
 import { ChapterErrorContext } from '@screens/Reader/components/ChapterError/ChapterError';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
-import { useDispatch } from 'react-redux';
 import { useAppDispatch } from '@redux/main';
 import useImmersiveMode from '@hooks/useImmersiveMode';
 import useScreenDimensions from '@hooks/useScreenDimensions';
-const styles = ScaledSheet.create({
-  container: {
-    minHeight: '100%',
-    minWidth: '100%',
-  },
-});
 
 export interface ReaderContextState {
   mangaKey?: string;
@@ -89,7 +77,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     chapter: chapterKey,
     showTransitionPage,
     setShowTransitionPage,
-    notifyOnLastChapter,
+    // notifyOnLastChapter,
     pageInDisplay,
     setIsOnChapterError,
     setPageInDisplay,
@@ -221,7 +209,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     getOffset,
     scrollPositionLandscape,
     scrollPositionPortrait,
-    isOnChapterError,
     addMangaToHistory,
   });
   readerPreviousChapterScrollPositionHandler({
@@ -230,7 +217,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     pages,
     indexOffset,
     chapterKey,
-    index,
     scrollPositionLandscapeUnsafe,
     scrollPositionPortraitUnsafe,
     getOffset,
@@ -238,15 +224,12 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     memoizedOffsets,
   });
 
-  const [shouldTrackScrollPosition, _setShouldTrackScrollPosition] =
-    React.useState<boolean>(false);
   const setShouldTrackScrollPosition = React.useCallback(
     (value: boolean) => {
       setTimeout(() => setShowTransitionPage(value), 15);
-      _setShouldTrackScrollPosition(value);
       shouldTrackScrollPositionRef.current = value;
     },
-    [_setShouldTrackScrollPosition, setShowTransitionPage],
+    [setShowTransitionPage],
   );
 
   const [currentPage, setCurrentPage] = React.useState<number>(
@@ -255,13 +238,13 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const source = useMangaSource(manga.source);
   const imageMenuRef = React.useRef<ImageMenuMethods>(null);
 
-  const contentContainerStyle = React.useMemo(
-    () => [
-      styles.container,
-      { backgroundColor: backgroundColor.toLowerCase() },
-    ],
-    [styles.container, backgroundColor],
-  );
+  // const contentContainerStyle = React.useMemo(
+  //   () => [
+  //     styles.container,
+  //     { backgroundColor: backgroundColor.toLowerCase() },
+  //   ],
+  //   [styles.container, backgroundColor],
+  // );
   const overlayOpacity = useSharedValue(0);
 
   const tapGesture = React.useMemo(
@@ -341,10 +324,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   readerScrollPositionInitialHandler({
     setShouldTrackScrollPosition,
     persistentForceScrollToOffset,
-    shouldTrackScrollPosition,
-    _chapter,
     readableChapters,
-    horizontal,
     scrollPositionLandscape,
     scrollPositionPortrait,
     indexOffset,
@@ -653,54 +633,54 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     }
   };
 
-  const getItemLayout = React.useCallback(
-    (data: Page[] | null | undefined, index: number) => {
-      if (data == null)
-        return {
-          index,
-          offset: (horizontal ? width : height) * index,
-          length: horizontal ? width : height,
-        };
+  // const getItemLayout = React.useCallback(
+  //   (data: Page[] | null | undefined, index: number) => {
+  //     if (data == null)
+  //       return {
+  //         index,
+  //         offset: (horizontal ? width : height) * index,
+  //         length: horizontal ? width : height,
+  //       };
 
-      switch (readingDirection) {
-        case ReadingDirection.WEBTOON:
-          // eslint-disable-next-line no-case-declarations
-          const page = data[index];
-          // eslint-disable-next-line no-case-declarations
-          let offset = 0;
-          for (let i = 0; i < index; i++) {
-            const p = data[i];
-            switch (p.type) {
-              case 'PAGE':
-                offset += p.height * (width / p.width);
-                break;
-              default:
-                offset += height;
-                break;
-            }
-          }
-          return {
-            index,
-            offset,
-            length:
-              page.type === 'PAGE'
-                ? page.height * (width / page.width)
-                : height,
-          };
-        case ReadingDirection.LEFT_TO_RIGHT:
-        case ReadingDirection.RIGHT_TO_LEFT:
-        default:
-          return { index, offset: width * index, length: width };
-        case ReadingDirection.VERTICAL:
-          return {
-            index,
-            offset: height * index,
-            length: height,
-          };
-      }
-    },
-    [readingDirection, horizontal, width, height],
-  );
+  //     switch (readingDirection) {
+  //       case ReadingDirection.WEBTOON:
+  //         // eslint-disable-next-line no-case-declarations
+  //         const page = data[index];
+  //         // eslint-disable-next-line no-case-declarations
+  //         let offset = 0;
+  //         for (let i = 0; i < index; i++) {
+  //           const p = data[i];
+  //           switch (p.type) {
+  //             case 'PAGE':
+  //               offset += p.height * (width / p.width);
+  //               break;
+  //             default:
+  //               offset += height;
+  //               break;
+  //           }
+  //         }
+  //         return {
+  //           index,
+  //           offset,
+  //           length:
+  //             page.type === 'PAGE'
+  //               ? page.height * (width / page.width)
+  //               : height,
+  //         };
+  //       case ReadingDirection.LEFT_TO_RIGHT:
+  //       case ReadingDirection.RIGHT_TO_LEFT:
+  //       default:
+  //         return { index, offset: width * index, length: width };
+  //       case ReadingDirection.VERTICAL:
+  //         return {
+  //           index,
+  //           offset: height * index,
+  //           length: height,
+  //         };
+  //     }
+  //   },
+  //   [readingDirection, horizontal, width, height],
+  // );
 
   function getItemSize(item: Page) {
     switch (readingDirection) {
@@ -834,6 +814,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
 const getItemType: (
   item: Page,
   index: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   extraData?: any,
 ) => string | number | undefined = (item) => item.type;
 

@@ -1,23 +1,20 @@
-import React, { useImperativeHandle } from 'react';
+import React from 'react';
 import { CustomBottomSheetProps } from './CustomBottomSheet.interfaces';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetHandleProps,
-  BottomSheetView,
 } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { useTheme } from '@emotion/react';
 import { BackHandler, StatusBar } from 'react-native';
 import Animated, {
   interpolate,
-  SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
 import { Portal } from '@gorhom/portal';
-import Box, { AnimatedBox } from '@components/Box';
-import Text from '@components/Text';
+import { AnimatedBox } from '@components/Box';
 
 const CustomHandle: React.FC<BottomSheetHandleProps> = ({ animatedIndex }) => {
   const theme = useTheme();
@@ -112,7 +109,9 @@ const CustomBottomSheet: React.ForwardRefRenderFunction<
         onChange={handleOnChange}
         onClose={handleOnClose}
         ref={(r) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (bottomSheet as any).current = r;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (ref as any).current = r;
         }}
         index={index}

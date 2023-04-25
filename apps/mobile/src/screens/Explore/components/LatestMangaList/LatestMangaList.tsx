@@ -1,4 +1,3 @@
-import Box from '@components/Box';
 import Button from '@components/Button';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
@@ -17,7 +16,6 @@ import {
 } from '@screens/Explore/Explore.flatlist';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
-import { FlatList } from 'react-native-gesture-handler';
 import connector, {
   ConnectedLatestMangaListProps,
 } from './LatestMangaList.redux';

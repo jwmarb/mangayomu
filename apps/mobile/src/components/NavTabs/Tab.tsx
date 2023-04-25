@@ -17,7 +17,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
 import { TabProps } from './Tab.interfaces';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import vibrate from '@helpers/vibrate';
 
 const tabIcons = {

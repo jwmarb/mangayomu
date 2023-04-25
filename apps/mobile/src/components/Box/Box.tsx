@@ -1,5 +1,4 @@
 import styled, { css } from '@emotion/native';
-import { BackgroundColor, ButtonColors } from '@mangayomu/theme';
 import { BoxProps } from './Box.interfaces';
 import {
   implementBorderModel,
@@ -8,8 +7,6 @@ import {
   implementFlexBoxModel,
   implementPositionModel,
   set,
-  setu,
-  setwandh,
   setWithPalette,
 } from './Box.helpers';
 import Animated from 'react-native-reanimated';

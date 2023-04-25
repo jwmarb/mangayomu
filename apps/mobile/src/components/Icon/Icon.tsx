@@ -8,10 +8,6 @@ import MaterialCommunityIconNames from 'react-native-vector-icons/glyphmaps/Mate
 import Animated from 'react-native-reanimated';
 import { getOrUseCustomColor } from '@components/Text';
 
-type RequireKey<T, KEYS extends keyof T> = Omit<T, KEYS> & {
-  [K in keyof T as K extends KEYS ? K : never]-?: T[K];
-};
-
 const styles = ScaledSheet.create({
   imageIcon: {
     borderRadius: '4@ms',

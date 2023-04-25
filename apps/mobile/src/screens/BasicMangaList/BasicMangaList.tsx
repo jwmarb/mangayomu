@@ -17,7 +17,6 @@ const BasicMangaList: React.FC<ConnectedBasicMangaListProps> = (props) => {
     renderItem,
     keyExtractor,
     key,
-    estimatedListSize,
     overrideItemLayout,
     drawDistance,
   } = useMangaFlashlistLayout(

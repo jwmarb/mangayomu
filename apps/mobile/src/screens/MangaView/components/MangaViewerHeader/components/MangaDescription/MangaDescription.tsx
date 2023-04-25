@@ -1,4 +1,3 @@
-import Box from '@components/Box';
 import Button from '@components/Button';
 import Icon from '@components/Icon';
 import Skeleton from '@components/Skeleton';
@@ -6,7 +5,6 @@ import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
 import { NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
-import { moderateScale } from 'react-native-size-matters';
 import { MangaDescriptionProps } from './MangaDescription.interfaces';
 
 const MAX_NUMBER_OF_LINES = 7;

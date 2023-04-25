@@ -10,7 +10,7 @@ import {
 } from 'react-native-reanimated';
 import { AnimatedBox } from '@components/Box';
 import { LoadingBarProps } from './LoadingBar.interfaces';
-import { Dimensions, useWindowDimensions } from 'react-native';
+import { Dimensions } from 'react-native';
 import { moderateScale } from 'react-native-size-matters';
 
 const LOADING_BAR_HEIGHT = moderateScale(3);

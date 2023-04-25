@@ -1,9 +1,6 @@
 import { MangaConcurrencyResult, SourceError } from '@helpers/getMangaHost';
 import { Manga } from '@mangayomu/mangascraper';
-import {
-  NetInfoState,
-  NetInfoStateType,
-} from '@react-native-community/netinfo/lib/typescript/src/internal/types';
+import { NetInfoState } from '@react-native-community/netinfo/lib/typescript/src/internal/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type StatusAPI =

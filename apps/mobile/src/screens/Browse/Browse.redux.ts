@@ -1,11 +1,8 @@
-import getMangaHost from '@helpers/getMangaHost';
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
 import {
   initializeUniversalSearch,
-  errorUniversalSearchResults,
   exitUniversalSearch,
-  appendUniversalSearchResults,
   universalSearchResultHandler,
   setQuery,
 } from '@redux/slices/browse';
@@ -19,16 +16,13 @@ const mapStateToProps = (state: AppState, props: HomeTabProps<'Browse'>) => ({
   ),
   inputSubmitted: state.browse.inputSubmitted,
   loading: state.browse.loading,
-  searchStates: state.browse.states,
   initialQuery: props.route.params?.initialQuery,
   query: state.browse.query,
 });
 
 const connector = connect(mapStateToProps, {
   initializeUniversalSearch,
-  errorUniversalSearchResults,
   exitUniversalSearch,
-  appendUniversalSearchResults,
   universalSearchResultHandler,
   setQuery,
 });

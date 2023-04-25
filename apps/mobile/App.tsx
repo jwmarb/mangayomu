@@ -10,7 +10,6 @@ import {
   AppState,
   AppStateStatus,
   StatusBar,
-  Text,
   useColorScheme,
 } from 'react-native';
 

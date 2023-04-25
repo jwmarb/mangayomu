@@ -1,13 +1,7 @@
-import Box from '@components/Box';
 import Button from '@components/Button';
 import { CustomBottomSheet } from '@components/CustomBottomSheet';
 import Stack from '@components/Stack';
-import Text from '@components/Text';
-import {
-  BottomSheetFlatList,
-  BottomSheetScrollView,
-  BottomSheetSectionList,
-} from '@gorhom/bottom-sheet';
+import { BottomSheetSectionList } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import React from 'react';
 import { AdvancedSearchFiltersProps } from './AdvancedSearchFilters.interfaces';
@@ -20,17 +14,12 @@ import {
   StatefulOption,
   StatefulSort,
 } from '@screens/InfiniteMangaList/InfiniteMangaList';
-import {
-  ListRenderItem,
-  SectionListData,
-  SectionListRenderItem,
-} from 'react-native';
+import { SectionListData, SectionListRenderItem } from 'react-native';
 import {
   InclusiveExclusiveFilter,
   MutableInclusiveExclusiveFilter,
 } from '@mangayomu/schema-creator';
 import SectionHeader from '@screens/Library/components/LibraryFilterMenu/Tabs/Filter/components/SectionHeader';
-import FilterItem from '@components/Filters/FilterItem';
 import { FilterState } from '@redux/slices/mainSourceSelector';
 import { useTheme } from '@emotion/react';
 
@@ -190,7 +179,5 @@ const AdvancedSearchFilters: React.ForwardRefRenderFunction<
     </CustomBottomSheet>
   );
 };
-
-const keyExtractor = (i: string) => i;
 
 export default React.forwardRef(AdvancedSearchFilters);

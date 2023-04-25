@@ -2,15 +2,10 @@ import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import { PageSchema } from '@database/schemas/Page';
 import { getErrorMessage } from '@helpers/getErrorMessage';
-import { MangaChapter, MangaHost } from '@mangayomu/mangascraper';
-import { AppState } from '@redux/main';
+import { MangaHost } from '@mangayomu/mangascraper';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {
-  getFileExtension,
-  removeURLParams,
-} from '@screens/Reader/components/ChapterPage/ChapterPage';
-import { Dimensions, Image, Platform } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { removeURLParams } from '@screens/Reader/components/ChapterPage/ChapterPage';
+import { Image } from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
 
 export type Page = ChapterError | ChapterPage | NoMorePages | TransitionPage;
@@ -119,7 +114,7 @@ export const fetchPagesByChapter = createAsyncThunk(
       const response = await payload.source.getPages(payload.chapter);
       const preload = Promise.all(response.map((x) => Image.prefetch(x)));
       const dimensions = Promise.all(
-        response.map(async (uri, index) => {
+        response.map(async (uri) => {
           const localPage = payload.localRealm.objectForPrimaryKey(
             PageSchema,
             removeURLParams(uri),
@@ -252,8 +247,8 @@ const readerSlice = createSlice({
           initialExtendedState),
         error: action.payload.value,
       };
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       if (!action.payload.value)
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         state.extendedState[action.payload.pageKey]!.retries++;
     },
     setLocalPageURI: (

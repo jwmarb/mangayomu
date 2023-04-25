@@ -5,11 +5,7 @@ import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
 import { Freeze } from 'react-freeze';
-import {
-  LayoutChangeEvent,
-  NativeSyntheticEvent,
-  ViewProps,
-} from 'react-native';
+import { LayoutChangeEvent, ViewProps } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Animated, {
   Easing,

@@ -3,7 +3,6 @@ import React from 'react';
 import { useWindowDimensions } from 'react-native';
 import Animated, {
   interpolate,
-  SharedValue,
   useAnimatedStyle,
   useDerivedValue,
 } from 'react-native-reanimated';

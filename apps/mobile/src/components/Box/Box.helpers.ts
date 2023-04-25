@@ -1,6 +1,5 @@
 import {
   BorderModel,
-  BorderProperty,
   BoxModel,
   DimensionsModel,
   FlexBoxModel,

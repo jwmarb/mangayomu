@@ -1,8 +1,5 @@
 import { MangaSchema } from '@database/schemas/Manga';
-import {
-  FilterState,
-  toggleBetweenFilters,
-} from '@redux/slices/mainSourceSelector';
+import { FilterState } from '@redux/slices/mainSourceSelector';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type LibrarySortOption = keyof typeof SORT_LIBRARY_BY;

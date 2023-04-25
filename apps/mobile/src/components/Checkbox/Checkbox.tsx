@@ -5,7 +5,6 @@ import React from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
-  runOnUI,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,

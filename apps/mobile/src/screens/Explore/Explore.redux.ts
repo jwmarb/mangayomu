@@ -9,9 +9,7 @@ import { connect, ConnectedProps } from 'react-redux';
 
 const mapStateToProps = (state: AppState) => ({
   source: getMangaHost(state),
-  networkStatus: state.explore.internetStatus,
-  hotMangas: state.explore.states.hot,
-  latestMangas: state.explore.states.latest,
+
   suspendRendering: state.host.suspendRendering,
   loading:
     (state.explore.status.hot === 'loading' ||

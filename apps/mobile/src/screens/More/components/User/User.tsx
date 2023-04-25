@@ -6,7 +6,6 @@ import { Menu, MenuItem } from '@components/Menu';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useRealm } from '@database/main';
-import copyTextToClipboard from '@helpers/copyTextToClipboard';
 import { getErrorMessage } from '@helpers/getErrorMessage';
 import useAuth0 from '@hooks/useAuth0';
 import useDialog from '@hooks/useDialog';

@@ -19,4 +19,5 @@ const TabHeader: React.FC<BottomTabHeaderProps> = (props) => {
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default (props: any) => <TabHeader {...props} />;

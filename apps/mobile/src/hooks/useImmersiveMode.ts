@@ -1,7 +1,4 @@
 import { useTheme } from '@emotion/react';
-import useAppSelector from '@hooks/useAppSelector';
-import useBoolean from '@hooks/useBoolean';
-import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
 import { ReaderBackgroundColor } from '@redux/slices/settings';
 import { NavigationBar } from '@theme/index';
 import React from 'react';

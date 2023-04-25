@@ -1,15 +1,7 @@
-import {
-  MangaSchema,
-  MangaRatingSchema,
-  MangaStatusSchema,
-} from '../schemas/Manga';
-import { useQuery, useRealm } from '@database/main';
-import { useApp, useUser } from '@realm/react';
-import Realm from 'realm';
+import { MangaSchema } from '../schemas/Manga';
+import { useRealm } from '@database/main';
+import { useUser } from '@realm/react';
 import React from 'react';
-import { ChapterSchema } from '@database/schemas/Chapter';
-import useAuth0 from '@hooks/useAuth0';
-import useMountedEffect from '@hooks/useMountedEffect';
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
 

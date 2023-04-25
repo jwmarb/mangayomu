@@ -14,11 +14,10 @@ import { InteractionManager } from 'react-native';
 import { getErrorMessage } from '@helpers/getErrorMessage';
 import { useObject, useRealm, useLocalRealm } from '../../main';
 import { ChapterSchema } from '@database/schemas/Chapter';
-import useMountEffect from '@hooks/useMountEffect';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import displayMessage from '@helpers/displayMessage';
 import integrateSortedList from '@helpers/integrateSortedList';
-import NetInfo, { useNetInfo } from '@react-native-community/netinfo';
+import NetInfo from '@react-native-community/netinfo';
 import { useUser } from '@realm/react';
 import {
   ImageScaling,

@@ -4,7 +4,6 @@ import Slider from '@components/Slider';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
-import { Freeze } from 'react-freeze';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import { CoverImageProps } from './CoverImage.interfaces';

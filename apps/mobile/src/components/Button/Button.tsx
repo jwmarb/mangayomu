@@ -1,12 +1,9 @@
 import React from 'react';
 import { ButtonProps } from './Button.interfaces';
-import { TouchableOpacity } from 'react-native';
 import { BaseButton } from 'react-native-gesture-handler';
-import { moderateScale, ScaledSheet } from 'react-native-size-matters';
-import Box from '@components/Box';
+import { moderateScale } from 'react-native-size-matters';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
-import { hexToRgb, rgbaToString } from '@mangayomu/theme';
 import Stack from '@components/Stack';
 
 const Button: React.FC<ButtonProps> = (props) => {

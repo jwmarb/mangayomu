@@ -1,20 +1,13 @@
 import Box from '@components/Box';
-import Icon from '@components/Icon';
 import Stack from '@components/Stack';
 import Tag from '@components/Tag';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import integrateSortedList from '@helpers/integrateSortedList';
 import { StringComparator } from '@mangayomu/algorithms';
-import { MangaHost } from '@mangayomu/mangascraper';
 import React from 'react';
 import { ListRenderItem } from 'react-native';
-import {
-  BaseButton,
-  BorderlessButton,
-  FlatList,
-  ScrollView,
-} from 'react-native-gesture-handler';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import connector, { ConnectedGenresListProps } from './GenresList.redux';
 const ItemSeparatorComponent = React.memo(() => <Box m={moderateScale(4)} />);

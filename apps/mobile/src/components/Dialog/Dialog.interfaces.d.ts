@@ -1,5 +1,4 @@
 import { ButtonProps } from '@components/Button/Button.interfaces';
-import React from 'react';
 
 export interface DialogAction {
   text: string;

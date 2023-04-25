@@ -17,6 +17,9 @@ export default function useScreenDimensions() {
       setHeight(screen.height);
       setWidth(screen.width);
     });
+    return () => {
+      p.remove();
+    };
   });
 
   return { width, height };

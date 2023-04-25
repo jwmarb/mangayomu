@@ -14,5 +14,4 @@ export const NavStyles = ScaledSheet.create({
     paddingBottom: '150@vs',
   },
 });
-export { default as StackHeader } from './NavHeader';
 export { default as TabHeader } from './TabHeader';

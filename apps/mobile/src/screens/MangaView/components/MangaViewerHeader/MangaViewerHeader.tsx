@@ -8,25 +8,19 @@ import React from 'react';
 import { MangaViewerHeaderProps } from './MangaViewerHeader.interfaces';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
-import { ListRenderItem, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { moderateScale } from 'react-native-size-matters';
 import MangaRating from '@screens/MangaView/components/MangaViewerHeader/components/MangaRating';
 import { useTheme } from '@emotion/react';
 import Skeleton from '@components/Skeleton';
 import MangaDescription from './components/MangaDescription';
-import Button from '@components/Button';
 import Icon from '@components/Icon';
-import { FlatList } from 'react-native-gesture-handler';
-import Tag from '@components/Tag';
 import MangaActionButtons from '@screens/MangaView/components/MangaViewerHeader/components/MangaActionButtons';
 import MangaGenres from '@screens/MangaView/components/MangaViewerHeader/components/MangaGenres';
 import MangaStatus from '@screens/MangaView/components/MangaViewerHeader/components/MangaStatus';
-import { ChapterSchema } from '@database/schemas/Chapter';
-import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import MangaSupportedLanguages from '@screens/MangaView/components/MangaViewerHeader/components/MangaSupportedLanguages';
 import MangaSource from '@screens/MangaView/components/MangaViewerHeader/components/MangaSource';
 import IconButton from '@components/IconButton';
-import Progress from '@components/Progress';
 
 const styles = StyleSheet.create({
   imageBackground: {
@@ -42,7 +36,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
     manga,
     scrollViewStyle,
     status,
-    error,
+    // error,
     firstChapterKey,
     numberOfSelectedLanguageChapters,
     onBookmark,

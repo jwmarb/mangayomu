@@ -1,4 +1,3 @@
-import Progress from '@components/Progress';
 import Skeleton from '@components/Skeleton';
 import Stack from '@components/Stack';
 import Text from '@components/Text';

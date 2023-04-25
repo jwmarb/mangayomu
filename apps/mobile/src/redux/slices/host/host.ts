@@ -1,5 +1,4 @@
 import integrateSortedList from '@helpers/integrateSortedList';
-import { StringComparator } from '@mangayomu/algorithms';
 import { MangaHost } from '@mangayomu/mangascraper';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 

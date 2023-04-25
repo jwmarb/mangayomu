@@ -5,7 +5,6 @@ import Home from '@screens/Home';
 import MangaView from '@screens/MangaView';
 import React from 'react';
 import Welcome from '@screens/Welcome/Welcome';
-import { StackHeader } from '@components/NavHeader';
 import BasicMangaList from '@screens/BasicMangaList';
 import SourceView from '@screens/SourceView';
 import InfiniteMangaList from '@screens/InfiniteMangaList';

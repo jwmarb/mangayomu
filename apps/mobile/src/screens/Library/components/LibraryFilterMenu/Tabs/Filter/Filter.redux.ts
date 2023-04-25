@@ -1,4 +1,3 @@
-import getMangaHost from '@helpers/getMangaHost';
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
 import {

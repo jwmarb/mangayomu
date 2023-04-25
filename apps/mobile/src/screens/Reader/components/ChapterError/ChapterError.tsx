@@ -12,7 +12,6 @@ import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import { ChapterErrorContextState } from '@screens/Reader/components/ChapterError/ChapterError.interfaces';
 import React from 'react';
-import { useWindowDimensions } from 'react-native';
 import { moderateScale } from 'react-native-size-matters';
 import connector, { ConnectedChapterErrorProps } from './ChapterError.redux';
 
@@ -24,9 +23,6 @@ const useChapterErrorContext = () => {
   if (ctx == null) throw Error('ChapterErrorContext is undefined');
   return ctx;
 };
-
-const wait = (ms: number) =>
-  new Promise<void>((res) => setTimeout(() => res(), ms));
 
 const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
   const { error, chapter: chapterKey } = props.error;

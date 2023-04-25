@@ -3,7 +3,7 @@ import Button from '@components/Button';
 import Icon from '@components/Icon';
 import Progress from '@components/Progress';
 import Stack from '@components/Stack';
-import { useLocalObject, useLocalRealm } from '@database/main';
+import { useLocalRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useRootNavigation from '@hooks/useRootNavigation';
 import React from 'react';

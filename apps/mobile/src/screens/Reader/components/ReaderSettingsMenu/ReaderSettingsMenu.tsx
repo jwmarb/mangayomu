@@ -1,7 +1,5 @@
 import { CustomBottomSheet } from '@components/CustomBottomSheet';
 import CustomTabs from '@components/CustomTabs';
-import Text from '@components/Text';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import GlobalReaderSettings from '@screens/Reader/components/ReaderSettingsMenu/components/GlobalReaderSettings';
 import LocalReaderSettings from '@screens/Reader/components/ReaderSettingsMenu/components/LocalReaderSettings';

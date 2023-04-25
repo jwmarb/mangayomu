@@ -1,8 +1,4 @@
-import { BadgeLocation } from '@components/Badge';
-import {
-  generateBadgePlacement,
-  useBadgeLayoutAnimation,
-} from '@components/Badge/Badge.helpers';
+import { useBadgeLayoutAnimation } from '@components/Badge/Badge.helpers';
 import Box, { AnimatedBox } from '@components/Box';
 import Text from '@components/Text';
 import React from 'react';

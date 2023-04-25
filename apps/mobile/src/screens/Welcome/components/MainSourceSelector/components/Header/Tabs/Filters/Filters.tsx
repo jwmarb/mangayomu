@@ -1,19 +1,13 @@
-import MultiCheckbox from '@components/MultiCheckbox';
-import Stack from '@components/Stack';
-import Text from '@components/Text';
-import { useTheme } from '@emotion/react';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { AppState } from '@redux/main';
 import {
-  FilterState,
   MainSourceFilterKeys,
   switchStateOfFilter,
 } from '@redux/slices/mainSourceSelector';
 import FilterItem from '@components/Filters/FilterItem';
 import React from 'react';
 import { ListRenderItem } from 'react-native';
-import { RectButton } from 'react-native-gesture-handler';
-import { connect, ConnectedProps } from 'react-redux';
+import { connect } from 'react-redux';
 
 const filters: { itemKey: MainSourceFilterKeys; name: string }[] = [
   { itemKey: 'hasHotUpdates', name: 'Hot updates' },

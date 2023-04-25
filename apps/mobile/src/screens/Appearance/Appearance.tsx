@@ -1,25 +1,18 @@
 import { bookDimensions, CustomizableBook } from '@components/Book';
 import Box from '@components/Box';
 import Button from '@components/Button';
-import Checkbox from '@components/Checkbox';
 import Divider from '@components/Divider';
-import Radio from '@components/Radio';
-import RadioGroup from '@components/RadioGroup';
-import Slider from '@components/Slider';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
-import { BookStyle, TitleAlignment } from '@redux/slices/settings';
+import { BookStyle } from '@redux/slices/settings';
 import React from 'react';
-import {
-  ScrollView,
-  TouchableWithoutFeedback,
-} from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import { moderateScale, ScaledSheet } from 'react-native-size-matters';
+import { moderateScale } from 'react-native-size-matters';
 import connector, { ConnectedAppearanceProps } from './Appearance.redux';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { CustomBottomSheet } from '@components/CustomBottomSheet';
@@ -81,7 +74,6 @@ const libraryExampleData: CustomManga[] = [
     title: 'The Beginning After the End',
   },
 ];
-const keyExtractor = (_: CustomManga, i: number) => `${i}`;
 
 const Appearance: React.FC<ConnectedAppearanceProps> = ({
   title,

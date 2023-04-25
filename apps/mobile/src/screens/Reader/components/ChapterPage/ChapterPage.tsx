@@ -1,43 +1,23 @@
 import React from 'react';
-import { Image, useWindowDimensions } from 'react-native';
-import FastImage, {
-  FastImageProps,
-  OnLoadEvent,
-} from 'react-native-fast-image';
-import {
-  ChapterPageContextState,
-  ChapterPageProps,
-} from './ChapterPage.interfaces';
+import { Image } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import { ChapterPageContextState } from './ChapterPage.interfaces';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
 import Box, { AnimatedBox } from '@components/Box';
 import Text from '@components/Text';
-import Progress from '@components/Progress';
-import { useTheme } from '@emotion/react';
-import { StatusBar } from 'react-native';
-import Animated, {
-  runOnJS,
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import { runOnJS } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import useMountedEffect from '@hooks/useMountedEffect';
 import connector, { ConnectedChapterPageProps } from './ChapterPage.redux';
 import Icon from '@components/Icon';
 import { moderateScale } from 'react-native-size-matters';
-import Stack, { AnimatedStack } from '@components/Stack';
+import Stack from '@components/Stack';
 import Hyperlink from '@components/Hyperlink';
 import Button from '@components/Button';
-import Divider from '@components/Divider';
-import { useLocalObject, useLocalRealm } from '@database/main';
+import { useLocalRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
-import { PageSchema } from '@database/schemas/Page';
 import { ReaderImageComponent, ReadingDirection } from '@redux/slices/settings';
 import { useIsFocused } from '@react-navigation/native';
 import useScreenDimensions from '@hooks/useScreenDimensions';
-import useDialog from '@hooks/useDialog';
 import RNFetchBlob from 'rn-fetch-blob';
 
 export function removeURLParams(url: string) {
