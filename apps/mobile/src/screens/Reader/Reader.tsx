@@ -236,7 +236,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     _chapter.indexPage + 1,
   );
   const source = useMangaSource(manga.source);
-  const imageMenuRef = React.useRef<ImageMenuMethods>(null);
 
   // const contentContainerStyle = React.useMemo(
   //   () => [
@@ -716,7 +715,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     <ChapterPageContext.Provider
       value={React.useMemo(
         () => ({
-          imageMenuRef,
           tapGesture,
           readingDirection,
           sourceName: source.getName(),
@@ -749,7 +747,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
           )}
         >
           <Overlay
-            imageMenuRef={imageMenuRef}
             currentPage={currentPage}
             manga={manga}
             chapter={chapter}

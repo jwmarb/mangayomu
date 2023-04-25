@@ -47,7 +47,7 @@ function encodePathName(uri: string) {
 }
 
 const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
-  const { imageMenuRef, tapGesture, readingDirection, sourceName, mangaTitle } =
+  const { tapGesture, readingDirection, sourceName, mangaTitle } =
     useChapterPageContext();
   const { width, height } = useScreenDimensions();
   const { page: pageKey, chapter } = props.page;
@@ -58,6 +58,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     index,
     extendedPageState,
     setLocalPageURI,
+    toggleImageModal,
   } = props;
   const isFocused = useIsFocused();
   const localRealm = useLocalRealm();
@@ -118,10 +119,10 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   const holdGesture = React.useMemo(
     () =>
       Gesture.LongPress().onStart(() => {
-        if (imageMenuRef.current != null) runOnJS(imageMenuRef.current.open)();
+        runOnJS(toggleImageModal)();
         // parsedPageKey, pageKey
       }),
-    [],
+    [toggleImageModal],
   );
 
   const gestures = React.useMemo(

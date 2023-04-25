@@ -7,6 +7,7 @@ import { PageSchema } from '@database/schemas/Page';
 import { useTheme } from '@emotion/react';
 import { Portal } from '@gorhom/portal';
 import displayMessage from '@helpers/displayMessage';
+import useAppSelector from '@hooks/useAppSelector';
 import useBoolean from '@hooks/useBoolean';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import React from 'react';
@@ -32,12 +33,9 @@ import {
 } from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
 import RNFetchBlob from 'rn-fetch-blob';
-import { ImageMenuMethods } from './ImageMenu.interfaces';
-import connector, { ConnectedImageMenuProps } from './ImageMenu.redux';
-const ImageMenu: React.ForwardRefRenderFunction<
-  ImageMenuMethods,
-  ConnectedImageMenuProps
-> = (props, ref) => {
+import connected, { ConnectedImageMenuProps } from './ImageMenu.redux';
+const ImageMenu: React.FC<ConnectedImageMenuProps> = (props) => {
+  const { pageInDisplay, toggleImageModal, show } = props;
   const localRealm = useLocalRealm();
   const theme = useTheme();
   const [width, setWidth] = React.useState<number>(
@@ -55,7 +53,6 @@ const ImageMenu: React.ForwardRefRenderFunction<
       p.remove();
     };
   }, []);
-  const [open, toggle] = useBoolean();
   const [page, setPage] = React.useState<PageSchema>();
   const [url, setURL] = React.useState<string>();
   const [containerHeight, setContainerHeight] = React.useState<number>(2000);
@@ -75,9 +72,9 @@ const ImageMenu: React.ForwardRefRenderFunction<
   const overlayStyle = useAnimatedStyle(() => ({
     backgroundColor: backgroundColor.value,
   }));
-  React.useImperativeHandle(ref, () => ({
-    open() {
-      toggle(true);
+
+  React.useEffect(() => {
+    if (show) {
       translationY.value = withTiming(0, {
         duration: 150,
         easing: Easing.ease,
@@ -85,21 +82,23 @@ const ImageMenu: React.ForwardRefRenderFunction<
       ReactNativeHapticFeedback.trigger('impactHeavy', {
         enableVibrateFallback: true,
       });
-    },
-  }));
+    } else {
+      translationY.value = withTiming(containerHeight, {
+        duration: 150,
+        easing: Easing.ease,
+      });
+    }
+  }, [show]);
   React.useEffect(() => {
-    if (props.pageInDisplay) {
-      setURL(props.pageInDisplay.url);
+    if (pageInDisplay != null) {
+      setURL(pageInDisplay.url);
       setPage(
-        localRealm.objectForPrimaryKey(
-          PageSchema,
-          props.pageInDisplay.parsedKey,
-        ),
+        localRealm.objectForPrimaryKey(PageSchema, pageInDisplay.parsedKey),
       );
     }
-  }, [props.pageInDisplay]);
+  }, [pageInDisplay]);
   function handleOnClose() {
-    toggle(false);
+    toggleImageModal(false);
     translationY.value = withTiming(containerHeight, {
       duration: 150,
       easing: Easing.ease,
@@ -175,7 +174,7 @@ const ImageMenu: React.ForwardRefRenderFunction<
         right={0}
         bottom={0}
         top={0}
-        pointerEvents={open ? 'auto' : 'none'}
+        pointerEvents={show ? 'auto' : 'none'}
       >
         <TouchableWithoutFeedback onPress={handleOnClose}>
           <AnimatedBox
@@ -250,4 +249,4 @@ const ImageMenu: React.ForwardRefRenderFunction<
   );
 };
 
-export default connector(React.forwardRef(ImageMenu));
+export default connected(React.memo(ImageMenu));

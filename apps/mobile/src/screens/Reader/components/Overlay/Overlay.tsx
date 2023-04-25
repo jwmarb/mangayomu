@@ -46,7 +46,6 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
     manga,
     addIfNewSourceToLibrary,
     totalPages,
-    imageMenuRef,
   } = props;
   const realm = useRealm();
   const translateY = useDerivedValue(() =>
@@ -125,7 +124,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   return (
     <Portal>
       <ReaderSettingsMenu ref={ref} mangaKey={manga._id} />
-      <ImageMenu ref={imageMenuRef} />
+      <ImageMenu />
       <Box
         z-index={-1}
         pointerEvents="box-none"

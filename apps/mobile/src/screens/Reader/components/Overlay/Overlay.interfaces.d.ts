@@ -11,7 +11,6 @@ export interface OverlayProps extends React.PropsWithChildren {
   mangaTitle: string;
   chapter: ChapterSchema & Realm.Object<ChapterSchema, never>;
   manga: MangaSchema & Realm.Object<MangaSchema, never>;
-  imageMenuRef: React.RefObject<ImageMenuMethods>;
 }
 
 export interface ReaderSettingProps {

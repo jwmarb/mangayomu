@@ -8,6 +8,7 @@ import {
   setShowTransitionPage,
   setPageInDisplay,
   setIsMounted,
+  toggleImageModal,
 } from '@redux/slices/reader';
 import { addMangaToHistory } from '@redux/slices/history';
 import { ReadingDirection } from '@redux/slices/settings';

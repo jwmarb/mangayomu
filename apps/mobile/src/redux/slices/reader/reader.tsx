@@ -64,6 +64,7 @@ interface ReaderState {
   } | null;
   showTransitionPage: boolean;
   isMounted: boolean;
+  showImageModal: boolean;
 }
 
 export interface FetchPagesByChapterPayload {
@@ -89,6 +90,7 @@ const initialReaderState: ReaderState = {
   isOnChapterError: null,
   showTransitionPage: false,
   isMounted: false,
+  showImageModal: false,
 };
 
 function getImageSizeAsync(
@@ -237,6 +239,9 @@ const readerSlice = createSlice({
           previousChapter: null,
           alreadyFetched: false,
         };
+    },
+    toggleImageModal: (state, action: PayloadAction<boolean | undefined>) => {
+      state.showImageModal = action.payload ?? !state.showImageModal;
     },
     setPageError: (
       state,
@@ -496,6 +501,7 @@ export const {
   setIsMounted,
   setPageInDisplay,
   setLocalPageURI,
+  toggleImageModal,
 } = readerSlice.actions;
 
 export default readerSlice.reducer;

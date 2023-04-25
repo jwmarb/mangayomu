@@ -164,8 +164,8 @@ export default function useCollapsibleTabHeader(
       velocity,
       contentOffset: { y },
     } = e.nativeEvent;
-    runOnUI(velocityHandler)(velocity);
-    runOnUI(scrollPositionHandler)(y);
+    velocityHandler(velocity);
+    scrollPositionHandler(y);
   }
 
   const style = useAnimatedStyle(() => ({
