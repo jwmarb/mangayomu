@@ -1,5 +1,6 @@
 import Divider from '@components/Divider';
 import Stack from '@components/Stack';
+import Text from '@components/Text';
 import DeviceOrientation from '@screens/Reader/components/Overlay/components/DeviceOrientation';
 import ImageScaling from '@screens/Reader/components/Overlay/components/ImageScaling';
 import ReaderDirection from '@screens/Reader/components/Overlay/components/ReaderDirection';
@@ -13,6 +14,9 @@ const GlobalReaderSettings: React.FC = () => {
   return (
     <>
       <Stack space="s" mx="m" my="s">
+        <Text bold color="textSecondary" variant="book-title">
+          GLOBAL
+        </Text>
         <DeviceOrientation type="setting" />
         <ImageScaling type="setting" />
         <ReaderDirection type="setting" />
@@ -20,6 +24,9 @@ const GlobalReaderSettings: React.FC = () => {
       </Stack>
       <Divider />
       <Stack space="s" mx="m" my="s">
+        <Text bold color="textSecondary" variant="book-title">
+          MISCELLANEOUS
+        </Text>
         <BackgroundColor />
         <ShowPageNumber />
         <NotifyOnLastChapter />

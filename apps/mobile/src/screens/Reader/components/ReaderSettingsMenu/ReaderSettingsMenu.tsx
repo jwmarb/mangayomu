@@ -6,6 +6,7 @@ import LocalReaderSettings from '@screens/Reader/components/ReaderSettingsMenu/c
 import { ReaderSettingsMenuProps } from '@screens/Reader/components/ReaderSettingsMenu/ReaderSettingsMenu.interfaces';
 import Advanced from './components/Advanced';
 import React from 'react';
+import Divider from '@components/Divider';
 
 const ReaderSettingsMenu: React.ForwardRefRenderFunction<
   BottomSheetMethods,
@@ -13,17 +14,25 @@ const ReaderSettingsMenu: React.ForwardRefRenderFunction<
 > = (props, ref) => {
   const [index, setIndex] = React.useState<number>(0);
   const { mangaKey } = props;
+  const readerSettings = React.useMemo(
+    () => (
+      <>
+        <LocalReaderSettings mangaKey={mangaKey} />
+        <Divider />
+        <GlobalReaderSettings />
+      </>
+    ),
+    [mangaKey],
+  );
   return (
-    <CustomBottomSheet ref={ref} showIndicator={false}>
+    <CustomBottomSheet ref={ref}>
       <CustomTabs
         navigationState={{ index, routes }}
         onIndexChange={setIndex}
         renderScene={({ route }) => {
           switch (route.key) {
-            case 'local':
-              return <LocalReaderSettings mangaKey={mangaKey} />;
-            case 'global':
-              return <GlobalReaderSettings />;
+            case 'reader':
+              return readerSettings;
             case 'advanced':
               return <Advanced />;
           }
@@ -33,8 +42,7 @@ const ReaderSettingsMenu: React.ForwardRefRenderFunction<
   );
 };
 const routes = [
-  { key: 'local', title: 'For this series' },
-  { key: 'global', title: 'Global' },
+  { key: 'reader', title: 'Reader' },
   { key: 'advanced', title: 'Advanced' },
 ];
 
