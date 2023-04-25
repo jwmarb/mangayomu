@@ -5,6 +5,7 @@ import {
 import React from 'react';
 import Realm from 'realm';
 import { useApp, useUser } from '@realm/react';
+import { getErrorMessage } from '@helpers/getErrorMessage';
 
 interface User {
   name: string;
@@ -48,18 +49,21 @@ export default function useAuth0(): Auth0ContextInterface {
           credentials.idToken != null &&
           app.currentUser != null
         ) {
-          const isAnonymousUser =
-            app.currentUser.identities[0].providerType === 'anon-user' &&
-            app.currentUser.identities.length === 1;
+          const isAnonymousUser = app.currentUser.providerType === 'anon-user';
           const realmCredentials = Realm.Credentials.jwt(credentials.idToken);
           if (isAnonymousUser || !app.currentUser.isLoggedIn)
             await app.logIn(realmCredentials);
-        } else throw Error('Failed to get user credentials.');
-      } catch (e) {
-        console.error(e);
+        } else
+          throw Error(
+            `Failed to get user credentials. credentials = ${JSON.stringify(
+              credentials,
+            )}`,
+          );
+      } catch (e: unknown) {
+        throw Error(getErrorMessage(e));
       }
     },
-    [_authorize, getCredentials, app, realmUser],
+    [_authorize, getCredentials, app.currentUser],
   );
 
   const clearSession = React.useCallback(async () => {
