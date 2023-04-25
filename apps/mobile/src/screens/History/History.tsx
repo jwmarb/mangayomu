@@ -1,10 +1,5 @@
 import { HistorySection, MangaHistory } from '@redux/slices/history';
 import React from 'react';
-import {
-  SectionList,
-  SectionListData,
-  SectionListRenderItem,
-} from 'react-native';
 import SectionHeader, {
   MANGA_HISTORY_SECTION_HEADER_HEIGHT,
 } from './components/SectionHeader';
@@ -26,8 +21,24 @@ import useBoolean from '@hooks/useBoolean';
 import Input from '@components/Input';
 import { useRealm } from '@database/main';
 import { MangaSchema } from '@database/schemas/Manga';
-import reverseArray from '@helpers/reverseArray';
-import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
+import { FlashList, ListRenderItem } from '@shopify/flash-list';
+
+type HistorySectionFlashListData =
+  | { type: 'SECTION'; date: number }
+  | { type: 'ROW'; data: MangaHistory; sectionDate: number };
+
+function toFlashListData(sections: HistorySection[]) {
+  const newArray: HistorySectionFlashListData[] = [];
+  for (let i = sections.length - 1; i >= 0; i--) {
+    newArray.push({ type: 'SECTION', date: sections[i].date });
+    if (sections[i].data.length > 0)
+      for (const data of sections[i].data) {
+        newArray.push({ type: 'ROW', data, sectionDate: sections[i].date });
+      }
+  }
+
+  return newArray;
+}
 
 const History: React.FC<ConnectedHistoryProps> = ({
   sections,
@@ -36,8 +47,8 @@ const History: React.FC<ConnectedHistoryProps> = ({
   clearMangaHistory,
 }) => {
   const dialog = useDialog();
-  const [parsedSections, setParsedSections] = React.useState<HistorySection[]>(
-    reverseArray(sections),
+  const [data, setData] = React.useState<HistorySectionFlashListData[]>(
+    toFlashListData(sections),
   );
   const [show, setShow] = useBoolean();
   const [query, setQuery] = React.useState<string>('');
@@ -118,37 +129,40 @@ const History: React.FC<ConnectedHistoryProps> = ({
     if (incognito) displayMessage('Incognito mode on');
     else displayMessage('Incognito mode off');
   }, [incognito]);
-  React.useEffect(() => {
+  useMountedEffect(() => {
     if (query.length > 0) {
+      const parsedQuery = query.trim().toLowerCase();
       const timeout = setTimeout(
         () =>
-          setParsedSections(() => {
-            const copy: HistorySection[] = [];
+          setData(() => {
+            const newArray: HistorySectionFlashListData[] = [];
             for (let i = sections.length - 1; i >= 0; i--) {
-              const mangasCopy: MangaHistory[] = [];
-              for (let k = 0; k < sections[i].data.length; k++) {
-                const mangaInDatabase = realm.objectForPrimaryKey(
-                  MangaSchema,
-                  sections[i].data[k].manga,
-                );
-                if (
-                  mangaInDatabase != null &&
-                  mangaInDatabase.title
-                    .toLowerCase()
-                    .includes(query.trim().toLowerCase())
-                )
-                  mangasCopy.push(sections[i].data[k]);
-              }
-              copy.push({ data: mangasCopy, date: sections[i].date });
+              newArray.push({ type: 'SECTION', date: sections[i].date });
+              if (sections[i].data.length > 0)
+                for (const data of sections[i].data) {
+                  const dbManga = realm.objectForPrimaryKey(
+                    MangaSchema,
+                    data.manga,
+                  );
+                  if (
+                    dbManga != null &&
+                    dbManga.title.toLowerCase().includes(parsedQuery)
+                  )
+                    newArray.push({
+                      type: 'ROW',
+                      data,
+                      sectionDate: sections[i].date,
+                    });
+                }
             }
-            return copy;
+            return newArray;
           }),
         300,
       );
       return () => {
         clearTimeout(timeout);
       };
-    } else setParsedSections(reverseArray(sections));
+    } else setData(toFlashListData(sections));
   }, [query, sections]);
 
   if (sections.length === 0)
@@ -175,41 +189,61 @@ const History: React.FC<ConnectedHistoryProps> = ({
       </Stack>
     );
   return (
-    <SectionList
+    <FlashList
       onScroll={onScroll}
-      getItemLayout={getItemLayout}
-      maxToRenderPerBatch={20}
-      initialNumToRender={0}
-      windowSize={13}
-      contentContainerStyle={contentContainerStyle}
-      style={scrollViewStyle}
-      sections={parsedSections}
+      data={data}
+      ListHeaderComponent={<Box style={scrollViewStyle} />}
+      ListFooterComponent={<Box style={contentContainerStyle} />}
       keyExtractor={keyExtractor}
-      renderSectionHeader={renderSectionHeader}
+      overrideItemLayout={overrideItemLayout}
+      getItemType={getItemType}
+      estimatedItemSize={MANGA_HISTORY_ITEM_HEIGHT}
       renderItem={renderItem}
     />
   );
 };
 
-const getItemLayout = sectionListGetItemLayout({
-  getItemHeight: () => MANGA_HISTORY_ITEM_HEIGHT,
-  getSectionHeaderHeight: () => MANGA_HISTORY_SECTION_HEADER_HEIGHT,
-}) as unknown as (
-  data: SectionListData<MangaHistory, HistorySection>[] | null,
+const getItemType: (
+  item: HistorySectionFlashListData,
   index: number,
-) => {
-  length: number;
-  offset: number;
-  index: number;
+) => string | number | undefined = (item) => item.type;
+
+const overrideItemLayout: (
+  layout: {
+    span?: number | undefined;
+    size?: number | undefined;
+  },
+  item: HistorySectionFlashListData,
+  index: number,
+  maxColumns: number,
+) => void = (layout, item) => {
+  switch (item.type) {
+    case 'ROW':
+      layout.size = MANGA_HISTORY_ITEM_HEIGHT;
+      break;
+    case 'SECTION':
+      layout.size = MANGA_HISTORY_SECTION_HEADER_HEIGHT;
+      break;
+  }
 };
 
-const renderSectionHeader: (info: {
-  section: SectionListData<MangaHistory, HistorySection>;
-}) => React.ReactElement = (s) => <SectionHeader date={s.section.date} />;
-const renderItem: SectionListRenderItem<MangaHistory, HistorySection> = ({
-  item,
-  section,
-}) => <MangaHistoryItem item={item} sectionDate={section.date} />;
-const keyExtractor = (item: MangaHistory) => item.manga;
+const renderItem: ListRenderItem<HistorySectionFlashListData> = ({ item }) => {
+  switch (item.type) {
+    case 'ROW':
+      return (
+        <MangaHistoryItem item={item.data} sectionDate={item.sectionDate} />
+      );
+    case 'SECTION':
+      return <SectionHeader date={item.date} />;
+  }
+};
+const keyExtractor = (item: HistorySectionFlashListData) => {
+  switch (item.type) {
+    case 'ROW':
+      return 'row:' + item.data.date;
+    case 'SECTION':
+      return 'section:' + item.date;
+  }
+};
 
 export default connector(History);

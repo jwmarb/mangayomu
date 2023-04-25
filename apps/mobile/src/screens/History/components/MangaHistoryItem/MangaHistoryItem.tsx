@@ -18,15 +18,13 @@ import connector, {
 } from '@screens/History/components/MangaHistoryItem/MangaHistoryItem.redux';
 import { format } from 'date-fns';
 import React from 'react';
+import { Image, StyleSheet } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
   RectButton,
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 
 const styles = ScaledSheet.create({
@@ -42,14 +40,20 @@ const styles = ScaledSheet.create({
 
 export const MANGA_HISTORY_ITEM_HEIGHT = moderateScale(100);
 
+const mangaHistoryItemStyles = StyleSheet.create({
+  error: {
+    position: 'absolute',
+    zIndex: -1,
+  },
+});
+
 const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
   const { item, deleteMangaFromHistory, sectionDate } = props;
   const navigation = useRootNavigation();
   const manga = useObject(MangaSchema, item.manga);
   const chapter = useLocalObject(ChapterSchema, item.chapter);
+  const loadingOpacity = useSharedValue(0);
   const dialog = useDialog();
-  const errorOpacity = useSharedValue(0);
-  const loaderOpacity = useSharedValue(0);
   const theme = useTheme();
 
   function handleOnDeleteFromHistory() {
@@ -83,29 +87,22 @@ const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
   function handleOnPressCover() {
     if (manga != null) navigation.navigate('MangaView', manga);
   }
-  function handleOnError() {
-    errorOpacity.value = 1;
-  }
-  function handleOnLoadEnd() {
-    loaderOpacity.value = 0;
-  }
+
   function handleOnLoadStart() {
-    loaderOpacity.value = 1;
+    loadingOpacity.value = 1;
   }
-  const errorContainer = useAnimatedStyle(
-    () => ({
-      opacity: errorOpacity.value,
-      position: 'absolute',
-      zIndex: 1000,
-    }),
-    [],
-  );
-  const loaderContainer = useAnimatedStyle(() => ({
-    opacity: loaderOpacity.value,
+
+  function handleOnLoadEnd() {
+    loadingOpacity.value = 0;
+  }
+
+  const loadingStyle = useAnimatedStyle(() => ({
+    opacity: loadingOpacity.value,
   }));
+
   const styledError = React.useMemo(
-    () => [errorContainer, styles.cover],
-    [errorContainer, styles.cover],
+    () => [mangaHistoryItemStyles.error, styles.cover],
+    [styles.cover, mangaHistoryItemStyles.error],
   );
   return (
     <RectButton
@@ -138,27 +135,28 @@ const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
                 <FastImage
                   onLoadStart={handleOnLoadStart}
                   onLoadEnd={handleOnLoadEnd}
-                  onError={handleOnError}
                   source={{ uri: manga.imageCover }}
-                  style={styles.cover}
+                  style={[
+                    styles.cover,
+                    { backgroundColor: theme.palette.skeleton },
+                  ]}
                   resizeMode={FastImage.resizeMode.cover}
                 />
+                <Image
+                  source={require('@assets/No-Image-Placeholder.png')}
+                  style={styledError}
+                />
                 <AnimatedBox
-                  style={loaderContainer}
+                  style={loadingStyle}
                   position="absolute"
                   justify-content="center"
                   bottom={0}
                   left={0}
                   right={0}
                   top={0}
-                  z-index={-1000}
                 >
                   <Progress size="small" />
                 </AnimatedBox>
-                <Animated.Image
-                  source={require('@assets/No-Image-Placeholder.png')}
-                  style={styledError}
-                />
               </TouchableWithoutFeedback>
               <Box align-self="center" flex-shrink>
                 <Text bold variant="book-title" numberOfLines={2}>
