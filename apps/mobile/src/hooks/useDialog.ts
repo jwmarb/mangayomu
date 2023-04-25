@@ -7,7 +7,6 @@ export const DialogContext = React.createContext<
 
 export default function useDialog() {
   const ctx = React.useContext(DialogContext);
-  if (ctx?.current == null)
-    throw Error('DialogContext was called outside of provider');
-  return ctx.current;
+
+  return ctx?.current ?? { open: () => void 0 };
 }
