@@ -2636,6 +2636,11 @@
     telejson "^3.2.0"
     util-deprecate "^1.0.2"
 
+"@stream-io/flat-list-mvcp@^0.10.2":
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/@stream-io/flat-list-mvcp/-/flat-list-mvcp-0.10.2.tgz#e247206c5c6409bb4af120e0f02d7b9b505f6e53"
+  integrity sha512-jebEKP7pfRF8/tVSqNM6qdvisfOtMnMlzGYTWldoOnIq9/6DS1BU4ilzBuH6O7iBUu4bDokrMCNJgA2b2EKW/A==
+
 "@tsconfig/react-native@^2.0.2":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@tsconfig/react-native/-/react-native-2.0.3.tgz#79ad8efc6d3729152da6cb23725b6c364a7349b2"
@@ -11082,6 +11087,11 @@ react-native-auth0@^2.17.1:
     jwt-decode "^2.2.0"
     prop-types "^15.8.1"
     url "^0.11.0"
+
+react-native-bidirectional-flatlist@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/react-native-bidirectional-flatlist/-/react-native-bidirectional-flatlist-0.5.0.tgz#618fbe12d0f6f95e6db3c9859c089ed505236966"
+  integrity sha512-6AvY3HZhaIVpLie5+Dh5YrquaYKk253qQKW9kQS4t/EV0ZfmJ0oaT8HbqO6MAi5bqFjG2L0U7f5RxkqQ+dpJZw==
 
 react-native-codegen@^0.71.5:
   version "0.71.5"

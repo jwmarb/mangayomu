@@ -46,7 +46,7 @@ import {
   NativeSyntheticEvent,
   ViewabilityConfigCallbackPairs,
   ViewToken,
-  // ListRenderItem,
+  ListRenderItem,
 } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import {
@@ -58,10 +58,14 @@ import {
 import connector, { ConnectedReaderProps } from './Reader.redux';
 import ChapterError from '@screens/Reader/components/ChapterError';
 import { ChapterErrorContext } from '@screens/Reader/components/ChapterError/ChapterError';
-import { FlashList, ListRenderItem } from '@shopify/flash-list';
+import {
+  FlashList,
+  ListRenderItem as FlashListRenderItem,
+} from '@shopify/flash-list';
 import { useAppDispatch } from '@redux/main';
 import useImmersiveMode from '@hooks/useImmersiveMode';
 import useScreenDimensions from '@hooks/useScreenDimensions';
+import { FlatList, ScrollView } from '@stream-io/flat-list-mvcp';
 
 export interface ReaderContextState {
   mangaKey?: string;
@@ -222,6 +226,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     getOffset,
     fetchedPreviousChapter,
     memoizedOffsets,
+    isHorizontal: horizontal,
   });
 
   const setShouldTrackScrollPosition = React.useCallback(
@@ -237,13 +242,10 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   );
   const source = useMangaSource(manga.source);
 
-  // const contentContainerStyle = React.useMemo(
-  //   () => [
-  //     styles.container,
-  //     { backgroundColor: backgroundColor.toLowerCase() },
-  //   ],
-  //   [styles.container, backgroundColor],
-  // );
+  const contentContainerStyle = React.useMemo(
+    () => [{ backgroundColor: backgroundColor.toLowerCase() }],
+    [backgroundColor],
+  );
   const overlayOpacity = useSharedValue(0);
 
   const tapGesture = React.useMemo(
@@ -632,54 +634,54 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     }
   };
 
-  // const getItemLayout = React.useCallback(
-  //   (data: Page[] | null | undefined, index: number) => {
-  //     if (data == null)
-  //       return {
-  //         index,
-  //         offset: (horizontal ? width : height) * index,
-  //         length: horizontal ? width : height,
-  //       };
+  const getItemLayout = React.useCallback(
+    (data: Page[] | null | undefined, index: number) => {
+      if (data == null)
+        return {
+          index,
+          offset: (horizontal ? width : height) * index,
+          length: horizontal ? width : height,
+        };
 
-  //     switch (readingDirection) {
-  //       case ReadingDirection.WEBTOON:
-  //         // eslint-disable-next-line no-case-declarations
-  //         const page = data[index];
-  //         // eslint-disable-next-line no-case-declarations
-  //         let offset = 0;
-  //         for (let i = 0; i < index; i++) {
-  //           const p = data[i];
-  //           switch (p.type) {
-  //             case 'PAGE':
-  //               offset += p.height * (width / p.width);
-  //               break;
-  //             default:
-  //               offset += height;
-  //               break;
-  //           }
-  //         }
-  //         return {
-  //           index,
-  //           offset,
-  //           length:
-  //             page.type === 'PAGE'
-  //               ? page.height * (width / page.width)
-  //               : height,
-  //         };
-  //       case ReadingDirection.LEFT_TO_RIGHT:
-  //       case ReadingDirection.RIGHT_TO_LEFT:
-  //       default:
-  //         return { index, offset: width * index, length: width };
-  //       case ReadingDirection.VERTICAL:
-  //         return {
-  //           index,
-  //           offset: height * index,
-  //           length: height,
-  //         };
-  //     }
-  //   },
-  //   [readingDirection, horizontal, width, height],
-  // );
+      switch (readingDirection) {
+        case ReadingDirection.WEBTOON:
+          // eslint-disable-next-line no-case-declarations
+          const page = data[index];
+          // eslint-disable-next-line no-case-declarations
+          let offset = 0;
+          for (let i = 0; i < index; i++) {
+            const p = data[i];
+            switch (p.type) {
+              case 'PAGE':
+                offset += p.height * (width / p.width);
+                break;
+              default:
+                offset += height;
+                break;
+            }
+          }
+          return {
+            index,
+            offset,
+            length:
+              page.type === 'PAGE'
+                ? page.height * (width / page.width)
+                : height,
+          };
+        case ReadingDirection.LEFT_TO_RIGHT:
+        case ReadingDirection.RIGHT_TO_LEFT:
+        default:
+          return { index, offset: width * index, length: width };
+        case ReadingDirection.VERTICAL:
+          return {
+            index,
+            offset: height * index,
+            length: height,
+          };
+      }
+    },
+    [readingDirection, horizontal, width, height],
+  );
 
   function getItemSize(item: Page) {
     switch (readingDirection) {
@@ -710,6 +712,28 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
 
   const isOnFirstChapter =
     readableChapters[readableChapters.length - 1].index === _chapter.index;
+
+  const renderItem: ListRenderItem<Page> = React.useCallback(
+    ({ item, index }) => {
+      switch (item.type) {
+        case 'PAGE':
+          return (
+            <ChapterPage
+              page={item}
+              index={index}
+              extendedPageState={extendedState[item.page]}
+            />
+          );
+        case 'TRANSITION_PAGE':
+          return <TransitionPage page={item} />;
+        case 'NO_MORE_PAGES':
+          return <NoMorePages />;
+        case 'CHAPTER_ERROR':
+          return <ChapterError error={item} />;
+      }
+    },
+    [extendedState],
+  );
 
   return (
     <ChapterPageContext.Provider
@@ -767,38 +791,71 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
               </Box>
             ) : (
               <Box minWidth={width} minHeight={height} height="100%">
-                <FlashList
-                  ref={flatListRef}
-                  // FlatList Props
-                  // updateCellsBatchingPeriod={10}
-                  // getItemLayout={getItemLayout}
-                  // windowSize={13}
-                  // maxToRenderPerBatch={50}
-                  // contentContainerStyle={contentContainerStyle}
-                  // initialScrollIndex={_chapter.indexPage}
-                  // FlashList props
-                  extraData={extendedState}
-                  estimatedFirstItemOffset={
-                    !isOnFirstChapter ? (horizontal ? width : height) : 0
-                  }
-                  initialScrollIndex={_chapter.indexPage}
-                  drawDistance={horizontal ? width : height}
-                  estimatedItemSize={horizontal ? width : height}
-                  getItemType={getItemType}
-                  overrideItemLayout={overrideItemLayout}
-                  showsVerticalScrollIndicator={false}
-                  showsHorizontalScrollIndicator={false}
-                  onScroll={handleOnScroll}
-                  viewabilityConfigCallbackPairs={
-                    viewabilityConfigCallbackPairs.current
-                  }
-                  horizontal={horizontal}
-                  data={pages}
-                  inverted={reversed}
-                  renderItem={renderItem}
-                  keyExtractor={keyExtractor}
-                  pagingEnabled={pagingEnabled}
-                />
+                {horizontal ? (
+                  <FlashList
+                    renderScrollComponent={ScrollView}
+                    ref={flatListRef as any}
+                    // FlatList Props
+                    // updateCellsBatchingPeriod={10}
+                    // getItemLayout={getItemLayout}
+                    // windowSize={13}
+                    // maxToRenderPerBatch={50}
+                    // contentContainerStyle={contentContainerStyle}
+                    // initialScrollIndex={
+                    //   _chapter.indexPage + (isOnFirstChapter ? 0 : 1)
+                    // }
+                    // FlashList props
+                    extraData={extendedState}
+                    maintainVisibleContentPosition={{
+                      autoscrollToTopThreshold: 10,
+                      minIndexForVisible: 1,
+                    }}
+                    estimatedFirstItemOffset={!isOnFirstChapter ? width : 0}
+                    initialScrollIndex={_chapter.indexPage}
+                    drawDistance={width}
+                    estimatedItemSize={width}
+                    getItemType={getItemType}
+                    overrideItemLayout={overrideItemLayout}
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
+                    onScroll={handleOnScroll}
+                    viewabilityConfigCallbackPairs={
+                      viewabilityConfigCallbackPairs.current
+                    }
+                    horizontal
+                    data={pages}
+                    inverted={reversed}
+                    renderItem={flashListRenderItem}
+                    keyExtractor={keyExtractor}
+                    pagingEnabled={pagingEnabled}
+                  />
+                ) : (
+                  <FlatList
+                    maintainVisibleContentPosition={{
+                      autoscrollToTopThreshold: 10,
+                      minIndexForVisible: 1,
+                    }}
+                    updateCellsBatchingPeriod={10}
+                    getItemLayout={getItemLayout}
+                    windowSize={13}
+                    maxToRenderPerBatch={50}
+                    contentContainerStyle={contentContainerStyle}
+                    initialScrollIndex={
+                      _chapter.indexPage + (isOnFirstChapter ? 0 : 1)
+                    }
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
+                    onScroll={handleOnScroll}
+                    viewabilityConfigCallbackPairs={
+                      viewabilityConfigCallbackPairs.current
+                    }
+                    data={pages}
+                    inverted={reversed}
+                    renderItem={renderItem}
+                    keyExtractor={keyExtractor}
+                    pagingEnabled={pagingEnabled}
+                  />
+                )}
               </Box>
             )}
           </GestureDetector>
@@ -828,7 +885,7 @@ const keyExtractor = (p: Page) => {
   }
 };
 
-const renderItem: ListRenderItem<Page> = ({
+const flashListRenderItem: FlashListRenderItem<Page> = ({
   item,
   index,
   extraData: _extraData,

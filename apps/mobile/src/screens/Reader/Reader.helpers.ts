@@ -20,6 +20,7 @@ import Orientation from 'react-native-orientation-locker';
 import Realm from 'realm';
 import RNFetchBlob from 'rn-fetch-blob';
 import useScreenDimensions from '@hooks/useScreenDimensions';
+import { FlatList } from 'react-native-gesture-handler';
 
 type ForceScrollToOffset = (offset: number) => void;
 
@@ -208,6 +209,7 @@ type ReaderPreviousChapterScrollPositionHandlerArguments = {
   forceScrollToOffset: ForceScrollToOffset;
   fetchedPreviousChapter: React.MutableRefObject<boolean>;
   memoizedOffsets: React.MutableRefObject<number[]>;
+  isHorizontal: boolean;
 };
 export function readerPreviousChapterScrollPositionHandler(
   arg: ReaderPreviousChapterScrollPositionHandlerArguments,
@@ -223,28 +225,29 @@ export function readerPreviousChapterScrollPositionHandler(
     scrollPositionPortraitUnsafe,
     forceScrollToOffset,
     fetchedPreviousChapter,
+    isHorizontal,
   } = arg;
   const { width, height } = useScreenDimensions();
   React.useEffect(() => {
     pagesRef.current = pages;
-    if (fetchedPreviousChapter.current) {
-      memoizedOffsets.current = []; // fetching previous chapter renders the current memoized offsets redundant and outdated
-      const offset =
-        getOffset(0, indexOffset.current[chapterKey].start - 1) + // Subtract 1 to include the transition page
-        (width > height
-          ? scrollPositionLandscapeUnsafe
-          : scrollPositionPortraitUnsafe
-        ).current;
+    // if (fetchedPreviousChapter.current && isHorizontal) {
+    //   memoizedOffsets.current = []; // fetching previous chapter renders the current memoized offsets redundant and outdated
+    //   const offset =
+    //     getOffset(0, indexOffset.current[chapterKey].start - 1) + // Subtract 1 to include the transition page
+    //     (width > height
+    //       ? scrollPositionLandscapeUnsafe
+    //       : scrollPositionPortraitUnsafe
+    //     ).current;
 
-      console.log('Previous chapter detected. Scrolling to offset...');
-      Alert.alert('debug', 'Previous chapter detected. Scrolling to offset...');
-      fetchedPreviousChapter.current = false;
-      // const interval =
-      forceScrollToOffset(offset);
-      // return () => {
-      //   clearInterval(interval);
-      // };
-    }
+    //   console.log('Previous chapter detected. Scrolling to offset...');
+    //   Alert.alert('debug', 'Previous chapter detected. Scrolling to offset...');
+    //   fetchedPreviousChapter.current = false;
+    //   // const interval =
+    //   forceScrollToOffset(offset);
+    //   // return () => {
+    //   //   clearInterval(interval);
+    //   // };
+    // } else fetchedPreviousChapter.current = false;
   }, [pages]);
 }
 
@@ -513,7 +516,7 @@ export function initializeReaderRefs(args: InitializeReaderRefsArguments) {
   const indexOffset = React.useRef<
     Record<string, { start: number; end: number }>
   >({});
-  const flatListRef = React.useRef<FlashList<any>>(null);
+  const flatListRef = React.useRef<FlatList>(null);
   const index = React.useRef<number>(_chapter.indexPage);
   return {
     scrollPositionLandscape,
