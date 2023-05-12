@@ -305,7 +305,7 @@ export const useManga = (
                 );
               })
                 ? ReadingDirection.WEBTOON
-                : 'Use global setting',
+                : mangaObject?.readerDirection ?? 'Use global setting',
               notifyNewChaptersCount: 0,
             },
             Realm.UpdateMode.Modified,
