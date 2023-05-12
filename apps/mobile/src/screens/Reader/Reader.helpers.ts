@@ -21,6 +21,7 @@ import Realm from 'realm';
 import RNFetchBlob from 'rn-fetch-blob';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import { FlatList } from 'react-native-gesture-handler';
+import { useRealm } from '@database/main';
 
 type ForceScrollToOffset = (offset: number) => void;
 
@@ -89,8 +90,15 @@ export function readerScrollPositionInitialHandler(
     );
     const endOffset = getOffset(
       indexOffset.current[chapterRef.current._id].start,
-      indexOffset.current[chapterRef.current._id].end,
+      indexOffset.current[chapterRef.current._id].end + 1,
     );
+
+    // console.log(
+    //   `Saved scroll position at ${Math.min(
+    //     Math.max(scrollPositionPortrait.current - startOffset, 0),
+    //     endOffset,
+    //   )}`,
+    // );
 
     localRealm.write(() => {
       localRealm.create<ChapterSchema>(
@@ -112,6 +120,7 @@ export function readerScrollPositionInitialHandler(
   }
   React.useEffect(() => {
     if (pages.length > 0) {
+      let interval: NodeJS.Timer;
       const hasNoSavedScrollPosition =
         chapterRef.current.scrollPositionLandscape === 0 ||
         chapterRef.current.scrollPositionPortrait === 0;
@@ -157,14 +166,14 @@ export function readerScrollPositionInitialHandler(
           //   clearInterval(interval);
           // };
         } else {
-          console.log('Scrolling back to saved position');
-          // const interval =
+          console.log(
+            `Scrolling back to saved position at ${
+              chapterRef.current.scrollPositionPortrait + transitionPageOffset
+            }`,
+          );
           scrollHelper.current.scrollToOffset(
             chapterRef.current.scrollPositionPortrait + transitionPageOffset,
-          ); // Scrolls to portrait scroll position because the useer is in portrait mode
-          // return () => {
-          //   clearInterval(interval);
-          // };
+          );
         }
       }
       setShouldTrackScrollPosition(true);
@@ -183,6 +192,7 @@ export function readerScrollPositionInitialHandler(
       return () => {
         scrollHelper.current.stopScrollingToOffset();
         clearInterval(timer);
+        clearInterval(interval);
         listener.remove();
         saveScrollPosition();
       };
@@ -210,7 +220,10 @@ type ReaderPreviousChapterScrollPositionHandlerArguments = {
   fetchedPreviousChapter: React.MutableRefObject<boolean>;
   memoizedOffsets: React.MutableRefObject<number[]>;
   isHorizontal: boolean;
-};
+} & Pick<
+  ReaderScrollPositionInitialHandlerArguments,
+  'persistentForceScrollToOffset'
+>;
 export function readerPreviousChapterScrollPositionHandler(
   arg: ReaderPreviousChapterScrollPositionHandlerArguments,
 ) {
@@ -226,28 +239,32 @@ export function readerPreviousChapterScrollPositionHandler(
     forceScrollToOffset,
     fetchedPreviousChapter,
     isHorizontal,
+    persistentForceScrollToOffset,
   } = arg;
   const { width, height } = useScreenDimensions();
+  const scrollHelper = React.useRef<
+    ReturnType<typeof persistentForceScrollToOffset>
+  >(persistentForceScrollToOffset());
   React.useEffect(() => {
     pagesRef.current = pages;
-    // if (fetchedPreviousChapter.current && isHorizontal) {
-    //   memoizedOffsets.current = []; // fetching previous chapter renders the current memoized offsets redundant and outdated
-    //   const offset =
-    //     getOffset(0, indexOffset.current[chapterKey].start - 1) + // Subtract 1 to include the transition page
-    //     (width > height
-    //       ? scrollPositionLandscapeUnsafe
-    //       : scrollPositionPortraitUnsafe
-    //     ).current;
+    if (fetchedPreviousChapter.current && isHorizontal) {
+      memoizedOffsets.current = []; // fetching previous chapter renders the current memoized offsets redundant and outdated
+      const offset =
+        getOffset(0, indexOffset.current[chapterKey].start - 1) + // Subtract 1 to include the transition page
+        (width > height
+          ? scrollPositionLandscapeUnsafe
+          : scrollPositionPortraitUnsafe
+        ).current;
 
-    //   console.log('Previous chapter detected. Scrolling to offset...');
-    //   Alert.alert('debug', 'Previous chapter detected. Scrolling to offset...');
-    //   fetchedPreviousChapter.current = false;
-    //   // const interval =
-    //   forceScrollToOffset(offset);
-    //   // return () => {
-    //   //   clearInterval(interval);
-    //   // };
-    // } else fetchedPreviousChapter.current = false;
+      console.log('Previous chapter detected. Scrolling to offset...');
+      Alert.alert('debug', 'Previous chapter detected. Scrolling to offset...');
+      fetchedPreviousChapter.current = false;
+      // const interval =
+      scrollHelper.current.scrollToOffset(offset);
+      return () => {
+        scrollHelper.current.stopScrollingToOffset();
+      };
+    } else fetchedPreviousChapter.current = false;
   }, [pages]);
 }
 
@@ -332,7 +349,10 @@ export function readerInitializer(args: ReaderInitializerArguments) {
     });
     return () => {
       const readerImageCachePath = getCachedReaderPages(source);
-      RNFetchBlob.fs.unlink(readerImageCachePath);
+      (async () => {
+        const exists = await RNFetchBlob.fs.exists(readerImageCachePath);
+        if (exists) await RNFetchBlob.fs.unlink(readerImageCachePath);
+      })();
       promise.abort();
       Orientation.unlockAllOrientations();
       resetReaderState();
@@ -343,7 +363,7 @@ export function readerInitializer(args: ReaderInitializerArguments) {
 
 type ScrollPositionReadingDirectionChangeHandlerArguments = Pick<
   ReaderScrollPositionInitialHandlerArguments,
-  'getOffset'
+  'getOffset' | 'persistentForceScrollToOffset'
 > & {
   forceScrollToOffset: ForceScrollToOffset;
   horizontal: boolean;
@@ -353,15 +373,22 @@ export function scrollPositionReadingDirectionChangeHandler(
   args: ScrollPositionReadingDirectionChangeHandlerArguments,
 ) {
   const mounted = React.useRef<boolean>(false);
-  const { getOffset, horizontal, forceScrollToOffset } = args;
-
+  const {
+    getOffset,
+    horizontal,
+    forceScrollToOffset,
+    persistentForceScrollToOffset,
+  } = args;
+  const scrollHelper = React.useRef<
+    ReturnType<typeof persistentForceScrollToOffset>
+  >(persistentForceScrollToOffset());
   React.useEffect(() => {
     if (mounted.current) {
       // const interval =
-      forceScrollToOffset(getOffset());
-      // return () => {
-      //   clearInterval(interval);
-      // };
+      scrollHelper.current.scrollToOffset(getOffset());
+      return () => {
+        scrollHelper.current.stopScrollingToOffset();
+      };
     } else mounted.current = true;
   }, [horizontal]);
 }
@@ -421,13 +448,30 @@ export function chapterKeyEffect(args: ChapterKeyEffectArguments) {
     scrollPositionPortrait,
     addMangaToHistory,
   } = args;
+  const realm = useRealm();
   React.useEffect(() => {
     const newChapter = localRealm.objectForPrimaryKey(
       ChapterSchema,
       chapterKey,
     );
     if (newChapter != null) {
-      addMangaToHistory({ chapter: chapterKey, manga: newChapter._mangaId });
+      const manga = realm.objectForPrimaryKey(MangaSchema, newChapter._mangaId);
+      if (manga != null)
+        addMangaToHistory({
+          chapter: {
+            date: newChapter.date,
+            index: newChapter.index,
+            link: newChapter.link,
+            name: newChapter.name,
+          },
+          manga: {
+            imageCover: manga.imageCover,
+            index: manga.index,
+            link: manga.link,
+            source: manga.source,
+            title: manga.title,
+          },
+        });
       localRealm.write(() => {
         newChapter.dateRead = Date.now();
       });
