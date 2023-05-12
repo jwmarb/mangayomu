@@ -5,9 +5,6 @@ import IconButton from '@components/IconButton';
 import Progress from '@components/Progress';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import { useLocalObject, useObject } from '@database/main';
-import { ChapterSchema } from '@database/schemas/Chapter';
-import { MangaSchema } from '@database/schemas/Manga';
 import { useTheme } from '@emotion/react';
 import displayMessage from '@helpers/displayMessage';
 import useDialog from '@hooks/useDialog';
@@ -49,9 +46,8 @@ const mangaHistoryItemStyles = StyleSheet.create({
 
 const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
   const { item, deleteMangaFromHistory, sectionDate } = props;
+  const { manga, chapter } = item;
   const navigation = useRootNavigation();
-  const manga = useObject(MangaSchema, item.manga);
-  const chapter = useLocalObject(ChapterSchema, item.chapter);
   const loadingOpacity = useSharedValue(0);
   const dialog = useDialog();
   const theme = useTheme();
@@ -79,8 +75,8 @@ const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
   function handleOnPress() {
     if (manga != null && chapter != null)
       navigation.navigate('Reader', {
-        chapter: item.chapter,
-        manga: item.manga,
+        chapter: item.chapter.link,
+        manga: item.manga.link,
       });
     else if (manga != null) navigation.navigate('MangaView', manga);
   }
@@ -116,9 +112,11 @@ const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
         height={MANGA_HISTORY_ITEM_HEIGHT}
         justify-content="center"
       >
-        {manga == null && <Text color="error">{item.manga} is undefined</Text>}
+        {manga == null && (
+          <Text color="error">{item.manga.link} is undefined</Text>
+        )}
         {chapter == null && (
-          <Text color="error">{item.chapter} is undefined</Text>
+          <Text color="error">{item.chapter.link} is undefined</Text>
         )}
         {manga != null && chapter != null && (
           <Stack space="s" flex-direction="row" justify-content="space-between">

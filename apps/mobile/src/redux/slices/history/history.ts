@@ -1,10 +1,11 @@
 import integrateSortedList from '@helpers/integrateSortedList';
+import { Manga, MangaChapter } from '@mangayomu/mangascraper';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { isToday } from 'date-fns';
 
 export interface MangaHistory {
-  manga: string; // key of the manga
-  chapter: string; // key of read/current chapter
+  manga: Manga; // key of the manga
+  chapter: MangaChapter; // key of read/current chapter
   date: number; // the exact date when this chapter was read
 }
 
@@ -43,7 +44,7 @@ const historySlice = createSlice({
       }
       const sortedList = integrateSortedList(
         state.sections[index].data,
-        (a, b) => a.manga.localeCompare(b.manga),
+        (a, b) => a.manga.link.localeCompare(b.manga.link),
       );
       sortedList.remove(action.payload.item);
       if (state.sections[index].data.length === 0)
@@ -51,7 +52,7 @@ const historySlice = createSlice({
     },
     addMangaToHistory: (
       state,
-      action: PayloadAction<{ manga: string; chapter: string }>,
+      action: PayloadAction<{ manga: Manga; chapter: MangaChapter }>,
     ) => {
       if (!state.incognito) {
         if (

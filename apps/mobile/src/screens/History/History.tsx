@@ -19,13 +19,19 @@ import { moderateScale } from 'react-native-size-matters';
 import Stack from '@components/Stack';
 import useBoolean from '@hooks/useBoolean';
 import Input from '@components/Input';
-import { useRealm } from '@database/main';
+import { useLocalRealm, useRealm } from '@database/main';
 import { MangaSchema } from '@database/schemas/Manga';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
+import { Manga, MangaChapter } from '@mangayomu/mangascraper';
+import { ChapterSchema } from '@database/schemas/Chapter';
 
 type HistorySectionFlashListData =
   | { type: 'SECTION'; date: number }
-  | { type: 'ROW'; data: MangaHistory; sectionDate: number };
+  | {
+      type: 'ROW';
+      data: MangaHistory;
+      sectionDate: number;
+    };
 
 function toFlashListData(sections: HistorySection[]) {
   const newArray: HistorySectionFlashListData[] = [];
@@ -33,7 +39,11 @@ function toFlashListData(sections: HistorySection[]) {
     newArray.push({ type: 'SECTION', date: sections[i].date });
     if (sections[i].data.length > 0)
       for (const data of sections[i].data) {
-        newArray.push({ type: 'ROW', data, sectionDate: sections[i].date });
+        newArray.push({
+          type: 'ROW',
+          data,
+          sectionDate: sections[i].date,
+        });
       }
   }
 
@@ -52,7 +62,6 @@ const History: React.FC<ConnectedHistoryProps> = ({
   );
   const [show, setShow] = useBoolean();
   const [query, setQuery] = React.useState<string>('');
-  const realm = useRealm();
   const { onScroll, contentContainerStyle, scrollViewStyle } =
     useCollapsibleTabHeader({
       headerTitle: 'History',
@@ -140,14 +149,7 @@ const History: React.FC<ConnectedHistoryProps> = ({
               newArray.push({ type: 'SECTION', date: sections[i].date });
               if (sections[i].data.length > 0)
                 for (const data of sections[i].data) {
-                  const dbManga = realm.objectForPrimaryKey(
-                    MangaSchema,
-                    data.manga,
-                  );
-                  if (
-                    dbManga != null &&
-                    dbManga.title.toLowerCase().includes(parsedQuery)
-                  )
+                  if (data.manga.title.toLowerCase().includes(parsedQuery))
                     newArray.push({
                       type: 'ROW',
                       data,
