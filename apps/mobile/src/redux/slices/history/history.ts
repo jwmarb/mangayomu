@@ -75,7 +75,7 @@ const historySlice = createSlice({
             (a, b) => a.date - b.date,
           );
           const index = recentSection.data.findIndex(
-            (x) => x.manga === action.payload.manga,
+            (x) => x.manga.link === action.payload.manga.link,
           ); // Linear search is more than sufficient enough here
           if (index === -1)
             sortedList.add({
