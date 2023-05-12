@@ -218,7 +218,7 @@ type ReaderPreviousChapterScrollPositionHandlerArguments = {
   getOffset(startIndex?: number, toIndex?: number): number;
   forceScrollToOffset: ForceScrollToOffset;
   fetchedPreviousChapter: React.MutableRefObject<boolean>;
-  memoizedOffsets: React.MutableRefObject<number[]>;
+  memoizedOffsets: React.MutableRefObject<Map<string, number>>;
   isHorizontal: boolean;
 } & Pick<
   ReaderScrollPositionInitialHandlerArguments,
@@ -248,7 +248,7 @@ export function readerPreviousChapterScrollPositionHandler(
   React.useEffect(() => {
     pagesRef.current = pages;
     if (fetchedPreviousChapter.current && isHorizontal) {
-      memoizedOffsets.current = []; // fetching previous chapter renders the current memoized offsets redundant and outdated
+      memoizedOffsets.current.clear(); // fetching previous chapter renders the current memoized offsets redundant and outdated because the data is shifted n indices
       const offset =
         getOffset(0, indexOffset.current[chapterKey].start - 1) + // Subtract 1 to include the transition page
         (width > height
@@ -549,7 +549,7 @@ export function initializeReaderRefs(args: InitializeReaderRefsArguments) {
   const scrollPositionLandscapeUnsafe = React.useRef<number>(0);
 
   const fetchedPreviousChapter = React.useRef<boolean>(false);
-  const memoizedOffsets = React.useRef<number[]>([]);
+  const memoizedOffsets = React.useRef<Map<string, number>>(new Map());
 
   const chapterRef = React.useRef<
     ChapterSchema & Realm.Object<ChapterSchema, never>

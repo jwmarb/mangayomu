@@ -47,6 +47,7 @@ import {
   ViewabilityConfigCallbackPairs,
   ViewToken,
   ListRenderItem,
+  Dimensions,
 } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import {
@@ -204,6 +205,30 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     [manga.readerDirection, globalReadingDirection],
   );
 
+  const persistentForceScrollToOffset = () => {
+    let interval: NodeJS.Timer | null = null;
+    return {
+      scrollToOffset(offset: number) {
+        interval = setInterval(() => {
+          flatListRef.current?.scrollToOffset({ offset, animated: false });
+          if (
+            Dimensions.get('screen').width > Dimensions.get('screen').height &&
+            offset - scrollPositionLandscapeUnsafe.current <= 100
+          )
+            this.stopScrollingToOffset();
+          else if (offset - scrollPositionPortraitUnsafe.current <= 100)
+            this.stopScrollingToOffset();
+        }, 15);
+      },
+      stopScrollingToOffset() {
+        if (interval != null) {
+          clearInterval(interval);
+          interval = null;
+        }
+      },
+    };
+  };
+
   chapterKeyEffect({
     chapterKey,
     localRealm,
@@ -227,6 +252,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     fetchedPreviousChapter,
     memoizedOffsets,
     isHorizontal: horizontal,
+    persistentForceScrollToOffset,
   });
 
   const setShouldTrackScrollPosition = React.useCallback(
@@ -298,30 +324,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     setIsMounted,
   });
 
-  const persistentForceScrollToOffset = () => {
-    let interval: NodeJS.Timer | null = null;
-    return {
-      scrollToOffset(offset: number) {
-        interval = setInterval(() => {
-          flatListRef.current?.scrollToOffset({ offset });
-          if (
-            width > height &&
-            offset - scrollPositionLandscapeUnsafe.current <= 100
-          )
-            this.stopScrollingToOffset();
-          else if (offset - scrollPositionPortraitUnsafe.current <= 100)
-            this.stopScrollingToOffset();
-        });
-      },
-      stopScrollingToOffset() {
-        if (interval != null) {
-          clearInterval(interval);
-          interval = null;
-        }
-      },
-    };
-  };
-
   readerScrollPositionInitialHandler({
     setShouldTrackScrollPosition,
     persistentForceScrollToOffset,
@@ -343,6 +345,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     getOffset,
     horizontal,
     forceScrollToOffset,
+    persistentForceScrollToOffset,
   });
 
   readerCurrentPageEffect({
@@ -361,64 +364,22 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       throw Error('toIndex cannot exceed the list length');
     switch (readingDirection) {
       case ReadingDirection.WEBTOON: {
-        if (memoizedOffsets.current.length === 0) {
-          let offset = 0;
-          memoizedOffsets.current[0] = 0;
-          for (let i = 0; i < pagesRef.current.length; i++) {
-            const curr = pagesRef.current[i];
-            if (curr == null) {
-              console.error(
-                `page at index ${i} does not exist. startIndex = ${startIndex}. toIndex = ${toIndex}. pages length = ${pagesRef.current.length}`,
-              );
-              console.log(JSON.stringify(pagesRef.current, null, 2));
-            }
-            switch (curr.type) {
-              case 'PAGE': {
-                offset += curr.height * (width / curr.width);
-                break;
-              }
-              default:
-                offset += height;
-                break;
-            }
-            memoizedOffsets.current[i + 1] = offset;
-          }
-        } else if (
-          toIndex < pagesRef.current.length &&
-          memoizedOffsets.current.length <= toIndex
-        ) {
-          // memoizedOffsets.length < pagesRef.current.length, so we need to calculate the new scroll positions
-
-          let offset =
-            memoizedOffsets.current[memoizedOffsets.current.length - 1];
-          for (
-            let i = memoizedOffsets.current.length;
-            i < pagesRef.current.length;
-            i++
-          ) {
-            const curr = pagesRef.current[i];
-            if (curr == null) {
-              console.error(
-                `page at index ${i} does not exist. startIndex = ${startIndex}. toIndex = ${toIndex}. pages length = ${pagesRef.current.length}`,
-              );
-              console.log(JSON.stringify(pagesRef.current, null, 2));
-            }
-            switch (curr.type) {
-              case 'PAGE': {
-                offset += curr.height * (width / curr.width);
-                break;
-              }
-              default:
-                offset += height;
-                break;
-            }
-            memoizedOffsets.current[i] = offset;
-          }
-        }
-
-        return (
-          memoizedOffsets.current[toIndex] - memoizedOffsets.current[startIndex]
+        const memoized = memoizedOffsets.current.get(
+          `${startIndex}-${toIndex}`,
         );
+        if (memoized == null) {
+          let offset = 0;
+          for (let i = startIndex; i < toIndex; i++) {
+            const item = pagesRef.current[i];
+            offset +=
+              item.type === 'PAGE'
+                ? item.height * (width / item.width)
+                : height;
+          }
+          memoizedOffsets.current.set(`${startIndex}-${toIndex}`, offset);
+          return offset;
+        }
+        return memoized;
       }
       case ReadingDirection.RIGHT_TO_LEFT:
       case ReadingDirection.LEFT_TO_RIGHT:
@@ -793,7 +754,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
               <Box minWidth={width} minHeight={height} height="100%">
                 {horizontal ? (
                   <FlashList
-                    renderScrollComponent={ScrollView}
                     ref={flatListRef as any}
                     // FlatList Props
                     // updateCellsBatchingPeriod={10}
@@ -831,6 +791,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                   />
                 ) : (
                   <FlatList
+                    ref={flatListRef}
                     maintainVisibleContentPosition={{
                       autoscrollToTopThreshold: 10,
                       minIndexForVisible: 1,
