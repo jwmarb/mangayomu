@@ -50,12 +50,16 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
         <Box align-self="center">
           <Stack space="s" flex-direction="row">
             <Text
-              color={rowChapter.dateRead ? 'disabled' : 'textPrimary'}
+              color={
+                rowChapter.dateRead || props.isReading
+                  ? 'disabled'
+                  : 'textPrimary'
+              }
               bold={!rowChapter.dateRead}
             >
               {rowChapter.name}
             </Text>
-            {rowChapter.dateRead && props.isReading && (
+            {(rowChapter.dateRead || props.isReading) && (
               <Text color="primary" variant="book-title">
                 ({rowChapter.indexPage + 1} / {rowChapter.numberOfPages})
               </Text>
