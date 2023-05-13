@@ -39,7 +39,7 @@ const Library: React.FC<ConnectedLibraryProps> = ({
     ref.current?.snapToIndex(1);
   }
 
-  const { data, mangasInLibrary } = useLibraryData({
+  const { data, mangasInLibrary, updateQuerifiedData } = useLibraryData({
     sortBy,
     reversed,
     filters,
@@ -85,7 +85,10 @@ const Library: React.FC<ConnectedLibraryProps> = ({
         ) : (
           <Input
             defaultValue={query}
-            onChangeText={setQuery}
+            onChangeText={(e) => {
+              setQuery(e);
+              updateQuerifiedData(e);
+            }}
             placeholder="Search for a title..."
             expanded
             iconButton={

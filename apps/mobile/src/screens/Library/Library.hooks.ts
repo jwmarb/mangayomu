@@ -11,7 +11,7 @@ import { FilterState } from '@redux/slices/mainSourceSelector';
 import { inPlaceSort } from 'fast-sort';
 import pLimit from 'p-limit';
 const limit = pLimit(1);
-import React from 'react';
+import React, { useTransition } from 'react';
 
 export function useLibraryData(args: {
   filters: {
@@ -25,6 +25,7 @@ export function useLibraryData(args: {
   setRefreshing: (val: boolean) => void;
 }) {
   const { filters, reversed, sortBy, query, refreshing, setRefreshing } = args;
+  const [isLoading, setTransition] = useTransition();
   const mangas = useQuery(MangaSchema);
   const mangasInLibrary = mangas.filtered('inLibrary == true');
   const isFocused = useIsFocused();
@@ -103,21 +104,18 @@ export function useLibraryData(args: {
 
   const [data, setData] = React.useState(sortedData);
   useMountedEffect(() => {
-    if (query.length > 0) {
-      const timeout = setTimeout(
-        () =>
-          setData(
-            sortedData.filter((x) =>
-              x.title.toLowerCase().includes(query.toLowerCase()),
-            ),
-          ),
-        300,
+    setData(sortedData);
+  }, [sortedData]);
+
+  function updateQuerifiedData(text: string) {
+    setTransition(() => {
+      setData(
+        sortedData.filter((x) =>
+          x.title.toLowerCase().includes(text.trim().toLowerCase()),
+        ),
       );
-      return () => {
-        clearTimeout(timeout);
-      };
-    } else setData(sortedData);
-  }, [sortedData, query]);
+    });
+  }
 
   React.useEffect(() => {
     (async () => {
@@ -182,5 +180,5 @@ export function useLibraryData(args: {
     })();
   }, [refreshing]);
 
-  return { data, mangasInLibrary };
+  return { data, mangasInLibrary, updateQuerifiedData };
 }
