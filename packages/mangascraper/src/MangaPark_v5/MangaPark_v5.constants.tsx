@@ -1,8 +1,8 @@
 import { MangaHostFiltersInfo } from '../scraper/scraper.interfaces';
 import createSchema from '@mangayomu/schema-creator';
-import { GENRES } from './MangaPark_v3.helpers';
+import { GENRES } from './MangaPark_v5.helpers';
 
-const MANGAPARKV3_GENRES = [
+const MANGAPARKV5_GENRES = [
   '_4_koma',
   'action',
   'adaptation',
@@ -216,7 +216,7 @@ const filters = createSchema(
       default: 'Rating Score',
     }),
     Genres: createInclusiveExclusiveFilter({
-      fields: MANGAPARKV3_GENRES.filter((x) => !genresMappedToType.has(x)),
+      fields: MANGAPARKV5_GENRES.filter((x) => !genresMappedToType.has(x)),
       map: {
         gore: 'Gore',
         bara: 'Bara (ML)',
@@ -335,17 +335,17 @@ const filters = createSchema(
   }),
 );
 
-export type MangaParkV3Filter = typeof filters.schema;
+export type MangaParkV5Filter = typeof filters.schema;
 
-export const MANGAPARKV3_INFO: MangaHostFiltersInfo<MangaParkV3Filter> = {
+export const MANGAPARKV5_INFO: MangaHostFiltersInfo<MangaParkV5Filter> = {
   filters,
   isAdult: true,
-  genres: MANGAPARKV3_GENRES as any,
+  genres: MANGAPARKV5_GENRES as any,
   hasHotMangas: true,
   hasLatestMangas: true,
   hasMangaDirectory: false,
   host: 'https://mangapark.net/',
-  version: '1.1.1',
-  name: 'MangaPark v3',
-  icon: 'https://styles.amarkcdn.com/img/mpark/favicon.ico?v1',
+  version: '1.1.2',
+  name: 'MangaPark v5',
+  icon: 'https://mangapark.io/client-script/img/favicon.gif',
 };

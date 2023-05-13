@@ -10,14 +10,14 @@ import {
   parseTimestamp,
   TYPE,
   VIEW_CHAPTERS,
-} from './MangaPark_v3.helpers';
+} from './MangaPark_v5.helpers';
 import {
-  MangaParkV3HotMangas,
-  MangaParkV3MangaMeta,
-  MangaParkV3NextDataMeta,
-  MangaParkV3NextDataReader,
-  MangaParkV3SearchManga,
-} from './MangaPark_v3.interfaces';
+  MangaParkV5HotMangas,
+  MangaParkV5MangaMeta,
+  MangaParkV5NextDataMeta,
+  MangaParkV5NextDataReader,
+  MangaParkV5SearchManga,
+} from './MangaPark_v5.interfaces';
 import { MangaHostWithFilters } from '../scraper/scraper.filters';
 import {
   Manga,
@@ -26,9 +26,9 @@ import {
 } from '../scraper/scraper.interfaces';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import axios from 'axios';
-import { MangaParkV3Filter, MANGAPARKV3_INFO } from './MangaPark_v3.constants';
+import { MangaParkV5Filter, MANGAPARKV5_INFO } from './MangaPark_v5.constants';
 
-class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
+class MangaParkV3 extends MangaHostWithFilters<MangaParkV5Filter> {
   private static API_ROUTE = 'https://mangapark.net/apo/';
   public async getPages(chapter: MangaChapter): Promise<string[]> {
     const _$ = await super.route({ url: chapter.link });
@@ -37,7 +37,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
     );
     const html = $('script#__NEXT_DATA__').html();
     if (html == null) throw Error('HTML is null');
-    const meta: MangaParkV3NextDataReader = JSON.parse(html);
+    const meta: MangaParkV5NextDataReader = JSON.parse(html);
     const { httpLis, wordLis } =
       meta.props.pageProps.dehydratedState.queries[0].state.data.data.imageSet;
     const images: string[] = [];
@@ -49,7 +49,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
   public async listRecentlyUpdatedManga(): Promise<Manga[]> {
     const {
       data: { data },
-    } = await axios.post<MangaParkV3HotMangas>(
+    } = await axios.post<MangaParkV5HotMangas>(
       MangaParkV3.API_ROUTE,
       {
         query:
@@ -78,7 +78,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
   public async listHotMangas(): Promise<Manga[]> {
     const {
       data: { data },
-    } = await axios.post<MangaParkV3HotMangas>(
+    } = await axios.post<MangaParkV5HotMangas>(
       MangaParkV3.API_ROUTE,
       {
         query:
@@ -106,7 +106,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
   }
   public async search(
     query: string,
-    filters: MangaParkV3Filter,
+    filters: MangaParkV5Filter,
   ): Promise<Manga[]> {
     if (filters) {
       const {
@@ -115,7 +115,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
             get_content_browse_search: { items },
           },
         },
-      } = await axios.post<MangaParkV3SearchManga>(MangaParkV3.API_ROUTE, {
+      } = await axios.post<MangaParkV5SearchManga>(MangaParkV3.API_ROUTE, {
         operationName: 'get_content_browse_search',
         query:
           'query get_content_browse_search($select: ComicSearchSelect) {\n  get_content_browse_search(select: $select) {\n    items {\n      data {\n        name\n        urlPath\n        imageCoverUrl\n      }\n    }\n  }\n}\n',
@@ -154,7 +154,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
           get_content_browse_search: { items },
         },
       },
-    } = await axios.post<MangaParkV3SearchManga>(MangaParkV3.API_ROUTE, {
+    } = await axios.post<MangaParkV5SearchManga>(MangaParkV3.API_ROUTE, {
       operationName: 'get_content_browse_search',
       query:
         'query get_content_browse_search($select: ComicSearchSelect) {\n  get_content_browse_search(select: $select) {\n    items {\n      data {\n        name\n        urlPath\n        imageCoverUrl\n      }\n    }\n  }\n}\n',
@@ -181,12 +181,12 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
       }),
     );
   }
-  public async getMeta(manga: Manga): Promise<MangaParkV3MangaMeta & Manga> {
+  public async getMeta(manga: Manga): Promise<MangaParkV5MangaMeta & Manga> {
     const $ = await super.route({ url: manga.link });
     const _$ = await super.route({ url: getV5URL(manga.link) });
     const html = _$('script#__NEXT_DATA__').html();
     if (html == null) throw Error('Unknown page');
-    const parsedData: MangaParkV3NextDataMeta = JSON.parse(html);
+    const parsedData: MangaParkV5NextDataMeta = JSON.parse(html);
     const [data] = parsedData.props.pageProps.dehydratedState.queries;
 
     const englishChapters = $('div.d-flex.mt-5:contains("English Chapters")')
@@ -310,4 +310,4 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV3Filter> {
   }
 }
 
-export default new MangaParkV3(MANGAPARKV3_INFO);
+export default new MangaParkV3(MANGAPARKV5_INFO);

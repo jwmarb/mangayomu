@@ -7,13 +7,13 @@ import {
   WithStatus,
 } from '../scraper/scraper.interfaces';
 
-export type MangaParkV3MangaMeta = MangaMeta<MangaMultilingualChapter> &
+export type MangaParkV5MangaMeta = MangaMeta<MangaMultilingualChapter> &
   WithGenres &
   WithStatus &
   WithRating &
   WithAuthors;
 
-export type MangaParkV3SearchManga = {
+export type MangaParkV5SearchManga = {
   data: {
     get_content_browse_search: {
       items: {
@@ -27,7 +27,7 @@ export type MangaParkV3SearchManga = {
   };
 };
 
-export type MangaParkV3HotMangas = {
+export type MangaParkV5HotMangas = {
   data: {
     get_content_browse_latest: {
       items: {
@@ -43,7 +43,7 @@ export type MangaParkV3HotMangas = {
   };
 };
 
-export type MangaParkV3NextDataMeta = {
+export type MangaParkV5NextDataMeta = {
   props: {
     pageProps: {
       dehydratedState: {
@@ -71,7 +71,7 @@ export type MangaParkV3NextDataMeta = {
   };
 };
 
-export type MangaParkV3NextDataReader = {
+export type MangaParkV5NextDataReader = {
   props: {
     pageProps: {
       dehydratedState: {
