@@ -28,7 +28,7 @@ import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import axios from 'axios';
 import { MangaParkV5Filter, MANGAPARKV5_INFO } from './MangaPark_v5.constants';
 
-class MangaParkV3 extends MangaHostWithFilters<MangaParkV5Filter> {
+class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
   private static API_ROUTE = 'https://mangapark.net/apo/';
   public async getPages(chapter: MangaChapter): Promise<string[]> {
     const _$ = await super.route({ url: chapter.link });
@@ -50,7 +50,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV5Filter> {
     const {
       data: { data },
     } = await axios.post<MangaParkV5HotMangas>(
-      MangaParkV3.API_ROUTE,
+      MangaParkV5.API_ROUTE,
       {
         query:
           'query get_content_browse_latest($select: ComicLatestSelect) {\n  get_content_browse_latest(select: $select) {\n    items {\n      comic {\n        data {\n          name\n          urlPath\n          imageCoverUrl\n        }\n      }\n    }\n  }\n}\n',
@@ -79,7 +79,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV5Filter> {
     const {
       data: { data },
     } = await axios.post<MangaParkV5HotMangas>(
-      MangaParkV3.API_ROUTE,
+      MangaParkV5.API_ROUTE,
       {
         query:
           'query get_content_browse_latest($select: ComicLatestSelect) {\n  get_content_browse_latest(select: $select) {\n    items {\n      comic {\n        data {\n          name\n          urlPath\n          imageCoverUrl\n        }\n      }\n    }\n  }\n}\n',
@@ -115,7 +115,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV5Filter> {
             get_content_browse_search: { items },
           },
         },
-      } = await axios.post<MangaParkV5SearchManga>(MangaParkV3.API_ROUTE, {
+      } = await axios.post<MangaParkV5SearchManga>(MangaParkV5.API_ROUTE, {
         operationName: 'get_content_browse_search',
         query:
           'query get_content_browse_search($select: ComicSearchSelect) {\n  get_content_browse_search(select: $select) {\n    items {\n      data {\n        name\n        urlPath\n        imageCoverUrl\n      }\n    }\n  }\n}\n',
@@ -154,7 +154,7 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV5Filter> {
           get_content_browse_search: { items },
         },
       },
-    } = await axios.post<MangaParkV5SearchManga>(MangaParkV3.API_ROUTE, {
+    } = await axios.post<MangaParkV5SearchManga>(MangaParkV5.API_ROUTE, {
       operationName: 'get_content_browse_search',
       query:
         'query get_content_browse_search($select: ComicSearchSelect) {\n  get_content_browse_search(select: $select) {\n    items {\n      data {\n        name\n        urlPath\n        imageCoverUrl\n      }\n    }\n  }\n}\n',
@@ -310,4 +310,4 @@ class MangaParkV3 extends MangaHostWithFilters<MangaParkV5Filter> {
   }
 }
 
-export default new MangaParkV3(MANGAPARKV5_INFO);
+export default new MangaParkV5(MANGAPARKV5_INFO);
