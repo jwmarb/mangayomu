@@ -59,6 +59,9 @@ export enum ReaderImageComponent {
 }
 
 export interface SettingsState {
+  history: {
+    incognito: boolean;
+  };
   cloud: {
     enabled: boolean;
   };
@@ -97,6 +100,9 @@ export interface SettingsState {
 export const AUTO_HEIGHT_SCALAR = 0.78048780487;
 
 const initialSettingsState: SettingsState = {
+  history: {
+    incognito: false,
+  },
   cloud: {
     enabled: true,
   },
@@ -133,6 +139,9 @@ const settingsSlice = createSlice({
   name: 'settings',
   initialState: initialSettingsState,
   reducers: {
+    toggleIncognitoMode: (state) => {
+      state.history.incognito = !state.history.incognito;
+    },
     setReaderImageComponent: (
       state,
       action: PayloadAction<ReaderImageComponent>,
@@ -245,6 +254,7 @@ export const {
   setReaderBackgroundColor,
   toggleShowPageNumber,
   setReaderImageComponent,
+  toggleIncognitoMode,
 } = settingsSlice.actions;
 
 export function useReaderSetting<

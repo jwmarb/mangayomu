@@ -1,5 +1,4 @@
-import { Manga, MangaChapter } from '@mangayomu/mangascraper';
-import { MangaHistory } from '@redux/slices/history';
+import { MangaHistory } from '@database/schemas/History';
 
 export interface MangaHistoryItemProps {
   item: MangaHistory;

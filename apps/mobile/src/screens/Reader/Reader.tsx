@@ -83,6 +83,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     showTransitionPage,
     setShowTransitionPage,
     // notifyOnLastChapter,
+    incognito,
     pageInDisplay,
     setIsOnChapterError,
     setPageInDisplay,
@@ -99,7 +100,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     globalReadingDirection,
     globalDeviceOrientation,
     setIsMounted,
-    addMangaToHistory,
     extendedState,
   } = props;
   const [showStatusAndNavBar, hideStatusAndNavBar] =
@@ -116,7 +116,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const collection = useLocalQuery(ChapterSchema);
   if (manga == null)
     throw Error(
-      'Manga does not exist. This error is thrown because it will not be possible to get next chapters without an existing manga object.',
+      `Manga does not exist. This error is thrown because it will not be possible to get next chapters without an existing manga object.\nThe value of mangaKey is: ${mangaKey}`,
     );
   if (_chapter == null)
     throw Error(
@@ -238,7 +238,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     getOffset,
     scrollPositionLandscape,
     scrollPositionPortrait,
-    addMangaToHistory,
+    incognito,
   });
   readerPreviousChapterScrollPositionHandler({
     forceScrollToOffset,

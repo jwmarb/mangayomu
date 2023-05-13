@@ -8,7 +8,13 @@ import {
 } from '@database/schemas/Manga';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { PageSchema } from '@database/schemas/Page';
-
+import {
+  UserHistorySchema,
+  HistorySectionSchema,
+  MangaHistorySchema,
+  BaseMangaChapterSchema,
+  BaseMangaSchema,
+} from '@database/schemas/History';
 export * from './providers/UserProvider';
 export const { useObject, useQuery, useRealm, RealmProvider } =
   createRealmContext({
@@ -17,8 +23,13 @@ export const { useObject, useQuery, useRealm, RealmProvider } =
       MangaRatingSchema,
       MangaStatusSchema,
       MangaReadingChapter,
+      UserHistorySchema,
+      HistorySectionSchema,
+      MangaHistorySchema,
+      BaseMangaChapterSchema,
+      BaseMangaSchema,
     ],
-    schemaVersion: 37,
+    schemaVersion: 46,
   });
 
 export const {

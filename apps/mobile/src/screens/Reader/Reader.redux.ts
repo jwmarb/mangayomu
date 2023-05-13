@@ -8,9 +8,7 @@ import {
   setShowTransitionPage,
   setPageInDisplay,
   setIsMounted,
-  toggleImageModal,
 } from '@redux/slices/reader';
-import { addMangaToHistory } from '@redux/slices/history';
 import { ReadingDirection } from '@redux/slices/settings';
 
 const mapStateToProps = (state: AppState, props: RootStackProps<'Reader'>) => ({
@@ -33,6 +31,7 @@ const mapStateToProps = (state: AppState, props: RootStackProps<'Reader'>) => ({
   showTransitionPage: state.reader.showTransitionPage,
   pageInDisplay: state.reader.pageInDisplay,
   extendedState: state.reader.extendedState,
+  incognito: state.settings.history.incognito,
 });
 
 const connector = connect(mapStateToProps, {
@@ -42,7 +41,6 @@ const connector = connect(mapStateToProps, {
   setShowTransitionPage,
   setPageInDisplay,
   setIsMounted,
-  addMangaToHistory,
 });
 
 export type ConnectedReaderProps = ConnectedProps<typeof connector>;

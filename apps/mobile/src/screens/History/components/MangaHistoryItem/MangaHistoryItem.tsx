@@ -9,6 +9,7 @@ import { useTheme } from '@emotion/react';
 import displayMessage from '@helpers/displayMessage';
 import useDialog from '@hooks/useDialog';
 import useRootNavigation from '@hooks/useRootNavigation';
+import useUserHistory from '@hooks/useUserHistory';
 import { AUTO_HEIGHT_SCALAR } from '@redux/slices/settings';
 import connector, {
   ConnectedMangaHistoryItemProps,
@@ -45,7 +46,8 @@ const mangaHistoryItemStyles = StyleSheet.create({
 });
 
 const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
-  const { item, deleteMangaFromHistory, sectionDate } = props;
+  const { item, sectionDate } = props;
+  const { deleteMangaFromHistory } = useUserHistory();
   const { manga, chapter } = item;
   const navigation = useRootNavigation();
   const loadingOpacity = useSharedValue(0);

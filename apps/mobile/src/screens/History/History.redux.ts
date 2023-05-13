@@ -1,16 +1,12 @@
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
-import { toggleIncognitoMode, clearMangaHistory } from '@redux/slices/history';
+import { toggleIncognitoMode } from '@redux/slices/settings';
 
 const mapStateToProps = (state: AppState) => ({
-  sections: state.history.sections,
-  incognito: state.history.incognito,
+  incognito: state.settings.history.incognito,
 });
 
-const connector = connect(mapStateToProps, {
-  toggleIncognitoMode,
-  clearMangaHistory,
-});
+const connector = connect(mapStateToProps, { toggleIncognitoMode });
 
 export type ConnectedHistoryProps = ConnectedProps<typeof connector>;
 

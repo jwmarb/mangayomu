@@ -4,6 +4,7 @@ import { useUser } from '@realm/react';
 import React from 'react';
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
+import { UserHistorySchema } from '@database/schemas/History';
 
 const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
   children,
@@ -36,6 +37,11 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
         sub.add(
           realm
             .objects(MangaSchema)
+            .filtered(`_realmId == "${currentUser?.id}"`),
+        );
+        sub.add(
+          realm
+            .objects(UserHistorySchema)
             .filtered(`_realmId == "${currentUser?.id}"`),
         );
       });

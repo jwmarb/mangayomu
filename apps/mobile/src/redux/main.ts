@@ -19,7 +19,6 @@ import { LibraryReducer } from '@redux/slices/library';
 import { BrowseReducer } from '@redux/slices/browse';
 import { SettingsReducer } from '@redux/slices/settings';
 import { ReaderReducer } from '@redux/slices/reader';
-import { HistoryReducer } from '@redux/slices/history';
 import { useDispatch } from 'react-redux';
 
 const reducers = combineReducers({
@@ -31,7 +30,6 @@ const reducers = combineReducers({
   browse: BrowseReducer,
   settings: SettingsReducer,
   reader: ReaderReducer,
-  history: HistoryReducer,
 });
 
 const persistConfig: PersistConfig<AppState> = {

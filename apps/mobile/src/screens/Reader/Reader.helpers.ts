@@ -2,7 +2,6 @@
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import { MangaHost } from '@mangayomu/mangascraper';
-import { addMangaToHistory } from '@redux/slices/history';
 import {
   FetchPagesByChapterPayload,
   getCachedReaderPages,
@@ -22,6 +21,7 @@ import RNFetchBlob from 'rn-fetch-blob';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import { FlatList } from 'react-native-gesture-handler';
 import { useRealm } from '@database/main';
+import useUserHistory from '@hooks/useUserHistory';
 
 type ForceScrollToOffset = (offset: number) => void;
 
@@ -336,6 +336,10 @@ export function readerInitializer(args: ReaderInitializerArguments) {
       manga.currentlyReadingChapter = {
         _id: _chapter._id,
         index: _chapter.indexPage,
+        /**
+         * TODO: Find a work-around for this field to be defined because this will be undefined if this is a new chapter (the user has yet to fetch pages yet)
+         */
+        numOfPages: _chapter.numberOfPages ?? 20,
       };
     });
 
@@ -413,6 +417,8 @@ export function readerCurrentPageEffect(
       manga.currentlyReadingChapter = {
         _id: chapterRef.current._id,
         index: currentPage - 1,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        numOfPages: chapterRef.current.numberOfPages ?? 20, // This should NOT be null because the user will need to be on the page, which means Chapter exists locally with this property defined
       };
     });
     localRealm.write(() => {
@@ -434,7 +440,7 @@ type ChapterKeyEffectArguments = Pick<
     setChapter: (
       value: ChapterSchema & Realm.Object<ChapterSchema, never>,
     ) => void;
-    addMangaToHistory: typeof addMangaToHistory;
+    incognito: boolean;
   };
 export function chapterKeyEffect(args: ChapterKeyEffectArguments) {
   const {
@@ -446,9 +452,10 @@ export function chapterKeyEffect(args: ChapterKeyEffectArguments) {
     getOffset,
     scrollPositionLandscape,
     scrollPositionPortrait,
-    addMangaToHistory,
+    incognito,
   } = args;
   const realm = useRealm();
+  const { addMangaToHistory } = useUserHistory({ incognito });
   React.useEffect(() => {
     const newChapter = localRealm.objectForPrimaryKey(
       ChapterSchema,

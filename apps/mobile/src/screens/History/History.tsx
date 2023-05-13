@@ -1,5 +1,4 @@
-import { HistorySection, MangaHistory } from '@redux/slices/history';
-import React from 'react';
+import React, { useTransition } from 'react';
 import SectionHeader, {
   MANGA_HISTORY_SECTION_HEADER_HEIGHT,
 } from './components/SectionHeader';
@@ -19,11 +18,18 @@ import { moderateScale } from 'react-native-size-matters';
 import Stack from '@components/Stack';
 import useBoolean from '@hooks/useBoolean';
 import Input from '@components/Input';
-import { useLocalRealm, useRealm } from '@database/main';
+import { useLocalRealm, useQuery, useRealm } from '@database/main';
 import { MangaSchema } from '@database/schemas/Manga';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { Manga, MangaChapter } from '@mangayomu/mangascraper';
 import { ChapterSchema } from '@database/schemas/Chapter';
+import {
+  HistorySection,
+  MangaHistory,
+  UserHistorySchema,
+} from '@database/schemas/History';
+import { useUser } from '@realm/react';
+import useUserHistory from '@hooks/useUserHistory';
 
 type HistorySectionFlashListData =
   | { type: 'SECTION'; date: number }
@@ -51,15 +57,19 @@ function toFlashListData(sections: HistorySection[]) {
 }
 
 const History: React.FC<ConnectedHistoryProps> = ({
-  sections,
   incognito,
   toggleIncognitoMode,
-  clearMangaHistory,
 }) => {
+  const { clearMangaHistory } = useUserHistory({ incognito });
   const dialog = useDialog();
-  const [data, setData] = React.useState<HistorySectionFlashListData[]>(
-    toFlashListData(sections),
+  const realm = useRealm();
+  const sections = React.useRef<HistorySection[]>(
+    realm.objects(UserHistorySchema)[0]?.history ?? [],
   );
+  const [data, setData] = React.useState<HistorySectionFlashListData[]>(
+    toFlashListData(sections.current),
+  );
+  const [isLoading, setTransition] = useTransition();
   const [show, setShow] = useBoolean();
   const [query, setQuery] = React.useState<string>('');
   const { onScroll, contentContainerStyle, scrollViewStyle } =
@@ -80,7 +90,29 @@ const History: React.FC<ConnectedHistoryProps> = ({
         <Box px="m">
           <Input
             expanded
-            onChangeText={setQuery}
+            onChangeText={(e) => {
+              const parsedQuery = e.trim().toLowerCase();
+              setQuery(e);
+              setTransition(() => {
+                const newArray: HistorySectionFlashListData[] = [];
+                for (let i = sections.current.length - 1; i >= 0; i--) {
+                  newArray.push({
+                    type: 'SECTION',
+                    date: sections.current[i].date,
+                  });
+                  if (sections.current[i].data.length > 0)
+                    for (const data of sections.current[i].data) {
+                      if (data.manga.title.toLowerCase().includes(parsedQuery))
+                        newArray.push({
+                          type: 'ROW',
+                          data,
+                          sectionDate: sections.current[i].date,
+                        });
+                    }
+                }
+                setData(newArray);
+              });
+            }}
             defaultValue={query}
             placeholder="Search for a title..."
             iconButton={
@@ -138,36 +170,40 @@ const History: React.FC<ConnectedHistoryProps> = ({
     if (incognito) displayMessage('Incognito mode on');
     else displayMessage('Incognito mode off');
   }, [incognito]);
-  useMountedEffect(() => {
+  function updateData() {
     if (query.length > 0) {
       const parsedQuery = query.trim().toLowerCase();
-      const timeout = setTimeout(
-        () =>
-          setData(() => {
-            const newArray: HistorySectionFlashListData[] = [];
-            for (let i = sections.length - 1; i >= 0; i--) {
-              newArray.push({ type: 'SECTION', date: sections[i].date });
-              if (sections[i].data.length > 0)
-                for (const data of sections[i].data) {
-                  if (data.manga.title.toLowerCase().includes(parsedQuery))
-                    newArray.push({
-                      type: 'ROW',
-                      data,
-                      sectionDate: sections[i].date,
-                    });
-                }
-            }
-            return newArray;
-          }),
-        300,
-      );
-      return () => {
-        clearTimeout(timeout);
-      };
-    } else setData(toFlashListData(sections));
-  }, [query, sections]);
+      const newArray: HistorySectionFlashListData[] = [];
+      for (let i = sections.current.length - 1; i >= 0; i--) {
+        newArray.push({ type: 'SECTION', date: sections.current[i].date });
+        if (sections.current[i].data.length > 0)
+          for (const data of sections.current[i].data) {
+            if (data.manga.title.toLowerCase().includes(parsedQuery))
+              newArray.push({
+                type: 'ROW',
+                data,
+                sectionDate: sections.current[i].date,
+              });
+          }
+      }
+      setData(newArray);
+    } else setData(toFlashListData(sections.current));
+  }
+  React.useEffect(() => {
+    const callback: Realm.CollectionChangeCallback<
+      UserHistorySchema & Realm.Object<unknown, never>
+    > = (changes) => {
+      sections.current = changes[0].history;
+      updateData();
+    };
+    const p = realm.objects(UserHistorySchema);
+    p.addListener(callback);
+    return () => {
+      p.removeListener(callback);
+    };
+  }, []);
 
-  if (sections.length === 0)
+  if (data.length === 0)
     return (
       <Stack
         space="s"
