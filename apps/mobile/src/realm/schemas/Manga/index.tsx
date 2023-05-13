@@ -50,12 +50,14 @@ export const MangaReadingChapter: Realm.ObjectSchema = {
   properties: {
     _id: 'string',
     index: 'double',
+    numOfPages: 'int',
   },
 };
 
 export type CurrentlyReadingChapter = {
   _id: string;
   index: number;
+  numOfPages: number;
 };
 
 export const SORT_CHAPTERS_BY = {
@@ -210,6 +212,7 @@ export const useManga = (
       netListener();
     };
   }, []);
+
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(async () => {
       if (isOffline === false) {
