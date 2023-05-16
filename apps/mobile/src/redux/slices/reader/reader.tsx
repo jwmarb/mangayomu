@@ -488,6 +488,12 @@ const readerSlice = createSlice({
         state.loading = true;
       }
     });
+    builder.addCase(fetchPagesByChapter.rejected, (state, action) => {
+      if (state.isMounted) {
+        delete state.chapterInfo[action.meta.arg.chapter._id];
+        state.loading = false;
+      }
+    });
   },
 });
 
