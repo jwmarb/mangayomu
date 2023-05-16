@@ -14,6 +14,7 @@ import { ChapterErrorContextState } from '@screens/Reader/components/ChapterErro
 import React from 'react';
 import { moderateScale } from 'react-native-size-matters';
 import connector, { ConnectedChapterErrorProps } from './ChapterError.redux';
+import NetInfo from '@react-native-community/netinfo';
 
 export const ChapterErrorContext = React.createContext<
   ChapterErrorContextState | undefined
@@ -35,11 +36,10 @@ const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
   const [loading, toggle] = useBoolean();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const chapter = useLocalObject(ChapterSchema, chapterKey)!;
-  async function onRetryFetch() {
-    if (!loading) {
-      toggle(true);
+  React.useEffect(() => {
+    if (loading) {
       try {
-        await fetchPagesByChapter({
+        const p = fetchPagesByChapter({
           chapter,
           localRealm,
           availableChapters,
@@ -48,10 +48,22 @@ const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
           mockSuccess: true,
           manga,
         });
+        const subscription = NetInfo.addEventListener(
+          ({ isInternetReachable }) => {
+            if (!isInternetReachable) p.abort();
+          },
+        );
+        return () => {
+          p.abort();
+          subscription();
+        };
       } finally {
         toggle(false);
       }
     }
+  }, [loading]);
+  async function onRetryFetch() {
+    if (!loading) toggle(true);
   }
   return (
     <Stack

@@ -12,7 +12,6 @@ import {
   ReaderScreenOrientation,
   ReadingDirection,
 } from '@redux/slices/settings';
-import { FlashList } from '@shopify/flash-list';
 import React from 'react';
 import { Alert, AppState, Dimensions } from 'react-native';
 import Orientation from 'react-native-orientation-locker';
@@ -286,9 +285,9 @@ interface ReaderInitializerArguments
   };
   realm: Realm;
   manga: MangaSchema & Realm.Object<MangaSchema, never>;
-  fetchPagesByChapter: (
-    arg: FetchPagesByChapterPayload,
-  ) => Promise<any> & { abort: () => void };
+  fetchPagesByChapter: (arg: FetchPagesByChapterPayload) => {
+    abort: () => void;
+  };
   source: MangaHost;
   resetReaderState: () => void;
   forceScrollToOffset: ForceScrollToOffset;
@@ -569,6 +568,7 @@ export function initializeReaderRefs(args: InitializeReaderRefsArguments) {
   >({});
   const flatListRef = React.useRef<FlatList>(null);
   const index = React.useRef<number>(_chapter.indexPage);
+  const isMounted = React.useRef<boolean>(false);
   return {
     scrollPositionLandscape,
     scrollPositionPortrait,
@@ -583,6 +583,7 @@ export function initializeReaderRefs(args: InitializeReaderRefsArguments) {
     index,
     fetchedPreviousChapter,
     memoizedOffsets,
+    isMounted,
   };
 }
 
