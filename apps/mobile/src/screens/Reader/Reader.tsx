@@ -16,6 +16,7 @@ import {
   Page,
   TransitionPage as ITransitionPage,
 } from '@redux/slices/reader/reader';
+import NetInfo from '@react-native-community/netinfo';
 import {
   ReaderScreenOrientation,
   ReadingDirection,
@@ -48,6 +49,7 @@ import {
   ViewToken,
   ListRenderItem,
   Dimensions,
+  Alert,
 } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import {
@@ -67,6 +69,8 @@ import { useAppDispatch } from '@redux/main';
 import useImmersiveMode from '@hooks/useImmersiveMode';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import { FlatList, ScrollView } from '@stream-io/flat-list-mvcp';
+import useBoolean from '@hooks/useBoolean';
+import useMountedEffect from '@hooks/useMountedEffect';
 
 export interface ReaderContextState {
   mangaKey?: string;
@@ -108,7 +112,18 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const dispatch = useAppDispatch();
   const fetchPagesByChapter = (
     ...args: Parameters<typeof _fetchPagesByChapter>
-  ) => dispatch(_fetchPagesByChapter(...args));
+  ) => {
+    const awaitingFetch = dispatch(_fetchPagesByChapter(...args));
+    const netListener = NetInfo.addEventListener(({ isInternetReachable }) => {
+      if (!isInternetReachable) awaitingFetch.abort();
+    });
+    return {
+      abort: () => {
+        netListener();
+        awaitingFetch.abort();
+      },
+    };
+  };
   const { width, height } = useScreenDimensions();
   const localRealm = useLocalRealm();
   const manga = useObject(MangaSchema, mangaKey);
@@ -124,6 +139,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     );
 
   const [chapter, setChapter] = React.useState(_chapter);
+  const [networkChange, toggleNetworkChange] = useBoolean();
   const [transitionPage, setTransitionPage] =
     React.useState<ITransitionPage | null>(null);
 
@@ -153,6 +169,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     index,
     memoizedOffsets,
     fetchedPreviousChapter,
+    isMounted,
   } = initializeReaderRefs({ _chapter, _chapterInfo, pages });
 
   React.useEffect(() => {
@@ -394,39 +411,126 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     }
   }
 
-  React.useEffect(() => {
-    if (pageInDisplay != null) {
-      (async () => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const pageChapter = localRealm.objectForPrimaryKey(
-          ChapterSchema,
-          pageInDisplay.chapter,
-        )!; // This will never be null
-        /**
-         * This code block will fetch the next chapter immediately
-         */
-        if (
-          pageChapter.index !== 0 &&
-          !chapterInfo.current[readableChapters[pageChapter.index - 1]._id]
-            ?.alreadyFetched &&
-          !chapterInfo.current[readableChapters[pageChapter.index - 1]._id]
-            ?.loading
-        ) {
-          const promise = fetchPagesByChapter({
-            chapter: readableChapters[pageChapter.index - 1],
-            availableChapters: readableChapters,
-            localRealm,
-            source,
-            offsetIndex: indexOffset,
-            manga,
-          });
-          return () => {
-            promise.abort();
-          };
-        }
-      })();
+  function fetchWithPageInDisplay(args: {
+    pageInDisplay: NonNullable<typeof pageInDisplay>;
+    manga: NonNullable<typeof manga>;
+  }) {
+    const { pageInDisplay, manga } = args;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const pageChapter = localRealm.objectForPrimaryKey(
+      ChapterSchema,
+      pageInDisplay.chapter,
+    )!; // This will never be null
+    /**
+     * This code block will fetch the next chapter immediately
+     */
+    if (
+      pageChapter.index !== 0 &&
+      !chapterInfo.current[readableChapters[pageChapter.index - 1]._id]
+        ?.alreadyFetched &&
+      !chapterInfo.current[readableChapters[pageChapter.index - 1]._id]?.loading
+    ) {
+      const promise = fetchPagesByChapter({
+        chapter: readableChapters[pageChapter.index - 1],
+        availableChapters: readableChapters,
+        localRealm,
+        source,
+        offsetIndex: indexOffset,
+        manga,
+      });
+      return () => {
+        promise.abort();
+      };
     }
+  }
+
+  React.useEffect(() => {
+    if (pageInDisplay != null) fetchWithPageInDisplay({ pageInDisplay, manga });
   }, [pageInDisplay]);
+
+  useMountedEffect(() => {
+    if (networkChange) {
+      toggleNetworkChange(false);
+      const isOnNextTransitionPage =
+        transitionPage != null &&
+        chapterRef.current.numberOfPages != null &&
+        chapterRef.current.index - 1 === transitionPage.next.index;
+      if (pageInDisplay != null)
+        fetchWithPageInDisplay({ pageInDisplay, manga });
+      else if (isOnNextTransitionPage)
+        fetchWithTransitionPage({
+          transitionPage,
+          manga,
+          whichChapterToFetch: 'next',
+        });
+      else if (!isOnChapterError) {
+        /**
+         * This probably means the user has not loaded the reader yet and disrupted initial fetch
+         */
+        const promise = fetchPagesByChapter({
+          chapter,
+          availableChapters: readableChapters,
+          localRealm,
+          source,
+          offsetIndex: indexOffset,
+          manga,
+        });
+        return () => {
+          promise.abort();
+        };
+      }
+    }
+  }, [networkChange]);
+
+  React.useEffect(() => {
+    /**
+     * This will rerun fetching pages if it has been disrupted somehow (e.g. switching networks while fetching)
+     */
+    const subscription = NetInfo.addEventListener(
+      ({ isConnected, isInternetReachable }) => {
+        if (isConnected && isInternetReachable && isMounted.current)
+          toggleNetworkChange(true);
+      },
+    );
+    isMounted.current = true;
+    return () => {
+      subscription();
+    };
+  }, []);
+
+  function fetchWithTransitionPage(args: {
+    transitionPage: NonNullable<typeof transitionPage>;
+    manga: NonNullable<typeof manga>;
+    whichChapterToFetch: 'next' | 'previous';
+  }) {
+    const { transitionPage, manga, whichChapterToFetch } = args;
+    const p = localRealm.objectForPrimaryKey(
+      ChapterSchema,
+      transitionPage[whichChapterToFetch]._id,
+    );
+    if (
+      p != null &&
+      !chapterInfo.current[transitionPage[whichChapterToFetch]._id]
+        ?.alreadyFetched &&
+      !chapterInfo.current[transitionPage[whichChapterToFetch]._id]?.loading
+    ) {
+      const promise = fetchPagesByChapter({
+        chapter: p,
+        availableChapters: readableChapters,
+        localRealm,
+        source,
+        offsetIndex: indexOffset,
+        fetchedPreviousChapter:
+          whichChapterToFetch === 'previous'
+            ? fetchedPreviousChapter
+            : undefined,
+        manga,
+      });
+      return () => {
+        promise.abort();
+      };
+    }
+  }
 
   React.useEffect(() => {
     /**
@@ -440,57 +544,21 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       chapterRef.current.index - 1 === transitionPage.next.index
     ) {
       setCurrentPage(chapterRef.current.numberOfPages);
-      const p = localRealm.objectForPrimaryKey(
-        ChapterSchema,
-        transitionPage.next._id,
-      );
-      if (
-        p != null &&
-        !chapterInfo.current[transitionPage.next._id]?.alreadyFetched &&
-        !chapterInfo.current[transitionPage.next._id]?.loading
-      ) {
-        console.log('Fetching next chapter...');
-        const promise = fetchPagesByChapter({
-          chapter: p,
-          availableChapters: readableChapters,
-          localRealm,
-          source,
-          offsetIndex: indexOffset,
-          manga,
-        });
-        return () => {
-          promise.abort();
-        };
-      }
+      fetchWithTransitionPage({
+        manga,
+        transitionPage,
+        whichChapterToFetch: 'next',
+      }); // Fetches next chapter
     } else if (
       transitionPage != null &&
       chapterRef.current.index + 1 === transitionPage.previous.index
     ) {
       setCurrentPage(1);
-      // asynchronous fetch previous chapter here
-      const p = localRealm.objectForPrimaryKey(
-        ChapterSchema,
-        transitionPage.previous._id,
-      );
-      if (
-        p != null &&
-        !chapterInfo.current[transitionPage.previous._id]?.alreadyFetched &&
-        !chapterInfo.current[transitionPage.previous._id]?.loading
-      ) {
-        console.log('Fetching previous chapter...');
-        const promise = fetchPagesByChapter({
-          chapter: p,
-          availableChapters: readableChapters,
-          localRealm,
-          source,
-          offsetIndex: indexOffset,
-          fetchedPreviousChapter,
-          manga,
-        });
-        return () => {
-          promise.abort();
-        };
-      }
+      fetchWithTransitionPage({
+        manga,
+        transitionPage,
+        whichChapterToFetch: 'previous',
+      }); // Fetches previous chapter
     }
   }, [transitionPage]);
 
