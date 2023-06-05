@@ -26,6 +26,7 @@ import Alignment from '@screens/Appearance/components/Alignment';
 import BoldFont from '@screens/Appearance/components/BoldFont';
 import FontSize from '@screens/Appearance/components/FontSize';
 import LetterSpacing from '@screens/Appearance/components/LetterSpacing';
+import AppearanceMode from '@screens/Appearance/components/AppearanceMode/AppearanceMode';
 
 const BOOK_RATIO = bookDimensions.width / bookDimensions.height;
 
@@ -254,9 +255,16 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
               />
             </Stack>
           </Box>
-          <Text variant="header" bold>
-            Theming
-          </Text>
+          <Box mx="m">
+            <Text variant="header" bold>
+              Theming
+            </Text>
+          </Box>
+          <Box background-color="paper" border-radius="@theme" box-shadow>
+            <Stack space="s" p="m">
+              <AppearanceMode />
+            </Stack>
+          </Box>
         </Stack>
       </ScrollView>
       <CustomBottomSheet
