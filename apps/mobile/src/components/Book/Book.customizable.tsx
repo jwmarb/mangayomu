@@ -91,6 +91,7 @@ const CustomizableBook: React.FC<CustomizableBookProps> = (props) => {
                 numberOfLines={2}
                 bold={bold}
                 align={align}
+                color={{ custom: 'white' }}
               >
                 {title}
               </AnimatedText>
