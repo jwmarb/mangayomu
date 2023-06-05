@@ -72,6 +72,7 @@ const History: React.FC<ConnectedHistoryProps> = ({
   const [isLoading, setTransition] = useTransition();
   const [show, setShow] = useBoolean();
   const [query, setQuery] = React.useState<string>('');
+
   const { onScroll, contentContainerStyle, scrollViewStyle } =
     useCollapsibleTabHeader({
       headerTitle: 'History',
@@ -166,6 +167,7 @@ const History: React.FC<ConnectedHistoryProps> = ({
       ),
       dependencies: [incognito, show],
     });
+
   useMountedEffect(() => {
     if (incognito) displayMessage('Incognito mode on');
     else displayMessage('Incognito mode off');
@@ -193,7 +195,7 @@ const History: React.FC<ConnectedHistoryProps> = ({
     const callback: Realm.CollectionChangeCallback<
       UserHistorySchema & Realm.Object<unknown, never>
     > = (changes) => {
-      sections.current = changes[0].history;
+      sections.current = changes[0]?.history ?? [];
       updateData();
     };
     const p = realm.objects(UserHistorySchema);
