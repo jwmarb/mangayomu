@@ -19,10 +19,10 @@ const IconButton: React.FC<IconButtonProps> = (props) => {
   const theme = useTheme();
   const rippleColor = React.useMemo(() => {
     if (defaultRippleColor != null) return defaultRippleColor;
-    if (color == null) return theme.palette.action.ripple;
     if (typeof color === 'object') return generateRippleColor(color.custom);
     if (color in theme.palette)
       return theme.palette[color as ButtonColors].ripple;
+    return theme.palette.action.ripple;
   }, [color, theme, defaultRippleColor]);
 
   const borderlessButtonStyle = React.useMemo(
