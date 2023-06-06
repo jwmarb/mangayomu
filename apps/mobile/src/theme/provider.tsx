@@ -1,5 +1,5 @@
 import React from 'react';
-import { ColorSchemeName, useColorScheme } from 'react-native';
+import { ColorSchemeName, StatusBar, useColorScheme } from 'react-native';
 
 import {
   NavigationContainer,
@@ -13,6 +13,7 @@ import { moderateScale } from 'react-native-size-matters';
 import { MenuProvider } from 'react-native-popup-menu';
 import DialogProvider from '@components/Dialog/DialogProvider';
 import { PortalProvider } from '@gorhom/portal';
+import { useMMKV } from 'react-native-mmkv';
 
 export enum AppearanceMode {
   SYSTEM = 'System',
@@ -37,7 +38,7 @@ export const useAppearanceColorScheme = (
 export const AppearanceContext = React.createContext<
   | {
       mode: AppearanceMode;
-      setMode: React.Dispatch<React.SetStateAction<AppearanceMode>>;
+      setMode: (setter: AppearanceMode) => void;
     }
   | undefined
 >(undefined);
@@ -49,10 +50,44 @@ export const useAppearanceMode = () => {
   return ctx;
 };
 
+const DEVICE_THEME = 'device_theme';
+
 export const AppearanceProvider: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const [mode, setMode] = React.useState(AppearanceMode.SYSTEM);
+  const mmkv = useMMKV();
+  const [mode, _setMode] = React.useState<AppearanceMode>(() => {
+    const savedValue = mmkv.getString(DEVICE_THEME);
+    if (savedValue == null) {
+      mmkv.set(DEVICE_THEME, AppearanceMode.SYSTEM);
+      return AppearanceMode.SYSTEM;
+    }
+    return savedValue as AppearanceMode;
+  });
+  const setMode = React.useCallback(
+    (setter: AppearanceMode) => {
+      mmkv.set(DEVICE_THEME, setter);
+      _setMode(setter);
+    },
+    [_setMode, mmkv],
+  );
+  React.useEffect(() => {
+    switch (mode) {
+      case AppearanceMode.DARK:
+        StatusBar.setBarStyle('light-content', true);
+        break;
+      case AppearanceMode.LIGHT:
+        StatusBar.setBarStyle('dark-content', true);
+        break;
+      case AppearanceMode.SYSTEM:
+        StatusBar.setBarStyle('default', true);
+        break;
+    }
+  }, [mode]);
+  const providedContextValue = React.useMemo(
+    () => ({ mode, setMode }),
+    [mode, setMode],
+  );
   const colorScheme = useAppearanceColorScheme(mode);
   const theme = React.useMemo(
     () =>
@@ -137,7 +172,7 @@ export const AppearanceProvider: React.FC<React.PropsWithChildren> = ({
         <DialogProvider>
           <PortalProvider>
             <NavigationContainer theme={theme.__react_navigation__}>
-              <AppearanceContext.Provider value={{ mode, setMode }}>
+              <AppearanceContext.Provider value={providedContextValue}>
                 {children}
               </AppearanceContext.Provider>
             </NavigationContainer>
