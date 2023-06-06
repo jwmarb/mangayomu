@@ -85,30 +85,14 @@ const Tab: React.FC<TabProps> = (props) => {
   }, [isFocused]);
   const rotation = useSharedValue(0);
   const scale = useSharedValue(1);
-  const color = useDerivedValue(() =>
-    interpolateColor(
-      indicator.value,
-      [0, 1],
-      [theme.palette.text.secondary, theme.palette.primary.main],
-    ),
-  );
 
   function handleOnPress() {
     if (!isFocused) navigation.navigate({ name: routeName, params: undefined });
   }
 
-  const textStyle = useAnimatedStyle(() => ({
-    color: color.value,
-  }));
-
   const style = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }, { rotate: rotation.value + 'deg' }],
   }));
-
-  const memoTextStyle = React.useMemo(
-    () => [textStyle, style],
-    [textStyle, style],
-  );
 
   function handleOnLongPress() {
     displayMessage(routeName);
@@ -127,7 +111,7 @@ const Tab: React.FC<TabProps> = (props) => {
           as={Animated.Text}
           variant="header"
           color={isFocused ? 'primary' : 'textSecondary'}
-          style={memoTextStyle}
+          style={style}
         >
           {tabIcons[routeName]}
         </Text>
@@ -135,7 +119,6 @@ const Tab: React.FC<TabProps> = (props) => {
           as={Animated.Text}
           variant="bottom-tab"
           color={isFocused ? 'primary' : 'textSecondary'}
-          style={textStyle}
         >
           {routeName}
         </Text>
