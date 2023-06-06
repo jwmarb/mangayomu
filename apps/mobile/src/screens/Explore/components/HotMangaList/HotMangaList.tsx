@@ -72,7 +72,11 @@ const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
         </Stack>
         <FlashList
           key={bookHeight}
-          ListEmptyComponent={!isOffline ? EmptyMangaListComponent : undefined}
+          ListEmptyComponent={
+            !isOffline && status === 'done'
+              ? EmptyMangaListComponent
+              : undefined
+          }
           ItemSeparatorComponent={MangaSeparator}
           contentContainerStyle={{ paddingHorizontal: theme.style.spacing.m }}
           ListHeaderComponent={

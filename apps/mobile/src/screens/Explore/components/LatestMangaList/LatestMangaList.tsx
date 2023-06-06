@@ -84,7 +84,11 @@ const LatestMangaList: React.FC<ConnectedLatestMangaListProps> = (props) => {
               )}
             </>
           }
-          ListEmptyComponent={!isOffline ? EmptyMangaListComponent : undefined}
+          ListEmptyComponent={
+            !isOffline && status === 'done'
+              ? EmptyMangaListComponent
+              : undefined
+          }
           data={latestMangas.slice(0, 9)}
           estimatedItemSize={bookHeight}
           key={bookHeight}
