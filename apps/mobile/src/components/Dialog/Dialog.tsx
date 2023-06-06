@@ -44,6 +44,7 @@ const Dialog: React.ForwardRefRenderFunction<DialogMethods> = (props, ref) => {
 
   return (
     <Modal
+      statusBarTranslucent
       transparent
       visible={show}
       onRequestClose={close}
