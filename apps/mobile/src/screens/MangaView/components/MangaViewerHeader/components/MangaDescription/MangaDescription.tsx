@@ -4,25 +4,67 @@ import Skeleton from '@components/Skeleton';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
-import { NativeSyntheticEvent, TextLayoutEventData } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { MangaDescriptionProps } from './MangaDescription.interfaces';
+import { useTheme } from '@emotion/react';
+import RenderHTML, { MixedStyleDeclaration } from 'react-native-render-html';
+import { typography } from '@theme/theme';
+import Box from '@components/Box/Box';
 
-const MAX_NUMBER_OF_LINES = 7;
+const MAX_CHARACTERS = 150;
 
 const MangaDescription: React.FC<MangaDescriptionProps> = (props) => {
   const { data, loading } = props;
-  const [numberOfLines, setNumberOfLines] = React.useState<number | undefined>(
-    MAX_NUMBER_OF_LINES,
+  const theme = useTheme();
+  const baseStyle: MixedStyleDeclaration = React.useMemo(
+    () =>
+      ({
+        ...typography.body,
+        color: theme.palette.text.secondary,
+        margin: 0,
+      } as MixedStyleDeclaration),
+    [],
   );
-  const isExpanded = numberOfLines == null;
-  const [showExpand, setShowExpand] = React.useState<boolean>(false);
-  function handleOnTextLayout(e: NativeSyntheticEvent<TextLayoutEventData>) {
-    setShowExpand(e.nativeEvent.lines.length > MAX_NUMBER_OF_LINES);
-  }
+  const tagStyles: Record<string, MixedStyleDeclaration> = React.useMemo(
+    () => ({
+      p: {
+        ...typography.body,
+        color: theme.palette.text.secondary,
+        margin: 0,
+      } as MixedStyleDeclaration,
+      a: {
+        ...typography.body,
+        color: theme.palette.text.hint,
+        margin: 0,
+      } as MixedStyleDeclaration,
+      hr: {
+        marginVertical: theme.style.spacing.m,
+      },
+      h1: {
+        margin: 0,
+        color: theme.palette.text.primary,
+        ...typography.header,
+      } as MixedStyleDeclaration,
+      h3: {
+        ...typography.header,
+        margin: 0,
+        color: theme.palette.text.primary,
+      } as MixedStyleDeclaration,
+    }),
+    [theme],
+  );
+  const { width } = useWindowDimensions();
+  const [maxHeight, setMaxHeight] = React.useState<number | undefined>(
+    MAX_CHARACTERS,
+  );
+  const isExpanded = maxHeight == null;
+  const showExpand = data != null && data.length > MAX_CHARACTERS;
   function handleOnShowMore() {
-    if (!isExpanded) setNumberOfLines(undefined);
-    else setNumberOfLines(MAX_NUMBER_OF_LINES);
+    if (!isExpanded) setMaxHeight(undefined);
+    else setMaxHeight(MAX_CHARACTERS);
   }
+
+  const contentWidth = width - 2 * theme.style.spacing.m;
   return (
     <Stack space="s">
       <Stack
@@ -67,14 +109,30 @@ const MangaDescription: React.FC<MangaDescriptionProps> = (props) => {
             <Text>Placeholder</Text>
           </Skeleton>
         </>
-      ) : (
-        <Text
-          color="textSecondary"
-          italic={!data}
-          onTextLayout={handleOnTextLayout}
-          numberOfLines={numberOfLines}
+      ) : data ? (
+        // <Text>{data}</Text>
+        <Box
+          maxHeight={maxHeight}
+          overflow="hidden"
+          border-width={{ b: 1 }}
+          border-color={theme.palette.borderColor}
+          pb="m"
         >
-          {data || 'No description available.'}
+          {React.useMemo(
+            () => (
+              <RenderHTML
+                source={{ html: data }}
+                contentWidth={contentWidth}
+                tagsStyles={tagStyles}
+                baseStyle={baseStyle}
+              />
+            ),
+            [data, contentWidth],
+          )}
+        </Box>
+      ) : (
+        <Text color="textSecondary" italic>
+          No description available.
         </Text>
       )}
     </Stack>
