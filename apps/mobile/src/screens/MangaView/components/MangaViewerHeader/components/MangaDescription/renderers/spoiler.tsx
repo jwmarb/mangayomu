@@ -27,6 +27,9 @@ export const spoilerRenderer: CustomBlockRenderer = ({
 }) => {
   const opacity = useSharedValue(1);
   const theme = useTheme();
+  const SPOILER_COLOR =
+    theme.mode === 'light' ? 'rgba(0, 0, 0, 0.36)' : 'rgba(51, 51, 51, 0.4)';
+  const SPOILER_CONTRAST_COLOR = theme.helpers.getContrastText(SPOILER_COLOR);
   const style = useAnimatedStyle(() => ({
     ...StyleSheet.absoluteFillObject,
     opacity: opacity.value,
@@ -42,7 +45,7 @@ export const spoilerRenderer: CustomBlockRenderer = ({
       <TDefaultRenderer {...defaultRendererProps} />
       <Animated.View style={style}>
         <BlurView
-          overlayColor="transparent"
+          overlayColor={SPOILER_COLOR}
           style={StyleSheet.absoluteFill}
           blurType={theme.mode ?? 'light'}
           blurRadius={3}
@@ -52,23 +55,15 @@ export const spoilerRenderer: CustomBlockRenderer = ({
           style={StyleSheet.absoluteFill}
           justify-content="center"
           align-items="center"
+          overflow="visible"
         >
-          <Box
-            px="m"
-            py="s"
-            background-color="rgba(0, 0, 0, 0.2)"
-            align-self="center"
-            border-radius="@theme"
-            box-shadow
+          <Text
+            color={{
+              custom: SPOILER_CONTRAST_COLOR,
+            }}
           >
-            <Text
-              color={{
-                custom: theme.helpers.getContrastText('rgba(0, 0, 0, 0.2)'),
-              }}
-            >
-              Reveal spoiler
-            </Text>
-          </Box>
+            Reveal spoiler
+          </Text>
         </Box>
       </Animated.View>
     </TouchableWithoutFeedback>
