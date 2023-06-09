@@ -91,44 +91,19 @@ const MangaDescriptionHTMLRenderer: React.FC<
 
   function handleOnDocument(doc: Document) {
     let numberOfLineBreaks = 0;
-    let firstOccuringText: Node | null = null;
     for (const child of doc.children) {
       switch (child.type) {
-        case 'text':
-          if (!firstOccuringText) {
-            firstOccuringText = child;
-          }
-          break;
         case 'tag':
           switch ((child as any).name) {
-            case 'br':
-            case 'hr':
-              numberOfLineBreaks++;
-              break;
             default:
               numberOfLineBreaks++; // Each new element adds a new line
-              if (
-                // Assume it is an element that holds textual data, which is the first child of this node.
-                (child as any).children.length > 0 &&
-                (child as any).children[0].data != null
-              ) {
-                if (!firstOccuringText)
-                  firstOccuringText = (child as any).children[0];
-              }
               break;
           }
           break;
       }
       if (numberOfLineBreaks > MAX_NUMBER_OF_LINES) break; // exit for loop
     }
-    if (numberOfLineBreaks > MAX_NUMBER_OF_LINES) {
-      setShowExpanded(true);
-      doc.children = [firstOccuringText ?? doc.children[0]];
-      /**
-       * Layout can break if the first occuring child is something else other than a text node like <br /> or <hr />
-       * But the likelihood of this happening is possibly none
-       */
-    }
+    if (numberOfLineBreaks > MAX_NUMBER_OF_LINES) setShowExpanded(true);
   }
 
   return (
