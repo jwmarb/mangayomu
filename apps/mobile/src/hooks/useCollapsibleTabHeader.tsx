@@ -1,7 +1,7 @@
 import Box from '@components/Box';
 import { BoxProps } from '@components/Box/Box.interfaces';
 import LoadingBar from '@components/LoadingBar';
-import { NAVHEADER_HEIGHT, NavStyles } from '@components/NavHeader';
+import { NAVHEADER_HEIGHT, useNavStyles } from '@components/NavHeader';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
@@ -134,7 +134,7 @@ export default function useCollapsibleTabHeader(
   const navigation = useRootNavigation();
   const translateY = useSharedValue(0);
   const scrollPosition = useSharedValue(0);
-
+  const NavStyles = useNavStyles();
   const opacity = useDerivedValue(() =>
     interpolate(translateY.value, [-NAVHEADER_HEIGHT, 0], [0, 1]),
   );

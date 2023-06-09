@@ -6,7 +6,7 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { useTheme } from '@emotion/react';
-import { BackHandler, StatusBar } from 'react-native';
+import { BackHandler } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -15,16 +15,15 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Portal } from '@gorhom/portal';
 import { AnimatedBox } from '@components/Box';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const CustomHandle: React.FC<BottomSheetHandleProps> = ({ animatedIndex }) => {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const indicatorHeight = useDerivedValue(() =>
-    interpolate(
-      animatedIndex.value,
-      [1.8, 2],
-      [0, StatusBar.currentHeight ?? 0],
-    ),
+    interpolate(animatedIndex.value, [1.8, 2], [0, insets.top]),
   );
+
   const style = useAnimatedStyle(() => ({
     height: indicatorHeight.value,
   }));

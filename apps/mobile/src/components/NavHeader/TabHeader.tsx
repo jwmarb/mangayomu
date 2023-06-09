@@ -1,5 +1,5 @@
 import Box from '@components/Box';
-import { NavStyles } from '@components/NavHeader';
+import { useNavStyles } from '@components/NavHeader';
 import Text from '@components/Text';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import React from 'react';
@@ -9,6 +9,7 @@ const TabHeader: React.FC<BottomTabHeaderProps> = (props) => {
     route,
     options: { headerTitle = route.name },
   } = props;
+  const NavStyles = useNavStyles();
 
   return (
     <Box style={NavStyles.header} justify-content="center">

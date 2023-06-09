@@ -24,6 +24,7 @@ import { UserProvider, AppProvider } from '@realm/react';
 import { REACT_APP_REALM_ID } from '@env';
 import { RealmEffect } from '@database/providers/RealmProvider';
 import { AppearanceProvider } from '@theme/provider';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 enableFreeze(true);
 enum Auth0 {
   DOMAIN = 'dev-wq6wbghv.us.auth0.com',
@@ -48,32 +49,34 @@ function App(): JSX.Element {
     <>
       <StatusBar translucent backgroundColor="transparent" />
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-            <Auth0Provider domain={Auth0.DOMAIN} clientId={Auth0.CLIENT_ID}>
-              <AppProvider id={REACT_APP_REALM_ID}>
-                <UserProvider fallback={<RealmUserProvider />}>
-                  <RealmProvider
-                    sync={{
-                      flexible: true,
-                      onError: (_, error) => {
-                        console.error(error);
-                      },
-                    }}
-                  >
-                    <LocalRealmProvider>
-                      <RealmEffect>
-                        <AppearanceProvider>
-                          <Root />
-                        </AppearanceProvider>
-                      </RealmEffect>
-                    </LocalRealmProvider>
-                  </RealmProvider>
-                </UserProvider>
-              </AppProvider>
-            </Auth0Provider>
-          </PersistGate>
-        </Provider>
+        <SafeAreaProvider>
+          <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+              <Auth0Provider domain={Auth0.DOMAIN} clientId={Auth0.CLIENT_ID}>
+                <AppProvider id={REACT_APP_REALM_ID}>
+                  <UserProvider fallback={<RealmUserProvider />}>
+                    <RealmProvider
+                      sync={{
+                        flexible: true,
+                        onError: (_, error) => {
+                          console.error(error);
+                        },
+                      }}
+                    >
+                      <LocalRealmProvider>
+                        <RealmEffect>
+                          <AppearanceProvider>
+                            <Root />
+                          </AppearanceProvider>
+                        </RealmEffect>
+                      </LocalRealmProvider>
+                    </RealmProvider>
+                  </UserProvider>
+                </AppProvider>
+              </Auth0Provider>
+            </PersistGate>
+          </Provider>
+        </SafeAreaProvider>
       </GestureHandlerRootView>
     </>
   );

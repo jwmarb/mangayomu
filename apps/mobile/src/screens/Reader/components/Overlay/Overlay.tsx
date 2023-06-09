@@ -29,6 +29,7 @@ import ReaderSettingsMenu from '@screens/Reader/components/ReaderSettingsMenu';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import ImageMenu from '@screens/Reader/components/ImageMenu';
 import { NavigationBar } from '@theme/index';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const OVERLAY_COLOR = 'rgba(0, 0, 0, 0.5)';
 export const OVERLAY_TEXT_PRIMARY = { custom: 'rgba(255, 255, 255, 1)' };
@@ -47,6 +48,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
     addIfNewSourceToLibrary,
     totalPages,
   } = props;
+  const insets = useSafeAreaInsets();
   const realm = useRealm();
   const translateY = useDerivedValue(() =>
     interpolate(opacity.value, [0, 1], [0, translateYOffset]),
@@ -140,7 +142,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
         <AnimatedBox
           style={topOverlayStyle}
           background-color={OVERLAY_COLOR}
-          pt={theme.style.spacing.s + (StatusBar.currentHeight ?? 0)}
+          pt={theme.style.spacing.s + insets.top}
           pb="s"
           px="m"
         >
