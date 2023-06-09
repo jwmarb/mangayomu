@@ -8,20 +8,15 @@ import { MangaDescriptionProps } from './MangaDescription.interfaces';
 import { useTheme } from '@emotion/react';
 import Box from '@components/Box/Box';
 import MangaDescriptionHTMLRenderer from '@screens/MangaView/components/MangaViewerHeader/components/MangaDescription/renderers';
-
-const MAX_CHARACTERS = 150;
+import useBoolean from '@hooks/useBoolean';
 
 const MangaDescription: React.FC<MangaDescriptionProps> = (props) => {
   const { data, loading } = props;
   const theme = useTheme();
-  const [maxHeight, setMaxHeight] = React.useState<number | undefined>(
-    MAX_CHARACTERS,
-  );
-  const isExpanded = maxHeight == null;
-  const showExpand = data != null && data.length > MAX_CHARACTERS;
+  const [isExpanded, toggleIsExpanded] = useBoolean();
+  const [showExpand, setShowExpanded] = useBoolean();
   function handleOnShowMore() {
-    if (!isExpanded) setMaxHeight(undefined);
-    else setMaxHeight(MAX_CHARACTERS);
+    toggleIsExpanded();
   }
 
   return (
@@ -70,13 +65,15 @@ const MangaDescription: React.FC<MangaDescriptionProps> = (props) => {
         </>
       ) : data ? (
         <Box
-          maxHeight={maxHeight}
-          overflow="hidden"
           border-width={{ b: 1 }}
           border-color={theme.palette.borderColor}
           pb="m"
         >
-          <MangaDescriptionHTMLRenderer data={data} />
+          <MangaDescriptionHTMLRenderer
+            isExpanded={isExpanded}
+            data={data}
+            setShowExpanded={setShowExpanded}
+          />
         </Box>
       ) : (
         <Text color="textSecondary" italic>
