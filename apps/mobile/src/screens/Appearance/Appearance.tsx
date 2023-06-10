@@ -1,4 +1,4 @@
-import { bookDimensions, CustomizableBook } from '@components/Book';
+import { CustomizableBook } from '@components/Book';
 import Box from '@components/Box';
 import Button from '@components/Button';
 import Divider from '@components/Divider';
@@ -27,8 +27,7 @@ import BoldFont from '@screens/Appearance/components/BoldFont';
 import FontSize from '@screens/Appearance/components/FontSize';
 import LetterSpacing from '@screens/Appearance/components/LetterSpacing';
 import AppearanceMode from '@screens/Appearance/components/AppearanceMode/AppearanceMode';
-
-const BOOK_RATIO = bookDimensions.width / bookDimensions.height;
+import { BOOK_DIMENSIONS_RATIO } from '@theme/constants';
 
 type CustomManga = Omit<Manga, 'index' | 'link'>;
 
@@ -108,7 +107,7 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
           break;
         case BookStyle.CLASSIC:
         case BookStyle.MANGAROCK:
-          height.value = widthValue / BOOK_RATIO;
+          height.value = widthValue / BOOK_DIMENSIONS_RATIO;
           break;
       }
     },
@@ -128,7 +127,7 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
             break;
           case BookStyle.CLASSIC:
           case BookStyle.MANGAROCK:
-            height.value = width.value / BOOK_RATIO;
+            height.value = width.value / BOOK_DIMENSIONS_RATIO;
             break;
         }
       _setBookStyle(newValue);

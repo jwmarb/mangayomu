@@ -1,7 +1,7 @@
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
 import { CoverProps } from '@components/Cover/Cover.interfaces';
-import { bookDimensions } from '@components/Book';
+import { BOOK_DIMENSIONS } from '@theme/constants';
 import { moderateScale } from 'react-native-size-matters';
 const normalCoverDimension = moderateScale(160);
 
@@ -12,7 +12,7 @@ const mapStateToProps = (state: AppState, props: CoverProps) => ({
     ? normalCoverDimension
     : state.settings.book.coverHeight,
   width: props.normalBookDimensions
-    ? bookDimensions.width
+    ? BOOK_DIMENSIONS.width
     : state.settings.book.width,
   bookHeight: state.settings.book.height,
   coverStyle: state.settings.book.style,

@@ -16,11 +16,6 @@ import { BaseButton } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 
-export const bookDimensions = {
-  width: moderateScale(110),
-  height: moderateScale(205),
-};
-
 const styles = ScaledSheet.create({
   linearGradient: {
     flexGrow: 1,

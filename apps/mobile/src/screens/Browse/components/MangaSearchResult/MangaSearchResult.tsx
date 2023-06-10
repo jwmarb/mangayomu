@@ -9,7 +9,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import connector, {
   ConnectedMangaSearchResultProps,
 } from './MangaSearchResult.redux';
-import { bookDimensions } from '@components/Book';
+import { BOOK_DIMENSIONS } from '@theme/constants';
 import {
   renderItem,
   keyExtractor,
@@ -67,7 +67,7 @@ const MangaSearchResult: React.FC<ConnectedMangaSearchResultProps> = (
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           ItemSeparatorComponent={MangaSeparator}
-          estimatedItemSize={bookDimensions.height}
+          estimatedItemSize={BOOK_DIMENSIONS.height}
           horizontal
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
