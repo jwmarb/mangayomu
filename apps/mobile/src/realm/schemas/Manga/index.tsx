@@ -72,6 +72,19 @@ export const SORT_CHAPTERS_BY = {
   Timestamp: (a: MangaChapter) => Date.parse(a.date),
 };
 
+export const SORT_CHAPTERS_BY_LEGACY = {
+  'Chapter number': (a: MangaChapter, b: MangaChapter) => {
+    if (a.name && b.name) {
+      const aName = a.name.match(/(0|[1-9]\d*)(\.\d+)?/g);
+      const bName = b.name.match(/(0|[1-9]\d*)(\.\d+)?/g);
+      if (aName != null && bName != null)
+        return parseFloat(bName[0]) - parseFloat(aName[0]);
+    }
+    if (a.index != null && b.index != null) return b.index - a.index;
+    throw Error('Chapter cannot be sorted due to undefined name and index');
+  },
+};
+
 export const KEYS_OF_SORT_CHAPTERS_BY = Object.keys(
   SORT_CHAPTERS_BY,
 ) as readonly SortChaptersMethod[];
@@ -175,7 +188,7 @@ export type UseMangaOptions = {
 
 export type FetchMangaMetaStatus = 'loading' | 'success' | 'local' | 'error';
 
-const SortLanguages = (a: ISOLangCode, b: ISOLangCode) =>
+export const SortLanguages = (a: ISOLangCode, b: ISOLangCode) =>
   languages[a].name.localeCompare(languages[b].name);
 
 export const useManga = (
