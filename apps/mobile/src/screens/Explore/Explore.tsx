@@ -28,6 +28,7 @@ import GenresList from '@screens/Explore/components/GenresList';
 import { Freeze } from 'react-freeze';
 import Progress from '@components/Progress';
 import useTabNavigation from '@hooks/useTabNavigation';
+import ContinueReading from '@screens/Explore/components/ContinueReading/ContinueReading';
 
 const Explore: React.FC<ConnectedExploreProps> = ({
   source,
@@ -119,6 +120,7 @@ const Explore: React.FC<ConnectedExploreProps> = ({
               placeholder="Titles, authors, or topics"
             />
           </Box>
+          <ContinueReading />
           <Freeze freeze={suspendRendering} placeholder={<Progress />}>
             {source.hasNoSources() ? (
               <Stack space="s" mx="m" align-self="center">
