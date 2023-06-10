@@ -89,6 +89,7 @@ export interface BoxProps
   /**
    * Decorating
    */
-  'background-color'?: string;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  'background-color'?: 'paper' | 'default' | (string & {});
   'box-shadow'?: boolean;
 }
