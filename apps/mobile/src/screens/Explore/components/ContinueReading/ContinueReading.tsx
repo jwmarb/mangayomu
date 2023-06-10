@@ -36,7 +36,7 @@ const ContinueReading: React.FC = () => {
     return prev;
   }, {} as Record<string, (ChapterSchema & Realm.Object<unknown, never>)[]>);
   const unfinishedMangas = currentlyReadingMangas.filter(
-    (manga) => manga.currentlyReadingChapter._id !== p[manga._id][0]._id,
+    (manga) => manga.currentlyReadingChapter?._id !== p[manga._id][0]?._id,
   );
 
   return (
