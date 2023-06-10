@@ -55,7 +55,11 @@ const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
   }
   const handleOnPress = () => {
     navigation.navigate('Reader', {
-      chapter: nextChapter._id,
+      chapter:
+        manga.currentlyReadingChapter.index ===
+        manga.currentlyReadingChapter.numOfPages - 1
+          ? nextChapter._id
+          : manga.currentlyReadingChapter._id,
       manga: manga._id,
     });
   };
