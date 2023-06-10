@@ -41,7 +41,7 @@ import { Portal } from '@gorhom/portal';
 import { moderateScale } from 'react-native-size-matters';
 import Stack from '@components/Stack';
 
-const DEFAULT_LANGUAGE: ISOLangCode = 'en';
+export const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 
 const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   const {
