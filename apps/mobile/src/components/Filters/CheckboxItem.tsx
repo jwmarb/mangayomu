@@ -3,6 +3,7 @@ import Checkbox from '@components/Checkbox';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
+import { ACCORDION_ITEM_HEIGHT } from '@theme/constants';
 import React from 'react';
 import { RectButton } from 'react-native-gesture-handler';
 
@@ -24,7 +25,13 @@ function CheckboxItem<T extends string>(props: CheckboxItemProps<T>) {
       onPress={handleOnToggle}
       rippleColor={theme.palette.action.ripple}
     >
-      <Stack p="s" space="s" flex-direction="row" align-items="center">
+      <Stack
+        p="s"
+        space="s"
+        height={ACCORDION_ITEM_HEIGHT}
+        flex-direction="row"
+        align-items="center"
+      >
         <Box>
           <Checkbox checked={props.checked} onChange={handleOnToggle} />
         </Box>
