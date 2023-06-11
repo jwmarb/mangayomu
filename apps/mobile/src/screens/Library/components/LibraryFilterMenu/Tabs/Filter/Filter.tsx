@@ -137,14 +137,9 @@ const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
     [setState],
   );
 
-  const totalHeight =
-    ACCORDION_SECTION_HEADER_HEIGHT * 2 +
-    genresSet.size * ACCORDION_ITEM_HEIGHT +
-    hostsInLibrary.size * ACCORDION_ITEM_HEIGHT;
-
   return (
     <BottomSheetScrollView>
-      <Box height={totalHeight}>
+      <Box mb="xl">
         <LibraryAccordionContext.Provider
           value={{ toggle, toggleGenre, toggleSourceVisibility }}
         >
