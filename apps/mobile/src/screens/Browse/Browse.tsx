@@ -19,6 +19,7 @@ import Item from './components/Item';
 import SectionHeader from './components/SectionHeader';
 
 import MangaSearchResult from '@screens/Browse/components/MangaSearchResult';
+import { AnimatedSectionList } from '@components/animated';
 
 const Browse: React.FC<ConnectedBrowseProps> = (props) => {
   const {
@@ -139,7 +140,7 @@ const Browse: React.FC<ConnectedBrowseProps> = (props) => {
       </ScrollView>
     );
   return (
-    <SectionList
+    <AnimatedSectionList
       onScroll={onScroll}
       style={scrollViewStyle}
       contentContainerStyle={contentContainerStyle}

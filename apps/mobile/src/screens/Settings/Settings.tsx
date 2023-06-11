@@ -5,6 +5,7 @@ import useRootNavigation from '@hooks/useRootNavigation';
 import PressableListItem from '@screens/More/components/PressableListItem';
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
 
 const Settings: React.FC = () => {
   const { onScroll, contentContainerStyle, scrollViewStyle } =
@@ -18,7 +19,7 @@ const Settings: React.FC = () => {
   }, [navigation]);
   return (
     <>
-      <ScrollView
+      <Animated.ScrollView
         onScroll={onScroll}
         contentContainerStyle={contentContainerStyle}
         style={scrollViewStyle}
@@ -39,7 +40,7 @@ const Settings: React.FC = () => {
           label="Appearance"
           iconLeft={<Icon type="font" name="palette" />}
         />
-      </ScrollView>
+      </Animated.ScrollView>
     </>
   );
 };

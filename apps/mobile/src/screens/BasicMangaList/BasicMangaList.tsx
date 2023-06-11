@@ -6,6 +6,7 @@ import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import Box from '@components/Box';
 import { FlashList } from '@shopify/flash-list';
 import useMangaFlashlistLayout from '@hooks/useMangaFlashlistLayout';
+import { AnimatedFlashList } from '@components/animated';
 
 const BasicMangaList: React.FC<ConnectedBasicMangaListProps> = (props) => {
   const { mangas, title, bookHeight, bookWidth } = props;
@@ -28,7 +29,7 @@ const BasicMangaList: React.FC<ConnectedBasicMangaListProps> = (props) => {
   );
 
   return (
-    <FlashList
+    <AnimatedFlashList
       drawDistance={drawDistance}
       estimatedItemSize={estimatedItemSize}
       // estimatedListSize={estimatedListSize}

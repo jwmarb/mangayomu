@@ -18,6 +18,7 @@ import IconButton from '@components/IconButton';
 import Stack from '@components/Stack';
 import { MangaSourceSelectorFilters } from '@screens/Welcome/components/MainSourceSelector/components/Header/Header';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
+import Animated from 'react-native-reanimated';
 const state = MangaHost.getListSources();
 
 const MainSourceSelector: React.FC<ConnectedMainSourceSelectorProps> = (
@@ -122,7 +123,7 @@ const MainSourceSelector: React.FC<ConnectedMainSourceSelectorProps> = (
   return (
     <>
       <MangaSourceSelectorFilters ref={bottomSheet} />
-      <FlatList
+      <Animated.FlatList
         ListHeaderComponent={<Box style={scrollViewStyle} />}
         ListFooterComponent={<Box style={contentContainerStyle} />}
         data={data}

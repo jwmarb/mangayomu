@@ -20,6 +20,7 @@ import { RefreshControl } from 'react-native-gesture-handler';
 import useBoolean from '@hooks/useBoolean';
 
 import { useLibraryData } from '@screens/Library/Library.hooks';
+import { AnimatedFlashList } from '@components/animated';
 
 const Library: React.FC<ConnectedLibraryProps> = ({
   sortBy,
@@ -126,7 +127,7 @@ const Library: React.FC<ConnectedLibraryProps> = ({
 
   return (
     <>
-      <FlashList
+      <AnimatedFlashList
         refreshControl={
           <RefreshControl
             refreshing={false}

@@ -35,6 +35,7 @@ import useMountedEffect from '@hooks/useMountedEffect';
 import Button from '@components/Button';
 import { moderateScale } from 'react-native-size-matters';
 import { LoadingBook } from '@components/Book';
+import { AnimatedFlashList } from '@components/animated';
 
 const reducer = (s: boolean) => !s;
 
@@ -447,7 +448,7 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
   }
   return (
     <>
-      <FlashList
+      <AnimatedFlashList
         drawDistance={drawDistance}
         onEndReached={handleOnReachedEnd}
         overrideItemLayout={overrideItemLayout}

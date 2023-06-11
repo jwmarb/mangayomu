@@ -30,6 +30,7 @@ import {
 } from '@database/schemas/History';
 import { useUser } from '@realm/react';
 import useUserHistory from '@hooks/useUserHistory';
+import { AnimatedFlashList } from '@components/animated';
 
 type HistorySectionFlashListData =
   | { type: 'SECTION'; date: number }
@@ -229,7 +230,7 @@ const History: React.FC<ConnectedHistoryProps> = ({
       </Stack>
     );
   return (
-    <FlashList
+    <AnimatedFlashList
       onScroll={onScroll}
       data={data}
       ListHeaderComponent={<Box style={scrollViewStyle} />}

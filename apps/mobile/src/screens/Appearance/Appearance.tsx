@@ -185,7 +185,7 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
 
   return (
     <>
-      <ScrollView
+      <Animated.ScrollView
         onScroll={onScroll}
         contentContainerStyle={contentContainerStyle}
         style={scrollViewStyle}
@@ -265,7 +265,7 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
             </Stack>
           </Box>
         </Stack>
-      </ScrollView>
+      </Animated.ScrollView>
       <CustomBottomSheet
         ref={bottomSheet}
         header={
