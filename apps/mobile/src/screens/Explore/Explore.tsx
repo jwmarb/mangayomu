@@ -121,8 +121,8 @@ const Explore: React.FC<ConnectedExploreProps> = ({
             />
           </Box>
           <ContinueReading />
-          {!suspendRendering ? (
-            source.hasNoSources() ? (
+          <Freeze freeze={suspendRendering} placeholder={<Progress />}>
+            {source.hasNoSources() ? (
               <Stack space="s" mx="m" align-self="center">
                 <Text variant="header" align="center">
                   No sources selected
@@ -143,10 +143,8 @@ const Explore: React.FC<ConnectedExploreProps> = ({
                 <HotMangaList />
                 <LatestMangaList />
               </Stack>
-            )
-          ) : (
-            <Progress />
-          )}
+            )}
+          </Freeze>
         </Stack>
       </Animated.ScrollView>
       <MainSourceSelector ref={sourceSelectorRef} />
