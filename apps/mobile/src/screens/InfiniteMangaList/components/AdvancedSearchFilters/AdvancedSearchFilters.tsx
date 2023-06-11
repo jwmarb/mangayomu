@@ -69,16 +69,6 @@ const AdvancedSearchFilters: React.ForwardRefRenderFunction<
     }
     return arr;
   }, [accordionStates]);
-  const sections = React.useMemo(
-    () =>
-      accordionKeys.map((x) => ({
-        title: x,
-        data: accordionStates[x]
-          ? (dummyStates[x] as MutableInclusiveExclusiveFilter<string>).fields
-          : [],
-      })),
-    [dummyStates, accordionKeys, accordionStates],
-  );
 
   const handleOnToggle = React.useCallback(
     (key: string) => {
