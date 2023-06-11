@@ -41,6 +41,8 @@ import { Portal } from '@gorhom/portal';
 import { moderateScale } from 'react-native-size-matters';
 import Stack from '@components/Stack';
 
+const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
+
 export const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 
 const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
@@ -77,6 +79,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   const { onScroll, contentContainerStyle, scrollViewStyle } =
     useCollapsibleHeader({
       headerTitle: '',
+      onScroll: handleOnScroll,
       backButtonColor: { custom: theme.palette.mangaViewerBackButtonColor },
       backButtonStyle: buttonStyle,
       backButtonRippleColor: theme.palette.action.ripple,
@@ -119,9 +122,9 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
       dependencies: [theme, manga?.inLibrary, manga == null],
     });
 
-  function handleOnScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
-    onScroll(e);
-    scrollPosition.value = e.nativeEvent.contentOffset.y;
+  function handleOnScroll(e: NativeScrollEvent) {
+    'worklet';
+    scrollPosition.value = e.contentOffset.y;
   }
 
   function handleOnOpenMenu() {
@@ -257,7 +260,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
           )}
         </Box>
       </Portal>
-      <FlashList
+      <AnimatedFlashList
         data={data}
         refreshing={refreshing}
         refreshControl={
@@ -281,7 +284,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
         renderItem={renderItem}
         ItemSeparatorComponent={Divider}
         estimatedItemSize={ROW_CHAPTER_HEIGHT}
-        {...{ onScroll: handleOnScroll }}
+        onScroll={onScroll}
       />
       {manga != null && (
         <MangaViewModal

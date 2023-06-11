@@ -42,6 +42,7 @@ export interface CollapsibleHeaderOptions {
   headerRightProps?: BoxProps;
   headerLeftProps?: BoxProps;
   header?: React.ReactNode;
+  onScroll?: (e: NativeScrollEvent) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   backButtonStyle?: any;
   loading?: boolean;
@@ -138,6 +139,7 @@ export default function useCollapsibleHeader(
     headerRightProps,
     showHeaderRight = true,
     header,
+    onScroll: extendedOnScroll,
   } = options;
   const theme = useTheme();
   const navigation = useRootNavigation();
@@ -167,6 +169,7 @@ export default function useCollapsibleHeader(
         Math.min(translateY.value - 2.5 * velocity.y, 0),
       );
     else translateY.value = 0;
+    if (extendedOnScroll) extendedOnScroll(event);
   });
 
   const style = useAnimatedStyle(() => ({
