@@ -5,14 +5,45 @@ import { FilterState } from '@redux/slices/mainSourceSelector';
 import FilterItem from '@components/Filters/FilterItem';
 import React from 'react';
 import connector, { ConnectedLibraryFilterProps } from './Filter.redux';
-import { BottomSheetSectionList } from '@gorhom/bottom-sheet';
-import { ListRenderItem, SectionListData } from 'react-native';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import Button from '@components/Button';
 import { MangaHost } from '@mangayomu/mangascraper';
 import integrateSortedList from '@helpers/integrateSortedList';
 import { StringComparator } from '@mangayomu/algorithms';
-import SectionHeader from './components/SectionHeader';
-const keyExtractor = (x: string, i: number) => x + i;
+import { FlashList, ListRenderItem } from '@shopify/flash-list';
+import {
+  ACCORDION_ITEM_HEIGHT,
+  ACCORDION_SECTION_HEADER_HEIGHT,
+} from '@theme/constants';
+import createAccordionHeader from '@helpers/createAccordionHeader';
+import createAccordionItem from '@helpers/createAccordionItem';
+import { Dimensions, StyleSheet } from 'react-native';
+interface LibraryAcccordionContextState {
+  toggle: (key: string) => void;
+  toggleGenre: (i: string) => void;
+  toggleSourceVisibility: (i: string) => void;
+}
+const LibraryAccordionContext = React.createContext<
+  LibraryAcccordionContextState | undefined
+>(undefined);
+const LibraryAccordionHeader = createAccordionHeader(
+  LibraryAccordionContext,
+  'toggle',
+);
+const LibraryAccordionGenreItem = createAccordionItem(
+  'FilterItem',
+  LibraryAccordionContext,
+  ['toggleGenre'],
+);
+const LibraryAccordionSourceItem = createAccordionItem(
+  'CheckboxItem',
+  LibraryAccordionContext,
+  ['toggleSourceVisibility'],
+);
+type LibraryAccordionData =
+  | { type: 'ACCORDION_HEADER'; title: string }
+  | { type: 'ACCORDION_GENRE_ITEM'; item: string }
+  | { type: 'ACCORDION_SOURCE_ITEM'; item: string };
 
 const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
   const {
@@ -22,6 +53,10 @@ const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
     resetFilters,
     filteredMangas,
   } = props;
+  const [state, setState] = React.useState({
+    Sources: true,
+    Genres: false,
+  });
   const hostsInLibrary = React.useMemo(
     () =>
       filteredMangas.reduce((prev, curr) => {
@@ -53,32 +88,47 @@ const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
     }
     return genres;
   }, [hostsInLibrary.size]);
-  const data = React.useMemo(() => {
+  const sortedHosts = React.useMemo(() => {
     const HostComparator = (a: string, b: string) =>
       mangasPerSource[b] - mangasPerSource[a];
-    const sortedGenres: string[] = [];
-    for (const genre of genresSet) {
-      integrateSortedList(sortedGenres, StringComparator).add(genre);
-    }
-    const sortedHosts: string[] = [];
+
+    const arr: string[] = [];
     for (const host of hostsInLibrary) {
-      integrateSortedList(sortedHosts, HostComparator).add(host);
+      integrateSortedList(arr, HostComparator).add(host);
     }
-    return [
-      {
-        title: 'Sources',
-        data: sortedHosts,
-      },
-      {
-        title: 'Genres',
-        data: sortedGenres,
-      },
-    ];
-  }, [hostsInLibrary.size, genresSet, mangasPerSource]);
-  const [state, setState] = React.useState({
-    Sources: true,
-    Genres: false,
-  });
+    return arr;
+  }, []);
+  const sortedGenres = React.useMemo(() => {
+    const arr: string[] = [];
+    for (const genre of genresSet) {
+      integrateSortedList(arr, StringComparator).add(genre);
+    }
+    return arr;
+  }, [genresSet]);
+  const data = React.useMemo(() => {
+    const parsed: LibraryAccordionData[] = [];
+
+    parsed.push({ type: 'ACCORDION_HEADER', title: 'Sources' });
+    /**
+     * Merge sortedHosts into parsed
+     */
+    if (state.Sources)
+      for (const host of sortedHosts) {
+        parsed.push({ type: 'ACCORDION_SOURCE_ITEM', item: host });
+      }
+
+    parsed.push({ type: 'ACCORDION_HEADER', title: 'Genres' });
+
+    /**
+     * Merge sortedGenres into parsed
+     */
+    if (state.Genres)
+      for (const genre of sortedGenres) {
+        parsed.push({ type: 'ACCORDION_GENRE_ITEM', item: genre });
+      }
+
+    return parsed;
+  }, [sortedGenres, sortedHosts, state.Sources, state.Genres]);
 
   const toggle = React.useCallback(
     (key: string) => {
@@ -87,63 +137,93 @@ const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
     [setState],
   );
 
-  const renderSectionHeader = React.useCallback(
-    ({ section }: { section: SectionListData<string> }) => (
-      <SectionHeader
-        title={section.title}
-        expanded={state[section.title as keyof typeof state]}
-        toggle={toggle}
-      />
-    ),
-    [toggle, state],
-  );
-
-  const renderItem: ListRenderItem<string> = React.useCallback(
-    ({ item }) =>
-      state[genresSet.has(item) ? 'Genres' : 'Sources'] ? (
-        genresSet.has(item) ? (
-          <FilterItem
-            key={item}
-            title={item}
-            itemKey={item}
-            state={filterStates.Genres[item] ?? FilterState.ANY}
-            onToggle={toggleGenre}
-          />
-        ) : (
-          <CheckboxItem
-            key={item}
-            title={item}
-            subtitle={`(${mangasPerSource[item]})`}
-            checked={filterStates.Sources[item]}
-            onToggle={toggleSourceVisibility}
-            itemKey={item}
-          />
-        )
-      ) : null,
-    [
-      state,
-      filterStates.Genres,
-      filterStates.Sources,
-      toggleSourceVisibility,
-      toggleGenre,
-      genresSet,
-      mangasPerSource,
-    ],
-  );
+  const totalHeight =
+    ACCORDION_SECTION_HEADER_HEIGHT * 2 +
+    genresSet.size * ACCORDION_ITEM_HEIGHT +
+    hostsInLibrary.size * ACCORDION_ITEM_HEIGHT;
 
   return (
-    <BottomSheetSectionList
-      ListHeaderComponent={
-        <Box mx="m" my="s">
-          <Button label="Reset Filters" onPress={onResetFilter} />
-        </Box>
-      }
-      sections={data}
-      keyExtractor={keyExtractor}
-      renderSectionHeader={renderSectionHeader}
-      renderItem={renderItem}
-    />
+    <BottomSheetScrollView>
+      <Box height={totalHeight}>
+        <LibraryAccordionContext.Provider
+          value={{ toggle, toggleGenre, toggleSourceVisibility }}
+        >
+          <FlashList
+            ListHeaderComponent={
+              <Box mx="m" my="s">
+                <Button label="Reset Filters" onPress={onResetFilter} />
+              </Box>
+            }
+            extraData={{ state, filterStates, mangasPerSource }}
+            data={data}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            getItemType={getItemType}
+            estimatedItemSize={ACCORDION_SECTION_HEADER_HEIGHT}
+            overrideItemLayout={overrideItemLayout}
+          />
+        </LibraryAccordionContext.Provider>
+      </Box>
+    </BottomSheetScrollView>
   );
 };
+
+const overrideItemLayout: (
+  layout: {
+    span?: number | undefined;
+    size?: number | undefined;
+  },
+  item: LibraryAccordionData,
+  index: number,
+  maxColumns: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  extraData?: any,
+) => void = (layout, item) => {
+  switch (item.type) {
+    case 'ACCORDION_GENRE_ITEM':
+    case 'ACCORDION_SOURCE_ITEM':
+      layout.size = ACCORDION_ITEM_HEIGHT;
+      break;
+    case 'ACCORDION_HEADER':
+      layout.size = ACCORDION_SECTION_HEADER_HEIGHT;
+      break;
+  }
+};
+
+const renderItem: ListRenderItem<LibraryAccordionData> = ({
+  item,
+  extraData,
+}) => {
+  switch (item.type) {
+    case 'ACCORDION_HEADER':
+      return (
+        <LibraryAccordionHeader
+          title={item.title}
+          expanded={extraData.state[item.title]}
+        />
+      );
+    case 'ACCORDION_GENRE_ITEM':
+      return (
+        <LibraryAccordionGenreItem
+          key={item.item}
+          title={item.item}
+          itemKey={item.item}
+          state={extraData.filterStates.Genres[item.item] ?? FilterState.ANY}
+        />
+      );
+    case 'ACCORDION_SOURCE_ITEM':
+      return (
+        <LibraryAccordionSourceItem
+          key={item.item}
+          title={item.item}
+          subtitle={`(${extraData.mangasPerSource[item.item]})`}
+          checked={extraData.filterStates.Sources[item.item]}
+          itemKey={item.item}
+        />
+      );
+  }
+};
+const keyExtractor = (_: LibraryAccordionData, i: number) => String(i);
+const getItemType = (item: LibraryAccordionData) => item.type;
 
 export default connector(Filter);
