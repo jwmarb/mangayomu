@@ -22,6 +22,7 @@ import Animated, {
   interpolate,
   interpolateColor,
   runOnUI,
+  useAnimatedScrollHandler,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -154,26 +155,19 @@ export default function useCollapsibleHeader(
     ),
   );
 
-  function velocityHandler(velocity?: NativeScrollVelocity) {
+  const onScroll = useAnimatedScrollHandler((event) => {
+    const {
+      velocity,
+      contentOffset: { y },
+    } = event;
+    scrollPosition.value = y;
     if (velocity)
       translateY.value = Math.max(
         -NAVHEADER_HEIGHT,
         Math.min(translateY.value - 2.5 * velocity.y, 0),
       );
-  }
-
-  function scrollPositionHandler(y: number) {
-    scrollPosition.value = y;
-  }
-
-  function onScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
-    const {
-      velocity,
-      contentOffset: { y },
-    } = e.nativeEvent;
-    velocityHandler(velocity);
-    scrollPositionHandler(y);
-  }
+    else translateY.value = 0;
+  });
 
   const style = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
