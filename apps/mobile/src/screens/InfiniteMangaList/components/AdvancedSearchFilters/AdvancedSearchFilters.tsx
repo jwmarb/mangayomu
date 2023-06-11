@@ -18,7 +18,6 @@ import {
   InclusiveExclusiveFilter,
   MutableInclusiveExclusiveFilter,
 } from '@mangayomu/schema-creator';
-import SectionHeader from '@screens/Library/components/LibraryFilterMenu/Tabs/Filter/components/SectionHeader';
 import { FilterState } from '@redux/slices/mainSourceSelector';
 import { useTheme } from '@emotion/react';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
@@ -27,6 +26,7 @@ import {
   ACCORDION_ITEM_HEIGHT,
   ACCORDION_SECTION_HEADER_HEIGHT,
 } from '@theme/constants';
+import InclusiveExclusiveHeader from '@screens/InfiniteMangaList/components/AdvancedSearchFilters/components/InclusiveExclusiveHeader';
 
 type AccordionData =
   | { type: 'ACCORDION_HEADER'; title: string }
@@ -195,7 +195,7 @@ const renderItem: ListRenderItem<AccordionData> = ({ item, extraData }) => {
   switch (item.type) {
     case 'ACCORDION_HEADER':
       return (
-        <SectionHeader
+        <InclusiveExclusiveHeader
           title={item.title}
           expanded={extraData.accordionStates[item.title]}
         />

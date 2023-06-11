@@ -8,12 +8,11 @@ type AdvancedSearchFiltersContextState = {
 export const AdvancedSearchFiltersContext =
   React.createContext<AdvancedSearchFiltersContextState | null>(null);
 
-export const useAdvancedSearchFilters = <
-  T extends Partial<AdvancedSearchFiltersContextState>,
->(
-  props?: T,
-) => {
+export const useAdvancedSearchFilters = () => {
   const ctx = React.useContext(AdvancedSearchFiltersContext);
-  if (ctx == null) return props as T;
+  if (ctx == null)
+    throw Error(
+      'Tried accessing AdvancedSearchFiltersContext when component is not a child of it',
+    );
   return ctx;
 };

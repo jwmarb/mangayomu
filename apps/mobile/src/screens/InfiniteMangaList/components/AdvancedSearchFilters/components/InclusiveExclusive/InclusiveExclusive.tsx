@@ -1,18 +1,15 @@
 import FilterItem from '@components/Filters/FilterItem';
 import React from 'react';
 import { InclusiveExclusiveProps } from './InclusiveExclusive.interfaces';
+import { useAdvancedSearchFilters } from '@screens/InfiniteMangaList/components/AdvancedSearchFilters/AdvancedSearchFilters.context';
 
 const InclusiveExclusive: React.FC<InclusiveExclusiveProps> = (props) => {
-  const {
-    onToggleInclusiveExclusive = () => void 0,
-    state,
-    itemKey,
-    title,
-    fieldKey,
-  } = props;
+  const { state, itemKey, title, fieldKey } = props;
+  const { onToggleInclusiveExclusive } = useAdvancedSearchFilters();
   const handleOnToggle = React.useCallback(
     (itemKey: string) => {
-      onToggleInclusiveExclusive(fieldKey, itemKey);
+      onToggleInclusiveExclusive &&
+        onToggleInclusiveExclusive(fieldKey, itemKey);
     },
     [onToggleInclusiveExclusive, fieldKey, itemKey],
   );
