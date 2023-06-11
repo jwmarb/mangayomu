@@ -55,8 +55,15 @@ export type StatefulSort = {
 export type StatefulOption = { type: 'option'; selected: string };
 
 const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
-  const { source, state, initialQuery, isOffline, bookHeight, bookWidth } =
-    props;
+  const {
+    genre,
+    source,
+    state,
+    initialQuery,
+    isOffline,
+    bookHeight,
+    bookWidth,
+  } = props;
   const numberOfItemsPerPage = React.useRef<number | null>(
     state?.mangas.length ?? null,
   );
@@ -108,7 +115,13 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
               case 'inclusive/exclusive':
                 prev[curr] = {
                   type: 'inclusive/exclusive',
-                  record: {},
+                  record:
+                    genre != null &&
+                    (state as InclusiveExclusiveFilter<string>).fields.indexOf(
+                      genre,
+                    ) !== -1
+                      ? { [genre]: FilterState.INCLUDE }
+                      : {},
                 };
                 return prev;
               case 'option':
@@ -126,7 +139,7 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
             }
           }, {} as Record<string, StatefulFilter>)
         : undefined,
-    [filters?.options, filters?.state],
+    [filters?.options, filters?.state, genre],
   );
 
   const [filterOptions, setFilterOptions] = React.useState<
@@ -333,6 +346,7 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
 
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(async () => {
+      if (genre != null) beginParsingFilter();
       if (state == null) await fetchMangas();
       else source.addPage();
     });
@@ -346,8 +360,8 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
     hasNext.current = true;
     source.resetPage();
   }
-  async function handleOnApplyFilters() {
-    if (filters && filterOptions != null) {
+  function beginParsingFilter() {
+    if (filters != null && filterOptions != null) {
       for (const key in filterOptions) {
         const state = filterOptions[key];
         const dummyState = filters.state[key];
@@ -393,6 +407,11 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
           }
         }
       }
+    }
+  }
+  async function handleOnApplyFilters() {
+    if (filters != null && filterOptions != null) {
+      beginParsingFilter();
       resetSearchState();
       ref.current?.close();
       await fetchMangas(true);

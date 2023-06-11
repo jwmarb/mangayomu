@@ -4,10 +4,12 @@ import Tag from '@components/Tag';
 import useMangaSource from '@hooks/useMangaSource';
 import React from 'react';
 import { MangaGenresProps } from './MangaGenres.interfaces';
+import useRootNavigation from '@hooks/useRootNavigation';
 
 const MangaGenres: React.FC<MangaGenresProps> = (props) => {
   const { data, source } = props;
   const host = useMangaSource(source);
+  const navigation = useRootNavigation();
   React.useEffect(() => {
     if (data != null)
       for (const genre of data) {
@@ -27,6 +29,12 @@ const MangaGenres: React.FC<MangaGenresProps> = (props) => {
             key={x}
             label={host.getGenre(x) || x}
             color={host.getGenre(x) ? undefined : 'error'}
+            onPress={() => {
+              navigation.navigate('InfiniteMangaList', {
+                source,
+                genre: x,
+              });
+            }}
           />
         ))
       ) : (

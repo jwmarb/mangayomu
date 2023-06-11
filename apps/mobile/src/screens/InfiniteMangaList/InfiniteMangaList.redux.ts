@@ -12,6 +12,7 @@ const mapStateToProps = (
     | (typeof state.browse.states)[''],
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   source: MangaHost.getAvailableSources().get(props.route.params.source)!,
+  genre: props.route.params.genre,
   initialQuery: state.browse.query,
   isOffline: state.explore.internetStatus === 'offline',
   bookWidth: state.settings.book.width,

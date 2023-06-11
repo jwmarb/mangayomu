@@ -14,6 +14,7 @@ export type RootStackParamList = {
   };
   InfiniteMangaList: {
     source: string;
+    genre?: string;
   };
   Settings: undefined;
   Appearance: undefined;
