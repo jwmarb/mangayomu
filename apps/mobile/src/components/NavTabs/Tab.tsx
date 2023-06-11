@@ -73,12 +73,24 @@ const Tab: React.FC<TabProps> = (props) => {
         30,
         { duration: 300, easing: Easing.bounce },
         (finished) => {
-          if (finished) rotation.value = withSpring(0);
+          if (finished)
+            rotation.value = withTiming(0, {
+              duration: 200,
+              easing: Easing.bounce,
+            });
         },
       );
-      scale.value = withSpring(1.2, undefined, (finished) => {
-        if (finished) scale.value = withSpring(1);
-      });
+      scale.value = withTiming(
+        1.2,
+        { duration: 200, easing: Easing.bounce },
+        (finished) => {
+          if (finished)
+            scale.value = withTiming(1, {
+              duration: 200,
+              easing: Easing.bounce,
+            });
+        },
+      );
     } else {
       indicator.value = withTiming(0, { duration: 300, easing: Easing.ease });
     }
