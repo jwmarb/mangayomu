@@ -39,6 +39,8 @@ const ContinueReading: React.FC = () => {
     (manga) => manga.currentlyReadingChapter?._id !== p[manga._id][0]?._id,
   );
 
+  if (unfinishedMangas.length === 0) return null;
+
   return (
     <Stack space="s">
       <Box mx="m">
