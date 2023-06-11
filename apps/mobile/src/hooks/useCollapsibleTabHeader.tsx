@@ -153,7 +153,7 @@ export default function useCollapsibleTabHeader(
       contentOffset: { y },
     } = event;
     scrollPosition.value = y;
-    if (velocity)
+    if (velocity && y > 0)
       translateY.value = Math.max(
         -NAVHEADER_HEIGHT,
         Math.min(translateY.value - 2.5 * velocity.y, 0),
