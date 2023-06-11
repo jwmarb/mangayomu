@@ -5,8 +5,9 @@ type AdvancedSearchFiltersContextState = {
   onToggleInclusiveExclusive: (key: string, value: string) => void;
 };
 
-export const AdvancedSearchFiltersContext =
-  React.createContext<AdvancedSearchFiltersContextState | null>(null);
+export const AdvancedSearchFiltersContext = React.createContext<
+  AdvancedSearchFiltersContextState | undefined
+>(undefined);
 
 export const useAdvancedSearchFilters = () => {
   const ctx = React.useContext(AdvancedSearchFiltersContext);

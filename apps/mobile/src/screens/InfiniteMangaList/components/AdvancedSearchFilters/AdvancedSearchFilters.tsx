@@ -26,7 +26,11 @@ import {
   ACCORDION_ITEM_HEIGHT,
   ACCORDION_SECTION_HEADER_HEIGHT,
 } from '@theme/constants';
-import InclusiveExclusiveHeader from '@screens/InfiniteMangaList/components/AdvancedSearchFilters/components/InclusiveExclusiveHeader';
+import createAccordionHeader from '@helpers/createAccordionHeader';
+const InclusiveExclusiveHeader = createAccordionHeader(
+  AdvancedSearchFiltersContext,
+  'toggle',
+);
 
 type AccordionData =
   | { type: 'ACCORDION_HEADER'; title: string }
