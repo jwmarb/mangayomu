@@ -1,7 +1,7 @@
 import Button from '@components/Button';
 import { CustomBottomSheet } from '@components/CustomBottomSheet';
 import Stack from '@components/Stack';
-import { BottomSheetSectionList } from '@gorhom/bottom-sheet';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import React from 'react';
 import { AdvancedSearchFiltersProps } from './AdvancedSearchFilters.interfaces';
@@ -14,7 +14,6 @@ import {
   StatefulOption,
   StatefulSort,
 } from '@screens/InfiniteMangaList/InfiniteMangaList';
-import { SectionListData, SectionListRenderItem } from 'react-native';
 import {
   InclusiveExclusiveFilter,
   MutableInclusiveExclusiveFilter,
@@ -22,15 +21,16 @@ import {
 import SectionHeader from '@screens/Library/components/LibraryFilterMenu/Tabs/Filter/components/SectionHeader';
 import { FilterState } from '@redux/slices/mainSourceSelector';
 import { useTheme } from '@emotion/react';
+import { FlashList, ListRenderItem } from '@shopify/flash-list';
+import { AdvancedSearchFiltersContext } from '@screens/InfiniteMangaList/components/AdvancedSearchFilters/AdvancedSearchFilters.context';
+import {
+  ACCORDION_ITEM_HEIGHT,
+  ACCORDION_SECTION_HEADER_HEIGHT,
+} from '@theme/constants';
 
-// <InclusiveExclusive
-//   map={state.map}
-//   key={x}
-//   fields={state.fields}
-//   name={x}
-//   record={(activateState as StatefulInclusiveExclusive).record}
-//   onToggleInclusiveExclusive={onToggleInclusiveExclusive}
-// />
+type AccordionData =
+  | { type: 'ACCORDION_HEADER'; title: string }
+  | { type: 'ACCORDION_ITEM'; item: string; sectionTitle: string };
 
 const AdvancedSearchFilters: React.ForwardRefRenderFunction<
   BottomSheetMethods,
@@ -56,14 +56,28 @@ const AdvancedSearchFilters: React.ForwardRefRenderFunction<
       return prev;
     }, {} as Record<string, boolean>),
   );
+  const data = React.useMemo(() => {
+    const arr: AccordionData[] = [];
+    for (const section of accordionKeys) {
+      arr.push({ type: 'ACCORDION_HEADER', title: section });
+      if (accordionStates[section])
+        for (const item of (
+          dummyStates[section] as MutableInclusiveExclusiveFilter<string>
+        ).fields) {
+          arr.push({ type: 'ACCORDION_ITEM', item, sectionTitle: section });
+        }
+    }
+    return arr;
+  }, [accordionStates]);
   const sections = React.useMemo(
     () =>
       accordionKeys.map((x) => ({
         title: x,
-        data: (dummyStates[x] as MutableInclusiveExclusiveFilter<string>)
-          .fields,
+        data: accordionStates[x]
+          ? (dummyStates[x] as MutableInclusiveExclusiveFilter<string>).fields
+          : [],
       })),
-    [dummyStates, accordionKeys],
+    [dummyStates, accordionKeys, accordionStates],
   );
 
   const handleOnToggle = React.useCallback(
@@ -71,48 +85,6 @@ const AdvancedSearchFilters: React.ForwardRefRenderFunction<
       setAccordionStates((prev) => ({ ...prev, [key]: !prev[key] }));
     },
     [setAccordionStates],
-  );
-
-  const renderSectionHeader = React.useCallback(
-    (info: {
-      section: SectionListData<
-        string,
-        {
-          title: string;
-          data: readonly string[];
-        }
-      >;
-    }) => (
-      <SectionHeader
-        title={info.section.title}
-        expanded={accordionStates[info.section.title]}
-        toggle={handleOnToggle}
-      />
-    ),
-    [handleOnToggle, accordionStates],
-  );
-  const renderItem: SectionListRenderItem<
-    string,
-    {
-      title: string;
-      data: readonly string[];
-    }
-  > = React.useCallback(
-    ({ item: data, section: { title } }) => {
-      if (!accordionStates[title]) return null;
-      const x = states[title] as StatefulInclusiveExclusive;
-      const dummy = dummyStates[title] as InclusiveExclusiveFilter<string>;
-      return (
-        <InclusiveExclusive
-          title={dummy.map ? dummy.map[data] : data}
-          fieldKey={title}
-          state={x.record[data] ?? FilterState.ANY}
-          itemKey={data}
-          onToggleInclusiveExclusive={onToggleInclusiveExclusive}
-        />
-      );
-    },
-    [states, dummyStates, onToggleInclusiveExclusive, accordionStates],
   );
 
   const theme = useTheme();
@@ -131,53 +103,120 @@ const AdvancedSearchFilters: React.ForwardRefRenderFunction<
         </Stack>
       }
     >
-      <BottomSheetSectionList
+      <BottomSheetScrollView
         contentContainerStyle={{ paddingVertical: theme.style.spacing.s }}
-        ListHeaderComponent={
-          <Stack space="s">
-            {keys.map((x) => {
-              const state = dummyStates[x];
-              const activateState = states[x];
-              switch (state.type) {
-                case 'description':
-                  return (
-                    <Description key={x} description={state.description} />
-                  );
-                case 'option':
-                  return (
-                    <Option
-                      map={state.map}
-                      onChange={onChangeOption}
-                      selected={(activateState as StatefulOption).selected}
-                      name={x}
-                      key={x}
-                      options={state.options}
-                    />
-                  );
-                case 'sort':
-                  return (
-                    <Sort
-                      key={x}
-                      options={state.options}
-                      selected={(activateState as StatefulSort).selected}
-                      reversed={(activateState as StatefulSort).reversed}
-                      onChange={onChangeSort}
-                      onToggleReverse={onToggleReverseSort}
-                      name={x}
-                    />
-                  );
-                default:
-                  return null;
-              }
-            })}
-          </Stack>
-        }
-        sections={sections}
-        renderSectionHeader={renderSectionHeader}
-        renderItem={renderItem}
-      />
+      >
+        <AdvancedSearchFiltersContext.Provider
+          value={React.useMemo(
+            () => ({ onToggleInclusiveExclusive, toggle: handleOnToggle }),
+            [handleOnToggle, onToggleInclusiveExclusive],
+          )}
+        >
+          <FlashList
+            ListHeaderComponent={
+              <Stack space="s">
+                {keys.map((x) => {
+                  const state = dummyStates[x];
+                  const activateState = states[x];
+                  switch (state.type) {
+                    case 'description':
+                      return (
+                        <Description key={x} description={state.description} />
+                      );
+                    case 'option':
+                      return (
+                        <Option
+                          map={state.map}
+                          onChange={onChangeOption}
+                          selected={(activateState as StatefulOption).selected}
+                          name={x}
+                          key={x}
+                          options={state.options}
+                        />
+                      );
+                    case 'sort':
+                      return (
+                        <Sort
+                          key={x}
+                          options={state.options}
+                          selected={(activateState as StatefulSort).selected}
+                          reversed={(activateState as StatefulSort).reversed}
+                          onChange={onChangeSort}
+                          onToggleReverse={onToggleReverseSort}
+                          name={x}
+                        />
+                      );
+                    default:
+                      return null;
+                  }
+                })}
+              </Stack>
+            }
+            data={data}
+            extraData={{ states, dummyStates, accordionStates }}
+            getItemType={getItemType}
+            keyExtractor={keyExtractor}
+            renderItem={renderItem}
+            estimatedItemSize={ACCORDION_SECTION_HEADER_HEIGHT}
+            overrideItemLayout={overrideItemLayout}
+          />
+        </AdvancedSearchFiltersContext.Provider>
+      </BottomSheetScrollView>
     </CustomBottomSheet>
   );
+};
+
+const overrideItemLayout: (
+  layout: {
+    span?: number | undefined;
+    size?: number | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  },
+  item: AccordionData,
+  index: number,
+  maxColumns: number,
+  extraData?: any,
+) => void = (layout, item) => {
+  switch (item.type) {
+    case 'ACCORDION_HEADER':
+      layout.size = ACCORDION_SECTION_HEADER_HEIGHT;
+      break;
+    case 'ACCORDION_ITEM':
+      layout.size = ACCORDION_ITEM_HEIGHT;
+      break;
+  }
+};
+
+const keyExtractor = (_: AccordionData, i: number) => String(i);
+
+const getItemType = (item: AccordionData) => item.type;
+
+const renderItem: ListRenderItem<AccordionData> = ({ item, extraData }) => {
+  switch (item.type) {
+    case 'ACCORDION_HEADER':
+      return (
+        <SectionHeader
+          title={item.title}
+          expanded={extraData.accordionStates[item.title]}
+        />
+      );
+    case 'ACCORDION_ITEM': {
+      const x = extraData.states[
+        item.sectionTitle
+      ] as StatefulInclusiveExclusive;
+      const dummy = extraData.dummyStates[
+        item.sectionTitle
+      ] as InclusiveExclusiveFilter<string>;
+      return (
+        <InclusiveExclusive
+          title={dummy.map ? dummy.map[item.item] : item.item}
+          fieldKey={item.sectionTitle}
+          state={x.record[item.item] ?? FilterState.ANY}
+          itemKey={item.item}
+        />
+      );
+    }
+  }
 };
 
 export default React.forwardRef(AdvancedSearchFilters);
