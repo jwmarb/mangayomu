@@ -20,6 +20,7 @@ import Animated, {
   FadeInDown,
   FadeOutDown,
   interpolateColor,
+  runOnUI,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
@@ -68,13 +69,23 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
     });
   }, [update]);
   const scrollPosition = useSharedValue(0);
+  const buttonInterpolateColor =
+    theme.mode === 'dark'
+      ? theme.palette.text.secondary
+      : theme.helpers.getContrastText(theme.palette.background.paper);
+
   const buttonStyle = useAnimatedStyle(() => ({
     color: interpolateColor(
       scrollPosition.value,
       [0, NAVHEADER_HEIGHT],
-      [theme.palette.mangaViewerBackButtonColor, theme.palette.text.secondary],
+      [theme.palette.mangaViewerBackButtonColor, buttonInterpolateColor],
     ),
   }));
+
+  const handleOnScroll = (e: NativeScrollEvent) => {
+    scrollPosition.value = e.contentOffset.y;
+  };
+
   const { onScroll, contentContainerStyle, scrollViewStyle } =
     useCollapsibleHeader({
       headerTitle: '',
@@ -104,7 +115,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
             color={{ custom: theme.palette.mangaViewerBackButtonColor }}
             rippleColor={theme.palette.action.ripple}
             animated
-            icon={<Icon type="font" name="web" />}
+            icon={<Icon type="font" name="web" style={buttonStyle} />}
             onPress={async () => {
               const canOpenURL = await Linking.canOpenURL(params.link);
               if (canOpenURL) Linking.openURL(params.link);
@@ -120,11 +131,6 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
       ),
       dependencies: [theme, manga?.inLibrary, manga == null],
     });
-
-  function handleOnScroll(e: NativeScrollEvent) {
-    'worklet';
-    scrollPosition.value = e.contentOffset.y;
-  }
 
   function handleOnOpenMenu() {
     ref.current?.snapToIndex(1);

@@ -21,7 +21,9 @@ import { NativeSyntheticEvent } from 'react-native';
 import Animated, {
   interpolate,
   interpolateColor,
+  runOnJS,
   runOnUI,
+  useAnimatedReaction,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useDerivedValue,
@@ -169,7 +171,7 @@ export default function useCollapsibleHeader(
         Math.min(translateY.value - 2.5 * velocity.y, 0),
       );
     else translateY.value = 0;
-    if (extendedOnScroll) extendedOnScroll(event);
+    if (extendedOnScroll) runOnJS(extendedOnScroll)(event);
   });
 
   const style = useAnimatedStyle(() => ({
