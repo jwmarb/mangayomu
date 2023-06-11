@@ -13,7 +13,7 @@ import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 
-interface SortItemProps<T extends string> {
+export interface SortItemProps<T extends string> {
   reversed: boolean;
   isSelected: boolean;
   title: T;

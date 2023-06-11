@@ -7,7 +7,7 @@ import { ACCORDION_ITEM_HEIGHT } from '@theme/constants';
 import React from 'react';
 import { RectButton } from 'react-native-gesture-handler';
 
-interface FilterItemProps<T extends string> {
+export interface FilterItemProps<T extends string> {
   state: FilterState;
   title: string;
   itemKey: T;

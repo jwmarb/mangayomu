@@ -10,7 +10,7 @@ import Animated, {
   useDerivedValue,
 } from 'react-native-reanimated';
 
-interface SelectItemProps<T extends string> {
+export interface SelectItemProps<T extends string> {
   isSelected: boolean;
   title: string;
   itemKey: T;
