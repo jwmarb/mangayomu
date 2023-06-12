@@ -45,33 +45,30 @@ const GenresList: React.FC<ConnectedGenresListProps> = (props) => {
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
       >
-        <FlatList
-          data={genres}
-          contentContainerStyle={scrollViewStyles}
-          ItemSeparatorComponent={ItemSeparatorComponent}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          numColumns={Math.ceil(genres.length / 3)}
-          key={genres.length}
-        />
+        <Box mx={-theme.style.spacing.s}>
+          <FlatList
+            data={genres}
+            contentContainerStyle={scrollViewStyles}
+            ItemSeparatorComponent={ItemSeparatorComponent}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            numColumns={Math.ceil(genres.length / 3)}
+            key={genres.length}
+          />
+        </Box>
       </ScrollView>
     </Stack>
   );
 };
 
-const renderItem: ListRenderItem<string> = ({ item }) => (
-  <Tag
-    // icon={
-    //   <Icon
-    //     type="image"
-    //     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    //     name={MangaHost.getAvailableSources().get(item.source)!.getIcon()}
-    //     size={moderateScale(18)}
-    //   />
-    // }
-    label={item}
-  />
-);
+const renderItem: ListRenderItem<string> = ({ item }) => <Item item={item} />;
+const Item: React.FC<{ item: string }> = React.memo(({ item }) => {
+  return (
+    <Box ml="s">
+      <Tag label={item} />
+    </Box>
+  );
+});
 const keyExtractor = (i: string) => i;
 
 export default connector(GenresList);
