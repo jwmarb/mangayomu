@@ -13,7 +13,13 @@ import Text from '@components/Text';
 
 const OptionTouchableComponent: React.FC<React.PropsWithChildren> = (props) => {
   const theme = useTheme();
-  return <RectButton rippleColor={theme.palette.action.ripple} {...props} />;
+  return (
+    <RectButton
+      shouldCancelWhenOutside
+      rippleColor={theme.palette.action.ripple}
+      {...props}
+    />
+  );
 };
 
 const Menu: React.FC<MenuProps> = (props) => {

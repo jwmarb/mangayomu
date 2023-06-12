@@ -30,6 +30,7 @@ const Item: React.FC<ConnectedItemProps> = ({
   }
   return (
     <RectButton
+      shouldCancelWhenOutside
       rippleColor={theme.palette.action.ripple}
       onPress={handleOnPress}
     >

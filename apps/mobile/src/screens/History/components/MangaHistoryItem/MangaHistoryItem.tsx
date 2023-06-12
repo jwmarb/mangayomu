@@ -58,6 +58,7 @@ const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
 
   return (
     <RectButton
+      shouldCancelWhenOutside
       rippleColor={theme.palette.action.ripple}
       onLongPress={handleOnLongPress}
       onPress={handleOnPress}

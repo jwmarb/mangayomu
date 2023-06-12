@@ -70,6 +70,7 @@ const Book: React.FC<ConnectedBookProps> = (props) => {
   if (bookStyle === BookStyle.TACHIYOMI)
     return (
       <BaseButton
+        shouldCancelWhenOutside
         style={coverStyles.button}
         onPress={handleOnPress}
         onLongPress={handleOnLongPress}
@@ -109,6 +110,7 @@ const Book: React.FC<ConnectedBookProps> = (props) => {
 
   return (
     <BaseButton
+      shouldCancelWhenOutside
       style={coverStyles.button}
       onPress={handleOnPress}
       onLongPress={handleOnLongPress}

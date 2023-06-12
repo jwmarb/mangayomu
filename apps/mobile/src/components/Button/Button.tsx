@@ -5,7 +5,6 @@ import { moderateScale } from 'react-native-size-matters';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import Stack from '@components/Stack';
-import Box from '@components/Box';
 
 const Button: React.FC<ButtonProps> = (props) => {
   const {
@@ -20,7 +19,7 @@ const Button: React.FC<ButtonProps> = (props) => {
   const theme = useTheme();
   return (
     <BaseButton
-      disallowInterruption
+      shouldCancelWhenOutside
       enabled={!disabled}
       style={{
         borderRadius: theme.style.borderRadius,

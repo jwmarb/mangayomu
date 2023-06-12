@@ -86,6 +86,7 @@ const Switch: React.FC<SwitchProps> = (props) => {
       </TouchableWithoutFeedback>
       <Box position="absolute" as={Animated.View} style={switchStyle}>
         <BorderlessButton
+          shouldCancelWhenOutside
           onPress={onToggle}
           rippleRadius={moderateScale(18)}
           rippleColor={theme.palette.action.ripple}

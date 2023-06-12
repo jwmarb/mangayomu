@@ -72,6 +72,7 @@ const TabBarItem = React.memo(function (props: {
   }));
   return (
     <BorderlessButton
+      shouldCancelWhenOutside
       rippleColor={theme.palette.primary.ripple}
       onPress={() => {
         jumpTo(routeKey);

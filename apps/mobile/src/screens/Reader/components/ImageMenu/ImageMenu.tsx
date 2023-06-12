@@ -193,6 +193,7 @@ const ImageMenu: React.FC<ConnectedImageMenuProps> = (props) => {
               background-color="paper"
             >
               <RectButton
+                shouldCancelWhenOutside
                 rippleColor={theme.palette.action.ripple}
                 onLongPress={handleOnLongPressSaveImage}
                 onPress={handleOnSaveImage}
@@ -208,6 +209,7 @@ const ImageMenu: React.FC<ConnectedImageMenuProps> = (props) => {
                 </Stack>
               </RectButton>
               <RectButton
+                shouldCancelWhenOutside
                 rippleColor={theme.palette.action.ripple}
                 onPress={handleOnShare}
                 onLongPress={handleOnLongPressShare}
@@ -227,6 +229,7 @@ const ImageMenu: React.FC<ConnectedImageMenuProps> = (props) => {
                 </Stack>
               </RectButton>
               <RectButton
+                shouldCancelWhenOutside
                 rippleColor={theme.palette.action.ripple}
                 onPress={handleOnViewInBrowser}
                 onLongPress={handleOnLongPressViewInBrowser}

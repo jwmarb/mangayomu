@@ -21,6 +21,7 @@ function FilterItem<T extends string>(props: FilterItemProps<T>) {
   }
   return (
     <RectButton
+      shouldCancelWhenOutside
       onPress={handleOnToggle}
       rippleColor={theme.palette.action.ripple}
     >

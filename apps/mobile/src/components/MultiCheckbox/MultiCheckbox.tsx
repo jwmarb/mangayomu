@@ -71,7 +71,11 @@ const MultiCheckbox: React.FC<MultiCheckboxProps> = (props) => {
   }
   return (
     <Box border-radius={10000} align-self="center">
-      <BorderlessButton onPress={handleOnPress} style={styles.borderlessButton}>
+      <BorderlessButton
+        shouldCancelWhenOutside
+        onPress={handleOnPress}
+        style={styles.borderlessButton}
+      >
         <Box
           as={Animated.View}
           p={moderateScale(1)}

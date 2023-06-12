@@ -79,6 +79,7 @@ const SourceView: React.FC<ConnectedSourceViewProps> = (props) => {
             <Text variant="header">Configuration</Text>
           </Box>
           <RectButton
+            shouldCancelWhenOutside
             rippleColor={theme.palette.action.ripple}
             onPress={handleOnToggleWithSearch}
           >
@@ -99,6 +100,7 @@ const SourceView: React.FC<ConnectedSourceViewProps> = (props) => {
           </RectButton>
           {source.hasHotMangas() && (
             <RectButton
+              shouldCancelWhenOutside
               rippleColor={theme.palette.action.ripple}
               onPress={handleOnToggleHot}
             >
@@ -120,6 +122,7 @@ const SourceView: React.FC<ConnectedSourceViewProps> = (props) => {
           )}
           {source.hasLatestMangas() && (
             <RectButton
+              shouldCancelWhenOutside
               rippleColor={theme.palette.action.ripple}
               onPress={handleOnToggleLatest}
             >

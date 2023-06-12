@@ -9,6 +9,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { useLocalObject } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useRootNavigation from '@hooks/useRootNavigation';
+import { useTheme } from '@emotion/react';
 
 export const ROW_CHAPTER_HEIGHT = moderateScale(60);
 
@@ -18,7 +19,7 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
   const navigation = useRootNavigation();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const rowChapter = useLocalObject(ChapterSchema, rowChapterKey)!;
-
+  const theme = useTheme();
   const parsed = Date.parse(rowChapter.date);
   const isRecent = Date.now() - 6.048e7 < parsed;
   const isWithinWeek = Date.now() - 6.048e8 < parsed;
@@ -36,7 +37,11 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
     });
   }
   return (
-    <RectButton onPress={handleOnPress}>
+    <RectButton
+      shouldCancelWhenOutside
+      onPress={handleOnPress}
+      rippleColor={theme.palette.action.ripple}
+    >
       <Stack
         space="s"
         mx="m"

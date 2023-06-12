@@ -19,6 +19,7 @@ const Tag: React.FC<TagProps> = (props) => {
   }
   return (
     <BaseButton
+      shouldCancelWhenOutside
       onPress={handleOnPress}
       style={baseButtonStyle}
       rippleColor={theme.palette.action.ripple}

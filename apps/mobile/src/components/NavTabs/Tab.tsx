@@ -113,6 +113,7 @@ const Tab: React.FC<TabProps> = (props) => {
 
   return (
     <BorderlessButton
+      shouldCancelWhenOutside
       style={styles.button}
       onPress={handleOnPress}
       onLongPress={handleOnLongPress}

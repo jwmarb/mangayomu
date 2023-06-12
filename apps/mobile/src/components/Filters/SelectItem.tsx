@@ -36,7 +36,7 @@ function SelectItem<T extends string>(props: SelectItemProps<T>) {
     props.onChange(props.itemKey);
   }
   return (
-    <RectButton onPress={handleOnPress}>
+    <RectButton shouldCancelWhenOutside onPress={handleOnPress}>
       <Stack p="m" space="m" flex-direction="row" align-items="center">
         <Animated.View style={iconStyle}>
           <Icon type="font" name="check" color="primary" />

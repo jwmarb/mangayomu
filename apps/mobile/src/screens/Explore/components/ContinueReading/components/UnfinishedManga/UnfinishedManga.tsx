@@ -81,6 +81,7 @@ const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
         border-width={1}
       >
         <RectButton
+          shouldCancelWhenOutside
           onPress={handleOnPress}
           rippleColor={theme.palette.action.ripple}
           onLongPress={handleOnLongPress}

@@ -50,6 +50,7 @@ function SortItem<T extends string>(props: SortItemProps<T>) {
   }
   return (
     <RectButton
+      shouldCancelWhenOutside
       onPress={handleOnPress}
       rippleColor={theme.palette.action.ripple}
     >

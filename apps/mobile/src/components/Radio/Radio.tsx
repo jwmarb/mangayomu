@@ -67,6 +67,7 @@ const Radio: React.FC<BaseRadioProps> = React.memo((props) => {
         justify-content="center"
       >
         <BorderlessButton
+          shouldCancelWhenOutside
           enabled={!isSelected}
           style={styles.button}
           rippleColor={theme.palette.action.ripple}

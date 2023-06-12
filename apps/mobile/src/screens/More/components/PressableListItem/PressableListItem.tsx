@@ -17,7 +17,11 @@ const PressableListItem: React.FC<PressableListItemProps> = (props) => {
   } = props;
   const theme = useTheme();
   return (
-    <RectButton rippleColor={theme.palette.action.ripple} onPress={onPress}>
+    <RectButton
+      shouldCancelWhenOutside
+      rippleColor={theme.palette.action.ripple}
+      onPress={onPress}
+    >
       <Stack
         mx="l"
         my="s"

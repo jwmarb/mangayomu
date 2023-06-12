@@ -228,5 +228,6 @@ export default function useCollapsibleHeader(
     onScroll,
     scrollViewStyle: NavStyles.offset,
     contentContainerStyle: NavStyles.contentContainerStyle,
+    scrollOffset: scrollPosition,
   };
 }

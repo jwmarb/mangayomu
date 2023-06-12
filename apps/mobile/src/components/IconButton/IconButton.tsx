@@ -44,6 +44,7 @@ const IconButton: React.FC<IconButtonProps> = (props) => {
     >
       <BorderlessButton
         disallowInterruption
+        shouldCancelWhenOutside
         style={borderlessButtonStyle}
         rippleColor={rippleColor}
         {...rest}

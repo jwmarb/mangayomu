@@ -24,6 +24,7 @@ const Item: React.FC<ConnectedItemProps> = React.memo(
     const theme = useTheme();
     return (
       <RectButton
+        shouldCancelWhenOutside
         onPress={handleOnPress}
         rippleColor={theme.palette.action.ripple}
       >

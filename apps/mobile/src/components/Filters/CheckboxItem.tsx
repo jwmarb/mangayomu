@@ -22,6 +22,7 @@ function CheckboxItem<T extends string>(props: CheckboxItemProps<T>) {
   }
   return (
     <RectButton
+      shouldCancelWhenOutside
       onPress={handleOnToggle}
       rippleColor={theme.palette.action.ripple}
     >
