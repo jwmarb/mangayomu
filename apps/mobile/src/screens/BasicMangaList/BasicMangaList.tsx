@@ -4,7 +4,6 @@ import connector, {
 import React from 'react';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import Box from '@components/Box';
-import { FlashList } from '@shopify/flash-list';
 import useMangaFlashlistLayout from '@hooks/useMangaFlashlistLayout';
 import { AnimatedFlashList } from '@components/animated';
 
