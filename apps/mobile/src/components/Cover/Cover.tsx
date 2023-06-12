@@ -4,6 +4,7 @@ import Progress from '@components/Progress';
 import { useTheme } from '@emotion/react';
 import { BookStyle } from '@redux/slices/settings';
 import React from 'react';
+import { Image, ImageBackground } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Animated, {
   useAnimatedStyle,
@@ -93,19 +94,21 @@ const Cover: React.FC<ConnectedCoverProps> = (props) => {
     ],
     [imageStyle, theme.palette.skeleton, coverStyles.imageOverlay],
   );
+  const imagePlaceHolderStyle = React.useMemo(
+    () => [coverStyles.imageOverlay, style],
+    [style],
+  );
 
   return (
     <>
       <AnimatedBox style={combinedLoadingStyle}>
         <Progress />
       </AnimatedBox>
-      <Animated.View style={style}>
-        <FastImage
+      <Animated.View style={imagePlaceHolderStyle}>
+        <Image
           source={require('@assets/No-Image-Placeholder.png')}
-          style={combinedStyles}
-        >
-          {children}
-        </FastImage>
+          style={imageStyle}
+        />
       </Animated.View>
       <FastImage
         source={{ uri: typeof cover === 'string' ? cover : cover?.imageCover }}
