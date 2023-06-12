@@ -5,7 +5,7 @@ import { useLocalQuery, useQuery } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaSchema, SORT_CHAPTERS_BY } from '@database/schemas/Manga';
 import { DEFAULT_LANGUAGE } from '@screens/MangaView/MangaView';
-import { inPlaceSort } from 'fast-sort';
+import { sort } from 'fast-sort';
 import React from 'react';
 import {
   renderItem,
@@ -22,15 +22,13 @@ const ContinueReading: React.FC = () => {
     'currentlyReadingChapter != null && inLibrary == true',
   );
   const p = currentlyReadingMangas.reduce((prev, curr) => {
-    prev[curr._id] = inPlaceSort(
-      Array.from(
-        chapters.filtered(
-          `_mangaId == "${curr._id}" && language == "${
-            curr.selectedLanguage !== 'Use default language'
-              ? curr.selectedLanguage
-              : DEFAULT_LANGUAGE
-          }"`,
-        ),
+    prev[curr._id] = sort(
+      chapters.filtered(
+        `_mangaId == "${curr._id}" && language == "${
+          curr.selectedLanguage !== 'Use default language'
+            ? curr.selectedLanguage
+            : DEFAULT_LANGUAGE
+        }"`,
       ),
     ).desc(SORT_CHAPTERS_BY['Chapter number']);
     return prev;
