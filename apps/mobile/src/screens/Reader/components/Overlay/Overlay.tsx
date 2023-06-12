@@ -31,11 +31,11 @@ import ImageMenu from '@screens/Reader/components/ImageMenu';
 import { NavigationBar } from '@theme/index';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export const OVERLAY_COLOR = 'rgba(0, 0, 0, 0.5)';
+export const OVERLAY_COLOR = 'rgba(128, 128, 128, 0.5)';
 export const OVERLAY_TEXT_PRIMARY = { custom: 'rgba(255, 255, 255, 1)' };
 export const OVERLAY_TEXT_SECONDARY = { custom: 'rgba(255, 255, 255, 0.7)' };
 
-const translateYOffset = moderateScale(-32) - NavigationBar.currentHeight;
+const translateYOffset = moderateScale(-32);
 
 const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   const {
@@ -197,7 +197,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
         ) : undefined}
         <AnimatedBox
           px="m"
-          pb={NavigationBar.currentHeight}
+          pb={insets.bottom}
           background-color={OVERLAY_COLOR}
           style={bottomOverlayStyle}
         >

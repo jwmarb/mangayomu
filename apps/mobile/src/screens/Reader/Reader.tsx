@@ -106,8 +106,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     setIsMounted,
     extendedState,
   } = props;
-  const [showStatusAndNavBar, hideStatusAndNavBar] =
-    useImmersiveMode(backgroundColor);
+  const [showStatusAndNavBar, hideStatusAndNavBar] = useImmersiveMode();
   const realm = useRealm();
   const dispatch = useAppDispatch();
   const fetchPagesByChapter = (

@@ -4,44 +4,19 @@ import { NavigationBar } from '@theme/index';
 import React from 'react';
 import { StatusBar } from 'react-native';
 
-const COLORS = {
-  [ReaderBackgroundColor.GRAY]: '#808080',
-  [ReaderBackgroundColor.BLACK]: '#000000',
-  [ReaderBackgroundColor.WHITE]: '#FFFFFF',
-};
-
-export default function useImmersiveMode(
-  backgroundColor: ReaderBackgroundColor,
-) {
+export default function useImmersiveMode() {
   const theme = useTheme();
-
-  function changeColors() {
-    StatusBar.setBarStyle(
-      backgroundColor === ReaderBackgroundColor.BLACK
-        ? 'light-content'
-        : 'dark-content',
-    );
-    StatusBar.setBackgroundColor(COLORS[backgroundColor]);
-    NavigationBar.changeColor(
-      COLORS[backgroundColor],
-      backgroundColor === ReaderBackgroundColor.BLACK,
-    );
-  }
 
   function show() {
     NavigationBar.show();
     StatusBar.setHidden(false);
-    changeColors();
+    StatusBar.setBarStyle('light-content');
   }
 
   function hide() {
     NavigationBar.hide();
     StatusBar.setHidden(true);
   }
-
-  React.useEffect(() => {
-    changeColors();
-  }, [backgroundColor]);
 
   React.useEffect(() => {
     hide();
