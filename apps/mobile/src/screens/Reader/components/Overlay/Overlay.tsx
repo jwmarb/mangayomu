@@ -51,7 +51,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   const insets = useSafeAreaInsets();
   const realm = useRealm();
   const translateY = useDerivedValue(() =>
-    interpolate(opacity.value, [0, 1], [0, translateYOffset]),
+    interpolate(opacity.value, [0, 1], [0, translateYOffset - insets.bottom]),
   );
   const [isBookmarked, setIsBookmarked] = React.useState<boolean>(
     manga.inLibrary,
