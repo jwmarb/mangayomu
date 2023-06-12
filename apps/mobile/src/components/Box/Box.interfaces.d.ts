@@ -1,6 +1,6 @@
 import React from 'react';
 import { ViewStyle } from 'react-native';
-import { Spacing } from '@mangayomu/theme';
+import { ButtonColors, Spacing } from '@mangayomu/theme';
 
 export interface Debuggable {
   debug?: boolean;
@@ -90,6 +90,6 @@ export interface BoxProps
    * Decorating
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
-  'background-color'?: 'paper' | 'default' | (string & {});
+  'background-color'?: 'paper' | 'default' | ButtonColors | (string & {});
   'box-shadow'?: boolean;
 }
