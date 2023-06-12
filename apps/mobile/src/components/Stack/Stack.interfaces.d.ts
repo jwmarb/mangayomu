@@ -1,12 +1,13 @@
 import {
   BorderModel,
   BoxModel,
+  BoxProps,
   Debuggable,
   DimensionsModel,
   FlexBoxModel,
   PositionModel,
 } from '@components/Box/Box.interfaces';
-import { Spacing } from '@mangayomu/theme';
+import { ButtonColors, Spacing } from '@mangayomu/theme';
 
 export interface StackProps
   extends BoxModel,
@@ -16,4 +17,6 @@ export interface StackProps
     DimensionsModel,
     BorderModel {
   space?: Spacing | number | { x?: Spacing | number; y?: Spacing | number };
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  'background-color'?: 'paper' | 'default' | ButtonColors | (string & {});
 }
