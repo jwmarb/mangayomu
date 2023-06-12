@@ -8,15 +8,18 @@ import { TagProps } from './Tag.interfaces';
 import Box from '@components/Box';
 
 const Tag: React.FC<TagProps> = (props) => {
-  const { label, icon, color = 'textPrimary', onPress } = props;
+  const { label, icon, color = 'textPrimary' } = props;
   const theme = useTheme();
   const baseButtonStyle = React.useMemo(
     () => ({ borderRadius: theme.style.borderRadius }),
     [theme.style.borderRadius],
   );
+  function handleOnPress() {
+    if ('id' in props) props.onPress && props.onPress(props.id);
+  }
   return (
     <BaseButton
-      onPress={onPress}
+      onPress={handleOnPress}
       style={baseButtonStyle}
       rippleColor={theme.palette.action.ripple}
     >

@@ -21,6 +21,15 @@ const MangaGenres: React.FC<MangaGenresProps> = (props) => {
           );
       }
   }, [data]);
+  const onPressTag = React.useCallback(
+    (genre: string) => {
+      navigation.navigate('InfiniteMangaList', {
+        source,
+        genre,
+      });
+    },
+    [navigation],
+  );
   return (
     <Stack flex-direction="row" flex-wrap="wrap" space="s" align-items="center">
       {data != null ? (
@@ -29,12 +38,8 @@ const MangaGenres: React.FC<MangaGenresProps> = (props) => {
             key={x}
             label={host.getGenre(x) || x}
             color={host.getGenre(x) ? undefined : 'error'}
-            onPress={() => {
-              navigation.navigate('InfiniteMangaList', {
-                source,
-                genre: x,
-              });
-            }}
+            onPress={onPressTag}
+            id={x}
           />
         ))
       ) : (

@@ -1,9 +1,15 @@
 import { Colors } from '@mangayomu/theme';
 import React from 'react';
 
-export interface TagProps {
+interface BaseTagProps {
   label: string;
   icon?: React.ReactElement<unknown>;
   color?: Colors;
-  onPress?: () => void;
 }
+
+export type TagProps =
+  | BaseTagProps
+  | (BaseTagProps & {
+      id: string;
+      onPress?: (id: string) => void;
+    });
