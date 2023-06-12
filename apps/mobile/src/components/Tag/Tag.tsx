@@ -5,6 +5,7 @@ import React from 'react';
 import { BaseButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import { TagProps } from './Tag.interfaces';
+import Box from '@components/Box';
 
 const Tag: React.FC<TagProps> = (props) => {
   const { label, icon, color = 'textPrimary', onPress } = props;
@@ -17,30 +18,25 @@ const Tag: React.FC<TagProps> = (props) => {
     <BaseButton
       onPress={onPress}
       style={baseButtonStyle}
-      rippleColor={
-        color === 'primary' || color === 'secondary'
-          ? theme.palette[color].ripple
-          : theme.palette.action.ripple
-      }
+      rippleColor={theme.palette.action.ripple}
     >
-      <Stack
-        space="s"
-        flex-direction="row"
+      <Box
         px={moderateScale(10)}
         py={moderateScale(5)}
-        border-width={moderateScale(1.5)}
-        border-color={
-          color === 'textPrimary' || color === 'textSecondary'
-            ? theme.palette.borderColor
-            : theme.helpers.getColor(color)
-        }
         border-radius="@theme"
+        background-color={
+          theme.mode === 'dark'
+            ? 'rgba(255, 255, 255, 0.1)'
+            : 'rgba(0, 0, 0, 0.1)'
+        }
       >
-        {icon}
-        <Text variant="button" color={color}>
-          {label}
-        </Text>
-      </Stack>
+        <Stack space="s" flex-direction="row">
+          {icon}
+          <Text variant="button" color={color}>
+            {label}
+          </Text>
+        </Stack>
+      </Box>
     </BaseButton>
   );
 };

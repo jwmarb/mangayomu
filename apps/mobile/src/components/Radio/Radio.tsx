@@ -75,8 +75,14 @@ const Radio: React.FC<BaseRadioProps> = React.memo((props) => {
           <Box
             border-color="disabled"
             border-width={moderateScale(1.5)}
+            style={{ borderColor: theme.palette.borderColor }}
             align-self="center"
             border-radius={100000}
+            // background-color={
+            //   theme.mode === 'light'
+            //     ? 'rgba(0, 0, 0, 0.1)'
+            //     : 'rgba(255, 255, 255, 0.1)'
+            // }
             p={moderateScale(3)}
           >
             <Animated.View style={combinedRadioStyle} />

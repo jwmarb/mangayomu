@@ -5,6 +5,7 @@ import { moderateScale } from 'react-native-size-matters';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import Stack from '@components/Stack';
+import Box from '@components/Box';
 
 const Button: React.FC<ButtonProps> = (props) => {
   const {
@@ -37,18 +38,19 @@ const Button: React.FC<ButtonProps> = (props) => {
         space={moderateScale(4)}
         py={moderateScale(12)}
         px={moderateScale(16)}
-        border-width={1.5}
-        border-radius="@theme"
         flex-direction="row"
         align-items="center"
         justify-content="center"
-        {...(variant === 'outline'
-          ? {
-              'border-color': disabled ? theme.palette.text.disabled : color,
-            }
-          : {
-              'border-color': 'transparent',
-            })}
+        border-width={moderateScale(1.5)}
+        border-radius="@theme"
+        style={{
+          borderColor:
+            variant === 'outline'
+              ? disabled
+                ? theme.palette.text.disabled
+                : theme.helpers.getColor(color)
+              : 'transparent',
+        }}
       >
         {iconPlacement === 'left' &&
           icon &&
