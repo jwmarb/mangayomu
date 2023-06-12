@@ -2,7 +2,7 @@
 import Box from '@components/Box';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import { SORT_CHAPTERS_BY, useManga } from '@database/schemas/Manga';
-import { FlashList, ListRenderItem } from '@shopify/flash-list';
+import { ListRenderItem } from '@shopify/flash-list';
 import React from 'react';
 import MangaViewerHeader from './components/MangaViewerHeader';
 import { useTheme } from '@emotion/react';
@@ -10,19 +10,13 @@ import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
 import { useLocalQuery, useLocalRealm } from '@database/main';
 import displayMessage from '@helpers/displayMessage';
+import { Linking, NativeScrollEvent, Share } from 'react-native';
 import {
-  Linking,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  Share,
-} from 'react-native';
-import Animated, {
-  FadeInDown,
-  FadeOutDown,
+  Easing,
   interpolateColor,
-  runOnUI,
   useAnimatedStyle,
   useSharedValue,
+  withTiming,
 } from 'react-native-reanimated';
 import { NAVHEADER_HEIGHT } from '@components/NavHeader';
 import { ChapterSchema } from '@database/schemas/Chapter';
@@ -38,10 +32,11 @@ import connector, {
   ConnectedMangaViewProps,
 } from '@screens/MangaView/MangaView.redux';
 import Text from '@components/Text';
-import { Portal } from '@gorhom/portal';
 import { moderateScale } from 'react-native-size-matters';
 import Stack from '@components/Stack';
 import { AnimatedFlashList } from '@components/animated';
+import InternetStatusToast from '@screens/MangaView/components/InternetStatusToast/InternetStatusToast';
+import QuickReadButton from '@screens/MangaView/components/QuickReadButton/QuickReadButton';
 
 export const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 
@@ -82,8 +77,23 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
     ),
   }));
 
+  const textOpacity = useSharedValue(0);
+  const networkStatusOffset = useSharedValue(moderateScale(32));
+
   const handleOnScroll = (e: NativeScrollEvent) => {
     scrollPosition.value = e.contentOffset.y;
+    if (e.velocity != null) {
+      if (e.velocity.y < 0)
+        textOpacity.value = withTiming(1, {
+          duration: 250,
+          easing: Easing.linear,
+        });
+      else
+        textOpacity.value = withTiming(0, {
+          duration: 250,
+          easing: Easing.linear,
+        });
+    }
   };
 
   const { onScroll, contentContainerStyle, scrollViewStyle } =
@@ -135,7 +145,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   function handleOnOpenMenu() {
     ref.current?.snapToIndex(1);
   }
-  const cloudRealm = useLocalRealm();
+  const localRealm = useLocalRealm();
 
   const chapters = useLocalQuery(ChapterSchema);
 
@@ -159,9 +169,9 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   const sortfn = React.useCallback(
     (a: string) =>
       SORT_CHAPTERS_BY[manga!.sortChaptersBy](
-        cloudRealm.objectForPrimaryKey('Chapter', a)!,
+        localRealm.objectForPrimaryKey('Chapter', a)!,
       ),
-    [manga != null, cloudRealm],
+    [manga != null, localRealm],
   );
 
   const data = React.useMemo(
@@ -246,25 +256,6 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
 
   return (
     <>
-      <Portal>
-        <Box
-          position="absolute"
-          bottom={0}
-          left={0}
-          right={0}
-          pointerEvents="none"
-        >
-          {manga != null && internetStatus === 'offline' && (
-            <Animated.View exiting={FadeOutDown} entering={FadeInDown}>
-              <Box px="s" py="s" background-color="primary">
-                <Text bold align="center">
-                  You are viewing a local version of the manga
-                </Text>
-              </Box>
-            </Animated.View>
-          )}
-        </Box>
-      </Portal>
       <AnimatedFlashList
         data={data}
         refreshing={refreshing}
@@ -301,6 +292,26 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
           supportedLanguages={manga.availableLanguages}
         />
       )}
+      <Box
+        position="absolute"
+        top={0}
+        bottom={0}
+        left={0}
+        right={0}
+        pointerEvents="box-none"
+      >
+        <InternetStatusToast
+          manga={manga}
+          networkStatusOffset={networkStatusOffset}
+        />
+        <QuickReadButton
+          firstChapter={firstChapter}
+          mangaKey={manga?._id}
+          currentlyReadingChapter={manga?.currentlyReadingChapter}
+          networkStatusOffset={networkStatusOffset}
+          textOpacity={textOpacity}
+        />
+      </Box>
     </>
   );
 };
