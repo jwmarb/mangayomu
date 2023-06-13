@@ -1,3 +1,4 @@
+import useMutableObject from '@hooks/useMutableObject';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import { Page, chapterIndices, offsetMemo } from '@redux/slices/reader';
 import { ReadingDirection } from '@redux/slices/settings';
@@ -11,18 +12,12 @@ export default function usePageLayout(args: {
 }) {
   const { readingDirection, pages, chapterKey } = args;
   const { width, height } = useScreenDimensions();
-  const pagesRef = React.useRef<Page[]>(pages);
-  const readingDirectionRef = React.useRef<ReadingDirection>(readingDirection);
-  React.useEffect(() => {
-    readingDirectionRef.current = readingDirection;
-  }, [readingDirection]);
-  React.useEffect(() => {
-    pagesRef.current = pages;
-  }, [pages]);
+  const pagesRef = useMutableObject(pages);
+  const readingDirectionRef = useMutableObject(readingDirection);
 
   const getPageOffset = (page: Page) => {
     const { width, height } = Dimensions.get('screen');
-    switch (readingDirectionRef.current) {
+    switch (readingDirectionRef) {
       case ReadingDirection.LEFT_TO_RIGHT:
       case ReadingDirection.RIGHT_TO_LEFT:
         return width;
@@ -41,7 +36,7 @@ export default function usePageLayout(args: {
   };
 
   const getSafeScrollRange = (): [number, number] => {
-    if (pagesRef.current.length === 0) return [0, 0];
+    if (pagesRef.length === 0) return [0, 0];
 
     const x = chapterIndices.get(chapterKey);
     if (x != null) {
@@ -49,20 +44,19 @@ export default function usePageLayout(args: {
       const { width, height } = Dimensions.get('screen');
       let minAccumulator = 0;
       let maxAccumulator = 0;
-      switch (readingDirectionRef.current) {
+      switch (readingDirectionRef) {
         case ReadingDirection.WEBTOON: {
           const memo = offsetMemo.get(chapterKey);
           if (memo != null) {
             minAccumulator = memo.min;
             maxAccumulator = memo.max;
           } else {
-            for (let i = 0; i < pagesRef.current.length; i++) {
+            for (let i = 0; i < pagesRef.length; i++) {
               // precondition: start + pageNumber < end
-              if (i < start)
-                minAccumulator += getPageOffset(pagesRef.current[i]);
-              if (i < end) maxAccumulator += getPageOffset(pagesRef.current[i]);
+              if (i < start) minAccumulator += getPageOffset(pagesRef[i]);
+              if (i < end) maxAccumulator += getPageOffset(pagesRef[i]);
               if (i === end)
-                maxAccumulator -= height - getPageOffset(pagesRef.current[i]);
+                maxAccumulator -= height - getPageOffset(pagesRef[i]);
             }
             offsetMemo.set(chapterKey, {
               min: minAccumulator,
