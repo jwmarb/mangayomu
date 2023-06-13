@@ -237,7 +237,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
             manga={manga}
             chapter={chapter}
             opacity={overlayOpacity}
-            mangaTitle={manga.title}
           />
           <GestureDetector gesture={tapGesture}>
             {pages.length === 0 ? (
