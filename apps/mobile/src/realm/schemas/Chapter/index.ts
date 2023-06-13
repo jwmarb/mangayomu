@@ -1,10 +1,11 @@
 import { ISOLangCode } from '@mangayomu/language-codes';
 import { MangaChapter } from '@mangayomu/mangascraper';
+import { Dimensions } from 'react-native';
 import Realm from 'realm';
 
 export interface IChapterSchema extends MangaChapter {
-  scrollPositionLandscape?: number;
-  scrollPositionPortrait?: number;
+  scrollPosition?: number;
+  savedScrollPositionType?: 'landscape' | 'portrait';
   numberOfPages?: number;
   indexPage?: number;
   dateRead?: number;
@@ -15,8 +16,8 @@ export interface IChapterSchema extends MangaChapter {
 }
 
 export class ChapterSchema extends Realm.Object<IChapterSchema> {
-  scrollPositionLandscape!: number;
-  scrollPositionPortrait!: number;
+  scrollPosition!: number;
+  savedScrollPositionType!: 'landscape' | 'portrait';
   indexPage!: number;
   numberOfPages?: number;
   dateRead?: number;
@@ -40,8 +41,15 @@ export class ChapterSchema extends Realm.Object<IChapterSchema> {
       _mangaId: 'string',
       numberOfPages: 'int?',
       language: { type: 'string', default: 'en' },
-      scrollPositionLandscape: { type: 'int', default: 0 },
-      scrollPositionPortrait: { type: 'int', default: 0 },
+      scrollPosition: { type: 'int', default: 0 },
+      savedScrollPositionType: {
+        type: 'string',
+        default: () => {
+          const { width, height } = Dimensions.get('window');
+          if (height > width) return 'portrait';
+          return 'landscape';
+        },
+      },
       indexPage: { type: 'int', default: 0 },
       dateRead: 'int?',
       link: 'string',
