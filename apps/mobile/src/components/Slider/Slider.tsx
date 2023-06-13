@@ -29,11 +29,11 @@ const styles = ScaledSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    width: '30@ms',
-    height: '30@ms',
+    width: '30@ms' as unknown as number,
+    height: '30@ms' as unknown as number,
   },
   trail: {
-    height: '1.5@ms',
+    height: '1.5@ms' as unknown as number,
   },
 });
 
