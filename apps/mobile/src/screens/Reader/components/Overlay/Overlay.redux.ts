@@ -6,10 +6,10 @@ import { addIfNewSourceToLibrary } from '@redux/slices/library';
 const mapStateToProps = (state: AppState, props: OverlayProps) => ({
   ...props,
   showPageNumber: state.settings.reader.showPageNumber,
-  totalPages: state.reader.currentChapter
-    ? state.reader.chapterInfo[state.reader.currentChapter]?.numberOfPages ??
-      null
-    : null,
+  // totalPages: state.reader.currentChapter
+  //   ? state.reader.chapterInfo[state.reader.currentChapter]?.numberOfPages ??
+  //     null
+  //   : null,
 });
 
 const connector = connect(mapStateToProps, { addIfNewSourceToLibrary });

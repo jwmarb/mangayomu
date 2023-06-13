@@ -55,7 +55,6 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     backgroundColor,
     imageComponentType,
     setPageError,
-    index,
     extendedPageState,
     setLocalPageURI,
     toggleImageModal,
@@ -242,7 +241,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
             localRealm.objectForPrimaryKey(ChapterSchema, chapter)!.name,
           ) +
           '/' +
-          index +
+          props.page.pageNumber +
           `.${fileExtension}`;
 
         const base64 = `data:image/${fileExtension};base64,${await RNFetchBlob.config(

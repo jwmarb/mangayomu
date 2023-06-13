@@ -10,7 +10,7 @@ import {
   ZoomStartPosition as EnumZoomStartPosition,
   useReaderSetting,
 } from '@redux/slices/settings';
-import { OVERLAY_TEXT_SECONDARY } from '@screens/Reader/components/Overlay/Overlay';
+import { OVERLAY_TEXT_SECONDARY } from '@theme/constants';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import Button from '@components/Button';

@@ -8,7 +8,6 @@ import { TapGesture } from 'react-native-gesture-handler';
 export interface ChapterPageProps {
   page: ChapterPage;
   extendedPageState?: ExtendedReaderPageState;
-  index: number;
 }
 
 export interface ChapterPageContextState {

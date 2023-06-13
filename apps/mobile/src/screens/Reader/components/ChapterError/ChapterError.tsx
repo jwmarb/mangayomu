@@ -5,7 +5,7 @@ import Icon from '@components/Icon';
 import Progress from '@components/Progress';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import { useLocalObject } from '@database/main';
+import { useLocalRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useBoolean from '@hooks/useBoolean';
 import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
@@ -14,7 +14,6 @@ import { ChapterErrorContextState } from '@screens/Reader/components/ChapterErro
 import React from 'react';
 import { moderateScale } from 'react-native-size-matters';
 import connector, { ConnectedChapterErrorProps } from './ChapterError.redux';
-import NetInfo from '@react-native-community/netinfo';
 
 export const ChapterErrorContext = React.createContext<
   ChapterErrorContextState | undefined
@@ -26,93 +25,78 @@ const useChapterErrorContext = () => {
 };
 
 const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
-  const { error, chapter: chapterKey } = props.error;
-  const { fetchPagesByChapter, backgroundColor } = props;
-  const { localRealm, availableChapters, offsetIndex, source, manga } =
-    useChapterErrorContext();
+  const { backgroundColor, data } = props;
+  const { error, current } = data;
+  const localRealm = useLocalRealm();
+  const chapter = localRealm.objectForPrimaryKey(ChapterSchema, current._id);
+  const fetchPages = useChapterErrorContext();
   const { background, textPrimary, textSecondary } =
     useReaderBackgroundColor(backgroundColor);
   const { width, height } = useScreenDimensions();
   const [loading, toggle] = useBoolean();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const chapter = useLocalObject(ChapterSchema, chapterKey)!;
   React.useEffect(() => {
-    if (loading) {
-      try {
-        const p = fetchPagesByChapter({
-          chapter,
-          localRealm,
-          availableChapters,
-          offsetIndex,
-          source,
-          mockSuccess: true,
-          manga,
-        });
-        const subscription = NetInfo.addEventListener(
-          ({ isInternetReachable }) => {
-            if (!isInternetReachable) p.abort();
-          },
-        );
-        return () => {
-          p.abort();
-          subscription();
-        };
-      } finally {
-        toggle(false);
-      }
+    if (loading && chapter != null) {
+      const p = fetchPages(chapter);
+      return () => {
+        p?.abort();
+      };
     }
   }, [loading]);
   async function onRetryFetch() {
     if (!loading) toggle(true);
   }
   return (
-    <Stack
-      space="s"
-      background-color={background}
-      width={width}
-      height={height}
-      align-items="center"
-      justify-content="center"
-      px="m"
-      py="s"
-    >
-      <Icon
-        type="font"
-        name="wifi-cancel"
-        color={textSecondary}
-        size={moderateScale(128)}
-      />
-      <Box>
-        <Text align="center" variant="header" bold color={textPrimary}>
-          Failed to load chapter
-        </Text>
-        <Text align="center" color={textSecondary}>
-          <Text bold color={textSecondary}>
-            {chapter.name}
-          </Text>{' '}
-          {error
-            ? 'gave the following error:'
-            : 'threw an error but did not provide a message.'}
-        </Text>
-        {error && (
-          <Text align="center" color="error">
-            {error}
-          </Text>
-        )}
-      </Box>
-      <Stack mt="s" mx="m" space="s">
-        <Button
-          label="Reload chapter"
-          variant="contained"
-          disabled={loading}
-          onPress={onRetryFetch}
-          icon={loading ? <Progress size="small" /> : undefined}
+    <Box background-color={background}>
+      <Stack
+        space="s"
+        width={width}
+        height={height}
+        align-items="center"
+        justify-content="center"
+        px="m"
+        py="s"
+      >
+        <Icon
+          type="font"
+          name="wifi-cancel"
+          color={textSecondary}
+          size={moderateScale(128)}
         />
-        <Hyperlink url={chapterKey} align="center" variant="book-title">
-          Open in browser
-        </Hyperlink>
+        <Box>
+          <Text align="center" variant="header" bold color={textPrimary}>
+            Failed to load chapter
+          </Text>
+          <Text align="center" color={textSecondary}>
+            <Text bold color={textSecondary}>
+              {chapter?.name ?? current._id}
+            </Text>{' '}
+            {error
+              ? 'gave the following error:'
+              : 'threw an error but did not provide a message.'}
+          </Text>
+          {error && (
+            <Text align="center" color="error">
+              {error}
+            </Text>
+          )}
+        </Box>
+        <Stack mt="s" mx="m" space="s">
+          <Button
+            label="Reload chapter"
+            variant="contained"
+            disabled={loading}
+            onPress={onRetryFetch}
+            icon={loading ? <Progress size="small" /> : undefined}
+          />
+          {chapter != null && (
+            <Hyperlink url={chapter.link} align="center" variant="book-title">
+              Open in browser
+            </Hyperlink>
+          )}
+        </Stack>
       </Stack>
-    </Stack>
+    </Box>
   );
 };
 

@@ -4,6 +4,7 @@ import Realm from 'realm';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import { ImageMenuMethods } from '@screens/Reader/components/ImageMenu/ImageMenu.interfaces';
+import useChapterFetcher from '@screens/Reader/hooks/useChapterFetcher';
 
 export interface OverlayProps extends React.PropsWithChildren {
   opacity: SharedValue<number>;

@@ -8,12 +8,12 @@ import {
   ReaderScreenOrientation,
   useReaderSetting,
 } from '@redux/slices/settings';
-import { OVERLAY_TEXT_SECONDARY } from '@screens/Reader/components/Overlay/Overlay';
 import { useReaderContext } from '@screens/Reader/Reader';
 import React from 'react';
 import connector, {
   ConnectedDeviceOrientationProps,
 } from './DeviceOrientation.redux';
+import { OVERLAY_TEXT_SECONDARY } from '@theme/constants';
 
 const DeviceOrientation: React.FC<ConnectedDeviceOrientationProps> = (
   props,
@@ -23,7 +23,7 @@ const DeviceOrientation: React.FC<ConnectedDeviceOrientationProps> = (
     type = 'button',
     setLockedDeviceOrientation,
   } = props;
-  const { mangaKey } = useReaderContext();
+  const mangaKey = useReaderContext();
   const set = React.useCallback(
     (val: ReaderScreenOrientation | 'Use global setting') => {
       if (val !== 'Use global setting') setLockedDeviceOrientation(val);

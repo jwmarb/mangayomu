@@ -12,5 +12,4 @@ export interface TransitionPageContextState {
   tapGesture: TapGesture;
   backgroundColor: ReaderBackgroundColor;
   currentChapter: ChapterSchema;
-  showTransitionPage: boolean;
 }

@@ -25,16 +25,20 @@ const useTransitionPageContext = () => {
 
 const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
   const { page, loading } = props;
-  const { tapGesture, backgroundColor, currentChapter, showTransitionPage } =
+  const { tapGesture, backgroundColor, currentChapter } =
     useTransitionPageContext();
   const { background, textPrimary, textSecondary } =
     useReaderBackgroundColor(backgroundColor);
-  const isPrevious = props.page.previous.index > currentChapter.index;
-  const isNext = props.page.next.index < currentChapter.index;
+  const isPrevious = props.page.next.index === currentChapter.index;
+  const isNext = props.page.previous.index === currentChapter.index;
 
   const { width, height } = useScreenDimensions();
   const previous = useLocalObject(ChapterSchema, page.previous._id);
   const next = useLocalObject(ChapterSchema, page.next._id);
+
+  React.useEffect(() => {
+    // fetch both previous and next chapters
+  }, []);
 
   return (
     <Box background-color={background}>
@@ -49,41 +53,37 @@ const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
           px="m"
           py="s"
         >
-          {showTransitionPage && (
+          {loading && <Progress />}
+          {isNext && (
             <>
-              {loading && <Progress />}
-              {isNext && (
-                <>
-                  <Text color={textSecondary}>
-                    <Text color={textPrimary} bold>
-                      Next:
-                    </Text>{' '}
-                    {next?.name}
-                  </Text>
-                  <Text color={textSecondary}>
-                    <Text color={textPrimary} bold>
-                      Current:
-                    </Text>{' '}
-                    {currentChapter.name}
-                  </Text>
-                </>
-              )}
-              {isPrevious && (
-                <>
-                  <Text color={textSecondary}>
-                    <Text color={textPrimary} bold>
-                      Current:
-                    </Text>{' '}
-                    {currentChapter.name}
-                  </Text>
-                  <Text color={textSecondary}>
-                    <Text color={textPrimary} bold>
-                      Previous:
-                    </Text>{' '}
-                    {previous?.name}
-                  </Text>
-                </>
-              )}
+              <Text color={textSecondary}>
+                <Text color={textPrimary} bold>
+                  Next:
+                </Text>{' '}
+                {next?.name}
+              </Text>
+              <Text color={textSecondary}>
+                <Text color={textPrimary} bold>
+                  Current:
+                </Text>{' '}
+                {currentChapter.name}
+              </Text>
+            </>
+          )}
+          {isPrevious && (
+            <>
+              <Text color={textSecondary}>
+                <Text color={textPrimary} bold>
+                  Current:
+                </Text>{' '}
+                {currentChapter.name}
+              </Text>
+              <Text color={textSecondary}>
+                <Text color={textPrimary} bold>
+                  Previous:
+                </Text>{' '}
+                {previous?.name}
+              </Text>
             </>
           )}
         </Stack>

@@ -1,20 +1,9 @@
-import { ChapterSchema } from '@database/schemas/Chapter';
-import { MangaSchema } from '@database/schemas/Manga';
-import { MangaHost } from '@mangayomu/mangascraper';
 import { ChapterError } from '@redux/slices/reader';
+import useChapterFetcher from '@screens/Reader/hooks/useChapterFetcher';
 import React from 'react';
-import Realm from 'realm';
 
 export interface ChapterErrorProps extends React.PropsWithChildren {
-  error: ChapterError;
+  data: ChapterError;
 }
 
-export interface ChapterErrorContextState {
-  availableChapters: (ChapterSchema & Realm.Object<ChapterSchema, never>)[];
-  localRealm: Realm;
-  source: MangaHost;
-  offsetIndex: React.MutableRefObject<
-    Record<string, { start: number; end: number }>
-  >;
-  manga: MangaSchema;
-}
+export type ChapterErrorContextState = ReturnType<typeof useChapterFetcher>;

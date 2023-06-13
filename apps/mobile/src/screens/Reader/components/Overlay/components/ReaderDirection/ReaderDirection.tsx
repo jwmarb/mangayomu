@@ -7,7 +7,7 @@ import { Menu, MenuItem } from '@components/Menu';
 import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
 import { ReadingDirection, useReaderSetting } from '@redux/slices/settings';
-import { OVERLAY_TEXT_SECONDARY } from '@screens/Reader/components/Overlay/Overlay';
+import { OVERLAY_TEXT_SECONDARY } from '@theme/constants';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import Button from '@components/Button';
@@ -18,7 +18,7 @@ const ReaderDirection: React.FC<ConnectedReaderDirectionProps> = (props) => {
     type = 'button',
     setGlobalReadingDirection,
   } = props;
-  const { mangaKey } = useReaderContext();
+  const mangaKey = useReaderContext();
   const set = React.useCallback(
     (val: ReadingDirection | 'Use global setting') => {
       if (val !== 'Use global setting') setGlobalReadingDirection(val);

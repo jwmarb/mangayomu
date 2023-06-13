@@ -8,7 +8,12 @@ import { removeURLParams } from '@screens/Reader/components/ChapterPage/ChapterP
 import { Image } from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
 
-export type Page = ChapterError | ChapterPage | NoMorePages | TransitionPage;
+export type Page = ChapterPage | NoMorePages | TransitionPage | ChapterError;
+export type ChapterError = {
+  type: 'CHAPTER_ERROR';
+  error: string;
+  current: { _id: string; index: number };
+};
 export type TransitionPage = {
   type: 'TRANSITION_PAGE';
   previous: { _id: string; index: number };
@@ -23,11 +28,6 @@ export type ChapterPage = {
   height: number;
 };
 export type NoMorePages = { type: 'NO_MORE_PAGES' };
-export type ChapterError = {
-  type: 'CHAPTER_ERROR';
-  chapter: string;
-  error: string;
-};
 
 export interface ReaderChapterInfo {
   numberOfPages: number;
@@ -50,20 +50,17 @@ const initialExtendedState: ExtendedReaderPageState = {
 
 export type ExtendedReaderState = ReaderState['extendedState'];
 
+export const fetchedChapters = new Set<string>();
+export const fetchingChapters = new Set<string>();
+export const chapterIndices: Map<string, { start: number; end: number }> =
+  new Map();
+export const offsetMemo: Map<string, { min: number; max: number }> = new Map();
+
 interface ReaderState {
   pages: Page[];
   loading: boolean;
-  isOnChapterError: boolean | null;
-  chapterInfo: Record<string, ReaderChapterInfo>;
   extendedState: Record<string, ExtendedReaderPageState | undefined>;
   currentChapter: string | null;
-  pageInDisplay: {
-    parsedKey: string;
-    url: string;
-    chapter: string;
-  } | null;
-  showTransitionPage: boolean;
-  isMounted: boolean;
   showImageModal: boolean;
 }
 
@@ -73,24 +70,15 @@ export interface FetchPagesByChapterPayload {
   availableChapters: (ChapterSchema & Realm.Object<ChapterSchema, never>)[];
   localRealm: Realm;
   source: MangaHost;
-  offsetIndex: React.MutableRefObject<
-    Record<string, { start: number; end: number }>
-  >;
-  fetchedPreviousChapter?: React.MutableRefObject<boolean>;
-  mockSuccess?: boolean; // remove later
+  mockError?: boolean;
 }
 
 const initialReaderState: ReaderState = {
   pages: [],
   loading: true,
-  chapterInfo: {},
   extendedState: {},
-  currentChapter: null,
-  pageInDisplay: null,
-  isOnChapterError: null,
-  showTransitionPage: false,
-  isMounted: false,
   showImageModal: false,
+  currentChapter: null,
 };
 
 function getImageSizeAsync(
@@ -109,11 +97,20 @@ export function getCachedReaderPages(source: MangaHost) {
   return RNFetchBlob.fs.dirs['CacheDir'] + '/' + source.getName() + '/';
 }
 
+const mockError = () => {
+  throw new Error('Mock error has been invoked');
+};
+
 export const fetchPagesByChapter = createAsyncThunk(
   'reader/fetchPagesByChapter',
   async (payload: FetchPagesByChapterPayload) => {
     try {
+      fetchingChapters.add(payload.chapter._id);
       const response = await payload.source.getPages(payload.chapter);
+      if (payload.mockError) mockError();
+      payload.localRealm.write(() => {
+        payload.chapter.numberOfPages = response.length;
+      });
       const preload = Promise.all(response.map((x) => Image.prefetch(x)));
       const dimensions = Promise.all(
         response.map(async (uri) => {
@@ -200,45 +197,17 @@ const readerSlice = createSlice({
   initialState: initialReaderState,
   reducers: {
     resetReaderState: (state) => {
-      state.chapterInfo = {};
       state.loading = true;
       state.pages = [];
+      state.showImageModal = false;
       state.currentChapter = null;
-      state.isOnChapterError = null;
-      state.showTransitionPage = false;
-      state.pageInDisplay = null;
-      state.isMounted = false;
-    },
-    setIsMounted: (state, action: PayloadAction<boolean>) => {
-      state.isMounted = action.payload;
-    },
-    setPageInDisplay: (
-      state,
-      action: PayloadAction<{
-        parsedKey: string;
-        url: string;
-        chapter: string;
-      }>,
-    ) => {
-      state.pageInDisplay = action.payload;
+      state.extendedState = {};
+      fetchedChapters.clear();
+      fetchingChapters.clear();
+      offsetMemo.clear();
     },
     setCurrentChapter: (state, action: PayloadAction<string>) => {
       state.currentChapter = action.payload;
-    },
-    setIsOnChapterError: (state, action: PayloadAction<boolean>) => {
-      state.isOnChapterError = action.payload;
-    },
-    setShowTransitionPage: (state, action: PayloadAction<boolean>) => {
-      state.showTransitionPage = action.payload;
-    },
-    startFetchingChapter: (state, action: PayloadAction<string>) => {
-      if (!state.chapterInfo[action.payload].alreadyFetched)
-        state.chapterInfo[action.payload] = {
-          loading: true,
-          numberOfPages: 0,
-          previousChapter: null,
-          alreadyFetched: false,
-        };
     },
     toggleImageModal: (state, action: PayloadAction<boolean | undefined>) => {
       state.showImageModal = action.payload ?? !state.showImageModal;
@@ -269,7 +238,8 @@ const readerSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchPagesByChapter.fulfilled, (state, action) => {
-      if (action.payload == null || !state.isMounted) return;
+      state.loading = false;
+      fetchingChapters.delete(action.meta.arg.chapter._id);
 
       const previousChapter:
         | (ChapterSchema & Realm.Object<ChapterSchema, never>)
@@ -279,192 +249,150 @@ const readerSlice = createSlice({
         | (ChapterSchema & Realm.Object<ChapterSchema, never>)
         | undefined =
         action.meta.arg.availableChapters[action.meta.arg.chapter.index - 1];
-      if (action.payload.type === 'error') {
-        state.isOnChapterError = true;
-        if (state.pages.length === 0) {
-          state.pages[0] = {
-            type: 'CHAPTER_ERROR',
-            error: getErrorMessage(action.payload.error),
-            chapter: action.meta.arg.chapter._id,
-          };
-        } else if (
-          previousChapter != null &&
-          previousChapter._id in state.chapterInfo
-        ) {
-          state.pages[state.pages.length - 1] = {
-            type: 'CHAPTER_ERROR',
-            error: getErrorMessage(action.payload.error),
-            chapter: action.meta.arg.chapter._id,
-          };
-        } else if (
-          nextChapter != null &&
-          nextChapter._id in state.chapterInfo
-        ) {
-          state.pages[0] = {
-            type: 'CHAPTER_ERROR',
-            error: getErrorMessage(action.payload.error),
-            chapter: action.meta.arg.chapter._id,
-          };
+
+      if (action.payload.error != null) {
+        const current = {
+          _id: action.meta.arg.chapter._id,
+          index: action.meta.arg.chapter.index,
+        };
+        const error = getErrorMessage(action.payload.error);
+        if (state.pages.length === 0)
+          state.pages = [{ type: 'CHAPTER_ERROR', current, error }];
+        else {
+          const lastItem = state.pages[state.pages.length - 1];
+          if (
+            lastItem.type === 'TRANSITION_PAGE' &&
+            lastItem.next._id === action.meta.arg.chapter._id
+          )
+            state.pages[state.pages.length - 1] = {
+              type: 'CHAPTER_ERROR',
+              current,
+              error,
+            };
+          const firstItem = state.pages[0];
+          if (
+            firstItem.type === 'TRANSITION_PAGE' &&
+            firstItem.previous._id === action.meta.arg.chapter._id
+          )
+            state.pages[0] = {
+              type: 'CHAPTER_ERROR',
+              current,
+              error,
+            };
         }
-        state.loading = false;
-        delete state.chapterInfo[action.meta.arg.chapter._id];
         return;
       }
-      state.chapterInfo[action.meta.arg.chapter._id] = {
-        numberOfPages: action.payload.data.length,
-        previousChapter: previousChapter?._id ?? null,
-        loading: false,
-        alreadyFetched: true,
-      };
-      action.meta.arg.localRealm.write(() => {
-        if (action.payload != null)
-          action.meta.arg.chapter.numberOfPages = action.payload.data.length;
-      });
+      const shouldAppendData =
+        fetchedChapters.size === 0 ||
+        (previousChapter != null && fetchedChapters.has(previousChapter._id));
+      const shouldPrependData =
+        nextChapter != null && fetchedChapters.has(nextChapter._id);
+      const shouldAddPreviousChapterTransition =
+        previousChapter != null &&
+        (shouldPrependData || fetchedChapters.size === 0);
+      const shouldAddNextChapterTransition =
+        nextChapter != null && shouldAppendData;
 
+      const newPages: Page[] = [];
+
+      if (shouldAddPreviousChapterTransition)
+        newPages.push({
+          type: 'TRANSITION_PAGE',
+          next: {
+            _id: action.meta.arg.chapter._id,
+            index: action.meta.arg.chapter.index,
+          },
+          previous: {
+            _id: previousChapter._id,
+            index: previousChapter.index,
+          },
+        });
+
+      for (let i = 0; i < action.payload.data.length; i++) {
+        const page = action.payload.data[i];
+        newPages.push({
+          type: 'PAGE',
+          chapter: action.meta.arg.chapter._id,
+          height: page.height,
+          width: page.width,
+          page: page.url,
+          pageNumber: i + 1,
+        });
+      }
+      /**
+       * Determine whether or not this chapter was refetched after an error
+       */
       if (
-        state.pages.length === 0 ||
-        (state.pages.length === 1 && state.pages[0].type === 'CHAPTER_ERROR')
-      ) {
-        state.isOnChapterError = false;
-        action.meta.arg.offsetIndex.current[action.meta.arg.chapter._id] = {
-          start: previousChapter == null ? 0 : 1,
-          end: action.payload.data.length - (previousChapter == null ? 1 : 0),
+        state.pages[state.pages.length - 1]?.type === 'CHAPTER_ERROR' &&
+        previousChapter != null
+      )
+        state.pages[state.pages.length - 1] = {
+          type: 'TRANSITION_PAGE',
+          next: {
+            _id: action.meta.arg.chapter._id,
+            index: action.meta.arg.chapter.index,
+          },
+          previous: { _id: previousChapter._id, index: previousChapter.index },
         };
-        if (state.pages.length === 1 && state.pages[0].type === 'CHAPTER_ERROR')
-          state.pages = [];
 
-        if (previousChapter != null)
-          state.pages.push({
-            type: 'TRANSITION_PAGE',
-            previous: {
-              _id: previousChapter._id,
-              index: previousChapter.index,
-            },
-            next: {
-              _id: action.meta.arg.chapter._id,
-              index: action.meta.arg.chapter.index,
-            },
-          });
-        for (let i = 0; i < action.payload.data.length; i++) {
-          state.pages.push({
-            type: 'PAGE',
-            page: action.payload.data[i].url,
-            width: action.payload.data[i].width,
-            height: action.payload.data[i].height,
-            pageNumber: i + 1,
-            chapter: action.meta.arg.chapter.link,
-            // localPageUri: action.payload.data[i].localPath,
-          });
-        }
-        if (nextChapter != null)
-          state.pages.push({
-            type: 'TRANSITION_PAGE',
-            previous: {
-              _id: action.meta.arg.chapter._id,
-              index: action.meta.arg.chapter.index,
-            },
-            next: { _id: nextChapter._id, index: nextChapter.index },
-          });
-        else state.pages.push({ type: 'NO_MORE_PAGES' });
-      } else {
-        // Determine where to append fetched pages based
-        if (
-          previousChapter != null &&
-          previousChapter.link in state.chapterInfo
-        ) {
-          // Assume this is the NEXT chapter we are fetching
-          action.meta.arg.offsetIndex.current[action.meta.arg.chapter._id] = {
-            start: state.pages.length,
-            end: state.pages.length + action.payload.data.length - 1,
-          };
+      if (state.pages[0]?.type === 'CHAPTER_ERROR' && nextChapter != null)
+        state.pages[0] = {
+          type: 'TRANSITION_PAGE',
+          previous: {
+            _id: action.meta.arg.chapter._id,
+            index: action.meta.arg.chapter.index,
+          },
+          next: {
+            _id: nextChapter._id,
+            index: nextChapter.index,
+          },
+        };
 
-          if (state.pages[state.pages.length - 1].type === 'CHAPTER_ERROR')
-            state.pages[state.pages.length - 1] = {
-              type: 'TRANSITION_PAGE',
-              next: {
-                _id: action.meta.arg.chapter._id,
-                index: action.meta.arg.chapter.index,
-              },
-              previous: {
-                _id: previousChapter._id,
-                index: previousChapter.index,
-              },
-            };
+      /**
+       * Final mutation of state.pages
+       */
+      if (shouldAppendData) state.pages = state.pages.concat(newPages);
+      if (shouldPrependData) {
+        state.pages = newPages.concat(state.pages);
+        offsetMemo.clear();
+      }
+      if (shouldAddNextChapterTransition)
+        state.pages.push({
+          type: 'TRANSITION_PAGE',
+          next: {
+            _id: nextChapter._id,
+            index: nextChapter.index,
+          },
+          previous: {
+            _id: action.meta.arg.chapter._id,
+            index: action.meta.arg.chapter.index,
+          },
+        });
+      else if (nextChapter == null) state.pages.push({ type: 'NO_MORE_PAGES' });
 
-          for (let i = 0; i < action.payload.data.length; i++) {
-            state.pages.push({
-              type: 'PAGE',
-              page: action.payload.data[i].url,
-              width: action.payload.data[i].width,
-              height: action.payload.data[i].height,
-              pageNumber: i + 1,
-              chapter: action.meta.arg.chapter.link,
-              // localPageUri: action.payload.data[i].localPath,
-            });
-          }
-          if (nextChapter != null)
-            state.pages.push({
-              type: 'TRANSITION_PAGE',
-              previous: {
-                _id: action.meta.arg.chapter._id,
-                index: action.meta.arg.chapter.index,
-              },
-              next: { _id: nextChapter._id, index: nextChapter.index },
-            });
-          else state.pages.push({ type: 'NO_MORE_PAGES' });
-        }
-        if (nextChapter != null && nextChapter.link in state.chapterInfo) {
-          if (action.meta.arg.fetchedPreviousChapter == null)
-            throw Error(
-              'When fetching a previous chapter, fetchedPreviousChapter must be passed.',
-            );
-          action.meta.arg.fetchedPreviousChapter.current = true;
-          // Assume this is the PREVIOUS chapter we are fetching
-          const newArray: Page[] = [];
-          if (previousChapter != null)
-            newArray.push({
-              type: 'TRANSITION_PAGE',
-              previous: {
-                _id: previousChapter._id,
-                index: previousChapter.index,
-              },
-              next: {
-                _id: action.meta.arg.chapter._id,
-                index: action.meta.arg.chapter.index,
-              },
-            });
-          for (let i = 0; i < action.payload.data.length; i++) {
-            newArray.push({
-              type: 'PAGE',
-              page: action.payload.data[i].url,
-              width: action.payload.data[i].width,
-              height: action.payload.data[i].height,
-              pageNumber: i + 1,
-              chapter: action.meta.arg.chapter.link,
-              // localPageUri: action.payload.data[i].localPath,
-            });
-          }
-          for (const key in action.meta.arg.offsetIndex.current) {
-            action.meta.arg.offsetIndex.current[key].start += newArray.length;
-            action.meta.arg.offsetIndex.current[key].end += newArray.length;
-          }
-          action.meta.arg.offsetIndex.current[action.meta.arg.chapter._id] = {
-            start: 0,
-            end: action.payload.data.length - 1,
-          };
-          if (state.pages[0].type === 'CHAPTER_ERROR')
-            state.pages[0] = {
-              type: 'TRANSITION_PAGE',
-              previous: {
-                _id: action.meta.arg.chapter._id,
-                index: action.meta.arg.chapter.index,
-              },
-              next: { _id: nextChapter._id, index: nextChapter.index },
-            };
-          state.pages = newArray.concat(state.pages);
+      chapterIndices.clear();
+
+      /**
+       * Traverse through each item in state.pages and add corresponding index to TransitionPages
+       */
+      let start = 0;
+      for (let i = 0; i < state.pages.length; i++) {
+        const item = state.pages[i];
+        switch (item.type) {
+          case 'TRANSITION_PAGE':
+            if (i > start) {
+              chapterIndices.set(item.previous._id, {
+                start: previousChapter == null ? 0 : start + 1,
+                end: i - 1,
+              });
+
+              start = i;
+            }
+            break;
         }
       }
-      state.loading = false;
+
+      fetchedChapters.add(action.meta.arg.chapter._id);
     });
     // builder.addCase(fetchPagesByChapter.rejected, (state, action) => {
     //   state.pages.push({
@@ -475,24 +403,22 @@ const readerSlice = createSlice({
     //   state.loading = false;
     // });
     builder.addCase(fetchPagesByChapter.pending, (state, action) => {
-      if (
-        action.meta.arg.chapter._id in state.chapterInfo === false &&
-        state.isMounted
-      ) {
-        state.chapterInfo[action.meta.arg.chapter._id] = {
-          loading: true,
-          numberOfPages: 0,
-          previousChapter: null,
-          alreadyFetched: false,
-        };
-        state.loading = true;
-      }
+      state.loading = true;
+      // if (
+      //   action.meta.arg.chapter._id in state.chapterInfo === false &&
+      //   state.isMounted
+      // ) {
+      //   state.chapterInfo[action.meta.arg.chapter._id] = {
+      //     loading: true,
+      //     numberOfPages: 0,
+      //     previousChapter: null,
+      //     alreadyFetched: false,
+      //   };
+      //   state.loading = true;
+      // }
     });
     builder.addCase(fetchPagesByChapter.rejected, (state, action) => {
-      if (state.isMounted) {
-        delete state.chapterInfo[action.meta.arg.chapter._id];
-        state.loading = false;
-      }
+      fetchingChapters.delete(action.meta.arg.chapter._id);
     });
   },
 });
@@ -500,12 +426,12 @@ const readerSlice = createSlice({
 export const {
   resetReaderState,
   setCurrentChapter,
-  startFetchingChapter,
-  setIsOnChapterError,
-  setShowTransitionPage,
+  // startFetchingChapter,
+  // setIsOnChapterError,
+  // setShowTransitionPage,
   setPageError,
-  setIsMounted,
-  setPageInDisplay,
+  // setIsMounted,
+  // setPageInDisplay,
   setLocalPageURI,
   toggleImageModal,
 } = readerSlice.actions;
