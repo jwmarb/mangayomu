@@ -1,5 +1,6 @@
 import { useLocalRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
+import useBoolean from '@hooks/useBoolean';
 import { Page } from '@redux/slices/reader';
 import usePageLayout from '@screens/Reader/hooks/usePageLayout';
 import { FlashList } from '@shopify/flash-list';
@@ -22,6 +23,9 @@ export default function useSavedChapterInfo(
   const localRealm = useLocalRealm();
   const scrollOffset = React.useRef<number>(0);
   const shouldSaveScrollOffset = React.useRef<boolean>(false);
+  const [isFinishedInitialScrollOffset, setIsFinishedInitialScrollOffset] =
+    useBoolean();
+
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     scrollOffset.current =
       event.nativeEvent.contentOffset[horizontal ? 'x' : 'y'];
@@ -51,11 +55,12 @@ export default function useSavedChapterInfo(
           offset: chapter.scrollPosition,
           animated: false,
         });
-        if (scrollOffset.current - chapter.scrollPosition >= 1) {
+        if (Math.abs(scrollOffset.current - chapter.scrollPosition) <= 1) {
           shouldSaveScrollOffset.current = true;
+          setIsFinishedInitialScrollOffset(true);
           clearInterval(scrollOffsetReturner);
         }
-      }, 1);
+      }, 15);
 
       const scrollTracker = setInterval(() => {
         saveScrollPosition();
@@ -68,5 +73,5 @@ export default function useSavedChapterInfo(
     }
   }, [pages]);
 
-  return { onScroll };
+  return { onScroll, isFinishedInitialScrollOffset };
 }
