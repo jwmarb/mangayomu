@@ -55,13 +55,7 @@ const Stack = styled.View<StackProps>`
         }
       })()};
       ${backgroundColor &&
-      `
-        background-color: ${setWithPalette(
-          theme,
-          'background-color',
-          backgroundColor,
-        )};
-      `}
+      setWithPalette(theme, 'background-color', backgroundColor)}
       ${debug &&
       css`
         background-color: red;
