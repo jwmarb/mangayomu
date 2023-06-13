@@ -36,7 +36,14 @@ const ReaderDirection: React.FC<ConnectedReaderDirectionProps> = (props) => {
   if (type === 'button')
     return (
       <Box flex-grow>
-        <Menu trigger={<OverlayBottomButton name="book-open-variant" />}>
+        <Menu
+          trigger={
+            <OverlayBottomButton
+              name="book-open-variant"
+              settingName="Reader direction"
+            />
+          }
+        >
           {Object.entries(ReadingDirection).map(([key, value]) => (
             <MenuItem
               key={key}

@@ -42,7 +42,14 @@ const DeviceOrientation: React.FC<ConnectedDeviceOrientationProps> = (
   if (type === 'button')
     return (
       <Box flex-grow>
-        <Menu trigger={<OverlayBottomButton name="phone-rotate-portrait" />}>
+        <Menu
+          trigger={
+            <OverlayBottomButton
+              name="phone-rotate-portrait"
+              settingName="Device orientation"
+            />
+          }
+        >
           {Object.entries(ReaderScreenOrientation).map(([key, value]) => (
             <MenuItem
               key={key}

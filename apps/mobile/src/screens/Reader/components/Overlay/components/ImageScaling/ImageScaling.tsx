@@ -32,7 +32,11 @@ const ImageScaling: React.FC<ConnectedImageScalingProps> = (props) => {
   if (type === 'button')
     return (
       <Box flex-grow>
-        <Menu trigger={<OverlayBottomButton name="image" />}>
+        <Menu
+          trigger={
+            <OverlayBottomButton name="image" settingName="Image scaling" />
+          }
+        >
           {Object.entries(ImageScalingEnum).map(([key, value]) => (
             <MenuItem
               key={key}

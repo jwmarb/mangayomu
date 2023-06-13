@@ -41,7 +41,14 @@ const ZoomStartPosition: React.FC<ConnectedZoomStartPositionProps> = (
   if (type === 'button')
     return (
       <Box flex-grow>
-        <Menu trigger={<OverlayBottomButton name="magnify" />}>
+        <Menu
+          trigger={
+            <OverlayBottomButton
+              name="magnify"
+              settingName="Zoom start position"
+            />
+          }
+        >
           {Object.entries(EnumZoomStartPosition).map(([key, value]) => (
             <MenuItem
               key={key}
