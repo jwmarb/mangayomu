@@ -66,5 +66,13 @@ export default function useReaderProps(
         : ReaderScreenOrientation.FREE,
     [manga.readerLockOrientation, readerProps.lockOrientation],
   );
-  return { readingDirection, imageScaling, zoomStartPosition, lockOrientation };
+  return React.useMemo(
+    () => ({
+      readingDirection,
+      imageScaling,
+      zoomStartPosition,
+      lockOrientation,
+    }),
+    [readingDirection, imageScaling, zoomStartPosition, lockOrientation],
+  );
 }
