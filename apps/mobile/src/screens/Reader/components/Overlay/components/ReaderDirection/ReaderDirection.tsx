@@ -11,6 +11,8 @@ import { OVERLAY_TEXT_SECONDARY } from '@theme/constants';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import Button from '@components/Button';
+import OverlayBottomButton from '@screens/Reader/components/Overlay/components/OverlayBottomButton';
+import Box from '@components/Box/Box';
 
 const ReaderDirection: React.FC<ConnectedReaderDirectionProps> = (props) => {
   const {
@@ -33,37 +35,34 @@ const ReaderDirection: React.FC<ConnectedReaderDirectionProps> = (props) => {
 
   if (type === 'button')
     return (
-      <Menu
-        trigger={
-          <IconButton
-            icon={<Icon type="font" name="book-open-variant" />}
-            color={OVERLAY_TEXT_SECONDARY}
-          />
-        }
-      >
-        {Object.entries(ReadingDirection).map(([key, value]) => (
-          <MenuItem
-            key={key}
-            optionKey={value as ReadingDirection}
-            onSelect={setReadingDirection}
-            color={value === readingDirection ? 'primary' : undefined}
-          >
-            {value}
-          </MenuItem>
-        ))}
-        {mangaKey != null && (
-          <MenuItem
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            optionKey={'Use global setting' as any}
-            onSelect={setReadingDirection}
-            color={
-              readingDirection === 'Use global setting' ? 'primary' : undefined
-            }
-          >
-            Use global setting
-          </MenuItem>
-        )}
-      </Menu>
+      <Box flex-grow>
+        <Menu trigger={<OverlayBottomButton name="book-open-variant" />}>
+          {Object.entries(ReadingDirection).map(([key, value]) => (
+            <MenuItem
+              key={key}
+              optionKey={value as ReadingDirection}
+              onSelect={setReadingDirection}
+              color={value === readingDirection ? 'primary' : undefined}
+            >
+              {value}
+            </MenuItem>
+          ))}
+          {mangaKey != null && (
+            <MenuItem
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              optionKey={'Use global setting' as any}
+              onSelect={setReadingDirection}
+              color={
+                readingDirection === 'Use global setting'
+                  ? 'primary'
+                  : undefined
+              }
+            >
+              Use global setting
+            </MenuItem>
+          )}
+        </Menu>
+      </Box>
     );
 
   return (

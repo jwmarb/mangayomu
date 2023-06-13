@@ -14,6 +14,10 @@ import connector, {
   ConnectedDeviceOrientationProps,
 } from './DeviceOrientation.redux';
 import { OVERLAY_TEXT_SECONDARY } from '@theme/constants';
+import { BorderlessButton } from 'react-native-gesture-handler';
+import { moderateScale } from 'react-native-size-matters';
+import Box from '@components/Box/Box';
+import OverlayBottomButton from '@screens/Reader/components/Overlay/components/OverlayBottomButton/OverlayBottomButton';
 
 const DeviceOrientation: React.FC<ConnectedDeviceOrientationProps> = (
   props,
@@ -37,37 +41,32 @@ const DeviceOrientation: React.FC<ConnectedDeviceOrientationProps> = (
   );
   if (type === 'button')
     return (
-      <Menu
-        trigger={
-          <IconButton
-            icon={<Icon type="font" name="phone-rotate-portrait" />}
-            color={OVERLAY_TEXT_SECONDARY}
-          />
-        }
-      >
-        {Object.entries(ReaderScreenOrientation).map(([key, value]) => (
-          <MenuItem
-            key={key}
-            optionKey={value as ReaderScreenOrientation}
-            onSelect={setLockOrientation}
-            color={value === lockOrientation ? 'primary' : undefined}
-          >
-            {value}
-          </MenuItem>
-        ))}
-        {mangaKey != null && (
-          <MenuItem
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            optionKey={'Use global setting' as any}
-            onSelect={setLockOrientation}
-            color={
-              lockOrientation === 'Use global setting' ? 'primary' : undefined
-            }
-          >
-            Use global setting
-          </MenuItem>
-        )}
-      </Menu>
+      <Box flex-grow>
+        <Menu trigger={<OverlayBottomButton name="phone-rotate-portrait" />}>
+          {Object.entries(ReaderScreenOrientation).map(([key, value]) => (
+            <MenuItem
+              key={key}
+              optionKey={value as ReaderScreenOrientation}
+              onSelect={setLockOrientation}
+              color={value === lockOrientation ? 'primary' : undefined}
+            >
+              {value}
+            </MenuItem>
+          ))}
+          {mangaKey != null && (
+            <MenuItem
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              optionKey={'Use global setting' as any}
+              onSelect={setLockOrientation}
+              color={
+                lockOrientation === 'Use global setting' ? 'primary' : undefined
+              }
+            >
+              Use global setting
+            </MenuItem>
+          )}
+        </Menu>
+      </Box>
     );
   return (
     <Stack

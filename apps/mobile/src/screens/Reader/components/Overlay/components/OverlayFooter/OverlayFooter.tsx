@@ -16,17 +16,15 @@ const OverlayFooter: React.FC<OverlayFooterProps> = (props) => {
 
   return (
     <AnimatedBox
-      px="m"
       pb={insets.bottom}
       background-color={OVERLAY_COLOR}
       style={style}
+      flex-direction="row"
     >
-      <Stack flex-direction="row" space="s" justify-content="space-evenly">
-        <DeviceOrientation />
-        <ZoomStartPosition />
-        <ImageScaling />
-        <ReaderDirection />
-      </Stack>
+      <DeviceOrientation />
+      <ZoomStartPosition />
+      <ImageScaling />
+      <ReaderDirection />
     </AnimatedBox>
   );
 };
