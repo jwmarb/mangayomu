@@ -18,7 +18,7 @@ const ReaderDirection: React.FC<ConnectedReaderDirectionProps> = (props) => {
     type = 'button',
     setGlobalReadingDirection,
   } = props;
-  const mangaKey = useReaderContext();
+  const { mangaKey } = useReaderContext();
   const set = React.useCallback(
     (val: ReadingDirection | 'Use global setting') => {
       if (val !== 'Use global setting') setGlobalReadingDirection(val);

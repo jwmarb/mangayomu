@@ -8,8 +8,11 @@ export interface OverlayHeaderProps {
     opacity: number;
   };
   opacity: SharedValue<number>;
-  manga: MangaSchema & Realm.Object<MangaSchema, never>;
-  chapter: ChapterSchema & Realm.Object<ChapterSchema, never>;
+  mangaTitle: string;
+  chapterTitle: string;
   onOpenSettingsMenu: () => void;
   onBookmark: () => void;
+  onBack: () => void;
+  onTitlePress: () => void;
+  isBookmarked: boolean;
 }

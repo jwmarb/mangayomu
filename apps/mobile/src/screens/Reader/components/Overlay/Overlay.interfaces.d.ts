@@ -9,7 +9,6 @@ import useChapterFetcher from '@screens/Reader/hooks/useChapterFetcher';
 export interface OverlayProps extends React.PropsWithChildren {
   opacity: SharedValue<number>;
   currentPage: number;
-  mangaTitle: string;
   chapter: ChapterSchema & Realm.Object<ChapterSchema, never>;
   manga: MangaSchema & Realm.Object<MangaSchema, never>;
 }

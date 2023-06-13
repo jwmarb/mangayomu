@@ -23,7 +23,7 @@ const DeviceOrientation: React.FC<ConnectedDeviceOrientationProps> = (
     type = 'button',
     setLockedDeviceOrientation,
   } = props;
-  const mangaKey = useReaderContext();
+  const { mangaKey } = useReaderContext();
   const set = React.useCallback(
     (val: ReaderScreenOrientation | 'Use global setting') => {
       if (val !== 'Use global setting') setLockedDeviceOrientation(val);

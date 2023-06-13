@@ -66,13 +66,8 @@ export interface ReaderContextState {
   mangaKey?: string;
 }
 
-export const ReaderContext = React.createContext<string | undefined>(undefined);
-export const useReaderContext = () => {
-  const ctx = React.useContext(ReaderContext);
-  if (ctx == null)
-    throw Error('Tried calling useReaderContext when no context is provided');
-  return ctx;
-};
+export const ReaderContext = React.createContext<{ mangaKey?: string }>({});
+export const useReaderContext = () => React.useContext(ReaderContext);
 
 const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const {

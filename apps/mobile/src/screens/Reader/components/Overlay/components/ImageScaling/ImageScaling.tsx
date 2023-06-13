@@ -15,7 +15,7 @@ import Button from '@components/Button';
 
 const ImageScaling: React.FC<ConnectedImageScalingProps> = (props) => {
   const { globalImageScaling, type = 'button', setGlobalImageScaling } = props;
-  const mangaKey = useReaderContext();
+  const { mangaKey } = useReaderContext();
   const set = React.useCallback(
     (val: ImageScalingEnum | 'Use global setting') => {
       if (val != 'Use global setting') setGlobalImageScaling(val);

@@ -3,7 +3,6 @@ import { OverlayFooterProps } from './OverlayFooter.interfaces';
 import { AnimatedBox } from '@components/Box';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { OVERLAY_COLOR } from '@theme/constants';
-import { ReaderContext } from '@screens/Reader/Reader';
 import ImageScaling from '@screens/Reader/components/Overlay/components/ImageScaling';
 import ZoomStartPosition from '@screens/Reader/components/Overlay/components/ZoomStartPosition';
 import DeviceOrientation from '@screens/Reader/components/Overlay/components/DeviceOrientation';
@@ -32,4 +31,4 @@ const OverlayFooter: React.FC<OverlayFooterProps> = (props) => {
   );
 };
 
-export default OverlayFooter;
+export default React.memo(OverlayFooter);

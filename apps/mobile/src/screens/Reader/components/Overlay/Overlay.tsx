@@ -18,6 +18,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import OverlayHeader from '@screens/Reader/components/Overlay/components/OverlayHeader/OverlayHeader';
 import PageCounter from '@screens/Reader/components/Overlay/components/PageCounter/PageCounter';
 import OverlayFooter from '@screens/Reader/components/Overlay/components/OverlayFooter/OverlayFooter';
+import useRootNavigation from '@hooks/useRootNavigation';
+import useBookmark from '@screens/Reader/components/Overlay/hooks/useBookmark';
 
 const translateYOffset = moderateScale(-32);
 
@@ -26,7 +28,6 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
     opacity,
     showPageNumber,
     currentPage: page,
-    mangaTitle,
     chapter,
     manga,
     addIfNewSourceToLibrary,
@@ -37,9 +38,10 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   const translateY = useDerivedValue(() =>
     interpolate(opacity.value, [0, 1], [0, translateYOffset - insets.bottom]),
   );
-  function handleOnOpenSettingsMenu() {
-    ref.current?.snapToIndex(1);
-  }
+
+  const navigation = useRootNavigation();
+
+  const isBookmark = useBookmark(manga);
 
   const style = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -48,7 +50,24 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
     transform: [{ translateY: translateY.value }],
   }));
 
-  function handleOnBookmark() {
+  const handleOnPressTitle = React.useCallback(() => {
+    navigation.replace('MangaView', {
+      imageCover: manga.imageCover,
+      link: manga.link,
+      source: manga.source,
+      title: manga.title,
+    });
+  }, [navigation, manga.imageCover, manga.link, manga.source, manga.title]);
+
+  const handleOnBack = React.useCallback(() => {
+    if (navigation.canGoBack()) navigation.goBack();
+  }, [navigation]);
+
+  const handleOnOpenSettingsMenu = React.useCallback(() => {
+    ref.current?.snapToIndex(1);
+  }, []);
+
+  const handleOnBookmark = React.useCallback(() => {
     realm.write(() => {
       addIfNewSourceToLibrary(manga.source);
       manga.inLibrary = !manga.inLibrary;
@@ -58,7 +77,12 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
       if (manga.inLibrary) manga.dateAddedInLibrary = Date.now();
       else manga.dateAddedInLibrary = undefined;
     });
-  }
+  }, [
+    manga.inLibrary,
+    manga.dateAddedInLibrary,
+    addIfNewSourceToLibrary,
+    realm,
+  ]);
 
   const bottomOverlayTranslation = useDerivedValue(() =>
     interpolate(opacity.value, [0, 1], [64, 0]),
@@ -69,9 +93,11 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   }));
   const bottomOverlayStyle = React.useMemo(
     () => [animatedBottomOverlayStyle, style],
-    [style, animatedBottomOverlayStyle],
+    [],
   );
   const ref = React.useRef<BottomSheetMethods>(null);
+
+  // console.log('\n\n\nRERENDER OVERLAY FULl');
 
   return (
     <Portal>
@@ -92,10 +118,13 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
         <OverlayHeader
           style={style}
           opacity={opacity}
-          manga={manga}
-          chapter={chapter}
+          mangaTitle={manga.title}
+          chapterTitle={chapter.name}
           onBookmark={handleOnBookmark}
           onOpenSettingsMenu={handleOnOpenSettingsMenu}
+          onBack={handleOnBack}
+          onTitlePress={handleOnPressTitle}
+          isBookmarked={isBookmark}
         />
         {/* <Box
           position="absolute"
@@ -147,7 +176,9 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
             pageCounterStyle={pageCounterStyle}
           />
         )}
-        <ReaderContext.Provider value={manga._id}>
+        <ReaderContext.Provider
+          value={React.useMemo(() => ({ mangaKey: manga._id }), [manga._id])}
+        >
           <OverlayFooter style={bottomOverlayStyle} />
         </ReaderContext.Provider>
       </Box>
@@ -155,4 +186,4 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   );
 };
 
-export default connector(React.memo(Overlay));
+export default connector(Overlay);
