@@ -3,8 +3,10 @@ import { OverlayHeaderProps } from './OverlayHeader.interfaces';
 import { AnimatedBox } from '@components/Box';
 import {
   OVERLAY_COLOR,
+  OVERLAY_HEADER_HEIGHT,
   OVERLAY_TEXT_PRIMARY,
   OVERLAY_TEXT_SECONDARY,
+  READER_NETWORK_TOAST_HEIGHT,
 } from '@theme/constants';
 import { useTheme } from '@emotion/react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,8 +23,9 @@ import {
   useAnimatedStyle,
   useDerivedValue,
 } from 'react-native-reanimated';
+import connector, { ConnectedOverlayHeaderProps } from './OverlayHeader.redux';
 
-const OverlayHeader: React.FC<OverlayHeaderProps> = (props) => {
+const OverlayHeader: React.FC<ConnectedOverlayHeaderProps> = (props) => {
   const {
     mangaTitle,
     opacity,
@@ -33,12 +36,20 @@ const OverlayHeader: React.FC<OverlayHeaderProps> = (props) => {
     onTitlePress,
     isBookmarked,
     onBack,
+    internetStatus,
   } = props;
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
   const topOverlayTranslation = useDerivedValue(() =>
-    interpolate(opacity.value, [0, 1], [-64, 0]),
+    interpolate(
+      opacity.value,
+      [0, 1],
+      [
+        -OVERLAY_HEADER_HEIGHT,
+        internetStatus === 'online' ? 0 : READER_NETWORK_TOAST_HEIGHT,
+      ],
+    ),
   );
 
   const animatedTopOverlayStyle = useAnimatedStyle(() => ({
@@ -93,4 +104,4 @@ const OverlayHeader: React.FC<OverlayHeaderProps> = (props) => {
   );
 };
 
-export default React.memo(OverlayHeader);
+export default connector(React.memo(OverlayHeader));
