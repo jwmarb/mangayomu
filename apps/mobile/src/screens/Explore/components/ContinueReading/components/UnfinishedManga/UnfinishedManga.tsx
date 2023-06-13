@@ -104,7 +104,7 @@ const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
               <Stack space="s" flex-direction="row" align-items="center">
                 <Icon type="font" name="page-next" color="primary" />
                 <Text color="textSecondary" variant="book-title">
-                  {nextChapter.name}
+                  {nextChapter?.name}
                 </Text>
               </Stack>
             </Box>
