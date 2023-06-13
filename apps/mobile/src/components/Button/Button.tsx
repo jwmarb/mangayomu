@@ -20,6 +20,7 @@ const Button: React.FC<ButtonProps> = (props) => {
   return (
     <BaseButton
       shouldCancelWhenOutside
+      disallowInterruption
       enabled={!disabled}
       style={{
         borderRadius: theme.style.borderRadius,
