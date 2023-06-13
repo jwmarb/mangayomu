@@ -4,8 +4,6 @@ export interface PageCounterProps {
   page?: number;
   totalPages?: number;
   pageCounterStyle: {
-    transform: {
-      translateY: number;
-    }[];
+    opacity: number;
   };
 }

@@ -20,8 +20,9 @@ import PageCounter from '@screens/Reader/components/Overlay/components/PageCount
 import OverlayFooter from '@screens/Reader/components/Overlay/components/OverlayFooter/OverlayFooter';
 import useRootNavigation from '@hooks/useRootNavigation';
 import useBookmark from '@screens/Reader/components/Overlay/hooks/useBookmark';
+import PageSliderNavigator from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator';
 
-const translateYOffset = moderateScale(-32);
+const pageSliderTranslateYOffset = moderateScale(-64);
 
 const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   const {
@@ -35,8 +36,15 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   const insets = useSafeAreaInsets();
   const realm = useRealm();
   const totalPages = chapter.numberOfPages;
-  const translateY = useDerivedValue(() =>
-    interpolate(opacity.value, [0, 1], [0, translateYOffset - insets.bottom]),
+  const textOpacity = useDerivedValue(() =>
+    interpolate(opacity.value, [0, 1], [1, 0]),
+  );
+  const pageSliderTranslateY = useDerivedValue(() =>
+    interpolate(
+      opacity.value,
+      [0, 1],
+      [0, pageSliderTranslateYOffset - insets.bottom],
+    ),
   );
 
   const navigation = useRootNavigation();
@@ -47,7 +55,11 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
     opacity: opacity.value,
   }));
   const pageCounterStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
+    opacity: textOpacity.value,
+  }));
+  const pageSliderStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: pageSliderTranslateY.value }],
+    opacity: opacity.value,
   }));
 
   const handleOnPressTitle = React.useCallback(() => {
@@ -116,7 +128,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
         justify-content="space-between"
       >
         <OverlayHeader
-          style={style}
+          style={React.useMemo(() => style, [])}
           opacity={opacity}
           mangaTitle={manga.title}
           chapterTitle={chapter.name}
@@ -169,6 +181,10 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
             />
           </Stack>
         </Box> */}
+        <PageSliderNavigator
+          opacity={opacity}
+          style={React.useMemo(() => pageSliderStyle, [])}
+        />
         {showPageNumber && (
           <PageCounter
             page={page}
