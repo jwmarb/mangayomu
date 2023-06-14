@@ -6,15 +6,17 @@ import React from 'react';
 
 const InterfaceTheme: React.FC = () => {
   return (
-    <Box px="m" py="s">
-      <Text variant="header" bold>
-        Interface theme
-      </Text>
-      <Text color="textSecondary">Customize your application theme</Text>
+    <>
+      <Box px="m" py="s">
+        <Text variant="header" bold>
+          Interface theme
+        </Text>
+        <Text color="textSecondary">Customize your application theme</Text>
+      </Box>
       <Stack space="s">
         <AppearanceMode />
       </Stack>
-    </Box>
+    </>
   );
 };
 
