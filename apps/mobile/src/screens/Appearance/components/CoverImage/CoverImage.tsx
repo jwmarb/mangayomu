@@ -35,7 +35,7 @@ const CoverImage: React.FC<CoverImageProps> = (props) => {
         py="m"
         px="l"
         border-width="@theme"
-        style={{ borderColor: theme.palette.borderColor }}
+        border-color="@theme"
       >
         <Text>Width</Text>
         <Slider

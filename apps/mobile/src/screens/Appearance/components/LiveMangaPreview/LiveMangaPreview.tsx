@@ -138,7 +138,7 @@ const LiveMangaPreview: React.FC<LiveMangaPreviewProps> = (props) => {
   }
   return (
     <Box
-      style={{ borderColor: theme.palette.borderColor }}
+      border-color="@theme"
       border-width="@theme"
       border-radius="@theme"
       mx="m"
@@ -152,10 +152,8 @@ const LiveMangaPreview: React.FC<LiveMangaPreviewProps> = (props) => {
           align-items="center"
           background-color="rgba(0, 0, 0, 0.7)"
           justify-content="center"
-          style={[
-            { borderColor: theme.palette.borderColor },
-            expandedImageStyle,
-          ]}
+          style={expandedImageStyle}
+          border-color="@theme"
           position="absolute"
           top={0}
           left={0}

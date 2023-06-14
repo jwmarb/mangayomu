@@ -28,11 +28,7 @@ const AppearanceModePreview: React.FC<AppearanceModePreviewProps> = (props) => {
     <Stack space="s" m="m">
       <PreviewSelectorWrapper isSelected={isSelected}>
         <Box
-          style={{
-            borderColor: isSelected
-              ? theme.palette.primary.main
-              : theme.palette.borderColor,
-          }}
+          border-color={isSelected ? 'primary' : '@theme'}
           background-color={theme.palette.background.paper}
           border-radius="@theme"
           border-width="@theme"

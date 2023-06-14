@@ -27,7 +27,7 @@ const PreviewSelectorWrapper: React.FC<PreviewSelectorWrapperProps> = (
           border-radius={10000}
           align-items="center"
           justify-content="center"
-          style={{ borderColor: theme.palette.background[background] }}
+          border-color={theme.palette.background[background]}
           border-width={SIZE / 6}
         >
           <Icon

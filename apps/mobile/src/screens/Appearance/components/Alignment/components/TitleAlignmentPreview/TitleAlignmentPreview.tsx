@@ -32,11 +32,7 @@ const TitleAlignmentPreview: React.FC<TitleAlignmentPreviewProps> = (props) => {
           }}
         >
           <Stack
-            style={{
-              borderColor: isSelected
-                ? theme.palette.primary.main
-                : theme.palette.borderColor,
-            }}
+            border-color={isSelected ? 'primary' : '@theme'}
             border-width="@theme"
             border-radius="@theme"
             px="m"

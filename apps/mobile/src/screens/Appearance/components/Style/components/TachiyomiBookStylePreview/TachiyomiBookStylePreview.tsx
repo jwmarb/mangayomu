@@ -36,11 +36,7 @@ const TachiyomiBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
         >
           <Stack
             px="m"
-            style={{
-              borderColor: isSelected
-                ? theme.palette.primary.main
-                : theme.palette.borderColor,
-            }}
+            border-color={isSelected ? 'primary' : '@theme'}
             border-width="@theme"
             border-radius="@theme"
             flex-grow
@@ -52,10 +48,8 @@ const TachiyomiBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
               width={BOOK_DIMENSIONS.width}
               height={BOOK_COVER_HEIGHT}
               background-color={theme.palette.skeleton}
-              style={[
-                coverStyles.image,
-                { borderColor: theme.palette.borderColor },
-              ]}
+              style={coverStyles.image}
+              border-color="@theme"
               border-width={moderateScale(2)}
             >
               <Stack space="s" p="s">

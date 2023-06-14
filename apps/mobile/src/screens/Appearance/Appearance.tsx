@@ -273,9 +273,9 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
                   </Text>
                 </Box>
                 <Stack
-                  style={{ borderColor: theme.palette.borderColor }}
                   border-radius="@theme"
                   border-width="@theme"
+                  border-color="@theme"
                   background-color="paper"
                   py="m"
                 >

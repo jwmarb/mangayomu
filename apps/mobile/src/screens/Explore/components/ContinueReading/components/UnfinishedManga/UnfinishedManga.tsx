@@ -75,9 +75,7 @@ const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
         overflow="hidden"
         background-color="paper"
         border-radius="@theme"
-        style={{
-          borderColor: theme.palette.borderColor,
-        }}
+        border-color="@theme"
         border-width="@theme"
       >
         <RectButton

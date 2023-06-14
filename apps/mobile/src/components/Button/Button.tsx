@@ -52,14 +52,13 @@ const Button: React.FC<ButtonProps> = (props) => {
           justify-content="center"
           border-width="@theme"
           border-radius="@theme"
-          style={{
-            borderColor:
-              variant === 'outline'
-                ? disabled
-                  ? theme.palette.text.disabled
-                  : theme.helpers.getColor(color)
-                : 'transparent',
-          }}
+          border-color={
+            variant === 'outline'
+              ? disabled
+                ? 'disabled'
+                : color
+              : 'transparent'
+          }
         >
           {iconPlacement === 'left' &&
             icon &&

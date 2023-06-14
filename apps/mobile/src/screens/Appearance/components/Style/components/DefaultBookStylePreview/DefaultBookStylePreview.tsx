@@ -30,11 +30,7 @@ const DefaultBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
           flex-shrink
           space="s"
           border-radius="@theme"
-          style={{
-            borderColor: isSelected
-              ? theme.palette.primary.main
-              : theme.palette.borderColor,
-          }}
+          border-color={isSelected ? 'primary' : '@theme'}
           border-width="@theme"
         >
           <BaseButton
