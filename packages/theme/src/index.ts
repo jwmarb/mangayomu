@@ -7,7 +7,7 @@ import {
   readColors,
 } from './helpers';
 export * from './colorHelpers';
-
+import deepcopy from 'deepcopy';
 export interface RGBA {
   red: number;
   green: number;
@@ -159,7 +159,9 @@ type ThemeCreator<T extends Theme> = (builder: ThemeBuilder) => ThemeSchema<T>;
  * @param builder A helper function to create a theme
  * @returns Returns the theme that will be used for the application
  */
-export function createTheme<T extends Theme>(builder: ThemeCreator<T>): T {
+export function createTheme<T extends Theme>(
+  builder: ThemeCreator<T>,
+): T & { opposite: T } {
   function color(dark: string, light: string): ColorSchema {
     return { dark, light };
   }
@@ -171,12 +173,17 @@ export function createTheme<T extends Theme>(builder: ThemeCreator<T>): T {
     colorConstant,
     definePalette: definePalette as ThemeBuilder['definePalette'],
   });
+  const opposite = deepcopy(template);
 
   const parsedGetContrastText = getContrastText(
     template.palette as ThemeSchema<DefaultTheme>['palette'],
   );
 
+  const oppositeMode = template.mode === 'light' ? 'dark' : 'light';
+  opposite.mode = oppositeMode;
+
   mutatePalette(template, template.mode);
+  mutatePalette(opposite, oppositeMode);
 
   // const parsed: DefaultTheme = {
   //   ...template,
@@ -197,15 +204,33 @@ export function createTheme<T extends Theme>(builder: ThemeCreator<T>): T {
     ),
     helpers: {},
   };
+  const oppositeParsed = {
+    ...opposite,
+    palette: readColors(
+      (opposite as ThemeSchema<DefaultTheme>).palette,
+      oppositeMode,
+    ),
+    helpers: {},
+  };
 
   for (const key in template.helpers) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (parsed.helpers as any)[key] = (...args: unknown[]) =>
       (template.helpers as any)[key](...args)(parsed);
+
+    (oppositeParsed.helpers as any)[key] = (...args: unknown[]) =>
+      (template.helpers as any)[key](...args)(oppositeParsed);
   }
   (parsed as DefaultTheme).helpers['getColor'] = getColor(
     parsed as DefaultTheme,
   );
   (parsed as DefaultTheme).helpers['getContrastText'] = parsedGetContrastText;
-  return parsed as T & DefaultThemeHelpers;
+  (oppositeParsed as DefaultTheme).helpers['getColor'] = getColor(
+    oppositeParsed as DefaultTheme,
+  );
+  (oppositeParsed as DefaultTheme).helpers['getContrastText'] =
+    parsedGetContrastText;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (parsed as any).opposite = oppositeParsed;
+  return parsed as T & DefaultThemeHelpers & { opposite: T };
 }

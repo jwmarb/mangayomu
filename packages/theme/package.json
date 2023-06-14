@@ -15,5 +15,8 @@
   "devDependencies": {
     "@types/jest": "^29.2.5",
     "ts-jest": "^29.0.5"
+  },
+  "dependencies": {
+    "deepcopy": "^2.1.0"
   }
 }
