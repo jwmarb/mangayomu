@@ -11,7 +11,7 @@ const OFFSET = moderateScale(-8);
 const PreviewSelectorWrapper: React.FC<PreviewSelectorWrapperProps> = (
   props,
 ) => {
-  const { children, isSelected } = props;
+  const { children, isSelected, background = 'default' } = props;
   const theme = useTheme();
   return (
     <Box>
@@ -27,7 +27,7 @@ const PreviewSelectorWrapper: React.FC<PreviewSelectorWrapperProps> = (
           border-radius={10000}
           align-items="center"
           justify-content="center"
-          style={{ borderColor: theme.palette.background.default }}
+          style={{ borderColor: theme.palette.background[background] }}
           border-width={SIZE / 6}
         >
           <Icon
