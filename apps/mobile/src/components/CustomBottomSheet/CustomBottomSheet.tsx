@@ -16,6 +16,9 @@ import Animated, {
 import { Portal } from '@gorhom/portal';
 import { AnimatedBox } from '@components/Box';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Freeze } from 'react-freeze';
+import Progress from '@components/Progress/Progress';
+import Box from '@components/Box/Box';
 
 const CustomHandle: React.FC<BottomSheetHandleProps> = ({ animatedIndex }) => {
   const theme = useTheme();
@@ -60,7 +63,7 @@ const CustomBottomSheet: React.ForwardRefRenderFunction<
   } = props;
   const bottomSheet = React.useRef<BottomSheet>(null);
   const animatedIndex = useSharedValue(0);
-  const isOpened = React.useRef<boolean>(false);
+  const [isOpened, setIsOpened] = React.useState<boolean>(false);
   const styledBackground = React.useMemo(
     () => [
       backgroundStyle,
@@ -79,19 +82,19 @@ const CustomBottomSheet: React.ForwardRefRenderFunction<
 
   function handleOnClose() {
     onClose && onClose();
-    isOpened.current = false;
+    setIsOpened(false);
   }
   function handleOnChange(i: number) {
     onChange && onChange(i);
-    if (i === -1) isOpened.current = false;
+    if (i === -1) setIsOpened(false);
     else {
       onOpen();
-      isOpened.current = true;
+      setIsOpened(true);
     }
   }
   React.useEffect(() => {
     const p = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (isOpened.current) {
+      if (isOpened) {
         bottomSheet.current?.close();
         return true;
       }
@@ -127,7 +130,16 @@ const CustomBottomSheet: React.ForwardRefRenderFunction<
             {header}
           </AnimatedBox>
         )}
-        {children}
+        <Freeze
+          freeze={!isOpened}
+          placeholder={
+            <Box p="m">
+              <Progress />
+            </Box>
+          }
+        >
+          {children}
+        </Freeze>
       </BottomSheet>
     </Portal>
   );
