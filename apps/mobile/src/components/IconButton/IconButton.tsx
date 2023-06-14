@@ -28,8 +28,8 @@ const IconButton: React.FC<IconButtonProps> = (props) => {
   const borderlessButtonStyle = React.useMemo(
     () =>
       ({
-        width: moderateScale(compact ? 32 : 48),
-        height: moderateScale(compact ? 32 : 48),
+        width: moderateScale(48),
+        height: moderateScale(48),
         alignItems: 'center',
         justifyContent: 'center',
       } as const),
@@ -47,6 +47,7 @@ const IconButton: React.FC<IconButtonProps> = (props) => {
         shouldCancelWhenOutside
         style={borderlessButtonStyle}
         rippleColor={rippleColor}
+        rippleRadius={compact ? moderateScale(18) : undefined}
         {...rest}
       >
         {icon &&

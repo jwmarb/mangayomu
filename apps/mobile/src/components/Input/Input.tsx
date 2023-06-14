@@ -10,6 +10,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { InputProps } from './Input.interfaces';
+import { moderateScale } from 'react-native-size-matters';
 
 const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
   const {
@@ -54,17 +55,14 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
           {React.cloneElement(icon, { variant: 'icon-button' })}
         </Box>
       )}
-      {iconButton && (
-        <Box left={0} position="absolute" align-self="center" ml="s">
-          {React.cloneElement(iconButton, { compact: true })}
-        </Box>
-      )}
+
       <InputBase
         iconButton={iconButton}
         icon={icon}
         onChangeText={handleOnChangeText}
         defaultValue={defaultValue}
         expanded={expanded}
+        shouldCancelWhenOutside
         {...rest}
         ref={(r) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -74,6 +72,16 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
         }}
         placeholderTextColor={theme.palette.text.hint}
       />
+      {iconButton && (
+        <Box
+          left={moderateScale(-8)}
+          position="absolute"
+          align-self="center"
+          ml="s"
+        >
+          {React.cloneElement(iconButton, { compact: true })}
+        </Box>
+      )}
       <Box position="absolute" right={0} align-self="center" mr="m">
         <Animated.View style={style}>
           <IconButton
