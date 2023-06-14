@@ -85,5 +85,6 @@ declare module '@emotion/react' {
       spacing: typeof spacing;
     } & DefaultTheme['style'];
     __react_navigation__: NavigationTheme;
+    opposite: Omit<Theme, 'opposite'>;
   }
 }
