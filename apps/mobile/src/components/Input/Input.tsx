@@ -82,7 +82,12 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
           {React.cloneElement(iconButton, { compact: true })}
         </Box>
       )}
-      <Box position="absolute" right={0} align-self="center" mr="m">
+      <Box
+        position="absolute"
+        right={moderateScale(-8)}
+        align-self="center"
+        mr="m"
+      >
         <Animated.View style={style}>
           <IconButton
             icon={<Icon type="font" name="close" />}
