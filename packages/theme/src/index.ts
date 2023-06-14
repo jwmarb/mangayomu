@@ -85,6 +85,7 @@ export interface DefaultTheme extends IThemeHelpers {
   };
   style: {
     borderRadius: number;
+    borderWidth: number;
     spacing: {
       s: number | string;
       m: number | string;
