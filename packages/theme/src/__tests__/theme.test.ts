@@ -48,6 +48,35 @@ const helpers = {
       return one + two;
     };
   },
+  withUsingParsedThemeProperty: () => {
+    return (theme: TestTheme) => {
+      return theme.palette.primary.ripple;
+    };
+  },
+  withCallingAnotherMethod: () => {
+    return (theme: TestTheme) => {
+      return theme.helpers.withMultipleParams(5, 10);
+    };
+  },
+  // This is just a binary search recursion algorithm
+  withRecursion: (arr: number[], target: number) => {
+    return (theme: TestTheme) => {
+      const m = Math.floor(arr.length / 2);
+      if (arr.length === 1 && arr[0] !== target) return false;
+      if (arr[m] === target) return true;
+      else if (target < arr[m])
+        return theme.helpers.withRecursion(
+          arr.slice(0, m),
+          target,
+        ) as unknown as boolean;
+      else if (target > arr[m])
+        return theme.helpers.withRecursion(
+          arr.slice(m),
+          target,
+        ) as unknown as boolean;
+      return false;
+    };
+  },
 };
 
 test('Theme object created and parsed properly', () => {
@@ -117,6 +146,16 @@ test('helper functions work as intended', () => {
   expect(theme.helpers.withParams('foo')).toBe(theme.mode + ' ' + 'foobar');
   expect(theme.helpers.getColor('primary')).toBe(theme.palette.primary.main);
   expect(theme.helpers.withMultipleParams(2, 2)).toBe(4);
+  expect(theme.helpers.withUsingParsedThemeProperty()).toBe(
+    theme.palette.primary.ripple,
+  );
+  expect(theme.helpers.withCallingAnotherMethod()).toBe(15);
+  expect(
+    theme.helpers.withRecursion([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 4),
+  ).toBe(true);
+  expect(
+    theme.helpers.withRecursion([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 22),
+  ).toBe(false);
 });
 
 test('palette in a different key is parsed', () => {
