@@ -46,7 +46,7 @@ function App(): JSX.Element {
   }, []);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <>
       <StatusBar translucent backgroundColor="transparent" />
       <SafeAreaProvider>
         <Provider store={store}>
@@ -76,7 +76,7 @@ function App(): JSX.Element {
           </PersistGate>
         </Provider>
       </SafeAreaProvider>
-    </GestureHandlerRootView>
+    </>
   );
 }
 
