@@ -19,4 +19,5 @@ export interface StackProps
   space?: Spacing | number | { x?: Spacing | number; y?: Spacing | number };
   // eslint-disable-next-line @typescript-eslint/ban-types
   'background-color'?: 'paper' | 'default' | ButtonColors | (string & {});
+  overflow?: BoxProps['overflow'];
 }

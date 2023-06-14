@@ -4,6 +4,7 @@ import {
   implementDimensionsModel,
   implementFlexBoxModel,
   implementPositionModel,
+  set,
   setWithPalette,
 } from '@components/Box/Box.helpers';
 import { StackProps } from '@components/Stack/Stack.interfaces';
@@ -12,7 +13,13 @@ import Animated from 'react-native-reanimated';
 
 const Stack = styled.View<StackProps>`
   ${(props) => {
-    const { theme, space, debug, 'background-color': backgroundColor } = props;
+    const {
+      theme,
+      space,
+      debug,
+      'background-color': backgroundColor,
+      overflow,
+    } = props;
     return css`
       ${(() => {
         if (space == null) return;
@@ -54,6 +61,7 @@ const Stack = styled.View<StackProps>`
           `;
         }
       })()};
+      ${set('overflow', overflow)}
       ${backgroundColor &&
       setWithPalette(theme, 'background-color', backgroundColor)}
       ${debug &&
