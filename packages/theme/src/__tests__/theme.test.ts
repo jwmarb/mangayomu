@@ -1,4 +1,4 @@
-import { createTheme, DefaultTheme, DefaultThemeHelpers } from '..';
+import { Colors, createTheme, DefaultTheme, DefaultThemeHelpers } from '..';
 
 interface TestTheme extends DefaultTheme {
   helpers: typeof helpers & DefaultThemeHelpers;
@@ -24,7 +24,7 @@ interface ReactNavigationTheme extends DefaultTheme {
   };
 }
 
-let theme: TestTheme;
+let theme: TestTheme & { opposite: TestTheme };
 let theme2: ReactNavigationTheme;
 
 const helpers = {
@@ -75,6 +75,18 @@ const helpers = {
           target,
         ) as unknown as boolean;
       return false;
+    };
+  },
+  themeModeDependentFunction: (
+    color:
+      | Colors
+      | 'primary@contrast'
+      | 'secondary@contrast'
+      | 'warning@contrast'
+      | 'error@contrast',
+  ) => {
+    return (theme: TestTheme) => {
+      return theme.helpers.getColor(color);
     };
   },
 };
@@ -293,4 +305,20 @@ test('Custom palette color', () => {
   expect(theme3.palette.customPaletteColor).toBe('#000000');
   expect(typeof theme3.palette.nested.one).toBe('string');
   expect(theme3.palette.nested.one).toBe('#000000');
+});
+
+test('Opposite theme parsed properly', () => {
+  expect(theme.opposite.palette.primary.main).toBe('#1890ff');
+  expect(theme.opposite.mode).toBe('dark');
+});
+
+test('Opposite theme helpers work as intended', () => {
+  expect(theme.opposite.helpers.themeModeDependentFunction('primary')).toBe(
+    '#1890ff',
+  );
+  expect(
+    theme.helpers.getContrastText(theme.opposite.palette.primary.main),
+  ).toBe(
+    theme.opposite.helpers.getContrastText(theme.opposite.palette.primary.main),
+  );
 });
