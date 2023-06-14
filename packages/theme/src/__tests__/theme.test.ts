@@ -117,6 +117,7 @@ test('Theme object created and parsed properly', () => {
     },
     style: {
       borderRadius: 4,
+      borderWidth: 4,
       spacing: {
         s: 2,
         m: 6,
@@ -197,6 +198,7 @@ test('palette in a different key is parsed', () => {
       },
       style: {
         borderRadius: 4,
+        borderWidth: 4,
         spacing: {
           s: 2,
           m: 6,
@@ -275,6 +277,7 @@ test('Custom palette color', () => {
       },
       style: {
         borderRadius: 4,
+        borderWidth: 4,
         spacing: {
           s: 2,
           m: 6,
