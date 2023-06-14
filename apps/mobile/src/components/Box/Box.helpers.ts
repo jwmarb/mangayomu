@@ -63,6 +63,10 @@ export function setWithPalette(
 ) {
   if (value == null) return;
   if (typeof value === 'string') {
+    if (value === 'skeleton')
+      return css`
+        ${cssProperty}: ${theme.palette.skeleton};
+      `;
     if (value in theme.palette.background)
       return css`
         ${cssProperty}: ${theme.palette.background[

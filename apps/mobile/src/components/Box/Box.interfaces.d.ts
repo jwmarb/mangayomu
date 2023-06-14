@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import React from 'react';
-import { ViewStyle } from 'react-native';
+import { ViewProps, ViewStyle } from 'react-native';
 import {
   BackgroundColor,
   ButtonColors,
@@ -49,6 +49,7 @@ export type BoxColor =
   | 'paper'
   | 'default'
   | 'disabled'
+  | 'skeleton'
   | (string & {});
 
 export interface BorderModel {
@@ -95,7 +96,8 @@ export interface BoxProps
     DimensionsModel,
     PositionModel,
     BorderModel,
-    Debuggable {
+    Debuggable,
+    ViewProps {
   /**
    * Layout
    */
