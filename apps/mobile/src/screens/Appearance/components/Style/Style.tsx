@@ -28,6 +28,9 @@ const Style: React.FC<StyleProps> = (props) => {
         <Text bold variant="header">
           Style
         </Text>
+        <Text color="textSecondary">
+          Customize how manga is displayed on screen
+        </Text>
       </Box>
       <ScrollView
         horizontal
