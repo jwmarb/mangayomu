@@ -64,6 +64,7 @@ const CustomizableCover: React.FC<CustomizableCoverProps> = (props) => {
       </Animated.View>
       <AnimatedFastImage
         source={{ uri: src }}
+        resizeMode="cover"
         style={imageStyle}
         onError={handleOnError}
       >
