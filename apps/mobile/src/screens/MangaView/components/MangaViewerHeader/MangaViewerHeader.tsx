@@ -141,7 +141,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
           />
         </Stack>
       </Stack>
-      <Box border-color="disabled" border-width={{ b: 1.5 }} />
+      <Box border-color="disabled" border-width={{ b: '@theme' }} />
     </Box>
   );
 };

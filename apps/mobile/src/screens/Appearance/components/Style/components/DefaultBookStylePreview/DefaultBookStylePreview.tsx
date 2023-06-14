@@ -35,7 +35,7 @@ const DefaultBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
               ? theme.palette.primary.main
               : theme.palette.borderColor,
           }}
-          border-width={RADIO_BUTTON_BORDER_WIDTH}
+          border-width="@theme"
         >
           <BaseButton
             onPress={handleOnPress}

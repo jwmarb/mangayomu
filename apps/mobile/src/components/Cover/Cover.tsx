@@ -55,7 +55,8 @@ const Cover: React.FC<ConnectedCoverProps> = (props) => {
           : coverHeight * scale,
       borderRadius:
         coverStyle !== BookStyle.MANGAROCK ? moderateScale(8 * scale) : 0,
-      borderWidth: coverStyle === BookStyle.TACHIYOMI ? 1 : 0,
+      borderWidth:
+        coverStyle === BookStyle.TACHIYOMI ? theme.style.borderWidth : 0,
       borderColor:
         coverStyle === BookStyle.TACHIYOMI
           ? theme.palette.background.disabled

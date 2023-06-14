@@ -85,7 +85,7 @@ const Radio: React.FC<BaseRadioProps> = React.memo((props) => {
         >
           <AnimatedBox
             border-color="disabled"
-            border-width={moderateScale(1.5)}
+            border-width="@theme"
             style={radioContainerStyle}
             align-self="center"
             border-radius={100000}

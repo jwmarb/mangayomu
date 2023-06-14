@@ -41,7 +41,7 @@ const Button: React.FC<ButtonProps> = (props) => {
         flex-direction="row"
         align-items="center"
         justify-content="center"
-        border-width={moderateScale(1.5)}
+        border-width="@theme"
         border-radius="@theme"
         style={{
           borderColor:

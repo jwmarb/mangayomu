@@ -65,7 +65,7 @@ const MangaDescription: React.FC<MangaDescriptionProps> = (props) => {
         </>
       ) : data ? (
         <Box
-          border-width={{ b: 1 }}
+          border-width={{ b: '@theme' }}
           border-color={theme.palette.borderColor}
           pb="m"
         >

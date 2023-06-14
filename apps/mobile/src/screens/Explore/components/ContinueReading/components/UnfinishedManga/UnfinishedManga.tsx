@@ -78,7 +78,7 @@ const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
         style={{
           borderColor: theme.palette.borderColor,
         }}
-        border-width={1}
+        border-width="@theme"
       >
         <RectButton
           shouldCancelWhenOutside
