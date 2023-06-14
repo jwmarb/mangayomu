@@ -196,7 +196,7 @@ const LiveMangaPreview: React.FC<LiveMangaPreviewProps> = (props) => {
       </Portal>
       <Button
         sharp
-        label={livePreview ? 'Hide Preview' : 'Live Preview Manga'}
+        label={livePreview ? 'Hide Preview' : 'Preview Manga'}
         onPress={() => {
           toggleLivePreview();
         }}
@@ -219,6 +219,7 @@ const LiveMangaPreview: React.FC<LiveMangaPreviewProps> = (props) => {
             p="m"
             height={moderateScale(400)}
             overflow="hidden"
+            justify-content="center"
           >
             {children}
           </Box>
