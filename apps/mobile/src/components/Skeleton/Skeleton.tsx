@@ -20,7 +20,7 @@ const Skeleton: React.FC<SkeletonProps> = (props) => {
       backgroundColor: theme.palette.skeleton,
       borderRadius: theme.style.borderRadius,
     }),
-    [fullWidth, theme.style.borderRadius, theme.palette.skeleton],
+    [fullWidth, theme.style.borderRadius, theme.palette.skeleton, height],
   );
 
   return (
