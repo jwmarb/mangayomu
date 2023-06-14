@@ -153,7 +153,9 @@ export type ThemeSchema<T extends DefaultTheme> = {
     : T[K];
 };
 
-type ThemeCreator<T extends Theme> = (builder: ThemeBuilder) => ThemeSchema<T>;
+type ThemeCreator<T extends Theme> = (
+  builder: ThemeBuilder,
+) => Omit<ThemeSchema<T>, 'opposite'>;
 /**
  * Create a theme for the application. Must be placed at the most top-level of the React app, and must be inside the component.
  * @param builder A helper function to create a theme
@@ -168,7 +170,7 @@ export function createTheme<T extends Theme>(
   function colorConstant(color: string): ColorSchema {
     return { dark: color, light: color };
   }
-  const template: ThemeSchema<T> = builder({
+  const template: Omit<ThemeSchema<T>, 'opposite'> = builder({
     color,
     colorConstant,
     definePalette: definePalette as ThemeBuilder['definePalette'],
