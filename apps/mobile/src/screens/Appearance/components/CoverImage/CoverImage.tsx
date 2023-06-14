@@ -7,6 +7,7 @@ import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import { CoverImageProps } from './CoverImage.interfaces';
+import { useTheme } from '@emotion/react';
 
 const CoverImage: React.FC<CoverImageProps> = (props) => {
   const {
@@ -17,23 +18,32 @@ const CoverImage: React.FC<CoverImageProps> = (props) => {
     autoHeight,
     onToggleAutoHeight,
   } = props;
+  const theme = useTheme();
   return (
     <>
-      <Text bold variant="header">
-        Cover Image
-      </Text>
       <Box>
-        <Text>Width</Text>
-        <Box mx="xl">
-          <Slider
-            defaultValue={width.value}
-            onChange={onChangeWidth}
-            min={moderateScale(50)}
-            max={moderateScale(200)}
-          />
-        </Box>
+        <Text bold variant="header">
+          Cover Image
+        </Text>
+        <Text color="textSecondary">
+          Change how manga covers should be displayed
+        </Text>
       </Box>
-      <Box>
+      <Box
+        border-radius="@theme"
+        background-color="paper"
+        py="m"
+        px="l"
+        border-width="@theme"
+        style={{ borderColor: theme.palette.borderColor }}
+      >
+        <Text>Width</Text>
+        <Slider
+          defaultValue={width.value}
+          onChange={onChangeWidth}
+          min={moderateScale(50)}
+          max={moderateScale(200)}
+        />
         <Stack flex-direction="row" space="m" align-items="center">
           <Text>Height</Text>
           <Box flex-direction="row" align-items="center">
@@ -45,16 +55,16 @@ const CoverImage: React.FC<CoverImageProps> = (props) => {
             </TouchableWithoutFeedback>
           </Box>
         </Stack>
-        {!autoHeight && (
-          <Box mx="xl">
+        <Box>
+          {!autoHeight && (
             <Slider
               defaultValue={height.value}
               onChange={onChangeHeight}
               min={50}
               max={moderateScale(400)}
             />
-          </Box>
-        )}
+          )}
+        </Box>
       </Box>
     </>
   );

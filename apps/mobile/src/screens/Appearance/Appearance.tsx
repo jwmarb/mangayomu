@@ -28,6 +28,7 @@ import FontSize from '@screens/Appearance/components/FontSize';
 import LetterSpacing from '@screens/Appearance/components/LetterSpacing';
 import AppearanceMode from '@screens/Appearance/components/AppearanceMode/AppearanceMode';
 import { BOOK_DIMENSIONS_RATIO } from '@theme/constants';
+import InterfaceTheme from '@screens/Appearance/components/InterfaceTheme/InterfaceTheme';
 
 type CustomManga = Omit<Manga, 'index' | 'link'>;
 
@@ -190,13 +191,10 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
         contentContainerStyle={contentContainerStyle}
         style={scrollViewStyle}
       >
-        <Stack space="s" my="s">
-          <Box mx="m">
-            <Text variant="header" bold>
-              Manga
-            </Text>
-          </Box>
-          <Box background-color="paper" border-radius="@theme" box-shadow>
+        <Stack space="s">
+          <Box>
+            <InterfaceTheme />
+            <Divider />
             <Box
               pointerEvents="none"
               p="m"
@@ -219,54 +217,62 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
                 imageCover="https://temp.compsci88.com/cover/One-Piece.jpg"
               />
             </Box>
-            <Divider />
-            <Stack space="s" p="m">
-              <Button
-                label="Press for library preview"
-                onPress={onLibraryPreview}
-              />
+            <Stack space="m">
               <Style style={style} setBookStyle={setBookStyle} />
-              <CoverImage
-                onChangeHeight={handleOnChangeHeight}
-                onChangeWidth={handleOnChangeWidth}
-                autoHeight={autoHeight}
-                onToggleAutoHeight={handleOnToggleAutoHeight}
-                width={width}
-                height={height}
-              />
-              <Text bold variant="header">
-                Title
-              </Text>
-              <Alignment
-                setTitleAlignment={setTitleAlignment}
-                alignment={title.alignment}
-              />
-              <BoldFont isBold={title.bold} onToggleBold={handleOnBoldToggle} />
-              <FontSize
-                fontSize={fontSize}
-                onChangeFontSize={handleOnChangeFontSize}
-              />
-              <LetterSpacing
-                letterSpacing={letterSpacing}
-                autoLetterSpacing={title.autoLetterSpacing}
-                onChangeLetterSpacing={handleOnChangeLetterSpacing}
-                onToggleAutoLetterSpacing={handleOnToggleLetterSpacing}
-              />
-            </Stack>
-          </Box>
-          <Box mx="m">
-            <Text variant="header" bold>
-              Theming
-            </Text>
-          </Box>
-          <Box background-color="paper" border-radius="@theme" box-shadow>
-            <Stack space="s" p="m">
-              <AppearanceMode />
+              <Stack mx="m" space="m">
+                <CoverImage
+                  onChangeHeight={handleOnChangeHeight}
+                  onChangeWidth={handleOnChangeWidth}
+                  autoHeight={autoHeight}
+                  onToggleAutoHeight={handleOnToggleAutoHeight}
+                  width={width}
+                  height={height}
+                />
+                <Box>
+                  <Text bold variant="header">
+                    Title
+                  </Text>
+                  <Text color="textSecondary">
+                    Modify how titles should be displayed in mangas
+                  </Text>
+                </Box>
+                <Stack
+                  style={{ borderColor: theme.palette.borderColor }}
+                  border-radius="@theme"
+                  border-width="@theme"
+                  background-color="paper"
+                  py="m"
+                >
+                  <Alignment
+                    setTitleAlignment={setTitleAlignment}
+                    alignment={title.alignment}
+                  />
+                  <Divider />
+                  <BoldFont
+                    isBold={title.bold}
+                    onToggleBold={handleOnBoldToggle}
+                  />
+
+                  <Divider />
+
+                  <FontSize
+                    fontSize={fontSize}
+                    onChangeFontSize={handleOnChangeFontSize}
+                  />
+                  <Divider />
+                  <LetterSpacing
+                    letterSpacing={letterSpacing}
+                    autoLetterSpacing={title.autoLetterSpacing}
+                    onChangeLetterSpacing={handleOnChangeLetterSpacing}
+                    onToggleAutoLetterSpacing={handleOnToggleLetterSpacing}
+                  />
+                </Stack>
+              </Stack>
             </Stack>
           </Box>
         </Stack>
       </Animated.ScrollView>
-      <CustomBottomSheet
+      {/* <CustomBottomSheet
         ref={bottomSheet}
         header={
           <Text variant="header" align="center" bold>
@@ -301,7 +307,7 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
             ))}
           </Box>
         </BottomSheetScrollView>
-      </CustomBottomSheet>
+      </CustomBottomSheet> */}
     </>
   );
 };

@@ -1,25 +1,47 @@
-import Radio from '@components/Radio';
-import RadioGroup from '@components/RadioGroup';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { TitleAlignment } from '@redux/slices/settings';
 import React from 'react';
 import { AlignmentProps } from './Alignment.interfaces';
+import Box from '@components/Box';
+import { ScrollView } from 'react-native-gesture-handler';
+import TitleAlignmentPreview from '@screens/Appearance/components/Alignment/components/TitleAlignmentPreview/TitleAlignmentPreview';
 
 const Alignment: React.FC<AlignmentProps> = (props) => {
   const { setTitleAlignment, alignment } = props;
   return (
-    <>
-      <Text>Alignment</Text>
-      <RadioGroup onChange={setTitleAlignment} value={alignment}>
-        <Stack flex-direction="row" space="s">
-          <Radio value={TitleAlignment.START} label="Left" />
-          <Radio value={TitleAlignment.CENTER} label="Center" />
-          <Radio value={TitleAlignment.END} label="Right" />
+    <Box pb="s">
+      <Box px="l" py="s">
+        <Text>Alignment</Text>
+      </Box>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+      >
+        <Stack flex-direction="row" space="m" px="l" py="s">
+          <TitleAlignmentPreview
+            alignItems="flex-start"
+            titleAlignment={TitleAlignment.START}
+            isSelected={alignment === TitleAlignment.START}
+            setTitleAlignment={setTitleAlignment}
+          />
+          <TitleAlignmentPreview
+            alignItems="center"
+            titleAlignment={TitleAlignment.CENTER}
+            isSelected={alignment === TitleAlignment.CENTER}
+            setTitleAlignment={setTitleAlignment}
+          />
+          <TitleAlignmentPreview
+            alignItems="flex-end"
+            titleAlignment={TitleAlignment.END}
+            isSelected={alignment === TitleAlignment.END}
+            setTitleAlignment={setTitleAlignment}
+          />
         </Stack>
-      </RadioGroup>
-    </>
+      </ScrollView>
+    </Box>
   );
 };
 
-export default React.memo(Alignment);
+export default Alignment;

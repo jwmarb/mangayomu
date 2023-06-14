@@ -18,7 +18,7 @@ const styles = ScaledSheet.create({
 const FontSize: React.FC<FontSizeProps> = (props) => {
   const { fontSize, onChangeFontSize } = props;
   return (
-    <Box>
+    <Box px="l" py="s">
       <Text>Font size</Text>
       <Stack flex-direction="row" space="m" align-items="center">
         <Text style={styles.textSmall}>abc</Text>
