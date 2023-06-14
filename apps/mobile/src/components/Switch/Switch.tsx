@@ -44,17 +44,14 @@ const Switch: React.FC<SwitchProps> = (props) => {
     interpolateColor(
       state.value,
       [0, 1],
-      [
-        'rgb(255, 255, 255)',
-        theme.palette[color][theme.mode === 'light' ? 'dark' : 'light'],
-      ],
+      ['rgb(255, 255, 255)', theme.palette[color].main],
     ),
   );
   const backgroundColor = useDerivedValue(() =>
     interpolateColor(
       state.value,
       [0, 1],
-      [theme.palette.background.disabled, theme.palette[color].main],
+      [theme.palette.background.disabled, theme.palette[color].dark],
     ),
   );
   const switchStyle = useAnimatedStyle(() => ({

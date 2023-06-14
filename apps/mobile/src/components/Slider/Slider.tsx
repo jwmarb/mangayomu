@@ -15,6 +15,7 @@ import Animated, {
   interpolate,
   runOnJS,
   useAnimatedReaction,
+  useAnimatedRef,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -33,7 +34,7 @@ const styles = ScaledSheet.create({
     height: '30@ms' as unknown as number,
   },
   trail: {
-    height: '1.5@ms' as unknown as number,
+    height: '4@ms' as unknown as number,
   },
 });
 
@@ -112,9 +113,11 @@ const Slider: React.ForwardRefRenderFunction<SliderMethods, SliderProps> = (
   const composedGestures = React.useMemo(
     () =>
       Gesture.Simultaneous(
-        Gesture.Tap().onStart((e) => {
-          left.value = Math.min(Math.max(e.x, maxLeft), maxRight ?? width);
-        }),
+        Gesture.LongPress()
+          .minDuration(0)
+          .onStart((e) => {
+            left.value = Math.min(Math.max(e.x, maxLeft), maxRight ?? width);
+          }),
         Gesture.Pan().onChange((e) => {
           left.value = Math.min(Math.max(e.x, maxLeft), maxRight ?? width);
         }),
@@ -142,6 +145,7 @@ const Slider: React.ForwardRefRenderFunction<SliderMethods, SliderProps> = (
       styles.trail,
       {
         backgroundColor: theme.helpers.getColor(color),
+        borderRadius: 10000,
       },
     ],
     [theme, color],
@@ -154,7 +158,7 @@ const Slider: React.ForwardRefRenderFunction<SliderMethods, SliderProps> = (
       [maxLeft, maxRight ?? newWidth],
       [maxLeft, newWidth],
     );
-    setTimeout(() => (opacity.value = 1), 1);
+    opacity.value = 1;
 
     setMaxRight(newWidth); // maxLeft is the padding: ;
     containerWidth.current = e.nativeEvent.layout.width;
@@ -163,30 +167,32 @@ const Slider: React.ForwardRefRenderFunction<SliderMethods, SliderProps> = (
   return (
     <Box flex-direction="row" flex-grow>
       <GestureDetector gesture={composedGestures}>
-        <Box flex-grow height={moderateScale(1.5)} py={moderateScale(15)}>
+        <Box flex-grow height={moderateScale(4)} py={moderateScale(14)}>
           <Box
             onLayout={handleOnLayout}
             flex-grow
-            height={moderateScale(1.5)}
+            height={moderateScale(4)}
             background-color={theme.palette.background.disabled}
+            border-radius={1000}
           />
         </Box>
       </GestureDetector>
       <GestureDetector gesture={composedGestures}>
-        <Box position="absolute" py={moderateScale(15)}>
+        <Box position="absolute" py={moderateScale(14)}>
           <Animated.View style={combinedTrailStyles}></Animated.View>
         </Box>
       </GestureDetector>
       <GestureDetector gesture={panGesture}>
         <AnimatedButton
           borderless
-          rippleColor={theme.palette.action.ripple}
+          foreground
+          rippleColor={theme.helpers.getRippleColor(color)}
           style={combinedBarStyles}
         >
           <Box
             align-self="center"
-            width={moderateScale(15)}
-            height={moderateScale(15)}
+            width={moderateScale(18)}
+            height={moderateScale(18)}
             background-color={theme.helpers.getColor(color)}
             border-radius={10000}
           ></Box>
