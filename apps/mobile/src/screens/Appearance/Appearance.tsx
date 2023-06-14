@@ -29,6 +29,14 @@ import LetterSpacing from '@screens/Appearance/components/LetterSpacing';
 import AppearanceMode from '@screens/Appearance/components/AppearanceMode/AppearanceMode';
 import { BOOK_DIMENSIONS_RATIO } from '@theme/constants';
 import InterfaceTheme from '@screens/Appearance/components/InterfaceTheme/InterfaceTheme';
+import IconButton from '@components/IconButton/IconButton';
+import Icon from '@components/Icon/Icon';
+import { Portal } from '@gorhom/portal';
+import useBoolean from '@hooks/useBoolean';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Input from '@components/Input/Input';
+import LiveMangaPreview from '@screens/Appearance/components/LiveMangaPreview/LiveMangaPreview';
+import { Freeze } from 'react-freeze';
 
 type CustomManga = Omit<Manga, 'index' | 'link'>;
 
@@ -95,6 +103,12 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
     useCollapsibleHeader({ headerTitle: 'Appearance' });
   const bottomSheet = React.useRef<BottomSheetMethods>(null);
   const { width: screenWidth } = useWindowDimensions();
+  const [bookTitle, setBookTitle] = React.useState<string>('One Piece');
+  const [imageURL, setImageURL] = React.useState<string>(
+    'https://temp.compsci88.com/cover/One-Piece.jpg',
+  );
+  const [source, setSource] = React.useState<string>('MangaSee');
+  const [enableLibraryPreview, toggleLibraryPreview] = useBoolean();
   const theme = useTheme();
   const width = useSharedValue(bookWidth);
   const height = useSharedValue(bookHeight);
@@ -166,6 +180,7 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
   }, []);
 
   function onLibraryPreview() {
+    toggleLibraryPreview(true);
     bottomSheet.current?.expand();
   }
 
@@ -195,7 +210,28 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
           <Box>
             <InterfaceTheme />
             <Divider />
-            <Box
+            <LiveMangaPreview
+              onLibraryPreview={onLibraryPreview}
+              setSource={setSource}
+              setBookTitle={setBookTitle}
+              setImageURL={setImageURL}
+              bookTitle={bookTitle}
+              imageURL={imageURL}
+            >
+              <CustomizableBook
+                bookStyle={style}
+                align={title.alignment}
+                bold={title.bold}
+                letterSpacing={letterSpacing}
+                fontSize={fontSize}
+                width={width}
+                height={height}
+                title={bookTitle}
+                source={source}
+                imageCover={imageURL}
+              />
+            </LiveMangaPreview>
+            {/* <Box
               pointerEvents="none"
               p="m"
               align-self="center"
@@ -216,7 +252,7 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
                 source="MangaSee"
                 imageCover="https://temp.compsci88.com/cover/One-Piece.jpg"
               />
-            </Box>
+            </Box> */}
             <Stack space="m">
               <Style style={style} setBookStyle={setBookStyle} />
               <Stack mx="m" space="m">
@@ -272,42 +308,45 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
           </Box>
         </Stack>
       </Animated.ScrollView>
-      {/* <CustomBottomSheet
+      <CustomBottomSheet
+        onClose={() => toggleLibraryPreview(false)}
         ref={bottomSheet}
         header={
           <Text variant="header" align="center" bold>
-            Preview
+            Library Preview
           </Text>
         }
       >
         <BottomSheetScrollView>
-          <Box flex-direction="row" flex-wrap="wrap">
-            {libraryExampleData.map((item, i) => (
-              <Animated.View style={cellComponentStyle} key={i}>
-                <Box
-                  m="s"
-                  align-items="center"
-                  justify-content="center"
-                  align-self="center"
-                >
-                  <CustomizableBook
-                    bookStyle={style}
-                    align={title.alignment}
-                    bold={title.bold}
-                    letterSpacing={letterSpacing}
-                    fontSize={fontSize}
-                    width={width}
-                    height={height}
-                    title={item.title}
-                    source={item.source}
-                    imageCover={item.imageCover}
-                  />
-                </Box>
-              </Animated.View>
-            ))}
-          </Box>
+          <Freeze freeze={!enableLibraryPreview}>
+            <Box flex-direction="row" flex-wrap="wrap">
+              {libraryExampleData.map((item, i) => (
+                <Animated.View style={cellComponentStyle} key={i}>
+                  <Box
+                    m="s"
+                    align-items="center"
+                    justify-content="center"
+                    align-self="center"
+                  >
+                    <CustomizableBook
+                      bookStyle={style}
+                      align={title.alignment}
+                      bold={title.bold}
+                      letterSpacing={letterSpacing}
+                      fontSize={fontSize}
+                      width={width}
+                      height={height}
+                      title={item.title}
+                      source={item.source}
+                      imageCover={item.imageCover}
+                    />
+                  </Box>
+                </Animated.View>
+              ))}
+            </Box>
+          </Freeze>
         </BottomSheetScrollView>
-      </CustomBottomSheet> */}
+      </CustomBottomSheet>
     </>
   );
 };
