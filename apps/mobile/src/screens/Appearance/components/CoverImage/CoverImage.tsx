@@ -24,12 +24,14 @@ const CoverImage: React.FC<CoverImageProps> = (props) => {
       </Text>
       <Box>
         <Text>Width</Text>
-        <Slider
-          defaultValue={width.value}
-          onChange={onChangeWidth}
-          min={moderateScale(50)}
-          max={moderateScale(200)}
-        />
+        <Box mx="xl">
+          <Slider
+            defaultValue={width.value}
+            onChange={onChangeWidth}
+            min={moderateScale(50)}
+            max={moderateScale(200)}
+          />
+        </Box>
       </Box>
       <Box>
         <Stack flex-direction="row" space="m" align-items="center">
@@ -44,12 +46,14 @@ const CoverImage: React.FC<CoverImageProps> = (props) => {
           </Box>
         </Stack>
         {!autoHeight && (
-          <Slider
-            defaultValue={height.value}
-            onChange={onChangeHeight}
-            min={50}
-            max={moderateScale(400)}
-          />
+          <Box mx="xl">
+            <Slider
+              defaultValue={height.value}
+              onChange={onChangeHeight}
+              min={50}
+              max={moderateScale(400)}
+            />
+          </Box>
         )}
       </Box>
     </>

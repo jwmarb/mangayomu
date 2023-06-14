@@ -52,7 +52,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
         style={styles.imageBackground}
       >
         <LinearGradient
-          colors={['rgba(0, 0, 0, 0.25)', theme.palette.background.default]}
+          colors={['rgba(0, 0, 0, 0.25)', theme.palette.background.paper]}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 0.7 }}
         >

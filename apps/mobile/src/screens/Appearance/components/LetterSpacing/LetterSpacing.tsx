@@ -31,12 +31,14 @@ const LetterSpacing: React.FC<LetterSpacingProps> = (props) => {
         </Box>
       </Stack>
       {!autoLetterSpacing && (
-        <Slider
-          min={-2}
-          max={1}
-          onChange={onChangeLetterSpacing}
-          defaultValue={letterSpacing.value}
-        />
+        <Box mx="xl">
+          <Slider
+            min={-2}
+            max={1}
+            onChange={onChangeLetterSpacing}
+            defaultValue={letterSpacing.value}
+          />
+        </Box>
       )}
     </Box>
   );
