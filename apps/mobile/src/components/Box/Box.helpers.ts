@@ -1,5 +1,6 @@
 import {
   BorderModel,
+  BoxColor,
   BoxModel,
   DimensionsModel,
   FlexBoxModel,
@@ -7,7 +8,7 @@ import {
 } from '@components/Box/Box.interfaces';
 import { css, ReactNativeStyle } from '@emotion/native';
 import { Theme } from '@emotion/react';
-import { ButtonColors, Spacing } from '@mangayomu/theme';
+import { ButtonColors, Colors, Spacing } from '@mangayomu/theme';
 
 export function set<T>(
   propertyName: string,
@@ -58,26 +59,28 @@ export function setwandh(
 export function setWithPalette(
   theme: Theme,
   cssProperty: string,
-  value?: string,
+  value?: BoxColor,
 ) {
   if (value == null) return;
-  if (value in theme.palette.background)
+  if (typeof value === 'string') {
+    if (value in theme.palette.background)
+      return css`
+        ${cssProperty}: ${theme.palette.background[
+          value as keyof typeof theme.palette.background
+        ]};
+      `;
+    if (value in theme.palette)
+      return css`
+        ${cssProperty}: ${theme.palette[value as ButtonColors].main};
+      `;
+    if (value === 'textPrimary' || value === 'textSecondary')
+      return css`
+        ${cssProperty}: ${theme.helpers.getColor(value as Colors)};
+      `;
     return css`
-      ${cssProperty}: ${theme.palette.background[
-        value as keyof typeof theme.palette.background
-      ]};
+      ${cssProperty}: ${value};
     `;
-  if (value in theme.palette)
-    return css`
-      ${cssProperty}: ${theme.palette[value as ButtonColors].main};
-    `;
-  if (value === 'textPrimary' || value === 'textSecondary')
-    return css`
-      ${cssProperty}: ${theme.helpers.getColor(value)};
-    `;
-  return css`
-    ${cssProperty}: ${value};
-  `;
+  }
 }
 
 export function implementBorderModel(theme: Theme, borderModel: BorderModel) {
@@ -90,7 +93,9 @@ export function implementBorderModel(theme: Theme, borderModel: BorderModel) {
     ${(() => {
       switch (typeof borderColor) {
         case 'string':
-          return setWithPalette(theme, 'border-color', borderColor);
+          return borderColor === '@theme'
+            ? `border-color: ${theme.palette.borderColor}`
+            : setWithPalette(theme, 'border-color', borderColor);
         case 'object':
           return css`
             ${setWithPalette(theme, 'border-top-color', borderColor.t)};
@@ -101,15 +106,26 @@ export function implementBorderModel(theme: Theme, borderModel: BorderModel) {
       }
     })()};
     ${(() => {
+      if (borderWidth === '@theme')
+        return `border-width: ${theme.style.borderWidth}px`;
+
       switch (typeof borderWidth) {
         case 'number':
           return `border-width: ${borderWidth}px`;
         case 'object':
           return css`
-            ${setu(theme, 'border-top-width', borderWidth.t)};
-            ${setu(theme, 'border-bottom-width', borderWidth.b)};
-            ${setu(theme, 'border-right-width', borderWidth.r)};
-            ${setu(theme, 'border-left-width', borderWidth.l)};
+            ${borderWidth.t === '@theme'
+              ? `border-top-width: ${theme.style.borderWidth}px`
+              : setu(theme, 'border-top-width', borderWidth.t)};
+            ${borderWidth.b === '@theme'
+              ? `border-bottom-width: ${theme.style.borderWidth}px`
+              : setu(theme, 'border-bottom-width', borderWidth.b)};
+            ${borderWidth.r === '@theme'
+              ? `border-right-width: ${theme.style.borderWidth}px`
+              : setu(theme, 'border-right-width', borderWidth.r)};
+            ${borderWidth.l === '@theme'
+              ? `border-left-width: ${theme.style.borderWidth}px`
+              : setu(theme, 'border-left-width', borderWidth.l)};
           `;
       }
     })()};

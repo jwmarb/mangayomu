@@ -1,6 +1,13 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import React from 'react';
 import { ViewStyle } from 'react-native';
-import { ButtonColors, Spacing } from '@mangayomu/theme';
+import {
+  BackgroundColor,
+  ButtonColors,
+  Colors,
+  Spacing,
+  Theme,
+} from '@mangayomu/theme';
 
 export interface Debuggable {
   debug?: boolean;
@@ -37,10 +44,21 @@ type BorderSideProperty<T> = {
   readonly b?: T;
 };
 
+export type BoxColor =
+  | Colors
+  | 'paper'
+  | 'default'
+  | 'disabled'
+  | (string & {});
+
 export interface BorderModel {
   'border-radius'?: number | '@theme' | BorderRadiusProperty<number | '@theme'>;
-  'border-color'?: string | BorderSideProperty<string>;
-  'border-width'?: number | BorderSideProperty<number>;
+  'border-color'?: BorderSideProperty<string> | '@theme' | BoxColor;
+  'border-width'?:
+    | number
+    | BorderSideProperty<number>
+    | BorderSideProperty<'@theme'>
+    | '@theme';
 }
 
 export interface BoxModel {
@@ -89,7 +107,6 @@ export interface BoxProps
   /**
    * Decorating
    */
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  'background-color'?: 'paper' | 'default' | ButtonColors | (string & {});
+  'background-color'?: BoxColor;
   'box-shadow'?: boolean;
 }
