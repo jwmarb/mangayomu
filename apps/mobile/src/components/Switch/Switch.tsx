@@ -74,7 +74,7 @@ const Switch: React.FC<SwitchProps> = (props) => {
       <TouchableWithoutFeedback onPress={onToggle}>
         <Box
           width={moderateScale(34)}
-          height={moderateScale(14)}
+          height={moderateScale(16)}
           align-self="center"
           border-radius={1000}
           as={Animated.View}
@@ -86,7 +86,7 @@ const Switch: React.FC<SwitchProps> = (props) => {
           shouldCancelWhenOutside
           onPress={onToggle}
           rippleRadius={moderateScale(18)}
-          rippleColor={theme.palette.action.ripple}
+          rippleColor={theme.helpers.getRippleColor(color)}
         >
           <Box
             as={Animated.View}
