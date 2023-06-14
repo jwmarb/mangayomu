@@ -15,6 +15,7 @@ const Button: React.FC<ButtonProps> = (props) => {
     disabled = false,
     icon,
     iconPlacement = 'left',
+    sharp = false,
     style,
     ...rest
   } = props;
@@ -25,7 +26,7 @@ const Button: React.FC<ButtonProps> = (props) => {
       style={[
         style,
         {
-          borderRadius: theme.style.borderRadius,
+          borderRadius: sharp ? undefined : theme.style.borderRadius,
           backgroundColor:
             variant === 'contained'
               ? disabled

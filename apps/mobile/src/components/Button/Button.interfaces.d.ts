@@ -10,4 +10,5 @@ export interface ButtonProps extends React.PropsWithChildren, BaseButtonProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon?: React.ReactElement<any>;
   iconPlacement?: 'left' | 'right';
+  sharp?: boolean;
 }
