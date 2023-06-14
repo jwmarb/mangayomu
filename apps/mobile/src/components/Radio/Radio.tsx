@@ -1,7 +1,7 @@
 import React from 'react';
 import { RadioProps, BaseRadioProps } from './Radio.interfaces';
 import { useRadioGroup } from '@components/RadioGroup';
-import Box from '@components/Box';
+import Box, { AnimatedBox } from '@components/Box';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
@@ -20,15 +20,15 @@ import { useTheme } from '@emotion/react';
 
 const styles = ScaledSheet.create({
   button: {
-    width: '22@ms',
-    height: '22@ms',
+    width: '22@ms' as unknown as number,
+    height: '22@ms' as unknown as number,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radio: {
     borderRadius: 10000,
-    width: '12@ms',
-    height: '12@ms',
+    width: '12@ms' as unknown as number,
+    height: '12@ms' as unknown as number,
   },
 });
 
@@ -43,6 +43,13 @@ const Radio: React.FC<BaseRadioProps> = React.memo((props) => {
       ['transparent', theme.palette.primary.main],
     ),
   );
+  const borderColor = useDerivedValue(() =>
+    interpolateColor(
+      state.value,
+      [0, 1],
+      [theme.palette.borderColor, theme.palette.primary.main],
+    ),
+  );
   function onChange() {
     _onChange();
     state.value = withTiming(1, { duration: 200 });
@@ -52,6 +59,9 @@ const Radio: React.FC<BaseRadioProps> = React.memo((props) => {
   }, [isSelected]);
   const radioStyle = useAnimatedStyle(() => ({
     backgroundColor: backgroundColor.value,
+  }));
+  const radioContainerStyle = useAnimatedStyle(() => ({
+    borderColor: borderColor.value,
   }));
 
   const combinedRadioStyle = React.useMemo(
@@ -73,10 +83,10 @@ const Radio: React.FC<BaseRadioProps> = React.memo((props) => {
           rippleColor={theme.palette.action.ripple}
           onPress={onChange}
         >
-          <Box
+          <AnimatedBox
             border-color="disabled"
             border-width={moderateScale(1.5)}
-            style={{ borderColor: theme.palette.borderColor }}
+            style={radioContainerStyle}
             align-self="center"
             border-radius={100000}
             // background-color={
@@ -87,7 +97,7 @@ const Radio: React.FC<BaseRadioProps> = React.memo((props) => {
             p={moderateScale(3)}
           >
             <Animated.View style={combinedRadioStyle} />
-          </Box>
+          </AnimatedBox>
         </BorderlessButton>
         <Text>{label}</Text>
       </Stack>
