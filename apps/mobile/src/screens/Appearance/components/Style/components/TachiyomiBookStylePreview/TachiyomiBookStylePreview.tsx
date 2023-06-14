@@ -32,6 +32,7 @@ const TachiyomiBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
             borderRadius: theme.style.borderRadius,
             flexGrow: 1,
           }}
+          rippleColor={theme.palette.action.ripple}
         >
           <Stack
             px="m"
