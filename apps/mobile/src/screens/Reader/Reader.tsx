@@ -165,13 +165,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     ]);
 
   React.useEffect(() => {
-    const p = fetchPagesByChapter(chapter);
-    return () => {
-      p?.abort();
-      resetReaderState();
-    };
-  }, []);
-  React.useEffect(() => {
     addMangaToHistory({
       manga: {
         imageCover: manga.imageCover,
