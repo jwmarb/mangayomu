@@ -49,7 +49,7 @@ export default function useSavedChapterInfo(
   };
 
   React.useEffect(() => {
-    if (pages) {
+    if (pages.length === 0) {
       const scrollOffsetReturner = setInterval(() => {
         scrollRef.current?.scrollToOffset({
           offset: chapter.scrollPosition,
@@ -71,7 +71,7 @@ export default function useSavedChapterInfo(
         clearInterval(scrollTracker);
       };
     }
-  }, [pages]);
+  }, [pages.length === 0]);
 
   return { onScroll, isFinishedInitialScrollOffset };
 }
