@@ -48,7 +48,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     globalZoomStartPosition,
     extendedState,
     setCurrentChapter,
-    resetReaderState,
   } = props;
   const { width, height } = useScreenDimensions();
   const overlayOpacity = useSharedValue(0);
