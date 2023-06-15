@@ -35,6 +35,8 @@ import NetworkToast from '@screens/Reader/components/NetworkToast';
 import useOverlayGesture from '@screens/Reader/hooks/useOverlayGesture';
 import useNetworkToast from '@screens/Reader/hooks/useNetworkToast';
 import useFlashList from '@screens/Reader/hooks/useFlashList';
+import useCancellable from '@screens/Reader/hooks/useCancellable';
+import useBoolean from '@hooks/useBoolean';
 
 const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const {
@@ -49,14 +51,18 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     globalZoomStartPosition,
     extendedState,
     setCurrentChapter,
+    fetchedNextChapter,
   } = props;
   const { width, height } = useScreenDimensions();
   const overlayOpacity = useSharedValue(0);
   const realm = useRealm();
   const localRealm = useLocalRealm();
   const ref = React.useRef<FlashList<Page>>(null);
-  const { addMangaToHistory } = useUserHistory({ incognito });
   const [manga, chapter, availableChapters] = useData(mangaKey, chapterKey);
+  const [currentPage, setCurrentPage] = React.useState<number>(
+    chapter.indexPage + 1,
+  );
+  const { addMangaToHistory } = useUserHistory({ incognito });
   const pageSliderNavRef = React.useRef<PageSliderNavigatorMethods>(null);
   const fetchPagesByChapter = useChapterFetcher({
     availableChapters,
@@ -84,6 +90,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
 
   const { getItemType, overrideItemLayout, keyExtractor, renderItem } =
     useFlashList({ getPageOffset });
+  const cancellable = useCancellable();
 
   const reversed = useMutableObject(
     readingDirection === ReadingDirection.RIGHT_TO_LEFT,
@@ -103,9 +110,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     scrollRef: ref,
     pages,
   });
-  const [currentPage, setCurrentPage] = React.useState<number>(
-    chapter.indexPage + 1,
-  );
+
   const handleOnViewableItemsChanged = (info: {
     viewableItems: ViewToken[];
     changed: ViewToken[];
@@ -139,6 +144,8 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
             chapter.numberOfPages - item.pageNumber,
           );
         } else pageSliderNavRef.current?.snapPointTo(item.pageNumber - 1);
+      } else if (item.type === 'TRANSITION_PAGE') {
+        cancellable(fetchPagesByChapter, item);
       }
     }
   };
@@ -226,7 +233,9 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                 <FlashList
                   ref={ref}
                   extraData={{ extendedState, readingDirection }}
-                  maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
+                  maintainVisibleContentPosition={
+                    fetchedNextChapter ? undefined : { minIndexForVisible: 0 }
+                  }
                   viewabilityConfigCallbackPairs={
                     viewabilityConfigCallbackPairs.current
                   }
