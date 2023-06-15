@@ -8,5 +8,5 @@ import React from 'react';
 export default function useMutableObject<T>(initialState: T) {
   const ref = React.useRef<T>(initialState);
   ref.current = initialState;
-  return ref.current;
+  return ref;
 }
