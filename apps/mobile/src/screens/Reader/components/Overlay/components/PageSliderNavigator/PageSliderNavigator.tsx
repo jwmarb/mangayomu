@@ -201,7 +201,7 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
   );
 
   const memoTrailStyle = React.useMemo(
-    () => [trailStyle, { opacity: visibleOpacity.value }],
+    () => [trailStyle, snapPointStyle],
     [reversed, maxLeftDistance],
   );
   return (
