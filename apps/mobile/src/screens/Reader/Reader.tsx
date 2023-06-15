@@ -139,7 +139,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
         setCurrentChapter(item.chapter);
         // pageSliderNavRef.current?.snapPointTo(reversed ? chapterIndices.get() (item.pageNumber - 1));
 
-        if (reversed && chapter?.numberOfPages != null) {
+        if (reversed.current && chapter?.numberOfPages != null) {
           pageSliderNavRef.current?.snapPointTo(
             chapter.numberOfPages - item.pageNumber,
           );
@@ -248,7 +248,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                   }
                   overrideItemLayout={overrideItemLayout}
                   keyExtractor={keyExtractor}
-                  inverted={reversed}
+                  inverted={reversed.current}
                   initialScrollIndex={chapter.indexPage}
                   renderItem={renderItem}
                   getItemType={getItemType}
