@@ -58,12 +58,14 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const { addMangaToHistory } = useUserHistory({ incognito });
   const [manga, chapter, availableChapters] = useData(mangaKey, chapterKey);
   const pageSliderNavRef = React.useRef<PageSliderNavigatorMethods>(null);
-  const fetchPagesByChapter = useChapterFetcher({ availableChapters, manga });
-  const netInfo = useNetInfo();
+  const fetchPagesByChapter = useChapterFetcher({
+    availableChapters,
+    manga,
+    chapter,
+  });
   const tapGesture = useOverlayGesture({ overlayOpacity });
   const { topOverlayStyle, toastStyle } = useNetworkToast({
     overlayOpacity,
-    internetStatus,
   });
   const readerProps = useReaderProps(manga, {
     readingDirection: globalReadingDirection,

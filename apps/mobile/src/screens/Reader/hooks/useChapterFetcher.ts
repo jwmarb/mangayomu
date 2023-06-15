@@ -4,8 +4,9 @@ import {
   fetchPagesByChapter,
   fetchedChapters,
   fetchingChapters,
+  resetReaderState,
 } from '@redux/slices/reader/reader';
-import NetInfo from '@react-native-community/netinfo';
+import NetInfo, { useNetInfo } from '@react-native-community/netinfo';
 import React from 'react';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaHost } from '@mangayomu/mangascraper';
@@ -17,13 +18,16 @@ import { useLocalRealm } from '@database/main';
  * @returns Returns a simple fetch function that accepts a chapter to get pages from
  */
 export default function useChapterFetcher(
-  args: Pick<FetchPagesByChapterPayload, 'availableChapters' | 'manga'>,
+  args: Pick<
+    FetchPagesByChapterPayload,
+    'availableChapters' | 'manga' | 'chapter'
+  >,
 ) {
   const dispatch = useAppDispatch();
   const source = MangaHost.getAvailableSources().get(args.manga.source);
   const localRealm = useLocalRealm();
   if (source == null) throw Error(`${args.manga.source} does not exist`);
-  return React.useCallback(
+  const fetchPages = React.useCallback(
     (
       chapter: ChapterSchema,
       callback?: (() => void) | null,
@@ -47,7 +51,10 @@ export default function useChapterFetcher(
       );
       const netListener = NetInfo.addEventListener(
         ({ isInternetReachable }) => {
-          if (!isInternetReachable) awaitingFetch.abort();
+          if (!isInternetReachable) {
+            awaitingFetch.abort();
+            netListener();
+          }
         },
       );
       if (callback) awaitingFetch.finally(callback);
@@ -60,4 +67,49 @@ export default function useChapterFetcher(
     },
     [source, localRealm, args.manga, args.availableChapters],
   );
+
+  /**
+   * Initially fetches the chapter and cancels fetch request if there are any changes to internet availability
+   */
+  React.useEffect(() => {
+    const p = fetchPages(args.chapter);
+
+    return () => {
+      p?.abort();
+      dispatch(resetReaderState());
+    };
+  }, []);
+
+  /**
+   * This reacts to changes in internet availability
+   */
+  React.useEffect(() => {
+    let p: ReturnType<typeof fetchPages>;
+    const listener = NetInfo.addEventListener((e) => {
+      if (e.isInternetReachable) {
+        const nextChapter = args.availableChapters[args.chapter.index - 1];
+        if (nextChapter != null) {
+          p = fetchPages(nextChapter);
+        }
+      }
+    });
+    return () => {
+      p?.abort();
+      listener();
+    };
+  }, []);
+
+  /**
+   * Automatically fetch next chapter
+   */
+  React.useEffect(() => {
+    const nextChapter = args.availableChapters[args.chapter.index - 1];
+    if (nextChapter != null) {
+      const p = fetchPages(nextChapter);
+      return () => {
+        p?.abort();
+      };
+    }
+  }, [args.chapter._id]);
+  return fetchPages;
 }
