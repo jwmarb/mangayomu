@@ -1,37 +1,16 @@
 import Box from '@components/Box';
 import Progress from '@components/Progress';
-import {
-  useLocalObject,
-  useLocalRealm,
-  useObject,
-  useRealm,
-} from '@database/main';
+import { useLocalRealm, useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
-import { MangaSchema, SORT_CHAPTERS_BY } from '@database/schemas/Manga';
-import {
-  Page,
-  fetchPagesByChapter as _fetchPagesByChapter,
-  chapterIndices,
-  offsetMemo,
-} from '@redux/slices/reader/reader';
-import NetInfo from '@react-native-community/netinfo';
+import { Page } from '@redux/slices/reader/reader';
+import { useNetInfo } from '@react-native-community/netinfo';
 import { ReadingDirection } from '@redux/slices/settings';
 import Overlay from '@screens/Reader/components/Overlay';
 import React from 'react';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import {
-  Easing,
-  runOnJS,
-  useAnimatedReaction,
-  useAnimatedScrollHandler,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import { GestureDetector } from 'react-native-gesture-handler';
+import { useSharedValue } from 'react-native-reanimated';
 import connector, { ConnectedReaderProps } from './Reader.redux';
-import { useAppDispatch } from '@redux/main';
-import useImmersiveMode from '@hooks/useImmersiveMode';
 import useScreenDimensions from '@hooks/useScreenDimensions';
-import { sort } from 'fast-sort';
 import useReaderProps from '@screens/Reader/hooks/useReaderProps';
 import useData from '@screens/Reader/hooks/useData';
 import useChapterFetcher from '@screens/Reader/hooks/useChapterFetcher';
@@ -42,32 +21,19 @@ import TransitionPage, {
 import ChapterPage, {
   ChapterPageContext,
 } from '@screens/Reader/components/ChapterPage/ChapterPage';
-import {
-  Animated,
-  FlatList,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  ViewToken,
-  ViewabilityConfigCallbackPairs,
-  useAnimatedValue,
-} from 'react-native';
+import { ViewToken, ViewabilityConfigCallbackPairs } from 'react-native';
 import NoMorePages from '@screens/Reader/components/NoMorePages/NoMorePages';
 import ChapterError, {
   ChapterErrorContext,
 } from '@screens/Reader/components/ChapterError/ChapterError';
-import { AnimatedFlashList } from '@components/animated';
 import useUserHistory from '@hooks/useUserHistory';
 import usePageLayout from '@screens/Reader/hooks/usePageLayout';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import useMountedEffect from '@hooks/useMountedEffect';
 import useSavedChapterInfo from '@screens/Reader/hooks/useSavedChapterInfo';
-
-export interface ReaderContextState {
-  mangaKey?: string;
-}
-
-export const ReaderContext = React.createContext<{ mangaKey?: string }>({});
-export const useReaderContext = () => React.useContext(ReaderContext);
+import { PageSliderNavigatorMethods } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator.interfaces';
+import useMutableObject from '@hooks/useMutableObject';
+import NetworkToast from '@screens/Reader/components/NetworkToast';
+import useOverlayGesture from '@screens/Reader/hooks/useOverlayGesture';
+import useNetworkToast from '@screens/Reader/hooks/useNetworkToast';
 
 const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const {
@@ -83,8 +49,8 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     extendedState,
     setCurrentChapter,
     resetReaderState,
+    internetStatus,
   } = props;
-  const [showStatusAndNavBar, hideStatusAndNavBar] = useImmersiveMode();
   const { width, height } = useScreenDimensions();
   const overlayOpacity = useSharedValue(0);
   const realm = useRealm();
@@ -92,13 +58,21 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const ref = React.useRef<FlashList<Page>>(null);
   const { addMangaToHistory } = useUserHistory({ incognito });
   const [manga, chapter, availableChapters] = useData(mangaKey, chapterKey);
+  const pageSliderNavRef = React.useRef<PageSliderNavigatorMethods>(null);
   const fetchPagesByChapter = useChapterFetcher({ availableChapters, manga });
-  const { readingDirection } = useReaderProps(manga, {
+  const netInfo = useNetInfo();
+  const tapGesture = useOverlayGesture({ overlayOpacity });
+  const { topOverlayStyle, toastStyle } = useNetworkToast({
+    overlayOpacity,
+    internetStatus,
+  });
+  const readerProps = useReaderProps(manga, {
     readingDirection: globalReadingDirection,
     lockOrientation: globalDeviceOrientation,
     imageScaling: globalImageScaling,
     zoomStartPosition: globalZoomStartPosition,
   });
+  const { readingDirection } = readerProps;
   const { getPageOffset, getSafeScrollRange, estimatedItemSize } =
     usePageLayout({
       readingDirection,
@@ -106,7 +80,10 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       chapterKey,
     });
 
-  const reversed = readingDirection === ReadingDirection.RIGHT_TO_LEFT;
+  const reversed = useMutableObject(
+    readingDirection === ReadingDirection.RIGHT_TO_LEFT,
+  );
+
   const horizontal =
     readingDirection === ReadingDirection.RIGHT_TO_LEFT ||
     readingDirection === ReadingDirection.LEFT_TO_RIGHT;
@@ -114,7 +91,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const isOnFirstChapter =
     availableChapters[availableChapters.length - 1].index === chapter.index;
 
-  const { onScroll } = useSavedChapterInfo({
+  const { onScroll, isFinishedInitialScrollOffset } = useSavedChapterInfo({
     getSafeScrollRange,
     horizontal,
     chapter,
@@ -150,8 +127,28 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
         });
         setCurrentPage(item.pageNumber);
         setCurrentChapter(item.chapter);
+        // pageSliderNavRef.current?.snapPointTo(reversed ? chapterIndices.get() (item.pageNumber - 1));
+
+        if (reversed && chapter?.numberOfPages != null) {
+          pageSliderNavRef.current?.snapPointTo(
+            chapter.numberOfPages - item.pageNumber,
+          );
+        } else pageSliderNavRef.current?.snapPointTo(item.pageNumber - 1);
       }
     }
+  };
+
+  const overrideItemLayout: (
+    layout: {
+      span?: number | undefined;
+      size?: number | undefined;
+    },
+    item: Page,
+    index: number,
+    maxColumns: number,
+    extraData?: any,
+  ) => void = (layout, item) => {
+    layout.size = getPageOffset(item);
   };
 
   const viewabilityConfigCallbackPairs =
@@ -167,6 +164,13 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     ]);
 
   React.useEffect(() => {
+    // NetInfo.addEventListener((e) => {
+    //   if (!e.isInternetReachable) {
+    //     p?.abort();
+
+    //   }
+    // })
+
     const p = fetchPagesByChapter(chapter);
     return () => {
       p?.abort();
@@ -191,53 +195,37 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     });
   }, [chapter]);
 
-  const tapGesture = React.useMemo(
-    () =>
-      Gesture.Tap()
-        .onStart(() => {
-          if (overlayOpacity.value > 0) {
-            runOnJS(hideStatusAndNavBar)();
-            overlayOpacity.value = withTiming(0, {
-              duration: 150,
-              easing: Easing.ease,
-            });
-          } else {
-            runOnJS(showStatusAndNavBar)();
-            overlayOpacity.value = withTiming(1, {
-              duration: 150,
-              easing: Easing.ease,
-            });
-          }
-        })
-        .cancelsTouchesInView(false),
-    [],
+  const transitionPageContextValue = React.useMemo(
+    () => ({ backgroundColor, currentChapter: chapter, tapGesture }),
+    [tapGesture, chapter._id, backgroundColor],
+  );
+
+  const chapterPageContextValue = React.useMemo(
+    () => ({
+      mangaTitle: manga.title,
+      readingDirection,
+      sourceName: manga.source,
+      tapGesture,
+    }),
+    [tapGesture, manga.source, readingDirection, manga.title],
   );
 
   return (
     <ChapterErrorContext.Provider value={fetchPagesByChapter}>
-      <ChapterPageContext.Provider
-        value={React.useMemo(
-          () => ({
-            mangaTitle: manga.title,
-            readingDirection,
-            sourceName: manga.source,
-            tapGesture,
-          }),
-          [tapGesture, manga.source, readingDirection, manga.title],
-        )}
-      >
-        <TransitionPageContext.Provider
-          value={React.useMemo(
-            () => ({ backgroundColor, currentChapter: chapter, tapGesture }),
-            [tapGesture, chapter, backgroundColor],
-          )}
-        >
+      <ChapterPageContext.Provider value={chapterPageContextValue}>
+        <TransitionPageContext.Provider value={transitionPageContextValue}>
           <Overlay
+            topOverlayStyle={topOverlayStyle}
+            isFinishedInitialScrollOffset={isFinishedInitialScrollOffset}
+            pageSliderNavRef={pageSliderNavRef}
+            scrollRef={ref}
+            readerProps={readerProps}
             currentPage={currentPage}
             manga={manga}
             chapter={chapter}
             opacity={overlayOpacity}
           />
+          <NetworkToast style={toastStyle} />
           <GestureDetector gesture={tapGesture}>
             {pages.length === 0 ? (
               <Box
@@ -258,7 +246,8 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                 background-color={backgroundColor.toLowerCase()}
               >
                 <FlashList
-                  extraData={extendedState}
+                  ref={ref}
+                  extraData={{ extendedState, readingDirection }}
                   viewabilityConfigCallbackPairs={
                     viewabilityConfigCallbackPairs.current
                   }
@@ -269,9 +258,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                   estimatedFirstItemOffset={
                     isOnFirstChapter ? 0 : estimatedItemSize
                   }
-                  overrideItemLayout={(layout, item) => {
-                    layout.size = getPageOffset(item);
-                  }}
+                  overrideItemLayout={overrideItemLayout}
                   keyExtractor={keyExtractor}
                   inverted={reversed}
                   initialScrollIndex={chapter.indexPage}
@@ -291,7 +278,9 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
 const renderItem: ListRenderItem<Page> = ({ item, extraData }) => {
   switch (item.type) {
     case 'PAGE':
-      return <ChapterPage page={item} extendedPageState={extraData} />;
+      return (
+        <ChapterPage page={item} extendedPageState={extraData.extendedState} />
+      );
     case 'TRANSITION_PAGE':
       return <TransitionPage page={item} />;
     case 'NO_MORE_PAGES':
