@@ -1,5 +1,6 @@
 import { useTheme } from '@emotion/react';
 import useMountedEffect from '@hooks/useMountedEffect';
+import { useNetInfo } from '@react-native-community/netinfo';
 import {
   OVERLAY_HEADER_HEIGHT,
   READER_NETWORK_TOAST_HEIGHT,
@@ -23,10 +24,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
  * A hook to use all necessities to provide functionality for network toast and components that depend on it
  */
 export default function useNetworkToast(args: {
-  internetStatus: 'online' | 'offline' | null;
   overlayOpacity: SharedValue<number>;
 }) {
-  const { internetStatus, overlayOpacity } = args;
+  const { isInternetReachable } = useNetInfo();
+  const { overlayOpacity } = args;
   const insets = useSafeAreaInsets();
   const derivedValue = useSharedValue(0);
   const toastOpacity = useSharedValue(0);
@@ -66,7 +67,7 @@ export default function useNetworkToast(args: {
   }));
 
   React.useEffect(() => {
-    if (internetStatus === 'online') {
+    if (isInternetReachable) {
       derivedValue.value = withTiming(0, {
         duration: 150,
         easing: Easing.ease,
@@ -86,7 +87,7 @@ export default function useNetworkToast(args: {
       cancelAnimation(derivedValue);
       cancelAnimation(toastOpacity);
     };
-  }, [internetStatus]);
+  }, [isInternetReachable]);
   const memoizedToastStyle = React.useMemo(() => toastStyle, []);
   const memoizedTopOverlayStyle = React.useMemo(() => topOverlayStyle, []);
   return {

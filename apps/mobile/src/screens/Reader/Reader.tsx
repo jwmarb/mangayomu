@@ -49,7 +49,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     extendedState,
     setCurrentChapter,
     resetReaderState,
-    internetStatus,
   } = props;
   const { width, height } = useScreenDimensions();
   const overlayOpacity = useSharedValue(0);
@@ -164,13 +163,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     ]);
 
   React.useEffect(() => {
-    // NetInfo.addEventListener((e) => {
-    //   if (!e.isInternetReachable) {
-    //     p?.abort();
-
-    //   }
-    // })
-
     const p = fetchPagesByChapter(chapter);
     return () => {
       p?.abort();
