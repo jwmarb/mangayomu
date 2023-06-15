@@ -2,11 +2,9 @@ import useBoolean from '@hooks/useBoolean';
 import useChapterFetcher from '@screens/Reader/hooks/useChapterFetcher';
 import NetInfo from '@react-native-community/netinfo';
 import React from 'react';
-import { Page, TransitionPage, fetchedChapters } from '@redux/slices/reader';
-import useMutableObject from '@hooks/useMutableObject';
-import { useLocalQuery, useLocalRealm } from '@database/main';
+import { TransitionPage, fetchedChapters } from '@redux/slices/reader';
+import { useLocalRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
-import { store } from '@redux/main';
 type Abortable = ReturnType<ReturnType<typeof useChapterFetcher>>;
 
 export default function useCancellable() {
@@ -64,11 +62,9 @@ export default function useCancellable() {
     if (previous == null || next == null) return;
 
     if (fetchedChapters.has(next._id)) {
-      console.log('fetching previous chapter');
       prevFnRef.current = () => fetchPages(previous);
       togglePrevious(true);
     } else if (fetchedChapters.has(previous._id)) {
-      console.log('fetching next chapter');
       nextFnRef.current = () => fetchPages(next);
       toggleNext(true);
     }
