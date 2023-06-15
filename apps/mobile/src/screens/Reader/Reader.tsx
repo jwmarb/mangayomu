@@ -226,6 +226,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                 <FlashList
                   ref={ref}
                   extraData={{ extendedState, readingDirection }}
+                  maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
                   viewabilityConfigCallbackPairs={
                     viewabilityConfigCallbackPairs.current
                   }
