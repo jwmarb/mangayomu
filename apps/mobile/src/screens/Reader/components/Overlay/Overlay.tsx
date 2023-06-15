@@ -10,7 +10,7 @@ import { Portal } from '@gorhom/portal';
 import { useRealm } from '@database/main';
 import displayMessage from '@helpers/displayMessage';
 import { moderateScale } from 'react-native-size-matters';
-import { ReaderContext, ReaderPropsContext } from '@screens/Reader/Reader';
+import { ParsedUserReaderSettingsContext } from '@screens/Reader/context/ParsedUserReaderSettings';
 import ReaderSettingsMenu from '@screens/Reader/components/ReaderSettingsMenu';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import ImageMenu from '@screens/Reader/components/ImageMenu';
@@ -24,6 +24,7 @@ import PageSliderNavigator from '@screens/Reader/components/Overlay/components/P
 import { chapterIndices } from '@redux/slices/reader';
 import { ReadingDirection } from '@redux/slices/settings';
 import { PageSliderNavigatorMethods } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator.interfaces';
+import { MangaKeyContext } from '@screens/Reader/context/MangaKey';
 
 const pageSliderTranslateYOffset = moderateScale(-78);
 
@@ -39,6 +40,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
     scrollRef,
     pageSliderNavRef,
     isFinishedInitialScrollOffset,
+    topOverlayStyle,
   } = props;
   const insets = useSafeAreaInsets();
   const realm = useRealm();
@@ -152,11 +154,6 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   );
   const ref = React.useRef<BottomSheetMethods>(null);
 
-  const readerContextProviderValue = React.useMemo(
-    () => ({ mangaKey: manga._id }),
-    [manga._id],
-  );
-
   const memoPageSliderStyle = React.useMemo(() => pageSliderStyle, []);
 
   const memoStyle = React.useMemo(() => style, []);
@@ -180,8 +177,8 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
         justify-content="space-between"
       >
         <OverlayHeader
+          topOverlayStyle={topOverlayStyle}
           style={memoStyle}
-          opacity={opacity}
           mangaTitle={manga.title}
           chapterTitle={chapter.name}
           onBookmark={handleOnBookmark}
@@ -233,7 +230,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
             />
           </Stack>
         </Box> */}
-        <ReaderPropsContext.Provider value={readerProps}>
+        <ParsedUserReaderSettingsContext.Provider value={readerProps}>
           <PageSliderNavigator
             isFinishedInitialScrollOffset={isFinishedInitialScrollOffset}
             initialChapterPageIndex={chapter.indexPage}
@@ -244,7 +241,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
             onSkipPrevious={handleOnSkipPrevious}
             onSkipNext={handleOnSkipNext}
           />
-        </ReaderPropsContext.Provider>
+        </ParsedUserReaderSettingsContext.Provider>
         {showPageNumber && (
           <PageCounter
             page={page}
@@ -252,9 +249,9 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
             pageCounterStyle={pageCounterStyle}
           />
         )}
-        <ReaderContext.Provider value={readerContextProviderValue}>
+        <MangaKeyContext.Provider value={manga._id}>
           <OverlayFooter style={bottomOverlayStyle} />
-        </ReaderContext.Provider>
+        </MangaKeyContext.Provider>
       </Box>
     </Portal>
   );

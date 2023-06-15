@@ -5,7 +5,6 @@ import { OverlayHeaderProps } from '@screens/Reader/components/Overlay/component
 
 const mapStateToProps = (state: AppState, props: OverlayHeaderProps) => ({
   ...props,
-  internetStatus: state.explore.internetStatus,
 });
 
 const connector = connect(mapStateToProps);

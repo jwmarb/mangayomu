@@ -28,7 +28,6 @@ import connector, { ConnectedOverlayHeaderProps } from './OverlayHeader.redux';
 const OverlayHeader: React.FC<ConnectedOverlayHeaderProps> = (props) => {
   const {
     mangaTitle,
-    opacity,
     style,
     onOpenSettingsMenu,
     onBookmark,
@@ -36,33 +35,16 @@ const OverlayHeader: React.FC<ConnectedOverlayHeaderProps> = (props) => {
     onTitlePress,
     isBookmarked,
     onBack,
-    internetStatus,
+    topOverlayStyle,
   } = props;
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
-  const topOverlayTranslation = useDerivedValue(() =>
-    interpolate(
-      opacity.value,
-      [0, 1],
-      [
-        -OVERLAY_HEADER_HEIGHT,
-        internetStatus === 'online' ? 0 : READER_NETWORK_TOAST_HEIGHT,
-      ],
-    ),
-  );
-
-  const animatedTopOverlayStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: topOverlayTranslation.value }],
-  }));
-  const topOverlayStyle = React.useMemo(
-    () => [animatedTopOverlayStyle, style],
-    [animatedTopOverlayStyle, style],
-  );
+  const combinedStyles = [topOverlayStyle, style];
 
   return (
     <AnimatedBox
-      style={topOverlayStyle}
+      style={combinedStyles}
       background-color={OVERLAY_COLOR}
       pt={theme.style.spacing.s + insets.top}
       pb="s"

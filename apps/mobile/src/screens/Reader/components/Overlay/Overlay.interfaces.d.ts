@@ -9,6 +9,7 @@ import useReaderProps from '@screens/Reader/hooks/useReaderProps';
 import { FlashList } from '@shopify/flash-list';
 import { Page } from '@redux/slices/reader';
 import { PageSliderNavigatorMethods } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator.interfaces';
+import useNetworkToast from '@screens/Reader/hooks/useNetworkToast';
 
 export interface OverlayProps extends React.PropsWithChildren {
   opacity: SharedValue<number>;
@@ -19,6 +20,7 @@ export interface OverlayProps extends React.PropsWithChildren {
   scrollRef: React.RefObject<FlashList<Page>>;
   pageSliderNavRef: React.RefObject<PageSliderNavigatorMethods>;
   isFinishedInitialScrollOffset: boolean;
+  topOverlayStyle: ReturnType<typeof useNetworkToast>['topOverlayStyle'];
 }
 
 export interface ReaderSettingProps {
