@@ -34,6 +34,7 @@ import useMutableObject from '@hooks/useMutableObject';
 import NetworkToast from '@screens/Reader/components/NetworkToast';
 import useOverlayGesture from '@screens/Reader/hooks/useOverlayGesture';
 import useNetworkToast from '@screens/Reader/hooks/useNetworkToast';
+import useFlashList from '@screens/Reader/hooks/useFlashList';
 
 const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const {
@@ -61,6 +62,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     availableChapters,
     manga,
     chapter,
+    pages,
   });
   const tapGesture = useOverlayGesture({ overlayOpacity });
   const { topOverlayStyle, toastStyle } = useNetworkToast({
@@ -79,6 +81,9 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       pages,
       chapterKey,
     });
+
+  const { getItemType, overrideItemLayout, keyExtractor, renderItem } =
+    useFlashList({ getPageOffset });
 
   const reversed = useMutableObject(
     readingDirection === ReadingDirection.RIGHT_TO_LEFT,
@@ -136,19 +141,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
         } else pageSliderNavRef.current?.snapPointTo(item.pageNumber - 1);
       }
     }
-  };
-
-  const overrideItemLayout: (
-    layout: {
-      span?: number | undefined;
-      size?: number | undefined;
-    },
-    item: Page,
-    index: number,
-    maxColumns: number,
-    extraData?: any,
-  ) => void = (layout, item) => {
-    layout.size = getPageOffset(item);
   };
 
   const viewabilityConfigCallbackPairs =
@@ -260,40 +252,5 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     </ChapterErrorContext.Provider>
   );
 };
-
-const renderItem: ListRenderItem<Page> = ({ item, extraData }) => {
-  switch (item.type) {
-    case 'PAGE':
-      return (
-        <ChapterPage page={item} extendedPageState={extraData.extendedState} />
-      );
-    case 'TRANSITION_PAGE':
-      return <TransitionPage page={item} />;
-    case 'NO_MORE_PAGES':
-      return <NoMorePages />;
-    case 'CHAPTER_ERROR':
-      return <ChapterError data={item} />;
-  }
-};
-
-const keyExtractor = (p: Page) => {
-  switch (p.type) {
-    case 'PAGE':
-      return `${p.page}.${p.pageNumber}`;
-    case 'TRANSITION_PAGE':
-      return `${p.previous._id}${p.next._id}`;
-    case 'CHAPTER_ERROR':
-      return `error-${p.current._id}`;
-    case 'NO_MORE_PAGES':
-      return 'no more pages';
-  }
-};
-
-const getItemType: (
-  item: Page,
-  index: number,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  extraData?: any,
-) => string | number | undefined = (item) => item.type;
 
 export default connector(Reader);
