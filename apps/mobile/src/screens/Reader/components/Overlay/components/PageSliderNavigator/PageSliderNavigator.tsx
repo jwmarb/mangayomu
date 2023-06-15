@@ -20,7 +20,7 @@ import {
   GestureDetector,
 } from 'react-native-gesture-handler';
 import SkipButton from '@screens/Reader/components/Overlay/components/PageSliderNavigator/components/SkipButton/SkipButton';
-import { useReaderPropsContext } from '@screens/Reader/Reader';
+import { useParsedUserReaderSettings } from '@screens/Reader/context/ParsedUserReaderSettings';
 import { hexToRgb, rgbaToString } from '@mangayomu/theme';
 import Animated, {
   Easing,
@@ -71,7 +71,7 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
     return values;
   }, [totalPages, totalDistance]);
   const left = useSharedValue<number>(OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET);
-  const { readingDirection } = useReaderPropsContext();
+  const { readingDirection } = useParsedUserReaderSettings();
   const [isUserInput, setIsUserInput] = React.useState<boolean>(false);
   const visibleOpacity = useSharedValue(0);
   const reversed = readingDirection === ReadingDirection.RIGHT_TO_LEFT;

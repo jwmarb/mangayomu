@@ -2,22 +2,20 @@ import {
   useReaderSetting,
   ImageScaling as ImageScalingEnum,
 } from '@redux/slices/settings';
-import { useReaderContext } from '@screens/Reader/Reader';
 import React from 'react';
 import connector, { ConnectedImageScalingProps } from './ImageScaling.redux';
 import { Menu, MenuItem } from '@components/Menu';
-import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
-import { OVERLAY_TEXT_SECONDARY } from '@theme/constants';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import Button from '@components/Button';
 import OverlayBottomButton from '@screens/Reader/components/Overlay/components/OverlayBottomButton';
 import Box from '@components/Box/Box';
+import { useMangaKey } from '@screens/Reader/context/MangaKey';
 
 const ImageScaling: React.FC<ConnectedImageScalingProps> = (props) => {
   const { globalImageScaling, type = 'button', setGlobalImageScaling } = props;
-  const { mangaKey } = useReaderContext();
+  const mangaKey = useMangaKey();
   const set = React.useCallback(
     (val: ImageScalingEnum | 'Use global setting') => {
       if (val != 'Use global setting') setGlobalImageScaling(val);

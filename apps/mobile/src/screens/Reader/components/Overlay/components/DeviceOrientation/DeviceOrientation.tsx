@@ -1,6 +1,5 @@
 import Button from '@components/Button';
 import Icon from '@components/Icon';
-import IconButton from '@components/IconButton';
 import { Menu, MenuItem } from '@components/Menu';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
@@ -8,16 +7,13 @@ import {
   ReaderScreenOrientation,
   useReaderSetting,
 } from '@redux/slices/settings';
-import { useReaderContext } from '@screens/Reader/Reader';
 import React from 'react';
 import connector, {
   ConnectedDeviceOrientationProps,
 } from './DeviceOrientation.redux';
-import { OVERLAY_TEXT_SECONDARY } from '@theme/constants';
-import { BorderlessButton } from 'react-native-gesture-handler';
-import { moderateScale } from 'react-native-size-matters';
 import Box from '@components/Box/Box';
 import OverlayBottomButton from '@screens/Reader/components/Overlay/components/OverlayBottomButton/OverlayBottomButton';
+import { useMangaKey } from '@screens/Reader/context/MangaKey';
 
 const DeviceOrientation: React.FC<ConnectedDeviceOrientationProps> = (
   props,
@@ -27,7 +23,7 @@ const DeviceOrientation: React.FC<ConnectedDeviceOrientationProps> = (
     type = 'button',
     setLockedDeviceOrientation,
   } = props;
-  const { mangaKey } = useReaderContext();
+  const mangaKey = useMangaKey();
   const set = React.useCallback(
     (val: ReaderScreenOrientation | 'Use global setting') => {
       if (val !== 'Use global setting') setLockedDeviceOrientation(val);
