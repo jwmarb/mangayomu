@@ -338,18 +338,22 @@ const readerSlice = createSlice({
           previous: { _id: previousChapter._id, index: previousChapter.index },
         };
 
-      if (state.pages[0]?.type === 'CHAPTER_ERROR' && nextChapter != null)
-        state.pages[0] = {
-          type: 'TRANSITION_PAGE',
-          previous: {
-            _id: action.meta.arg.chapter._id,
-            index: action.meta.arg.chapter.index,
-          },
-          next: {
-            _id: nextChapter._id,
-            index: nextChapter.index,
-          },
-        };
+      if (state.pages[0]?.type === 'CHAPTER_ERROR' && nextChapter != null) {
+        if (state.pages.length === 1) state.pages = [];
+        else {
+          state.pages[0] = {
+            type: 'TRANSITION_PAGE',
+            previous: {
+              _id: action.meta.arg.chapter._id,
+              index: action.meta.arg.chapter.index,
+            },
+            next: {
+              _id: nextChapter._id,
+              index: nextChapter.index,
+            },
+          };
+        }
+      }
 
       /**
        * Final mutation of state.pages
