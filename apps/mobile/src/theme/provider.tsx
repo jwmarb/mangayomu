@@ -96,19 +96,19 @@ export const AppearanceProvider: React.FC<React.PropsWithChildren> = ({
         palette: {
           mangaViewerBackButtonColor: colorConstant('#fafafa'),
           skeleton: color('rgba(255, 255, 255, 0.12)', 'rgba(0, 0, 0, 0.12)'),
-          borderColor: color('#444444', '#CCCCCC'),
+          borderColor: color('rgba(160, 160, 160, 0.1)', '#CCCCCC'),
           action: {
             ripple: color('#606060', '#C4C4C4'),
           },
           primary: {
-            light: colorConstant('#69c0ff'),
-            main: colorConstant('#1890ff'),
-            dark: colorConstant('#0050b3'),
+            light: color('#B2CBE6', '#34A1FB'),
+            main: color('#8DB1D8', '#1996FD'),
+            dark: color('#6897CA', '#066EC4'),
           },
           secondary: {
-            light: colorConstant('#EE4B2B'),
-            main: colorConstant('#D22B2B'),
-            dark: colorConstant('#AA4A44'),
+            light: color('#DAA2B7', '#EC8F43'),
+            main: color('#D290A9', '#E57417'),
+            dark: color('#BA5B7F', '#B55D14'),
           },
           error: {
             main: color('#f44336', '#d32f2f'),
@@ -127,9 +127,9 @@ export const AppearanceProvider: React.FC<React.PropsWithChildren> = ({
             hint: color('rgba(255, 255, 255, 0.5)', 'rgba(0, 0, 0, 0.38)'),
           },
           background: {
-            default: color('#000000', '#fafafa'),
-            paper: color('#111111', '#ffffff'),
-            disabled: color('#232323', '#EFEFEF'),
+            default: color('#071113', '#fafafa'),
+            paper: color('#09181A', '#ffffff'),
+            disabled: color('#102A2D', '#EFEFEF'),
           },
           status: {
             ongoing: color('#73d13d', '#b7eb8f'),
@@ -140,6 +140,7 @@ export const AppearanceProvider: React.FC<React.PropsWithChildren> = ({
         },
         style: {
           borderRadius: moderateScale(24),
+          borderWidth: moderateScale(2),
           spacing,
           shadow,
         },
@@ -156,8 +157,8 @@ export const AppearanceProvider: React.FC<React.PropsWithChildren> = ({
               },
               {} as UserDefinedPalette<typeof NavigationDefaultTheme.colors>,
             ),
-            primary: colorConstant('#1890ff'),
-            background: color('#141414', '#fafafa'),
+            primary: color('#8DB1D8', '#1996FD'),
+            background: color('#071113', '#fafafa'),
             text: color('rgba(255, 255, 255, 1)', 'rgba(0, 0, 0, 0.87)'),
           }),
         },
