@@ -30,6 +30,8 @@ import PageSliderDecorators from '@screens/Reader/components/Overlay/components/
 import connector, {
   ConnectedPageSliderNavigatorProps,
 } from './PageSliderNavigator.redux';
+import integrateSortedList from '@helpers/integrateSortedList';
+import { NumberComparator } from '@mangayomu/algorithms';
 
 const styles = ScaledSheet.create({
   button: {
@@ -56,34 +58,33 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
   } = props;
   const theme = useTheme();
   const [maxLeftDistance, setMaxLeftDistance] = React.useState<number>(0);
+  const { readingDirection } = useParsedUserReaderSettings();
   const totalDistance = maxLeftDistance - OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET;
+  const reversed = readingDirection === ReadingDirection.RIGHT_TO_LEFT;
   const snapPoints = React.useMemo(() => {
     if (totalPages == null || !totalDistance) return [];
     const snapLocation = totalDistance / (totalPages - 1);
-    const values = new Array(totalPages);
-    for (let i = 0; i < totalPages; i++) {
-      values[i] = i * snapLocation + OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET;
-    }
+    const values: number[] = new Array(totalPages);
+    if (reversed)
+      for (let i = 0; i < totalPages; i++) {
+        values[i] =
+          (totalPages - 1 - i) * snapLocation +
+          OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET;
+      }
+    else
+      for (let i = 0; i < totalPages; i++) {
+        values[i] = i * snapLocation + OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET;
+      }
+
     return values;
-  }, [totalPages, totalDistance]);
+  }, [totalPages, totalDistance, reversed]);
   const left = useSharedValue<number>(OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET);
-  const { readingDirection } = useParsedUserReaderSettings();
   const [isUserInput, setIsUserInput] = React.useState<boolean>(false);
   const visibleOpacity = useSharedValue(0);
-  const reversed = readingDirection === ReadingDirection.RIGHT_TO_LEFT;
+
   React.useEffect(() => {
-    if (
-      totalPages != null &&
-      totalDistance != null &&
-      isFinishedInitialScrollOffset &&
-      !hide
-    ) {
-      left.value =
-        snapPoints[
-          reversed
-            ? totalPages - initialChapterPageIndex - 1
-            : initialChapterPageIndex
-        ];
+    if (totalPages != null && isFinishedInitialScrollOffset && !hide) {
+      left.value = snapPoints[initialChapterPageIndex];
       visibleOpacity.value = withTiming(1, {
         duration: 150,
         easing: Easing.ease,
@@ -100,6 +101,7 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
     }),
     [snapPoints, isUserInput],
   );
+
   const panGesture = React.useMemo(
     () =>
       Gesture.Pan()
@@ -133,7 +135,6 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
       totalPages,
       totalDistance,
       setIsUserInput,
-      reversed,
     ],
   );
 
@@ -144,7 +145,6 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
         .onStart((e) => {
           if (totalPages != null) {
             runOnJS(setIsUserInput)(true);
-            left.value = e.x + OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET;
             const index = Math.min(
               Math.round(e.x / (totalDistance / totalPages)),
               totalPages - 1,
@@ -153,14 +153,7 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
             runOnJS(onSnapToPoint)(index);
           }
         }),
-    [
-      snapPoints,
-      totalDistance,
-      totalPages,
-      setIsUserInput,
-      onSnapToPoint,
-      reversed,
-    ],
+    [snapPoints, totalDistance, totalPages, setIsUserInput, onSnapToPoint],
   );
 
   const gesture = React.useMemo(
@@ -168,14 +161,14 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
     [tapGesture, panGesture],
   );
 
+  const trail = useDerivedValue(() => maxLeftDistance - left.value);
   const btnStyle = useAnimatedStyle(() => ({
-    left: left.value,
     opacity: visibleOpacity.value,
+    left: left.value,
   }));
   const snapPointStyle = useAnimatedStyle(() => ({
     opacity: visibleOpacity.value,
   }));
-  const trail = useDerivedValue(() => maxLeftDistance - left.value);
   const trailStyle = useAnimatedStyle(() =>
     !reversed
       ? {

@@ -139,11 +139,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
         setCurrentChapter(item.chapter);
         // pageSliderNavRef.current?.snapPointTo(reversed ? chapterIndices.get() (item.pageNumber - 1));
 
-        if (reversed.current && chapter?.numberOfPages != null) {
-          pageSliderNavRef.current?.snapPointTo(
-            chapter.numberOfPages - item.pageNumber,
-          );
-        } else pageSliderNavRef.current?.snapPointTo(item.pageNumber - 1);
+        pageSliderNavRef.current?.snapPointTo(item.pageNumber - 1);
       } else if (item.type === 'TRANSITION_PAGE') {
         cancellable(fetchPagesByChapter, item);
       }
