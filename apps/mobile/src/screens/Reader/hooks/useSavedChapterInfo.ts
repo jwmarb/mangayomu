@@ -49,7 +49,7 @@ export default function useSavedChapterInfo(
   };
 
   React.useEffect(() => {
-    if (pages.length === 0) {
+    if (pages.length > 0) {
       const scrollOffsetReturner = setInterval(() => {
         scrollRef.current?.scrollToOffset({
           offset: chapter.scrollPosition,
@@ -60,18 +60,18 @@ export default function useSavedChapterInfo(
           setIsFinishedInitialScrollOffset(true);
           clearInterval(scrollOffsetReturner);
         }
-      }, 15);
+      }, 1);
 
       const scrollTracker = setInterval(() => {
         saveScrollPosition();
       }, 500);
 
       return () => {
-        clearInterval(scrollOffsetReturner);
+        // clearInterval(scrollOffsetReturner);
         clearInterval(scrollTracker);
       };
     }
-  }, [pages.length === 0]);
+  }, [pages.length > 0]);
 
   return { onScroll, isFinishedInitialScrollOffset };
 }
