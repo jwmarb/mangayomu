@@ -91,6 +91,12 @@ const exploreSlice = createSlice({
         state.internetStatus = 'online';
       }
     },
+    setNetworkState: (
+      state,
+      action: PayloadAction<'online' | 'offline' | null>,
+    ) => {
+      state.internetStatus = action.payload;
+    },
   },
 });
 
@@ -98,6 +104,7 @@ export const {
   setExplorerState,
   refreshExplorerState,
   explorerNetworkStateListenerHandler,
+  setNetworkState,
 } = exploreSlice.actions;
 
 export default exploreSlice.reducer;
