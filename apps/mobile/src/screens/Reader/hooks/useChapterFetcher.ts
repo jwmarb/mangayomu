@@ -37,6 +37,7 @@ export default function useChapterFetcher(
       ) {
         return;
       }
+
       return dispatch(
         fetchPagesByChapter({
           source,
@@ -76,24 +77,29 @@ export default function useChapterFetcher(
     };
   }, []);
 
-  React.useEffect(() => {
-    if (
-      args.pages.length > 0 &&
-      !(args.pages.length === 1 && args.pages[0].type === 'CHAPTER_ERROR')
-    ) {
-      let p: ReturnType<typeof fetchPages>;
-      const listener = NetInfo.addEventListener(({ isInternetReachable }) => {
-        if (isInternetReachable) {
-          const nextChapter = args.availableChapters[args.chapter.index - 1];
-          if (nextChapter != null) p = fetchPages(nextChapter);
-        }
-      });
-      return () => {
-        listener();
-        p?.abort();
-      };
-    }
-  }, [args.chapter._id, args.pages.length > 0]);
+  /**
+   * Automatically gets next chapters
+   */
+  // React.useEffect(() => {
+  //   if (
+  //     args.pages.length > 0 &&
+  //     !(args.pages.length === 1 && args.pages[0].type === 'CHAPTER_ERROR')
+  //   ) {
+  //     let p: ReturnType<typeof fetchPages>;
+  //     const listener = NetInfo.addEventListener(({ isInternetReachable }) => {
+  //       if (isInternetReachable) {
+  //         const nextChapter = args.availableChapters[args.chapter.index - 1];
+  //         if (nextChapter != null) {
+  //           p = fetchPages(nextChapter);
+  //         }
+  //       }
+  //     });
+  //     return () => {
+  //       listener();
+  //       p?.abort();
+  //     };
+  //   }
+  // }, [args.chapter._id, args.pages.length > 0]);
 
   return fetchPages;
 }
