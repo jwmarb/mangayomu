@@ -7,6 +7,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { removeURLParams } from '@screens/Reader/components/ChapterPage/ChapterPage';
 import { Image } from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
+import NetInfo from '@react-native-community/netinfo';
 
 export type Page = ChapterPage | NoMorePages | TransitionPage | ChapterError;
 export type ChapterError = {
@@ -105,6 +106,8 @@ export const fetchPagesByChapter = createAsyncThunk(
   'reader/fetchPagesByChapter',
   async (payload: FetchPagesByChapterPayload) => {
     try {
+      const { isInternetReachable } = await NetInfo.fetch();
+      if (!isInternetReachable) throw Error('Internet unavailable');
       fetchingChapters.add(payload.chapter._id);
       const response = await payload.source.getPages(payload.chapter);
       if (payload.mockError) mockError();
