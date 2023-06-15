@@ -54,7 +54,7 @@ const NetworkToast: React.FC<ConnectedNetworkToastProps> = ({
           </Stack>
         </AnimatedBox>
       </Box>
-      <Box
+      {/* <Box
         style={StyleSheet.absoluteFill}
         pointerEvents="box-none"
         justify-content="center"
@@ -69,7 +69,7 @@ const NetworkToast: React.FC<ConnectedNetworkToastProps> = ({
           variant="contained"
           color="primary"
         />
-      </Box>
+      </Box> */}
     </Portal>
   );
 };
