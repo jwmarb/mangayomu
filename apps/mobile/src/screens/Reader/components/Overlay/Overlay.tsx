@@ -59,7 +59,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
         index: reversedNav ? end : start,
       });
     }
-  }, [reversedNav]);
+  }, [reversedNav, chapter._id]);
   const handleOnSnapToPoint = React.useCallback(
     (index: number) => {
       const indices = chapterIndices.get(chapter._id);
@@ -71,7 +71,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
         });
       }
     },
-    [reversedNav],
+    [reversedNav, chapter._id],
   );
 
   const handleOnSkipNext = React.useCallback(() => {
@@ -83,7 +83,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
         index: reversedNav ? start : end,
       });
     }
-  }, [reversedNav]);
+  }, [reversedNav, chapter._id]);
   const pageSliderTranslateY = useDerivedValue(() =>
     interpolate(
       opacity.value,
