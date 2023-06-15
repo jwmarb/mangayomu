@@ -6,23 +6,16 @@ import {
 import Box, { AnimatedBox } from '@components/Box';
 import Text from '@components/Text/Text';
 import { useTheme } from '@emotion/react';
-import Slider from '@components/Slider/Slider';
-import Icon from '@components/Icon/Icon';
-import { ScaledSheet, moderateScale } from 'react-native-size-matters';
+import { ScaledSheet } from 'react-native-size-matters';
 import {
   OVERLAY_COLOR,
   OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET,
   OVERLAY_SLIDER_HEIGHT,
 } from '@theme/constants';
-import {
-  BorderlessButton,
-  Gesture,
-  GestureDetector,
-} from 'react-native-gesture-handler';
+import { Gesture } from 'react-native-gesture-handler';
 import SkipButton from '@screens/Reader/components/Overlay/components/PageSliderNavigator/components/SkipButton/SkipButton';
 import { useParsedUserReaderSettings } from '@screens/Reader/context/ParsedUserReaderSettings';
-import { hexToRgb, rgbaToString } from '@mangayomu/theme';
-import Animated, {
+import {
   Easing,
   runOnJS,
   useAnimatedStyle,
@@ -30,11 +23,13 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import SnapPoints from '@screens/Reader/components/Overlay/components/PageSliderNavigator/components/SnapPoints/SnapPoints';
 import { ReadingDirection } from '@redux/slices/settings';
 import { LayoutChangeEvent } from 'react-native';
 import { PageSliderNavigatorSnapPointsContext } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator.context';
 import PageSliderDecorators from '@screens/Reader/components/Overlay/components/PageSliderNavigator/components/PageSliderDecorators/PageSliderDecorators';
+import connector, {
+  ConnectedPageSliderNavigatorProps,
+} from './PageSliderNavigator.redux';
 
 const styles = ScaledSheet.create({
   button: {
@@ -47,7 +42,7 @@ const styles = ScaledSheet.create({
 
 const PageSliderNavigator: React.ForwardRefRenderFunction<
   PageSliderNavigatorMethods,
-  PageSliderNavigatorProps
+  ConnectedPageSliderNavigatorProps
 > = (props, ref) => {
   const {
     style,
@@ -57,6 +52,7 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
     onSnapToPoint,
     initialChapterPageIndex,
     isFinishedInitialScrollOffset,
+    hide,
   } = props;
   const theme = useTheme();
   const [maxLeftDistance, setMaxLeftDistance] = React.useState<number>(0);
@@ -79,7 +75,8 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
     if (
       totalPages != null &&
       totalDistance != null &&
-      isFinishedInitialScrollOffset
+      isFinishedInitialScrollOffset &&
+      !hide
     ) {
       left.value =
         snapPoints[
@@ -92,7 +89,7 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
         easing: Easing.ease,
       });
     }
-  }, [totalPages, isFinishedInitialScrollOffset]);
+  }, [totalPages, isFinishedInitialScrollOffset, hide]);
 
   React.useImperativeHandle(
     ref,
@@ -204,7 +201,7 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
   );
 
   const memoTrailStyle = React.useMemo(
-    () => trailStyle,
+    () => [trailStyle, { opacity: visibleOpacity.value }],
     [reversed, maxLeftDistance],
   );
   return (
@@ -246,4 +243,4 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
   );
 };
 
-export default React.forwardRef(PageSliderNavigator);
+export default connector(React.forwardRef(PageSliderNavigator));

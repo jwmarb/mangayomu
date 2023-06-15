@@ -1,5 +1,7 @@
 import React from 'react';
-import { PageSliderDecoratorsProps } from './PageSliderDecorators.interfaces';
+import connector, {
+  ConnectedPageSliderDecoratorsProps,
+} from './PageSliderDecorators.redux';
 import Box, { AnimatedBox } from '@components/Box/Box';
 import SnapPoints from '@screens/Reader/components/Overlay/components/PageSliderNavigator/components/SnapPoints/SnapPoints';
 import {
@@ -15,8 +17,10 @@ import { OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET } from '@theme/constants';
 const AnimatedBorderlessButton =
   Animated.createAnimatedComponent(BorderlessButton);
 
-const PageSliderDecorators: React.FC<PageSliderDecoratorsProps> = (props) => {
-  const { onLayout, gesture, style, snapPointStyle, trailStyle } = props;
+const PageSliderDecorators: React.FC<ConnectedPageSliderDecoratorsProps> = (
+  props,
+) => {
+  const { onLayout, gesture, style, snapPointStyle, trailStyle, hide } = props;
   const theme = useTheme();
   return (
     <Box
@@ -28,10 +32,14 @@ const PageSliderDecorators: React.FC<PageSliderDecoratorsProps> = (props) => {
       align-self="center"
       justify-content="center"
       overflow="visible"
-      background-color={rgbaToString({
-        ...hexToRgb(theme.palette.primary.main),
-        alpha: 0.32,
-      })}
+      background-color={
+        !hide
+          ? theme.palette.skeleton
+          : rgbaToString({
+              ...hexToRgb(theme.palette.primary.main),
+              alpha: 0.32,
+            })
+      }
     >
       <GestureDetector gesture={gesture}>
         <Box justify-content="center">
@@ -64,4 +72,4 @@ const PageSliderDecorators: React.FC<PageSliderDecoratorsProps> = (props) => {
   );
 };
 
-export default React.memo(PageSliderDecorators);
+export default connector(React.memo(PageSliderDecorators));

@@ -8,5 +8,5 @@ export interface PageSliderDecoratorsProps extends React.PropsWithChildren {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   style: any;
   snapPointStyle: Record<string, unknown>;
-  trailStyle: Record<string, unknown>;
+  trailStyle: Record<string, unknown>[];
 }

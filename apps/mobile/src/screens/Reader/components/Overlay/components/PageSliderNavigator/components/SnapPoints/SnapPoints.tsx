@@ -4,9 +4,10 @@ import { useTheme } from '@emotion/react';
 import { moderateScale } from 'react-native-size-matters';
 import { OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET } from '@theme/constants';
 import { useSnapPoints } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator.context';
-import { SnapPointsProps } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/components/SnapPoints/SnapPoints.interfaces';
+import connector, { ConnectedSnapPointsProps } from './SnapPoints.redux';
+import { Freeze } from 'react-freeze';
 
-const SnapPoints: React.FC<SnapPointsProps> = ({ style }) => {
+const SnapPoints: React.FC<ConnectedSnapPointsProps> = ({ style, freeze }) => {
   const snapPoints = useSnapPoints();
   const theme = useTheme();
   if (snapPoints.length === 0) return null;
@@ -21,19 +22,21 @@ const SnapPoints: React.FC<SnapPointsProps> = ({ style }) => {
       bottom={0}
       justify-content="center"
     >
-      {snapPoints.map((x) => (
-        <Box
-          key={x}
-          border-radius={10000}
-          background-color={theme.palette.primary.light}
-          height={moderateScale(2)}
-          width={moderateScale(2)}
-          position="absolute"
-          left={Math.floor(x - OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET)}
-        />
-      ))}
+      <Freeze freeze={freeze}>
+        {snapPoints.map((x) => (
+          <Box
+            key={x}
+            border-radius={10000}
+            background-color={theme.palette.primary.light}
+            height={moderateScale(2)}
+            width={moderateScale(2)}
+            position="absolute"
+            left={Math.floor(x - OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET)}
+          />
+        ))}
+      </Freeze>
     </AnimatedBox>
   );
 };
 
-export default React.memo(SnapPoints);
+export default connector(React.memo(SnapPoints));
