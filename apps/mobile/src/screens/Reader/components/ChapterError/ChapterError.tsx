@@ -14,6 +14,10 @@ import { ChapterErrorContextState } from '@screens/Reader/components/ChapterErro
 import React from 'react';
 import { moderateScale } from 'react-native-size-matters';
 import connector, { ConnectedChapterErrorProps } from './ChapterError.redux';
+import NetInfo, {
+  NetInfoSubscription,
+  useNetInfo,
+} from '@react-native-community/netinfo';
 
 export const ChapterErrorContext = React.createContext<
   ChapterErrorContextState | undefined
@@ -34,11 +38,19 @@ const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
     useReaderBackgroundColor(backgroundColor);
   const { width, height } = useScreenDimensions();
   const [loading, toggle] = useBoolean();
+  const netInfo = useNetInfo();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   React.useEffect(() => {
     if (loading && chapter != null) {
-      const p = fetchPages(chapter);
+      let p: ReturnType<typeof fetchPages>;
+      const listener: NetInfoSubscription = NetInfo.addEventListener(
+        ({ isInternetReachable }) => {
+          if (isInternetReachable) p = fetchPages(chapter);
+          else toggle(false);
+        },
+      );
       return () => {
+        listener();
         p?.abort();
       };
     }
@@ -85,7 +97,7 @@ const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
           <Button
             label="Reload chapter"
             variant="contained"
-            disabled={loading}
+            disabled={loading || !netInfo.isInternetReachable}
             onPress={onRetryFetch}
             icon={loading ? <Progress size="small" /> : undefined}
           />
