@@ -10,6 +10,7 @@ import { StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { moderateScale } from 'react-native-size-matters';
 import connector, { ConnectedNetworkToastProps } from './NetworkToast.redux';
+import { fetchedChapters, fetchingChapters } from '@redux/slices/reader';
 
 const NetworkToast: React.FC<ConnectedNetworkToastProps> = ({
   internetStatus,
@@ -17,7 +18,6 @@ const NetworkToast: React.FC<ConnectedNetworkToastProps> = ({
   style,
 }) => {
   const insets = useSafeAreaInsets();
-
   return (
     <Portal>
       <Box style={StyleSheet.absoluteFill} pointerEvents="none">
@@ -66,6 +66,22 @@ const NetworkToast: React.FC<ConnectedNetworkToastProps> = ({
             else setNetworkState('offline');
           }}
           label="Toggle Network State"
+          variant="contained"
+          color="primary"
+        />
+        <Button
+          onPress={() => {
+            console.log(fetchedChapters);
+          }}
+          label="Print fetchedChapters"
+          variant="contained"
+          color="primary"
+        />
+        <Button
+          onPress={() => {
+            console.log(fetchingChapters);
+          }}
+          label="Print fetchingChapters"
           variant="contained"
           color="primary"
         />
