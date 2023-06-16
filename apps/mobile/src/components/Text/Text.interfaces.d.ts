@@ -9,10 +9,6 @@ export interface TextProps extends React.PropsWithChildren, NativeTextProps {
   color?:
     | Colors
     | ButtonColorsTextContrasts
-    /**
-     * @deprecated Use a regular string instead. This will be removed in the future
-     */
-    | { custom: string }
     | 'inherit'
     // eslint-disable-next-line @typescript-eslint/ban-types
     | (string & {});

@@ -107,7 +107,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
     useCollapsibleHeader({
       headerTitle: '',
       onScroll: handleOnScroll,
-      backButtonColor: { custom: theme.palette.mangaViewerBackButtonColor },
+      backButtonColor: theme.palette.mangaViewerBackButtonColor,
       backButtonStyle: buttonStyle,
       backButtonRippleColor: theme.palette.action.ripple,
       loading: status === 'loading',
@@ -115,7 +115,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
         <>
           {manga == null ? undefined : (
             <IconButton
-              color={{ custom: theme.palette.mangaViewerBackButtonColor }}
+              color={theme.palette.mangaViewerBackButtonColor}
               rippleColor={theme.palette.action.ripple}
               animated
               onPress={handleOnBookmark}
@@ -129,7 +129,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
             />
           )}
           <IconButton
-            color={{ custom: theme.palette.mangaViewerBackButtonColor }}
+            color={theme.palette.mangaViewerBackButtonColor}
             rippleColor={theme.palette.action.ripple}
             animated
             icon={<Icon type="font" name="web" style={buttonStyle} />}

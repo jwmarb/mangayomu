@@ -36,7 +36,7 @@ const MangaStatus: React.FC<MangaStatusProps> = (props) => {
       >
         <Text color="textSecondary">Scan Status</Text>
         {data && data.scan ? (
-          <Text color={{ custom: getColor(data.scan) }}>
+          <Text color={getColor(data.scan)}>
             {data.scan.substring(0, data.scan.indexOf(' '))}
           </Text>
         ) : loading ? (
@@ -55,7 +55,7 @@ const MangaStatus: React.FC<MangaStatusProps> = (props) => {
       >
         <Text color="textSecondary">Publish Status</Text>
         {data && data.publish ? (
-          <Text color={{ custom: getColor(data.publish) }}>
+          <Text color={getColor(data.publish)}>
             {data.publish.substring(0, data.publish.lastIndexOf(' '))}
           </Text>
         ) : (

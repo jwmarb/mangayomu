@@ -96,7 +96,7 @@ const Book: React.FC<ConnectedBookProps> = (props) => {
                     numberOfLines={2}
                     bold={bold}
                     align={align}
-                    color={{ custom: theme.helpers.getContrastText('#000000') }}
+                    color={theme.helpers.getContrastText('#000000')}
                   >
                     {manga.title}
                   </Text>
