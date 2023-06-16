@@ -205,13 +205,9 @@ export const useManga = (
     options.preferLocal ? 'local' : 'loading',
   );
   const [error, setError] = React.useState<string>('');
-  const mangaObject = useObject(
+  const manga = useObject(
     MangaSchema,
     typeof link === 'string' ? link : link.link,
-  );
-
-  const [manga, setManga] = React.useState<IMangaSchema | undefined>(
-    mangaObject && mangaObject.isValid() ? mangaObject : undefined,
   );
   React.useEffect(() => {
     const netListener = NetInfo.addEventListener((state) => {
@@ -255,11 +251,11 @@ export const useManga = (
         throw Error(
           `"${link.source}" is not a valid source. Cannot fetch manga metadata from ${link.link}.`,
         );
-      const manga = link as Manga;
+      const _manga = link as Manga;
       setStatus('loading');
       setError('');
       try {
-        const meta = await source.getMeta(manga);
+        const meta = await source.getMeta(_manga);
         localRealm.write(() => {
           for (const x of meta.chapters) {
             const existingChapter = localRealm.objectForPrimaryKey(
@@ -326,7 +322,7 @@ export const useManga = (
                 );
               })
                 ? ReadingDirection.WEBTOON
-                : mangaObject?.readerDirection ?? 'Use global setting',
+                : manga?.readerDirection ?? 'Use global setting',
               notifyNewChaptersCount: 0,
             },
             Realm.UpdateMode.Modified,
@@ -344,13 +340,13 @@ export const useManga = (
     setError,
     source,
     mangaRealm,
-    mangaObject,
+    manga,
     isOffline,
     localRealm,
   ]);
 
   const refresh = React.useCallback(async () => {
-    if (mangaObject != null) {
+    if (manga != null) {
       try {
         await fetchData();
         setStatus('success');
@@ -359,17 +355,7 @@ export const useManga = (
         setError(e as string);
       }
     }
-  }, [fetchData, mangaObject == null]);
-
-  React.useEffect(() => {
-    mangaObject?.addListener((_manga, changes) => {
-      if (changes.deleted) setManga(undefined);
-      else setManga(_manga);
-    });
-    return () => {
-      mangaObject?.removeAllListeners();
-    };
-  }, [mangaObject != null]);
+  }, [fetchData, manga == null]);
 
   const update = React.useCallback(
     (
@@ -378,15 +364,15 @@ export const useManga = (
         getChapter: (key: string) => ChapterSchema | null,
       ) => void,
     ) => {
-      if (mangaObject != null && mangaObject.isValid()) {
+      if (manga != null && manga.isValid()) {
         mangaRealm.write(() => {
-          fn(mangaObject, (k: string) =>
+          fn(manga, (k: string) =>
             localRealm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
           );
         });
       }
     },
-    [mangaObject, mangaRealm, localRealm],
+    [manga, mangaRealm, localRealm],
   );
 
   return { manga, refresh, status, error, update };
