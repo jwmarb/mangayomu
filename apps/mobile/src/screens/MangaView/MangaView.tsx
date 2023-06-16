@@ -42,6 +42,7 @@ import { AnimatedFlashList } from '@components/animated';
 import InternetStatusToast from '@screens/MangaView/components/InternetStatusToast/InternetStatusToast';
 import QuickReadButton from '@screens/MangaView/components/QuickReadButton/QuickReadButton';
 import useChapters from '@screens/MangaView/hooks/useChapters';
+import useRefresh from '@screens/MangaView/hooks/useRefresh';
 
 export const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 
@@ -57,7 +58,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
     preferLocal: false,
   });
   const { data, firstChapter } = useChapters(manga);
-  const [refreshing, setRefreshing] = React.useState<boolean>(false);
+  const [refreshing, onRefresh] = useRefresh(refresh);
   const handleOnBookmark = React.useCallback(() => {
     update((mangaObj) => {
       addIfNewSourceToLibrary(mangaObj.source);
@@ -152,20 +153,6 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
     ref.current?.snapToIndex(1);
   }
 
-  function handleOnRefresh() {
-    setRefreshing(true);
-  }
-
-  React.useEffect(() => {
-    if (refreshing) {
-      try {
-        refresh();
-      } finally {
-        setRefreshing(false);
-      }
-    }
-  }, [refreshing]);
-
   const extraData = {
     manga,
   };
@@ -209,7 +196,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
         data={data}
         refreshing={refreshing}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleOnRefresh} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         ListHeaderComponent={
           <MangaViewerHeader
