@@ -33,9 +33,7 @@ export default function useCancellable(pages: Page[]) {
       };
     }
   }, [previous]);
-  React.useEffect(() => {
-    if (!previous) console.log('previous done fetching');
-  }, [previous]);
+
   React.useEffect(() => {
     if (next && nextFnRef.current) {
       let p: Abortable;
