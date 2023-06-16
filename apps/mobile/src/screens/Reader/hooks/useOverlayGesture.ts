@@ -17,26 +17,33 @@ export default function useOverlayGesture(args: {
   const { overlayOpacity } = args;
   const [showStatusAndNavBar, hideStatusAndNavBar] = useImmersiveMode();
 
+  function showOverlay() {
+    'worklet';
+    runOnJS(showStatusAndNavBar)();
+    overlayOpacity.value = withTiming(1, {
+      duration: 150,
+      easing: Easing.ease,
+    });
+  }
+
+  function hideOverlay() {
+    'worklet';
+    runOnJS(hideStatusAndNavBar)();
+    overlayOpacity.value = withTiming(0, {
+      duration: 150,
+      easing: Easing.ease,
+    });
+  }
+
   const tapGesture = React.useMemo(
     () =>
       Gesture.Tap()
         .onStart(() => {
-          if (overlayOpacity.value > 0) {
-            runOnJS(hideStatusAndNavBar)();
-            overlayOpacity.value = withTiming(0, {
-              duration: 150,
-              easing: Easing.ease,
-            });
-          } else {
-            runOnJS(showStatusAndNavBar)();
-            overlayOpacity.value = withTiming(1, {
-              duration: 150,
-              easing: Easing.ease,
-            });
-          }
+          if (overlayOpacity.value > 0) hideOverlay();
+          else showOverlay();
         })
         .cancelsTouchesInView(false),
     [],
   );
-  return tapGesture;
+  return { tapGesture, hideOverlay, showOverlay };
 }
