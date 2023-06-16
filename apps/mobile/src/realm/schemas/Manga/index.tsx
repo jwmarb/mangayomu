@@ -196,7 +196,7 @@ export const useManga = (
   options: UseMangaOptions = { preferLocal: true },
 ) => {
   const mangaRealm = useRealm();
-  const cloudRealm = useLocalRealm();
+  const localRealm = useLocalRealm();
   const currentUser = useUser();
   if (currentUser == null)
     throw Error('currentUser is null in useManga() when it is required.');
@@ -260,7 +260,7 @@ export const useManga = (
       setError('');
       try {
         const meta = await source.getMeta(manga);
-        cloudRealm.write(() => {
+        localRealm.write(() => {
           for (const x of meta.chapters) {
             const copy = x;
             (copy as ChapterSchema)._mangaId = meta.link;
@@ -269,7 +269,7 @@ export const useManga = (
             (copy as ChapterSchema).language =
               (x as MangaMultilingualChapter).language ?? 'en';
 
-            cloudRealm.create<ChapterSchema>(
+            localRealm.create<ChapterSchema>(
               'Chapter',
               copy,
               Realm.UpdateMode.Modified,
@@ -341,7 +341,7 @@ export const useManga = (
     mangaRealm,
     mangaObject,
     isOffline,
-    cloudRealm,
+    localRealm,
   ]);
 
   const refresh = React.useCallback(async () => {
@@ -387,12 +387,12 @@ export const useManga = (
       if (mangaObject != null && mangaObject.isValid()) {
         mangaRealm.write(() => {
           fn(mangaObject, (k: string) =>
-            cloudRealm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
+            localRealm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
           );
         });
       }
     },
-    [mangaObject, mangaRealm, cloudRealm],
+    [mangaObject, mangaRealm, localRealm],
   );
 
   return { manga, refresh, status, error, update };
