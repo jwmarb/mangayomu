@@ -72,7 +72,7 @@ const LoadingBar: React.FC<LoadingBarProps> = (props) => {
     return () => {
       listener.remove();
     };
-  }, []);
+  }, [loading]);
 
   return (
     <AnimatedBox
