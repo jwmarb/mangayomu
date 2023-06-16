@@ -132,14 +132,7 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
   );
 
   React.useEffect(() => {
-    if (totalPages != null) {
-      console.log(
-        `\nreversed, and the index is ${
-          indexRef.current
-        }\nthe snap position is ${snapPoints[indexRef.current]}\n`,
-      );
-      left.value = snapPoints[indexRef.current];
-    }
+    if (totalPages != null) left.value = snapPoints[indexRef.current];
   }, [reversed]);
 
   const tapGesture = React.useMemo(
