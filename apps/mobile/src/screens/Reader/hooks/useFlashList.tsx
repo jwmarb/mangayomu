@@ -1,4 +1,4 @@
-import { Page } from '@redux/slices/reader/reader';
+import { ExtendedReaderPageState, Page } from '@redux/slices/reader/reader';
 import React from 'react';
 import { ListRenderItem } from '@shopify/flash-list';
 import TransitionPage from '@screens/Reader/components/TransitionPage/TransitionPage';
@@ -6,8 +6,14 @@ import ChapterPage from '@screens/Reader/components/ChapterPage/ChapterPage';
 import NoMorePages from '@screens/Reader/components/NoMorePages/NoMorePages';
 import ChapterError from '@screens/Reader/components/ChapterError/ChapterError';
 import usePageLayout from '@screens/Reader/hooks/usePageLayout';
+import { ReadingDirection } from '@redux/slices/settings';
 
-const renderItem: ListRenderItem<Page> = ({ item, extraData }) => {
+const renderItem: ListRenderItem<Page> = (info) => {
+  const { item } = info;
+  const extraData = info.extraData as {
+    extendedState: Record<string, ExtendedReaderPageState | undefined>;
+    readingDirection: ReadingDirection;
+  };
   switch (item.type) {
     case 'PAGE':
       return (
