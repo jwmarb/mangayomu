@@ -8,7 +8,7 @@ import { ReadingDirection } from '@redux/slices/settings';
 import Overlay from '@screens/Reader/components/Overlay';
 import React from 'react';
 import { GestureDetector } from 'react-native-gesture-handler';
-import { useSharedValue } from 'react-native-reanimated';
+import { runOnJS, useSharedValue } from 'react-native-reanimated';
 import connector, { ConnectedReaderProps } from './Reader.redux';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import useReaderProps from '@screens/Reader/hooks/useReaderProps';
@@ -70,7 +70,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     chapter,
     pages,
   });
-  const tapGesture = useOverlayGesture({ overlayOpacity });
+  const { tapGesture, showOverlay } = useOverlayGesture({ overlayOpacity });
   const { topOverlayStyle, toastStyle } = useNetworkToast({
     overlayOpacity,
   });
@@ -150,6 +150,9 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
           break;
         case 'TRANSITION_PAGE':
           cancellable(fetchPagesByChapter, item);
+          break;
+        case 'NO_MORE_PAGES':
+          runOnJS(showOverlay)();
           break;
       }
     }
