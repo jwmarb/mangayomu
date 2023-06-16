@@ -41,6 +41,7 @@ import Stack from '@components/Stack';
 import { AnimatedFlashList } from '@components/animated';
 import InternetStatusToast from '@screens/MangaView/components/InternetStatusToast/InternetStatusToast';
 import QuickReadButton from '@screens/MangaView/components/QuickReadButton/QuickReadButton';
+import useChapters from '@screens/MangaView/hooks/useChapters';
 
 export const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 
@@ -55,6 +56,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   const { manga, status, error, refresh, update } = useManga(params, {
     preferLocal: false,
   });
+  const { data, firstChapter } = useChapters(manga);
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
   const handleOnBookmark = React.useCallback(() => {
     update((mangaObj) => {
@@ -149,67 +151,6 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   function handleOnOpenMenu() {
     ref.current?.snapToIndex(1);
   }
-
-  const localRealm = useLocalRealm();
-
-  const [chapters, setChapters] = React.useState<
-    Realm.Collection<ChapterSchema & Realm.Object<unknown, never>>
-  >(
-    localRealm
-      .objects(ChapterSchema)
-      .filtered(
-        '_mangaId == $0 && language == $1',
-        params.link,
-        manga?.selectedLanguage === 'Use default language'
-          ? DEFAULT_LANGUAGE
-          : manga?.selectedLanguage,
-      ),
-  );
-
-  React.useEffect(() => {
-    const callback: Realm.CollectionChangeCallback<
-      ChapterSchema & Realm.Object<unknown, never>
-    > = (e) => {
-      setChapters(e);
-    };
-    const p = localRealm
-      .objects(ChapterSchema)
-      .filtered(
-        '_mangaId == $0 && language == $1',
-        params.link,
-        manga?.selectedLanguage === 'Use default language'
-          ? DEFAULT_LANGUAGE
-          : manga?.selectedLanguage,
-      );
-    p.addListener(callback);
-    return () => {
-      p.removeListener(callback);
-    };
-  }, []);
-
-  const data = React.useMemo(() => {
-    if (manga != null) {
-      const sorted = sort(Array.from(chapters))[
-        manga.reversedSort ? 'desc' : 'asc'
-      ](SORT_CHAPTERS_BY[manga.sortChaptersBy]);
-      return sorted;
-    }
-
-    return [];
-  }, [manga?.selectedLanguage, manga?.sortChaptersBy, manga?.reversedSort]);
-
-  const firstChapter = React.useMemo(
-    () =>
-      chapters.find(
-        (c) =>
-          c._mangaId === params.link &&
-          c.language ===
-            (manga?.selectedLanguage === 'Use default language'
-              ? DEFAULT_LANGUAGE
-              : manga?.selectedLanguage),
-      )!,
-    [params.link, manga?.selectedLanguage, chapters.length],
-  );
 
   function handleOnRefresh() {
     setRefreshing(true);
