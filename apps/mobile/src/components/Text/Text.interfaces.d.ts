@@ -6,7 +6,16 @@ import { TextProps as NativeTextProps, TextStyle } from 'react-native';
 
 export interface TextProps extends React.PropsWithChildren, NativeTextProps {
   variant?: TextVariants | 'inherit';
-  color?: Colors | ButtonColorsTextContrasts | { custom: string } | 'inherit';
+  color?:
+    | Colors
+    | ButtonColorsTextContrasts
+    /**
+     * @deprecated Use a regular string instead. This will be removed in the future
+     */
+    | { custom: string }
+    | 'inherit'
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    | (string & {});
   contrast?: boolean;
   align?: TextStyle['textAlign'];
   bold?: boolean;
