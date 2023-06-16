@@ -137,8 +137,9 @@ export function isPaletteColor(theme: DefaultTheme) {
         return true;
       default:
         if (
-          color in theme.palette &&
-          'main' in theme.palette[color as keyof DefaultTheme['palette']]
+          withoutContrast in theme.palette &&
+          'main' in
+            theme.palette[withoutContrast as keyof DefaultTheme['palette']]
         )
           return true;
         if (color in theme.palette.text) return true;
