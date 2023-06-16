@@ -62,7 +62,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const [currentPage, setCurrentPage] = React.useState<number>(
     chapter.indexPage + 1,
   );
-  const { addMangaToHistory } = useUserHistory({ incognito });
   const pageSliderNavRef = React.useRef<PageSliderNavigatorMethods>(null);
   const fetchPagesByChapter = useChapterFetcher({
     availableChapters,
@@ -113,6 +112,8 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     chapter,
     scrollRef: ref,
     pages,
+    manga,
+    incognito,
   });
 
   const handleOnViewableItemsChanged = (info: {
@@ -169,24 +170,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
         },
       },
     ]);
-
-  React.useEffect(() => {
-    addMangaToHistory({
-      manga: {
-        imageCover: manga.imageCover,
-        index: manga.index,
-        link: manga.link,
-        source: manga.source,
-        title: manga.title,
-      },
-      chapter: {
-        date: chapter.date,
-        index: chapter.index,
-        link: chapter.link,
-        name: chapter.name,
-      },
-    });
-  }, [chapter]);
 
   const transitionPageContextValue = React.useMemo(
     () => ({ backgroundColor, currentChapter: chapter, tapGesture }),
