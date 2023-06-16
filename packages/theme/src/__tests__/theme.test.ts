@@ -159,6 +159,7 @@ test('helper functions work as intended', () => {
   expect(theme.helpers.withParams('foo')).toBe(theme.mode + ' ' + 'foobar');
   expect(theme.helpers.getColor('primary')).toBe(theme.palette.primary.main);
   expect(theme.helpers.isPaletteColor('primary')).toBe(true);
+  expect(theme.helpers.isPaletteColor('primary@contrast')).toBe(true);
   expect(theme.helpers.withMultipleParams(2, 2)).toBe(4);
   expect(theme.helpers.withUsingParsedThemeProperty()).toBe(
     theme.palette.primary.ripple,
