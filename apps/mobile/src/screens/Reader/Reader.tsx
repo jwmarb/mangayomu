@@ -123,29 +123,34 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     if (page != null) {
       const item = page.item as Page;
 
-      if (item.type === 'PAGE') {
-        const chapter = localRealm.objectForPrimaryKey(
-          ChapterSchema,
-          item.chapter,
-        );
-        realm.write(() => {
-          if (chapter?.numberOfPages != null)
-            manga.currentlyReadingChapter = {
-              _id: item.chapter,
-              index: item.pageNumber - 1,
-              numOfPages: chapter.numberOfPages,
-            };
-        });
-        localRealm.write(() => {
-          if (chapter != null) chapter.indexPage = item.pageNumber - 1;
-        });
-        setCurrentPage(item.pageNumber);
-        setCurrentChapter(item.chapter);
-        // pageSliderNavRef.current?.snapPointTo(reversed ? chapterIndices.get() (item.pageNumber - 1));
+      switch (item.type) {
+        case 'PAGE':
+          {
+            const chapter = localRealm.objectForPrimaryKey(
+              ChapterSchema,
+              item.chapter,
+            );
+            realm.write(() => {
+              if (chapter?.numberOfPages != null)
+                manga.currentlyReadingChapter = {
+                  _id: item.chapter,
+                  index: item.pageNumber - 1,
+                  numOfPages: chapter.numberOfPages,
+                };
+            });
+            localRealm.write(() => {
+              if (chapter != null) chapter.indexPage = item.pageNumber - 1;
+            });
+            setCurrentPage(item.pageNumber);
+            setCurrentChapter(item.chapter);
+            // pageSliderNavRef.current?.snapPointTo(reversed ? chapterIndices.get() (item.pageNumber - 1));
 
-        pageSliderNavRef.current?.snapPointTo(item.pageNumber - 1);
-      } else if (item.type === 'TRANSITION_PAGE') {
-        cancellable(fetchPagesByChapter, item);
+            pageSliderNavRef.current?.snapPointTo(item.pageNumber - 1);
+          }
+          break;
+        case 'TRANSITION_PAGE':
+          cancellable(fetchPagesByChapter, item);
+          break;
       }
     }
   };
