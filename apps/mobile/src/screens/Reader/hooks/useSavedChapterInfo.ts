@@ -1,6 +1,7 @@
 import { useLocalRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useBoolean from '@hooks/useBoolean';
+import useMutableObject from '@hooks/useMutableObject';
 import { Page } from '@redux/slices/reader';
 import usePageLayout from '@screens/Reader/hooks/usePageLayout';
 import { FlashList } from '@shopify/flash-list';
@@ -23,6 +24,7 @@ export default function useSavedChapterInfo(
   const localRealm = useLocalRealm();
   const scrollOffset = React.useRef<number>(0);
   const shouldSaveScrollOffset = React.useRef<boolean>(false);
+  const chapterRef = useMutableObject(chapter);
   const [isFinishedInitialScrollOffset, setIsFinishedInitialScrollOffset] =
     useBoolean();
 
@@ -34,16 +36,19 @@ export default function useSavedChapterInfo(
   const saveScrollPosition = () => {
     if (shouldSaveScrollOffset.current) {
       const [min, max] = getSafeScrollRange();
-      const { width, height } = Dimensions.get('window');
       const interpolatedScrollOffset = Math.min(
         Math.max(min, scrollOffset.current),
         max,
       );
-
       localRealm.write(() => {
-        chapter.scrollPosition = interpolatedScrollOffset;
-        chapter.savedScrollPositionType =
-          height > width ? 'portrait' : 'landscape';
+        localRealm.create(
+          ChapterSchema,
+          {
+            _id: chapterRef.current._id,
+            scrollPosition: interpolatedScrollOffset,
+          },
+          Realm.UpdateMode.Modified,
+        );
       });
     }
   };

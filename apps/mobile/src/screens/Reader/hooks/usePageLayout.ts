@@ -11,6 +11,7 @@ export default function usePageLayout(args: {
   chapterKey: string;
 }) {
   const { readingDirection, pages, chapterKey } = args;
+  const chapterKeyRef = useMutableObject(chapterKey);
   const { width, height } = useScreenDimensions();
   const pagesRef = useMutableObject(pages);
   const readingDirectionRef = useMutableObject(readingDirection);
@@ -38,7 +39,7 @@ export default function usePageLayout(args: {
   const getSafeScrollRange = (): [number, number] => {
     if (pagesRef.current.length === 0) return [0, 0];
 
-    const x = chapterIndices.get(chapterKey);
+    const x = chapterIndices.get(chapterKeyRef.current);
     if (x != null) {
       const { start, end } = x;
       const { width, height } = Dimensions.get('screen');
@@ -46,7 +47,7 @@ export default function usePageLayout(args: {
       let maxAccumulator = 0;
       switch (readingDirectionRef.current) {
         case ReadingDirection.WEBTOON: {
-          const memo = offsetMemo.get(chapterKey);
+          const memo = offsetMemo.get(chapterKeyRef.current);
           if (memo != null) {
             minAccumulator = memo.min;
             maxAccumulator = memo.max;
@@ -59,7 +60,7 @@ export default function usePageLayout(args: {
               if (i === end)
                 maxAccumulator -= height - getPageOffset(pagesRef.current[i]);
             }
-            offsetMemo.set(chapterKey, {
+            offsetMemo.set(chapterKeyRef.current, {
               min: minAccumulator,
               max: maxAccumulator,
             });
