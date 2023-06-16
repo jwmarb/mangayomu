@@ -11,9 +11,7 @@ import {
 import { AnimatedBox } from '@components/Box';
 import { LoadingBarProps } from './LoadingBar.interfaces';
 import { Dimensions } from 'react-native';
-import { moderateScale } from 'react-native-size-matters';
-
-const LOADING_BAR_HEIGHT = moderateScale(3);
+import { LOADING_BAR_HEIGHT } from '@theme/constants';
 
 const LoadingBar: React.FC<LoadingBarProps> = (props) => {
   const { loading } = props;

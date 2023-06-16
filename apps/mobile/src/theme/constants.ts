@@ -27,3 +27,5 @@ export const READER_NETWORK_TOAST_HEIGHT = moderateScale(24);
 export const RADIO_BUTTON_BORDER_WIDTH = moderateScale(2);
 
 export const DIVIDER_DEPTH = moderateScale(1.5);
+
+export const LOADING_BAR_HEIGHT = moderateScale(3);
