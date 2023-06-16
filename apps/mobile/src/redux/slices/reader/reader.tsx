@@ -62,7 +62,6 @@ interface ReaderState {
   loading: boolean;
   extendedState: Record<string, ExtendedReaderPageState | undefined>;
   currentChapter: string | null;
-  fetchedNextChapter: boolean;
   showImageModal: boolean;
 }
 
@@ -81,7 +80,6 @@ const initialReaderState: ReaderState = {
   extendedState: {},
   showImageModal: false,
   currentChapter: null,
-  fetchedNextChapter: false,
 };
 
 function getImageSizeAsync(
@@ -207,7 +205,6 @@ const readerSlice = createSlice({
       state.showImageModal = false;
       state.currentChapter = null;
       state.extendedState = {};
-      state.fetchedNextChapter = false;
       fetchedChapters.clear();
       fetchingChapters.clear();
       offsetMemo.clear();
@@ -302,7 +299,6 @@ const readerSlice = createSlice({
       const newPages: Page[] = [];
 
       if (shouldAddPreviousChapterTransition) {
-        state.fetchedNextChapter = false;
         newPages.push({
           type: 'TRANSITION_PAGE',
           next: {
@@ -364,12 +360,12 @@ const readerSlice = createSlice({
        * Final mutation of state.pages
        */
       if (shouldAppendData) state.pages = state.pages.concat(newPages);
+
       if (shouldPrependData) {
         state.pages = newPages.concat(state.pages);
         offsetMemo.clear();
       }
       if (shouldAddNextChapterTransition) {
-        state.fetchedNextChapter = true;
         state.pages.push({
           type: 'TRANSITION_PAGE',
           next: {
@@ -382,7 +378,6 @@ const readerSlice = createSlice({
           },
         });
       } else if (nextChapter == null) {
-        state.fetchedNextChapter = true;
         state.pages.push({ type: 'NO_MORE_PAGES' });
       }
 

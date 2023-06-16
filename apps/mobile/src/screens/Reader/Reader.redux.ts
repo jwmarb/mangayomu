@@ -15,7 +15,6 @@ const mapStateToProps = (state: AppState, props: RootStackProps<'Reader'>) => ({
   globalZoomStartPosition: state.settings.reader.zoomStartPosition,
   extendedState: state.reader.extendedState,
   incognito: state.settings.history.incognito,
-  fetchedNextChapter: state.reader.fetchedNextChapter,
 });
 
 const connector = connect(mapStateToProps, {
