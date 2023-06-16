@@ -2,7 +2,7 @@ import Box from '@components/Box';
 import Progress from '@components/Progress';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import { useLocalObject } from '@database/main';
+import { useLocalRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
 import useScreenDimensions from '@hooks/useScreenDimensions';
@@ -29,16 +29,16 @@ const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
     useTransitionPageContext();
   const { background, textPrimary, textSecondary } =
     useReaderBackgroundColor(backgroundColor);
+  const localRealm = useLocalRealm();
   const isPrevious = props.page.next.index === currentChapter.index;
   const isNext = props.page.previous.index === currentChapter.index;
 
   const { width, height } = useScreenDimensions();
-  const previous = useLocalObject(ChapterSchema, page.previous._id);
-  const next = useLocalObject(ChapterSchema, page.next._id);
-
-  React.useEffect(() => {
-    // fetch both previous and next chapters
-  }, []);
+  const previous = localRealm.objectForPrimaryKey(
+    ChapterSchema,
+    page.previous._id,
+  );
+  const next = localRealm.objectForPrimaryKey(ChapterSchema, page.next._id);
 
   return (
     <Box background-color={background}>
