@@ -12,7 +12,7 @@ import { moderateScale } from 'react-native-size-matters';
 import { hexToRgb, rgbaToString } from '@mangayomu/theme';
 import { useTheme } from '@emotion/react';
 import Animated from 'react-native-reanimated';
-import { OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET } from '@theme/constants';
+import { OVERLAY_SLIDER_CIRCLE_RADIUS } from '@theme/constants';
 
 const AnimatedBorderlessButton =
   Animated.createAnimatedComponent(BorderlessButton);
@@ -27,7 +27,6 @@ const PageSliderDecorators: React.FC<ConnectedPageSliderDecoratorsProps> = (
       onLayout={onLayout}
       height={moderateScale(4)}
       border-radius={10000}
-      mx="m"
       flex-grow
       align-self="center"
       justify-content="center"
@@ -47,7 +46,6 @@ const PageSliderDecorators: React.FC<ConnectedPageSliderDecoratorsProps> = (
           <AnimatedBox
             position="absolute"
             background-color={theme.palette.primary.light}
-            left={OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET / 2}
             style={trailStyle}
             border-radius={10000}
             height={moderateScale(4)}
@@ -60,9 +58,9 @@ const PageSliderDecorators: React.FC<ConnectedPageSliderDecoratorsProps> = (
           >
             <Box
               align-self="center"
-              height={moderateScale(22)}
-              width={moderateScale(22)}
-              background-color={theme.palette.primary.light}
+              height={OVERLAY_SLIDER_CIRCLE_RADIUS * 2}
+              width={OVERLAY_SLIDER_CIRCLE_RADIUS * 2}
+              background-color="primary"
               border-radius={10000}
             />
           </AnimatedBorderlessButton>

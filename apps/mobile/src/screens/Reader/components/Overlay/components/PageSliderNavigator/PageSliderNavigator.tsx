@@ -1,15 +1,11 @@
 import React from 'react';
-import {
-  PageSliderNavigatorMethods,
-  PageSliderNavigatorProps,
-} from './PageSliderNavigator.interfaces';
+import { PageSliderNavigatorMethods } from './PageSliderNavigator.interfaces';
 import Box, { AnimatedBox } from '@components/Box';
 import Text from '@components/Text/Text';
 import { useTheme } from '@emotion/react';
-import { ScaledSheet } from 'react-native-size-matters';
 import {
   OVERLAY_COLOR,
-  OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET,
+  OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS,
   OVERLAY_SLIDER_HEIGHT,
 } from '@theme/constants';
 import { Gesture } from 'react-native-gesture-handler';
@@ -30,13 +26,14 @@ import PageSliderDecorators from '@screens/Reader/components/Overlay/components/
 import connector, {
   ConnectedPageSliderNavigatorProps,
 } from './PageSliderNavigator.redux';
+import { StyleSheet } from 'react-native';
 import integrateSortedList from '@helpers/integrateSortedList';
 import { NumberComparator } from '@mangayomu/algorithms';
 
-const styles = ScaledSheet.create({
+const styles = StyleSheet.create({
   button: {
-    width: '32@ms' as unknown as number,
-    height: '32@ms' as unknown as number,
+    width: OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS * 2,
+    height: OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS * 2,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -58,27 +55,27 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
   } = props;
   const theme = useTheme();
   const [maxLeftDistance, setMaxLeftDistance] = React.useState<number>(0);
+  const indexRef = React.useRef<number>(0);
   const { readingDirection } = useParsedUserReaderSettings();
-  const totalDistance = maxLeftDistance - OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET;
   const reversed = readingDirection === ReadingDirection.RIGHT_TO_LEFT;
   const snapPoints = React.useMemo(() => {
-    if (totalPages == null || !totalDistance) return [];
-    const snapLocation = totalDistance / (totalPages - 1);
+    if (totalPages == null || !maxLeftDistance) return [];
+    const snapLocation = maxLeftDistance / (totalPages - 1);
     const values: number[] = new Array(totalPages);
     if (reversed)
       for (let i = 0; i < totalPages; i++) {
         values[i] =
-          (totalPages - 1 - i) * snapLocation +
-          OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET;
+          (totalPages - 1 - i) * snapLocation -
+          OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS;
       }
     else
       for (let i = 0; i < totalPages; i++) {
-        values[i] = i * snapLocation + OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET;
+        values[i] = i * snapLocation - OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS;
       }
 
     return values;
-  }, [totalPages, totalDistance, reversed]);
-  const left = useSharedValue<number>(OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET);
+  }, [totalPages, maxLeftDistance, reversed]);
+  const left = useSharedValue<number>(-OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS);
   const [isUserInput, setIsUserInput] = React.useState<boolean>(false);
   const visibleOpacity = useSharedValue(0);
 
@@ -96,30 +93,26 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
     ref,
     () => ({
       snapPointTo(index: number) {
-        if (!isUserInput) left.value = snapPoints[index];
+        if (!isUserInput && totalPages != null) {
+          left.value = snapPoints[index];
+          indexRef.current = index;
+        }
       },
     }),
-    [snapPoints, isUserInput],
+    [snapPoints, isUserInput, totalPages],
   );
 
   const panGesture = React.useMemo(
     () =>
       Gesture.Pan()
         .onChange((e) => {
-          const parsed = Math.min(
-            Math.max(OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET, e.x),
-            maxLeftDistance,
-          );
-
+          const parsed = Math.min(Math.max(0, e.x), maxLeftDistance);
           if (totalPages != null) {
-            const index = Math.floor(
-              (parsed - OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET) /
-                (totalDistance / totalPages),
-            );
-            if (parsed - snapPoints[index] <= 10) {
-              left.value = snapPoints[index];
-              runOnJS(onSnapToPoint)(index);
-            }
+            const snapLocation = maxLeftDistance / (totalPages - 1);
+            const index = Math.round(parsed / snapLocation);
+            const snapPoint = index * snapLocation;
+            left.value = snapPoint - OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS;
+            runOnJS(onSnapToPoint)(index);
           }
         })
         .onStart(() => {
@@ -133,10 +126,21 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
       snapPoints,
       onSnapToPoint,
       totalPages,
-      totalDistance,
+      maxLeftDistance,
       setIsUserInput,
     ],
   );
+
+  React.useEffect(() => {
+    if (totalPages != null) {
+      console.log(
+        `\nreversed, and the index is ${
+          indexRef.current
+        }\nthe snap position is ${snapPoints[indexRef.current]}\n`,
+      );
+      left.value = snapPoints[indexRef.current];
+    }
+  }, [reversed]);
 
   const tapGesture = React.useMemo(
     () =>
@@ -145,15 +149,14 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
         .onStart((e) => {
           if (totalPages != null) {
             runOnJS(setIsUserInput)(true);
-            const index = Math.min(
-              Math.round(e.x / (totalDistance / totalPages)),
-              totalPages - 1,
-            );
-            left.value = snapPoints[index];
+            const snapLocation = maxLeftDistance / (totalPages - 1);
+            const index = Math.round(e.x / snapLocation);
+            const snapPoint = index * snapLocation;
+            left.value = snapPoint - OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS;
             runOnJS(onSnapToPoint)(index);
           }
         }),
-    [snapPoints, totalDistance, totalPages, setIsUserInput, onSnapToPoint],
+    [snapPoints, maxLeftDistance, totalPages, setIsUserInput, onSnapToPoint],
   );
 
   const gesture = React.useMemo(
@@ -161,7 +164,9 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
     [tapGesture, panGesture],
   );
 
-  const trail = useDerivedValue(() => maxLeftDistance - left.value);
+  const trail = useDerivedValue(
+    () => maxLeftDistance - left.value - OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS,
+  );
   const btnStyle = useAnimatedStyle(() => ({
     opacity: visibleOpacity.value,
     left: left.value,
@@ -173,11 +178,11 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
     !reversed
       ? {
           right: trail.value,
-          left: OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET / 2,
+          left: 0,
         }
       : {
-          right: OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET / 2,
-          left: left.value - OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET,
+          right: 0,
+          left: left.value + OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS,
         },
   );
   const combinedButtonStyle = React.useMemo(
@@ -186,9 +191,7 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
   );
   const handleOnLayout = React.useCallback(
     (e: LayoutChangeEvent) => {
-      setMaxLeftDistance(
-        e.nativeEvent.layout.width + OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET,
-      );
+      setMaxLeftDistance(e.nativeEvent.layout.width);
     },
     [setMaxLeftDistance],
   );
@@ -218,7 +221,9 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
         border-radius={10000}
         px="m"
       >
-        <Text>{reversed ? totalPages : 1}</Text>
+        <Box mr="m" align-self="center">
+          <Text>{reversed ? totalPages : 1}</Text>
+        </Box>
         <PageSliderNavigatorSnapPointsContext.Provider value={snapPoints}>
           <PageSliderDecorators
             trailStyle={memoTrailStyle}
@@ -229,7 +234,9 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
           />
         </PageSliderNavigatorSnapPointsContext.Provider>
 
-        <Text>{reversed ? 1 : totalPages}</Text>
+        <Box ml="m" align-self="center">
+          <Text>{reversed ? 1 : totalPages}</Text>
+        </Box>
       </Box>
       <SkipButton next onSkip={onSkipNext} />
     </AnimatedBox>

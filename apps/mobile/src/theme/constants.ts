@@ -19,8 +19,9 @@ export const OVERLAY_COLOR = 'rgba(128, 128, 128, 0.5)';
 export const OVERLAY_TEXT_PRIMARY = { custom: 'rgba(255, 255, 255, 1)' };
 export const OVERLAY_TEXT_SECONDARY = { custom: 'rgba(255, 255, 255, 0.7)' };
 export const OVERLAY_SLIDER_HEIGHT = moderateScale(45);
-export const OVERLAY_SLIDER_CIRCLE_DEFAULT_OFFSET = moderateScale(-16);
 export const OVERLAY_HEADER_HEIGHT = moderateScale(64);
+export const OVERLAY_SLIDER_CIRCLE_RADIUS = moderateScale(11);
+export const OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS = moderateScale(16);
 export const READER_NETWORK_TOAST_HEIGHT = moderateScale(24);
 
 export const RADIO_BUTTON_BORDER_WIDTH = moderateScale(2);
