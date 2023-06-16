@@ -3,6 +3,7 @@ import {
   definePalette,
   getColor,
   getContrastText,
+  isPaletteColor,
   mutatePalette,
   readColors,
 } from './helpers';
@@ -67,6 +68,9 @@ export interface ThemeHelpers extends DefaultThemeHelpers {}
 export interface DefaultThemeHelpers {
   getColor(colorProp: Colors | ButtonColorsTextContrasts): string;
   getContrastText(colorProp: string): string;
+  isPaletteColor(
+    colorProp: string,
+  ): colorProp is Colors | ButtonColorsTextContrasts;
 }
 
 export interface IThemeHelpers {
@@ -223,10 +227,17 @@ export function createTheme<T extends Theme>(
     (oppositeParsed.helpers as any)[key] = (...args: unknown[]) =>
       (template.helpers as any)[key](...args)(oppositeParsed);
   }
+  (parsed as DefaultTheme).helpers['isPaletteColor'] = isPaletteColor(
+    parsed as DefaultTheme,
+  );
   (parsed as DefaultTheme).helpers['getColor'] = getColor(
     parsed as DefaultTheme,
   );
   (parsed as DefaultTheme).helpers['getContrastText'] = parsedGetContrastText;
+
+  (oppositeParsed as DefaultTheme).helpers['isPaletteColor'] = isPaletteColor(
+    oppositeParsed as DefaultTheme,
+  );
   (oppositeParsed as DefaultTheme).helpers['getColor'] = getColor(
     oppositeParsed as DefaultTheme,
   );

@@ -126,6 +126,24 @@ export function definePalette<T>(obj: T) {
   return ['palette', obj];
 }
 
+export function isPaletteColor(theme: DefaultTheme) {
+  return (color: string): color is Colors | ButtonColorsTextContrasts => {
+    switch (color) {
+      case 'textPrimary':
+      case 'textSecondary':
+        return true;
+      default:
+        if (
+          color in theme.palette &&
+          'main' in theme.palette[color as keyof DefaultTheme['palette']]
+        )
+          return true;
+        if (color in theme.palette.text) return true;
+        return false;
+    }
+  };
+}
+
 export function getColor(theme: DefaultTheme) {
   return (color: Colors | ButtonColorsTextContrasts) => {
     const indexContrastDecoration = color.indexOf('@contrast');
