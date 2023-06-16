@@ -361,17 +361,6 @@ export const useManga = (
     }
   }, [fetchData, mangaObject == null]);
 
-  // useMountEffect(() => {
-  //   InteractionManager.runAfterInteractions(async () => {
-  //     try {
-  //       await fetchData();
-  //       setStatus('success');
-  //     } catch (e) {
-  //       setStatus('error');
-  //       setError(e as string);
-  //     }
-  //   });
-  // }, []);
   React.useEffect(() => {
     mangaObject?.addListener((_manga, changes) => {
       if (changes.deleted) setManga(undefined);
