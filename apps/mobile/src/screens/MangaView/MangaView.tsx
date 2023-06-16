@@ -1,14 +1,18 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import Box from '@components/Box';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
-import { SORT_CHAPTERS_BY, useManga } from '@database/schemas/Manga';
+import {
+  IMangaSchema,
+  SORT_CHAPTERS_BY,
+  useManga,
+} from '@database/schemas/Manga';
 import { ListRenderItem } from '@shopify/flash-list';
 import React from 'react';
 import MangaViewerHeader from './components/MangaViewerHeader';
 import { useTheme } from '@emotion/react';
 import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
-import { useLocalQuery, useLocalRealm } from '@database/main';
+import { useLocalRealm } from '@database/main';
 import displayMessage from '@helpers/displayMessage';
 import { Linking, NativeScrollEvent, Share } from 'react-native';
 import {
@@ -27,7 +31,7 @@ import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSh
 import MangaViewModal from '@screens/MangaView/components/MangaViewModal';
 import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 import { ISOLangCode } from '@mangayomu/language-codes';
-import { inPlaceSort } from 'fast-sort';
+import { sort } from 'fast-sort';
 import connector, {
   ConnectedMangaViewProps,
 } from '@screens/MangaView/MangaView.redux';
@@ -145,57 +149,66 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   function handleOnOpenMenu() {
     ref.current?.snapToIndex(1);
   }
+
   const localRealm = useLocalRealm();
 
-  const chapters = useLocalQuery(ChapterSchema);
-
-  const multilingualChapters = React.useMemo(
-    () => chapters.filtered(`_mangaId == "${params.link}"`),
-    [chapters, params.link],
-  );
-
-  const selectedLanguageChapters = React.useMemo(
-    () =>
-      multilingualChapters.filtered(
-        `language == "${
-          manga?.selectedLanguage === 'Use default language'
-            ? DEFAULT_LANGUAGE
-            : manga?.selectedLanguage
-        }"`,
+  const [chapters, setChapters] = React.useState<
+    Realm.Collection<ChapterSchema & Realm.Object<unknown, never>>
+  >(
+    localRealm
+      .objects(ChapterSchema)
+      .filtered(
+        '_mangaId == $0 && language == $1',
+        params.link,
+        manga?.selectedLanguage === 'Use default language'
+          ? DEFAULT_LANGUAGE
+          : manga?.selectedLanguage,
       ),
-    [multilingualChapters, manga?.selectedLanguage],
   );
 
-  const sortfn = React.useCallback(
-    (a: string) =>
-      SORT_CHAPTERS_BY[manga!.sortChaptersBy](
-        localRealm.objectForPrimaryKey('Chapter', a)!,
-      ),
-    [manga != null, localRealm],
-  );
+  React.useEffect(() => {
+    const callback: Realm.CollectionChangeCallback<
+      ChapterSchema & Realm.Object<unknown, never>
+    > = (e) => {
+      setChapters(e);
+    };
+    const p = localRealm
+      .objects(ChapterSchema)
+      .filtered(
+        '_mangaId == $0 && language == $1',
+        params.link,
+        manga?.selectedLanguage === 'Use default language'
+          ? DEFAULT_LANGUAGE
+          : manga?.selectedLanguage,
+      );
+    p.addListener(callback);
+    return () => {
+      p.removeListener(callback);
+    };
+  }, []);
 
-  const data = React.useMemo(
-    () =>
-      manga
-        ? inPlaceSort(selectedLanguageChapters.map((x) => x._id)).by(
-            manga.reversedSort
-              ? {
-                  desc: sortfn,
-                }
-              : {
-                  asc: sortfn,
-                },
-          )
-        : [],
-    [manga?.chapters, manga?.selectedLanguage],
-  );
+  const data = React.useMemo(() => {
+    if (manga != null) {
+      const sorted = sort(Array.from(chapters))[
+        manga.reversedSort ? 'desc' : 'asc'
+      ](SORT_CHAPTERS_BY[manga.sortChaptersBy]);
+      return sorted;
+    }
+
+    return [];
+  }, [manga?.selectedLanguage, manga?.sortChaptersBy, manga?.reversedSort]);
 
   const firstChapter = React.useMemo(
     () =>
-      selectedLanguageChapters.filtered(
-        `index == ${selectedLanguageChapters.length - 1}`,
-      )[0],
-    [selectedLanguageChapters],
+      chapters.find(
+        (c) =>
+          c._mangaId === params.link &&
+          c.language ===
+            (manga?.selectedLanguage === 'Use default language'
+              ? DEFAULT_LANGUAGE
+              : manga?.selectedLanguage),
+      )!,
+    [params.link, manga?.selectedLanguage, chapters.length],
   );
 
   function handleOnRefresh() {
@@ -212,15 +225,9 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
     }
   }, [refreshing]);
 
-  const renderItem: ListRenderItem<string> = React.useCallback(
-    ({ item }) => (
-      <RowChapter
-        rowChapterKey={item}
-        isReading={manga?.currentlyReadingChapter?._id === item}
-      />
-    ),
-    [manga?.currentlyReadingChapter?._id],
-  );
+  const extraData = {
+    manga,
+  };
 
   if (manga == null && internetStatus === 'offline')
     return (
@@ -257,6 +264,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   return (
     <>
       <AnimatedFlashList
+        extraData={extraData}
         data={data}
         refreshing={refreshing}
         refreshControl={
@@ -266,7 +274,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
           <MangaViewerHeader
             firstChapterKey={firstChapter?._id}
             onOpenMenu={handleOnOpenMenu}
-            numberOfSelectedLanguageChapters={selectedLanguageChapters.length}
+            numberOfSelectedLanguageChapters={data.length}
             onBookmark={handleOnBookmark}
             status={status}
             manga={params}
@@ -313,6 +321,27 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
         />
       </Box>
     </>
+  );
+};
+
+const renderItem: ListRenderItem<
+  ChapterSchema & Realm.Object<unknown, never>
+> = (info) => {
+  const { item } = info;
+  const extra = info.extraData as {
+    manga: IMangaSchema | undefined;
+  };
+  return (
+    <RowChapter
+      mangaKey={extra.manga?._id}
+      dateRead={item.dateRead}
+      name={item.name}
+      indexPage={item.indexPage}
+      numberOfPages={item.numberOfPages}
+      date={item.date}
+      chapterKey={item._id}
+      isReading={extra.manga?.currentlyReadingChapter?._id === item._id}
+    />
   );
 };
 

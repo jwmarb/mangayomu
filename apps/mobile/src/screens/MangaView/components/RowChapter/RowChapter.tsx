@@ -6,21 +6,25 @@ import { RectButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import { RowChapterProps } from './RowChapter.interfaces';
 import { format, formatDistanceToNow } from 'date-fns';
-import { useLocalObject } from '@database/main';
-import { ChapterSchema } from '@database/schemas/Chapter';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { useTheme } from '@emotion/react';
 
 export const ROW_CHAPTER_HEIGHT = moderateScale(60);
 
 const RowChapter: React.FC<RowChapterProps> = (props) => {
-  if ('loading' in props) return null;
-  const { rowChapterKey } = props;
+  const {
+    mangaKey,
+    date,
+    isReading,
+    name,
+    indexPage,
+    numberOfPages,
+    dateRead,
+    chapterKey,
+  } = props;
   const navigation = useRootNavigation();
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const rowChapter = useLocalObject(ChapterSchema, rowChapterKey)!;
   const theme = useTheme();
-  const parsed = Date.parse(rowChapter.date);
+  const parsed = Date.parse(date);
   const isRecent = Date.now() - 6.048e7 < parsed;
   const isWithinWeek = Date.now() - 6.048e8 < parsed;
   const formattedDate = React.useMemo(
@@ -31,10 +35,11 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
     [parsed, isWithinWeek],
   );
   function handleOnPress() {
-    navigation.navigate('Reader', {
-      chapter: rowChapterKey,
-      manga: rowChapter._mangaId,
-    });
+    if (mangaKey != null)
+      navigation.navigate('Reader', {
+        chapter: chapterKey,
+        manga: mangaKey,
+      });
   }
   return (
     <RectButton
@@ -55,18 +60,14 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
         <Box align-self="center">
           <Stack space="s" flex-direction="row">
             <Text
-              color={
-                rowChapter.dateRead || props.isReading
-                  ? 'disabled'
-                  : 'textPrimary'
-              }
-              bold={!rowChapter.dateRead}
+              color={dateRead || isReading ? 'disabled' : 'textPrimary'}
+              bold={!dateRead}
             >
-              {rowChapter.name}
+              {name}
             </Text>
-            {(rowChapter.dateRead || props.isReading) && (
+            {(dateRead || isReading) && (
               <Text color="primary" variant="book-title">
-                ({rowChapter.indexPage + 1} / {rowChapter.numberOfPages})
+                ({indexPage + 1} / {numberOfPages})
               </Text>
             )}
           </Stack>
