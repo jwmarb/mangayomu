@@ -1,10 +1,13 @@
-import { NavStyles } from '@components/NavHeader';
-import { IMangaSchema, FetchMangaMetaStatus } from '@database/schemas/Manga';
+import {
+  IMangaSchema,
+  FetchMangaMetaStatus,
+  useManga,
+} from '@database/schemas/Manga';
 import { Manga } from '@mangayomu/mangascraper';
 import React from 'react';
 
 export interface MangaViewerHeaderProps extends React.PropsWithChildren {
-  meta?: IMangaSchema;
+  meta?: ReturnType<typeof useManga>['manga'];
   manga: Omit<Manga, 'index'>;
   status: FetchMangaMetaStatus;
   error: string;
