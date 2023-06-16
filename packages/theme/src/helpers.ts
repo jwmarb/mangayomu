@@ -128,7 +128,10 @@ export function definePalette<T>(obj: T) {
 
 export function isPaletteColor(theme: DefaultTheme) {
   return (color: string): color is Colors | ButtonColorsTextContrasts => {
-    switch (color) {
+    const contrastIndex = color.indexOf('@contrast');
+    const withoutContrast =
+      contrastIndex === -1 ? color : color.substring(0, contrastIndex);
+    switch (withoutContrast) {
       case 'textPrimary':
       case 'textSecondary':
         return true;
