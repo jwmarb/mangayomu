@@ -3,7 +3,7 @@ import useScreenDimensions from '@hooks/useScreenDimensions';
 import { Page, chapterIndices, offsetMemo } from '@redux/slices/reader';
 import { ReadingDirection } from '@redux/slices/settings';
 import React from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, FlatListProps } from 'react-native';
 
 export default function usePageLayout(args: {
   readingDirection: ReadingDirection;
@@ -15,6 +15,38 @@ export default function usePageLayout(args: {
   const { width, height } = useScreenDimensions();
   const pagesRef = useMutableObject(pages);
   const readingDirectionRef = useMutableObject(readingDirection);
+
+  const getItemLayout: FlatListProps<Page>['getItemLayout'] = (data, index) => {
+    if (data == null)
+      return {
+        index,
+        length: 0,
+        offset: 0,
+      };
+    return {
+      index,
+      length: getPageOffset(data[index]),
+      offset: getPageOffsetFromOrigin(data, index),
+    };
+  };
+
+  const getPageOffsetFromOrigin = (data: ArrayLike<Page>, index: number) => {
+    const { width, height } = Dimensions.get('screen');
+    switch (readingDirectionRef.current) {
+      case ReadingDirection.WEBTOON: {
+        let offset = 0;
+        for (let i = 0; i < index; i++) {
+          offset += getPageOffset(data[i]);
+        }
+        return offset;
+      }
+      case ReadingDirection.LEFT_TO_RIGHT:
+      case ReadingDirection.RIGHT_TO_LEFT:
+        return width * index;
+      case ReadingDirection.VERTICAL:
+        return height * index;
+    }
+  };
 
   const getPageOffset = (page: Page) => {
     const { width, height } = Dimensions.get('screen');
@@ -92,5 +124,7 @@ export default function usePageLayout(args: {
     getPageOffset,
     estimatedItemSize,
     getSafeScrollRange,
+    getItemLayout,
+    getPageOffsetFromOrigin,
   };
 }

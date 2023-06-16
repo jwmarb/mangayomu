@@ -37,6 +37,7 @@ import useNetworkToast from '@screens/Reader/hooks/useNetworkToast';
 import useFlashList from '@screens/Reader/hooks/useFlashList';
 import useCancellable from '@screens/Reader/hooks/useCancellable';
 import useBoolean from '@hooks/useBoolean';
+import PageList from '@screens/Reader/components/PageList';
 
 const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const {
@@ -80,12 +81,16 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     zoomStartPosition: globalZoomStartPosition,
   });
   const { readingDirection } = readerProps;
-  const { getPageOffset, getSafeScrollRange, estimatedItemSize } =
-    usePageLayout({
-      readingDirection,
-      pages,
-      chapterKey,
-    });
+  const {
+    getPageOffset,
+    getSafeScrollRange,
+    estimatedItemSize,
+    getItemLayout,
+  } = usePageLayout({
+    readingDirection,
+    pages,
+    chapterKey,
+  });
 
   const { getItemType, overrideItemLayout, keyExtractor, renderItem } =
     useFlashList({ getPageOffset });
@@ -227,8 +232,15 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                 height="100%"
                 background-color={backgroundColor.toLowerCase()}
               >
-                <FlashList
+                <PageList
                   ref={ref}
+                  readingDirection={readingDirection}
+                  getItemLayout={getItemLayout}
+                  maxToRenderPerBatch={10}
+                  windowSize={9}
+                  updateCellsBatchingPeriod={0}
+                  removeClippedSubviews
+                  initialNumToRender={0}
                   extraData={extraData}
                   maintainVisibleContentPosition={
                     !isFetchingPrevious ? undefined : { minIndexForVisible: 0 }
