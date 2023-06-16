@@ -4,14 +4,14 @@ import DeviceOrientation from '@screens/Reader/components/Overlay/components/Dev
 import ImageScaling from '@screens/Reader/components/Overlay/components/ImageScaling';
 import ReaderDirection from '@screens/Reader/components/Overlay/components/ReaderDirection';
 import ZoomStartPosition from '@screens/Reader/components/Overlay/components/ZoomStartPosition';
-import { ReaderContext } from '@screens/Reader/Reader';
 import React from 'react';
 import { LocalReaderSettingsProps } from './LocalReaderSettings.interfaces';
+import { MangaKeyContext } from '@screens/Reader/context/MangaKey';
 
 const LocalReaderSettings: React.FC<LocalReaderSettingsProps> = (props) => {
   const { mangaKey } = props;
   return (
-    <ReaderContext.Provider value={{ mangaKey }}>
+    <MangaKeyContext.Provider value={mangaKey}>
       <Stack space="s" mx="m" my="s">
         <Text bold color="textSecondary" variant="book-title">
           FOR THIS SERIES
@@ -21,7 +21,7 @@ const LocalReaderSettings: React.FC<LocalReaderSettingsProps> = (props) => {
         <ReaderDirection type="setting" />
         <ZoomStartPosition type="setting" />
       </Stack>
-    </ReaderContext.Provider>
+    </MangaKeyContext.Provider>
   );
 };
 
