@@ -158,6 +158,7 @@ test('helper functions work as intended', () => {
   expect(theme.helpers.second()).toBe(theme.style.borderRadius * 2);
   expect(theme.helpers.withParams('foo')).toBe(theme.mode + ' ' + 'foobar');
   expect(theme.helpers.getColor('primary')).toBe(theme.palette.primary.main);
+  expect(theme.helpers.isPaletteColor('primary')).toBe(true);
   expect(theme.helpers.withMultipleParams(2, 2)).toBe(4);
   expect(theme.helpers.withUsingParsedThemeProperty()).toBe(
     theme.palette.primary.ripple,
