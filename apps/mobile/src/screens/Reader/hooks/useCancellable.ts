@@ -2,12 +2,12 @@ import useBoolean from '@hooks/useBoolean';
 import useChapterFetcher from '@screens/Reader/hooks/useChapterFetcher';
 import NetInfo from '@react-native-community/netinfo';
 import React from 'react';
-import { TransitionPage, fetchedChapters } from '@redux/slices/reader';
+import { Page, TransitionPage, fetchedChapters } from '@redux/slices/reader';
 import { useLocalRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 type Abortable = ReturnType<ReturnType<typeof useChapterFetcher>>;
 
-export default function useCancellable() {
+export default function useCancellable(pages: Page[]) {
   const localRealm = useLocalRealm();
   const [previous, togglePrevious] = useBoolean();
   const [next, toggleNext] = useBoolean();
@@ -19,14 +19,14 @@ export default function useCancellable() {
       const listener = NetInfo.addEventListener(() => {
         p?.abort();
         if (prevFnRef.current != null) {
-          console.log('here');
           p = prevFnRef.current();
+          p?.finally(() => {
+            prevFnRef.current = undefined;
+            setTimeout(() => togglePrevious(false), 1);
+          });
         }
       });
-      p?.finally(() => {
-        togglePrevious(false);
-        prevFnRef.current = undefined;
-      });
+
       return () => {
         listener();
         p?.abort();
@@ -34,16 +34,22 @@ export default function useCancellable() {
     }
   }, [previous]);
   React.useEffect(() => {
+    if (!previous) console.log('previous done fetching');
+  }, [previous]);
+  React.useEffect(() => {
     if (next && nextFnRef.current) {
       let p: Abortable;
       const listener = NetInfo.addEventListener(() => {
         p?.abort();
-        if (nextFnRef.current != null) p = nextFnRef.current();
+        if (nextFnRef.current != null) {
+          p = nextFnRef.current();
+          p?.finally(() => {
+            toggleNext(false);
+            nextFnRef.current = undefined;
+          });
+        }
       });
-      p?.finally(() => {
-        toggleNext(false);
-        nextFnRef.current = undefined;
-      });
+
       return () => {
         listener();
         p?.abort();
@@ -61,13 +67,14 @@ export default function useCancellable() {
     );
     if (previous == null || next == null) return;
 
-    if (fetchedChapters.has(next._id)) {
+    if (fetchedChapters.has(next._id) && !fetchedChapters.has(previous._id)) {
       prevFnRef.current = () => fetchPages(previous);
       togglePrevious(true);
-    } else if (fetchedChapters.has(previous._id)) {
+    }
+    if (fetchedChapters.has(previous._id) && !fetchedChapters.has(next._id)) {
       nextFnRef.current = () => fetchPages(next);
       toggleNext(true);
     }
   };
-  return cancellable;
+  return [cancellable, previous] as const;
 }

@@ -2,7 +2,7 @@ import Box from '@components/Box';
 import Progress from '@components/Progress';
 import { useLocalRealm, useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
-import { Page } from '@redux/slices/reader/reader';
+import { Page, chapterIndices } from '@redux/slices/reader/reader';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { ReadingDirection } from '@redux/slices/settings';
 import Overlay from '@screens/Reader/components/Overlay';
@@ -90,7 +90,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
 
   const { getItemType, overrideItemLayout, keyExtractor, renderItem } =
     useFlashList({ getPageOffset });
-  const cancellable = useCancellable();
+  const [cancellable, isFetchingPrevious] = useCancellable(pages);
 
   const reversed = useMutableObject(
     readingDirection === ReadingDirection.RIGHT_TO_LEFT,
@@ -191,6 +191,8 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     [tapGesture, manga.source, readingDirection, manga.title],
   );
 
+  const extraData = { extendedState, readingDirection, chapter };
+
   return (
     <ChapterErrorContext.Provider value={fetchPagesByChapter}>
       <ChapterPageContext.Provider value={chapterPageContextValue}>
@@ -228,9 +230,9 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
               >
                 <FlashList
                   ref={ref}
-                  extraData={{ extendedState, readingDirection }}
+                  extraData={extraData}
                   maintainVisibleContentPosition={
-                    fetchedNextChapter ? undefined : { minIndexForVisible: 0 }
+                    !isFetchingPrevious ? undefined : { minIndexForVisible: 0 }
                   }
                   viewabilityConfigCallbackPairs={
                     viewabilityConfigCallbackPairs.current
