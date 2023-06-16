@@ -262,18 +262,23 @@ export const useManga = (
         const meta = await source.getMeta(manga);
         localRealm.write(() => {
           for (const x of meta.chapters) {
-            const copy = x;
-            (copy as ChapterSchema)._mangaId = meta.link;
-            (copy as ChapterSchema)._id = x.link;
-            (copy as ChapterSchema)._realmId = currentUser.id;
-            (copy as ChapterSchema).language =
-              (x as MangaMultilingualChapter).language ?? 'en';
-
-            localRealm.create<ChapterSchema>(
-              'Chapter',
-              copy,
-              Realm.UpdateMode.Modified,
+            const existingChapter = localRealm.objectForPrimaryKey(
+              ChapterSchema,
+              x.link,
             );
+            if (existingChapter == null) {
+              const copy = x;
+              (copy as ChapterSchema)._mangaId = meta.link;
+              (copy as ChapterSchema)._id = x.link;
+              (copy as ChapterSchema)._realmId = currentUser.id;
+              (copy as ChapterSchema).language =
+                (x as MangaMultilingualChapter).language ?? 'en';
+              localRealm.create<ChapterSchema>(
+                'Chapter',
+                copy,
+                Realm.UpdateMode.Modified,
+              );
+            }
           }
         });
         mangaRealm.write(() => {
