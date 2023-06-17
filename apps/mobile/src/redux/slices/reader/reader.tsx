@@ -390,6 +390,12 @@ const readerSlice = createSlice({
       for (let i = 0; i < state.pages.length; i++) {
         const item = state.pages[i];
         switch (item.type) {
+          case 'NO_MORE_PAGES':
+            chapterIndices.set(action.meta.arg.chapter._id, {
+              start: start + 1,
+              end: i - 1,
+            });
+            break;
           case 'TRANSITION_PAGE':
             if (i > start) {
               chapterIndices.set(item.previous._id, {
