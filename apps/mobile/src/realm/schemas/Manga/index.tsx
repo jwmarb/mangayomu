@@ -265,11 +265,20 @@ export const useManga = (
             assertIsManga(link) ? link.link : link._id
           }.`,
         );
-      const _manga = link as Manga;
+      const _manga = link;
       setStatus('loading');
       setError('');
       try {
-        const meta = await source.getMeta(_manga);
+        const meta = await source.getMeta(
+          assertIsManga(_manga)
+            ? _manga
+            : {
+                link: _manga._id,
+                imageCover: _manga.imageCover,
+                title: _manga.title,
+                source: _manga.source,
+              },
+        );
         localRealm.write(() => {
           for (const x of meta.chapters) {
             const existingChapter = localRealm.objectForPrimaryKey(
