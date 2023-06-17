@@ -18,32 +18,13 @@ import { FlashList } from '@shopify/flash-list';
 import { UNFINISHED_MANGA_WIDTH } from '@theme/constants';
 import { useTheme } from '@emotion/react';
 import { useWindowDimensions } from 'react-native';
-import { moderateScale } from 'react-native-size-matters';
 import Button from '@components/Button/Button';
+import useUnfinishedMangas from '@hooks/useUnfinishedMangas';
 
 const ContinueReading: React.FC = () => {
   const theme = useTheme();
-  const mangas = useQuery(MangaSchema);
   const { width } = useWindowDimensions();
-  const chapters = useLocalQuery(ChapterSchema);
-  const currentlyReadingMangas = mangas.filtered(
-    'currentlyReadingChapter != null && inLibrary == true',
-  );
-  const p = currentlyReadingMangas.reduce((prev, curr) => {
-    prev[curr._id] = chapters
-      .filtered(
-        '_mangaId == $0 && language == $1',
-        curr._id,
-        curr.selectedLanguage !== 'Use default language'
-          ? curr.selectedLanguage
-          : DEFAULT_LANGUAGE,
-      )
-      .sorted('index');
-    return prev;
-  }, {} as Record<string, Realm.Results<ChapterSchema & Realm.Object<unknown, never>>>);
-  const unfinishedMangas = currentlyReadingMangas.filter(
-    (manga) => manga.currentlyReadingChapter?._id !== p[manga._id][0]?._id,
-  );
+  const [unfinishedMangas, p] = useUnfinishedMangas();
 
   if (unfinishedMangas.length === 0) return null;
 
