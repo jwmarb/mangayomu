@@ -66,7 +66,6 @@ export class BaseMangaSchema extends Realm.Object<Manga> {
   title!: string;
   imageCover!: string;
   link!: string;
-  index!: number;
   static schema: Realm.ObjectSchema = {
     embedded: true,
     name: 'BaseManga',
@@ -75,7 +74,6 @@ export class BaseMangaSchema extends Realm.Object<Manga> {
       title: 'string',
       imageCover: 'string',
       link: 'string',
-      index: 'int',
     },
   };
 }
