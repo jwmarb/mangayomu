@@ -59,7 +59,9 @@ const ContinueReading: React.FC = () => {
         <Text variant="header" bold>
           Continue reading
         </Text>
-        <Button label={`View all ${unfinishedMangas.length} mangas`} />
+        {unfinishedMangas.length > 5 && (
+          <Button label={`View all ${unfinishedMangas.length} mangas`} />
+        )}
       </Stack>
       <FlashList
         contentContainerStyle={{
