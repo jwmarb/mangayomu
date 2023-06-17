@@ -20,11 +20,16 @@ import { useTheme } from '@emotion/react';
 import { useWindowDimensions } from 'react-native';
 import Button from '@components/Button/Button';
 import useUnfinishedMangas from '@hooks/useUnfinishedMangas';
+import useRootNavigation from '@hooks/useRootNavigation';
 
 const ContinueReading: React.FC = () => {
   const theme = useTheme();
   const { width } = useWindowDimensions();
   const [unfinishedMangas, p] = useUnfinishedMangas();
+  const navigation = useRootNavigation();
+  function handleOnViewAll() {
+    navigation.navigate('UnfinishedMangaList');
+  }
 
   if (unfinishedMangas.length === 0) return null;
 
@@ -41,7 +46,10 @@ const ContinueReading: React.FC = () => {
           Continue reading
         </Text>
         {unfinishedMangas.length > 5 && (
-          <Button label={`View all ${unfinishedMangas.length} mangas`} />
+          <Button
+            label={`View all ${unfinishedMangas.length} mangas`}
+            onPress={handleOnViewAll}
+          />
         )}
       </Stack>
       <FlashList
