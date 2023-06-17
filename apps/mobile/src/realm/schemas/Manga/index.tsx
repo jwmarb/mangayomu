@@ -25,6 +25,7 @@ import {
   ReadingDirection,
   ZoomStartPosition,
 } from '@redux/slices/settings';
+import assertIsManga from '@helpers/assertIsManga';
 
 export const MangaRatingSchema: Realm.ObjectSchema = {
   name: 'MangaRating',
@@ -197,7 +198,7 @@ function deepEqual(a: MangaChapter, b: MangaChapter) {
 }
 
 export const useManga = (
-  link: string | Manga,
+  link: string | Manga | MangaSchema,
   options: UseMangaOptions = { preferLocal: true },
 ) => {
   const mangaRealm = useRealm();
@@ -212,7 +213,11 @@ export const useManga = (
   const [error, setError] = React.useState<string>('');
   const manga = useObject(
     MangaSchema,
-    typeof link === 'string' ? link : link.link,
+    typeof link === 'string'
+      ? link
+      : assertIsManga(link)
+      ? link.link
+      : link._id,
   );
   React.useEffect(() => {
     const netListener = NetInfo.addEventListener((state) => {
@@ -254,7 +259,11 @@ export const useManga = (
         );
       if (source == null)
         throw Error(
-          `"${link.source}" is not a valid source. Cannot fetch manga metadata from ${link.link}.`,
+          `"${
+            link.source
+          }" is not a valid source. Cannot fetch manga metadata from ${
+            assertIsManga(link) ? link.link : link._id
+          }.`,
         );
       const _manga = link as Manga;
       setStatus('loading');

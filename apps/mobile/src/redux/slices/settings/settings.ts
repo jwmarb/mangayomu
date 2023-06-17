@@ -58,6 +58,17 @@ export enum ReaderImageComponent {
   AUTO = 'Auto (recommended)',
 }
 
+export enum AutoFetchType {
+  ALWAYS = 'Always',
+  WIFI_ONLY = 'Wi-Fi only',
+  NEVER = 'Never',
+}
+
+export enum AutoFetchThreshold {
+  AT_START = 'From the start of a chapter',
+  AT_END = 'From the end of a chapter',
+}
+
 export interface SettingsState {
   history: {
     incognito: boolean;
@@ -73,6 +84,11 @@ export interface SettingsState {
     backgroundColor: ReaderBackgroundColor;
     showPageNumber: boolean;
     notifyOnLastChapter: boolean;
+    automaticallyFetchNextChapter: {
+      type: AutoFetchType;
+      thresholdPosition: AutoFetchThreshold;
+      pageThreshold: number;
+    };
     imageScaling: ImageScaling;
     readingDirection: ReadingDirection;
     zoomStartPosition: ZoomStartPosition;
@@ -111,6 +127,11 @@ const initialSettingsState: SettingsState = {
     backgroundColor: ReaderBackgroundColor.BLACK,
     showPageNumber: true,
     notifyOnLastChapter: true,
+    automaticallyFetchNextChapter: {
+      type: AutoFetchType.ALWAYS,
+      thresholdPosition: AutoFetchThreshold.AT_END,
+      pageThreshold: 5,
+    },
     imageScaling: ImageScaling.SMART_FIT,
     readingDirection: ReadingDirection.RIGHT_TO_LEFT,
     zoomStartPosition: ZoomStartPosition.AUTOMATIC,
