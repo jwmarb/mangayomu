@@ -15,6 +15,7 @@ import MainSourceSelector from '@screens/MainSourceSelector/MainSourceSelector';
 import { useUser } from '@realm/react';
 import useAuth0 from '@hooks/useAuth0';
 import useDialog from '@hooks/useDialog';
+import UnfinishedMangaList from '@screens/UnfinishedMangaList/UnfinishedMangaList';
 
 const mapStateToProps = (state: AppState) => ({
   showWelcomeScreen: state.__initial__.firstTimeUser,
@@ -84,6 +85,11 @@ const Root: React.FC<RootProps> = ({ showWelcomeScreen }) => {
       <RootStack.Screen
         name="MainSourceSelector"
         component={MainSourceSelector}
+      />
+      <RootStack.Screen
+        name="UnfinishedMangaList"
+        component={UnfinishedMangaList}
+        options={{ headerShown: false }}
       />
     </RootStack.Navigator>
   );

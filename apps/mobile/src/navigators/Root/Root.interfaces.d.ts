@@ -6,6 +6,7 @@ export type RootStackParamList = {
   Home: undefined;
   MangaView: Manga;
   Welcome: undefined;
+  UnfinishedMangaList: undefined;
   BasicMangaList: {
     stateKey: keyof ExploreState['states'];
   };
