@@ -8,7 +8,7 @@ import { Comparator } from './Comparator';
  * @returns Returns the index of an element
  */
 function binarySearch<T, E>(
-  arr: T[],
+  arr: ArrayLike<T>,
   elementToFind: E,
   comparator: Comparator<T, E>,
 ): number {
@@ -34,7 +34,7 @@ function binarySearch<T, E>(
  * @returns Returns the index that the element should be placed in to maintain element order based on the comparator function.
  */
 function suggestIndex<T, E>(
-  arr: T[],
+  arr: ArrayLike<T>,
   elementToFind: E,
   comparator: Comparator<T, E>,
 ): number {
@@ -53,7 +53,7 @@ function suggestIndex<T, E>(
 }
 
 function lowerBound<T, E>(
-  arr: T[],
+  arr: ArrayLike<T>,
   elementToFind: E,
   comparator: Comparator<T, E>,
 ): number {
@@ -73,7 +73,7 @@ function lowerBound<T, E>(
 }
 
 function upperBound<T, E>(
-  arr: T[],
+  arr: ArrayLike<T>,
   elementToFind: E,
   comparator: Comparator<T, E>,
 ): number {
@@ -93,7 +93,7 @@ function upperBound<T, E>(
 }
 
 function range<T, E>(
-  arr: T[],
+  arr: ArrayLike<T>,
   elementToFind: E,
   comparator: Comparator<T, E>,
 ): [number, number] {
