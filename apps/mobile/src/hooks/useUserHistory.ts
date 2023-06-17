@@ -1,6 +1,9 @@
 import { useRealm } from '@database/main';
 import { MangaHistory, UserHistorySchema } from '@database/schemas/History';
+import { MangaSchema } from '@database/schemas/Manga';
+import assertIsManga from '@helpers/assertIsManga';
 import integrateSortedList from '@helpers/integrateSortedList';
+import mangaSchemaToManga from '@helpers/mangaSchemaToManga';
 import { Manga, MangaChapter } from '@mangayomu/mangascraper';
 import { useUser } from '@realm/react';
 import { isToday } from 'date-fns';
@@ -10,7 +13,7 @@ const useUserHistory = (config?: { incognito: boolean }) => {
   const currentUser = useUser();
 
   const addMangaToHistory = (payload: {
-    manga: Manga;
+    manga: Manga | MangaSchema;
     chapter: MangaChapter;
   }) => {
     if (config == null)
@@ -34,7 +37,14 @@ const useUserHistory = (config?: { incognito: boolean }) => {
           const recentSection = sections[sections.length - 1];
           const dateNow = Date.now();
           const appendData = {
-            manga: payload.manga,
+            manga: {
+              link: assertIsManga(payload.manga)
+                ? payload.manga.link
+                : payload.manga._id,
+              imageCover: payload.manga.imageCover,
+              source: payload.manga.source,
+              title: payload.manga.title,
+            },
             chapter: payload.chapter,
             date: dateNow,
           };
@@ -46,7 +56,7 @@ const useUserHistory = (config?: { incognito: boolean }) => {
               (a, b) => a.date - b.date,
             );
             const index = recentSection.data.findIndex(
-              (x) => x.manga.link === payload.manga.link,
+              (x) => x.manga.link === mangaSchemaToManga(payload.manga).link,
             ); // Linear search is more than sufficient enough here
             if (index !== -1) {
               recentSection.data.splice(index, 1);
@@ -63,7 +73,7 @@ const useUserHistory = (config?: { incognito: boolean }) => {
               {
                 data: [
                   {
-                    manga: payload.manga,
+                    manga: mangaSchemaToManga(payload.manga),
                     chapter: payload.chapter,
                     date: Date.now(),
                   },
