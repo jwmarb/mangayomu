@@ -89,7 +89,6 @@ const Root: React.FC<RootProps> = ({ showWelcomeScreen }) => {
       <RootStack.Screen
         name="UnfinishedMangaList"
         component={UnfinishedMangaList}
-        options={{ headerShown: false }}
       />
     </RootStack.Navigator>
   );
