@@ -2,22 +2,12 @@ import Book from '@components/Book';
 import Box from '@components/Box';
 import { MangaSchema } from '@database/schemas/Manga';
 import { useTheme } from '@emotion/react';
+import assertIsManga from '@helpers/assertIsManga';
 import useMountedEffect from '@hooks/useMountedEffect';
 import { Manga } from '@mangayomu/mangascraper';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import React from 'react';
 import { Dimensions, useWindowDimensions } from 'react-native';
-
-function assertIsManga(t: unknown): t is Manga {
-  return (
-    typeof t === 'object' &&
-    t != null &&
-    'link' in t &&
-    'imageCover' in t &&
-    'source' in t &&
-    'title' in t
-  );
-}
 
 const Item: React.FC<{ item: Manga }> = React.memo(({ item }) => (
   <Box my="s" align-items="center" flex-grow>
