@@ -22,17 +22,17 @@ const ContinueReading: React.FC = () => {
     'currentlyReadingChapter != null && inLibrary == true',
   );
   const p = currentlyReadingMangas.reduce((prev, curr) => {
-    prev[curr._id] = sort(
-      chapters.filtered(
-        `_mangaId == "${curr._id}" && language == "${
-          curr.selectedLanguage !== 'Use default language'
-            ? curr.selectedLanguage
-            : DEFAULT_LANGUAGE
-        }"`,
-      ),
-    ).desc(SORT_CHAPTERS_BY['Chapter number']);
+    prev[curr._id] = chapters
+      .filtered(
+        '_mangaId == $0 && language == $1',
+        curr._id,
+        curr.selectedLanguage !== 'Use default language'
+          ? curr.selectedLanguage
+          : DEFAULT_LANGUAGE,
+      )
+      .sorted('index');
     return prev;
-  }, {} as Record<string, (ChapterSchema & Realm.Object<unknown, never>)[]>);
+  }, {} as Record<string, Realm.Results<ChapterSchema & Realm.Object<unknown, never>>>);
   const unfinishedMangas = currentlyReadingMangas.filter(
     (manga) => manga.currentlyReadingChapter?._id !== p[manga._id][0]?._id,
   );
