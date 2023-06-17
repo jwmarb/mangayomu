@@ -1,5 +1,6 @@
 import Box from '@components/Box';
 import Stack from '@components/Stack/Stack';
+import Realm from 'realm';
 import Text from '@components/Text';
 import { useLocalQuery, useQuery } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
@@ -72,7 +73,7 @@ const ContinueReading: React.FC = () => {
           layout.size = UNFINISHED_MANGA_WIDTH + theme.style.spacing.s * 2;
         }}
         horizontal
-        data={unfinishedMangas}
+        data={unfinishedMangas.slice(0, 5)}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ItemSeparatorComponent={ItemSeparatorComponent}
