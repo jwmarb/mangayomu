@@ -191,6 +191,15 @@ export type FetchMangaMetaStatus = 'loading' | 'success' | 'local' | 'error';
 export const SortLanguages = (a: ISOLangCode, b: ISOLangCode) =>
   languages[a].name.localeCompare(languages[b].name);
 
+function deepEqual(a: MangaChapter, b: MangaChapter) {
+  return (
+    a.date === b.date &&
+    a.index === b.index &&
+    a.link === b.link &&
+    a.name === b.name
+  );
+}
+
 export const useManga = (
   link: string | Omit<Manga, 'index'>,
   options: UseMangaOptions = { preferLocal: true },
@@ -262,7 +271,10 @@ export const useManga = (
               ChapterSchema,
               x.link,
             );
-            if (existingChapter == null) {
+            if (
+              (existingChapter != null && !deepEqual(existingChapter, x)) ||
+              existingChapter == null
+            ) {
               const copy = x;
               (copy as ChapterSchema)._mangaId = meta.link;
               (copy as ChapterSchema)._id = x.link;
