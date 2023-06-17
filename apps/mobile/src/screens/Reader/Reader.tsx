@@ -38,6 +38,7 @@ import useFlashList from '@screens/Reader/hooks/useFlashList';
 import useCancellable from '@screens/Reader/hooks/useCancellable';
 import useBoolean from '@hooks/useBoolean';
 import PageList from '@screens/Reader/components/PageList';
+import displayMessage from '@helpers/displayMessage';
 
 const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const {
@@ -52,6 +53,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     globalZoomStartPosition,
     extendedState,
     setCurrentChapter,
+    notifyOnLastChapter,
   } = props;
   const { width, height } = useScreenDimensions();
   const overlayOpacity = useSharedValue(0);
@@ -59,6 +61,10 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const localRealm = useLocalRealm();
   const ref = React.useRef<FlashList<Page>>(null);
   const [manga, chapter, availableChapters] = useData(mangaKey, chapterKey);
+  React.useEffect(() => {
+    if (notifyOnLastChapter && availableChapters[0]._id === chapter._id)
+      displayMessage('Final chapter');
+  }, [notifyOnLastChapter, chapter._id]);
   const [currentPage, setCurrentPage] = React.useState<number>(
     chapter.indexPage + 1,
   );
