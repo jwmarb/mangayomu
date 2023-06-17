@@ -34,7 +34,9 @@ export default function useData(mangaKey: string, chapterKey: string) {
     () =>
       collection
         .filtered(
-          `language == "${chapter.language}" && _mangaId == "${chapter._mangaId}"`,
+          'language == $0 && _mangaId == $1',
+          chapter.language,
+          chapter._mangaId,
         )
         .sorted('index') as unknown,
     [chapter.language, chapter._mangaId],
