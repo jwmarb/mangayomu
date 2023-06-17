@@ -110,11 +110,11 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   const handleOnPressTitle = React.useCallback(() => {
     navigation.replace('MangaView', {
       imageCover: manga.imageCover,
-      link: manga.link,
+      link: manga._id,
       source: manga.source,
       title: manga.title,
     });
-  }, [navigation, manga.imageCover, manga.link, manga.source, manga.title]);
+  }, [navigation, manga.imageCover, manga._id, manga.source, manga.title]);
 
   const handleOnBack = React.useCallback(() => {
     if (navigation.canGoBack()) navigation.goBack();

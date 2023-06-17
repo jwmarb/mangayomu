@@ -126,7 +126,12 @@ export function useLibraryData(args: {
           limit(async () => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const host = MangaHost.getAvailableSources().get(manga.source)!;
-            const meta = await host.getMeta(manga);
+            const meta = await host.getMeta({
+              imageCover: manga.imageCover,
+              link: manga._id,
+              source: manga.source,
+              title: manga.title,
+            });
             if (meta.chapters.length !== manga.chapters.length) {
               numberOfUpdates++;
               realm.write(() => {
@@ -141,7 +146,6 @@ export function useLibraryData(args: {
                     description: meta.description,
                     genres: meta.genres as unknown as Set<string>,
                     imageCover: meta.imageCover,
-                    index: meta.index,
                     source: meta.source,
                     title: meta.title,
                     chapters: meta.chapters.map((x) => x.link),

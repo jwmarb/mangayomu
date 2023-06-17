@@ -17,7 +17,7 @@ export default function useChapters(
       .objects(ChapterSchema)
       .filtered(
         '_mangaId == $0 && language == $1',
-        manga?.link,
+        manga?._id,
         manga?.selectedLanguage === 'Use default language'
           ? DEFAULT_LANGUAGE
           : manga?.selectedLanguage,
@@ -34,7 +34,7 @@ export default function useChapters(
       .objects(ChapterSchema)
       .filtered(
         '_mangaId == $0 && language == $1',
-        manga?.link,
+        manga?._id,
         manga?.selectedLanguage === 'Use default language'
           ? DEFAULT_LANGUAGE
           : manga?.selectedLanguage,
@@ -61,13 +61,13 @@ export default function useChapters(
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       chapters.find(
         (c) =>
-          c._mangaId === manga?.link &&
+          c._mangaId === manga?._id &&
           c.language ===
             (manga?.selectedLanguage === 'Use default language'
               ? DEFAULT_LANGUAGE
               : manga?.selectedLanguage),
       )!,
-    [manga?.link, manga?.selectedLanguage, chapters.length],
+    [manga?._id, manga?.selectedLanguage, chapters.length],
   );
 
   return { data, firstChapter };

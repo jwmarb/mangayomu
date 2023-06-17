@@ -29,7 +29,7 @@ export const { useObject, useQuery, useRealm, RealmProvider } =
       BaseMangaChapterSchema,
       BaseMangaSchema,
     ],
-    schemaVersion: 47,
+    schemaVersion: 48,
   });
 
 export const {

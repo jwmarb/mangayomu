@@ -45,8 +45,7 @@ export default function useSavedChapterInfo(
     addMangaToHistory({
       manga: {
         imageCover: manga.imageCover,
-        index: manga.index,
-        link: manga.link,
+        link: manga._id,
         source: manga.source,
         title: manga.title,
       },

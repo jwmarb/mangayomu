@@ -92,7 +92,7 @@ export const KEYS_OF_SORT_CHAPTERS_BY = Object.keys(
 export type SortChaptersMethod = keyof typeof SORT_CHAPTERS_BY;
 
 export interface IMangaSchema
-  extends Manga,
+  extends Omit<Manga, 'link'>,
     Partial<WithAuthors>,
     Partial<WithStatus>,
     Partial<WithHentai>,
@@ -117,7 +117,6 @@ export interface IMangaSchema
 }
 
 export class MangaSchema extends Realm.Object<IMangaSchema> {
-  link!: string;
   title!: string;
   imageCover!: string;
   source!: string;
@@ -148,7 +147,6 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
     properties: {
       _id: 'string',
       _realmId: 'string',
-      link: 'string',
       title: 'string',
       imageCover: 'string',
       source: 'string',
