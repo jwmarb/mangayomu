@@ -92,7 +92,7 @@ export const KEYS_OF_SORT_CHAPTERS_BY = Object.keys(
 export type SortChaptersMethod = keyof typeof SORT_CHAPTERS_BY;
 
 export interface IMangaSchema
-  extends Omit<Manga, 'index'>,
+  extends Manga,
     Partial<WithAuthors>,
     Partial<WithStatus>,
     Partial<WithHentai>,
@@ -120,7 +120,6 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   link!: string;
   title!: string;
   imageCover!: string;
-  index!: number;
   source!: string;
   description!: string | null;
   genres!: Set<string>;
@@ -150,7 +149,6 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
       _id: 'string',
       _realmId: 'string',
       link: 'string',
-      index: 'int',
       title: 'string',
       imageCover: 'string',
       source: 'string',
@@ -201,7 +199,7 @@ function deepEqual(a: MangaChapter, b: MangaChapter) {
 }
 
 export const useManga = (
-  link: string | Omit<Manga, 'index'>,
+  link: string | Manga,
   options: UseMangaOptions = { preferLocal: true },
 ) => {
   const mangaRealm = useRealm();

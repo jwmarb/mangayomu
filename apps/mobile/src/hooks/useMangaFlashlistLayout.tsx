@@ -7,19 +7,15 @@ import { ListRenderItemInfo } from '@shopify/flash-list';
 import React from 'react';
 import { Dimensions, useWindowDimensions } from 'react-native';
 
-const Item: React.FC<{ item: Omit<Manga, 'index'> }> = React.memo(
-  ({ item }) => (
-    <Box my="s" align-items="center" flex-grow>
-      <Book manga={item} />
-    </Box>
-  ),
-);
-function keyExtractor<T extends Omit<Manga, 'index'>>(i: T, index: number) {
+const Item: React.FC<{ item: Manga }> = React.memo(({ item }) => (
+  <Box my="s" align-items="center" flex-grow>
+    <Book manga={item} />
+  </Box>
+));
+function keyExtractor<T extends Manga>(i: T, index: number) {
   return i.link + index;
 }
-function renderItem<T extends Omit<Manga, 'index'>>({
-  item,
-}: ListRenderItemInfo<T>) {
+function renderItem<T extends Manga>({ item }: ListRenderItemInfo<T>) {
   return <Item item={item} />;
 }
 

@@ -66,12 +66,11 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
     );
 
     return data.get_content_browse_latest.items.map(
-      ({ comic: { data } }, index): Manga => ({
+      ({ comic: { data } }): Manga => ({
         imageCover: data.imageCoverUrl,
         link: 'https://' + super.getLink() + getV3URL(data.urlPath),
         source: super.getName(),
         title: data.name,
-        index,
       }),
     );
   }
@@ -100,7 +99,6 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
         link: 'https://' + super.getLink() + getV3URL(data.urlPath),
         source: super.getName(),
         title: data.name,
-        index,
       }),
     );
   }
@@ -139,12 +137,11 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
         },
       });
       return items.map(
-        ({ data }, index): Manga => ({
+        ({ data }): Manga => ({
           imageCover: data.imageCoverUrl,
           link: 'https://' + super.getLink() + getV3URL(data.urlPath),
           source: super.getName(),
           title: data.name,
-          index,
         }),
       );
     }
@@ -172,12 +169,11 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       },
     });
     return items.map(
-      ({ data }, index): Manga => ({
+      ({ data }): Manga => ({
         imageCover: data.imageCoverUrl,
         link: 'https://' + super.getLink() + getV3URL(data.urlPath),
         source: super.getName(),
         title: data.name,
-        index,
       }),
     );
   }
@@ -291,7 +287,6 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       source: super.getName(),
       link: manga.link,
       authors,
-      index: manga.index,
       description: data.state.data.data.summary.code,
       genres,
       rating: {

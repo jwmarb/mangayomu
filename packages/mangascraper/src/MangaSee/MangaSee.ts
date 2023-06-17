@@ -142,7 +142,6 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       link: manga.link,
       authors: data.author,
       genres: data.genre,
-      index: manga.index,
       description,
       yearReleased,
       type,

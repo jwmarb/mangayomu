@@ -8,7 +8,7 @@ import React from 'react';
 
 export interface MangaViewerHeaderProps extends React.PropsWithChildren {
   meta?: ReturnType<typeof useManga>['manga'];
-  manga: Omit<Manga, 'index'>;
+  manga: Manga;
   status: FetchMangaMetaStatus;
   error: string;
   refresh: () => void;

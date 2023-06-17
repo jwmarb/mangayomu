@@ -3,10 +3,10 @@ import { SharedValue } from 'react-native-reanimated';
 import { BookStyle, TitleAlignment } from '@redux/slices/settings';
 
 export interface BookProps {
-  manga: Omit<Manga, 'index'>;
+  manga: Manga;
 }
 
-export interface CustomizableBookProps extends Omit<Manga, 'index' | 'link'> {
+export interface CustomizableBookProps extends Omit<Manga, 'link'> {
   width: SharedValue<number>;
   height: SharedValue<number>;
   fontSize: SharedValue<number>;

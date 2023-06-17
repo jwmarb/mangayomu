@@ -38,7 +38,7 @@ import Input from '@components/Input/Input';
 import LiveMangaPreview from '@screens/Appearance/components/LiveMangaPreview/LiveMangaPreview';
 import { Freeze } from 'react-freeze';
 
-type CustomManga = Omit<Manga, 'index' | 'link'>;
+type CustomManga = Omit<Manga, 'link'>;
 
 const libraryExampleData: CustomManga[] = [
   {

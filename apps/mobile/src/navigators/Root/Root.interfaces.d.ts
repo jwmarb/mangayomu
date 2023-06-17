@@ -4,7 +4,7 @@ import { ExploreState } from '@redux/slices/explore';
 
 export type RootStackParamList = {
   Home: undefined;
-  MangaView: Omit<Manga, 'index'>;
+  MangaView: Manga;
   Welcome: undefined;
   BasicMangaList: {
     stateKey: keyof ExploreState['states'];
