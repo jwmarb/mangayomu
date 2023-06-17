@@ -18,6 +18,7 @@ import { UNFINISHED_MANGA_WIDTH } from '@theme/constants';
 import { useTheme } from '@emotion/react';
 import { useWindowDimensions } from 'react-native';
 import { moderateScale } from 'react-native-size-matters';
+import Button from '@components/Button/Button';
 
 const ContinueReading: React.FC = () => {
   const theme = useTheme();
@@ -47,11 +48,18 @@ const ContinueReading: React.FC = () => {
 
   return (
     <Stack space="s">
-      <Box mx="m">
+      <Stack
+        space="s"
+        mx="m"
+        flex-direction="row"
+        justify-content="space-between"
+        align-items="center"
+      >
         <Text variant="header" bold>
           Continue reading
         </Text>
-      </Box>
+        <Button label={`View all ${unfinishedMangas.length} mangas`} />
+      </Stack>
       <FlashList
         contentContainerStyle={{
           paddingHorizontal: width / 2 - UNFINISHED_MANGA_WIDTH / 2,
