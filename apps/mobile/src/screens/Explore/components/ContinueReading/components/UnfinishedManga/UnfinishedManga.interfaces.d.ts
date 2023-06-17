@@ -4,5 +4,5 @@ import React from 'react';
 
 export interface UnfinishedMangaProps extends React.PropsWithChildren {
   manga: MangaSchema & Realm.Object<unknown, never>;
-  chapters: (ChapterSchema & Realm.Object<unknown, never>)[];
+  chapters: Realm.Results<ChapterSchema & Realm.Object<unknown, never>>;
 }

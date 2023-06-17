@@ -1,13 +1,22 @@
 import { MangaSchema } from '@database/schemas/Manga';
 import { ListRenderItem } from '@shopify/flash-list';
 import UnfinishedManga from './components/UnfinishedManga';
-import { UNFINISHED_MANGA_HEIGHT } from '@theme/constants';
+import { UNFINISHED_MANGA_WIDTH } from '@theme/constants';
+import Box from '@components/Box';
+import { ChapterSchema } from '@database/schemas/Chapter';
 
 export const renderItem: ListRenderItem<
   MangaSchema & Realm.Object<unknown, never>
-> = ({ item, extraData }) => (
-  <UnfinishedManga manga={item} chapters={extraData[item._id]} />
-);
+> = (info) => {
+  const { item } = info;
+  const extraData = info.extraData as Record<
+    string,
+    Realm.Results<ChapterSchema & Realm.Object<unknown, never>>
+  >;
+  return <UnfinishedManga manga={item} chapters={extraData[item._id]} />;
+};
+
+export const ItemSeparatorComponent = () => <Box mx="s" />;
 
 export const keyExtractor = (
   item: MangaSchema & Realm.Object<unknown, never>,
@@ -23,5 +32,5 @@ export const overrideItemLayout: (
   maxColumns: number,
   extraData?: any,
 ) => void = (layout) => {
-  layout.size = UNFINISHED_MANGA_HEIGHT;
+  layout.size = UNFINISHED_MANGA_WIDTH;
 };

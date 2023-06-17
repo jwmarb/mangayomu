@@ -13,42 +13,33 @@ import { useLocalRealm } from '@database/main';
 import { moderateScale } from 'react-native-size-matters';
 import integrateSortedList from '@helpers/integrateSortedList';
 import { SORT_CHAPTERS_BY_LEGACY } from '@database/schemas/Manga';
-import { useWindowDimensions } from 'react-native';
+import { LayoutChangeEvent, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useRootNavigation from '@hooks/useRootNavigation';
+import { UNFINISHED_MANGA_WIDTH } from '@theme/constants';
+import { binary } from '@mangayomu/algorithms';
 
 const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
   const { manga, chapters } = props;
-  const { width } = useWindowDimensions();
   const localRealm = useLocalRealm();
-  const insets = useSafeAreaInsets();
-  const maxWidth = width - moderateScale(32);
   const theme = useTheme();
   const navigation = useRootNavigation();
-  const currentlyReadingChapterOfRandomManga = localRealm.objectForPrimaryKey(
-    ChapterSchema,
-    manga.currentlyReadingChapter._id,
-  );
 
   const currentChapter = localRealm.objectForPrimaryKey(
     ChapterSchema,
     manga.currentlyReadingChapter._id,
   );
-
-  const { indexOf } = integrateSortedList(
-    chapters,
-    SORT_CHAPTERS_BY_LEGACY['Chapter number'],
+  const nextChapterIndex: number = React.useMemo(
+    () =>
+      currentChapter == null
+        ? -1
+        : binary.search(chapters, currentChapter, (a, b) => a.index - b.index),
+    [manga.currentlyReadingChapter._id, chapters.length],
   );
-
   const nextChapter:
     | (ChapterSchema & Realm.Object<unknown, never>)
     | undefined =
-    chapters[
-      indexOf(
-        currentlyReadingChapterOfRandomManga as ChapterSchema &
-          Realm.Object<unknown, never>,
-      ) - 1
-    ];
+    nextChapterIndex !== -1 ? chapters[nextChapterIndex] : undefined;
 
   function handleOnLongPress() {
     displayMessage(manga.title);
@@ -57,7 +48,7 @@ const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
     navigation.navigate('Reader', {
       chapter:
         manga.currentlyReadingChapter.index ===
-        manga.currentlyReadingChapter.numOfPages - 1
+          manga.currentlyReadingChapter.numOfPages - 1 && nextChapter != null
           ? nextChapter._id
           : manga.currentlyReadingChapter._id,
       manga: manga._id,
@@ -65,50 +56,44 @@ const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
   };
   return (
     <Box
-      width={width + insets.left + insets.right}
-      align-items="center"
-      justify-content="center"
+      width={UNFINISHED_MANGA_WIDTH}
+      align-self="center"
+      overflow="hidden"
+      background-color="paper"
+      border-radius="@theme"
+      border-color="@theme"
+      border-width="@theme"
     >
-      <Box
-        align-self="center"
-        width={maxWidth}
-        overflow="hidden"
-        background-color="paper"
-        border-radius="@theme"
-        border-color="@theme"
-        border-width="@theme"
+      <RectButton
+        shouldCancelWhenOutside
+        onPress={handleOnPress}
+        rippleColor={theme.palette.action.ripple}
+        onLongPress={handleOnLongPress}
       >
-        <RectButton
-          shouldCancelWhenOutside
-          onPress={handleOnPress}
-          rippleColor={theme.palette.action.ripple}
-          onLongPress={handleOnLongPress}
-        >
-          <Stack space="s" flex-direction="row" py="s" px="m">
-            <StaticCover manga={manga} />
-            <Box flex-shrink justify-content="center">
-              <Text variant="book-title" numberOfLines={2} bold>
-                {manga.title}
+        <Stack space="s" flex-direction="row" py="s" px="m">
+          <StaticCover manga={manga} />
+          <Box flex-shrink justify-content="center">
+            <Text variant="book-title" numberOfLines={2} bold>
+              {manga.title}
+            </Text>
+            <Stack space="s" flex-direction="row" align-items="center">
+              <Text variant="book-title" numberOfLines={1} color="hint">
+                {currentChapter?.name}
               </Text>
-              <Stack space="s" flex-direction="row" align-items="center">
-                <Text variant="book-title" numberOfLines={1} color="hint">
-                  {currentChapter?.name}
-                </Text>
-                <Text variant="bottom-tab" color="primary">
-                  ({manga.currentlyReadingChapter.index + 1} /{' '}
-                  {manga.currentlyReadingChapter.numOfPages})
-                </Text>
-              </Stack>
-              <Stack space="s" flex-direction="row" align-items="center">
-                <Icon type="font" name="page-next" color="primary" />
-                <Text color="textSecondary" variant="book-title">
-                  {nextChapter?.name}
-                </Text>
-              </Stack>
-            </Box>
-          </Stack>
-        </RectButton>
-      </Box>
+              <Text variant="bottom-tab" color="primary">
+                ({manga.currentlyReadingChapter.index + 1} /{' '}
+                {manga.currentlyReadingChapter.numOfPages})
+              </Text>
+            </Stack>
+            <Stack space="s" flex-direction="row" align-items="center">
+              <Icon type="font" name="page-next" color="primary" />
+              <Text color="textSecondary" variant="book-title">
+                {nextChapter?.name}
+              </Text>
+            </Stack>
+          </Box>
+        </Stack>
+      </RectButton>
     </Box>
   );
 };
