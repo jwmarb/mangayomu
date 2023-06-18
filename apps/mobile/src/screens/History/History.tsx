@@ -2,9 +2,7 @@ import React, { useTransition } from 'react';
 import SectionHeader, {
   MANGA_HISTORY_SECTION_HEADER_HEIGHT,
 } from './components/SectionHeader';
-import MangaHistoryItem, {
-  MANGA_HISTORY_ITEM_HEIGHT,
-} from '@screens/History/components/MangaHistoryItem';
+import MangaHistoryItem from '@screens/History/components/MangaHistoryItem';
 import connector, { ConnectedHistoryProps } from './History.redux';
 import useCollapsibleTabHeader from '@hooks/useCollapsibleTabHeader';
 import IconButton from '@components/IconButton';
@@ -31,6 +29,7 @@ import {
 import { useUser } from '@realm/react';
 import useUserHistory from '@hooks/useUserHistory';
 import { AnimatedFlashList } from '@components/animated';
+import { MANGA_LIST_ITEM_HEIGHT } from '@theme/constants';
 
 type HistorySectionFlashListData =
   | { type: 'SECTION'; date: number }
@@ -238,7 +237,7 @@ const History: React.FC<ConnectedHistoryProps> = ({
       keyExtractor={keyExtractor}
       overrideItemLayout={overrideItemLayout}
       getItemType={getItemType}
-      estimatedItemSize={MANGA_HISTORY_ITEM_HEIGHT}
+      estimatedItemSize={MANGA_LIST_ITEM_HEIGHT}
       renderItem={renderItem}
     />
   );
@@ -260,7 +259,7 @@ const overrideItemLayout: (
 ) => void = (layout, item) => {
   switch (item.type) {
     case 'ROW':
-      layout.size = MANGA_HISTORY_ITEM_HEIGHT;
+      layout.size = MANGA_LIST_ITEM_HEIGHT;
       break;
     case 'SECTION':
       layout.size = MANGA_HISTORY_SECTION_HEADER_HEIGHT;
