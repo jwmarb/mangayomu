@@ -7,7 +7,7 @@ export default function mangaSchemaToManga(manga: Manga | MangaSchema): Manga {
     return {
       imageCover: manga.imageCover,
       link: manga._id,
-      title: manga.imageCover,
+      title: manga.title,
       source: manga.source,
     };
   return manga;
