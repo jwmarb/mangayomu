@@ -54,7 +54,12 @@ export default function useChapters(
     }
 
     return [];
-  }, [manga?.selectedLanguage, manga?.sortChaptersBy, manga?.reversedSort]);
+  }, [
+    manga?.selectedLanguage,
+    manga?.sortChaptersBy,
+    manga?.reversedSort,
+    chapters.length,
+  ]);
 
   const firstChapter = React.useMemo(
     () =>
