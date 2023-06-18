@@ -12,6 +12,7 @@ export const BOOK_COVER_HEIGHT = moderateScale(160);
 
 export const UNFINISHED_MANGA_HEIGHT = moderateScale(128);
 export const UNFINISHED_MANGA_WIDTH = moderateScale(267);
+export const MANGA_LIST_ITEM_HEIGHT = moderateScale(100);
 
 export const ACCORDION_SECTION_HEADER_HEIGHT = moderateScale(48);
 export const ACCORDION_ITEM_HEIGHT = moderateScale(52);
