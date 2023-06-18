@@ -27,6 +27,6 @@ export default function useUnfinishedManga(
   const nextChapter:
     | (ChapterSchema & Realm.Object<unknown, never>)
     | undefined =
-    nextChapterIndex !== -1 ? chapters[nextChapterIndex + 1] : undefined;
+    nextChapterIndex !== -1 ? chapters[nextChapterIndex - 1] : undefined;
   return { nextChapter, currentChapter };
 }
