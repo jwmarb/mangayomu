@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React from 'react';
 import { UnfinishedMangaProps } from './UnfinishedManga.interfaces';
 import Box from '@components/Box';
@@ -8,46 +9,30 @@ import Text from '@components/Text';
 import Icon from '@components/Icon';
 import { useTheme } from '@emotion/react';
 import displayMessage from '@helpers/displayMessage';
-import { ChapterSchema } from '@database/schemas/Chapter';
-import { useLocalRealm } from '@database/main';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { UNFINISHED_MANGA_WIDTH } from '@theme/constants';
-import { binary } from '@mangayomu/algorithms';
+import useUnfinishedManga from '@hooks/useUnfinishedManga';
 
 const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
   const { manga, chapters } = props;
-  const localRealm = useLocalRealm();
   const theme = useTheme();
   const navigation = useRootNavigation();
 
-  const currentChapter = localRealm.objectForPrimaryKey(
-    ChapterSchema,
-    manga.currentlyReadingChapter._id,
-  );
-  const nextChapterIndex: number = React.useMemo(
-    () =>
-      currentChapter == null
-        ? -1
-        : binary.search(chapters, currentChapter, (a, b) => a.index - b.index),
-    [manga.currentlyReadingChapter._id, chapters.length],
-  );
-  const nextChapter:
-    | (ChapterSchema & Realm.Object<unknown, never>)
-    | undefined =
-    nextChapterIndex !== -1 ? chapters[nextChapterIndex] : undefined;
+  const { currentChapter, nextChapter } = useUnfinishedManga(manga, chapters);
 
   function handleOnLongPress() {
     displayMessage(manga.title);
   }
   const handleOnPress = () => {
-    navigation.navigate('Reader', {
-      chapter:
-        manga.currentlyReadingChapter.index ===
-          manga.currentlyReadingChapter.numOfPages - 1 && nextChapter != null
-          ? nextChapter._id
-          : manga.currentlyReadingChapter._id,
-      manga: manga._id,
-    });
+    if (manga.currentlyReadingChapter != null)
+      navigation.navigate('Reader', {
+        chapter:
+          manga.currentlyReadingChapter.index ===
+            manga.currentlyReadingChapter.numOfPages - 1 && nextChapter != null
+            ? nextChapter._id
+            : manga.currentlyReadingChapter._id,
+        manga: manga._id,
+      });
   };
   return (
     <Box
@@ -76,8 +61,8 @@ const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
                 {currentChapter?.name}
               </Text>
               <Text variant="bottom-tab" color="primary">
-                ({manga.currentlyReadingChapter.index + 1} /{' '}
-                {manga.currentlyReadingChapter.numOfPages})
+                ({manga.currentlyReadingChapter!.index + 1} /{' '}
+                {manga.currentlyReadingChapter!.numOfPages})
               </Text>
             </Stack>
             <Stack space="s" flex-direction="row" align-items="center">
