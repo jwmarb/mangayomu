@@ -123,7 +123,7 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   source!: string;
   description!: string | null;
   genres!: Set<string>;
-  currentlyReadingChapter!: CurrentlyReadingChapter;
+  currentlyReadingChapter?: CurrentlyReadingChapter;
   dateAddedInLibrary?: number;
   notifyNewChaptersCount!: number;
   chapters!: string[];
