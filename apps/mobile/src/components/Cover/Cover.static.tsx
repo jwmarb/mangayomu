@@ -11,6 +11,8 @@ import FastImage from 'react-native-fast-image';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { ScaledSheet } from 'react-native-size-matters';
+import { MangaSchema } from '@database/schemas/Manga';
+import mangaSchemaToManga from '@helpers/mangaSchemaToManga';
 
 const styles = ScaledSheet.create({
   cover: {
@@ -31,7 +33,7 @@ const mangaHistoryItemStyles = StyleSheet.create({
 });
 
 interface StaticCoverProps {
-  manga: Manga;
+  manga: Manga | MangaSchema;
 }
 
 const StaticCover: React.FC<StaticCoverProps> = (props) => {
@@ -40,7 +42,8 @@ const StaticCover: React.FC<StaticCoverProps> = (props) => {
   const navigation = useRootNavigation();
   const theme = useTheme();
   function handleOnPressCover() {
-    if (manga != null) navigation.navigate('MangaView', manga);
+    if (manga != null)
+      navigation.navigate('MangaView', mangaSchemaToManga(manga));
   }
 
   function handleOnLoadStart() {
