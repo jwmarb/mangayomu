@@ -25,13 +25,13 @@ import useRootNavigation from '@hooks/useRootNavigation';
 const ContinueReading: React.FC = () => {
   const theme = useTheme();
   const { width } = useWindowDimensions();
-  const [unfinishedMangas, p] = useUnfinishedMangas();
+  const [unfinishedMangas, p, isNotSynced] = useUnfinishedMangas();
   const navigation = useRootNavigation();
   function handleOnViewAll() {
     navigation.navigate('UnfinishedMangaList');
   }
 
-  if (unfinishedMangas.length === 0) return null;
+  if (unfinishedMangas.length === 0 || isNotSynced) return null;
 
   return (
     <Stack space="s">
