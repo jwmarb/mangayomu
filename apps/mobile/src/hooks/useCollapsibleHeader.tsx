@@ -41,8 +41,10 @@ export interface CollapsibleHeaderOptions {
   backButtonRippleColor?: string;
   showBackButton?: boolean;
   showHeaderRight?: boolean;
+  showHeaderLeft?: boolean;
   headerRightProps?: BoxProps;
   headerLeftProps?: BoxProps;
+  headerLeft?: React.ReactNode;
   header?: React.ReactNode;
   onScroll?: (e: NativeScrollEvent) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,9 +74,11 @@ const CollapsibleBase = React.memo<
         </Text>
       </Box>
     ),
+    headerLeft,
     headerLeftProps = { 'justify-content': 'center' },
     headerRightProps = { 'flex-grow': true, 'justify-content': 'center' },
     showHeaderRight,
+    showHeaderLeft = true,
   }) => {
     const navigation = useRootNavigation();
     return (
@@ -90,24 +94,27 @@ const CollapsibleBase = React.memo<
         background-color="transparent"
       >
         <Stack space="s" flex-direction="row">
-          {showBackButton && (
+          {showHeaderLeft && (
             <Box {...headerLeftProps}>
               <Box ml="m" flex-direction="row">
-                <IconButton
-                  color={backButtonColor}
-                  rippleColor={backButtonRippleColor}
-                  animated={!!backButtonStyle}
-                  icon={
-                    <Icon
-                      type="font"
-                      name="arrow-left"
-                      style={backButtonStyle}
+                {headerLeft ||
+                  (showBackButton && (
+                    <IconButton
+                      color={backButtonColor}
+                      rippleColor={backButtonRippleColor}
+                      animated={!!backButtonStyle}
+                      icon={
+                        <Icon
+                          type="font"
+                          name="arrow-left"
+                          style={backButtonStyle}
+                        />
+                      }
+                      onPress={() => {
+                        if (navigation.canGoBack()) navigation.goBack();
+                      }}
                     />
-                  }
-                  onPress={() => {
-                    if (navigation.canGoBack()) navigation.goBack();
-                  }}
-                />
+                  ))}
               </Box>
             </Box>
           )}
@@ -141,6 +148,8 @@ export default function useCollapsibleHeader(
     headerRightProps,
     showHeaderRight = true,
     header,
+    headerLeft,
+    showHeaderLeft,
     onScroll: extendedOnScroll,
   } = options;
   const theme = useTheme();
@@ -217,6 +226,8 @@ export default function useCollapsibleHeader(
             headerLeftProps={headerLeftProps}
             headerRightProps={headerRightProps}
             showHeaderRight={showHeaderRight}
+            headerLeft={headerLeft}
+            showHeaderLeft={showHeaderLeft}
           />
           <LoadingBar loading={loading} />
         </>
