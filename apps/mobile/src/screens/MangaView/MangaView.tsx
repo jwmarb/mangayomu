@@ -43,6 +43,11 @@ import InternetStatusToast from '@screens/MangaView/components/InternetStatusToa
 import QuickReadButton from '@screens/MangaView/components/QuickReadButton/QuickReadButton';
 import useChapters from '@screens/MangaView/hooks/useChapters';
 import useRefresh from '@screens/MangaView/hooks/useRefresh';
+import {
+  renderItem,
+  keyExtractor,
+  overrideItemLayout,
+} from './MangaView.flashlist';
 
 export const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 
@@ -216,6 +221,8 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
         renderItem={renderItem}
         ItemSeparatorComponent={Divider}
         estimatedItemSize={ROW_CHAPTER_HEIGHT}
+        overrideItemLayout={overrideItemLayout}
+        keyExtractor={keyExtractor}
         onScroll={onScroll}
       />
       {manga != null && (
@@ -249,27 +256,6 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
         />
       </Box>
     </>
-  );
-};
-
-const renderItem: ListRenderItem<
-  ChapterSchema & Realm.Object<unknown, never>
-> = (info) => {
-  const { item } = info;
-  const extra = info.extraData as {
-    manga: IMangaSchema | undefined;
-  };
-  return (
-    <RowChapter
-      mangaKey={extra.manga?._id}
-      dateRead={item.dateRead}
-      name={item.name}
-      indexPage={item.indexPage}
-      numberOfPages={item.numberOfPages}
-      date={item.date}
-      chapterKey={item._id}
-      isReading={extra.manga?.currentlyReadingChapter?._id === item._id}
-    />
   );
 };
 
