@@ -10,43 +10,48 @@ export default function useChapters(
 ) {
   const localRealm = useLocalRealm();
 
-  const [chapters, setChapters] = React.useState<
-    Realm.Collection<ChapterSchema & Realm.Object<unknown, never>>
-  >(() =>
-    localRealm
-      .objects(ChapterSchema)
-      .filtered(
-        '_mangaId == $0 && language == $1',
-        manga?._id,
-        manga?.selectedLanguage === 'Use default language'
-          ? DEFAULT_LANGUAGE
-          : manga?.selectedLanguage,
-      ),
+  const selectedLanguage =
+    manga?.selectedLanguage === 'Use default language'
+      ? DEFAULT_LANGUAGE
+      : manga?.selectedLanguage;
+  const [chapters, setChapters] = React.useState<Realm.Results<ChapterSchema>>(
+    () =>
+      localRealm
+        .objects(ChapterSchema)
+        .filtered(
+          '_mangaId = $0 AND language = $1 SORT(index ASC)',
+          manga?._id,
+          selectedLanguage,
+        ) ?? [],
   );
 
   React.useEffect(() => {
-    const callback: Realm.CollectionChangeCallback<
-      ChapterSchema & Realm.Object<unknown, never>
-    > = (e) => {
-      setChapters(e);
+    const callback: Realm.CollectionChangeCallback<ChapterSchema> = (
+      collection,
+    ) => {
+      setChapters(
+        collection.filtered(
+          '_mangaId = $0 AND language = $1 SORT(index ASC)',
+          manga?._id,
+          selectedLanguage,
+        ),
+      );
     };
-    const p = localRealm
+    const chapters = localRealm
       .objects(ChapterSchema)
       .filtered(
-        '_mangaId == $0 && language == $1',
+        '_mangaId = $0 AND language = $1 SORT(index ASC)',
         manga?._id,
-        manga?.selectedLanguage === 'Use default language'
-          ? DEFAULT_LANGUAGE
-          : manga?.selectedLanguage,
+        selectedLanguage,
       );
-    p.addListener(callback);
+    chapters.addListener(callback);
     return () => {
-      p.removeListener(callback);
+      chapters.removeListener(callback);
     };
-  }, []);
+  }, [selectedLanguage, manga?._id]);
 
   const data = React.useMemo(() => {
-    if (manga != null) {
+    if (manga != null && chapters.length > 0) {
       const sorted = sort(Array.from(chapters))[
         manga.reversedSort ? 'desc' : 'asc'
       ](SORT_CHAPTERS_BY[manga.sortChaptersBy]);
@@ -58,22 +63,11 @@ export default function useChapters(
     manga?.selectedLanguage,
     manga?.sortChaptersBy,
     manga?.reversedSort,
-    chapters.length,
+    chapters,
   ]);
 
-  const firstChapter = React.useMemo(
-    () =>
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      chapters.find(
-        (c) =>
-          c._mangaId === manga?._id &&
-          c.language ===
-            (manga?.selectedLanguage === 'Use default language'
-              ? DEFAULT_LANGUAGE
-              : manga?.selectedLanguage),
-      )!,
-    [manga?._id, manga?.selectedLanguage, chapters.length],
-  );
+  const firstChapter =
+    chapters.length > 0 ? chapters[chapters.length - 1] : undefined;
 
   return { data, firstChapter };
 }
