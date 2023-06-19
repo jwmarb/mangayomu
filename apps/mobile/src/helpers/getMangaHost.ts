@@ -76,18 +76,29 @@ export default function getMangaHost(state: AppState) {
             : ([] as Manga[]),
         ),
       );
-      const [errors, mangas] = mangaCollection.reduce(
+      const [errors, unsortedMangas] = mangaCollection.reduce(
         (prev, curr, index) => {
           if (curr.status === 'rejected')
             prev[0].push({
               source: hosts[index].getName(),
               error: getErrorMessage(curr.reason),
             });
-          else integrateSortedList(prev[1], indexComparator).add(curr.value);
+          else prev[1].push({ mangas: curr.value });
           return prev;
         },
-        [[], []] as MangaCollectionState,
+        [[], []] as [SourceError[], { mangas: Manga[] }[]],
       );
+
+      const largestIndex = unsortedMangas.reduce(
+        (prev, curr) => Math.max(0, prev, curr.mangas.length - 1),
+        0,
+      );
+      const mangas: Manga[] = [];
+      for (let i = 0; i <= largestIndex; i++) {
+        for (const collection of unsortedMangas) {
+          if (i < collection.mangas.length) mangas.push(collection.mangas[i]);
+        }
+      }
       return {
         errors,
         mangas,
@@ -101,18 +112,30 @@ export default function getMangaHost(state: AppState) {
             : ([] as Manga[]),
         ),
       );
-      const [errors, mangas] = mangaCollection.reduce(
+      const [errors, unsortedMangas] = mangaCollection.reduce(
         (prev, curr, index) => {
           if (curr.status === 'rejected')
             prev[0].push({
               source: hosts[index].getName(),
               error: getErrorMessage(curr.reason),
             });
-          else integrateSortedList(prev[1], indexComparator).add(curr.value);
+          else prev[1].push({ mangas: curr.value });
           return prev;
         },
-        [[], []] as MangaCollectionState,
+        [[], []] as [SourceError[], { mangas: Manga[] }[]],
       );
+
+      const largestIndex = unsortedMangas.reduce(
+        (prev, curr) => Math.max(0, prev, curr.mangas.length - 1),
+        0,
+      );
+      const mangas: Manga[] = [];
+      for (let i = 0; i <= largestIndex; i++) {
+        for (const collection of unsortedMangas) {
+          if (i < collection.mangas.length) mangas.push(collection.mangas[i]);
+        }
+      }
+
       return {
         errors,
         mangas,
