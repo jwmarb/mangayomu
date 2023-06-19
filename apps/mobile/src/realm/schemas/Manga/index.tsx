@@ -211,14 +211,33 @@ export const useManga = (
     options.preferLocal ? 'local' : 'loading',
   );
   const [error, setError] = React.useState<string>('');
-  const manga = useObject(
-    MangaSchema,
-    typeof link === 'string'
-      ? link
-      : assertIsManga(link)
-      ? link.link
-      : link._id,
+  const [manga, setManga] = React.useState<MangaSchema | undefined>(
+    mangaRealm.objectForPrimaryKey(
+      MangaSchema,
+      typeof link === 'string'
+        ? link
+        : assertIsManga(link)
+        ? link.link
+        : link._id,
+    ),
   );
+  React.useEffect(() => {
+    const callback: Realm.ObjectChangeCallback<MangaSchema> = (obj) => {
+      setManga(obj);
+    };
+    const listener = mangaRealm.objectForPrimaryKey(
+      MangaSchema,
+      typeof link === 'string'
+        ? link
+        : assertIsManga(link)
+        ? link.link
+        : link._id,
+    );
+    listener?.addListener(callback);
+    return () => {
+      listener?.removeListener(callback);
+    };
+  }, []);
   React.useEffect(() => {
     const netListener = NetInfo.addEventListener((state) => {
       setIsOffline(state.isInternetReachable === false);
