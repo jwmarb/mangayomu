@@ -96,6 +96,8 @@ export default function useSavedChapterInfo(
           savedScrollPosition.current < min ||
           savedScrollPosition.current > max
         ) {
+          shouldSaveScrollOffset.current = true;
+          setIsFinishedInitialScrollOffset(true);
           clearInterval(scrollOffsetReturner);
           return;
         }
