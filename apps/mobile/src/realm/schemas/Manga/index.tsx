@@ -317,7 +317,7 @@ export const useManga = (
               (copy as ChapterSchema).language =
                 (x as MangaMultilingualChapter).language ?? 'en';
               localRealm.create<ChapterSchema>(
-                'Chapter',
+                ChapterSchema,
                 copy,
                 Realm.UpdateMode.Modified,
               );
