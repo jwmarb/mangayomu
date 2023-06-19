@@ -407,7 +407,7 @@ export const useManga = (
   const update = React.useCallback(
     (
       fn: (
-        mangaRealmObject: MangaSchema & Realm.Object<MangaSchema, never>,
+        mangaRealmObject: MangaSchema,
         getChapter: (key: string) => ChapterSchema | null,
       ) => void,
     ) => {
