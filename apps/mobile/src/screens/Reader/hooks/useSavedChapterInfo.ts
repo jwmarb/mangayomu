@@ -43,6 +43,9 @@ export default function useSavedChapterInfo(
     useBoolean();
 
   React.useEffect(() => {
+    localRealm.write(() => {
+      chapter.dateRead = Date.now();
+    });
     addMangaToHistory({
       manga: {
         imageCover: manga.imageCover,
