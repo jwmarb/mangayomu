@@ -206,33 +206,35 @@ export const useManga = (
   const currentUser = useUser();
   if (currentUser == null)
     throw Error('currentUser is null in useManga() when it is required.');
+  const mangaId =
+    typeof link === 'string'
+      ? link
+      : assertIsManga(link)
+      ? link.link
+      : link._id;
+
   const [isOffline, setIsOffline] = React.useState<boolean | null>(null);
   const [status, setStatus] = React.useState<FetchMangaMetaStatus>(
     options.preferLocal ? 'local' : 'loading',
   );
   const [error, setError] = React.useState<string>('');
   const [manga, setManga] = React.useState<MangaSchema | undefined>(
-    mangaRealm.objectForPrimaryKey(
-      MangaSchema,
-      typeof link === 'string'
-        ? link
-        : assertIsManga(link)
-        ? link.link
-        : link._id,
-    ),
+    mangaRealm.objectForPrimaryKey(MangaSchema, mangaId),
   );
   React.useEffect(() => {
-    const callback: Realm.ObjectChangeCallback<MangaSchema> = (obj) => {
-      setManga(obj);
+    const callback: Realm.CollectionChangeCallback<MangaSchema> = (
+      collection,
+      mods,
+    ) => {
+      for (const key in mods) {
+        if (mods[key as keyof typeof mods].length > 0) {
+          for (const index of mods[key as keyof typeof mods]) {
+            if (collection[index]._id === mangaId) setManga(collection[index]);
+          }
+        }
+      }
     };
-    const listener = mangaRealm.objectForPrimaryKey(
-      MangaSchema,
-      typeof link === 'string'
-        ? link
-        : assertIsManga(link)
-        ? link.link
-        : link._id,
-    );
+    const listener = mangaRealm.objects(MangaSchema);
     listener?.addListener(callback);
     return () => {
       listener?.removeListener(callback);
