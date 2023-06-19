@@ -34,6 +34,7 @@ export default function useSavedChapterInfo(
     manga,
   } = args;
   const { addMangaToHistory } = useUserHistory({ incognito });
+  const savedScrollPosition = useMutableObject(chapter.scrollPosition);
   const localRealm = useLocalRealm();
   const scrollOffset = React.useRef<number>(0);
   const shouldSaveScrollOffset = React.useRef<boolean>(false);
@@ -85,17 +86,26 @@ export default function useSavedChapterInfo(
 
   React.useEffect(() => {
     if (pages.length > 0) {
+      const [min, max] = getSafeScrollRange();
       const scrollOffsetReturner = setInterval(() => {
+        if (
+          savedScrollPosition.current == null ||
+          savedScrollPosition.current < min ||
+          savedScrollPosition.current > max
+        ) {
+          clearInterval(scrollOffsetReturner);
+          return;
+        }
         scrollRef.current?.scrollToOffset({
-          offset: chapter.scrollPosition,
+          offset: savedScrollPosition.current,
           animated: false,
         });
-        if (Math.abs(scrollOffset.current - chapter.scrollPosition) <= 1) {
+        if (Math.abs(scrollOffset.current - savedScrollPosition.current) <= 1) {
           shouldSaveScrollOffset.current = true;
           setIsFinishedInitialScrollOffset(true);
           clearInterval(scrollOffsetReturner);
         }
-      }, 1);
+      }, 20);
 
       const scrollTracker = setInterval(() => {
         saveScrollPosition();
