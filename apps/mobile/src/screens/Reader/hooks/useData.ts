@@ -32,13 +32,11 @@ export default function useData(mangaKey: string, chapterKey: string) {
 
   const readableChapters = React.useMemo(
     () =>
-      collection
-        .filtered(
-          'language == $0 && _mangaId == $1',
-          chapter.language,
-          chapter._mangaId,
-        )
-        .sorted('index') as unknown,
+      collection.filtered(
+        'language == $0 && _mangaId == $1 SORT(index ASC)',
+        chapter.language,
+        chapter._mangaId,
+      ) as unknown,
     [chapter.language, chapter._mangaId],
   ) as (ChapterSchema & Realm.Object<ChapterSchema, never>)[];
 
