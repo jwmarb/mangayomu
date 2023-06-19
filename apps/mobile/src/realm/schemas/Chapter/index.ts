@@ -16,7 +16,7 @@ export interface IChapterSchema extends MangaChapter {
 }
 
 export class ChapterSchema extends Realm.Object<IChapterSchema> {
-  scrollPosition!: number;
+  scrollPosition?: number;
   savedScrollPositionType!: 'landscape' | 'portrait';
   indexPage!: number;
   numberOfPages?: number;
@@ -41,7 +41,7 @@ export class ChapterSchema extends Realm.Object<IChapterSchema> {
       _mangaId: 'string',
       numberOfPages: 'int?',
       language: { type: 'string', default: 'en' },
-      scrollPosition: { type: 'int', default: 0 },
+      scrollPosition: 'int?',
       savedScrollPositionType: {
         type: 'string',
         default: () => {
