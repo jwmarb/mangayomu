@@ -7,6 +7,6 @@ export interface QuickReadButtonProps extends React.PropsWithChildren {
   currentlyReadingChapter?: CurrentlyReadingChapter;
   networkStatusOffset: SharedValue<number>;
   textOpacity: SharedValue<number>;
-  firstChapter: ChapterSchema;
+  firstChapter?: ChapterSchema;
   mangaKey?: string;
 }
