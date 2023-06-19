@@ -16,6 +16,8 @@ const PageList: React.ForwardRefRenderFunction<
     renderItem: preDeterminedRenderItem,
     readingDirection,
     extraData,
+    initialScrollIndex,
+    estimatedFirstItemOffset,
     ...rest
   } = props;
   switch (readingDirection) {
@@ -24,6 +26,13 @@ const PageList: React.ForwardRefRenderFunction<
         <FlatList
           ref={ref as React.ForwardedRef<FlatList<Page>>}
           {...(rest as FlatListProps<Page>)}
+          initialScrollIndex={
+            initialScrollIndex != null
+              ? estimatedFirstItemOffset !== 0
+                ? initialScrollIndex + 1
+                : initialScrollIndex
+              : undefined
+          }
           extraData={extraData}
           renderItem={
             preDeterminedRenderItem != null
@@ -44,6 +53,8 @@ const PageList: React.ForwardRefRenderFunction<
         <FlashList
           ref={ref as React.ForwardedRef<FlashList<Page>>}
           {...rest}
+          estimatedFirstItemOffset={estimatedFirstItemOffset}
+          initialScrollIndex={initialScrollIndex}
           renderItem={preDeterminedRenderItem}
           extraData={extraData}
         />
