@@ -24,6 +24,7 @@ export type RootStackParamList = {
     manga: string; // The key of the manga
   };
   MainSourceSelector: undefined;
+  GlobalReaderSettings: undefined;
 };
 
 export type RootStackProps<T extends keyof RootStackParamList> =

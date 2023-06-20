@@ -17,6 +17,9 @@ const Settings: React.FC = () => {
   const handleOnSource = React.useCallback(() => {
     navigation.navigate('MainSourceSelector');
   }, [navigation]);
+  const handleOnReaderSettings = React.useCallback(() => {
+    navigation.navigate('GlobalReaderSettings');
+  }, [navigation]);
   return (
     <>
       <Animated.ScrollView
@@ -25,6 +28,7 @@ const Settings: React.FC = () => {
         style={scrollViewStyle}
       >
         <PressableListItem
+          onPress={handleOnReaderSettings}
           label="Reader"
           iconLeft={<Icon type="font" name="book" />}
         />
