@@ -67,6 +67,7 @@ export enum AutoFetchType {
 export enum AutoFetchThreshold {
   AT_START = 'From the start of a chapter',
   AT_END = 'From the end of a chapter',
+  IMMEDIATELY = 'No threshold, fetch immediately',
 }
 
 export interface SettingsState {
@@ -254,6 +255,19 @@ const settingsSlice = createSlice({
     setBookStyle: (state, action: PayloadAction<BookStyle>) => {
       state.book.style = action.payload;
     },
+    setAutoFetch: (state, action: PayloadAction<AutoFetchType>) => {
+      state.reader.automaticallyFetchNextChapter.type = action.payload;
+    },
+    setAutoFetchThresholdPosition: (
+      state,
+      action: PayloadAction<AutoFetchThreshold>,
+    ) => {
+      state.reader.automaticallyFetchNextChapter.thresholdPosition =
+        action.payload;
+    },
+    setAutoFetchPageThreshold: (state, action: PayloadAction<number>) => {
+      state.reader.automaticallyFetchNextChapter.pageThreshold = action.payload;
+    },
   },
 });
 
@@ -276,6 +290,9 @@ export const {
   toggleShowPageNumber,
   setReaderImageComponent,
   toggleIncognitoMode,
+  setAutoFetch,
+  setAutoFetchThresholdPosition,
+  setAutoFetchPageThreshold,
 } = settingsSlice.actions;
 
 export function useReaderSetting<
