@@ -1,4 +1,4 @@
-import { useAppDispatch } from '@redux/main';
+import { AppState, useAppDispatch } from '@redux/main';
 import {
   FetchPagesByChapterPayload,
   Page,
@@ -7,12 +7,19 @@ import {
   fetchingChapters,
   resetReaderState,
 } from '@redux/slices/reader/reader';
-import NetInfo, { NetInfoSubscription } from '@react-native-community/netinfo';
+import NetInfo, {
+  NetInfoChangeHandler,
+  NetInfoStateType,
+  NetInfoSubscription,
+} from '@react-native-community/netinfo';
 import React from 'react';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaHost } from '@mangayomu/mangascraper';
 import { useLocalRealm } from '@database/main';
 import { InteractionManager } from 'react-native';
+import { AutoFetchThreshold, AutoFetchType } from '@redux/slices/settings';
+import useMutableObject from '@hooks/useMutableObject';
+import useCancellable from '@screens/Reader/hooks/useCancellable';
 
 /**
  * A hook to create a fetcher to fetch a chapter
@@ -23,10 +30,16 @@ export default function useChapterFetcher(
   args: Pick<
     FetchPagesByChapterPayload,
     'availableChapters' | 'manga' | 'chapter'
-  > & { pages: Page[] },
+  > & {
+    pages: Page[];
+    autoFetch: AppState['settings']['reader']['automaticallyFetchNextChapter'];
+    currentPage: number;
+    cancellable: ReturnType<typeof useCancellable>[0];
+  },
 ) {
   const dispatch = useAppDispatch();
   const source = MangaHost.getAvailableSources().get(args.manga.source);
+  const currentChapter = useMutableObject(args.chapter);
   const localRealm = useLocalRealm();
   if (source == null) throw Error(`${args.manga.source} does not exist`);
   const fetchPages = React.useCallback(
@@ -58,6 +71,57 @@ export default function useChapterFetcher(
     };
   }, []);
 
+  React.useEffect(() => {
+    let listener: NetInfoSubscription | null = null;
+    switch (args.autoFetch.type) {
+      case AutoFetchType.ALWAYS:
+      case AutoFetchType.WIFI_ONLY:
+        listener = NetInfo.addEventListener((e) => {
+          if (
+            e.type === NetInfoStateType.wifi ||
+            args.autoFetch.type === AutoFetchType.ALWAYS
+          ) {
+            let offsetTillFetch = 0;
+            switch (args.autoFetch.thresholdPosition) {
+              case AutoFetchThreshold.AT_END:
+                if (currentChapter.current.numberOfPages)
+                  offsetTillFetch = Math.max(
+                    0,
+                    currentChapter.current.numberOfPages -
+                      args.autoFetch.pageThreshold -
+                      args.currentPage,
+                  );
+                break;
+              case AutoFetchThreshold.AT_START:
+                offsetTillFetch = Math.max(
+                  0,
+                  args.autoFetch.pageThreshold - args.currentPage,
+                );
+                break;
+            }
+            if (offsetTillFetch === 0 && currentChapter.current.index > 0)
+              args.cancellable(fetchPages, {
+                previous: {
+                  index: currentChapter.current.index,
+                  _id: currentChapter.current._id,
+                },
+                next: {
+                  index:
+                    args.availableChapters[currentChapter.current.index - 1]
+                      .index,
+                  _id: args.availableChapters[currentChapter.current.index - 1]
+                    ._id,
+                },
+              });
+          }
+        });
+        break;
+    }
+    return () => {
+      if (listener != null) listener();
+    };
+  }, [args.autoFetch, args.currentPage]);
+
   /**
    * Initially fetches current chapter
    */
@@ -76,30 +140,6 @@ export default function useChapterFetcher(
       p?.abort();
     };
   }, []);
-
-  /**
-   * Automatically gets next chapters
-   */
-  // React.useEffect(() => {
-  //   if (
-  //     args.pages.length > 0 &&
-  //     !(args.pages.length === 1 && args.pages[0].type === 'CHAPTER_ERROR')
-  //   ) {
-  //     let p: ReturnType<typeof fetchPages>;
-  //     const listener = NetInfo.addEventListener(({ isInternetReachable }) => {
-  //       if (isInternetReachable) {
-  //         const nextChapter = args.availableChapters[args.chapter.index - 1];
-  //         if (nextChapter != null) {
-  //           p = fetchPages(nextChapter);
-  //         }
-  //       }
-  //     });
-  //     return () => {
-  //       listener();
-  //       p?.abort();
-  //     };
-  //   }
-  // }, [args.chapter._id, args.pages.length > 0]);
 
   return fetchPages;
 }

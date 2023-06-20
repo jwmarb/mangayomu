@@ -54,6 +54,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     extendedState,
     setCurrentChapter,
     notifyOnLastChapter,
+    autoFetch,
   } = props;
   const { width, height } = useScreenDimensions();
   const overlayOpacity = useSharedValue(0);
@@ -69,11 +70,15 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     chapter.indexPage + 1,
   );
   const pageSliderNavRef = React.useRef<PageSliderNavigatorMethods>(null);
+  const [cancellable, isFetchingPrevious] = useCancellable(pages);
   const fetchPagesByChapter = useChapterFetcher({
     availableChapters,
     manga,
     chapter,
     pages,
+    currentPage,
+    autoFetch,
+    cancellable,
   });
   const { tapGesture, showOverlay } = useOverlayGesture({ overlayOpacity });
   const { topOverlayStyle, toastStyle } = useNetworkToast({
@@ -99,7 +104,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
 
   const { getItemType, overrideItemLayout, keyExtractor, renderItem } =
     useFlashList({ getPageOffset });
-  const [cancellable, isFetchingPrevious] = useCancellable(pages);
 
   const reversed = useMutableObject(
     readingDirection === ReadingDirection.RIGHT_TO_LEFT,
