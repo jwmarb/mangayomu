@@ -1,9 +1,8 @@
+import { ModalBuilderProps } from '@components/ModalBuilder/ModalBuilder.interfaces';
 import React from 'react';
 
-export interface ModalMenuProps<T> extends React.PropsWithChildren {
-  title: string;
+export interface ModalMenuProps<T> extends ModalBuilderProps {
   value: T;
   onChange: (newValue: T) => void;
-  trigger: React.ReactNode;
   enum: Record<string | number, T>;
 }
