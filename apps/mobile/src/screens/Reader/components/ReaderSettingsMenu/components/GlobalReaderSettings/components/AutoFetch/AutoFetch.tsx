@@ -114,7 +114,7 @@ const AutoFetch: React.FC<ConnectedAutoFetchProps> = (props) => {
                     justify-content="space-between"
                     p="m"
                   >
-                    <Box>
+                    <Box flex-shrink>
                       <Text># of pages threshold</Text>
                       <Text color="textSecondary" variant="body-sub">
                         Initiate auto fetch {pageThreshold} pages{' '}
