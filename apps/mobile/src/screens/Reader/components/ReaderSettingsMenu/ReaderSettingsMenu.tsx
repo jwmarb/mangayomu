@@ -29,7 +29,6 @@ const ReaderSettingsMenu: React.ForwardRefRenderFunction<
         contentContainerStyle={styles.bottomSheetScrollView}
       >
         <LocalReaderSettings mangaKey={mangaKey} />
-        <Divider />
         <GlobalReaderSettings />
       </BottomSheetScrollView>
     ),

@@ -12,6 +12,9 @@ import Button from '@components/Button';
 import OverlayBottomButton from '@screens/Reader/components/Overlay/components/OverlayBottomButton';
 import Box from '@components/Box/Box';
 import { useMangaKey } from '@screens/Reader/context/MangaKey';
+import ModalMenu from '@components/ModalMenu';
+import { RectButton } from 'react-native-gesture-handler';
+import { useTheme } from '@emotion/react';
 
 const ImageScaling: React.FC<ConnectedImageScalingProps> = (props) => {
   const { globalImageScaling, type = 'button', setGlobalImageScaling } = props;
@@ -22,6 +25,7 @@ const ImageScaling: React.FC<ConnectedImageScalingProps> = (props) => {
     },
     [setGlobalImageScaling],
   );
+  const theme = useTheme();
   const [imageScaling, setImageScaling] = useReaderSetting(
     'readerImageScaling',
     globalImageScaling,
@@ -61,46 +65,33 @@ const ImageScaling: React.FC<ConnectedImageScalingProps> = (props) => {
       </Box>
     );
   return (
-    <Stack
-      flex-direction="row"
-      space="s"
-      align-items="center"
-      justify-content="space-between"
-    >
-      <Text>Image scaling</Text>
-      <Menu
-        trigger={
-          <Button
-            label={imageScaling}
-            icon={<Icon type="font" name="chevron-down" />}
-            iconPlacement="right"
-          />
-        }
-      >
-        {Object.entries(ImageScalingEnum).map(([key, value]) => (
-          <MenuItem
-            key={key}
-            optionKey={value as ImageScalingEnum}
-            onSelect={setImageScaling}
-            color={value === imageScaling ? 'primary' : undefined}
-          >
-            {value}
-          </MenuItem>
-        ))}
-        {mangaKey != null && (
-          <MenuItem
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            optionKey={'Use global setting' as any}
-            onSelect={setImageScaling}
-            color={
-              imageScaling === 'Use global setting' ? 'primary' : undefined
-            }
-          >
-            Use global setting
-          </MenuItem>
-        )}
-      </Menu>
-    </Stack>
+    <ModalMenu
+      value={imageScaling}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onChange={setImageScaling as any}
+      title="Image scaling"
+      enum={{
+        ...(mangaKey != null
+          ? { 'Use global setting': 'Use global setting' }
+          : {}),
+        ...ImageScalingEnum,
+      }}
+      trigger={
+        <RectButton rippleColor={theme.palette.action.ripple}>
+          <Stack flex-direction="row" space="s" align-items="center">
+            <Box align-self="center" ml="l">
+              <Icon type="font" name="image-auto-adjust" variant="header" />
+            </Box>
+            <Box p="m">
+              <Text>Image scaling</Text>
+              <Text variant="body-sub" color="textSecondary">
+                {imageScaling}
+              </Text>
+            </Box>
+          </Stack>
+        </RectButton>
+      }
+    />
   );
 };
 

@@ -15,25 +15,48 @@ import React from 'react';
 const GlobalReaderSettings: React.FC = () => {
   return (
     <>
-      <Stack space="s" mx="m" my="s">
-        <Text bold color="textSecondary" variant="book-title">
-          GLOBAL
+      <Box mx="m">
+        <Text bold variant="header">
+          Global
         </Text>
+        <Text color="textSecondary">
+          Settings that will apply to all mangas by default
+        </Text>
+      </Box>
+      <Box
+        m="m"
+        overflow="hidden"
+        background-color="paper"
+        border-color="@theme"
+        border-radius="@theme"
+        border-width="@theme"
+      >
         <DeviceOrientation type="setting" />
         <ImageScaling type="setting" />
         <ReaderDirection type="setting" />
         <ZoomStartPosition type="setting" />
-      </Stack>
+      </Box>
       <Divider />
-      <Box>
-        <Box py="s" px="m">
-          <Text bold color="textSecondary" variant="book-title">
-            MISCELLANEOUS
-          </Text>
-        </Box>
+      <Box pt="m" px="m">
+        <Text bold variant="header">
+          Miscellaneous
+        </Text>
+        <Text color="textSecondary">Customize functionality and features</Text>
+      </Box>
+      <Box
+        m="m"
+        overflow="hidden"
+        background-color="paper"
+        border-color="@theme"
+        border-radius="@theme"
+        border-width="@theme"
+      >
         <BackgroundColor />
+        <Divider />
         <ShowPageNumber />
+        <Divider />
         <NotifyOnLastChapter />
+        <Divider />
         <AutoFetch />
       </Box>
     </>

@@ -14,6 +14,9 @@ import Button from '@components/Button';
 import OverlayBottomButton from '@screens/Reader/components/Overlay/components/OverlayBottomButton';
 import Box from '@components/Box/Box';
 import { useMangaKey } from '@screens/Reader/context/MangaKey';
+import ModalMenu from '@components/ModalMenu';
+import { RectButton } from 'react-native-gesture-handler';
+import { useTheme } from '@emotion/react';
 
 const ZoomStartPosition: React.FC<ConnectedZoomStartPositionProps> = (
   props,
@@ -35,6 +38,8 @@ const ZoomStartPosition: React.FC<ConnectedZoomStartPositionProps> = (
     globalZoomStartPosition,
     mangaKey ?? set,
   );
+
+  const theme = useTheme();
 
   if (type === 'button')
     return (
@@ -75,46 +80,33 @@ const ZoomStartPosition: React.FC<ConnectedZoomStartPositionProps> = (
       </Box>
     );
   return (
-    <Stack
-      flex-direction="row"
-      justify-content="space-between"
-      align-items="center"
-      space="s"
-    >
-      <Text>Zoom start position</Text>
-      <Menu
-        trigger={
-          <Button
-            label={zoomStartPosition}
-            icon={<Icon type="font" name="chevron-down" />}
-            iconPlacement="right"
-          />
-        }
-      >
-        {Object.entries(EnumZoomStartPosition).map(([key, value]) => (
-          <MenuItem
-            key={key}
-            optionKey={value as EnumZoomStartPosition}
-            onSelect={setZoomStartPosition}
-            color={value === zoomStartPosition ? 'primary' : undefined}
-          >
-            {value}
-          </MenuItem>
-        ))}
-        {mangaKey != null && (
-          <MenuItem
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            optionKey={'Use global setting' as any}
-            onSelect={setZoomStartPosition}
-            color={
-              zoomStartPosition === 'Use global setting' ? 'primary' : undefined
-            }
-          >
-            Use global setting
-          </MenuItem>
-        )}
-      </Menu>
-    </Stack>
+    <ModalMenu
+      value={zoomStartPosition}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onChange={setZoomStartPosition as any}
+      title="Zoom start position"
+      enum={{
+        ...(mangaKey != null
+          ? { 'Use global setting': 'Use global setting' }
+          : {}),
+        ...EnumZoomStartPosition,
+      }}
+      trigger={
+        <RectButton rippleColor={theme.palette.action.ripple}>
+          <Stack flex-direction="row" space="s" align-items="center">
+            <Box align-self="center" ml="l">
+              <Icon type="font" name="magnify-scan" variant="header" />
+            </Box>
+            <Box p="m">
+              <Text>Zoom start position</Text>
+              <Text variant="body-sub" color="textSecondary">
+                {zoomStartPosition}
+              </Text>
+            </Box>
+          </Stack>
+        </RectButton>
+      }
+    />
   );
 };
 
