@@ -94,6 +94,7 @@ export const AppearanceProvider: React.FC<React.PropsWithChildren> = ({
       createTheme<Theme>(({ color, colorConstant, definePalette }) => ({
         mode: colorScheme,
         palette: {
+          overlay: colorConstant('rgba(0, 0, 0, 0.5)'),
           mangaViewerBackButtonColor: colorConstant('#fafafa'),
           skeleton: color('rgba(255, 255, 255, 0.12)', 'rgba(0, 0, 0, 0.12)'),
           borderColor: color('rgba(160, 160, 160, 0.1)', '#CCCCCC'),
