@@ -22,6 +22,11 @@ export const typography = {
     font-size: ${moderateScale(14) + 'px'};
     letter-spacing: -0.44px;
   `,
+  'body-sub': css`
+    font-family: Roboto;
+    font-size: ${moderateScale(12) + 'px'};
+    letter-spacing: -0.4px;
+  `,
   button: css`
     font-family: Roboto;
     font-size: ${moderateScale(12) + 'px'};
