@@ -33,7 +33,7 @@ const styles = ScaledSheet.create({
 });
 
 const Radio: React.FC<BaseRadioProps> = React.memo((props) => {
-  const { isSelected, onChange: _onChange, label } = props;
+  const { isSelected, onChange: _onChange, label, onPress } = props;
   const theme = useTheme();
   const state = useSharedValue(isSelected ? 1 : 0);
   const backgroundColor = useDerivedValue(() =>
@@ -51,6 +51,7 @@ const Radio: React.FC<BaseRadioProps> = React.memo((props) => {
     ),
   );
   function onChange() {
+    if (onPress != null) onPress();
     _onChange();
     state.value = withTiming(1, { duration: 200 });
   }
@@ -109,6 +110,7 @@ const Radio: React.FC<BaseRadioProps> = React.memo((props) => {
 const RadioContextReceiver: React.FC<RadioProps> = ({
   value: providedValue,
   label,
+  onPress,
 }) => {
   const { value, onChange } = useRadioGroup();
   const handleOnChange = React.useCallback(() => {
@@ -116,7 +118,12 @@ const RadioContextReceiver: React.FC<RadioProps> = ({
   }, [onChange, providedValue]);
   const isSelected = value === providedValue;
   return (
-    <Radio isSelected={isSelected} onChange={handleOnChange} label={label} />
+    <Radio
+      isSelected={isSelected}
+      onChange={handleOnChange}
+      label={label}
+      onPress={onPress}
+    />
   );
 };
 export default RadioContextReceiver;
