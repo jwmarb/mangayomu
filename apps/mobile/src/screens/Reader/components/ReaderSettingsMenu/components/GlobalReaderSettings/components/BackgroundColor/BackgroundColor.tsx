@@ -8,17 +8,18 @@ import React from 'react';
 import connector, {
   ConnectedBackgroundColorProps,
 } from './BackgroundColor.redux';
+import Box from '@components/Box/Box';
 
 const BackgroundColor: React.FC<ConnectedBackgroundColorProps> = (props) => {
   const { backgroundColor, setReaderBackgroundColor } = props;
   return (
-    <Stack
-      space="s"
-      flex-direction="row"
-      justify-content="space-between"
-      align-items="center"
-    >
-      <Text>Background color</Text>
+    <Stack space="s" flex-direction="row" justify-content="space-between">
+      <Box flex-shrink align-self="flex-end">
+        <Text>Background color</Text>
+        <Text variant="body-sub" color="textSecondary">
+          The background color of the reader
+        </Text>
+      </Box>
       <Menu
         trigger={
           <Button

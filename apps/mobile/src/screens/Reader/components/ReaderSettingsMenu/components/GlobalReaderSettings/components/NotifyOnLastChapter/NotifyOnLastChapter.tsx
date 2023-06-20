@@ -5,6 +5,7 @@ import React from 'react';
 import connector, {
   ConnectedNotifyOnLastChapterProps,
 } from './NotifyOnLastChapter.redux';
+import Box from '@components/Box/Box';
 
 const NotifyOnLastChapter: React.FC<ConnectedNotifyOnLastChapterProps> = (
   props,
@@ -14,13 +15,13 @@ const NotifyOnLastChapter: React.FC<ConnectedNotifyOnLastChapterProps> = (
     toggleNotifyOnLastChapter();
   }
   return (
-    <Stack
-      space="s"
-      justify-content="space-between"
-      align-items="center"
-      flex-direction="row"
-    >
-      <Text>Notify on last chapter</Text>
+    <Stack space="s" justify-content="space-between" flex-direction="row">
+      <Box flex-shrink align-self="flex-end">
+        <Text>Last chapter reminder</Text>
+        <Text variant="body-sub" color="textSecondary">
+          Displays a message when you reach the last chapter of a manga
+        </Text>
+      </Box>
       <Switch enabled={notifyOnLastChapter} onChange={handleOnChange} />
     </Stack>
   );
