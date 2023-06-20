@@ -1,6 +1,3 @@
-import Button from '@components/Button';
-import Icon from '@components/Icon';
-import { Menu, MenuItem } from '@components/Menu';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { ReaderBackgroundColor } from '@redux/slices/settings';
@@ -8,39 +5,29 @@ import React from 'react';
 import connector, {
   ConnectedBackgroundColorProps,
 } from './BackgroundColor.redux';
-import Box from '@components/Box/Box';
+import { RectButton } from 'react-native-gesture-handler';
+import ModalMenu from '@components/ModalMenu';
 
 const BackgroundColor: React.FC<ConnectedBackgroundColorProps> = (props) => {
   const { backgroundColor, setReaderBackgroundColor } = props;
+
   return (
-    <Stack space="s" flex-direction="row" justify-content="space-between">
-      <Box flex-shrink align-self="flex-end">
-        <Text>Background color</Text>
-        <Text variant="body-sub" color="textSecondary">
-          The background color of the reader
-        </Text>
-      </Box>
-      <Menu
-        trigger={
-          <Button
-            label={backgroundColor}
-            icon={<Icon type="font" name="chevron-down" />}
-            iconPlacement="right"
-          />
-        }
-      >
-        {Object.entries(ReaderBackgroundColor).map(([key, value]) => (
-          <MenuItem
-            key={key}
-            optionKey={value as ReaderBackgroundColor}
-            onSelect={setReaderBackgroundColor}
-            color={value === backgroundColor ? 'primary' : undefined}
-          >
-            {value}
-          </MenuItem>
-        ))}
-      </Menu>
-    </Stack>
+    <ModalMenu
+      title="Background color"
+      value={backgroundColor}
+      onChange={setReaderBackgroundColor}
+      enum={ReaderBackgroundColor}
+      trigger={
+        <RectButton>
+          <Stack m="m">
+            <Text>Background color</Text>
+            <Text variant="body-sub" color="textSecondary">
+              {backgroundColor}
+            </Text>
+          </Stack>
+        </RectButton>
+      }
+    />
   );
 };
 
