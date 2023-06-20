@@ -56,6 +56,7 @@ const Radio: React.FC<BaseRadioProps> = React.memo((props) => {
   }
   React.useEffect(() => {
     if (!isSelected) state.value = withTiming(0, { duration: 100 });
+    else state.value = withTiming(1, { duration: 200 });
   }, [isSelected]);
   const radioStyle = useAnimatedStyle(() => ({
     backgroundColor: backgroundColor.value,
