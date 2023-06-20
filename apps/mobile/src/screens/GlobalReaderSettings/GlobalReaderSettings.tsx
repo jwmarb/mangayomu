@@ -8,8 +8,7 @@ const GlobalReaderSettings: React.FC = () => {
     useCollapsibleHeader({ headerTitle: 'Reader' });
   return (
     <Animated.ScrollView
-      style={scrollViewStyle}
-      contentContainerStyle={contentContainerStyle}
+      contentContainerStyle={[contentContainerStyle, scrollViewStyle]}
       onScroll={onScroll}
     >
       <Global />
