@@ -7,6 +7,15 @@ import { ReaderSettingsMenuProps } from '@screens/Reader/components/ReaderSettin
 import Advanced from './components/Advanced';
 import React from 'react';
 import Divider from '@components/Divider';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { useTheme } from '@emotion/react';
+import { ScaledSheet } from 'react-native-size-matters';
+
+const styles = ScaledSheet.create({
+  bottomSheetScrollView: {
+    paddingBottom: '100@ms' as unknown as number,
+  },
+});
 
 const ReaderSettingsMenu: React.ForwardRefRenderFunction<
   BottomSheetMethods,
@@ -16,11 +25,13 @@ const ReaderSettingsMenu: React.ForwardRefRenderFunction<
   const { mangaKey } = props;
   const readerSettings = React.useMemo(
     () => (
-      <>
+      <BottomSheetScrollView
+        contentContainerStyle={styles.bottomSheetScrollView}
+      >
         <LocalReaderSettings mangaKey={mangaKey} />
         <Divider />
         <GlobalReaderSettings />
-      </>
+      </BottomSheetScrollView>
     ),
     [mangaKey],
   );
