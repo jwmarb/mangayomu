@@ -67,26 +67,28 @@ export default function useNetworkToast(args: {
   }));
 
   React.useEffect(() => {
-    if (isInternetReachable) {
-      derivedValue.value = withTiming(0, {
-        duration: 150,
-        easing: Easing.ease,
-      });
-      toastOpacity.value = withDelay(
-        2000,
-        withTiming(0, { duration: 150, easing: Easing.ease }),
-      );
-    } else {
-      derivedValue.value = 1;
-      toastOpacity.value = withTiming(1, {
-        duration: 150,
-        easing: Easing.ease,
-      });
+    if (isInternetReachable != null) {
+      if (isInternetReachable) {
+        derivedValue.value = withTiming(0, {
+          duration: 150,
+          easing: Easing.ease,
+        });
+        toastOpacity.value = withDelay(
+          2000,
+          withTiming(0, { duration: 150, easing: Easing.ease }),
+        );
+      } else {
+        derivedValue.value = 1;
+        toastOpacity.value = withTiming(1, {
+          duration: 150,
+          easing: Easing.ease,
+        });
+      }
+      return () => {
+        cancelAnimation(derivedValue);
+        cancelAnimation(toastOpacity);
+      };
     }
-    return () => {
-      cancelAnimation(derivedValue);
-      cancelAnimation(toastOpacity);
-    };
   }, [isInternetReachable]);
   const memoizedToastStyle = React.useMemo(() => toastStyle, []);
   const memoizedTopOverlayStyle = React.useMemo(() => topOverlayStyle, []);
