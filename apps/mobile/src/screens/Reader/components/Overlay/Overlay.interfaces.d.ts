@@ -15,7 +15,7 @@ export interface OverlayProps extends React.PropsWithChildren {
   opacity: SharedValue<number>;
   currentPage: number;
   chapter: ChapterSchema & Realm.Object<ChapterSchema, never>;
-  manga: MangaSchema & Realm.Object<MangaSchema, never>;
+  manga: MangaSchema;
   readerProps: ReturnType<typeof useReaderProps>;
   scrollRef: React.RefObject<FlashList<Page>>;
   pageSliderNavRef: React.RefObject<PageSliderNavigatorMethods>;

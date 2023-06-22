@@ -18,7 +18,7 @@ export default function useSavedChapterInfo(
   args: Pick<ReturnType<typeof usePageLayout>, 'getSafeScrollRange'> & {
     horizontal: boolean;
     chapter: ChapterSchema & Realm.Object<ChapterSchema, never>;
-    manga: MangaSchema & Realm.Object<MangaSchema, never>;
+    manga: MangaSchema;
     scrollRef: React.RefObject<FlashList<Page>>;
     incognito: boolean;
     pages: Page[];

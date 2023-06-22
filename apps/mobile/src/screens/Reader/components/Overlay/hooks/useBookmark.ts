@@ -1,9 +1,7 @@
 import { IMangaSchema, MangaSchema } from '@database/schemas/Manga';
 import React from 'react';
 
-export default function useBookmark(
-  manga: MangaSchema & Realm.Object<MangaSchema, never>,
-) {
+export default function useBookmark(manga: MangaSchema) {
   const [isBookmarked, setIsBookmarked] = React.useState<boolean>(
     manga.inLibrary,
   );
