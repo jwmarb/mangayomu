@@ -32,8 +32,11 @@ const GlobalReaderSettings: React.FC = () => {
         border-width="@theme"
       >
         <DeviceOrientation type="setting" />
+        <Divider />
         <ImageScaling type="setting" />
+        <Divider />
         <ReaderDirection type="setting" />
+        <Divider />
         <ZoomStartPosition type="setting" />
       </Box>
       <Divider />
