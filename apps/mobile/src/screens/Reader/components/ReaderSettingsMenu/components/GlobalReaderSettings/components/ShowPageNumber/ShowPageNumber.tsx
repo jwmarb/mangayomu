@@ -26,13 +26,15 @@ const ShowPageNumber: React.FC<ConnectedShowPageNumberProps> = (props) => {
         flex-direction="row"
         p="m"
       >
-        <Box align-self="flex-end">
+        <Box align-self="center">
           <Text>Show page number</Text>
           <Text color="textSecondary" variant="body-sub">
-            Allows you to see the current page number
+            Shows the current page number
           </Text>
         </Box>
-        <Switch enabled={showPageNumber} onChange={handleOnChange} />
+        <Box align-self="center">
+          <Switch enabled={showPageNumber} onChange={handleOnChange} />
+        </Box>
       </Stack>
     </RectButton>
   );

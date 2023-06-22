@@ -34,7 +34,9 @@ const NotifyOnLastChapter: React.FC<ConnectedNotifyOnLastChapterProps> = (
             Displays a message when you reach the last chapter of a manga
           </Text>
         </Box>
-        <Switch enabled={notifyOnLastChapter} onChange={handleOnChange} />
+        <Box align-self="center">
+          <Switch enabled={notifyOnLastChapter} onChange={handleOnChange} />
+        </Box>
       </Stack>
     </RectButton>
   );
