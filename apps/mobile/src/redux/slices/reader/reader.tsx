@@ -398,8 +398,11 @@ const readerSlice = createSlice({
             break;
           case 'TRANSITION_PAGE':
             if (i > start) {
+              const isFirstChapter =
+                item.previous.index ===
+                action.meta.arg.availableChapters.length - 1;
               chapterIndices.set(item.previous._id, {
-                start: previousChapter == null ? 0 : start + 1,
+                start: !isFirstChapter ? start + 1 : 0,
                 end: i - 1,
               });
 
