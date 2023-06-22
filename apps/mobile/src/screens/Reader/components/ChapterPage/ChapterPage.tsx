@@ -92,26 +92,12 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     [width, stylizedHeight],
   );
 
-  // const animatedLoadingStyle = useAnimatedStyle(() => ({
-  //   opacity: loadingOpacity.value,
-  // }));
-
   function handleOnReload() {
-    // setError(false);
-    // loadingOpacity.value = fallbackToWebView ? 0 : 1;
     setPageError({ pageKey, value: false });
     webViewRef.current?.reload();
   }
 
-  // function handleOnLoadEnd() {
-  //   loadingOpacity.value = 0;
-  // }
-  // function handleOnLoadStart() {
-  //   loadingOpacity.value = 1;
-  // }
   function handleOnError() {
-    // setError(true);
-    // loadingOpacity.value = 0;
     setPageError({ pageKey, value: true });
   }
 
@@ -119,7 +105,6 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     () =>
       Gesture.LongPress().onStart(() => {
         runOnJS(toggleImageModal)();
-        // parsedPageKey, pageKey
       }),
     [toggleImageModal],
   );
@@ -135,9 +120,6 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
       case 'error':
         handleOnError();
         break;
-      // case 'load':
-      //   handleOnLoadEnd();
-      //   break;
     }
   };
 
