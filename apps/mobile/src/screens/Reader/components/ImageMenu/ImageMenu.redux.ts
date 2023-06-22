@@ -3,11 +3,12 @@ import { connect, ConnectedProps } from 'react-redux';
 import { toggleImageModal } from '@redux/slices/reader';
 
 const mapStateToProps = (state: AppState) => ({
-  pageInDisplay: state.reader.pageInDisplay,
   show: state.reader.showImageModal,
 });
 
-const connector = connect(mapStateToProps, { toggleImageModal });
+const connector = connect(mapStateToProps, { toggleImageModal }, null, {
+  forwardRef: true,
+});
 
 export type ConnectedImageMenuProps = ConnectedProps<typeof connector>;
 

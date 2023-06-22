@@ -18,6 +18,7 @@ export interface OverlayProps extends React.PropsWithChildren {
   manga: MangaSchema;
   readerProps: ReturnType<typeof useReaderProps>;
   scrollRef: React.RefObject<FlashList<Page>>;
+  imageMenuRef: React.RefObject<ImageMenuMethods>;
   pageSliderNavRef: React.RefObject<PageSliderNavigatorMethods>;
   isFinishedInitialScrollOffset: boolean;
   topOverlayStyle: ReturnType<typeof useNetworkToast>['topOverlayStyle'];

@@ -41,6 +41,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
     pageSliderNavRef,
     isFinishedInitialScrollOffset,
     topOverlayStyle,
+    imageMenuRef,
   } = props;
   const insets = useSafeAreaInsets();
   const realm = useRealm();
@@ -163,7 +164,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   return (
     <Portal>
       <ReaderSettingsMenu ref={ref} mangaKey={manga._id} />
-      <ImageMenu />
+      <ImageMenu ref={imageMenuRef} />
       <Box
         z-index={-1}
         pointerEvents="box-none"

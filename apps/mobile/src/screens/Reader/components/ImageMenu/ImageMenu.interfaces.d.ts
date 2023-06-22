@@ -7,5 +7,5 @@ export interface ImageMenuProps {
 }
 
 export interface ImageMenuMethods {
-  open: () => void;
+  setImageMenuPageKey: (pageKey: string) => void;
 }

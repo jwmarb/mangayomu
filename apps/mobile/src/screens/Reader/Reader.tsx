@@ -37,6 +37,7 @@ import useBoolean from '@hooks/useBoolean';
 import PageList from '@screens/Reader/components/PageList';
 import displayMessage from '@helpers/displayMessage';
 import { ChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
+import { ImageMenuMethods } from '@screens/Reader/components/ImageMenu/ImageMenu.interfaces';
 
 const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const {
@@ -68,6 +69,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     chapter.indexPage + 1,
   );
   const pageSliderNavRef = React.useRef<PageSliderNavigatorMethods>(null);
+  const imageMenuRef = React.useRef<ImageMenuMethods>(null);
   const [cancellable, isFetchingPrevious] = useCancellable(pages);
   const fetchPagesByChapter = useChapterFetcher({
     availableChapters,
@@ -190,6 +192,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       readingDirection,
       sourceName: manga.source,
       tapGesture,
+      imageMenuRef,
     }),
     [tapGesture, manga.source, readingDirection, manga.title],
   );
@@ -201,6 +204,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       <ChapterPageContext.Provider value={chapterPageContextValue}>
         <TransitionPageContext.Provider value={transitionPageContextValue}>
           <Overlay
+            imageMenuRef={imageMenuRef}
             topOverlayStyle={topOverlayStyle}
             isFinishedInitialScrollOffset={isFinishedInitialScrollOffset}
             pageSliderNavRef={pageSliderNavRef}

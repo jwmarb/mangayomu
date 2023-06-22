@@ -19,9 +19,11 @@ interface UsePageRendererArgs {
   };
   extendedPageState?: ExtendedReaderPageState;
   stylizedHeight: number;
+  backgroundColor: string;
 }
 export default function usePageRenderer(args: UsePageRendererArgs) {
-  const { pageKey, style, extendedPageState, stylizedHeight } = args;
+  const { pageKey, style, extendedPageState, stylizedHeight, backgroundColor } =
+    args;
   const { height } = useScreenDimensions();
   /**
    * In the case of very large images which can be observed in some webtoons (e.g. images that exceed the device's height by 5-8 times),
@@ -64,7 +66,7 @@ export default function usePageRenderer(args: UsePageRendererArgs) {
 
   const Renderer: React.FC = React.useCallback(
     () => (
-      <Box style={style} align-self="center">
+      <Box style={style} align-self="center" background-color={backgroundColor}>
         <ImageBaseRenderer
           onError={handleOnError}
           onMessage={handleOnMessage}

@@ -29,7 +29,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   const { width, height } = useScreenDimensions();
   const { page: pageKey, chapter, pageNumber } = props.page;
   const { extendedPageState, backgroundColor } = props;
-  const gestures = usePageGestures();
+  const gestures = usePageGestures({ pageKey });
   const imageWidth = props.page.width;
   const imageHeight = props.page.height;
   const scale = width / imageWidth;
@@ -48,6 +48,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     pageKey,
     style,
     stylizedHeight,
+    backgroundColor,
   });
   usePageDownloader({ chapter, extendedPageState, pageKey, pageNumber });
 

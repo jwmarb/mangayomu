@@ -34,27 +34,33 @@ import {
 import { moderateScale } from 'react-native-size-matters';
 import RNFetchBlob from 'rn-fetch-blob';
 import connected, { ConnectedImageMenuProps } from './ImageMenu.redux';
-const ImageMenu: React.FC<ConnectedImageMenuProps> = (props) => {
-  const { pageInDisplay, toggleImageModal, show } = props;
+import { ImageMenuMethods } from '@screens/Reader/components/ImageMenu/ImageMenu.interfaces';
+import useScreenDimensions from '@hooks/useScreenDimensions';
+const ImageMenu: React.ForwardRefRenderFunction<
+  ImageMenuMethods,
+  ConnectedImageMenuProps
+> = (props, ref) => {
+  const { toggleImageModal, show } = props;
   const localRealm = useLocalRealm();
   const theme = useTheme();
-  const [width, setWidth] = React.useState<number>(
-    Dimensions.get('screen').width,
-  );
-  const [height, setHeight] = React.useState<number>(
-    Dimensions.get('screen').height,
-  );
+  const { width, height } = useScreenDimensions();
+  const page = React.useRef<PageSchema>();
+  const url = React.useRef<string>();
+  React.useImperativeHandle(ref, () => ({
+    setImageMenuPageKey: (pageKey: string) => {
+      const pageObj = localRealm.objectForPrimaryKey(PageSchema, pageKey);
+      if (pageObj != null) {
+        page.current = pageObj;
+        url.current = pageKey;
+      }
+    },
+  }));
   React.useEffect(() => {
-    const p = Dimensions.addEventListener('change', ({ screen }) => {
-      setWidth(screen.width);
-      setHeight(screen.height);
-    });
-    return () => {
-      p.remove();
-    };
-  }, []);
-  const [page, setPage] = React.useState<PageSchema>();
-  const [url, setURL] = React.useState<string>();
+    if (!show) {
+      page.current = undefined;
+      url.current = undefined;
+    }
+  }, [show]);
   const [containerHeight, setContainerHeight] = React.useState<number>(2000);
   const translationY = useSharedValue(containerHeight);
   const backgroundColor = useDerivedValue(
@@ -89,14 +95,7 @@ const ImageMenu: React.FC<ConnectedImageMenuProps> = (props) => {
       });
     }
   }, [show]);
-  React.useEffect(() => {
-    if (pageInDisplay != null) {
-      setURL(pageInDisplay.url);
-      setPage(
-        localRealm.objectForPrimaryKey(PageSchema, pageInDisplay.parsedKey),
-      );
-    }
-  }, [pageInDisplay]);
+
   function handleOnClose() {
     toggleImageModal(false);
     translationY.value = withTiming(containerHeight, {
@@ -105,9 +104,9 @@ const ImageMenu: React.FC<ConnectedImageMenuProps> = (props) => {
     });
   }
   async function handleOnShare() {
-    if (url != null) {
+    if (url.current != null) {
       try {
-        await Share.share({ url, message: url });
+        await Share.share({ url: url.current, message: url.current });
       } catch (e) {
         displayMessage('Failed to share image.');
       } finally {
@@ -117,14 +116,14 @@ const ImageMenu: React.FC<ConnectedImageMenuProps> = (props) => {
   }
 
   async function handleOnSaveImage() {
-    if (page != null && url != null) {
+    if (page.current != null && url.current != null) {
       handleOnClose();
       const path =
         Platform.OS === 'ios'
           ? RNFetchBlob.fs.dirs['MainBundleDir'] +
-            page._id.substring(page._id.lastIndexOf('/'))
+            page.current._id.substring(page.current._id.lastIndexOf('/'))
           : RNFetchBlob.fs.dirs['PictureDir'] +
-            page._id.substring(page._id.lastIndexOf('/'));
+            page.current._id.substring(page.current._id.lastIndexOf('/'));
       if (Platform.OS === 'android') {
         RNFetchBlob.config({
           fileCache: true,
@@ -136,7 +135,7 @@ const ImageMenu: React.FC<ConnectedImageMenuProps> = (props) => {
             description: 'Downloading image',
           },
         })
-          .fetch('GET', url)
+          .fetch('GET', url.current)
           .then((res) => {
             CameraRoll.save(res.data, { type: 'photo' })
               .then(() => displayMessage('Image saved.'))
@@ -144,7 +143,7 @@ const ImageMenu: React.FC<ConnectedImageMenuProps> = (props) => {
           })
           .catch(() => displayMessage('Failed to save image.'));
       } else
-        CameraRoll.save(url, { type: 'photo' })
+        CameraRoll.save(url.current, { type: 'photo' })
           .then(() => displayMessage('Image saved.'))
           .catch(() => displayMessage('Failed to save image.'));
     }
@@ -160,12 +159,14 @@ const ImageMenu: React.FC<ConnectedImageMenuProps> = (props) => {
     displayMessage('View in browser');
   }
   async function handleOnViewInBrowser() {
-    if (url && (await Linking.canOpenURL(url))) await Linking.openURL(url);
+    if (url.current && (await Linking.canOpenURL(url.current)))
+      await Linking.openURL(url.current);
   }
   function handleOnLayout(e: LayoutChangeEvent) {
     setContainerHeight(e.nativeEvent.layout.height);
     translationY.value = e.nativeEvent.layout.height;
   }
+
   return (
     <Portal>
       <Box
@@ -252,4 +253,4 @@ const ImageMenu: React.FC<ConnectedImageMenuProps> = (props) => {
   );
 };
 
-export default connected(React.memo(ImageMenu));
+export default React.memo(connected(React.forwardRef(ImageMenu)));
