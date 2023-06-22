@@ -64,7 +64,7 @@ export default function usePageRenderer(args: UsePageRendererArgs) {
 
   const Renderer: React.FC = React.useCallback(
     () => (
-      <Box style={style} align-self="center" background-color="red">
+      <Box style={style} align-self="center">
         <ImageBaseRenderer
           onError={handleOnError}
           onMessage={handleOnMessage}
