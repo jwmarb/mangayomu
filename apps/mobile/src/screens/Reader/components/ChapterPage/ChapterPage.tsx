@@ -268,7 +268,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
       }
     >
       <GestureDetector gesture={gestures}>
-        <Box style={style} align-self="center">
+        <Box style={style} align-self="center" pointerEvents="none">
           {/* <AnimatedBox
           position="absolute"
           align-items="center"
