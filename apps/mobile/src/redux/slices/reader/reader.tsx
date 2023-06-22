@@ -4,10 +4,10 @@ import { PageSchema } from '@database/schemas/Page';
 import { getErrorMessage } from '@helpers/getErrorMessage';
 import { MangaHost } from '@mangayomu/mangascraper';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { removeURLParams } from '@screens/Reader/components/ChapterPage/ChapterPage';
 import { Image } from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
 import NetInfo from '@react-native-community/netinfo';
+import removeURLParams from '@screens/Reader/components/ChapterPage/helpers/removeURLParams';
 
 export type Page = ChapterPage | NoMorePages | TransitionPage | ChapterError;
 export type ChapterError = {
@@ -122,7 +122,7 @@ export const fetchPagesByChapter = createAsyncThunk(
             removeURLParams(uri),
           );
 
-          // const fileExtension = getFileExtension(uri);
+          // const fileExtension = 1(uri);
           // /**
           //  * Download image locally
           //  */

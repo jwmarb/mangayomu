@@ -12,16 +12,11 @@ const mapStateToProps = (
   state: AppState,
   props: React.PropsWithChildren<ChapterPageProps>,
 ) => ({
-  backgroundColor: state.settings.reader.backgroundColor.toLowerCase(),
-  imageComponentType: state.settings.reader.advanced.imageComponent,
   ...props,
+  backgroundColor: state.settings.reader.backgroundColor.toLowerCase(),
 });
 
-const connector = connect(mapStateToProps, {
-  setPageError,
-  setLocalPageURI,
-  toggleImageModal,
-});
+const connector = connect(mapStateToProps);
 
 export type ConnectedChapterPageProps = ConnectedProps<typeof connector>;
 

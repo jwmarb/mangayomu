@@ -18,9 +18,6 @@ import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import TransitionPage, {
   TransitionPageContext,
 } from '@screens/Reader/components/TransitionPage/TransitionPage';
-import ChapterPage, {
-  ChapterPageContext,
-} from '@screens/Reader/components/ChapterPage/ChapterPage';
 import { ViewToken, ViewabilityConfigCallbackPairs } from 'react-native';
 import NoMorePages from '@screens/Reader/components/NoMorePages/NoMorePages';
 import ChapterError, {
@@ -39,6 +36,7 @@ import useCancellable from '@screens/Reader/hooks/useCancellable';
 import useBoolean from '@hooks/useBoolean';
 import PageList from '@screens/Reader/components/PageList';
 import displayMessage from '@helpers/displayMessage';
+import { ChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
 
 const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const {
