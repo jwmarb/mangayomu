@@ -26,7 +26,7 @@
     "android:metro": "yarn workspace @mangayomu/mobile start",
     "android:start": "yarn workspace @mangayomu/mobile android",
     "start:web": "yarn --cwd apps/nextjs start",
-    "build:web": "yarn --cwd apps/nextjs build",
+    "build:web": "yarn --cwd apps/nextjs build && yarn build",
     "dev:web": "yarn workspace @mangayomu/nextjs dev"
   },
   "devDependencies": {
