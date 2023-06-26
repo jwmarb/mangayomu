@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+  "apps/nextjs",
+  "packages/request-handler"
+]

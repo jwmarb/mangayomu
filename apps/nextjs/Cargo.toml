@@ -1,0 +1,41 @@
+[package]
+name = "mangayomu-rust"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1", features = ["macros"] }
+serde_json = { version = "1", features = ["raw_value"] }
+# Documentation: https://docs.rs/vercel_runtime/latest/vercel_runtime
+vercel_runtime = { version = "1.0.2" }
+serde-querystring = "0.2.0"
+serde = "1.0.164"
+http = "0.2.9"
+regex = "1.8.4"
+request-handler = { path = "../../packages/request-handler"}
+
+# You can specify a library for shared logic here (optional)
+# [lib]
+# path = "src-rs/lib.rs"
+
+# Each handler has to be specified as [[bin]]
+[[bin]]
+name = "test"
+path = "api/test.rs"
+
+# [[bin]]
+# name = "_id_"
+# path = "api/user/[id].rs"
+
+# [[bin]]
+# name = "_input_"
+# path = "api/fib/[input].rs"
+
+# Note that you need to provide unique names for each binary:
+# [[bin]]
+# name = "user-id"
+# path = "api/user/[id].rs"
+#
+# [[bin]]
+# name = "group-id"
+# path = "api/group/[id].rs"

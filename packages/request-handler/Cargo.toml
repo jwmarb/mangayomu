@@ -1,0 +1,14 @@
+[package]
+name = "request-handler"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+http = "0.2.9"
+serde = { version = "1.0.164", features = ["derive"]}
+serde-querystring = "0.2.1"
+serde_json = "1.0.99"
+vercel_runtime = "1.0.2"
+async_fn_traits = "0.1.1"
