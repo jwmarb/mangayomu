@@ -14,7 +14,7 @@ use crate::{
 pub struct Handler {
     request: Arc<Request>,
     middleware: Vec<Middleware>,
-    extra_data: MiddlewareData,
+    extra_data: Arc<Mutex<MiddlewareData>>,
     available_methods: HashMap<Method, MethodHandler>,
 }
 
@@ -23,7 +23,7 @@ impl Handler {
         Self {
             request: Arc::new(req),
             middleware: vec![],
-            extra_data: Arc::new(Mutex::new(HashMap::new())),
+            extra_data: Arc::new(Mutex::new(MiddlewareData::default())),
             available_methods: HashMap::new(),
         }
     }
@@ -31,7 +31,7 @@ impl Handler {
         Self {
             request: Arc::new(req),
             middleware: vec![],
-            extra_data: Arc::new(Mutex::new(HashMap::new())),
+            extra_data: Arc::new(Mutex::new(MiddlewareData::default())),
             available_methods: HashMap::new(),
         }
     }
@@ -69,7 +69,7 @@ impl Handler {
         req: Arc<Request>,
         available_methods: &HashMap<Method, MethodHandler>,
         middlewares: &Vec<Middleware>,
-        extra_data: MiddlewareData,
+        extra_data: Arc<Mutex<MiddlewareData>>,
     ) -> Result<Response<Body>, Error> {
         let method = req.method();
         /*
@@ -99,7 +99,7 @@ impl Handler {
           Method execution occurs here
         */
         let route_executor = available_methods.get(method).unwrap();
-        Ok(route_executor(Arc::clone(&req))
+        Ok(route_executor(Arc::clone(&req), Arc::clone(&extra_data))
             .await
             .unwrap_or_else(|err| {
                 Response::builder()
@@ -111,17 +111,19 @@ impl Handler {
     }
     pub fn method<T, G>(&mut self, method: Method, f: T) -> &mut Self
     where
-        T: Fn(Arc<Request>) -> G + Send + 'static,
+        T: Fn(Arc<Request>, Arc<Mutex<MiddlewareData>>) -> G + Send + 'static,
         G: Future<Output = Result<Response<Body>, ResponseError>> + Send + 'static,
     {
-        self.available_methods
-            .insert(method, Box::new(move |req| Box::pin(f(Arc::clone(&req)))));
+        self.available_methods.insert(
+            method,
+            Box::new(move |req, extra| Box::pin(f(Arc::clone(&req), Arc::clone(&extra)))),
+        );
         self
     }
 
     pub fn middleware<T, G>(&mut self, f: T) -> &mut Self
     where
-        T: Fn(MiddlewareRequest, MiddlewareData) -> G + Send + 'static,
+        T: Fn(MiddlewareRequest, Arc<Mutex<MiddlewareData>>) -> G + Send + 'static,
         G: Future<Output = Result<(), ResponseError>> + Send + 'static,
     {
         self.middleware

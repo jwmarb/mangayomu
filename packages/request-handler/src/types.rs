@@ -1,6 +1,7 @@
 use std::{
     any::Any,
     collections::HashMap,
+    fmt::Debug,
     future::Future,
     pin::Pin,
     sync::{Arc, Mutex},
@@ -88,12 +89,39 @@ where
     }
 }
 
-pub type MiddlewareData = Arc<Mutex<HashMap<String, Box<dyn Any + Sync + Send>>>>;
+#[derive(Default)]
+pub struct MiddlewareData(HashMap<String, Box<dyn Any + Sync + Send>>);
+impl MiddlewareData {
+    pub fn insert<T: Any + Sync + Send>(&mut self, key: String, value: T) {
+        self.0.insert(key, Box::new(value));
+    }
+    pub fn get<T: Any + Sync + Send>(&self, key: &str) -> Result<&T, ResponseError> {
+        self.0
+            .get(key)
+            .ok_or(ResponseError {
+                response: StatusCode::INTERNAL_SERVER_ERROR.into(),
+                error: format!(
+                    "Tried accessing key \"{}\" when it does not exist as a middleware data",
+                    key
+                ),
+            })?
+            .downcast_ref()
+            .ok_or(ResponseError {
+                response: StatusCode::INTERNAL_SERVER_ERROR.into(),
+                error: format!("Mismatch type for key \"{}\"", key),
+            })
+    }
+}
 pub type MiddlewareRequest = Arc<Request>;
 pub type HandlerRequest = Arc<Request>;
 type PinnedFuture<Output> = Pin<Box<dyn Future<Output = Output> + Send + 'static>>;
 pub type Middleware = Box<
-    dyn Fn(MiddlewareRequest, MiddlewareData) -> PinnedFuture<Result<(), ResponseError>> + Send,
+    dyn Fn(MiddlewareRequest, Arc<Mutex<MiddlewareData>>) -> PinnedFuture<Result<(), ResponseError>>
+        + Send,
 >;
-pub type MethodHandler =
-    Box<dyn Fn(HandlerRequest) -> PinnedFuture<Result<Response<Body>, ResponseError>>>;
+pub type MethodHandler = Box<
+    dyn Fn(
+        HandlerRequest,
+        Arc<Mutex<MiddlewareData>>,
+    ) -> PinnedFuture<Result<Response<Body>, ResponseError>>,
+>;
