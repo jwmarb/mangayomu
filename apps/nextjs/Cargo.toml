@@ -21,7 +21,7 @@ request-handler = { path = "../../packages/request-handler"}
 # Each handler has to be specified as [[bin]]
 [[bin]]
 name = "test"
-path = "api/test.rs"
+path = "api/v1/test.rs"
 
 # [[bin]]
 # name = "_id_"
