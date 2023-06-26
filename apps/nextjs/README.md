@@ -1,34 +1,53 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# MangaYomu Web
 
-## Getting Started
+This is the directory holding the website. It uses [Next.js](https://nextjs.org/) as the framework while also using a [Rust](https://www.rust-lang.org/) backend.
 
-First, run the development server:
+## Environment variables
+
+**Do not setup a `.env` file in this directory. Instead, set it up in the root of the repository as `.env.local`**
+
+The environment variables used here are in the table below.
+
+| `.env.local`       | _Description_                                                  |
+| ------------------ | -------------------------------------------------------------- |
+| REACT_APP_REALM_ID | The app id of your MongoDB realm                               |
+| REDIS_URL          | The URL to your [redis](https://redis.io/) instance            |
+| MONGODB_URL        | The URL to your [MongoDB](https://cloud.mongodb.com/) instance |
+
+## Setting up a development server
+
+Make sure you have the following in your system:
+
+- [Rust](https://www.rust-lang.org/tools/install)
+- [Node.js](https://nodejs.org/en/download)
+- [yarn](https://yarnpkg.com/cli/install) (package manager for Node.js)
+
+Before creating a development server, make sure you are in the root directory of this repository, where `package.json` contains `@mangayomu/root` in the name field.
+
+Install the dependencies with this command.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+yarn
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Once it finished, build the packages:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+yarn build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Everything is done, so the development server can be created. Make sure you have `vercel` because it will be used to run the server. It can be installed via `npm`:
 
-## Learn More
+```bash
+npm i -g vercel
+```
 
-To learn more about Next.js, take a look at the following resources:
+**Before proceeding, you must set up the [environment variables](#environment-variables). After you're done, proceed to the next step**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+While you're still in the root directory of this repository, run the following command to start the development server:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+```bash
+vercel dev
+```
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+**Why use `vercel dev`? Can't we just use `yarn web:dev`?** Although this command works, the Rust backend will remain inactive because this command only starts the Next.js server. In order to have both the Next.js server and Rust backend active at the same time, we must use `vercel dev`
