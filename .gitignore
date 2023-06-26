@@ -84,3 +84,4 @@ npm-debug.log
 
 # Compiled code
 **/target
+.env*.local
