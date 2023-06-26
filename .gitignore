@@ -80,3 +80,7 @@ npm-debug.log
 
 # Secrets
 .env
+.vercel
+
+# Compiled code
+**/target
