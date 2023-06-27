@@ -5,8 +5,8 @@
   "types": "dist/src/index.d.ts",
   "main": "dist/src/index.js",
   "scripts": {
-    "build": "rimraf dist && tsc",
-    "reset": "rimraf node_modules",
+    "build": "rm -rf dist && tsc",
+    "reset": "rm -rf node_modules",
     "test": "jest"
   },
   "keywords": [],

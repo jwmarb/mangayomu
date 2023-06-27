@@ -15,8 +15,8 @@
     "url": "^0.11.0"
   },
   "scripts": {
-    "build": "rimraf dist && tsc",
-    "reset": "rimraf node_modules",
+    "build": "rm -rf dist && tsc",
+    "reset": "rm -rf node_modules",
     "test": "jest"
   }
 }
