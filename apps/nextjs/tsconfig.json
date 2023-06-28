@@ -31,8 +31,5 @@
     ".next/types/**/*.ts",
     "../../.next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"],
-  "watchOptions": {
-    "excludeDirectories": ["app"]
-  }
+  "exclude": ["node_modules"]
 }

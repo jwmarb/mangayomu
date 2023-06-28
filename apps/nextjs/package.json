@@ -5,14 +5,16 @@
   "description": "The official website for MangaYomu",
   "scripts": {
     "run": "concurrently -k -p \"[{name}]\" -n \"Next.js,Vercel CLI\" -c \"white.bold,cyan.bold\" \"next dev\" \"vercel dev\"",
-    "build": "rm -rf .next && next build && tsc -p tsconfig.api.json",
+    "prebuild": "node init.js && rm -rf ../tsconfig.api.tsbuildinfo",
+    "build": "concurrently -p \"[{name}]\" -n \"tsc,Next.js\" -c \"cyan.bold,white.bold\" \"tsc -p tsconfig.api.json && node copy.js\" \"next build\"",
+    "postbuild": "rm -rf .tmp",
     "start": "next start",
     "lint": "next lint",
     "reset": "rm -rf node_modules && rm -rf .vercel && rm -rf .next",
     "api:build": "yarn run api:copy",
     "api:copy": "node copy.js",
     "api:watch": "watch \"npm run api:build\" ./.tmp --interval 1 --wait 0.1",
-    "dev": "concurrently -k -p \"[{name}]\" -n \"Vercel CLI,api,tsc\" -c \"yellow.bold,green.bold,cyan.bold\" \"next dev\" \"yarn run api:watch\" \"tsc -w -p tsconfig.api.json\""
+    "dev": "concurrently -k -p \"[{name}]\" -n \"Vercel CLI,api,tsc\" -c \"yellow.bold,green.bold,cyan.bold\" \"next dev\" \"yarn run api:watch\" \"tsc -w -p tsconfig.api.json\" \"node init.js --cleanup\""
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",

@@ -96,7 +96,7 @@ function copyFiles(filePaths, fromPath, toPath) {
   for (var i = 0; i < filePaths.length; i++) {
     var copy = copiedPaths[i];
     var original = filePaths[i];
-    fsSync.copyFileSync(original, copy, fs.constants.COPYFILE_FICLONE);
+    fsSync.cpSync(original, copy, { recursive: true });
     println(
       `Copied ${original.replace(__dirname, '')} to ${copy.replace(
         __dirname,
