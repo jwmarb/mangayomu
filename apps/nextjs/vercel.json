@@ -7,5 +7,6 @@
       "runtime": "@vercel/node@2.15.2"
     }
   },
-  "devCommand": "yarn run dev"
+  "devCommand": "yarn run dev",
+  "buildCommand": "yarn run build"
 }
