@@ -69,7 +69,19 @@ vercel dev
 
 **Why use `vercel dev`? Can't we just use `yarn web:dev`?** Although this command works, the Rust backend will remain inactive because this command only starts the Next.js server. In order to have both the Next.js server and Rust backend active at the same time, we must use `vercel dev`
 
-### ❗ Issues with `@vercel/node` and [Next.js](https://nextjs.org/) ❗
+## Building the website
+
+_Note: You must use a distribution of linux to build the server or else vercel will throw errors, such as `Error: Unable to find lambda for route: /favicon.ico`_
+
+To build the website, navigate to the root of this repository and simply type the following command:
+
+```bash
+vercel build
+```
+
+It will compile the typescript files for the API and build the Next.js application. If building this in a linux distribution throws an error, it'll still build in vercel servers; you probably want to build this in a linux docker container instead. As long as running the development server works, the production build will have no issue running at all.
+
+## ❗ Issues with `@vercel/node` and [Next.js](https://nextjs.org/) ❗
 
 Typescript does not work with `@vercel/node` in a [Next.js](https://nextjs.org/) project. The following error will occur:
 
