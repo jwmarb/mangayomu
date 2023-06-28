@@ -6,17 +6,29 @@ MangaYomu will be a mobile application for manga reading. I plan to create a Nex
 
 ## Setup
 
-Do make sure you have `yarn` installed. If not, it is simple to install it globally:
+Install all the necessary global dependencies
 
 ```sh
-npm i -g yarn
+npm i -g yarn concurrently nx
 ```
 
-Then in the project root directory, install all the necessary dependencies by running:
+- **nx** Monorepo management tool
+- **concurrently** Parallelization tool
+- **yarn** Package manager / Monorepo management tool
+
+Then while you're still in the project root directory, install all the necessary dependencies by running:
 
 ```sh
-yarn
+yarn install
 ```
+
+Then build all the necessary dependencies:
+
+```sh
+yarn build
+```
+
+_Note: building packages is required for all apps to run as they are local dependencies_
 
 ## Using yarn workspaces
 
@@ -67,9 +79,17 @@ yarn start
 
 Both will work; it depends which one you want to use :)
 
+### Running web
+
+To run the development server, you must have `vercel-cli` installed in your system. If not, you can simply install it via:
+
+```sh
+npm i -g vercel
+```
+
+After you have `vercel-cli` installed, refer to this [documentation](/apps/nextjs/README.md)
+
 ## Todo
 
 - Add database
-- Add web version
 - Add manga page sharing (share page that redirects to web app version)
-- Convert Expo to React Native
