@@ -10,7 +10,7 @@
     "postbuild": "rm -rf .tmp",
     "start": "next start",
     "lint": "next lint",
-    "reset": "rm -rf node_modules && rm -rf .vercel && rm -rf .next",
+    "reset": "rm -rf node_modules && rm -rf .vercel && rm -rf .next && rm -rf .tmp",
     "api:build": "yarn run api:copy",
     "api:copy": "node copy.js",
     "api:watch": "watch \"npm run api:build\" ./.tmp --interval 1 --wait 0.1",
