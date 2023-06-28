@@ -16,15 +16,14 @@
       "**/@react-native",
       "**/@react-native/*",
       "**/@react-native-community/*",
-      "**/@react-native-*",
-      "**/metro-*",
-      "**/metro"
+      "**/@react-native-*"
     ]
   },
   "scripts": {
-    "build": "npx nx run-many --target=build --exclude=@mangayomu/nextjs",
-    "reset": "npx nx run-many --target=reset --all && rm -rf yarn.lock && rm -rf node_modules",
-    "test": "npx nx run-many --target=test --all",
+    "build": "yarn nx run-many --target=build --exclude=@mangayomu/nextjs",
+    "reset": "yarn nx run-many --target=reset --all",
+    "postreset": "rm -rf yarn.lock && rmdir node_modules /s /q",
+    "test": "yarn nx run-many --target=test --all",
     "android:metro": "yarn workspace @mangayomu/mobile start",
     "android:start": "yarn workspace @mangayomu/mobile android",
     "start:web": "yarn --cwd apps/nextjs start",
