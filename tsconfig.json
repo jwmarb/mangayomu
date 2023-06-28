@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "types": ["node", "jest"],
+    "types": ["node"],
     "jsx": "preserve",
     "strict": true,
     "module": "CommonJS",
+    "moduleResolution": "Node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "declaration": true,

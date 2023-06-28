@@ -85,3 +85,5 @@ npm-debug.log
 # Compiled code
 **/target
 .env*.local
+apps/nextjs/api/**/*.js
+**/*.tsbuildinfo
