@@ -1,11 +1,5 @@
-use std::{
-    any::Any,
-    collections::HashMap,
-    fmt::Debug,
-    future::Future,
-    pin::Pin,
-    sync::{Arc, Mutex},
-};
+use std::{any::Any, collections::HashMap, fmt::Debug, future::Future, pin::Pin, sync::Arc};
+use tokio::sync::Mutex;
 
 use http::{Response, StatusCode};
 use serde::Serialize;

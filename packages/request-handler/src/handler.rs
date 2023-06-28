@@ -1,8 +1,5 @@
-use std::{
-    collections::HashMap,
-    future::Future,
-    sync::{Arc, Mutex},
-};
+use std::{collections::HashMap, future::Future, sync::Arc};
+use tokio::sync::Mutex;
 
 use http::Method;
 use vercel_runtime::{Body, Error, Request, Response, StatusCode};
