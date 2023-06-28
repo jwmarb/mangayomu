@@ -7,6 +7,7 @@
       "runtime": "@vercel/node@2.15.2"
     }
   },
+  "framework": "nextjs",
   "devCommand": "yarn run dev",
   "buildCommand": "yarn run build"
 }
