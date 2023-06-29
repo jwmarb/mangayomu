@@ -15,9 +15,6 @@ The environment variables used here are in the table below.
 | MONGODB_URL          | The URL to your [MongoDB](https://cloud.mongodb.com/) instance | ❗  |
 | GOOGLE_OAUTH2_ID     |                                                                | ❗  |
 | GOOGLE_OAUTH2_SECRET |                                                                | ❗  |
-| JWT_SECRET           | A secret for the JsonWebToken                                  | ❗  |
-| JWT_EXPIRES_IN       | How long tokens should expire                                  | ❗  |
-| JWT_MAX_AGE          | Max age of a token                                             | ❗  |
 
 | Legend | Meaning                                              |
 | ------ | ---------------------------------------------------- |
@@ -91,7 +88,7 @@ Although you can move all your `.ts` files to `app/api`, they will not work ther
 
 A workaround is to switch to `.js` extension instead of `.ts` and use ES5 syntax. However, there won't be any typesafety to guarantee the functionality of your code before runtime.
 
-Instead, this application has a script and typescript compiler watching for changes in the `app/api` directory. Typescipt compiles the .ts files into `.tmp`, then a script listens for any changes to the `.tmp` folder and copies its contents to `/api`. Additionally, the same script also listens for any deletions/changes in `app/api` and replicates these changes in `/api`, though it does not actually copy the `.ts` files (it only checks the integrity of the files).
+Instead, this application has a script that watches the `app/api` directory and compiles typescript into the `api` folder. You can edit the script, which is notably `api-build.js` and `api-watch.js`. The script relies on babel for compilation, so configuration is located in `util.js`.
 
 `vercel dev` will automatically run this script, but if you ever want to run it manually, you can run the following command:
 
@@ -99,8 +96,9 @@ Instead, this application has a script and typescript compiler watching for chan
 yarn run api:watch
 ```
 
-However, this script does not enable the typescript compiler, so you'll need to enable that manually:
+**When importing modules outside of `app/api`, please import from `@server/` instead of `@app/`. Also, any typescript file outside of `app/api` cannot be used for the API**
 
-```bash
-tsc -w -p tsconfig.api.json
+```js
+import redis from '@app/api/redis'; // BAD. Compiled JS will not import modules correctly
+import redis from '@server/redis'; // GOOD. Compiled JS with have working relative imports
 ```

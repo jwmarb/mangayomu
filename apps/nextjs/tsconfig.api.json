@@ -14,7 +14,10 @@
     "outDir": "./.tmp",
     "listEmittedFiles": true,
     "removeComments": true,
-    "rootDir": "./app/api"
+    "rootDir": "./app/api",
+    "paths": {
+      "@/*": ["./app/*"]
+    }
   },
   "include": ["./app/api/**/*.ts"]
 }

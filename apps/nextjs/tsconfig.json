@@ -21,7 +21,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./app/*"]
+      "@app/*": ["./app/*"],
+      "@server/*": ["./app/api/*"]
     }
   },
   "include": [

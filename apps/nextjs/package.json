@@ -5,16 +5,13 @@
   "description": "The official website for MangaYomu",
   "scripts": {
     "run": "concurrently -k -p \"[{name}]\" -n \"Next.js,Vercel CLI\" -c \"white.bold,cyan.bold\" \"next dev\" \"vercel dev\"",
-    "prebuild": "node init.js && rm -rf ../tsconfig.api.tsbuildinfo",
-    "build": "concurrently -p \"[{name}]\" -n \"tsc,Next.js\" -c \"cyan.bold,white.bold\" \"tsc -p tsconfig.api.json && node copy.js\" \"next build\"",
-    "postbuild": "rm -rf .tmp",
+    "build": "concurrently -p \"[{name}]\" -n \"api,Next.js\" -c \"green.bold,white.bold\" \"yarn run api:build\"",
     "start": "next start",
     "lint": "next lint",
-    "reset": "rm -rf node_modules && rm -rf .vercel && rm -rf .next && rm -rf .tmp",
-    "api:build": "yarn run api:copy",
-    "api:copy": "node copy.js",
-    "api:watch": "watch \"npm run api:build\" ./.tmp --interval 1 --wait 0.1",
-    "dev": "concurrently -k -p \"[{name}]\" -n \"Vercel CLI,api,tsc\" -c \"yellow.bold,green.bold,cyan.bold\" \"next dev\" \"yarn run api:watch\" \"tsc -w -p tsconfig.api.json\" \"node init.js --cleanup\""
+    "reset": "rm -rf node_modules && rm -rf .vercel && rm -rf .next",
+    "api:build": "node api-build.js",
+    "api:watch": "node api-watch.js",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"Vercel CLI,api\" -c \"yellow.bold,green.bold\" \"next dev\" \"yarn run api:watch\""
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -24,15 +21,23 @@
     "axios": "^1.4.0",
     "googleapis": "^118.0.0",
     "http-status-codes": "^2.2.0",
+    "ioredis": "^5.3.2",
+    "nanoid": "^4.0.2",
     "next": "13.4.7",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "realm-web": "^2.0.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.22.5",
+    "@babel/core": "^7.22.5",
+    "@babel/preset-env": "^7.22.5",
+    "@babel/preset-typescript": "^7.22.5",
     "@emotion/babel-plugin": "^11.11.0",
     "@types/node": "20.3.1",
     "@types/react": "18.2.13",
     "@types/react-dom": "18.2.6",
+    "babel-plugin-module-resolver": "^5.0.0",
     "concurrently": "^8.2.0",
     "encoding": "^0.1.13",
     "eslint": "8.43.0",
