@@ -2,6 +2,7 @@ var path = require('path');
 var babel = require('@babel/core');
 var globalPath = require('path');
 var fs = require('fs/promises');
+var fsSync = require('fs');
 var DEV_PATH = path.resolve(__dirname, 'app', 'api');
 var VERCEL_PATH = path.resolve(__dirname, 'api');
 var { println, compile } = require('./util');
@@ -85,11 +86,23 @@ function writeAll(pendingToBeWritten) {
     Promise.all(
       pendingToBeWritten.map(function (pendingFile) {
         return new Promise(function (res2) {
-          fs.writeFile(pendingFile.path, pendingFile.code, {
-            encoding: 'utf-8',
-          }).then(function () {
-            res2();
-          });
+          if (!fsSync.existsSync(pendingFile.path))
+            fs.mkdir(
+              pendingFile.path.substring(0, pendingFile.path.lastIndexOf('\\')),
+              { recursive: true },
+            ).then(function () {
+              fs.writeFile(pendingFile.path, pendingFile.code, {
+                encoding: 'utf-8',
+              }).then(function () {
+                res2();
+              });
+            });
+          else
+            fs.writeFile(pendingFile.path, pendingFile.code, {
+              encoding: 'utf-8',
+            }).then(function () {
+              res2();
+            });
         });
       }),
     ).then(function () {
