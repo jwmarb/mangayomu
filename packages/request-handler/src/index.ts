@@ -1,7 +1,35 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { HTTP_METHOD } from 'next/dist/server/web/http';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ServerResponse, IncomingMessage } from 'http';
+export type VercelRequestCookies = {
+  [key: string]: string;
+};
+export type VercelRequestQuery = {
+  [key: string]: string | string[];
+};
+export type VercelRequestBody = any;
+export type VercelRequest = IncomingMessage & {
+  query: VercelRequestQuery;
+  cookies: VercelRequestCookies;
+  body: VercelRequestBody;
+};
+export type VercelResponse = ServerResponse & {
+  send: (body: any) => VercelResponse;
+  json: (jsonBody: any) => VercelResponse;
+  status: (statusCode: number) => VercelResponse;
+  redirect: (statusOrUrl: string | number, url?: string) => VercelResponse;
+};
+
 import pLimit from 'promise-limit';
 import { StatusCodes, getReasonPhrase } from 'http-status-codes';
+
+type HTTP_METHOD =
+  | 'GET'
+  | 'HEAD'
+  | 'OPTIONS'
+  | 'POST'
+  | 'PUT'
+  | 'DELETE'
+  | 'PATCH';
 
 export interface EmbeddedResponseStatus {
   status_code: StatusCodes;
@@ -41,17 +69,18 @@ export class ResponseError {
 export type Route<T = NonNullable<unknown>> = (
   request: HandlerRequest<T>,
   response: HandlerResponse,
-) => Promise<void> | void;
+) => Promise<void | VercelResponse> | void | VercelResponse;
 export type Middleware<T = NonNullable<unknown>> = (
   request: HandlerRequest<T>,
   response: HandlerResponse,
-) => Promise<void> | void;
+  next: () => void,
+) => Promise<void | VercelResponse> | void | VercelResponse;
 export type Method = HTTP_METHOD;
 
 export class HandlerRequest<M = Record<PropertyKey, unknown>> {
-  private request: NextApiRequest;
+  private request: VercelRequest;
   private extraData: M;
-  public constructor(request: NextApiRequest, extraData: M) {
+  public constructor(request: VercelRequest, extraData: M) {
     this.request = request;
     this.extraData = extraData;
   }
@@ -81,9 +110,9 @@ export class HandlerRequest<M = Record<PropertyKey, unknown>> {
 }
 
 export class HandlerResponse {
-  private response: NextApiResponse;
+  private response: VercelResponse;
   private statusCode: StatusCodes;
-  public constructor(response: NextApiResponse) {
+  public constructor(response: VercelResponse) {
     this.response = response;
     this.statusCode = StatusCodes.OK;
   }
@@ -96,39 +125,51 @@ export class HandlerResponse {
   }
 
   public cookie(
-    record: Record<string, string | number | boolean>,
+    record: Record<string, string | number | boolean | Date>,
     options: {
       /**
-       * Defines whether the cookie should be httpOnly.
-       * By default it is `true`, but if there is a need for javascript to access the cookie, set this to `false`
+       * Forbids JavaScript from accessing the cookie, for example, through the [`Document.cookie`](https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie) property. Note that a cookie that has been created with `HttpOnly` will still be sent with JavaScript-initiated requests, for example, when calling [`XMLHttpRequest.send()`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send) or [`fetch()`](https://developer.mozilla.org/en-US/docs/Web/API/fetch). This mitigates attacks against cross-site scripting ([XSS](https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting)).
        */
       httpOnly?: boolean;
       /**
-       * The age of the cookie, in seconds. By default it is `86400`
+       * Indicates the number of seconds until the cookie expires. A zero or negative number will expire the cookie immediately. If both `Expires` and `Max-Age` are set, `Max-Age` has precedence.
        */
-      maxAge?: number;
+      maxAge?: Date;
 
       /**
-       * The path where the cookie should persist. By default it is `/`
+       * Indicates the path that *must* exist in the requested URL for the browser to send the `Cookie` header.
+       *
+       * The forward slash (`/`) character is interpreted as a directory separator, and subdirectories are matched as well. For example, for `Path=/docs`,
+       *
+       * -   the request paths `/docs`, `/docs/`, `/docs/Web/`, and `/docs/Web/HTTP` will all match.
+       * -   the request paths `/`, `/docsets`, `/fr/docs` will not match.
        */
       path?: string;
+
+      /**
+       * Indicates that the cookie is sent to the server only when a request is made with the `https:` scheme (except on localhost), and therefore, is more resistant to [man-in-the-middle](https://developer.mozilla.org/en-US/docs/Glossary/MitM) attacks.
+       */
+      secure?: boolean;
     } = {},
   ) {
-    const { httpOnly = true, maxAge = 86400, path = '/' } = options;
+    const defaults = (
+      [
+        options.httpOnly != null && ['HttpOnly', options.httpOnly],
+        options.maxAge != null && ['Max-Age', options.maxAge.toString()],
+        options.path != null && ['Path', options.path],
+        options.secure != null && ['Secure', options.secure],
+      ] as [string, Date | number | boolean | string][]
+    ).filter(Boolean);
     const value = Object.entries(record)
-      .concat([
-        ['HttpOnly', httpOnly],
-        ['Max-Age', maxAge],
-        ['Path', path],
-      ])
+      .concat(defaults)
       .reduce((prev, curr) => {
         const [key, value] = curr;
-        if (value && key === 'HttpOnly') prev.push('HttpOnly');
+        if (typeof value === 'boolean' && value === true) prev.push(key);
         else prev.push(`${key}=${value}`);
         return prev;
       }, [] as string[])
       .join('; ');
-    this.response.setHeader('Set-Cookie', value);
+    this.response.setHeader('Set-Cookie', [value]);
 
     return this;
   }
@@ -141,17 +182,12 @@ export class HandlerResponse {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public json(val: any) {
     if (val instanceof Error)
-      return this.response
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json(
-          ResponseError.from(StatusCodes.INTERNAL_SERVER_ERROR, val.message),
-        );
-    if (val instanceof ResponseError)
-      return this.response
-        .status(val.getResponse().status_code)
-        .json(val.toObject());
+      return this.response.json(
+        ResponseError.from(StatusCodes.INTERNAL_SERVER_ERROR, val.message),
+      );
+    if (val instanceof ResponseError) return this.response.json(val.toObject());
 
-    return this.response.status(this.statusCode).json({
+    return this.response.json({
       data: val,
       response: {
         status_code: this.statusCode,
@@ -163,6 +199,18 @@ export class HandlerResponse {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public body(val: any) {
     return this.response.status(this.statusCode).send(val);
+  }
+  public redirect(path: string) {
+    this.response.redirect(path);
+  }
+
+  public get _vercelResponse() {
+    return this.response;
+  }
+
+  public end() {
+    this.response.end();
+    return this;
   }
 }
 export class Handler {
@@ -187,12 +235,17 @@ export class Handler {
   }
   public build() {
     const limit = pLimit(1);
-    return async (_request: NextApiRequest, _response: NextApiResponse) => {
+    return async (_request: VercelRequest, _response: VercelResponse) => {
       const request = new HandlerRequest(_request, this.extraData);
       const response = new HandlerResponse(_response);
       try {
         for (const middleware of this.middlewares) {
-          await limit(async () => middleware(request, response));
+          let hasNext = false;
+          const next = () => {
+            hasNext = true;
+          };
+          await limit(async () => middleware(request, response, next));
+          if (!hasNext) return;
         }
         const method = request.method as Method;
         const routeFn = this.routes.get(method);
