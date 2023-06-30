@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;500;600;700;800;900&display=swap');
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@layer base {
+  :root {
+    --color-primary: 46 192 255;
+    --color-secondary: 247 130 130;
+    --color-primary-contrast: #000000;
+    --color-secondary-contrast: #000000;
+    --color-text-primary: rgba(0, 0, 0, 0.87);
+    --color-text-secondary: rgba(0, 0, 0, 0.6);
+    --color-error: 244 67 54;
+    --background-color-paper: 255 255 255;
+    --background-color-default: 250 250 250;
+    --background-color-disabled: 239 239 239;
+    --border-color-default: #cccccc;
+  }
+  :root[class~='dark'] {
+    --color-primary: 152 185 220;
+    --color-secondary: 220 168 188;
+    --color-primary-contrast: #000000;
+    --color-secondary-contrast: #000000;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: rgba(255, 255, 255, 0.7);
+    --color-error: 211 47 47;
+    --background-color-paper: 9 24 26;
+    --background-color-default: 7 17 19;
+    --background-color-disabled: 16 42 45;
+    --border-color-default: rgba(160, 160, 160, 0.1);
+  }
+  .text-variant-header {
+    @apply text-3xl font-thin tracking-tight;
+  }
+  .text-variant-body {
+    @apply text-base font-normal tracking-tight;
+  }
+  .text-variant-label {
+    @apply text-base font-medium tracking-tight;
+  }
+  .text-variant-button {
+    @apply text-sm font-bold tracking-tight;
+  }
+  .text-variant-sm-label {
+    @apply text-sm font-normal tracking-tight;
+  }
+}
