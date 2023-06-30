@@ -1,10 +1,12 @@
 import React from 'react';
 import { TextComponentType, TextProps } from './Text.interfaces';
 import useClassName from '@app/hooks/useClassName';
-import { ButtonColor, ButtonContrastColors, TextColor } from '@app/theme';
-import resolveConfig from 'tailwindcss/resolveConfig';
-import tailwindConfig from '../../../tailwind.config';
-const config = resolveConfig(tailwindConfig);
+import {
+  ButtonColor,
+  ButtonContrastColors,
+  TextColor,
+  TextVariant,
+} from '@app/theme';
 
 const DynamicTextComponent: React.FC<
   React.PropsWithChildren<{ type: TextComponentType } & Record<string, unknown>>
@@ -29,7 +31,29 @@ const DynamicTextComponent: React.FC<
       return <h5 {...rest}>{children}</h5>;
     case 'h6':
       return <h6 {...rest}>{children}</h6>;
+    case 'a':
+      return <a {...rest}>{children}</a>;
   }
+};
+
+const TextVariants: Record<TextVariant, string> = {
+  body: 'text-variant-body',
+  button: 'text-variant-button',
+  header: 'text-variant-header',
+  label: 'text-variant-label',
+  'sm-label': 'text-variant-sm-label',
+};
+const TextColors: Record<
+  TextColor | ButtonContrastColors | ButtonColor,
+  string
+> = {
+  error: 'text-error',
+  'text-primary': 'text-text-primary',
+  'text-secondary': 'text-text-secondary',
+  'primary-contrast': 'text-primary-contrast',
+  'secondary-contrast': 'text-secondary-contrast',
+  primary: 'text-primary',
+  secondary: 'text-secondary',
 };
 
 export default function Text<T extends TextComponentType>(
@@ -43,7 +67,7 @@ export default function Text<T extends TextComponentType>(
     ...rest
   } = props;
   const className = useClassName(
-    `text-variant-${variant} text-${color}`,
+    `${TextVariants[variant]} ${TextColors[color]}`,
     props,
   );
   return (

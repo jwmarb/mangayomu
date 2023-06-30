@@ -15,7 +15,8 @@ export type TextComponentType =
   | 'h3'
   | 'h4'
   | 'h5'
-  | 'h6';
+  | 'h6'
+  | 'a';
 
 export interface TextProps<T extends TextComponentType>
   extends React.HTMLProps<
@@ -27,6 +28,8 @@ export interface TextProps<T extends TextComponentType>
       ? HTMLSpanElement
       : T extends 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
       ? HTMLHeadingElement
+      : T extends 'a'
+      ? HTMLAnchorElement
       : HTMLParagraphElement
   > {
   variant?: TextVariant;
