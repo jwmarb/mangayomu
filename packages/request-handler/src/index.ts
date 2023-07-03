@@ -37,8 +37,8 @@ export interface EmbeddedResponseStatus {
 }
 
 export class ResponseError {
-  private response: EmbeddedResponseStatus;
-  private error: string;
+  public readonly response: EmbeddedResponseStatus;
+  public readonly error: string;
   public static from(
     status: StatusCodes,
     error: Error | string,
@@ -80,6 +80,11 @@ export type Method = HTTP_METHOD;
 export class HandlerRequest<M = Record<PropertyKey, unknown>> {
   private request: VercelRequest;
   private extraData: M;
+
+  public get _vercelRequest() {
+    return this.request;
+  }
+
   public constructor(request: VercelRequest, extraData: M) {
     this.request = request;
     this.extraData = extraData;
