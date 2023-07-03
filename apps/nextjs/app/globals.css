@@ -13,40 +13,52 @@
     --color-secondary: 247 130 130;
     --color-primary-contrast: #000000;
     --color-secondary-contrast: #000000;
+    --color-error-contrast: #ffffff;
+    --color-hint: rgba(0, 0, 0, 0.38);
     --color-text-primary: rgba(0, 0, 0, 0.87);
     --color-text-secondary: rgba(0, 0, 0, 0.6);
-    --color-error: 244 67 54;
+    --color-error: 220 38 38;
     --background-color-paper: 255 255 255;
     --background-color-default: 250 250 250;
-    --background-color-disabled: 239 239 239;
+    --background-color-disabled: 220 220 220;
     --border-color-default: #cccccc;
+    --action-hover: 196 196 196;
   }
   :root[class~='dark'] {
     --color-primary: 152 185 220;
     --color-secondary: 220 168 188;
     --color-primary-contrast: #000000;
     --color-secondary-contrast: #000000;
+    --color-error-contrast: #000000;
     --color-text-primary: #ffffff;
     --color-text-secondary: rgba(255, 255, 255, 0.7);
-    --color-error: 211 47 47;
+    --color-hint: rgba(255, 255, 255, 0.5);
+    --color-error: 252 165 165;
     --background-color-paper: 9 24 26;
     --background-color-default: 7 17 19;
     --background-color-disabled: 16 42 45;
     --border-color-default: rgba(160, 160, 160, 0.1);
+    --action-hover: 196 196 196;
   }
   .text-variant-header {
-    @apply text-3xl font-thin tracking-tight;
+    @apply text-xl font-bold;
+  }
+  .text-variant-header-emphasized {
+    @apply text-3xl font-bold;
   }
   .text-variant-body {
-    @apply text-base font-normal tracking-tight;
-  }
-  .text-variant-label {
-    @apply text-base font-medium tracking-tight;
+    @apply text-base font-medium;
   }
   .text-variant-button {
-    @apply text-sm font-bold tracking-tight;
+    @apply text-sm font-medium;
   }
   .text-variant-sm-label {
     @apply text-sm font-normal tracking-tight;
+  }
+  .text-variant-list-header {
+    @apply text-sm font-medium;
+  }
+  .text-variant-sm-badge {
+    @apply text-xs font-bold;
   }
 }
