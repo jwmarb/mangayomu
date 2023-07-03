@@ -15,6 +15,15 @@ function getOutputPath(devPathFile) {
   return newPath.substring(0, newPath.length - 3) + '.js';
 }
 
+/**
+ * Creates a directory to the path, if the directories do not exist
+ * @param {string} path
+ */
+function createDirectoryIfNotExist(path) {
+  const pathToCreate = path.substring(0, path.lastIndexOf('\\'));
+  if (!fs.existsSync(pathToCreate)) fs.mkdirSync(pathToCreate);
+}
+
 watch.createMonitor('./app/api', { interval: 1 }, function (monitor) {
   println('Watching for file changes in ./app/api ...');
   monitor.on('changed', function (_) {
@@ -28,6 +37,7 @@ watch.createMonitor('./app/api', { interval: 1 }, function (monitor) {
   monitor.on('created', function (_) {
     var file = __dirname + '\\' + _;
     var writeToPath = getOutputPath(file);
+    createDirectoryIfNotExist(writeToPath);
     compile(file).then(function (code) {
       println(`Created ${_}`);
       fs.writeFileSync(writeToPath, code, { encoding: 'utf-8' });
