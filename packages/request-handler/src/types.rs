@@ -1,8 +1,8 @@
 use std::{any::Any, collections::HashMap, fmt::Debug, future::Future, pin::Pin, sync::Arc};
-use tokio::sync::Mutex;
+use tokio::sync::RwLock;
 
 use http::{Response, StatusCode};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use vercel_runtime::{Body, Request};
 
@@ -15,7 +15,7 @@ impl Into<EmbeddedResponseStatus> for StatusCode {
     }
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, Deserialize)]
 pub struct EmbeddedResponseStatus {
     pub message: String,
     pub status_code: u16,
@@ -50,6 +50,8 @@ impl Into<Body> for ResponseError {
         )
     }
 }
+
+#[derive(Serialize, Deserialize)]
 pub struct JsonDataResponse<T: Serialize> {
     pub response: EmbeddedResponseStatus,
     pub data: T,
@@ -110,12 +112,15 @@ pub type MiddlewareRequest = Arc<Request>;
 pub type HandlerRequest = Arc<Request>;
 type PinnedFuture<Output> = Pin<Box<dyn Future<Output = Output> + Send + 'static>>;
 pub type Middleware = Box<
-    dyn Fn(MiddlewareRequest, Arc<Mutex<MiddlewareData>>) -> PinnedFuture<Result<(), ResponseError>>
+    dyn Fn(
+            MiddlewareRequest,
+            Arc<RwLock<MiddlewareData>>,
+        ) -> PinnedFuture<Result<(), ResponseError>>
         + Send,
 >;
 pub type MethodHandler = Box<
     dyn Fn(
         HandlerRequest,
-        Arc<Mutex<MiddlewareData>>,
+        Arc<RwLock<MiddlewareData>>,
     ) -> PinnedFuture<Result<Response<Body>, ResponseError>>,
 >;

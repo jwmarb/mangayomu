@@ -1,5 +1,5 @@
 use std::{collections::HashMap, future::Future, sync::Arc};
-use tokio::sync::Mutex;
+use tokio::sync::RwLock;
 
 use http::Method;
 use vercel_runtime::{Body, Error, Request, Response, StatusCode};
@@ -11,7 +11,7 @@ use crate::{
 pub struct Handler {
     request: Arc<Request>,
     middleware: Vec<Middleware>,
-    extra_data: Arc<Mutex<MiddlewareData>>,
+    extra_data: Arc<RwLock<MiddlewareData>>,
     available_methods: HashMap<Method, MethodHandler>,
 }
 
@@ -20,7 +20,7 @@ impl Handler {
         Self {
             request: Arc::new(req),
             middleware: vec![],
-            extra_data: Arc::new(Mutex::new(MiddlewareData::default())),
+            extra_data: Arc::new(RwLock::new(MiddlewareData::default())),
             available_methods: HashMap::new(),
         }
     }
@@ -28,7 +28,7 @@ impl Handler {
         Self {
             request: Arc::new(req),
             middleware: vec![],
-            extra_data: Arc::new(Mutex::new(MiddlewareData::default())),
+            extra_data: Arc::new(RwLock::new(MiddlewareData::default())),
             available_methods: HashMap::new(),
         }
     }
@@ -66,7 +66,7 @@ impl Handler {
         req: Arc<Request>,
         available_methods: &HashMap<Method, MethodHandler>,
         middlewares: &Vec<Middleware>,
-        extra_data: Arc<Mutex<MiddlewareData>>,
+        extra_data: Arc<RwLock<MiddlewareData>>,
     ) -> Result<Response<Body>, Error> {
         let method = req.method();
         /*
@@ -108,7 +108,7 @@ impl Handler {
     }
     pub fn method<T, G>(&mut self, method: Method, f: T) -> &mut Self
     where
-        T: Fn(Arc<Request>, Arc<Mutex<MiddlewareData>>) -> G + Send + 'static,
+        T: Fn(Arc<Request>, Arc<RwLock<MiddlewareData>>) -> G + Send + 'static,
         G: Future<Output = Result<Response<Body>, ResponseError>> + Send + 'static,
     {
         self.available_methods.insert(
@@ -120,7 +120,7 @@ impl Handler {
 
     pub fn middleware<T, G>(&mut self, f: T) -> &mut Self
     where
-        T: Fn(MiddlewareRequest, Arc<Mutex<MiddlewareData>>) -> G + Send + 'static,
+        T: Fn(MiddlewareRequest, Arc<RwLock<MiddlewareData>>) -> G + Send + 'static,
         G: Future<Output = Result<(), ResponseError>> + Send + 'static,
     {
         self.middleware
