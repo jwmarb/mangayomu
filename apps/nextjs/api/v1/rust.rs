@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use tokio::sync::Mutex;
+use tokio::sync::RwLock;
 
 use http::{Method, StatusCode};
 use request_handler::{Handler, JsonDataResponse, MiddlewareData, ResponseError};
@@ -12,7 +12,7 @@ async fn main() -> Result<(), Error> {
 
 async fn get(
     _: Arc<Request>,
-    __: Arc<Mutex<MiddlewareData>>,
+    __: Arc<RwLock<MiddlewareData>>,
 ) -> Result<Response<Body>, ResponseError> {
     Ok(Response::builder()
         .status(StatusCode::OK)
