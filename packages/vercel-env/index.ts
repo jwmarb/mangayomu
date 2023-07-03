@@ -1,33 +1,33 @@
 const REQUIRED_VARS = [
   'REACT_APP_REALM_ID',
   'REDIS_URL',
-  'MONGODB_URL',
+  'MONGODB_URI',
+  'MONGODB_DATABASE_NAME',
   'GOOGLE_OAUTH2_ID',
   'GOOGLE_OAUTH2_SECRET',
   'JWT_SECRET',
-  'JWT_EXPIRES_IN',
-  'JWT_MAX_AGE',
+  'JWT_EXP_DAYS',
 ];
 
 interface EnvironmentVariables {
   REACT_APP_REALM_ID: string;
   REDIS_URL: string;
-  MONGODB_URL: string;
+  MONGODB_URI: string;
+  MONGODB_DATABASE_NAME: string;
   VERCEL_ENV: 'production' | 'development';
   VERCEL_URL: UrlBuildParse;
   AUTH_URL: AuthUrl;
   GOOGLE_OAUTH2_ID: string;
   GOOGLE_OAUTH2_SECRET: string;
   JWT_SECRET: string;
-  JWT_EXPIRES_IN: string;
-  JWT_MAX_AGE: number;
+  JWT_EXP_DAYS: string;
 }
 
 export class AuthUrl {
   private url: UrlBuildParse;
   private providers: Map<string, string>;
   public constructor(url: UrlBuildParse) {
-    this.url = url.clone().join('api', 'v1', 'oauth2');
+    this.url = new UrlBuildParse(url.toString()).join('api', 'v1', 'oauth2');
     this.providers = new Map();
   }
   public provider(provider: string) {
@@ -86,13 +86,23 @@ export class UrlBuildParse {
     return this.url.protocol;
   }
 
+  public query(args: Record<string, unknown>) {
+    for (const key in args) {
+      this.url.searchParams.append(key, String(args[key]));
+    }
+    return this;
+  }
+
   public toString() {
     return this.url.toString();
   }
 }
 
 function generateUrl(environment: 'production' | 'development', host?: string) {
-  if (host == null) throw Error('Unknown host');
+  if (host == null) {
+    console.warn('host is undefined. Falling back to localhost:3000...');
+    return new UrlBuildParse('http://localhost:3000/');
+  }
   switch (environment) {
     case 'development':
       return new UrlBuildParse(`http://${host}`);
