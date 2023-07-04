@@ -26,8 +26,12 @@ export default function SafeArea({ children }: React.PropsWithChildren) {
   }, [setMobile]);
 
   return (
-    <div className={`flex ${mobile ? 'flex-col' : 'flex-row'}`}>
-      <div style={mobile ? { height: headerHeight } : { width: drawerWidth }} />
+    <div
+      className="w-full h-full"
+      style={
+        mobile ? { paddingTop: headerHeight } : { paddingLeft: drawerWidth }
+      }
+    >
       {children}
     </div>
   );
