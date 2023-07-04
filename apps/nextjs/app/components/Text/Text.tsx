@@ -7,6 +7,7 @@ import {
   TextColor,
   TextVariant,
 } from '@app/theme';
+import Link from 'next/link';
 
 const DynamicTextComponent: React.FC<
   React.PropsWithChildren<{ type: TextComponentType } & Record<string, unknown>>
@@ -32,6 +33,12 @@ const DynamicTextComponent: React.FC<
     case 'h6':
       return <h6 {...rest}>{children}</h6>;
     case 'a':
+      if (rest.href != null)
+        return (
+          <Link href={rest.href} {...rest}>
+            {children}
+          </Link>
+        );
       return <a {...rest}>{children}</a>;
   }
 };
@@ -40,8 +47,10 @@ const TextVariants: Record<TextVariant, string> = {
   body: 'text-variant-body',
   button: 'text-variant-button',
   header: 'text-variant-header',
-  label: 'text-variant-label',
   'sm-label': 'text-variant-sm-label',
+  'header-emphasized': 'text-variant-header-emphasized',
+  'list-header': 'text-variant-list-header',
+  'sm-badge': 'text-variant-sm-badge',
 };
 const TextColors: Record<
   TextColor | ButtonContrastColors | ButtonColor,
@@ -54,6 +63,9 @@ const TextColors: Record<
   'secondary-contrast': 'text-secondary-contrast',
   primary: 'text-primary',
   secondary: 'text-secondary',
+  'error-contrast': 'text-error-contrast',
+  hint: 'text-hint',
+  'icon-button-contrast': 'text-icon-button-contrast',
 };
 
 export default function Text<T extends TextComponentType>(
