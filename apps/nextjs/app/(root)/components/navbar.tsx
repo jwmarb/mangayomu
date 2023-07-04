@@ -3,13 +3,16 @@ import DarkMode from '@app/components/DarkMode';
 import IconButton from '@app/components/IconButton';
 import Text from '@app/components/Text';
 import useBoolean from '@app/hooks/useBoolean';
-import MenuIcon from 'mdi-react/MenuIcon';
-import UserIcon from 'mdi-react/AccountIcon';
-import HomeIcon from 'mdi-react/HomeOutlineIcon';
-import SearchIcon from 'mdi-react/MagnifyIcon';
-import AddIcon from 'mdi-react/AddIcon';
-import HistoryIcon from 'mdi-react/HistoryIcon';
-import ChevronLeftIcon from 'mdi-react/ChevronDoubleLeftIcon';
+import {
+  MdAdd,
+  MdMenu,
+  MdPerson,
+  MdHistory,
+  MdHome,
+  MdSearch,
+  MdChevronLeft,
+} from 'react-icons/md';
+
 import React from 'react';
 import {
   animated,
@@ -23,9 +26,10 @@ import Drawer, { DrawerMethods } from '@app/(root)/components/drawer';
 import { useUser } from '@app/context/realm';
 import TextField from '@app/components/TextField';
 import Button from '@app/components/Button';
-import ListButton from '@app/components/ListButton';
 import { useSafeArea } from '@app/context/safearea';
 import { useDarkMode } from '@app/context/darkmode';
+import * as List from '@app/components/List';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const drawerRef = React.useRef<DrawerMethods>(null);
@@ -36,7 +40,7 @@ export default function Navbar() {
   const setNavbarHeight = useSafeArea((store) => store.setHeaderHeight);
   const { scrollY } = useScroll();
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     if (navbar.current) setNavbarHeight(navbar.current.offsetHeight);
 
     const listener = () => {
@@ -46,16 +50,17 @@ export default function Navbar() {
     return () => {
       navbar.current?.removeEventListener('resize', listener);
     };
-  }, [setNavbarHeight]);
+  }, [setNavbarHeight, mobile]);
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <>
       {mobile && (
         <animated.nav
           ref={navbar}
-          className={
-            'fixed w-full flex flex-row items-center px-4 py-2 bg-primary'
-          }
+          className="fixed w-full flex flex-row items-center px-4 py-2 bg-primary"
           style={{
             backgroundColor: scrollY.to(
               [navbar.current?.offsetHeight ?? 0, 0],
@@ -67,7 +72,7 @@ export default function Navbar() {
           }}
         >
           <IconButton
-            icon={<MenuIcon />}
+            icon={<MdMenu />}
             onClick={() => drawerRef.current?.open()}
           />
         </animated.nav>
@@ -76,43 +81,59 @@ export default function Navbar() {
         <div className="flex flex-row justify-between gap-2">
           <div className="flex flex-row gap-2 items-center">
             <div className="w-10 h-10 bg-default rounded-lg items-center justify-center flex">
-              <UserIcon className="text-text-primary" />
+              <MdPerson className="text-text-primary" />
             </div>
             <Text>{user.profile.name ?? 'Guest'}</Text>
           </div>
           {mobile && (
             <IconButton
-              icon={<ChevronLeftIcon />}
+              icon={<MdChevronLeft />}
               onPress={() => drawerRef.current?.close()}
             />
           )}
         </div>
-        <div className="py-4 flex flex-col">
-          <div>
-            <Text variant="list-header" color="hint" className="py-1.5">
-              Navigation
-            </Text>
-          </div>
-          <ListButton active icon={<HomeIcon />}>
-            Home
-          </ListButton>
-          <ListButton icon={<SearchIcon />}>Browse</ListButton>
-          <ListButton icon={<HistoryIcon />}>History</ListButton>
-          <div className="flex flex-row justify-between items-center">
-            <Text variant="list-header" color="hint" className="py-1.5">
-              My Library
-            </Text>
-            <IconButton icon={<AddIcon />} />
-            {/* <Text
-              variant="sm-badge"
-              className="px-1.5 py-0.5 bg-primary rounded-md"
-              color="primary-contrast"
-            >
-              3
-            </Text> */}
-          </div>
+        <div className="flex flex-col space-y-2">
+          <List.Category>
+            <List.Accordion>
+              <List.Header>Navigation</List.Header>
+              <List.AccordionContent>
+                <List.Button
+                  onClick={() => router.push('/')}
+                  active={pathname === '/'}
+                  icon={<MdHome />}
+                >
+                  Home
+                </List.Button>
+                <List.Button
+                  active={pathname === '/browse'}
+                  onClick={() => router.push('/browse')}
+                  icon={<MdSearch />}
+                >
+                  Browse
+                </List.Button>
+                <List.Button
+                  active={pathname === '/history'}
+                  icon={<MdHistory />}
+                >
+                  History
+                </List.Button>
+              </List.AccordionContent>
+            </List.Accordion>
+          </List.Category>
+          <List.Category>
+            <List.Accordion>
+              <List.Header
+                icon={
+                  <>
+                    <IconButton icon={<MdAdd />} />
+                  </>
+                }
+              >
+                My Library
+              </List.Header>
+            </List.Accordion>
+          </List.Category>
         </div>
-        <DarkMode />
       </Drawer>
     </>
   );
