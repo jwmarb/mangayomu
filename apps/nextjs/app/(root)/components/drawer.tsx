@@ -1,6 +1,6 @@
 'use client';
+import { useDrawer } from '@app/context/drawer';
 import { useSafeArea } from '@app/context/safearea';
-import useBoolean from '@app/hooks/useBoolean';
 import useClassName, { OverrideClassName } from '@app/hooks/useClassName';
 import { animated, easings, useSpring } from '@react-spring/web';
 import { useGesture } from '@use-gesture/react';
@@ -17,11 +17,11 @@ const Drawer: React.ForwardRefRenderFunction<
   DrawerMethods,
   React.PropsWithChildren<DrawerProps>
 > = ({ children, ...rest }, ref) => {
-  const [drawerActive, toggle] = useBoolean();
+  const { active, toggle } = useDrawer();
   const isMobile = useSafeArea((store) => store.mobile);
   const setDrawerWidth = useSafeArea((store) => store.setDrawerWidth);
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     if (divRef.current) setDrawerWidth(divRef.current.offsetWidth);
 
     const listener = () => {
@@ -35,7 +35,7 @@ const Drawer: React.ForwardRefRenderFunction<
 
   const className = useClassName(
     `fixed bg-paper h-screen touch-pan-y ${
-      !drawerActive && isMobile ? 'pointer-events-none' : ''
+      !active && isMobile ? 'pointer-events-none' : ''
     }`,
     rest,
   );
@@ -115,10 +115,9 @@ const Drawer: React.ForwardRefRenderFunction<
       }
     },
   });
-  const onToggle = () => toggle();
   React.useEffect(() => {
     if (divRef.current != null)
-      if (drawerActive) {
+      if (active) {
         document.body.style.overflow = 'hidden';
         api.start({ transform: 0 });
       } else {
@@ -127,7 +126,7 @@ const Drawer: React.ForwardRefRenderFunction<
           transform: -divRef.current.offsetWidth,
         });
       }
-  }, [drawerActive, api]);
+  }, [active, api]);
   React.useEffect(() => {
     if (!isMobile) toggle(false);
   }, [isMobile, toggle]);
@@ -141,7 +140,7 @@ const Drawer: React.ForwardRefRenderFunction<
     <>
       <animated.div
         {...backdropDrag()}
-        onClick={onToggle}
+        onClick={() => toggle(false)}
         style={{
           opacity: transform.to(
             [0, -(divRef.current?.offsetWidth ?? 1)],
@@ -149,7 +148,7 @@ const Drawer: React.ForwardRefRenderFunction<
           ),
         }}
         className={`h-full w-screen bg-black/[.3] fixed transition duration-250 touch-none ${
-          !drawerActive ? 'pointer-events-none' : ''
+          !active ? 'pointer-events-none' : ''
         }`}
       />
       <animated.div
@@ -160,7 +159,7 @@ const Drawer: React.ForwardRefRenderFunction<
         style={{
           transform: transform.to((value) => `translateX(${value}px)`),
           opacity: transform.to(
-            [0, -(divRef.current?.offsetWidth ?? 1)],
+            [0, -(divRef.current?.offsetWidth ?? 0)],
             [1, 0],
           ),
         }}
