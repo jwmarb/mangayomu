@@ -1,3 +1,6 @@
+'use client';
+
+import React from 'react';
 import { create } from 'zustand';
 
 interface DarkModeStore {
@@ -7,12 +10,12 @@ interface DarkModeStore {
 
 export const useDarkMode = create<DarkModeStore>((set) => ({
   isDarkMode: (() => {
-    const theme = localStorage.getItem('theme');
+    const theme = window.localStorage.getItem('theme');
     const dark =
       theme === 'dark' ||
       (theme == null &&
         window.matchMedia('(prefers-color-scheme: dark)').matches);
-    document.documentElement.classList.add(dark ? 'dark' : 'light');
+    // document.documentElement.classList.add(dark ? 'dark' : 'light');
     return dark;
   })(),
   toggleDarkMode: (val) => {
@@ -35,3 +38,14 @@ export const useDarkMode = create<DarkModeStore>((set) => ({
     }
   },
 }));
+
+export const DarkModeInitializer: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
+  const isDarkMode = useDarkMode((store) => store.isDarkMode);
+  React.useInsertionEffect(() => {
+    document.documentElement.classList.add(isDarkMode ? 'dark' : 'light');
+  }, []);
+
+  return <>{children}</>;
+};
