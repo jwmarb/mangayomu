@@ -2,7 +2,7 @@ import React from 'react';
 import type { CheckboxProps } from './Checkbox.interfaces';
 import { VisuallyHidden, useCheckbox, useFocusRing } from 'react-aria';
 import { useToggleState } from 'react-stately';
-import CheckIcon from 'mdi-react/CheckIcon';
+import { MdCheck } from 'react-icons/md';
 
 export default function Checkbox(props: CheckboxProps) {
   const ref = React.useRef<HTMLInputElement>(null);
@@ -37,7 +37,7 @@ export default function Checkbox(props: CheckboxProps) {
           }`}
         >
           {isSelected && (
-            <CheckIcon className="text-primary-contrast text-variant-body" />
+            <MdCheck className="text-primary-contrast text-variant-body" />
           )}
         </div>
       </div>
