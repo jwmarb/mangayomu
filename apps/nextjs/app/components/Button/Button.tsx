@@ -42,7 +42,7 @@ export default function Button(props: ButtonProps) {
     ref,
   );
   const className = useClassName(
-    `px-4 py-2 rounded-lg text-variant-button transition ease-out hover:duration-250 duration-250 motion-reduce:transition-none motion-reduce:hover:transition-none flex flex-row items-center gap-2 ${
+    `px-4 py-2 rounded-lg text-variant-button transition ease-out hover:duration-250 duration-250 motion-reduce:transition-none motion-reduce:hover:transition-none flex flex-row items-center justify-center gap-2 ${
       disabled ? disabledConfig[variant] : buttonConfig[color][variant]
     }`,
     props,
@@ -50,9 +50,9 @@ export default function Button(props: ButtonProps) {
   return (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <button {...(buttonProps as any)} className={className} ref={ref}>
-      {iconPlacement === 'left' && <div>{icon}</div>}
+      {icon && iconPlacement === 'left' && <div>{icon}</div>}
       {children}
-      {iconPlacement === 'right' && <div>{icon}</div>}
+      {icon && iconPlacement === 'right' && <div>{icon}</div>}
     </button>
   );
 }
