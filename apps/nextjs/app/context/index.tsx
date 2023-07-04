@@ -1,3 +1,4 @@
+import { DarkModeInitializer } from '@app/context/darkmode';
 import { ClientRealmProvider } from '@app/context/realm';
 import env from '@mangayomu/vercel-env';
 
@@ -22,7 +23,7 @@ export function Providers({
       idToken={idToken}
       idTokenInvalid={idTokenInvalid}
     >
-      {children}
+      <DarkModeInitializer>{children}</DarkModeInitializer>
     </ClientRealmProvider>
   );
 }

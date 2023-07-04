@@ -9,7 +9,7 @@ interface SafeAreaStore {
 }
 
 export const useSafeArea = create<SafeAreaStore>((set) => ({
-  mobile: false,
+  mobile: window.innerWidth < 1024,
   drawerWidth: 0,
   headerHeight: 0,
   setDrawerWidth: (w) => set({ drawerWidth: w }),
