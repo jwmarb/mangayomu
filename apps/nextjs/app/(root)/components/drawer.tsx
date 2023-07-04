@@ -5,6 +5,7 @@ import useClassName, { OverrideClassName } from '@app/hooks/useClassName';
 import { animated, easings, useSpring } from '@react-spring/web';
 import { useGesture } from '@use-gesture/react';
 import React from 'react';
+import { shallow } from 'zustand/shallow';
 
 export interface DrawerMethods {
   open: () => void;
@@ -17,7 +18,14 @@ const Drawer: React.ForwardRefRenderFunction<
   DrawerMethods,
   React.PropsWithChildren<DrawerProps>
 > = ({ children, ...rest }, ref) => {
-  const { active, toggle } = useDrawer();
+  const { active, toggle, setVisible } = useDrawer(
+    (store) => ({
+      active: store.active,
+      toggle: store.toggle,
+      setVisible: store.setVisible,
+    }),
+    shallow,
+  );
   const isMobile = useSafeArea((store) => store.mobile);
   const setDrawerWidth = useSafeArea((store) => store.setDrawerWidth);
 
@@ -43,6 +51,9 @@ const Drawer: React.ForwardRefRenderFunction<
     transform: -1000,
     delay: 0,
     config: { duration: 100, easing: easings.linear },
+    onChange: (result) => {
+      setVisible(result.value.transform > -(divRef.current?.offsetWidth ?? 0));
+    },
   }));
   const open = () => {
     toggle(true);
@@ -50,6 +61,7 @@ const Drawer: React.ForwardRefRenderFunction<
   const close = () => {
     toggle(false);
   };
+
   React.useImperativeHandle(ref, () => ({ open, close }));
   const divRef = React.useRef<HTMLDivElement>(null);
 

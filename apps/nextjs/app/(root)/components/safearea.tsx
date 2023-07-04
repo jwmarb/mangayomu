@@ -14,7 +14,7 @@ export default function SafeArea({ children }: React.PropsWithChildren) {
     }),
     shallow,
   );
-  const drawerActive = useDrawer((store) => store.active);
+  const drawerActive = useDrawer((store) => store.visible);
 
   React.useEffect(() => {
     const listener = () => {
@@ -28,11 +28,15 @@ export default function SafeArea({ children }: React.PropsWithChildren) {
   }, [setMobile]);
 
   return (
-    <div
-      className={`w-full h-full relative flex ${drawerActive ? '-z-10' : ''}`}
-      style={mobile ? { marginTop: headerHeight } : { marginLeft: drawerWidth }}
+    <main
+      className={`flex flex-col bg-secondary w-full h-full relative min-h-screen ${
+        drawerActive ? '-z-10' : ''
+      }`}
+      style={
+        mobile ? { paddingTop: headerHeight } : { marginLeft: drawerWidth }
+      }
     >
       {children}
-    </div>
+    </main>
   );
 }
