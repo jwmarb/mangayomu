@@ -29,12 +29,10 @@ export default function SafeArea({ children }: React.PropsWithChildren) {
 
   return (
     <main
-      className={`flex flex-col bg-secondary w-full h-full relative min-h-screen ${
+      className={`flex flex-col w-full h-full relative min-h-screen ${
         drawerActive ? '-z-10' : ''
       }`}
-      style={
-        mobile ? { paddingTop: headerHeight } : { marginLeft: drawerWidth }
-      }
+      style={mobile ? { marginTop: headerHeight } : { marginLeft: drawerWidth }}
     >
       {children}
     </main>
