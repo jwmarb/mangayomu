@@ -1,7 +1,5 @@
 import React from 'react';
 
-interface BrowseProps {}
-
-export default function Browse(props: BrowseProps) {
+export default function Browse() {
   return <div>Hello World</div>;
 }
