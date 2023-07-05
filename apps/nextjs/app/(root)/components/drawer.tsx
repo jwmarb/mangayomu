@@ -42,7 +42,7 @@ const Drawer: React.ForwardRefRenderFunction<
   }, [setDrawerWidth]);
 
   const className = useClassName(
-    `fixed bg-paper h-screen touch-pan-y ${
+    `fixed bg-paper h-screen touch-pan-y lg:border-r-2 border-default ${
       !active && isMobile ? 'pointer-events-none' : ''
     }`,
     rest,
