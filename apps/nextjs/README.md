@@ -8,13 +8,16 @@ This is the directory holding the website. It uses [Next.js](https://nextjs.org/
 
 The environment variables used here are in the table below.
 
-| `.env.local`         | _Description_                                                  |     |
-| -------------------- | -------------------------------------------------------------- | --- |
-| REACT_APP_REALM_ID   | The app id of your MongoDB realm                               | ❗  |
-| REDIS_URL            | The URL to your [redis](https://redis.io/) instance            | ❗  |
-| MONGODB_URL          | The URL to your [MongoDB](https://cloud.mongodb.com/) instance | ❗  |
-| GOOGLE_OAUTH2_ID     |                                                                | ❗  |
-| GOOGLE_OAUTH2_SECRET |                                                                | ❗  |
+| `.env.local`          | _Description_                                                                                    |     |
+| --------------------- | ------------------------------------------------------------------------------------------------ | --- |
+| REACT_APP_REALM_ID    | The app id of your MongoDB realm                                                                 | ❗  |
+| REDIS_URL             | The URL to your [redis](https://redis.io/) instance                                              | ❗  |
+| MONGODB_URI           | The URI of your [MongoDB](https://cloud.mongodb.com/) instance                                   | ❗  |
+| MONGODB_DATABASE_NAME | The name of your database, which is where all the collections (User, Manga, etc.) are located in | ❗  |
+| GOOGLE_OAUTH2_ID      |                                                                                                  | ❗  |
+| GOOGLE_OAUTH2_SECRET  |                                                                                                  | ❗  |
+| JWT_SECRET            |                                                                                                  | ❗  |
+| EXP_DAYS              |                                                                                                  | ❗  |
 
 | Legend | Meaning                                              |
 | ------ | ---------------------------------------------------- |
