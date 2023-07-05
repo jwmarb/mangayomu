@@ -6,7 +6,7 @@ import { MdCheck } from 'react-icons/md';
 
 export default function Checkbox(props: CheckboxProps) {
   const ref = React.useRef<HTMLInputElement>(null);
-  const state = useToggleState();
+  const state = useToggleState(props);
   const { isFocusVisible, focusProps } = useFocusRing();
   const { inputProps } = useCheckbox(props, state, ref);
   const isSelected = state.isSelected && !props.isIndeterminate;
