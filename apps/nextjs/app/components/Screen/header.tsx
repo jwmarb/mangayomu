@@ -17,7 +17,7 @@ interface HeaderProps
 export default function Header(props: HeaderProps) {
   const { children, deps = [], ...rest } = props;
   const className = useClassName(
-    'fixed right-0 px-4 lg:bg-paper bg-default py-2',
+    'fixed right-0 px-4 bg-paper bg-default lg:pt-2',
     props,
   );
   const setHeaderHeight = useSetHeaderHeight();
