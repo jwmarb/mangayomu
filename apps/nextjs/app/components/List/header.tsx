@@ -9,19 +9,21 @@ import { MdChevronRight } from 'react-icons/md';
 
 interface ListHeaderProps extends React.PropsWithChildren {
   icon?: React.ReactNode;
+  badge?: number;
 }
 
 function BaseComponent(
-  props: React.PropsWithChildren<{ className: string; onClick: () => void }>,
+  props: React.PropsWithChildren<{ onClick: () => void } & OverrideClassName>,
 ) {
+  const className = useClassName('cursor-pointer', props);
   const ctx = useListAccordionHeader();
 
   if (ctx == null) return <div {...props} />;
-  return <button {...props}></button>;
+  return <div {...props} className={className} />;
 }
 
 export default function ListHeader(props: ListHeaderProps) {
-  const { children, icon } = props;
+  const { children, badge, icon } = props;
   const ctx = useListAccordionHeader();
 
   if (icon)
@@ -33,10 +35,23 @@ export default function ListHeader(props: ListHeaderProps) {
         <Text
           variant="list-header"
           color="hint"
-          className="text-start py-1.5 select-none hover:text-white flex-grow"
+          className={`text-start py-1.5 select-none ${
+            ctx ? 'hover:text-black hover:dark:text-white' : ''
+          } flex flex-row flex-grow items-center`}
         >
           {children}
+          {badge && (
+            <Text
+              component="span"
+              variant="sm-badge"
+              color="hint"
+              className="ml-2 w-[1.125rem] h-[1.125rem] rounded-full flex items-center justify-center"
+            >
+              ({badge})
+            </Text>
+          )}
         </Text>
+
         <div className="relative">
           <div className="absolute top-0 bottom-0 right-0 bg-red-500 flex items-center mr-4">
             {icon}
@@ -62,7 +77,9 @@ export default function ListHeader(props: ListHeaderProps) {
       <Text
         variant="list-header"
         color="hint"
-        className="text-start py-1.5 select-none hover:text-white flex-grow"
+        className={`text-start py-1.5 select-none ${
+          ctx ? 'hover:text-black hover:dark:text-white' : ''
+        } flex-grow`}
       >
         {children}
       </Text>
