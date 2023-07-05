@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import { useButton } from 'react-aria';
 import { ButtonProps } from './Button.interfaces';
@@ -42,7 +43,7 @@ export default function Button(props: ButtonProps) {
     ref,
   );
   const className = useClassName(
-    `px-4 py-2 rounded-lg text-variant-button transition ease-out hover:duration-250 duration-250 motion-reduce:transition-none motion-reduce:hover:transition-none flex flex-row items-center justify-center gap-2 ${
+    `select-none px-4 py-2 rounded-lg text-variant-button transition ease-out hover:duration-250 duration-250 motion-reduce:transition-none motion-reduce:hover:transition-none flex flex-row items-center justify-center gap-2 ${
       disabled ? disabledConfig[variant] : buttonConfig[color][variant]
     }`,
     props,
