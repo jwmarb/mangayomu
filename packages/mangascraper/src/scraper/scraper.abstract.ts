@@ -13,12 +13,12 @@ abstract class MangaHost {
   /**
    * List of manga hosts
    */
-  private static listSources: string[] = [];
+  public static sources: string[] = [];
 
   /**
    * Total available of manga hosts
    */
-  private static availableSources = new Map<string, MangaHost>();
+  public static sourcesMap = new Map<string, MangaHost>();
   /**
    * Whether or not the manga host shows hot mangas
    */
@@ -32,17 +32,17 @@ abstract class MangaHost {
   /**
    * The name of the manga host
    */
-  private readonly name: string;
+  public readonly name: string;
 
   /**
    * The icon of the manga host
    */
-  private readonly icon: string;
+  public readonly icon: string;
 
   /**
    * The available genres the manga host provides
    */
-  private readonly genres: string[];
+  public readonly genres: string[];
 
   private readonly genresDictionary: Record<string, string>;
 
@@ -58,7 +58,7 @@ abstract class MangaHost {
    */
   private page: number;
 
-  private readonly version: string;
+  public readonly version: string;
 
   private readonly _isAdult: boolean;
 
@@ -85,8 +85,8 @@ abstract class MangaHost {
     this._isAdult = info.isAdult;
     this._hasMangaDirectory = info.hasMangaDirectory;
 
-    MangaHost.availableSources.set(info.name, this);
-    MangaHost.listSources.push(info.name);
+    MangaHost.sourcesMap.set(info.name, this);
+    MangaHost.sources.push(info.name);
   }
 
   /**
@@ -140,32 +140,12 @@ abstract class MangaHost {
     return this.formattedGenres;
   }
 
-  public getName() {
-    return this.name;
-  }
-
-  public getIcon() {
-    return this.icon;
-  }
-
-  public getGenres() {
-    return this.genres;
-  }
-
   public hasHotMangas() {
     return this.hotMangas;
   }
 
   public hasLatestMangas() {
     return this.latestMangas;
-  }
-
-  public static getAvailableSources() {
-    return this.availableSources;
-  }
-
-  public static getListSources() {
-    return this.listSources;
   }
 
   /**

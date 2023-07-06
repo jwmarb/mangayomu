@@ -69,7 +69,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       ({ comic: { data } }): Manga => ({
         imageCover: data.imageCoverUrl,
         link: 'https://' + super.getLink() + getV3URL(data.urlPath),
-        source: super.getName(),
+        source: this.name,
         title: data.name,
       }),
     );
@@ -97,7 +97,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       ({ comic: { data } }, index): Manga => ({
         imageCover: data.imageCoverUrl,
         link: 'https://' + super.getLink() + getV3URL(data.urlPath),
-        source: super.getName(),
+        source: this.name,
         title: data.name,
       }),
     );
@@ -140,7 +140,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
         ({ data }): Manga => ({
           imageCover: data.imageCoverUrl,
           link: 'https://' + super.getLink() + getV3URL(data.urlPath),
-          source: super.getName(),
+          source: this.name,
           title: data.name,
         }),
       );
@@ -172,7 +172,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       ({ data }): Manga => ({
         imageCover: data.imageCoverUrl,
         link: 'https://' + super.getLink() + getV3URL(data.urlPath),
-        source: super.getName(),
+        source: this.name,
         title: data.name,
       }),
     );
@@ -284,7 +284,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
 
     return {
       title: data.state.data.data.name,
-      source: super.getName(),
+      source: this.name,
       link: manga.link,
       authors,
       description: data.state.data.data.summary.code,

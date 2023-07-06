@@ -43,7 +43,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         link: `https://${super.getLink()}/manga/${x.IndexName}`,
         title: x.SeriesName,
         imageCover: this.getImageCover(html, x.IndexName),
-        source: super.getName(),
+        source: this.name,
         index: i,
       })),
     );
@@ -59,7 +59,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         link: `https://${super.getLink()}/manga/${x.IndexName}`,
         title: x.SeriesName,
         imageCover: this.getImageCover(html, x.IndexName),
-        source: super.getName(),
+        source: this.name,
         index: i,
       })),
     );
@@ -84,7 +84,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         type: x.t,
         genres: x.g,
         yearReleased: x.y,
-        source: super.getName(),
+        source: this.name,
         officialTranslation: x.o === 'yes' ? true : false,
         altTitles: x.al,
         lt: parseInt(x.lt),
@@ -137,7 +137,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     const imageCover = $('img.img-fluid.bottom-5').attr('src')!;
 
     return {
-      source: super.getName(),
+      source: this.name,
       title: data.name,
       link: manga.link,
       authors: data.author,
