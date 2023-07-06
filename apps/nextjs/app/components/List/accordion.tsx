@@ -1,14 +1,8 @@
 'use client';
-
 import useBoolean from '@app/hooks/useBoolean';
 import useClassName, { OverrideClassName } from '@app/hooks/useClassName';
-import {
-  Interpolation,
-  SpringValue,
-  useSpring,
-  animated,
-} from '@react-spring/web';
-import React, { useId } from 'react';
+import { SpringValue, useSpring } from '@react-spring/web';
+import React from 'react';
 
 const ListAccordionHeaderContext = React.createContext<
   readonly [SpringValue<number>, ReturnType<typeof useBoolean>[1]] | null
@@ -29,29 +23,28 @@ export const useListAccordionContent = () => {
 
 export default function Accordion({
   children,
-  persist = false,
-}: React.PropsWithChildren<{ persist?: boolean }>) {
-  const id = useId();
+  persist,
+}: React.PropsWithChildren<{ persist?: string }>) {
   const [expanded, toggle] = useBoolean(
-    persist && localStorage.getItem(id) === 'true',
+    persist != null ? localStorage.getItem(persist) === 'true' : true,
   );
   const [{ rotate }, api] = useSpring(() => ({
-    rotate: persist && localStorage.getItem(id) === 'true' ? 0 : 90,
+    rotate: !expanded ? 0 : 90,
     config: { duration: 150 },
   }));
 
   React.useEffect(() => {
     if (expanded) {
-      if (persist) localStorage.setItem(id, 'true');
+      if (persist != null) localStorage.setItem(persist, 'true');
       api.start({ rotate: 90 });
     } else {
-      if (persist) localStorage.setItem(id, 'false');
+      if (persist != null) localStorage.setItem(persist, 'false');
       api.start({ rotate: 0 });
     }
     return () => {
       api.stop();
     };
-  }, [expanded, api, id, persist]);
+  }, [expanded, api, persist]);
 
   const providedHeaderContextValue = React.useMemo(
     () => [rotate, toggle] as const,
