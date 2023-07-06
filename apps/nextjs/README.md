@@ -17,7 +17,7 @@ The environment variables used here are in the table below.
 | GOOGLE_OAUTH2_ID      |                                                                                                  | ❗  |
 | GOOGLE_OAUTH2_SECRET  |                                                                                                  | ❗  |
 | JWT_SECRET            |                                                                                                  | ❗  |
-| EXP_DAYS              |                                                                                                  | ❗  |
+| JWT_EXP_DAYS          |                                                                                                  | ❗  |
 
 | Legend | Meaning                                              |
 | ------ | ---------------------------------------------------- |
@@ -79,29 +79,34 @@ To build the website, navigate to the root of this repository and simply type th
 vercel build
 ```
 
-It will compile the typescript files for the API and build the Next.js application. If building this in a linux distribution throws an error, it'll still build in vercel servers; you probably want to build this in a linux docker container instead. As long as running the development server works, the production build will have no issue running at all.
+It will **ONLY** compile the Next.js application. To compile for `api` route, navigate to `<project-root>/apps/backend` and run `yarn run build` from there. If building this in a linux distribution throws an error, it'll still build in vercel servers; you probably want to build this in a linux docker container instead. As long as running the development server works, the production build will have no issue running at all.
 
-## ❗ Issues with `@vercel/node` and [Next.js](https://nextjs.org/) ❗
+## Deploying the website
 
-Typescript does not work with `@vercel/node` in a [Next.js](https://nextjs.org/) project. The following error will occur:
-
-`Cannot use import statement outside a module`
-
-Although you can move all your `.ts` files to `app/api`, they will not work there by default because it conflicts with vercel runtimes watching `api/`, and this application uses the app router for Next.js 13 instead of the pages router (See [Next.js documentation](https://nextjs.org/docs/getting-started/project-structure)).
-
-A workaround is to switch to `.js` extension instead of `.ts` and use ES5 syntax. However, there won't be any typesafety to guarantee the functionality of your code before runtime.
-
-Instead, this application has a script that watches the `app/api` directory and compiles typescript into the `api` folder. You can edit the script, which is notably `api-build.js` and `api-watch.js`. The script relies on babel for compilation, so configuration is located in `util.js`.
-
-`vercel dev` will automatically run this script, but if you ever want to run it manually, you can run the following command:
+Do note that this app project is meant for Vercel only. Before deploying, make sure `<project-root>/apps/backend` is built with its `dist` assembled along with compiled js files for Vercel Serverless Functions. To deploy it, make sure you're in the project root directory and run:
 
 ```bash
-yarn run api:watch
+vercel
 ```
 
-**When importing modules outside of `app/api`, please import from `@server/` instead of `@app/`. Also, any typescript file outside of `app/api` cannot be used for the API**
+This will upload the files into vercel for deployment.
 
-```js
-import redis from '@app/api/redis'; // BAD. Compiled JS will not import modules correctly
-import redis from '@server/redis'; // GOOD. Compiled JS with have working relative imports
+### Editing the `api` route
+
+To edit the `api` route, the coding should be done in `<project-root>/apps/backend/`. To get started, simply open the directory in your terminal and type the following command:
+
+```bash
+yarn run watch
 ```
+
+This executes a small JS script, which is `watch.js`, along with `tsc` to create declaration files. All API changes (in `<project-root>apps/backend/src/api`) will automatically be compiled into `<project-root>apps/nextjs/api/v1`. The rest will be compiled into `<project-root>apps/backend/dist`, where you can access backend exports such as redis and mongodb for server-side usage in Next.js.
+
+### Building the `api` route
+
+To build `<project-root>/apps/backend`, you can simply type the following command:
+
+```bash
+yarn run build
+```
+
+Though, this command is not necessary if you already ran `yarn run watch` and created `dist` and `api/v1` files and that the files are up-to-date with your `.ts` code.
