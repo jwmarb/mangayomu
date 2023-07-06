@@ -4,14 +4,11 @@
   "private": true,
   "description": "The official website for MangaYomu",
   "scripts": {
-    "run": "concurrently -k -p \"[{name}]\" -n \"Next.js,Vercel CLI\" -c \"white.bold,cyan.bold\" \"next dev\" \"vercel dev\"",
-    "build": "yarn run api:build && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "reset": "rm -rf node_modules && rm -rf .vercel && rm -rf .next && rm -rf yarn.lock",
-    "api:build": "node api-build.js",
-    "api:watch": "node api-watch.js",
-    "dev": "concurrently -k -p \"[{name}]\" -n \"Vercel CLI,api\" -c \"yellow.bold,green.bold\" \"next dev\" \"yarn run api:watch\""
+    "dev": "next dev"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
