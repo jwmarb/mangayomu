@@ -18,7 +18,7 @@ const authenticate = async (): Promise<AuthTokenResponse> => {
   const id_token = nextCookies.get('id_token');
   if (id_token) {
     const body = JSON.stringify({ id_token: id_token.value });
-    const response = await fetch(env().VERCEL_URL + 'api/v1/session', {
+    const response = await fetch(env().VERCEL_URL + '/api/v1/session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body,
