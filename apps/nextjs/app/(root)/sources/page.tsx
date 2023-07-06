@@ -8,6 +8,7 @@ import Button from '@app/components/Button';
 import { MdSearch, MdFilterList } from 'react-icons/md';
 import { useAddedSources } from '@app/context/sources';
 import Screen from '@app/components/Screen';
+import Tabs from '@app/components/Tabs';
 
 export default function SourceSelector() {
   const [query, setQuery] = React.useState<string>('');
@@ -24,39 +25,42 @@ export default function SourceSelector() {
   );
   return (
     <Screen>
-      <Screen.Header className="flex flex-col gap-2">
-        <TextField
-          onChange={setQuery}
-          className="w-full"
-          placeholder="Search for a source name..."
-          adornment={<MdSearch />}
-        />
-        <div className="flex flex-row">
-          <button className="py-2 px-4 flex-grow border-b-2 border-primary">
-            <Text color="primary">All Sources</Text>
-          </button>
-          <button className="py-2 px-4 flex-grow">
-            <Text color="hint">Selected ({sources.length})</Text>
-          </button>
-        </div>
-      </Screen.Header>
-      <Screen.Content className="flex flex-col gap-4">
-        <div className="flex justify-end items-center">
-          <Button icon={<MdFilterList />}>Filters</Button>
-        </div>
-        {mapped.length > 0 ? (
-          <div className="grid xl:grid-cols-3 md:grid-cols-2 gap-2 md:gap-4">
-            {mapped}
-          </div>
-        ) : (
-          <div>
-            <Text variant="header-emphasized">No results found</Text>
-            <Text color="text-secondary">
-              There are no sources that match &quot;{query}&quot;
-            </Text>
-          </div>
-        )}
-      </Screen.Content>
+      <Tabs>
+        <Screen.Header className="flex flex-col gap-2">
+          <TextField
+            onChange={setQuery}
+            className="w-full"
+            placeholder="Search for a source name..."
+            adornment={<MdSearch />}
+          />
+          <Tabs.List>
+            <Tabs.Tab>All Sources</Tabs.Tab>
+            <Tabs.Tab>Selected ({sources.length})</Tabs.Tab>
+          </Tabs.List>
+        </Screen.Header>
+        <Screen.Content className="flex flex-col gap-4">
+          <Tabs.Panel>
+            <div className="flex justify-end items-center">
+              <Button icon={<MdFilterList />}>Filters</Button>
+            </div>
+            {mapped.length > 0 ? (
+              <div className="grid xl:grid-cols-3 md:grid-cols-2 gap-2 md:gap-4">
+                {mapped}
+              </div>
+            ) : (
+              <div>
+                <Text variant="header-emphasized">No results found</Text>
+                <Text color="text-secondary">
+                  There are no sources that match &quot;{query}&quot;
+                </Text>
+              </div>
+            )}
+          </Tabs.Panel>
+          <Tabs.Panel>
+            <Text>Hello World!</Text>
+          </Tabs.Panel>
+        </Screen.Content>
+      </Tabs>
     </Screen>
   );
 }
