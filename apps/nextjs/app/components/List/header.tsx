@@ -1,9 +1,8 @@
 'use client';
 import { useListAccordionHeader } from '@app/components/List/accordion';
 import Text from '@app/components/Text';
-import useBoolean from '@app/hooks/useBoolean';
 import useClassName, { OverrideClassName } from '@app/hooks/useClassName';
-import { animated, useSpring } from '@react-spring/web';
+import { animated } from '@react-spring/web';
 import React from 'react';
 import { MdChevronRight } from 'react-icons/md';
 
