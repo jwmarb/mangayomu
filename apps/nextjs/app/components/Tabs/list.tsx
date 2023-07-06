@@ -28,10 +28,7 @@ export default function TabList(props: React.PropsWithChildren) {
 
         if (e.key === 'ArrowRight') {
           tabIndex++;
-          if (tabIndex >= tabRefs.current.length) {
-            console.log('Resetting back to 0');
-            tabIndex = 0;
-          }
+          if (tabIndex >= tabRefs.current.length) tabIndex = 0;
         } else if (e.key === 'ArrowLeft') {
           tabIndex--;
           if (tabIndex < 0) tabIndex = tabRefs.current.length - 1;
