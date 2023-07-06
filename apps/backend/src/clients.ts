@@ -4,5 +4,5 @@ import { google } from 'googleapis';
 export const googleClient = new google.auth.OAuth2(
   env().GOOGLE_OAUTH2_ID,
   env().GOOGLE_OAUTH2_SECRET,
-  env().AUTH_URL.provider('google'),
+  env().AUTH_URL + '/api/v1/oauth2/google/callback',
 );

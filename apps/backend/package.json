@@ -1,0 +1,28 @@
+{
+  "name": "@mangayomu/backend",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "scripts": {
+    "tsc:build": "tsc --build tsconfig.build.json --verbose",
+    "tsc:watch": "tsc --watch -p ./tsconfig.build.json",
+    "build": "concurrently -p \"[{name}]\" -n \"babel,tsc\" -c \"yellow.bold,blue.bold\" \"node build.js\" \"yarn run tsc:build\"",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"babel,tsc\" -c \"yellow.bold,blue.bold\" \"node watch.js\" \"yarn run tsc:watch\""
+  },
+  "dependencies": {
+    "@mangayomu/request-handler": "1.0.0",
+    "@mangayomu/vercel-env": "1.0.0",
+    "googleapis": "^120.0.0",
+    "http-status-codes": "^2.2.0",
+    "ioredis": "^5.3.2",
+    "realm-web": "^2.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.22.6",
+    "@babel/core": "^7.22.6",
+    "@babel/preset-env": "^7.22.6",
+    "@babel/preset-typescript": "^7.22.5",
+    "concurrently": "^8.2.0"
+  }
+}

@@ -1,24 +1,24 @@
-var babel = require('@babel/core');
+const babel = require('@babel/core');
 
 /**
  * @type {import('@babel/core').TransformOptions}
  */
-var babelOptions = {
+const babelOptions = {
   presets: [
     ['@babel/preset-env', { modules: 'commonjs' }],
     '@babel/preset-typescript',
   ],
-  plugins: [
-    [
-      'module-resolver',
-      {
-        root: ['./app/api'],
-        alias: {
-          '@server': './app/api',
-        },
-      },
-    ],
-  ],
+  // plugins: [
+  //   [
+  //     'module-resolver',
+  //     {
+  //       root: './src/api',
+  //       alias: {
+  //         '@main': '@mangayomu/backend',
+  //       },
+  //     },
+  //   ],
+  // ],
 };
 
 function format(n) {
@@ -36,11 +36,11 @@ function formatHours(n) {
  * @param {string} input
  */
 function println(input) {
-  var date = new Date();
-  var period = date.getHours() > 12 ? 'PM' : 'AM';
-  var hour = date.getHours();
-  var min = date.getMinutes();
-  var seconds = date.getSeconds();
+  const date = new Date();
+  const period = date.getHours() > 12 ? 'PM' : 'AM';
+  const hour = date.getHours();
+  const min = date.getMinutes();
+  const seconds = date.getSeconds();
   console.log(
     `${formatHours(hour)}:${format(min)}:${format(
       seconds,
@@ -56,7 +56,7 @@ function println(input) {
 function compile(tsPath) {
   return new Promise(function (res) {
     babel.transformFileAsync(tsPath, babelOptions).then(function (c) {
-      res(c.code);
+      res(c.code.replace('require("@main")', 'require("@mangayomu/backend")'));
     });
   });
 }

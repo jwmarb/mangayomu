@@ -1,4 +1,4 @@
-import redis from '@server/redis';
+import redis from '../redis';
 import { Middleware, ResponseError } from '@mangayomu/request-handler';
 import { StatusCodes } from 'http-status-codes';
 

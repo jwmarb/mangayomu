@@ -20,7 +20,7 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@babel/cli@^7.22.5":
+"@babel/cli@^7.22.5", "@babel/cli@^7.22.6":
   version "7.22.6"
   resolved "https://registry.yarnpkg.com/@babel/cli/-/cli-7.22.6.tgz#63f5be2a0abd587ccfbdc93424fa85f43142cc53"
   integrity sha512-Be3/RfEDmkMRGT1+ru5nTkfcvWz5jDOYg1V9rXqTz2u9Qt96O1ryboGvxVBp7wOnYWDB8DNHIWb6DThrpudfOw==
@@ -62,7 +62,7 @@
   resolved "https://registry.yarnpkg.com/@babel/compat-data/-/compat-data-7.22.6.tgz#15606a20341de59ba02cd2fcc5086fcbe73bf544"
   integrity sha512-29tfsWTq2Ftu7MXmimyC0C5FDZv5DYxOZkh3XD3+QW4V/BYuv/LyEsjj3c0hqedEaDt6DBfDvexMKU8YevdqFg==
 
-"@babel/core@^7.11.6", "@babel/core@^7.12.3", "@babel/core@^7.13.16", "@babel/core@^7.20.0", "@babel/core@^7.22.5":
+"@babel/core@^7.11.6", "@babel/core@^7.12.3", "@babel/core@^7.13.16", "@babel/core@^7.20.0", "@babel/core@^7.22.5", "@babel/core@^7.22.6":
   version "7.22.6"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.22.6.tgz#aafafbe86e9a1679d876b99dc46382964ef72494"
   integrity sha512-HPIyDa6n+HKw5dEuway3vVAhBboYCtREBMp+IWeseZy6TFtzn6MHkCH2KKYUOC/vKKwgSMHQW4htBOrmuRPXfw==
@@ -1038,7 +1038,7 @@
     "@babel/helper-create-regexp-features-plugin" "^7.22.5"
     "@babel/helper-plugin-utils" "^7.22.5"
 
-"@babel/preset-env@^7.22.5", "@babel/preset-env@^7.4.5":
+"@babel/preset-env@^7.22.5", "@babel/preset-env@^7.22.6", "@babel/preset-env@^7.4.5":
   version "7.22.6"
   resolved "https://registry.yarnpkg.com/@babel/preset-env/-/preset-env-7.22.6.tgz#41bade05f2f8782d693b52d707ede7cef9da3b38"
   integrity sha512-IHr0AXHGk8oh8HYSs45Mxuv6iySUBwDTIzJSnXN7PURqHdxJVQlCoXmKJgyvSS9bcNf9NVRVE35z+LkCvGmi6w==
@@ -4468,10 +4468,19 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@18.2.13", "@types/react@18.2.14", "@types/react@^18.0.24":
+"@types/react@*", "@types/react@^18.0.24":
   version "18.2.14"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.14.tgz#fa7a6fecf1ce35ca94e74874f70c56ce88f7a127"
   integrity sha512-A0zjq+QN/O0Kpe30hA1GidzyFjatVvrpIvWLxD+xv67Vt91TWWgco9IvrJBkeyHm1trGaFS/FSGqPlhyeZRm0g==
+  dependencies:
+    "@types/prop-types" "*"
+    "@types/scheduler" "*"
+    csstype "^3.0.2"
+
+"@types/react@18.2.13":
+  version "18.2.13"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.13.tgz#a98c09bde8b18f80021935b11d2d29ef5f4dcb2f"
+  integrity sha512-vJ+zElvi/Zn9cVXB5slX2xL8PZodPCwPRDpittQdw43JR2AJ5k3vKdgJJyneV/cYgIbLQUwXa9JVDvUZXGba+Q==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -9298,6 +9307,14 @@ googleapis@^118.0.0:
   version "118.0.0"
   resolved "https://registry.yarnpkg.com/googleapis/-/googleapis-118.0.0.tgz#a8b9f84d283544b85927abeb989252cb2f3ec490"
   integrity sha512-Ny6zJOGn5P/YDT6GQbJU6K0lSzEu4Yuxnsn45ZgBIeSQ1RM0FolEjUToLXquZd89DU9wUfqA5XYHPEctk1TFWg==
+  dependencies:
+    google-auth-library "^8.0.2"
+    googleapis-common "^6.0.0"
+
+googleapis@^120.0.0:
+  version "120.0.0"
+  resolved "https://registry.yarnpkg.com/googleapis/-/googleapis-120.0.0.tgz#0ca260fad6cc7575e5d762e6a33ea88000f8e6bc"
+  integrity sha512-Reo5PpERv0Df/L8Jx8CrPHMI3oEXmPBDHLXCY12biXUtveVgWVEoQN4Inn/85+eoNRsDiVyeEH/MjAa3hPHHrA==
   dependencies:
     google-auth-library "^8.0.2"
     googleapis-common "^6.0.0"
