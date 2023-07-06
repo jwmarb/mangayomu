@@ -1,4 +1,4 @@
-import React, { KeyboardEventHandler } from 'react';
+import React from 'react';
 import { TabPropsContext } from './tab';
 import { TabPanelContext } from './panel';
 import createContext from '@app/helpers/createContext';
