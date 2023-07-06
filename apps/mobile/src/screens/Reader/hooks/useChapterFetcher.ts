@@ -38,7 +38,7 @@ export default function useChapterFetcher(
   },
 ) {
   const dispatch = useAppDispatch();
-  const source = MangaHost.getAvailableSources().get(args.manga.source);
+  const source = MangaHost.sourcesMap.get(args.manga.source);
   const currentChapter = useMutableObject(args.chapter);
   const localRealm = useLocalRealm();
   if (source == null) throw Error(`${args.manga.source} does not exist`);

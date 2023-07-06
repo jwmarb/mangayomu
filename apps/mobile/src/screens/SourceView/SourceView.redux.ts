@@ -9,7 +9,7 @@ const mapStateToProps = (
   props: RootStackProps<'SourceView'>,
 ) => ({
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  source: MangaHost.getAvailableSources().get(props.route.params.source)!,
+  source: MangaHost.sourcesMap.get(props.route.params.source)!,
   config: state.host.hostsConfig[props.route.params.source],
 });
 

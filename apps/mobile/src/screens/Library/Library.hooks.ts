@@ -45,7 +45,7 @@ export function useLibraryData(args: {
     }
     return (manga: MangaSchema) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const source = MangaHost.getAvailableSources().get(manga.source)!;
+      const source = MangaHost.sourcesMap.get(manga.source)!;
       if (ignoreGenres.size > 0) {
         for (const genre of ignoreGenres) {
           if (
@@ -125,7 +125,7 @@ export function useLibraryData(args: {
         const updates = mangasInLibrary.map((manga) =>
           limit(async () => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const host = MangaHost.getAvailableSources().get(manga.source)!;
+            const host = MangaHost.sourcesMap.get(manga.source)!;
             const meta = await host.getMeta({
               imageCover: manga.imageCover,
               link: manga._id,

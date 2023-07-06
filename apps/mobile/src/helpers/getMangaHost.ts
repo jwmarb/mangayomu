@@ -1,20 +1,15 @@
 import integrateSortedList from '@helpers/integrateSortedList';
-import { MangaHost, Manga } from '@mangayomu/mangascraper';
+
 import { AppState } from '@redux/main';
 import { inPlaceSort } from 'fast-sort';
 import React from 'react';
 import { getErrorMessage } from './getErrorMessage';
-
-function indexComparator(a: { index: number }, b: { index: number }) {
-  return a.index - b.index;
-}
+import { MangaHost, Manga } from '@mangayomu/mangascraper';
 
 export interface SourceError {
   error: string;
   source: string;
 }
-
-type MangaCollectionState = [SourceError[], Manga[]];
 
 export type MangaConcurrencyResult = {
   errors: SourceError[];
@@ -28,7 +23,7 @@ export type MangaConcurrencyResult = {
  * @returns
  */
 export default function getMangaHost(state: AppState) {
-  const p = MangaHost.getAvailableSources();
+  const p = MangaHost.sourcesMap;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const hosts = state.host.name.map((host) => p.get(host)!);
   return {
@@ -44,7 +39,7 @@ export default function getMangaHost(state: AppState) {
      */
     getUniqGenres() {
       const set = React.useMemo(
-        () => new Set(hosts.flatMap((x) => x.getGenres())),
+        () => new Set(hosts.flatMap((x) => x.genres)),
         state.host.name,
       );
       return [
@@ -55,23 +50,21 @@ export default function getMangaHost(state: AppState) {
     getGenres() {
       const genres = hosts
         .flatMap((x) =>
-          x
-            .getGenres()
-            .map((y, i) => ({ genre: y, source: x.getName(), index: i })),
+          x.genres.map((y, i) => ({ genre: y, source: x.name, index: i })),
         )
         .sort((a, b) => a.genre.localeCompare(b.genre));
       return genres;
     },
     getRawGenres() {
       return hosts.reduce((prev, curr) => {
-        prev[curr.getName()] = curr.getFormattedGenres();
+        prev[curr.name] = curr.getFormattedGenres();
         return prev;
       }, {} as Record<string, string[]>);
     },
     async getHotMangas(): Promise<MangaConcurrencyResult> {
       const mangaCollection = await Promise.allSettled(
         hosts.map((x) =>
-          state.host.hostsConfig[x.getName()].useHottestUpdates
+          state.host.hostsConfig[x.name].useHottestUpdates
             ? x.listHotMangas()
             : ([] as Manga[]),
         ),
@@ -80,7 +73,7 @@ export default function getMangaHost(state: AppState) {
         (prev, curr, index) => {
           if (curr.status === 'rejected')
             prev[0].push({
-              source: hosts[index].getName(),
+              source: hosts[index].name,
               error: getErrorMessage(curr.reason),
             });
           else prev[1].push({ mangas: curr.value });
@@ -107,7 +100,7 @@ export default function getMangaHost(state: AppState) {
     async getLatestMangas(): Promise<MangaConcurrencyResult> {
       const mangaCollection = await Promise.allSettled(
         hosts.map((x) =>
-          state.host.hostsConfig[x.getName()].useLatestUpdates
+          state.host.hostsConfig[x.name].useLatestUpdates
             ? x.listRecentlyUpdatedManga()
             : ([] as Manga[]),
         ),
@@ -116,7 +109,7 @@ export default function getMangaHost(state: AppState) {
         (prev, curr, index) => {
           if (curr.status === 'rejected')
             prev[0].push({
-              source: hosts[index].getName(),
+              source: hosts[index].name,
               error: getErrorMessage(curr.reason),
             });
           else prev[1].push({ mangas: curr.value });
@@ -145,18 +138,28 @@ export default function getMangaHost(state: AppState) {
       const mangaCollection = await Promise.allSettled(
         hosts.map((x) => x.listMangas()),
       );
-      const [errors, mangas] = mangaCollection.reduce(
+      const [errors, categorizedMangas] = mangaCollection.reduce(
         (prev, curr, index) => {
           if (curr.status === 'rejected')
             prev[0].push({
-              source: hosts[index].getName(),
+              source: hosts[index].name,
               error: getErrorMessage(curr.reason),
             });
-          else integrateSortedList(prev[1], indexComparator).add(curr.value);
+          else prev[1].push({ mangas: curr.value });
           return prev;
         },
-        [[], []] as MangaCollectionState,
+        [[], []] as [SourceError[], { mangas: Manga[] }[]],
       );
+      const largestIndex = categorizedMangas.reduce(
+        (prev, curr) => Math.max(0, prev, curr.mangas.length - 1),
+        0,
+      );
+      const mangas: Manga[] = [];
+      for (let i = 0; i <= largestIndex; i++) {
+        for (const collection of categorizedMangas) {
+          if (i < collection.mangas.length) mangas.push(collection.mangas[i]);
+        }
+      }
       return {
         errors,
         mangas,

@@ -72,7 +72,7 @@ const CustomizableBook: React.FC<CustomizableBookProps> = (props) => {
   if (bookStyle === BookStyle.TACHIYOMI)
     return (
       <AnimatedStack space="s" style={stackStyle}>
-        <Badge type="image" uri={source.getIcon()} show>
+        <Badge type="image" uri={source.icon} show>
           <CustomizableCover
             bookStyle={bookStyle}
             bookHeight={height}
@@ -103,7 +103,7 @@ const CustomizableBook: React.FC<CustomizableBookProps> = (props) => {
 
   return (
     <AnimatedStack space="s" style={stackStyle}>
-      <Badge type="image" uri={source.getIcon()} show>
+      <Badge type="image" uri={source.icon} show>
         <CustomizableCover
           bookStyle={bookStyle}
           bookHeight={height}

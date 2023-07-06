@@ -14,7 +14,7 @@ import connector, {
 import React from 'react';
 import { ListRenderItem } from 'react-native';
 
-const state = MangaHost.getListSources();
+const state = MangaHost.sources;
 
 const MainSourceSelector = React.forwardRef<
   BottomSheetMethods,
@@ -42,7 +42,7 @@ const MainSourceSelector = React.forwardRef<
         state
           .filter((x) => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const host = MangaHost.getAvailableSources().get(x)!;
+            const host = MangaHost.sourcesMap.get(x)!;
             return (
               x.trim().toLowerCase().includes(query.trim().toLowerCase()) &&
               applyFilterState(host.hasHotMangas(), hasHotUpdates) &&

@@ -81,7 +81,7 @@ const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
     const genres = new Set<string>();
     for (const source of hostsInLibrary) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const host = MangaHost.getAvailableSources().get(source)!;
+      const host = MangaHost.sourcesMap.get(source)!;
       for (const genre of host.getFormattedGenres()) {
         genres.add(genre);
       }

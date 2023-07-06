@@ -213,7 +213,7 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
   }, [query]);
   const { onScroll, scrollViewStyle, contentContainerStyle } =
     useCollapsibleHeader({
-      headerTitle: source.getName(),
+      headerTitle: source.name,
       showBackButton: !showSearchBar,
       header: showSearchBar ? (
         <Box {...(filters == null ? { mx: 'm' } : { ml: 'm' })} flex-grow>

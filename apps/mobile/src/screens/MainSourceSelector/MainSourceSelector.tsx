@@ -19,7 +19,7 @@ import Stack from '@components/Stack';
 import { MangaSourceSelectorFilters } from '@screens/Welcome/components/MainSourceSelector/components/Header/Header';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import Animated from 'react-native-reanimated';
-const state = MangaHost.getListSources();
+const state = MangaHost.sources;
 
 const MainSourceSelector: React.FC<ConnectedMainSourceSelectorProps> = (
   props,
@@ -99,7 +99,7 @@ const MainSourceSelector: React.FC<ConnectedMainSourceSelectorProps> = (
       state
         .filter((x) => {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const host = MangaHost.getAvailableSources().get(x)!;
+          const host = MangaHost.sourcesMap.get(x)!;
           return (
             x.trim().toLowerCase().includes(query.trim().toLowerCase()) &&
             applyFilterState(host.hasHotMangas(), hasHotUpdates) &&

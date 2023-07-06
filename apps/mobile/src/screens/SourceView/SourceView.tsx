@@ -27,15 +27,15 @@ const SourceView: React.FC<ConnectedSourceViewProps> = (props) => {
   const theme = useTheme();
 
   function handleOnToggleHot() {
-    toggleConfig({ source: source.getName(), key: 'useHottestUpdates' });
+    toggleConfig({ source: source.name, key: 'useHottestUpdates' });
   }
 
   function handleOnToggleLatest() {
-    toggleConfig({ source: source.getName(), key: 'useLatestUpdates' });
+    toggleConfig({ source: source.name, key: 'useLatestUpdates' });
   }
 
   function handleOnToggleWithSearch() {
-    toggleConfig({ source: source.getName(), key: 'useWithUniversalSearch' });
+    toggleConfig({ source: source.name, key: 'useWithUniversalSearch' });
   }
 
   return (
@@ -54,12 +54,12 @@ const SourceView: React.FC<ConnectedSourceViewProps> = (props) => {
         >
           <Icon
             type="image"
-            name={source.getIcon()}
+            name={source.icon}
             size={moderateScale(32)}
             variant="inherit"
           />
           <Box flex-direction="column">
-            <Text>{source.getName()}</Text>
+            <Text>{source.name}</Text>
             <Text color="textSecondary">Version: {source.getVersion()}</Text>
             {source.isAdult() && (
               <Text color="warning">This source may contain 18+ content</Text>

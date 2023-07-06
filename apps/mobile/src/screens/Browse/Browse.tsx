@@ -59,7 +59,7 @@ const Browse: React.FC<ConnectedBrowseProps> = (props) => {
           return {
             source: x,
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            manga: await MangaHost.getAvailableSources().get(x)!.search(query),
+            manga: await MangaHost.sourcesMap.get(x)!.search(query),
           };
         } catch (e) {
           throw { source: x, error: e };

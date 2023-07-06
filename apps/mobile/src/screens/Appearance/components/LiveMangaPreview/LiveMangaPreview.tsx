@@ -81,8 +81,8 @@ const LiveMangaPreview: React.FC<LiveMangaPreviewProps> = (props) => {
         // resolve to online fetching
         const netInfo = await NetInfo.fetch();
         if (netInfo.isInternetReachable) {
-          const sources = MangaHost.getListSources();
-          const source = MangaHost.getAvailableSources().get(
+          const sources = MangaHost.sources;
+          const source = MangaHost.sourcesMap.get(
             sources[Math.floor(Math.random() * sources.length)],
           );
           if (source != null) {

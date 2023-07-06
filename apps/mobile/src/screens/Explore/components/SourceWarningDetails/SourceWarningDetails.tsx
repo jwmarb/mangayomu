@@ -64,10 +64,10 @@ const styles = ScaledSheet.create({
 const MangaError: React.FC<{ item: SourceError }> = React.memo(
   ({ item: { source, error } }) => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const host = MangaHost.getAvailableSources().get(source)!;
+    const host = MangaHost.sourcesMap.get(source)!;
     return (
       <Stack flex-direction="row" space="m" m="s" align-items="center">
-        <FastImage source={{ uri: host.getIcon() }} style={styles.icon} />
+        <FastImage source={{ uri: host.icon }} style={styles.icon} />
         <Box flex-direction="column">
           <Text color="error">{error}</Text>
           <Text color="textSecondary">Source name: {source}</Text>

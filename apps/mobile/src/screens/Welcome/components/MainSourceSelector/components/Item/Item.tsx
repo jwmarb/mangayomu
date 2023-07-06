@@ -16,10 +16,10 @@ import { ScaledSheet } from 'react-native-size-matters';
 const Item: React.FC<ConnectedItemProps> = React.memo(
   ({ item, addSource, isSelected, removeSource }) => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const host = MangaHost.getAvailableSources().get(item)!;
+    const host = MangaHost.sourcesMap.get(item)!;
     function handleOnPress() {
-      if (!isSelected) addSource(host.getName());
-      else removeSource(host.getName());
+      if (!isSelected) addSource(host.name);
+      else removeSource(host.name);
     }
     const theme = useTheme();
     return (
@@ -33,9 +33,9 @@ const Item: React.FC<ConnectedItemProps> = React.memo(
             <Checkbox onChange={handleOnPress} checked={isSelected} />
           </Box>
           <Stack py="s" flex-direction="row" space="m">
-            <FastImage source={{ uri: host.getIcon() }} style={styles.icon} />
+            <FastImage source={{ uri: host.icon }} style={styles.icon} />
             <Stack>
-              <Text bold>{host.getName()}</Text>
+              <Text bold>{host.name}</Text>
               <Text color="textSecondary">v{host.getVersion()}</Text>
               <Hyperlink url={`https://${host.getLink()}/`}>
                 {host.getLink()}

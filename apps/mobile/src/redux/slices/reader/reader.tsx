@@ -95,7 +95,7 @@ function getImageSizeAsync(
 }
 
 export function getCachedReaderPages(source: MangaHost) {
-  return RNFetchBlob.fs.dirs['CacheDir'] + '/' + source.getName() + '/';
+  return RNFetchBlob.fs.dirs['CacheDir'] + '/' + source.name + '/';
 }
 
 const mockError = () => {
@@ -129,7 +129,7 @@ export const fetchPagesByChapter = createAsyncThunk(
           // const path =
           //   RNFetchBlob.fs.dirs['CacheDir'] +
           //   '/' +
-          //   payload.source.getName() +
+          //   payload.source.name +
           //   '/' +
           //   encodePathName(payload.manga.title) +
           //   '/' +

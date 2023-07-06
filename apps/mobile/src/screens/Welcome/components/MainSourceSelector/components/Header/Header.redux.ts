@@ -10,7 +10,7 @@ import { addAllSources, removeAllSources } from '@redux/slices/host';
 
 const mapStateToProps = (state: AppState) => ({
   numSelected: state.host.name.length,
-  totalSources: MangaHost.getListSources().length,
+  totalSources: MangaHost.sources.length,
   query: state.mainSourceSelector.query,
 });
 

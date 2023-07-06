@@ -50,12 +50,12 @@ const Item: React.FC<ConnectedItemProps> = ({
         >
           <Icon
             type="image"
-            name={source.getIcon()}
+            name={source.icon}
             variant="inherit"
             size={moderateScale(32)}
           />
           <Box>
-            <Text>{source.getName()}</Text>
+            <Text>{source.name}</Text>
             <Text color="textSecondary">{source.getVersion()}</Text>
           </Box>
         </Stack>

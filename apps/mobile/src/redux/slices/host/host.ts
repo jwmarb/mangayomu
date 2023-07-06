@@ -32,8 +32,8 @@ export const SORT_HOSTS_BY = {
   Alphabetically: (reversed: boolean) => (n1: string, n2: string) =>
     reversed ? n2.localeCompare(n1) : n1.localeCompare(n2),
   Version: (reversed: boolean) => (n1: string, n2: string) => {
-    const source1 = MangaHost.getAvailableSources().get(n1);
-    const source2 = MangaHost.getAvailableSources().get(n2);
+    const source1 = MangaHost.sourcesMap.get(n1);
+    const source2 = MangaHost.sourcesMap.get(n2);
     if (source1 == null || source2 == null)
       throw Error('Cannot compare sources that do not exist.');
     return reversed
@@ -62,13 +62,13 @@ export const hostSlice = createSlice({
       else state.pinned[action.payload] = null;
     },
     addSource: (state, action: PayloadAction<string>) => {
-      const source = MangaHost.getAvailableSources().get(action.payload);
+      const source = MangaHost.sourcesMap.get(action.payload);
       if (source == null)
         throw Error(`${action.payload} does not exist as a manga source.`);
       integrateSortedList(
         state.name,
         SORT_HOSTS_BY[state.comparatorKey](state.reversed),
-      ).add(source.getName());
+      ).add(source.name);
       if (action.payload in state.hostsConfig === false) {
         state.hostsConfig[action.payload] = {
           useWithUniversalSearch: true,
@@ -78,13 +78,13 @@ export const hostSlice = createSlice({
       }
     },
     removeSource: (state, action: PayloadAction<string>) => {
-      const source = MangaHost.getAvailableSources().get(action.payload);
+      const source = MangaHost.sourcesMap.get(action.payload);
       if (source == null)
         throw Error(`${action.payload} does not exist as a manga source.`);
       integrateSortedList(
         state.name,
         SORT_HOSTS_BY[state.comparatorKey](state.reversed),
-      ).remove(source.getName());
+      ).remove(source.name);
       delete state.pinned[action.payload];
     },
     toggleReversedList: (state) => {
@@ -94,14 +94,14 @@ export const hostSlice = createSlice({
       state.comparatorKey = action.payload;
     },
     addAllSources: (state) => {
-      const sources = MangaHost.getListSources();
+      const sources = MangaHost.sources;
       state.name = sources.sort(
         SORT_HOSTS_BY[state.comparatorKey](state.reversed),
       );
       for (const name of sources) {
         if (name in state.hostsConfig === false) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const source = MangaHost.getAvailableSources().get(name)!;
+          const source = MangaHost.sourcesMap.get(name)!;
           state.hostsConfig[name] = {
             useWithUniversalSearch: true,
             useHottestUpdates: source.hasHotMangas(),

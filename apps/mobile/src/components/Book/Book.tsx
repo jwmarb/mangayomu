@@ -83,7 +83,7 @@ const Book: React.FC<ConnectedBookProps> = (props) => {
             placement={BadgeLocation.TOP_LEFT}
             color="primary"
           >
-            <Badge type="image" uri={source.getIcon()} show>
+            <Badge type="image" uri={source.icon} show>
               <Cover cover={manga}>
                 <LinearGradient
                   colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
@@ -123,7 +123,7 @@ const Book: React.FC<ConnectedBookProps> = (props) => {
           placement={BadgeLocation.TOP_LEFT}
           color="primary"
         >
-          <Badge type="image" uri={source.getIcon()} show>
+          <Badge type="image" uri={source.icon} show>
             <Cover cover={manga} />
           </Badge>
         </Badge>
