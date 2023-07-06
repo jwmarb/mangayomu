@@ -77,7 +77,7 @@ export default function Navbar() {
         </div>
         <div className="flex flex-col space-y-2">
           <List.Category>
-            <List.Accordion persist>
+            <List.Accordion persist="accordion_list_home">
               <List.Header>Home</List.Header>
               <List.Accordion.Content>
                 <List.Button
@@ -112,7 +112,7 @@ export default function Navbar() {
             </List.Accordion>
           </List.Category>
           <List.Category>
-            <List.Accordion>
+            <List.Accordion persist="accordion_list_misc">
               <List.Header>Miscellaneous</List.Header>
               <List.Accordion.Content>
                 <List.Button
@@ -126,7 +126,7 @@ export default function Navbar() {
             </List.Accordion>
           </List.Category>
           <List.Category>
-            <List.Accordion>
+            <List.Accordion persist="accordion_sources">
               <List.Header
                 badge={sources.length || undefined}
                 icon={
@@ -148,7 +148,7 @@ export default function Navbar() {
             </List.Accordion>
           </List.Category>
           <List.Category>
-            <List.Accordion>
+            <List.Accordion persist="accordion_library">
               <List.Header
                 icon={
                   <>
