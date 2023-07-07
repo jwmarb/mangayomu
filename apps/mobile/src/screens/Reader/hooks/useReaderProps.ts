@@ -1,4 +1,5 @@
 import { MangaSchema } from '@database/schemas/Manga';
+import displayMessage from '@helpers/displayMessage';
 import {
   ImageScaling,
   ReaderScreenOrientation,
@@ -82,6 +83,10 @@ export default function useReaderProps(
       Orientation.unlockAllOrientations();
     };
   }, [lockOrientation]);
+
+  React.useEffect(() => {
+    displayMessage(readingDirection);
+  }, []);
 
   return React.useMemo(
     () => ({
