@@ -1,5 +1,5 @@
 import React from 'react';
-import { MenuProps } from './Menu.interfaces';
+import { MenuProps } from './';
 import {
   Menu as RNMenu,
   MenuOptions,

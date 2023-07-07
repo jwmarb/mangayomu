@@ -1,5 +1,5 @@
 import React from 'react';
-import { ButtonProps } from './Button.interfaces';
+import { ButtonProps } from './';
 import { moderateScale } from 'react-native-size-matters';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';

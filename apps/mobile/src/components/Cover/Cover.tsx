@@ -4,7 +4,7 @@ import Progress from '@components/Progress';
 import { useTheme } from '@emotion/react';
 import { BookStyle } from '@redux/slices/settings';
 import React from 'react';
-import { Image, ImageBackground } from 'react-native';
+import { Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Animated, {
   useAnimatedStyle,

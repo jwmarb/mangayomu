@@ -1,5 +1,5 @@
 import { Theme } from '@emotion/react';
-import { TextProps } from './Text.interfaces';
+import { TextProps } from './';
 
 export function getOrUseCustomColor(
   theme: Theme,
@@ -9,5 +9,5 @@ export function getOrUseCustomColor(
     return theme.helpers.getColor(color);
   }
   if (typeof color === 'string') return color;
-  return color.custom;
+  return color;
 }

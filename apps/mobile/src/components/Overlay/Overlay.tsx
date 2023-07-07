@@ -1,6 +1,6 @@
 import Box from '@components/Box/Box';
 import React from 'react';
-import { OverlayProps } from './Overlay.interfaces';
+import { OverlayProps } from './';
 import { Pressable } from 'react-native';
 import { useTheme } from '@emotion/react';
 

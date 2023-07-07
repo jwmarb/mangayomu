@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
-import { RadioGroupProps } from './RadioGroup.interfaces';
+import { RadioGroupProps } from './';
 
 const RadioContext = React.createContext<{
   onChange: (val: any) => void;

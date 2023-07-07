@@ -2,9 +2,8 @@ import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import React from 'react';
-import { BaseButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
-import { TagProps } from './Tag.interfaces';
+import { TagProps } from './';
 import Box from '@components/Box';
 import { Pressable } from 'react-native';
 

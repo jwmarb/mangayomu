@@ -1,5 +1,5 @@
 import Badge from '@components/Badge';
-import { CustomizableBookProps } from '@components/Book/Book.interfaces';
+import { CustomizableBookProps } from './';
 import { CustomizableCover } from '@components/Cover/';
 import { AnimatedStack } from '@components/Stack';
 import { AnimatedText } from '@components/Text';

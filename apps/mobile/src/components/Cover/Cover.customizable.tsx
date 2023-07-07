@@ -1,5 +1,5 @@
 import { coverStyles } from '@components/Cover/Cover';
-import { CustomizableCoverProps } from '@components/Cover/Cover.interfaces';
+import { CustomizableCoverProps } from './';
 import Progress from '@components/Progress';
 import { useTheme } from '@emotion/react';
 import { BookStyle } from '@redux/slices/settings';

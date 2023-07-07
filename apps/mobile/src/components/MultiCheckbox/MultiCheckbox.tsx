@@ -2,7 +2,6 @@ import Box from '@components/Box';
 import Icon from '@components/Icon';
 import { useTheme } from '@emotion/react';
 import React from 'react';
-import { BorderlessButton } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -11,7 +10,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
-import { MultiCheckboxProps } from './MultiCheckbox.interfaces';
+import { MultiCheckboxProps } from './';
 import { Pressable, StyleProp, ViewStyle } from 'react-native';
 
 const MultiCheckbox: React.FC<MultiCheckboxProps> = (props) => {

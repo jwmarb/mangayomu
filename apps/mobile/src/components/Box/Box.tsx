@@ -1,5 +1,5 @@
 import styled, { css } from '@emotion/native';
-import { BoxProps } from './Box.interfaces';
+import { BoxProps } from './';
 import {
   implementBorderModel,
   implementBoxModel,

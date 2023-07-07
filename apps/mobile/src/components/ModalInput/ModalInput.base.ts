@@ -1,5 +1,4 @@
 import styled, { css } from '@emotion/native';
-import { TextInput } from 'react-native-gesture-handler';
 import { verticalScale } from 'react-native-size-matters';
 
 export const ModalInputBase = styled.TextInput`

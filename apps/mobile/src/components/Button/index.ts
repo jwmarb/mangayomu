@@ -1,1 +1,17 @@
-export { default } from './Button';
+import Button from './Button';
+export default Button;
+import { ButtonColors } from '@mangayomu/theme';
+import React from 'react';
+import { PressableProps, StyleProp, ViewStyle } from 'react-native';
+
+export interface ButtonProps extends Omit<PressableProps, 'style'> {
+  label?: string;
+  variant?: 'contained' | 'outline' | 'text';
+  color?: ButtonColors;
+  disabled?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  icon?: React.ReactElement<any>;
+  iconPlacement?: 'left' | 'right';
+  sharp?: boolean;
+  style?: StyleProp<ViewStyle>;
+}

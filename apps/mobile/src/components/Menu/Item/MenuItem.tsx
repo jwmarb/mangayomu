@@ -3,7 +3,7 @@ import Text from '@components/Text';
 import React from 'react';
 import { MenuOption } from 'react-native-popup-menu';
 import { moderateScale } from 'react-native-size-matters';
-import { MenuItemProps } from './MenuItem.interfaces';
+import { MenuItemProps } from './';
 
 function MenuItem<T>(props: MenuItemProps<T>) {
   const {

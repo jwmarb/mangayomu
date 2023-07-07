@@ -9,7 +9,7 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 import { AnimatedBox } from '@components/Box';
-import { LoadingBarProps } from './LoadingBar.interfaces';
+import { LoadingBarProps } from './';
 import { Dimensions } from 'react-native';
 import { LOADING_BAR_HEIGHT } from '@theme/constants';
 

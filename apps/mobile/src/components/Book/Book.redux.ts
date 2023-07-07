@@ -1,6 +1,6 @@
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
-import { BookProps } from '@components/Book/Book.interfaces';
+import { BookProps } from './';
 
 const mapStateToProps = (state: AppState, props: BookProps) => ({
   ...props,

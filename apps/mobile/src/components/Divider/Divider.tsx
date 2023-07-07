@@ -1,7 +1,7 @@
 import Box from '@components/Box';
 import { useTheme } from '@emotion/react';
 import React from 'react';
-import { DividerProps } from './Divider.interfaces';
+import { DividerProps } from './';
 import { DIVIDER_DEPTH } from '@theme/constants';
 
 const Divider: React.FC<DividerProps> = (props) => {

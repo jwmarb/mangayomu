@@ -1,14 +1,10 @@
 import React from 'react';
-import { RadioProps, BaseRadioProps } from './Radio.interfaces';
+import { RadioProps, BaseRadioProps } from './';
 import { useRadioGroup } from '@components/RadioGroup';
-import Box, { AnimatedBox } from '@components/Box';
+import { AnimatedBox } from '@components/Box';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import {
-  BorderlessButton,
-  TouchableWithoutFeedback,
-} from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,

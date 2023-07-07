@@ -1,9 +1,9 @@
 import React from 'react';
-import { ModalInputProps } from './ModalInput.interfaces';
+import { ModalInputProps } from './';
 import ModalBuilder from '@components/ModalBuilder/ModalBuilder';
 import { ModalInputBase } from '@components/ModalInput/ModalInput.base';
 import { useTheme } from '@emotion/react';
-import { ModalBuilderMethods } from '@components/ModalBuilder/ModalBuilder.interfaces';
+import { ModalBuilderMethods } from '@components/ModalBuilder';
 import {
   NativeSyntheticEvent,
   TextInputFocusEventData,

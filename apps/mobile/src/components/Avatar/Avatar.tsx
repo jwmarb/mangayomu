@@ -3,7 +3,10 @@ import useAuth0 from '@hooks/useAuth0';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 import { moderateScale } from 'react-native-size-matters';
-import { AvatarProps } from './Avatar.interfaces';
+
+export interface AvatarProps {
+  size?: number;
+}
 
 const Avatar: React.FC<AvatarProps> = (props) => {
   const { size = moderateScale(32) } = props;

@@ -2,7 +2,7 @@ import { getOrUseCustomColor } from '@components/Text/Text.helpers';
 import styled, { css } from '@emotion/native';
 import 'react';
 import Animated from 'react-native-reanimated';
-import { TextProps } from './Text.interfaces';
+import { TextProps } from './';
 
 const Text = styled.Text<TextProps>`
   ${(props) => {

@@ -1,6 +1,6 @@
 import styled, { css } from '@emotion/native';
 import React from 'react';
-import { IconProps, ImageIconProps } from './Icon.interfaces';
+import { IconProps, ImageIconProps } from './';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FastImage from 'react-native-fast-image';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';

@@ -2,7 +2,6 @@ import Box from '@components/Box';
 import Icon from '@components/Icon';
 import { useTheme } from '@emotion/react';
 import React from 'react';
-import { BorderlessButton } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -11,8 +10,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
-import { CheckboxProps } from './Checkbox.interfaces';
 import { Pressable, StyleProp, ViewStyle } from 'react-native';
+import { CheckboxProps } from './';
 
 const Checkbox: React.FC<CheckboxProps> = (props) => {
   const { checked, onChange = () => void 0, defaultState = false } = props;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomBottomSheetProps } from './CustomBottomSheet.interfaces';
+import { CustomBottomSheetProps } from './';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetHandleProps,

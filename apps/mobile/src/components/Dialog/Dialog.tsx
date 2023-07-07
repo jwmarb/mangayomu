@@ -7,11 +7,7 @@ import React from 'react';
 import { Modal } from 'react-native';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import {
-  DialogAction,
-  DialogMethods,
-  DialogOptions,
-} from './Dialog.interfaces';
+import { DialogAction, DialogMethods, DialogOptions } from './';
 
 const actionsDefaultState: DialogAction[] = [{ text: 'Close' }];
 

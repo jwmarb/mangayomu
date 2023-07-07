@@ -5,18 +5,14 @@ import { useTheme } from '@emotion/react';
 import displayMessage from '@helpers/displayMessage';
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
-import { BorderlessButton } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
-  interpolateColor,
   useAnimatedStyle,
-  useDerivedValue,
   useSharedValue,
-  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
-import { TabProps } from './Tab.interfaces';
+import { TabProps } from './';
 import vibrate from '@helpers/vibrate';
 
 const tabIcons = {

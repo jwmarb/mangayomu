@@ -3,7 +3,6 @@ import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import React from 'react';
 import { Pressable, useWindowDimensions } from 'react-native';
-import { BorderlessButton } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,

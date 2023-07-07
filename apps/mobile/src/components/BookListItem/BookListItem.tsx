@@ -1,5 +1,4 @@
 import React from 'react';
-import { BookListItemProps } from './BookListItem.interfaces';
 import Box from '@components/Box';
 import { useTheme } from '@emotion/react';
 import { MANGA_LIST_ITEM_HEIGHT } from '@theme/constants';
@@ -8,6 +7,15 @@ import { StaticCover } from '@components/Cover';
 import Text from '@components/Text';
 import displayMessage from '@helpers/displayMessage';
 import { Pressable } from 'react-native';
+import { MangaSchema } from '@database/schemas/Manga';
+import { Manga } from '@mangayomu/mangascraper';
+
+export interface BookListItemProps extends React.PropsWithChildren {
+  manga: Manga | MangaSchema;
+  start?: React.ReactNode;
+  end?: React.ReactNode;
+  onPress?: () => void;
+}
 
 const BookListItem: React.FC<BookListItemProps> = (props) => {
   const { manga, children, end, start, onPress } = props;
@@ -20,8 +28,6 @@ const BookListItem: React.FC<BookListItemProps> = (props) => {
       android_ripple={{
         color: theme.palette.action.ripple,
       }}
-      // shouldCancelWhenOutside
-      // rippleColor={theme.palette.action.ripple}
       onLongPress={handleOnLongPress}
       onPress={onPress}
     >

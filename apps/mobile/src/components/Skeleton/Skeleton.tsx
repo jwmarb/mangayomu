@@ -1,8 +1,8 @@
 import Box from '@components/Box';
 import { useTheme } from '@emotion/react';
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { SkeletonProps } from './Skeleton.interfaces';
+import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { SkeletonProps } from './';
 
 const styles = StyleSheet.create({
   shape: {
@@ -24,7 +24,7 @@ const Skeleton: React.FC<SkeletonProps> = (props) => {
   );
 
   return (
-    <Box style={style}>
+    <Box style={style as StyleProp<ViewStyle>}>
       <Box style={styles.shape}>{children}</Box>
     </Box>
   );

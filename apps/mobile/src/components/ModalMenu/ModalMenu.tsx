@@ -1,11 +1,11 @@
 import Box from '@components/Box';
-import { ModalMenuProps } from './ModalMenu.interfaces';
+import { ModalMenuProps } from './';
 import React from 'react';
 import RadioGroup from '@components/RadioGroup';
 import Radio from '@components/Radio';
 import { useTheme } from '@emotion/react';
 import ModalBuilder from '@components/ModalBuilder/ModalBuilder';
-import { ModalBuilderMethods } from '@components/ModalBuilder/ModalBuilder.interfaces';
+import { ModalBuilderMethods } from '@components/ModalBuilder';
 import { Pressable } from 'react-native';
 
 function ModalMenu<T>(props: ModalMenuProps<T>) {

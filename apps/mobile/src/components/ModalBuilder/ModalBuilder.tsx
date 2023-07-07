@@ -1,20 +1,12 @@
 import Box from '@components/Box';
-import {
-  ModalBuilderMethods,
-  ModalBuilderProps,
-} from './ModalBuilder.interfaces';
+import { ModalBuilderMethods, ModalBuilderProps } from './';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
-import {
-  KeyboardAvoidingView,
-  Modal,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import { Modal, TouchableWithoutFeedback } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import useBoolean from '@hooks/useBoolean';
 import Overlay from '@components/Overlay/Overlay';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const ModalBuilder: React.ForwardRefRenderFunction<
   ModalBuilderMethods,

@@ -1,5 +1,5 @@
 import { setwandh } from '@components/Box/Box.helpers';
-import { InputProps } from '@components/Input/Input.interfaces';
+import { InputProps } from './';
 import styled, { css } from '@emotion/native';
 import { moderateScale, verticalScale } from 'react-native-size-matters';
 

@@ -1,10 +1,6 @@
 import Box from '@components/Box';
 import { useTheme } from '@emotion/react';
 import React from 'react';
-import {
-  BorderlessButton,
-  TouchableWithoutFeedback,
-} from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   interpolate,
@@ -15,7 +11,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
-import { SwitchProps } from './Switch.interfaces';
+import { SwitchProps } from './';
 import { Pressable } from 'react-native';
 
 const leftScaled = moderateScale(8);

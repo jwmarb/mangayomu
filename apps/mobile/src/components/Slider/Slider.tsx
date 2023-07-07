@@ -7,22 +7,17 @@ import {
   Pressable,
   useWindowDimensions,
 } from 'react-native';
-import {
-  BorderlessButton,
-  Gesture,
-  GestureDetector,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
   runOnJS,
   useAnimatedReaction,
-  useAnimatedRef,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
-import { SliderProps, SliderMethods } from './Slider.interfaces';
+import { SliderProps, SliderMethods } from './';
 
 const AnimatedButton = Animated.createAnimatedComponent(Pressable);
 

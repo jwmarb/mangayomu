@@ -7,7 +7,7 @@ import {
   set,
   setWithPalette,
 } from '@components/Box/Box.helpers';
-import { StackProps } from '@components/Stack/Stack.interfaces';
+import { StackProps } from './';
 import styled, { css } from '@emotion/native';
 import Animated from 'react-native-reanimated';
 

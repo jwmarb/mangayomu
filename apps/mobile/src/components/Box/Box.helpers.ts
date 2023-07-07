@@ -5,7 +5,7 @@ import {
   DimensionsModel,
   FlexBoxModel,
   PositionModel,
-} from '@components/Box/Box.interfaces';
+} from './';
 import { css, ReactNativeStyle } from '@emotion/native';
 import { Theme } from '@emotion/react';
 import { ButtonColors, Colors, Spacing } from '@mangayomu/theme';

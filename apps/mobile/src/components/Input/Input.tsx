@@ -8,7 +8,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import { InputProps } from './Input.interfaces';
+import { InputProps } from './';
 import { moderateScale } from 'react-native-size-matters';
 import { TextInput } from 'react-native';
 
@@ -61,7 +61,6 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
         onChangeText={handleOnChangeText}
         defaultValue={defaultValue}
         expanded={expanded}
-        shouldCancelWhenOutside
         {...rest}
         ref={(r: unknown) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any

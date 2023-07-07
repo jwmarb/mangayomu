@@ -1,8 +1,7 @@
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
-import { CoverProps } from '@components/Cover/Cover.interfaces';
+import { CoverProps } from './';
 import { BOOK_COVER_HEIGHT, BOOK_DIMENSIONS } from '@theme/constants';
-import { moderateScale } from 'react-native-size-matters';
 
 const mapStateToProps = (state: AppState, props: CoverProps) => ({
   cover: props.cover,

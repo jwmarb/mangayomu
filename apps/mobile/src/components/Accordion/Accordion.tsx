@@ -5,7 +5,7 @@ import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
 import { Freeze } from 'react-freeze';
-import { LayoutChangeEvent, ViewProps } from 'react-native';
+import { LayoutChangeEvent, TextProps, ViewProps } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -15,7 +15,20 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { AccordionProps, AccordionMethods } from './Accordion.interfaces';
+import { StackProps } from '@components/Stack/Stack.interfaces';
+
+export interface AccordionProps extends React.PropsWithChildren {
+  title: string;
+  textProps?: TextProps;
+  containerProps?: StackProps;
+  defaultState?: 'expanded' | 'collapsed';
+}
+
+export interface AccordionMethods {
+  expand: () => void;
+  collapse: () => void;
+  toggle: () => void;
+}
 
 const Accordion: React.ForwardRefRenderFunction<
   AccordionMethods,

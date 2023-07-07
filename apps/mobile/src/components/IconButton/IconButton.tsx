@@ -1,14 +1,9 @@
 import Box from '@components/Box';
-import { generateRippleColor } from '@components/IconButton/IconButton.helpers';
 import { useTheme } from '@emotion/react';
 import { ButtonColors } from '@mangayomu/theme';
 import React from 'react';
-import {
-  BorderlessButton,
-  TouchableNativeFeedback,
-} from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
-import { IconButtonProps } from './IconButton.interfaces';
+import { IconButtonProps } from './';
 import { Pressable } from 'react-native';
 
 const IconButton: React.FC<IconButtonProps> = (props) => {
