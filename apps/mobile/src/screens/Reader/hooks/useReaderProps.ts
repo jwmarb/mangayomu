@@ -7,6 +7,7 @@ import {
   ZoomStartPosition,
 } from '@redux/slices/settings';
 import React from 'react';
+import Orientation from 'react-native-orientation-locker';
 
 type ReaderProps = Omit<
   {
@@ -66,6 +67,22 @@ export default function useReaderProps(
         : ReaderScreenOrientation.FREE,
     [manga.readerLockOrientation, readerProps.lockOrientation],
   );
+  React.useEffect(() => {
+    switch (lockOrientation) {
+      case ReaderScreenOrientation.FREE:
+        break;
+      case ReaderScreenOrientation.LANDSCAPE:
+        Orientation.lockToLandscape();
+        break;
+      case ReaderScreenOrientation.PORTRAIT:
+        Orientation.lockToPortrait();
+        break;
+    }
+    return () => {
+      Orientation.unlockAllOrientations();
+    };
+  }, [lockOrientation]);
+
   return React.useMemo(
     () => ({
       readingDirection,
