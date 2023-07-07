@@ -1,10 +1,9 @@
 import { setwandh } from '@components/Box/Box.helpers';
 import { InputProps } from '@components/Input/Input.interfaces';
 import styled, { css } from '@emotion/native';
-import { TextInput } from 'react-native-gesture-handler';
 import { moderateScale, verticalScale } from 'react-native-size-matters';
 
-export const InputBase = styled(TextInput)<InputProps>`
+export const InputBase = styled.TextInput<InputProps>`
   ${({ theme, width, maxWidth, icon, iconButton, expanded }) => css`
     color: ${theme.palette.text.primary};
     border-radius: ${theme.style.borderRadius + 'px'};

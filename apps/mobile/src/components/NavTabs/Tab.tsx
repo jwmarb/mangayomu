@@ -4,7 +4,7 @@ import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import displayMessage from '@helpers/displayMessage';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -112,12 +112,14 @@ const Tab: React.FC<TabProps> = (props) => {
   }
 
   return (
-    <BorderlessButton
-      shouldCancelWhenOutside
+    <Pressable
       style={styles.button}
       onPress={handleOnPress}
       onLongPress={handleOnLongPress}
-      rippleColor={theme.palette.action.ripple}
+      android_ripple={{
+        color: theme.palette.action.ripple,
+        borderless: true,
+      }}
     >
       <Box py="m" px="s" flex-direction="column" align-items="center" flex-grow>
         <Text
@@ -136,7 +138,7 @@ const Tab: React.FC<TabProps> = (props) => {
           {routeName}
         </Text>
       </Box>
-    </BorderlessButton>
+    </Pressable>
   );
 };
 

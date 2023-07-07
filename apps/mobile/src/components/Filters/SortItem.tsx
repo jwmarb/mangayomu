@@ -1,5 +1,4 @@
 import React from 'react';
-import { RectButton } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   interpolateColor,
@@ -12,6 +11,7 @@ import Icon from '@components/Icon';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
+import { Pressable } from 'react-native';
 
 export interface SortItemProps<T extends string> {
   reversed: boolean;
@@ -49,10 +49,11 @@ function SortItem<T extends string>(props: SortItemProps<T>) {
     else props.onToggleReverse();
   }
   return (
-    <RectButton
-      shouldCancelWhenOutside
+    <Pressable
+      android_ripple={{
+        color: theme.palette.action.ripple,
+      }}
       onPress={handleOnPress}
-      rippleColor={theme.palette.action.ripple}
     >
       <Stack p="m" space="m" flex-direction="row" align-items="center">
         <Animated.View style={iconStyle}>
@@ -62,7 +63,7 @@ function SortItem<T extends string>(props: SortItemProps<T>) {
           {props.title}
         </Text>
       </Stack>
-    </RectButton>
+    </Pressable>
   );
 }
 

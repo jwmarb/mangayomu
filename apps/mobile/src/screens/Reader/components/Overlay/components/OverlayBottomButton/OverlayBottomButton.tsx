@@ -7,6 +7,7 @@ import { BorderlessButton } from 'react-native-gesture-handler';
 import { useTheme } from '@emotion/react';
 import { OVERLAY_TEXT_PRIMARY } from '@theme/constants';
 import displayMessage from '@helpers/displayMessage';
+import { Pressable } from 'react-native';
 
 const OverlayBottomButton: React.FC<OverlayBottomButtonProps> = (props) => {
   const { name, settingName, ...rest } = props;
@@ -15,12 +16,12 @@ const OverlayBottomButton: React.FC<OverlayBottomButtonProps> = (props) => {
     displayMessage(settingName);
   }
   return (
-    <BorderlessButton
-      rippleColor={theme.palette.action.ripple}
+    <Pressable
+      android_ripple={{
+        color: theme.palette.action.ripple,
+      }}
       {...rest}
       onLongPress={handleOnLongPress}
-      disallowInterruption
-      cancelsTouchesInView
     >
       <Box py={theme.style.spacing.m} flex-grow align-items="center">
         <Icon
@@ -30,7 +31,7 @@ const OverlayBottomButton: React.FC<OverlayBottomButtonProps> = (props) => {
           color={OVERLAY_TEXT_PRIMARY}
         />
       </Box>
-    </BorderlessButton>
+    </Pressable>
   );
 };
 

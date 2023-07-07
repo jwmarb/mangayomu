@@ -36,6 +36,7 @@ const MainSourceSelector: React.FC<ConnectedMainSourceSelectorProps> = (
   const bottomSheet = React.useRef<BottomSheetMethods>(null);
   const { onScroll, scrollViewStyle, contentContainerStyle } =
     useCollapsibleHeader({
+      showHeaderLeft: false,
       header: (
         <Stack
           mx="m"

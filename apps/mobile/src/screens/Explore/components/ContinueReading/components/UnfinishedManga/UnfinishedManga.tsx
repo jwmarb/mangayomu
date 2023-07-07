@@ -2,7 +2,6 @@
 import React from 'react';
 import { UnfinishedMangaProps } from './UnfinishedManga.interfaces';
 import Box from '@components/Box';
-import { RectButton } from 'react-native-gesture-handler';
 import Stack from '@components/Stack';
 import { StaticCover } from '@components/Cover';
 import Text from '@components/Text';
@@ -12,6 +11,7 @@ import displayMessage from '@helpers/displayMessage';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { UNFINISHED_MANGA_WIDTH } from '@theme/constants';
 import useUnfinishedManga from '@hooks/useUnfinishedManga';
+import { Pressable } from 'react-native';
 
 const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
   const { manga, chapters } = props;
@@ -44,10 +44,11 @@ const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
       border-color="@theme"
       border-width="@theme"
     >
-      <RectButton
-        shouldCancelWhenOutside
+      <Pressable
         onPress={handleOnPress}
-        rippleColor={theme.palette.action.ripple}
+        android_ripple={{
+          color: theme.palette.action.ripple,
+        }}
         onLongPress={handleOnLongPress}
       >
         <Stack space="s" flex-direction="row" py="s" px="m">
@@ -73,7 +74,7 @@ const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
             </Stack>
           </Box>
         </Stack>
-      </RectButton>
+      </Pressable>
     </Box>
   );
 };

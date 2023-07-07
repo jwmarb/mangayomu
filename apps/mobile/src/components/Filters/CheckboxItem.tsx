@@ -5,7 +5,7 @@ import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import { ACCORDION_ITEM_HEIGHT } from '@theme/constants';
 import React from 'react';
-import { RectButton } from 'react-native-gesture-handler';
+import { Pressable } from 'react-native';
 
 export interface CheckboxItemProps<T extends string> {
   title: string;
@@ -21,10 +21,11 @@ function CheckboxItem<T extends string>(props: CheckboxItemProps<T>) {
     props.onToggle(props.itemKey);
   }
   return (
-    <RectButton
-      shouldCancelWhenOutside
+    <Pressable
+      android_ripple={{
+        color: theme.palette.action.ripple,
+      }}
       onPress={handleOnToggle}
-      rippleColor={theme.palette.action.ripple}
     >
       <Stack
         p="s"
@@ -41,7 +42,7 @@ function CheckboxItem<T extends string>(props: CheckboxItemProps<T>) {
           <Text color="disabled">{props.subtitle}</Text>
         </Stack>
       </Stack>
-    </RectButton>
+    </Pressable>
   );
 }
 

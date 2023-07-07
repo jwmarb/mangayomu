@@ -5,7 +5,7 @@ import { useTheme } from '@emotion/react';
 import { FilterState } from '@redux/slices/mainSourceSelector';
 import { ACCORDION_ITEM_HEIGHT } from '@theme/constants';
 import React from 'react';
-import { RectButton } from 'react-native-gesture-handler';
+import { Pressable } from 'react-native';
 
 export interface FilterItemProps<T extends string> {
   state: FilterState;
@@ -20,10 +20,11 @@ function FilterItem<T extends string>(props: FilterItemProps<T>) {
     props.onToggle(props.itemKey);
   }
   return (
-    <RectButton
-      shouldCancelWhenOutside
+    <Pressable
+      android_ripple={{
+        color: theme.palette.action.ripple,
+      }}
       onPress={handleOnToggle}
-      rippleColor={theme.palette.action.ripple}
     >
       <Stack
         height={ACCORDION_ITEM_HEIGHT}
@@ -35,7 +36,7 @@ function FilterItem<T extends string>(props: FilterItemProps<T>) {
         <MultiCheckbox state={props.state} onChange={handleOnToggle} />
         <Text color="textSecondary">{props.title}</Text>
       </Stack>
-    </RectButton>
+    </Pressable>
   );
 }
 

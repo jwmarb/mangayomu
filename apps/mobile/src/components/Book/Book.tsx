@@ -1,5 +1,6 @@
 import Badge, { BadgeLocation } from '@components/Badge';
 import connector, { ConnectedBookProps } from '@components/Book/Book.redux';
+import Box from '@components/Box/Box';
 import Cover from '@components/Cover';
 import { coverStyles } from '@components/Cover/Cover';
 import Stack from '@components/Stack';
@@ -12,7 +13,7 @@ import useMangaSource from '@hooks/useMangaSource';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { BookStyle } from '@redux/slices/settings';
 import React from 'react';
-import { BaseButton } from 'react-native-gesture-handler';
+import { Pressable } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 
@@ -38,7 +39,7 @@ const Book: React.FC<ConnectedBookProps> = (props) => {
   const navigation = useRootNavigation();
   const dbManga =
     '_id' in manga
-      ? (manga as MangaSchema & Realm.Object<MangaSchema, never>)
+      ? (manga as unknown as MangaSchema & Realm.Object<MangaSchema, never>)
       : null;
   const source = useMangaSource(manga);
 
@@ -69,12 +70,13 @@ const Book: React.FC<ConnectedBookProps> = (props) => {
 
   if (bookStyle === BookStyle.TACHIYOMI)
     return (
-      <BaseButton
-        shouldCancelWhenOutside
+      <Pressable
+        android_ripple={{
+          color: theme.palette.action.ripple,
+        }}
         style={coverStyles.button}
         onPress={handleOnPress}
         onLongPress={handleOnLongPress}
-        rippleColor={theme.palette.action.ripple}
       >
         <Stack space="s" width={width} minHeight={height}>
           <Badge
@@ -105,33 +107,35 @@ const Book: React.FC<ConnectedBookProps> = (props) => {
             </Badge>
           </Badge>
         </Stack>
-      </BaseButton>
+      </Pressable>
     );
 
   return (
-    <BaseButton
-      shouldCancelWhenOutside
-      style={coverStyles.button}
-      onPress={handleOnPress}
-      onLongPress={handleOnLongPress}
-      rippleColor={theme.palette.action.ripple}
-    >
-      <Stack space="s" width={width} minHeight={height}>
-        <Badge
-          type="number"
-          count={dbManga?.notifyNewChaptersCount ?? 0}
-          placement={BadgeLocation.TOP_LEFT}
-          color="primary"
-        >
-          <Badge type="image" uri={source.icon} show>
-            <Cover cover={manga} />
+    <Box style={coverStyles.button} overflow="hidden" align-self="center">
+      <Pressable
+        android_ripple={{
+          color: theme.palette.action.ripple,
+        }}
+        onPress={handleOnPress}
+        onLongPress={handleOnLongPress}
+      >
+        <Stack space="s" width={width} minHeight={height}>
+          <Badge
+            type="number"
+            count={dbManga?.notifyNewChaptersCount ?? 0}
+            placement={BadgeLocation.TOP_LEFT}
+            color="primary"
+          >
+            <Badge type="image" uri={source.icon} show>
+              <Cover cover={manga} />
+            </Badge>
           </Badge>
-        </Badge>
-        <Text style={textStyle} numberOfLines={2} bold={bold} align={align}>
-          {manga.title}
-        </Text>
-      </Stack>
-    </BaseButton>
+          <Text style={textStyle} numberOfLines={2} bold={bold} align={align}>
+            {manga.title}
+          </Text>
+        </Stack>
+      </Pressable>
+    </Box>
   );
 };
 

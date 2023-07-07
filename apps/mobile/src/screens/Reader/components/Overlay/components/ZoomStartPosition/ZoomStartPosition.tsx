@@ -10,13 +10,12 @@ import {
 } from '@redux/slices/settings';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import Button from '@components/Button';
 import OverlayBottomButton from '@screens/Reader/components/Overlay/components/OverlayBottomButton';
 import Box from '@components/Box/Box';
 import { useMangaKey } from '@screens/Reader/context/MangaKey';
 import ModalMenu from '@components/ModalMenu';
-import { RectButton } from 'react-native-gesture-handler';
 import { useTheme } from '@emotion/react';
+import { Pressable } from 'react-native';
 
 const ZoomStartPosition: React.FC<ConnectedZoomStartPositionProps> = (
   props,
@@ -92,7 +91,7 @@ const ZoomStartPosition: React.FC<ConnectedZoomStartPositionProps> = (
         ...EnumZoomStartPosition,
       }}
       trigger={
-        <RectButton rippleColor={theme.palette.action.ripple}>
+        <Pressable android_ripple={{ color: theme.palette.action.ripple }}>
           <Stack flex-direction="row" space="s" align-items="center">
             <Box align-self="center" ml="l">
               <Icon type="font" name="magnify-scan" variant="header" />
@@ -104,7 +103,7 @@ const ZoomStartPosition: React.FC<ConnectedZoomStartPositionProps> = (
               </Text>
             </Box>
           </Stack>
-        </RectButton>
+        </Pressable>
       }
     />
   );

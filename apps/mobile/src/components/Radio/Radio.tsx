@@ -17,6 +17,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useTheme } from '@emotion/react';
+import { Pressable } from 'react-native';
 
 const styles = ScaledSheet.create({
   button: {
@@ -71,18 +72,20 @@ const Radio: React.FC<BaseRadioProps> = React.memo((props) => {
     [radioStyle, styles.radio],
   );
   return (
-    <TouchableWithoutFeedback onPress={onChange} disabled={isSelected}>
+    <Pressable onPress={onChange} disabled={isSelected}>
       <Stack
         flex-direction="row"
         space="s"
         align-items="center"
         justify-content="center"
       >
-        <BorderlessButton
-          shouldCancelWhenOutside
-          enabled={!isSelected}
+        <Pressable
+          android_ripple={{
+            borderless: true,
+            color: theme.palette.action.ripple,
+          }}
+          disabled={isSelected}
           style={styles.button}
-          rippleColor={theme.palette.action.ripple}
           onPress={onChange}
         >
           <AnimatedBox
@@ -100,10 +103,10 @@ const Radio: React.FC<BaseRadioProps> = React.memo((props) => {
           >
             <Animated.View style={combinedRadioStyle} />
           </AnimatedBox>
-        </BorderlessButton>
+        </Pressable>
         <Text>{label}</Text>
       </Stack>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 });
 

@@ -17,11 +17,9 @@ import {
   Platform,
   Linking,
   Dimensions,
+  Pressable,
 } from 'react-native';
-import {
-  RectButton,
-  TouchableWithoutFeedback,
-} from 'react-native-gesture-handler';
+
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {
   Easing,
@@ -177,7 +175,7 @@ const ImageMenu: React.ForwardRefRenderFunction<
         top={0}
         pointerEvents={show ? 'auto' : 'none'}
       >
-        <TouchableWithoutFeedback onPress={handleOnClose}>
+        <Pressable onPress={handleOnClose}>
           <AnimatedBox
             style={overlayStyle}
             width={width}
@@ -193,9 +191,10 @@ const ImageMenu: React.ForwardRefRenderFunction<
               }}
               background-color="paper"
             >
-              <RectButton
-                shouldCancelWhenOutside
-                rippleColor={theme.palette.action.ripple}
+              <Pressable
+                android_ripple={{
+                  color: theme.palette.action.ripple,
+                }}
                 onLongPress={handleOnLongPressSaveImage}
                 onPress={handleOnSaveImage}
               >
@@ -208,10 +207,11 @@ const ImageMenu: React.ForwardRefRenderFunction<
                   <Icon type="font" name="image" size={moderateScale(24)} />
                   <Text variant="button">Save image</Text>
                 </Stack>
-              </RectButton>
-              <RectButton
-                shouldCancelWhenOutside
-                rippleColor={theme.palette.action.ripple}
+              </Pressable>
+              <Pressable
+                android_ripple={{
+                  color: theme.palette.action.ripple,
+                }}
                 onPress={handleOnShare}
                 onLongPress={handleOnLongPressShare}
               >
@@ -228,10 +228,11 @@ const ImageMenu: React.ForwardRefRenderFunction<
                   />
                   <Text variant="button">Share</Text>
                 </Stack>
-              </RectButton>
-              <RectButton
-                shouldCancelWhenOutside
-                rippleColor={theme.palette.action.ripple}
+              </Pressable>
+              <Pressable
+                android_ripple={{
+                  color: theme.palette.action.ripple,
+                }}
                 onPress={handleOnViewInBrowser}
                 onLongPress={handleOnLongPressViewInBrowser}
               >
@@ -244,10 +245,10 @@ const ImageMenu: React.ForwardRefRenderFunction<
                   <Icon type="font" name="web" size={moderateScale(24)} />
                   <Text variant="button">Open in browser</Text>
                 </Stack>
-              </RectButton>
+              </Pressable>
             </AnimatedBox>
           </AnimatedBox>
-        </TouchableWithoutFeedback>
+        </Pressable>
       </Box>
     </Portal>
   );

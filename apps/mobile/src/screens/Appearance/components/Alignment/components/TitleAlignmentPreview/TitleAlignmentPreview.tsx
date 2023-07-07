@@ -8,7 +8,7 @@ import { LinePlaceholder } from '@screens/Appearance/components/Style/Style';
 import PreviewSelectorWrapper from '@screens/Appearance/components/Style/components/PreviewSelectorWrapper/PreviewSelectorWrapper';
 import { BOOK_DIMENSIONS } from '@theme/constants';
 import React from 'react';
-import { BaseButton } from 'react-native-gesture-handler';
+import { Pressable } from 'react-native';
 
 const TitleAlignmentPreview: React.FC<TitleAlignmentPreviewProps> = (props) => {
   const {
@@ -24,9 +24,11 @@ const TitleAlignmentPreview: React.FC<TitleAlignmentPreviewProps> = (props) => {
   return (
     <PreviewSelectorWrapper isSelected={isSelected} background="paper">
       <Stack space="s">
-        <BaseButton
+        <Pressable
           onPress={handleOnPress}
-          rippleColor={theme.palette.action.ripple}
+          android_ripple={{
+            color: theme.palette.action.ripple,
+          }}
           style={{
             borderRadius: theme.style.borderRadius,
           }}
@@ -55,7 +57,7 @@ const TitleAlignmentPreview: React.FC<TitleAlignmentPreviewProps> = (props) => {
               </Box>
             </Stack>
           </Stack>
-        </BaseButton>
+        </Pressable>
         <Text>{titleAlignment[0].toUpperCase() + titleAlignment.slice(1)}</Text>
       </Stack>
     </PreviewSelectorWrapper>

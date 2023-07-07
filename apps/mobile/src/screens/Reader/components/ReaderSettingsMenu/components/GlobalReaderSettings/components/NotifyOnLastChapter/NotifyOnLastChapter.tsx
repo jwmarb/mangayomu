@@ -6,8 +6,8 @@ import connector, {
   ConnectedNotifyOnLastChapterProps,
 } from './NotifyOnLastChapter.redux';
 import Box from '@components/Box/Box';
-import { RectButton } from 'react-native-gesture-handler';
 import { useTheme } from '@emotion/react';
+import { Pressable } from 'react-native';
 
 const NotifyOnLastChapter: React.FC<ConnectedNotifyOnLastChapterProps> = (
   props,
@@ -18,8 +18,8 @@ const NotifyOnLastChapter: React.FC<ConnectedNotifyOnLastChapterProps> = (
     toggleNotifyOnLastChapter();
   }
   return (
-    <RectButton
-      rippleColor={theme.palette.action.ripple}
+    <Pressable
+      android_ripple={{ color: theme.palette.action.ripple }}
       onPress={handleOnChange}
     >
       <Stack
@@ -38,7 +38,7 @@ const NotifyOnLastChapter: React.FC<ConnectedNotifyOnLastChapterProps> = (
           <Switch enabled={notifyOnLastChapter} onChange={handleOnChange} />
         </Box>
       </Stack>
-    </RectButton>
+    </Pressable>
   );
 };
 

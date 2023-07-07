@@ -7,7 +7,7 @@ import Box from '@components/Box/Box';
 import PreviewSelectorWrapper from '@screens/Appearance/components/Style/components/PreviewSelectorWrapper/PreviewSelectorWrapper';
 import { useTheme } from '@emotion/react';
 import { moderateScale } from 'react-native-size-matters';
-import { useWindowDimensions } from 'react-native';
+import { Pressable, useWindowDimensions } from 'react-native';
 import { LinePlaceholder } from '@screens/Appearance/components/Style/Style';
 import { DIVIDER_DEPTH } from '@theme/constants';
 import { coverStyles } from '@components/Cover/Cover';
@@ -34,8 +34,10 @@ const AppearanceModePreview: React.FC<AppearanceModePreviewProps> = (props) => {
           border-width="@theme"
           overflow="hidden"
         >
-          <BaseButton
-            rippleColor={theme.palette.action.ripple}
+          <Pressable
+            android_ripple={{
+              color: theme.palette.action.ripple,
+            }}
             onPress={handleOnPress}
           >
             <Stack
@@ -264,13 +266,11 @@ const AppearanceModePreview: React.FC<AppearanceModePreviewProps> = (props) => {
                   name="triangle"
                   style={{ transform: [{ rotate: '90deg' }] }}
                   size={moderateScale(5)}
-                  color={{
-                    custom: theme.palette.primary.contrastText,
-                  }}
+                  color={theme.palette.primary.contrastText}
                 />
               </Box>
             </Stack>
-          </BaseButton>
+          </Pressable>
         </Box>
       </PreviewSelectorWrapper>
       {mode !== Mode.SYSTEM ? (

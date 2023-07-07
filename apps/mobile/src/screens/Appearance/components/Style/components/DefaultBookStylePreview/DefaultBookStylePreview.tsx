@@ -1,21 +1,15 @@
 import React from 'react';
 import { PreviewBookStyleProps } from '@screens/Appearance/components/Style/Style.interfaces';
-import {
-  BOOK_COVER_HEIGHT,
-  BOOK_DIMENSIONS,
-  RADIO_BUTTON_BORDER_WIDTH,
-} from '@theme/constants';
+import { BOOK_COVER_HEIGHT, BOOK_DIMENSIONS } from '@theme/constants';
 import Stack from '@components/Stack';
 import { useTheme } from '@emotion/react';
 import { coverStyles } from '@components/Cover/Cover';
 import Box from '@components/Box';
 import { LinePlaceholder } from '@screens/Appearance/components/Style/Style';
 import Text from '@components/Text';
-import Badge from '@components/Badge/Badge';
 import PreviewSelectorWrapper from '@screens/Appearance/components/Style/components/PreviewSelectorWrapper/PreviewSelectorWrapper';
-import Icon from '@components/Icon/Icon';
-import { BaseButton, BorderlessButton } from 'react-native-gesture-handler';
 import { BookStyle } from '@redux/slices/settings';
+import { Pressable } from 'react-native';
 
 const DefaultBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
   const { onSelect, isSelected } = props;
@@ -33,9 +27,11 @@ const DefaultBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
           border-color={isSelected ? 'primary' : '@theme'}
           border-width="@theme"
         >
-          <BaseButton
+          <Pressable
             onPress={handleOnPress}
-            rippleColor={theme.palette.action.ripple}
+            android_ripple={{
+              color: theme.palette.action.ripple,
+            }}
             style={{ borderRadius: theme.style.borderRadius }}
           >
             <Stack
@@ -53,7 +49,7 @@ const DefaultBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
               {LinePlaceholder}
               {LinePlaceholder}
             </Stack>
-          </BaseButton>
+          </Pressable>
         </Stack>
         <Text>Classic</Text>
       </Stack>

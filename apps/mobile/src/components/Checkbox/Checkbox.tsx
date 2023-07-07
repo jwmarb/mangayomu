@@ -12,6 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import { CheckboxProps } from './Checkbox.interfaces';
+import { Pressable, StyleProp, ViewStyle } from 'react-native';
 
 const Checkbox: React.FC<CheckboxProps> = (props) => {
   const { checked, onChange = () => void 0, defaultState = false } = props;
@@ -56,10 +57,12 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
   }
   return (
     <Box border-radius={10000}>
-      <BorderlessButton
-        shouldCancelWhenOutside
+      <Pressable
+        android_ripple={{
+          color: theme.palette.action.ripple,
+        }}
         onPress={handleOnPress}
-        style={styles.borderlessButton}
+        style={styles.borderlessButton as StyleProp<ViewStyle>}
       >
         <Box
           as={Animated.View}
@@ -73,7 +76,7 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
             <Icon type="font" name="check-bold" color="primary@contrast" />
           </Animated.View>
         </Box>
-      </BorderlessButton>
+      </Pressable>
     </Box>
   );
 };

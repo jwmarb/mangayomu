@@ -1,7 +1,6 @@
 import Text from '@components/Text';
 import React from 'react';
-import { Linking } from 'react-native';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { Linking, Pressable } from 'react-native';
 import { HyperlinkProps } from './Hyperlink.interfaces';
 
 const Hyperlink: React.FC<HyperlinkProps> = (props) => {
@@ -15,11 +14,11 @@ const Hyperlink: React.FC<HyperlinkProps> = (props) => {
     }
   }
   return (
-    <TouchableWithoutFeedback onPress={handleOnPress}>
+    <Pressable onPress={handleOnPress}>
       <Text color="hint" underline={underline} {...rest}>
         {children}
       </Text>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 };
 

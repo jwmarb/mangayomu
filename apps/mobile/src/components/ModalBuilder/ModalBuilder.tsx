@@ -34,7 +34,12 @@ const ModalBuilder: React.ForwardRefRenderFunction<
   return (
     <>
       <TouchableWithoutFeedback onPress={handleOnOpen}>
-        {trigger}
+        {React.isValidElement(trigger)
+          ? React.cloneElement(trigger, { onPress: handleOnOpen } as Record<
+              string,
+              unknown
+            >)
+          : trigger}
       </TouchableWithoutFeedback>
       <Modal
         visible={visible}
@@ -63,6 +68,7 @@ const ModalBuilder: React.ForwardRefRenderFunction<
               border-radius="@theme"
               border-width="@theme"
               m="m"
+              overflow="hidden"
             >
               <Box py="m" px="l">
                 <Text variant="header">{title}</Text>

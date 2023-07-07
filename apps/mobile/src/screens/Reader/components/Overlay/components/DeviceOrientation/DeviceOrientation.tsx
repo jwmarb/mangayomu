@@ -15,8 +15,8 @@ import Box from '@components/Box/Box';
 import OverlayBottomButton from '@screens/Reader/components/Overlay/components/OverlayBottomButton/OverlayBottomButton';
 import { useMangaKey } from '@screens/Reader/context/MangaKey';
 import ModalMenu from '@components/ModalMenu/ModalMenu';
-import { RectButton } from 'react-native-gesture-handler';
 import { useTheme } from '@emotion/react';
+import { Pressable } from 'react-native';
 
 const DeviceOrientation: React.FC<ConnectedDeviceOrientationProps> = (
   props,
@@ -88,7 +88,7 @@ const DeviceOrientation: React.FC<ConnectedDeviceOrientationProps> = (
         ...ReaderScreenOrientation,
       }}
       trigger={
-        <RectButton rippleColor={theme.palette.action.ripple}>
+        <Pressable android_ripple={{ color: theme.palette.action.ripple }}>
           <Stack flex-direction="row" space="s" align-items="center">
             <Box align-self="center" ml="l">
               <Icon
@@ -104,7 +104,7 @@ const DeviceOrientation: React.FC<ConnectedDeviceOrientationProps> = (
               </Text>
             </Box>
           </Stack>
-        </RectButton>
+        </Pressable>
       }
     />
   );

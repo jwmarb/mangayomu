@@ -14,6 +14,7 @@ import Text from '@components/Text';
 import { BaseButton } from 'react-native-gesture-handler';
 import PreviewSelectorWrapper from '@screens/Appearance/components/Style/components/PreviewSelectorWrapper';
 import { BookStyle } from '@redux/slices/settings';
+import { Pressable } from 'react-native';
 
 const MangaRockBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
   const { isSelected, onSelect } = props;
@@ -31,9 +32,9 @@ const MangaRockBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
           border-color={isSelected ? 'primary' : '@theme'}
           border-width="@theme"
         >
-          <BaseButton
+          <Pressable
             onPress={handleOnPress}
-            rippleColor={theme.palette.action.ripple}
+            android_ripple={{ color: theme.palette.action.ripple }}
             style={{ borderRadius: theme.style.borderRadius }}
           >
             <Stack
@@ -51,7 +52,7 @@ const MangaRockBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
               {LinePlaceholder}
               {LinePlaceholder}
             </Stack>
-          </BaseButton>
+          </Pressable>
         </Stack>
         <Text>MangaRock</Text>
       </Stack>

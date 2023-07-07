@@ -12,6 +12,7 @@ import {
 } from 'react-native-reanimated';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { ACCORDION_SECTION_HEADER_HEIGHT } from '@theme/constants';
+import { Pressable } from 'react-native';
 
 export interface SectionHeaderProps {
   toggle: (key: string) => void;
@@ -32,7 +33,7 @@ const Section: React.FC<SectionHeaderProps> = (props) => {
   }));
   const handleOnPress = () => toggle(title);
   return (
-    <TouchableWithoutFeedback onPress={handleOnPress}>
+    <Pressable onPress={handleOnPress}>
       <Stack
         height={ACCORDION_SECTION_HEADER_HEIGHT}
         mx="m"
@@ -49,7 +50,7 @@ const Section: React.FC<SectionHeaderProps> = (props) => {
           compact
         />
       </Stack>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 };
 

@@ -4,19 +4,22 @@ import {
   Menu as RNMenu,
   MenuOptions,
   MenuTrigger,
+  MenuOptionsCustomStyle,
 } from 'react-native-popup-menu';
 import { useTheme } from '@emotion/react';
 import { moderateScale } from 'react-native-size-matters';
-import { RectButton, ScrollView } from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native-gesture-handler';
 import Box from '@components/Box';
 import Text from '@components/Text';
+import { Pressable } from 'react-native';
 
 const OptionTouchableComponent: React.FC<React.PropsWithChildren> = (props) => {
   const theme = useTheme();
   return (
-    <RectButton
-      shouldCancelWhenOutside
-      rippleColor={theme.palette.action.ripple}
+    <Pressable
+      android_ripple={{
+        color: theme.palette.action.ripple,
+      }}
       {...props}
     />
   );
@@ -63,7 +66,9 @@ const Menu: React.FC<MenuProps> = (props) => {
   return (
     <RNMenu>
       <MenuTrigger customStyles={customMenuTriggerCustomStyles} />
-      <MenuOptions customStyles={customMenuOptionsStyles}>
+      <MenuOptions
+        customStyles={customMenuOptionsStyles as MenuOptionsCustomStyle}
+      >
         {title && (
           <Box
             p="s"

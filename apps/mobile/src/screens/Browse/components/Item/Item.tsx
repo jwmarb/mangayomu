@@ -7,9 +7,9 @@ import { useTheme } from '@emotion/react';
 import useMangaSource from '@hooks/useMangaSource';
 import useRootNavigation from '@hooks/useRootNavigation';
 import React from 'react';
-import { RectButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import connector, { ConnectedItemProps } from './Item.redux';
+import { Pressable } from 'react-native';
 
 const Item: React.FC<ConnectedItemProps> = ({
   item,
@@ -29,9 +29,10 @@ const Item: React.FC<ConnectedItemProps> = ({
     navigation.navigate('InfiniteMangaList', { source: item });
   }
   return (
-    <RectButton
-      shouldCancelWhenOutside
-      rippleColor={theme.palette.action.ripple}
+    <Pressable
+      android_ripple={{
+        color: theme.palette.action.ripple,
+      }}
       onPress={handleOnPress}
     >
       <Stack
@@ -71,7 +72,7 @@ const Item: React.FC<ConnectedItemProps> = ({
           />
         </Stack>
       </Stack>
-    </RectButton>
+    </Pressable>
   );
 };
 

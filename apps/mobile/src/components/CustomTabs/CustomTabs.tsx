@@ -2,7 +2,7 @@ import Box from '@components/Box';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import React from 'react';
-import { useWindowDimensions } from 'react-native';
+import { Pressable, useWindowDimensions } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
@@ -32,7 +32,9 @@ function CustomTabBar<T extends Route>(props: TabBarProps<T>) {
   return (
     <TabBar
       {...props}
-      style={{ backgroundColor: theme.palette.background.paper }}
+      style={{
+        backgroundColor: theme.palette.background.paper,
+      }}
       indicatorStyle={{ backgroundColor: theme.palette.primary.main }}
       renderTabBarItem={(tabBarProps) => (
         <TabBarItem
@@ -71,9 +73,11 @@ const TabBarItem = React.memo(function (props: {
     color: color.value,
   }));
   return (
-    <BorderlessButton
-      shouldCancelWhenOutside
-      rippleColor={theme.palette.primary.ripple}
+    <Pressable
+      android_ripple={{
+        color: theme.palette.primary.ripple,
+        borderless: true,
+      }}
       onPress={() => {
         jumpTo(routeKey);
       }}
@@ -90,7 +94,7 @@ const TabBarItem = React.memo(function (props: {
           {routeTitle}
         </Text>
       </Box>
-    </BorderlessButton>
+    </Pressable>
   );
 });
 

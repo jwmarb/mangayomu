@@ -1,11 +1,11 @@
 import React from 'react';
 import { ButtonProps } from './Button.interfaces';
-import { BaseButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import Stack from '@components/Stack';
 import Box from '@components/Box/Box';
+import { Pressable } from 'react-native';
 
 const Button: React.FC<ButtonProps> = (props) => {
   const {
@@ -36,12 +36,15 @@ const Button: React.FC<ButtonProps> = (props) => {
         },
       ]}
     >
-      <BaseButton
-        shouldCancelWhenOutside
-        disallowInterruption
-        enabled={!disabled}
+      <Pressable
+        // shouldCancelWhenOutside
+        // disallowInterruption
+        disabled={disabled}
+        android_ripple={{
+          color: theme.palette[color].ripple,
+        }}
         {...rest}
-        rippleColor={theme.palette[color].ripple}
+        // rippleColor={theme.palette[color].ripple}
       >
         <Stack
           space={moderateScale(4)}
@@ -82,11 +85,7 @@ const Button: React.FC<ButtonProps> = (props) => {
                 disabled
                   ? 'disabled'
                   : variant === 'contained'
-                  ? {
-                      custom: theme.helpers.getContrastText(
-                        theme.palette[color].main,
-                      ),
-                    }
+                  ? theme.helpers.getContrastText(theme.palette[color].main)
                   : color
               }
             >
@@ -107,7 +106,7 @@ const Button: React.FC<ButtonProps> = (props) => {
                 : color,
             })}
         </Stack>
-      </BaseButton>
+      </Pressable>
     </Box>
   );
 };

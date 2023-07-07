@@ -2,12 +2,12 @@ import Box from '@components/Box';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
-import { RectButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import { RowChapterProps } from './RowChapter.interfaces';
 import { format, formatDistanceToNow } from 'date-fns';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { useTheme } from '@emotion/react';
+import { Pressable } from 'react-native';
 
 export const ROW_CHAPTER_HEIGHT = moderateScale(60);
 
@@ -42,10 +42,11 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
       });
   }
   return (
-    <RectButton
-      shouldCancelWhenOutside
+    <Pressable
       onPress={handleOnPress}
-      rippleColor={theme.palette.action.ripple}
+      android_ripple={{
+        color: theme.palette.action.ripple,
+      }}
     >
       <Stack
         space="s"
@@ -76,7 +77,7 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
           </Text>
         </Box>
       </Stack>
-    </RectButton>
+    </Pressable>
   );
 };
 

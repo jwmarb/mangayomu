@@ -9,8 +9,8 @@ import connector, {
   ConnectedItemProps,
 } from '@screens/Welcome/components/MainSourceSelector/components/Item/Item.redux';
 import React from 'react';
-import FastImage from 'react-native-fast-image';
-import { RectButton } from 'react-native-gesture-handler';
+import { Pressable } from 'react-native';
+import FastImage, { FastImageProps } from 'react-native-fast-image';
 import { ScaledSheet } from 'react-native-size-matters';
 
 const Item: React.FC<ConnectedItemProps> = React.memo(
@@ -23,17 +23,21 @@ const Item: React.FC<ConnectedItemProps> = React.memo(
     }
     const theme = useTheme();
     return (
-      <RectButton
-        shouldCancelWhenOutside
+      <Pressable
         onPress={handleOnPress}
-        rippleColor={theme.palette.action.ripple}
+        android_ripple={{
+          color: theme.palette.action.ripple,
+        }}
       >
         <Box flex-direction="row" align-items="center">
           <Box align-self="center" ml="s">
             <Checkbox onChange={handleOnPress} checked={isSelected} />
           </Box>
           <Stack py="s" flex-direction="row" space="m">
-            <FastImage source={{ uri: host.icon }} style={styles.icon} />
+            <FastImage
+              source={{ uri: host.icon }}
+              style={styles.icon as FastImageProps['style']}
+            />
             <Stack>
               <Text bold>{host.name}</Text>
               <Text color="textSecondary">v{host.getVersion()}</Text>
@@ -43,15 +47,15 @@ const Item: React.FC<ConnectedItemProps> = React.memo(
             </Stack>
           </Stack>
         </Box>
-      </RectButton>
+      </Pressable>
     );
   },
 );
 
 const styles = ScaledSheet.create({
   icon: {
-    width: '64@ms',
-    height: '64@ms',
+    width: '64@ms' as unknown as number,
+    height: '64@ms' as unknown as number,
   },
 });
 

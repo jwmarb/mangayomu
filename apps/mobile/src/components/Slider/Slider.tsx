@@ -4,6 +4,7 @@ import React from 'react';
 import {
   Dimensions,
   LayoutChangeEvent,
+  Pressable,
   useWindowDimensions,
 } from 'react-native';
 import {
@@ -23,7 +24,7 @@ import Animated, {
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import { SliderProps, SliderMethods } from './Slider.interfaces';
 
-const AnimatedButton = Animated.createAnimatedComponent(BorderlessButton);
+const AnimatedButton = Animated.createAnimatedComponent(Pressable);
 
 const styles = ScaledSheet.create({
   button: {
@@ -184,9 +185,11 @@ const Slider: React.ForwardRefRenderFunction<SliderMethods, SliderProps> = (
       </GestureDetector>
       <GestureDetector gesture={panGesture}>
         <AnimatedButton
-          borderless
-          foreground
-          rippleColor={theme.helpers.getRippleColor(color)}
+          android_ripple={{
+            borderless: true,
+            color: theme.helpers.getRippleColor(color),
+            foreground: true,
+          }}
           style={combinedBarStyles}
         >
           <Box

@@ -4,17 +4,13 @@ import Stack from '@components/Stack/Stack';
 import Box from '@components/Box/Box';
 import Text from '@components/Text/Text';
 import { AutoFetchThreshold, AutoFetchType } from '@redux/slices/settings';
-import Button from '@components/Button/Button';
-import Icon from '@components/Icon/Icon';
-import { RectButton, TextInput } from 'react-native-gesture-handler';
 import { useTheme } from '@emotion/react';
 import ModalMenu from '@components/ModalMenu/ModalMenu';
 import { DIVIDER_DEPTH } from '@theme/constants';
-import IconButton from '@components/IconButton/IconButton';
-import Input from '@components/Input/Input';
 import ModalInput from '@components/ModalInput/ModalInput';
 import {
   NativeSyntheticEvent,
+  Pressable,
   TextInputSubmitEditingEventData,
 } from 'react-native';
 
@@ -38,7 +34,7 @@ const AutoFetch: React.FC<ConnectedAutoFetchProps> = (props) => {
     <>
       <ModalMenu
         trigger={
-          <RectButton rippleColor={theme.palette.action.ripple}>
+          <Pressable android_ripple={{ color: theme.palette.action.ripple }}>
             <Stack
               align-items="center"
               flex-direction="row"
@@ -58,7 +54,7 @@ const AutoFetch: React.FC<ConnectedAutoFetchProps> = (props) => {
                 {autoFetchType}
               </Text>
             </Stack>
-          </RectButton>
+          </Pressable>
         }
         title="Use Auto Fetch"
         enum={AutoFetchType}
@@ -74,7 +70,9 @@ const AutoFetch: React.FC<ConnectedAutoFetchProps> = (props) => {
         >
           <ModalMenu
             trigger={
-              <RectButton rippleColor={theme.palette.action.ripple}>
+              <Pressable
+                android_ripple={{ color: theme.palette.action.ripple }}
+              >
                 <Stack
                   flex-direction="row"
                   space="s"
@@ -93,7 +91,7 @@ const AutoFetch: React.FC<ConnectedAutoFetchProps> = (props) => {
                     {MAPPED_THRESHOLD_POSITION[thresholdPosition]}
                   </Text>
                 </Stack>
-              </RectButton>
+              </Pressable>
             }
             title="Threshold Position"
             value={thresholdPosition}
@@ -107,7 +105,9 @@ const AutoFetch: React.FC<ConnectedAutoFetchProps> = (props) => {
               defaultValue={String(pageThreshold)}
               keyboardType="number-pad"
               trigger={
-                <RectButton>
+                <Pressable
+                  android_ripple={{ color: theme.palette.action.ripple }}
+                >
                   <Stack
                     flex-direction="row"
                     space="s"
@@ -123,7 +123,7 @@ const AutoFetch: React.FC<ConnectedAutoFetchProps> = (props) => {
                     </Box>
                     <Text color="textSecondary">{pageThreshold}</Text>
                   </Stack>
-                </RectButton>
+                </Pressable>
               }
               title="# of pages threshold"
             />

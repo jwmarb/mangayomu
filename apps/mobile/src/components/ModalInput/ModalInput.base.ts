@@ -2,7 +2,7 @@ import styled, { css } from '@emotion/native';
 import { TextInput } from 'react-native-gesture-handler';
 import { verticalScale } from 'react-native-size-matters';
 
-export const ModalInputBase = styled(TextInput)`
+export const ModalInputBase = styled.TextInput`
   ${({ theme }) => css`
     color: ${theme.palette.text.primary};
     padding-horizontal: ${verticalScale(16) + 'px'};

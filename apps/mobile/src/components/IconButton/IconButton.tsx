@@ -3,9 +3,13 @@ import { generateRippleColor } from '@components/IconButton/IconButton.helpers';
 import { useTheme } from '@emotion/react';
 import { ButtonColors } from '@mangayomu/theme';
 import React from 'react';
-import { BorderlessButton } from 'react-native-gesture-handler';
+import {
+  BorderlessButton,
+  TouchableNativeFeedback,
+} from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import { IconButtonProps } from './IconButton.interfaces';
+import { Pressable } from 'react-native';
 
 const IconButton: React.FC<IconButtonProps> = (props) => {
   const {
@@ -41,17 +45,18 @@ const IconButton: React.FC<IconButtonProps> = (props) => {
       height={borderlessButtonStyle.height}
       border-radius={10000}
     >
-      <BorderlessButton
-        disallowInterruption
-        shouldCancelWhenOutside
+      <Pressable
+        android_ripple={{
+          borderless: true,
+          color: rippleColor,
+          radius: compact ? moderateScale(18) : undefined,
+        }}
         style={borderlessButtonStyle}
-        rippleColor={rippleColor}
-        rippleRadius={compact ? moderateScale(18) : undefined}
         {...rest}
       >
         {icon &&
           React.cloneElement(icon, { variant: 'icon-button', color, animated })}
-      </BorderlessButton>
+      </Pressable>
     </Box>
   );
 };

@@ -6,6 +6,7 @@ import { BaseButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import { TagProps } from './Tag.interfaces';
 import Box from '@components/Box';
+import { Pressable } from 'react-native';
 
 const Tag: React.FC<TagProps> = (props) => {
   const { label, icon, color = 'textPrimary' } = props;
@@ -18,11 +19,12 @@ const Tag: React.FC<TagProps> = (props) => {
     if ('id' in props) props.onPress && props.onPress(props.id);
   }
   return (
-    <BaseButton
-      shouldCancelWhenOutside
+    <Pressable
       onPress={handleOnPress}
       style={baseButtonStyle}
-      rippleColor={theme.palette.action.ripple}
+      android_ripple={{
+        color: theme.palette.action.ripple,
+      }}
     >
       <Box
         px={moderateScale(10)}
@@ -41,7 +43,7 @@ const Tag: React.FC<TagProps> = (props) => {
           </Text>
         </Stack>
       </Box>
-    </BaseButton>
+    </Pressable>
   );
 };
 

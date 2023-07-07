@@ -1,8 +1,10 @@
 import { ButtonColors } from '@mangayomu/theme';
 import React from 'react';
-import { BaseButtonProps } from 'react-native-gesture-handler';
+import { PressableProps, StyleProp, ViewStyle } from 'react-native';
 
-export interface ButtonProps extends React.PropsWithChildren, BaseButtonProps {
+export interface ButtonProps
+  extends React.PropsWithChildren,
+    Omit<PressableProps, 'style'> {
   label?: string;
   variant?: 'contained' | 'outline' | 'text';
   color?: ButtonColors;
@@ -11,4 +13,5 @@ export interface ButtonProps extends React.PropsWithChildren, BaseButtonProps {
   icon?: React.ReactElement<any>;
   iconPlacement?: 'left' | 'right';
   sharp?: boolean;
+  style?: StyleProp<ViewStyle>;
 }

@@ -4,13 +4,13 @@ import IconButton from '@components/IconButton';
 import { InputBase } from '@components/Input/Input.base';
 import { useTheme } from '@emotion/react';
 import React from 'react';
-import { TextInput } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
 import { InputProps } from './Input.interfaces';
 import { moderateScale } from 'react-native-size-matters';
+import { TextInput } from 'react-native';
 
 const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
   const {
@@ -55,7 +55,6 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
           {React.cloneElement(icon, { variant: 'icon-button' })}
         </Box>
       )}
-
       <InputBase
         iconButton={iconButton}
         icon={icon}
@@ -64,7 +63,7 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
         expanded={expanded}
         shouldCancelWhenOutside
         {...rest}
-        ref={(r) => {
+        ref={(r: unknown) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (textRef as any).current = r;
           // eslint-disable-next-line @typescript-eslint/no-explicit-any

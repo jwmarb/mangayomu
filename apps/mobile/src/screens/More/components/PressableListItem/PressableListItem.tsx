@@ -4,9 +4,9 @@ import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import React from 'react';
-import { RectButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import { PressableListItemProps } from './PressableListItem.interfaces';
+import { Pressable } from 'react-native';
 
 const PressableListItem: React.FC<PressableListItemProps> = (props) => {
   const {
@@ -17,9 +17,10 @@ const PressableListItem: React.FC<PressableListItemProps> = (props) => {
   } = props;
   const theme = useTheme();
   return (
-    <RectButton
-      shouldCancelWhenOutside
-      rippleColor={theme.palette.action.ripple}
+    <Pressable
+      android_ripple={{
+        color: theme.palette.action.ripple,
+      }}
       onPress={onPress}
     >
       <Stack
@@ -51,7 +52,7 @@ const PressableListItem: React.FC<PressableListItemProps> = (props) => {
         </Stack>
         {iconRight}
       </Stack>
-    </RectButton>
+    </Pressable>
   );
 };
 

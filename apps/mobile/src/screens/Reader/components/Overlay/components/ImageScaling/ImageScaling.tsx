@@ -13,8 +13,8 @@ import OverlayBottomButton from '@screens/Reader/components/Overlay/components/O
 import Box from '@components/Box/Box';
 import { useMangaKey } from '@screens/Reader/context/MangaKey';
 import ModalMenu from '@components/ModalMenu';
-import { RectButton } from 'react-native-gesture-handler';
 import { useTheme } from '@emotion/react';
+import { Pressable } from 'react-native';
 
 const ImageScaling: React.FC<ConnectedImageScalingProps> = (props) => {
   const { globalImageScaling, type = 'button', setGlobalImageScaling } = props;
@@ -77,7 +77,7 @@ const ImageScaling: React.FC<ConnectedImageScalingProps> = (props) => {
         ...ImageScalingEnum,
       }}
       trigger={
-        <RectButton rippleColor={theme.palette.action.ripple}>
+        <Pressable android_ripple={{ color: theme.palette.action.ripple }}>
           <Stack flex-direction="row" space="s" align-items="center">
             <Box align-self="center" ml="l">
               <Icon type="font" name="image-auto-adjust" variant="header" />
@@ -89,7 +89,7 @@ const ImageScaling: React.FC<ConnectedImageScalingProps> = (props) => {
               </Text>
             </Box>
           </Stack>
-        </RectButton>
+        </Pressable>
       }
     />
   );

@@ -8,8 +8,7 @@ import { useTheme } from '@emotion/react';
 import displayMessage from '@helpers/displayMessage';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import React from 'react';
-import { Linking } from 'react-native';
-import { RectButton, ScrollView } from 'react-native-gesture-handler';
+import { Linking, Pressable, ScrollView } from 'react-native';
 import { moderateScale } from 'react-native-size-matters';
 import connector, { ConnectedSourceViewProps } from './SourceView.redux';
 
@@ -78,9 +77,8 @@ const SourceView: React.FC<ConnectedSourceViewProps> = (props) => {
           <Box mx="m" my="s">
             <Text variant="header">Configuration</Text>
           </Box>
-          <RectButton
-            shouldCancelWhenOutside
-            rippleColor={theme.palette.action.ripple}
+          <Pressable
+            android_ripple={{ color: theme.palette.action.ripple }}
             onPress={handleOnToggleWithSearch}
           >
             <Stack
@@ -97,11 +95,10 @@ const SourceView: React.FC<ConnectedSourceViewProps> = (props) => {
                 onChange={handleOnToggleWithSearch}
               />
             </Stack>
-          </RectButton>
+          </Pressable>
           {source.hasHotMangas() && (
-            <RectButton
-              shouldCancelWhenOutside
-              rippleColor={theme.palette.action.ripple}
+            <Pressable
+              android_ripple={{ color: theme.palette.action.ripple }}
               onPress={handleOnToggleHot}
             >
               <Stack
@@ -118,12 +115,11 @@ const SourceView: React.FC<ConnectedSourceViewProps> = (props) => {
                   onChange={handleOnToggleHot}
                 />
               </Stack>
-            </RectButton>
+            </Pressable>
           )}
           {source.hasLatestMangas() && (
-            <RectButton
-              shouldCancelWhenOutside
-              rippleColor={theme.palette.action.ripple}
+            <Pressable
+              android_ripple={{ color: theme.palette.action.ripple }}
               onPress={handleOnToggleLatest}
             >
               <Stack
@@ -140,7 +136,7 @@ const SourceView: React.FC<ConnectedSourceViewProps> = (props) => {
                   onChange={handleOnToggleLatest}
                 />
               </Stack>
-            </RectButton>
+            </Pressable>
           )}
         </Stack>
       </Stack>

@@ -1,6 +1,5 @@
 import React from 'react';
 import { BookListItemProps } from './BookListItem.interfaces';
-import { RectButton } from 'react-native-gesture-handler';
 import Box from '@components/Box';
 import { useTheme } from '@emotion/react';
 import { MANGA_LIST_ITEM_HEIGHT } from '@theme/constants';
@@ -8,6 +7,7 @@ import Stack from '@components/Stack';
 import { StaticCover } from '@components/Cover';
 import Text from '@components/Text';
 import displayMessage from '@helpers/displayMessage';
+import { Pressable } from 'react-native';
 
 const BookListItem: React.FC<BookListItemProps> = (props) => {
   const { manga, children, end, start, onPress } = props;
@@ -16,9 +16,12 @@ const BookListItem: React.FC<BookListItemProps> = (props) => {
     displayMessage(manga.title);
   }
   return (
-    <RectButton
-      shouldCancelWhenOutside
-      rippleColor={theme.palette.action.ripple}
+    <Pressable
+      android_ripple={{
+        color: theme.palette.action.ripple,
+      }}
+      // shouldCancelWhenOutside
+      // rippleColor={theme.palette.action.ripple}
       onLongPress={handleOnLongPress}
       onPress={onPress}
     >
@@ -47,7 +50,7 @@ const BookListItem: React.FC<BookListItemProps> = (props) => {
           {end}
         </Stack>
       </Box>
-    </RectButton>
+    </Pressable>
   );
 };
 

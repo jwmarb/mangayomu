@@ -1,21 +1,24 @@
 import React from 'react';
 import { SkipButtonProps } from './SkipButton.interfaces';
 import Box from '@components/Box';
-import { BorderlessButton } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
 import { OVERLAY_COLOR, OVERLAY_SLIDER_HEIGHT } from '@theme/constants';
 import Icon from '@components/Icon';
 import { useTheme } from '@emotion/react';
+import { Pressable } from 'react-native';
 
 const SkipButton: React.FC<SkipButtonProps> = (props) => {
   const { onSkip } = props;
   const theme = useTheme();
   return (
     <Box align-self="flex-start" border-radius={10000}>
-      <BorderlessButton
-        rippleColor={theme.palette.action.ripple}
-        disallowInterruption
-        cancelsTouchesInView
+      <Pressable
+        android_ripple={{
+          color: theme.palette.action.ripple,
+          borderless: true,
+          foreground: true,
+          radius: OVERLAY_SLIDER_HEIGHT / 2,
+        }}
         onPress={onSkip}
       >
         <Box
@@ -33,7 +36,7 @@ const SkipButton: React.FC<SkipButtonProps> = (props) => {
             <Icon type="font" name="skip-next" size={moderateScale(24)} />
           )}
         </Box>
-      </BorderlessButton>
+      </Pressable>
     </Box>
   );
 };

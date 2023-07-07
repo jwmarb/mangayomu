@@ -16,6 +16,7 @@ import PreviewSelectorWrapper from '@screens/Appearance/components/Style/compone
 import { BaseButton } from 'react-native-gesture-handler';
 import { BookStyle } from '@redux/slices/settings';
 import Icon from '@components/Icon';
+import { Pressable } from 'react-native';
 
 const TachiyomiBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
   const { isSelected, onSelect } = props;
@@ -26,13 +27,15 @@ const TachiyomiBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
   return (
     <PreviewSelectorWrapper isSelected={isSelected}>
       <Stack space="s" flex-grow border-radius="@theme">
-        <BaseButton
+        <Pressable
           onPress={handleOnPress}
           style={{
             borderRadius: theme.style.borderRadius,
             flexGrow: 1,
           }}
-          rippleColor={theme.palette.action.ripple}
+          android_ripple={{
+            color: theme.palette.action.ripple,
+          }}
         >
           <Stack
             px="m"
@@ -58,7 +61,7 @@ const TachiyomiBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
               </Stack>
             </Box>
           </Stack>
-        </BaseButton>
+        </Pressable>
         <Text>Tachiyomi</Text>
       </Stack>
     </PreviewSelectorWrapper>

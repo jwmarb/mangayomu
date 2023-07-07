@@ -6,8 +6,8 @@ import connector, {
   ConnectedShowPageNumberProps,
 } from './ShowPageNumber.redux';
 import Box from '@components/Box/Box';
-import { RectButton } from 'react-native-gesture-handler';
 import { useTheme } from '@emotion/react';
+import { Pressable } from 'react-native';
 
 const ShowPageNumber: React.FC<ConnectedShowPageNumberProps> = (props) => {
   const { toggleShowPageNumber, showPageNumber } = props;
@@ -16,8 +16,8 @@ const ShowPageNumber: React.FC<ConnectedShowPageNumberProps> = (props) => {
     toggleShowPageNumber();
   }
   return (
-    <RectButton
-      rippleColor={theme.palette.action.ripple}
+    <Pressable
+      android_ripple={{ color: theme.palette.action.ripple }}
       onPress={handleOnChange}
     >
       <Stack
@@ -36,7 +36,7 @@ const ShowPageNumber: React.FC<ConnectedShowPageNumberProps> = (props) => {
           <Switch enabled={showPageNumber} onChange={handleOnChange} />
         </Box>
       </Stack>
-    </RectButton>
+    </Pressable>
   );
 };
 
