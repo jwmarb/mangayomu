@@ -1,5 +1,5 @@
 import React from 'react';
-import type { CheckboxProps } from './Checkbox.interfaces';
+import type { CheckboxProps } from './';
 import { VisuallyHidden, useCheckbox, useFocusRing } from 'react-aria';
 import { useToggleState } from 'react-stately';
 import { MdCheck } from 'react-icons/md';

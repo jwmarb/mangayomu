@@ -2,7 +2,7 @@
 import useClassName from '@app/hooks/useClassName';
 import React from 'react';
 import { useButton } from 'react-aria';
-import type { IconButtonProps } from './IconButton.interfaces';
+import type { IconButtonProps } from './';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function IconButton(

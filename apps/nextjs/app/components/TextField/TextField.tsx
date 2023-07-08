@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import type { TextFieldProps } from './TextField.interfaces';
+import type { TextFieldProps } from './';
 import useClassName from '@app/hooks/useClassName';
 import { AriaTextFieldProps, useTextField } from 'react-aria';
 import useBoolean from '@app/hooks/useBoolean';

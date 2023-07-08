@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { useButton } from 'react-aria';
-import { ButtonProps } from './Button.interfaces';
+import { ButtonProps } from './';
 import useClassName from '@app/hooks/useClassName';
 import { ButtonColor, ButtonVariant } from '@app/theme';
 

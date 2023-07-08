@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextComponentType, TextProps } from './Text.interfaces';
+import { TextComponentType, TextProps } from './';
 import useClassName from '@app/hooks/useClassName';
 import {
   ButtonColor,
