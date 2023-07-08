@@ -17,8 +17,8 @@ export const SORT_HOSTS_BY = {
   Alphabetically: (reversed: boolean) => (n1: string, n2: string) =>
     reversed ? n2.localeCompare(n1) : n1.localeCompare(n2),
   Version: (reversed: boolean) => (n1: string, n2: string) => {
-    const source1 = MangaHost.getAvailableSources().get(n1);
-    const source2 = MangaHost.getAvailableSources().get(n2);
+    const source1 = MangaHost.sourcesMap.get(n1);
+    const source2 = MangaHost.sourcesMap.get(n2);
     if (source1 == null || source2 == null)
       throw Error('Cannot compare sources that do not exist.');
     return reversed
