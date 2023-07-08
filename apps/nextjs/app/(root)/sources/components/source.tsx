@@ -5,10 +5,8 @@ import Checkbox from '@app/components/Checkbox';
 import Text from '@app/components/Text';
 import { useAddedSources } from '@app/context/sources';
 import { MangaHost } from '@mangayomu/mangascraper';
-import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
-import { useButton } from 'react-aria';
 import { shallow } from 'zustand/shallow';
 import { MdLink, MdOutlineSettings } from 'react-icons/md';
 
@@ -27,7 +25,7 @@ function Source(props: SourceProps) {
   const highlight = isSelected ? 'border-primary/[0.5]' : 'border-default';
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const source = MangaHost.getAvailableSources().get(strSource)!;
+  const source = MangaHost.sourcesMap.get(strSource)!;
   return (
     <div className={`transition duration-250 flex flex-col ${highlight}`}>
       <button
@@ -40,21 +38,21 @@ function Source(props: SourceProps) {
         <div className="flex flex-row space-x-4">
           <img
             loading="lazy"
-            src={source.getIcon()}
-            alt={`${source.getName()} icon`}
+            src={source.icon}
+            alt={`${source.name} icon`}
             className="w-16 h-16 md:h-24 md:w-24 rounded-lg"
           />
           <div className="justify-center flex flex-col items-start">
-            <Text className="md:text-variant-header">{source.getName()}</Text>
+            <Text className="md:text-variant-header">{source.name}</Text>
             <Text
               color="text-secondary"
               variant="sm-label"
               className="md:text-variant-body"
             >
-              v{source.getVersion()}
+              v{source.version}
             </Text>
             <Text color="hint" variant="sm-label">
-              {source.getLink()}
+              {source.link}
             </Text>
           </div>
         </div>
@@ -66,7 +64,7 @@ function Source(props: SourceProps) {
             'flex flex-row border-x-2 border-b-2 rounded-b-lg bg-paper border-default'
           }
         >
-          <Link href={`https://${source.getLink()}`}>
+          <Link href={`https://${source.link}`}>
             <Button
               className="rounded-t-none rounded-br-none"
               icon={<MdLink />}
