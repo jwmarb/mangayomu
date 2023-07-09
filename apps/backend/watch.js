@@ -76,10 +76,8 @@ watch.createMonitor('./src', { interval: 1 }, async function (monitor) {
     const file = __dirname + '\\' + _;
     const filePath = pathOnly(file);
     const isSrcDirectory = filePath === DEV_SRC_PATH;
-    const deconstePath = isSrcDirectory
-      ? getDistPath(file)
-      : getOutputPath(file);
-    println(`Deconsted ${_}`);
-    fs.rmSync(deconstePath, { force: true });
+    const deletePath = isSrcDirectory ? getDistPath(file) : getOutputPath(file);
+    println(`Deleted ${_}`);
+    fs.rmSync(deletePath, { force: true });
   });
 });
