@@ -4,6 +4,7 @@ import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import React from 'react';
 import { MangaStatusProps } from './MangaStatus.interfaces';
+import { moderateScale } from 'react-native-size-matters';
 
 const ongoingSet = new Set(['ongoing', 'publishing']);
 
@@ -35,14 +36,13 @@ const MangaStatus: React.FC<MangaStatusProps> = (props) => {
         align-items="center"
       >
         <Text color="textSecondary">Scan Status</Text>
+
         {data && data.scan ? (
           <Text color={getColor(data.scan)}>
             {data.scan.substring(0, data.scan.indexOf(' '))}
           </Text>
         ) : loading ? (
-          <Skeleton>
-            <Text>Ongoing</Text>
-          </Skeleton>
+          <Text.Skeleton lineStyles={[{ width: moderateScale(72) }]} />
         ) : (
           <Text color="disabled">Unknown</Text>
         )}
@@ -59,9 +59,7 @@ const MangaStatus: React.FC<MangaStatusProps> = (props) => {
             {data.publish.substring(0, data.publish.lastIndexOf(' '))}
           </Text>
         ) : (
-          <Skeleton>
-            <Text>Ongoing</Text>
-          </Skeleton>
+          <Text.Skeleton lineStyles={[{ width: moderateScale(72) }]} />
         )}
       </Stack>
     </>

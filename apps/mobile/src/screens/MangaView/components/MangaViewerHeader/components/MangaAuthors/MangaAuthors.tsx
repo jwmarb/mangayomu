@@ -7,12 +7,7 @@ import { MangaAuthorsProps } from './MangaAuthors.interfaces';
 
 const MangaAuthors: React.FC<MangaAuthorsProps> = (props) => {
   const { data, loading } = props;
-  if (data == null && loading)
-    return (
-      <Skeleton fullWidth>
-        <Text>Placeholder</Text>
-      </Skeleton>
-    );
+  if (data == null && loading) return <Text.Skeleton />;
 
   return (
     <Box maxWidth={moderateScale(420)} align-self="center">

@@ -5,6 +5,7 @@ import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
 import { MangaRatingProps } from './MangaRating.interfaces';
+import { moderateScale } from 'react-native-size-matters';
 
 const MangaRating: React.FC<MangaRatingProps> = (props) => {
   const { data, loading } = props;
@@ -12,24 +13,16 @@ const MangaRating: React.FC<MangaRatingProps> = (props) => {
   if (data == null && loading)
     return (
       <Box align-self="center">
-        <Skeleton>
-          <Box
-            flex-direction="row"
-            align-items="center"
-            justify-content="center"
-          >
-            <Icon color="disabled" type="font" name="star" variant="header" />
-            <Icon color="disabled" type="font" name="star" variant="header" />
-            <Icon color="disabled" type="font" name="star" variant="header" />
-            <Icon color="disabled" type="font" name="star" variant="header" />
-            <Icon color="disabled" type="font" name="star" variant="header" />
-            <Box ml="s">
-              <Text variant="book-title" color="textSecondary">
-                Placeholder
-              </Text>
-            </Box>
-          </Box>
-        </Skeleton>
+        <Box flex-direction="row" align-items="center" justify-content="center">
+          <Text.Skeleton lineStyles={[{ width: moderateScale(70) }]} />
+          <Stack space="s" ml="s" flex-direction="row" align-items="center">
+            <Text.Skeleton lineStyles={[{ width: moderateScale(24) }]} />
+            <Text variant="book-title" color="textSecondary">
+              •
+            </Text>
+            <Text.Skeleton lineStyles={[{ width: moderateScale(52) }]} />
+          </Stack>
+        </Box>
       </Box>
     );
 
