@@ -1,4 +1,4 @@
-import Box from '@components/Box';
+import Box, { AnimatedBox } from '@components/Box';
 import { coverStyles } from '@components/Cover/Cover';
 import Stack from '@components/Stack';
 import { useIsFocused } from '@react-navigation/native';
@@ -17,6 +17,7 @@ import Animated, {
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
 import { BookStyle } from '@redux/slices/settings';
+import { moderateScale } from 'react-native-size-matters';
 
 const mapStateToProps = (state: AppState) => state.settings.book;
 
@@ -86,7 +87,7 @@ const LoadingBook: React.FC<LoadingBookProps> = ({
       <Animated.View style={loadingStyles} />
       {style !== BookStyle.TACHIYOMI && (
         <Box>
-          <Animated.View style={textLoading}>
+          <Box>
             <Text
               numberOfLines={2}
               bold={title.bold}
@@ -95,8 +96,20 @@ const LoadingBook: React.FC<LoadingBookProps> = ({
             >
               a
             </Text>
-          </Animated.View>
-          <Animated.View style={textLoading}>
+            <Box
+              flex-grow
+              position="absolute"
+              left={0}
+              right={0}
+              top={0}
+              bottom={0}
+              align-items="center"
+              justify-content="center"
+            >
+              <AnimatedBox height="50%" style={textLoading} />
+            </Box>
+          </Box>
+          <Box>
             <Text
               numberOfLines={2}
               bold={title.bold}
@@ -105,7 +118,19 @@ const LoadingBook: React.FC<LoadingBookProps> = ({
             >
               a
             </Text>
-          </Animated.View>
+            <Box
+              flex-grow
+              position="absolute"
+              left={0}
+              right={0}
+              top={0}
+              bottom={0}
+              align-items="center"
+              justify-content="center"
+            >
+              <AnimatedBox height="50%" style={textLoading} />
+            </Box>
+          </Box>
         </Box>
       )}
     </Stack>

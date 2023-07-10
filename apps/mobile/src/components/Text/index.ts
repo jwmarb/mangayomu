@@ -1,4 +1,7 @@
-import Text from './Text';
+import BaseText from './Text';
+import Skeleton from './Text.skeleton';
+const Text = BaseText as typeof BaseText & { Skeleton: typeof Skeleton };
+Text.Skeleton = Skeleton;
 export default Text;
 export { AnimatedText } from './Text';
 import { ButtonColorsTextContrasts } from '@mangayomu/theme';
