@@ -14,4 +14,5 @@ export type TextVariant =
   | 'sm-label'
   | 'header-emphasized'
   | 'list-header'
-  | 'sm-badge';
+  | 'sm-badge'
+  | 'book-title';
