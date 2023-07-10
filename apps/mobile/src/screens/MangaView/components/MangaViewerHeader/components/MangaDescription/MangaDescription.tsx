@@ -45,24 +45,8 @@ const MangaDescription: React.FC<MangaDescriptionProps> = (props) => {
         )}
       </Stack>
 
-      {data == null && loading ? (
-        <>
-          <Skeleton>
-            <Text>Placeholder</Text>
-          </Skeleton>
-          <Skeleton>
-            <Text>Placeholder</Text>
-          </Skeleton>
-          <Skeleton>
-            <Text>Placeholder</Text>
-          </Skeleton>
-          <Skeleton>
-            <Text>Placeholder</Text>
-          </Skeleton>
-          <Skeleton>
-            <Text>Placeholder</Text>
-          </Skeleton>
-        </>
+      {data == null || loading ? (
+        <Text.Skeleton numberOfLines={6} />
       ) : data ? (
         <Box
           border-width={{ b: '@theme' }}
