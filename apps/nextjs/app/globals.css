@@ -61,4 +61,11 @@
   .text-variant-sm-badge {
     @apply text-xs font-bold;
   }
+  .text-variant-book-title {
+    @apply md:text-sm font-medium text-xs tracking-tight md:tracking-normal;
+  }
+
+  .skeleton {
+    @apply bg-gray-700 animate-pulse;
+  }
 }
