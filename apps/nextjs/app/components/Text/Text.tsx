@@ -51,6 +51,7 @@ const TextVariants: Record<TextVariant, string> = {
   'header-emphasized': 'text-variant-header-emphasized',
   'list-header': 'text-variant-list-header',
   'sm-badge': 'text-variant-sm-badge',
+  'book-title': 'text-variant-book-title',
 };
 const TextColors: Record<
   TextColor | ButtonContrastColors | ButtonColor,
