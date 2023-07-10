@@ -57,13 +57,7 @@ export const spoilerRenderer: CustomBlockRenderer = ({
           align-items="center"
           overflow="visible"
         >
-          <Text
-            color={{
-              custom: SPOILER_CONTRAST_COLOR,
-            }}
-          >
-            Reveal spoiler
-          </Text>
+          <Text color={SPOILER_CONTRAST_COLOR}>Reveal spoiler</Text>
         </Box>
       </Animated.View>
     </TouchableWithoutFeedback>
