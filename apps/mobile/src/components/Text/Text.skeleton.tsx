@@ -1,18 +1,19 @@
-import Box from '@components/Box';
+import Box, { BoxProps } from '@components/Box';
 import { coverStyles } from '@components/Cover/Cover';
 import Text from '@components/Text';
 import React from 'react';
 
-interface TextSkeletonProps {
+interface TextSkeletonProps extends BoxProps {
   numberOfLines?: number;
+  lineStyles?: BoxProps[];
 }
 
 const TextSkeleton: React.FC<TextSkeletonProps> = (props) => {
-  const { numberOfLines = 1 } = props;
+  const { numberOfLines = 1, lineStyles = [], ...rest } = props;
   return (
-    <Box>
+    <Box {...rest}>
       {new Array(numberOfLines).fill('').map((_, i) => (
-        <Box key={i}>
+        <Box key={i} {...lineStyles[i]}>
           <Text style={coverStyles.placeholderText}>a</Text>
           <Box
             flex-grow
