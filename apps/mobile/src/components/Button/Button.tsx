@@ -69,11 +69,7 @@ const Button: React.FC<ButtonProps> = (props) => {
               color: disabled
                 ? 'disabled'
                 : variant === 'contained'
-                ? {
-                    custom: theme.helpers.getContrastText(
-                      theme.palette[color].main,
-                    ),
-                  }
+                ? theme.helpers.getContrastText(theme.palette[color].main)
                 : color,
             })}
           {label && (
@@ -98,11 +94,7 @@ const Button: React.FC<ButtonProps> = (props) => {
               color: disabled
                 ? 'disabled'
                 : variant === 'contained'
-                ? {
-                    custom: theme.helpers.getContrastText(
-                      theme.palette[color].main,
-                    ),
-                  }
+                ? theme.helpers.getContrastText(theme.palette[color].main)
                 : color,
             })}
         </Stack>
