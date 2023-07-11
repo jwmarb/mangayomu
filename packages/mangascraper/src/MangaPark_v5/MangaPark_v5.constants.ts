@@ -13,6 +13,7 @@ const MANGAPARKV5_GENRES = [
   'animals',
   'anthology',
   'artbook',
+  'award_winning',
   'bara',
   'blackmail',
   'bloody',
@@ -218,6 +219,7 @@ const filters = createSchema(
     Genres: createInclusiveExclusiveFilter({
       fields: MANGAPARKV5_GENRES.filter((x) => !genresMappedToType.has(x)),
       map: {
+        award_winning: 'Award Winning',
         gore: 'Gore',
         bara: 'Bara (ML)',
         josei: 'Josei',
