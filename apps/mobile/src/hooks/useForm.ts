@@ -6,17 +6,16 @@ interface FormState {
   error?: string;
 }
 
-export default function useForm<TSchema>(validator: Zod.AnyZodObject) {
-  const validation = React.useRef<Record<keyof TSchema, FormState>>(
-    {} as Record<keyof TSchema, FormState>,
+export default function useForm<TSchema>(
+  validator: Zod.AnyZodObject | Zod.ZodEffects<Zod.AnyZodObject>,
+) {
+  const validation = React.useRef<Record<keyof TSchema, string>>(
+    {} as Record<keyof TSchema, string>,
   );
   const [errors, setErrors] = React.useState<Record<keyof TSchema, string>>(
     {} as Record<keyof TSchema, string>,
   );
   const clearErrors = () => {
-    for (const key in validation.current) {
-      validation.current[key].error = '';
-    }
     setErrors({} as Record<keyof TSchema, string>);
   };
   const setError = (errors: Partial<Record<keyof TSchema, string>>) => {
@@ -32,50 +31,30 @@ export default function useForm<TSchema>(validator: Zod.AnyZodObject) {
   const handleSubmit = (onSubmit: (e: TSchema) => void) => {
     return () => {
       clearErrors();
-      for (const key in validation.current) {
-        const result: zod.SafeParseReturnType<unknown, unknown> =
-          validator.shape[key].safeParse(
-            validation.current[key as keyof TSchema].value,
-          );
-        if (!result.success)
-          validation.current[key as keyof TSchema].error =
-            result.error.errors[0].message;
-      }
-
-      // Check if there are errors
-      for (const key in validation.current) {
-        if (validation.current[key].error)
-          return setErrors(
-            Object.entries<FormState>(validation.current).reduce(
-              (prev, [key, value]) => {
-                prev[key] = value.error || '';
-                return prev;
-              },
-              {} as Record<string, string>,
-            ) as Record<keyof TSchema, string>,
-          );
-      }
-
-      onSubmit(
-        Object.entries<FormState>(validation.current).reduce(
-          (prev, [key, value]) => {
-            prev[key] = value.value;
-            return prev;
-          },
-          {} as Record<string, unknown>,
-        ) as TSchema,
-      );
+      const result = validator.safeParse(validation.current);
+      if (!result.success) {
+        const fieldErrors = result.error.flatten().fieldErrors as Record<
+          keyof TSchema,
+          string[]
+        >;
+        setErrors((prev) => {
+          const copy = { ...prev };
+          for (const key in fieldErrors) {
+            copy[key] = fieldErrors[key][0];
+          }
+          return copy;
+        });
+      } else onSubmit(validation.current as TSchema);
     };
   };
 
-  const register = (key: keyof TSchema) => {
-    validation.current[key] =
-      validation.current[key] ?? ({ value: '', error: '' } as FormState);
+  const register = <T extends keyof TSchema>(key: T) => {
+    validation.current[key] = validation.current[key] ?? '';
     return {
       onChangeText: (e: string) => {
-        validation.current[key].value = e;
+        validation.current[key] = e;
       },
-      defaultValue: validation.current[key].value,
+      defaultValue: validation.current[key] as TSchema[T],
       error: errors[key],
     };
   };
