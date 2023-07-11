@@ -1,4 +1,4 @@
-import Box from '@components/Box';
+import Box, { AnimatedBox } from '@components/Box';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
 import { InputBase } from '@components/Input/Input.base';
@@ -11,6 +11,7 @@ import Animated, {
 import { InputProps } from './';
 import { moderateScale } from 'react-native-size-matters';
 import { TextInput } from 'react-native';
+import useBoolean from '@hooks/useBoolean';
 
 const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
   const {
@@ -21,6 +22,7 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
     expanded,
     ...rest
   } = props;
+  const [visible, toggleVisible] = useBoolean();
   const textRef = React.useRef<TextInput>(null);
   const opacity = useSharedValue(
     defaultValue.length > 0 || (props.value && props.value.length > 0) ? 1 : 0,
@@ -44,6 +46,10 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
     else opacity.value = 0;
   }
 
+  function handleOnToggleShowPassword() {
+    toggleVisible();
+  }
+
   const style = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
@@ -62,6 +68,9 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
         defaultValue={defaultValue}
         expanded={expanded}
         {...rest}
+        secureTextEntry={
+          rest.textContentType === 'password' ? !visible : undefined
+        }
         ref={(r: unknown) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (textRef as any).current = r;
@@ -85,15 +94,26 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
         right={moderateScale(-8)}
         align-self="center"
         mr="m"
+        flex-direction="row"
       >
-        <Animated.View style={style}>
+        {rest.textContentType === 'password' && (
+          <AnimatedBox style={style}>
+            <IconButton
+              onPress={handleOnToggleShowPassword}
+              icon={<Icon type="font" name={visible ? 'eye' : 'eye-off'} />}
+              compact
+              color="textSecondary"
+            />
+          </AnimatedBox>
+        )}
+        <AnimatedBox style={style}>
           <IconButton
             icon={<Icon type="font" name="close" />}
             compact
             color="textSecondary"
             onPress={handleOnClear}
           />
-        </Animated.View>
+        </AnimatedBox>
       </Box>
     </Box>
   );
