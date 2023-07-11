@@ -45,7 +45,7 @@ watch.createMonitor('./src', { interval: 1 }, async function (monitor) {
   monitor.on('changed', async function (_) {
     const file = __dirname + '\\' + _;
     const filePath = pathOnly(file);
-    const isSrcDirectory = filePath === DEV_SRC_PATH;
+    const isSrcDirectory = !filePath.includes(DEV_API_ROUTE_PATH);
     const writeToPath = isSrcDirectory
       ? getDistPath(file)
       : getOutputPath(file);
@@ -56,7 +56,7 @@ watch.createMonitor('./src', { interval: 1 }, async function (monitor) {
   monitor.on('created', async function (_) {
     const file = __dirname + '\\' + _;
     const filePath = pathOnly(file);
-    const isSrcDirectory = filePath === DEV_SRC_PATH;
+    const isSrcDirectory = !filePath.includes(DEV_API_ROUTE_PATH);
     if (isSrcDirectory) {
       // compile to ./dist
       const writeToPath = getDistPath(file);
