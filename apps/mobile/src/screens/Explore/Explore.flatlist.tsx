@@ -1,7 +1,7 @@
 import Book from '@components/Book';
 import { LoadingBook } from '@components/Book/';
 import Box from '@components/Box';
-import { Manga } from '@mangayomu/mangascraper';
+import { Manga } from '@mangayomu/mangascraper/src';
 import React from 'react';
 import { ListRenderItem } from '@shopify/flash-list';
 import { moderateScale } from 'react-native-size-matters';

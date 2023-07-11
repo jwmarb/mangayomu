@@ -18,7 +18,7 @@ import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { CustomBottomSheet } from '@components/CustomBottomSheet';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useWindowDimensions } from 'react-native';
-import { Manga } from '@mangayomu/mangascraper';
+import { Manga } from '@mangayomu/mangascraper/src';
 import { useTheme } from '@emotion/react';
 import Style from '@screens/Appearance/components/Style';
 import CoverImage from '@screens/Appearance/components/CoverImage';

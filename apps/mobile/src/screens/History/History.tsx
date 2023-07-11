@@ -19,7 +19,7 @@ import Input from '@components/Input';
 import { useLocalRealm, useQuery, useRealm } from '@database/main';
 import { MangaSchema } from '@database/schemas/Manga';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
-import { Manga, MangaChapter } from '@mangayomu/mangascraper';
+import { Manga, MangaChapter } from '@mangayomu/mangascraper/src';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import {
   HistorySection,

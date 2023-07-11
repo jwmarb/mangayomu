@@ -5,7 +5,7 @@ import Text from '@components/Text';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { SourceError } from '@helpers/getMangaHost';
-import { MangaHost } from '@mangayomu/mangascraper';
+import { MangaHost } from '@mangayomu/mangascraper/src';
 import React from 'react';
 import { ListRenderItem } from 'react-native';
 import FastImage from 'react-native-fast-image';

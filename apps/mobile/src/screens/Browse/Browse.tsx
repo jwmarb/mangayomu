@@ -4,7 +4,7 @@ import IconButton from '@components/IconButton';
 import Input from '@components/Input';
 import Stack from '@components/Stack';
 import useCollapsibleTabHeader from '@hooks/useCollapsibleTabHeader';
-import { MangaHost } from '@mangayomu/mangascraper';
+import { MangaHost } from '@mangayomu/mangascraper/src';
 import React from 'react';
 import {
   ListRenderItem,

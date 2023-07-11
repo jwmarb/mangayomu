@@ -28,7 +28,7 @@ import {
 } from '@mangayomu/schema-creator';
 import { FilterState } from '@redux/slices/mainSourceSelector';
 import { InclusiveExclusiveFilter } from '@mangayomu/schema-creator';
-import { Manga } from '@mangayomu/mangascraper';
+import { Manga } from '@mangayomu/mangascraper/src';
 import { StatusAPI } from '@redux/slices/explore';
 import { getErrorMessage } from '@helpers/getErrorMessage';
 import useMountedEffect from '@hooks/useMountedEffect';

@@ -3,7 +3,7 @@ import { AnimatedBox } from '@components/Box';
 import Progress from '@components/Progress';
 import { useTheme } from '@emotion/react';
 import useRootNavigation from '@hooks/useRootNavigation';
-import { Manga } from '@mangayomu/mangascraper';
+import { Manga } from '@mangayomu/mangascraper/src';
 import { AUTO_HEIGHT_SCALAR } from '@redux/slices/settings';
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';

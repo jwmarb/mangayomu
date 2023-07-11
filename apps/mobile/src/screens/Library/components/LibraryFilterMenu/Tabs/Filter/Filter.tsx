@@ -7,7 +7,7 @@ import React from 'react';
 import connector, { ConnectedLibraryFilterProps } from './Filter.redux';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import Button from '@components/Button';
-import { MangaHost } from '@mangayomu/mangascraper';
+import { MangaHost } from '@mangayomu/mangascraper/src';
 import integrateSortedList from '@helpers/integrateSortedList';
 import { StringComparator } from '@mangayomu/algorithms';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';

@@ -2,7 +2,7 @@ import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import { PageSchema } from '@database/schemas/Page';
 import { getErrorMessage } from '@helpers/getErrorMessage';
-import { MangaHost } from '@mangayomu/mangascraper';
+import { MangaHost } from '@mangayomu/mangascraper/src';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Image } from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';

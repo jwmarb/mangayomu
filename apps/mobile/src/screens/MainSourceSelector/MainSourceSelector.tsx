@@ -7,7 +7,7 @@ import { ListRenderItem } from 'react-native';
 import connector, {
   ConnectedMainSourceSelectorProps,
 } from './MainSourceSelector.redux';
-import { MangaHost } from '@mangayomu/mangascraper';
+import { MangaHost } from '@mangayomu/mangascraper/src';
 import { applyFilterState } from '@redux/slices/mainSourceSelector';
 import { SORT_HOSTS_BY } from '@redux/slices/host';
 import Text from '@components/Text';

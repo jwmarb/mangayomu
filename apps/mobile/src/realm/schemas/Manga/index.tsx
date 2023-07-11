@@ -6,7 +6,7 @@ import {
   WithHentai,
   WithRating,
   WithStatus,
-} from '@mangayomu/mangascraper';
+} from '@mangayomu/mangascraper/src';
 import Realm from 'realm';
 import React from 'react';
 import useMangaSource from '@hooks/useMangaSource';

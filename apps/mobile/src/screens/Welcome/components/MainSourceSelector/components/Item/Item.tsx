@@ -4,7 +4,7 @@ import Hyperlink from '@components/Hyperlink';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
-import { MangaHost } from '@mangayomu/mangascraper';
+import { MangaHost } from '@mangayomu/mangascraper/src';
 import connector, {
   ConnectedItemProps,
 } from '@screens/Welcome/components/MainSourceSelector/components/Item/Item.redux';

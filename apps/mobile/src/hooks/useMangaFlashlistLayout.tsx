@@ -4,7 +4,7 @@ import { MangaSchema } from '@database/schemas/Manga';
 import { useTheme } from '@emotion/react';
 import assertIsManga from '@helpers/assertIsManga';
 import useMountedEffect from '@hooks/useMountedEffect';
-import { Manga } from '@mangayomu/mangascraper';
+import { Manga } from '@mangayomu/mangascraper/src';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import React from 'react';
 import { Dimensions, useWindowDimensions } from 'react-native';

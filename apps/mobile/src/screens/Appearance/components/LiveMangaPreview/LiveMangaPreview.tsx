@@ -21,7 +21,7 @@ import { useRealm } from '@database/main';
 import { MangaSchema } from '@database/schemas/Manga';
 import NetInfo from '@react-native-community/netinfo';
 import useDialog from '@hooks/useDialog';
-import { MangaHost } from '@mangayomu/mangascraper';
+import { MangaHost } from '@mangayomu/mangascraper/src';
 import { getErrorMessage } from '@helpers/getErrorMessage';
 import Progress from '@components/Progress/Progress';
 import { Portal } from '@gorhom/portal';

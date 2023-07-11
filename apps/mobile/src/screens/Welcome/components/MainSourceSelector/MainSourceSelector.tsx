@@ -2,7 +2,7 @@ import { CustomBottomSheet } from '@components/CustomBottomSheet';
 import { useTheme } from '@emotion/react';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
-import { MangaHost } from '@mangayomu/mangascraper';
+import { MangaHost } from '@mangayomu/mangascraper/src';
 import { SORT_HOSTS_BY } from '@redux/slices/host';
 import { applyFilterState } from '@redux/slices/mainSourceSelector';
 import Header from '@screens/Welcome/components/MainSourceSelector/components/Header';
