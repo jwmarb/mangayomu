@@ -2,9 +2,9 @@
 import useClassName from '@app/hooks/useClassName';
 import React from 'react';
 
-const HeaderHeightContext = React.createContext<number | undefined>(undefined);
+const HeaderHeightContext = React.createContext<number>(0);
 const SetHeaderHeightContext = React.createContext<React.Dispatch<
-  React.SetStateAction<number | undefined>
+  React.SetStateAction<number>
 > | null>(null);
 
 export const useHeaderHeight = () => React.useContext(HeaderHeightContext);
@@ -27,7 +27,7 @@ interface ScreenBaseProps
 const ScreenBase: React.FC<ScreenBaseProps> = (props) => {
   const { children, ...rest } = props;
   const className = useClassName('w-full relative', props);
-  const [headerHeight, setHeaderHeight] = React.useState<number | undefined>();
+  const [headerHeight, setHeaderHeight] = React.useState<number>(0);
   return (
     <div {...rest} className={className}>
       <HeaderHeightContext.Provider value={headerHeight}>

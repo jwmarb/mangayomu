@@ -13,11 +13,20 @@ interface ContentProps
     > {}
 
 export default function Content(props: ContentProps) {
-  const { children, ...rest } = props;
+  const {
+    children,
+    className: defaultClassName,
+    overrideClassName,
+    style = {},
+    ...rest
+  } = props;
   const headerHeight = useHeaderHeight();
   const navHeaderHeight = useSafeArea((store) => store.headerHeight);
   const isMobile = useSafeArea((store) => store.mobile);
-  const className = useClassName('max-w-screen-xl mx-auto p-4', props);
+  const className = useClassName('max-w-screen-xl mx-auto p-4', {
+    className: defaultClassName,
+    overrideClassName,
+  });
 
   return (
     <div
@@ -25,11 +34,13 @@ export default function Content(props: ContentProps) {
       className={className}
       style={{
         marginTop: headerHeight,
-        minHeight: headerHeight
-          ? window.innerHeight -
-            headerHeight -
-            (!isMobile ? 0 : navHeaderHeight)
-          : undefined,
+        minHeight:
+          headerHeight != null
+            ? window.innerHeight -
+              headerHeight -
+              (!isMobile ? 0 : navHeaderHeight)
+            : undefined,
+        ...style,
       }}
     >
       {children}
