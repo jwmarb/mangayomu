@@ -84,7 +84,7 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
           left={moderateScale(-8)}
           position="absolute"
           align-self="center"
-          ml="s"
+          ml="m"
         >
           {React.cloneElement(iconButton, { compact: true })}
         </Box>
