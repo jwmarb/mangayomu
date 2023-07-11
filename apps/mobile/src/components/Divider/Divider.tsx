@@ -5,14 +5,23 @@ import { DividerProps } from './';
 import { DIVIDER_DEPTH } from '@theme/constants';
 
 const Divider: React.FC<DividerProps> = (props) => {
-  const { orientation = 'horizontal' } = props;
+  const { orientation = 'horizontal', shrink = false, ...boxProps } = props;
   const theme = useTheme();
   return (
     <Box
       background-color={theme.palette.borderColor}
       {...(orientation === 'horizontal'
-        ? { width: '100%', height: DIVIDER_DEPTH }
-        : { height: '100%', width: DIVIDER_DEPTH })}
+        ? {
+            width: shrink ? undefined : '100%',
+            height: DIVIDER_DEPTH,
+            'flex-grow': shrink,
+          }
+        : {
+            height: shrink ? undefined : '100%',
+            width: DIVIDER_DEPTH,
+            'flex-grow': shrink,
+          })}
+      {...boxProps}
     />
   );
 };
