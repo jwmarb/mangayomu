@@ -45,7 +45,7 @@ export default function Navbar() {
       <nav
         ref={navRef}
         className={`lg:opacity-0 lg:pointer-events-none fixed w-full flex flex-row items-center px-4 py-2 bg-paper ${
-          !drawerVisible ? 'z-10' : ''
+          !drawerVisible ? 'z-50' : ''
         }`}
       >
         <IconButton
