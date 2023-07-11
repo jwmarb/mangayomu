@@ -5,16 +5,25 @@ import Text from '@components/Text';
 import Input from '@components/Input';
 import Box from '@components/Box';
 import { useTheme } from '@emotion/react';
+import { Pressable } from 'react-native';
 
 const Field: React.FC<FieldProps> = (props) => {
   const { onChange, label, error, ...rest } = props;
   const theme = useTheme();
+  const inputRef = React.useRef<React.ElementRef<typeof Input>>(null);
+
+  const handleOnPress = () => {
+    inputRef.current?.focus();
+  };
+
   if (error)
     return (
       <Stack space={theme.style.spacing.s / 2}>
-        <Stack space="s">
-          <Text>{label}</Text>
-          <Input width="100%" placeholder={label} error {...rest} />
+        <Stack space="s" flex-shrink>
+          <Pressable onPress={handleOnPress}>
+            <Text>{label}</Text>
+          </Pressable>
+          <Input ref={inputRef} placeholder={label} error {...rest} />
         </Stack>
         <Text variant="body-sub" color="error">
           {error}
@@ -23,8 +32,10 @@ const Field: React.FC<FieldProps> = (props) => {
     );
   return (
     <Stack space="s">
-      <Text>{label}</Text>
-      <Input width="100%" placeholder={label} {...rest} />
+      <Pressable onPress={handleOnPress}>
+        <Text>{label}</Text>
+      </Pressable>
+      <Input ref={inputRef} expanded placeholder={label} {...rest} />
     </Stack>
   );
 };
