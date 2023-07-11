@@ -23,6 +23,7 @@
     --background-color-disabled: 220 220 220;
     --border-color-default: #cccccc;
     --action-hover: 196 196 196;
+    --background-color-tag: rgba(0, 0, 0, 0.1);
   }
   :root[class~='dark'] {
     --color-primary: 152 185 220;
@@ -38,6 +39,7 @@
     --background-color-default: 7 17 19;
     --background-color-disabled: 16 42 45;
     --border-color-default: rgba(160, 160, 160, 0.1);
+    --background-color-tag: rgba(255, 255, 255, 0.1);
     --action-hover: 196 196 196;
   }
   .text-variant-header {
@@ -47,7 +49,7 @@
     @apply text-3xl font-bold;
   }
   .text-variant-body {
-    @apply text-base font-medium;
+    @apply text-base font-normal;
   }
   .text-variant-button {
     @apply text-sm font-medium;
@@ -66,6 +68,6 @@
   }
 
   .skeleton {
-    @apply bg-gray-700 animate-pulse;
+    @apply dark:bg-gray-700 bg-gray-300 animate-pulse;
   }
 }
