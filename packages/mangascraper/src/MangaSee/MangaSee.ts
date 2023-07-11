@@ -44,7 +44,6 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         title: x.SeriesName,
         imageCover: this.getImageCover(html, x.IndexName),
         source: this.name,
-        index: i,
       })),
     );
   }
@@ -60,7 +59,6 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         title: x.SeriesName,
         imageCover: this.getImageCover(html, x.IndexName),
         source: this.name,
-        index: i,
       })),
     );
   }
@@ -79,7 +77,6 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
           scan: x.ss,
           publish: x.ps,
         },
-        index: i,
         isHentai: x.h,
         type: x.t,
         genres: x.g,
