@@ -11,4 +11,5 @@ export interface InputProps extends TextInputProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   iconButton?: React.ReactElement<any>;
   expanded?: boolean;
+  error?: boolean;
 }

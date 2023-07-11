@@ -12,11 +12,14 @@ export const InputBase = styled.TextInput<InputProps>`
     iconButton,
     expanded,
     textContentType,
+    error,
   }) => css`
     color: ${theme.palette.text.primary};
     border-radius: ${theme.style.borderRadius + 'px'};
     border-width: 1.5px;
-    border-color: ${theme.palette.borderColor};
+    border-color: ${error
+      ? theme.palette.error.main
+      : theme.palette.borderColor};
     padding-horizontal: ${verticalScale(16) + 'px'};
     padding-vertical: ${verticalScale(6) + 'px'};
     ${theme.typography.body};
