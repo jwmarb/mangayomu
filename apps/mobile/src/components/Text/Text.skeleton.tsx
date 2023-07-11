@@ -1,6 +1,6 @@
 import Box, { BoxProps } from '@components/Box';
 import { coverStyles } from '@components/Cover/Cover';
-import Text from '@components/Text';
+import Text from './Text';
 import React from 'react';
 
 interface TextSkeletonProps extends BoxProps {
