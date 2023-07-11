@@ -26,8 +26,8 @@ const IconButton: React.FC<IconButtonProps> = (props) => {
   const borderlessButtonStyle = React.useMemo(
     () =>
       ({
-        width: moderateScale(48),
-        height: moderateScale(48),
+        width: compact ? moderateScale(32) : moderateScale(48),
+        height: compact ? moderateScale(32) : moderateScale(48),
         alignItems: 'center',
         justifyContent: 'center',
       } as const),
@@ -44,7 +44,6 @@ const IconButton: React.FC<IconButtonProps> = (props) => {
         android_ripple={{
           borderless: true,
           color: rippleColor,
-          radius: compact ? moderateScale(18) : undefined,
         }}
         style={borderlessButtonStyle}
         {...rest}
