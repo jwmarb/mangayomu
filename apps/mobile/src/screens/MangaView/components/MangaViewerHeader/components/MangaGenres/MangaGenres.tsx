@@ -15,9 +15,9 @@ const MangaGenres: React.FC<MangaGenresProps> = (props) => {
       for (const genre of data) {
         if (host.getGenre(genre) == null)
           console.warn(
-            `${genre} does not exist in host.getGenre(). Add it to the source genres.\nIndex in genres: ${host
-              .getGenres()
-              .indexOf(genre)}`,
+            `${genre} does not exist in host.getGenre(). Add it to the source genres.\nIndex in genres: ${host.genres.indexOf(
+              genre,
+            )}`,
           );
       }
   }, [data]);
