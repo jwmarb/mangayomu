@@ -1,7 +1,9 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "module": "CommonJS",
+    "target": "ES5"
   },
   "include": ["./src"],
   "exclude": ["dist", "node_modules", "__tests__/", "src/**/*.test.ts"]
