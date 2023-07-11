@@ -9,20 +9,13 @@ import { MdSearch, MdFilterList } from 'react-icons/md';
 import { useAddedSources } from '@app/context/sources';
 import Screen from '@app/components/Screen';
 import Tabs from '@app/components/Tabs';
+import SourceList from '@app/(root)/sources/components/sourcelist';
+import SelectedSourceList from '@app/(root)/sources/components/selectedsourcelist';
 
 export default function SourceSelector() {
   const [query, setQuery] = React.useState<string>('');
-  const sources = useAddedSources((store) => store.sources);
-  const set = React.useMemo(() => new Set(sources), [sources]);
-  const mapped = React.useMemo(
-    () =>
-      MangaHost.getListSources()
-        .filter((val) => val.toLowerCase().includes(query.toLowerCase()))
-        .map((x, i) => (
-          <Source key={x + i} source={x} isSelected={set.has(x)} />
-        )),
-    [query, set],
-  );
+  const savedSources = useAddedSources((store) => store.sources);
+
   return (
     <Screen>
       <Tabs>
@@ -35,29 +28,15 @@ export default function SourceSelector() {
           />
           <Tabs.List>
             <Tabs.Tab>All Sources</Tabs.Tab>
-            <Tabs.Tab>Selected ({sources.length})</Tabs.Tab>
+            <Tabs.Tab>Selected ({savedSources.length})</Tabs.Tab>
           </Tabs.List>
         </Screen.Header>
-        <Screen.Content className="flex flex-col gap-4">
+        <Screen.Content className="flex flex-grow flex-col gap-4">
           <Tabs.Panel>
-            <div className="flex justify-end items-center">
-              <Button icon={<MdFilterList />}>Filters</Button>
-            </div>
-            {mapped.length > 0 ? (
-              <div className="grid xl:grid-cols-3 md:grid-cols-2 gap-2 md:gap-4">
-                {mapped}
-              </div>
-            ) : (
-              <div>
-                <Text variant="header-emphasized">No results found</Text>
-                <Text color="text-secondary">
-                  There are no sources that match &quot;{query}&quot;
-                </Text>
-              </div>
-            )}
+            <SourceList query={query} />
           </Tabs.Panel>
           <Tabs.Panel>
-            <Text>Hello World!</Text>
+            <SelectedSourceList query={query} />
           </Tabs.Panel>
         </Screen.Content>
       </Tabs>
