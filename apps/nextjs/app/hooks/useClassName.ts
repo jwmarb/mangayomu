@@ -13,12 +13,14 @@ export default function useClassName(
   className: string | (() => string),
   props: OverrideClassName,
 ) {
-  return [
-    props.overrideClassName ?? typeof className === 'string'
-      ? className
-      : className(),
-    props.className,
-  ]
+  return (
+    props.overrideClassName != null
+      ? [props.overrideClassName, props.className]
+      : [
+          typeof className === 'string' ? className : className(),
+          props.className,
+        ]
+  )
     .filter(Boolean)
     .join(' ');
 }
