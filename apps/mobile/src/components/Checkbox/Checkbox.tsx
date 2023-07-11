@@ -59,6 +59,7 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
       <Pressable
         android_ripple={{
           color: theme.palette.action.ripple,
+          borderless: true,
         }}
         onPress={handleOnPress}
         style={styles.borderlessButton as StyleProp<ViewStyle>}
