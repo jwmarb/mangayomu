@@ -1,4 +1,4 @@
-import { MangaHost } from '@mangayomu/mangascraper';
+import { MangaHost } from '@mangayomu/mangascraper/src';
 import { RootStackProps } from '@navigators/Root/Root.interfaces';
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';

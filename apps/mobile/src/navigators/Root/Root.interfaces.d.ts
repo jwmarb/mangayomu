@@ -1,4 +1,4 @@
-import { Manga } from '@mangayomu/mangascraper';
+import { Manga } from '@mangayomu/mangascraper/src';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ExploreState } from '@redux/slices/explore';
 

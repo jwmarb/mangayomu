@@ -4,7 +4,7 @@ import { MangaSchema } from '@database/schemas/Manga';
 import assertIsManga from '@helpers/assertIsManga';
 import integrateSortedList from '@helpers/integrateSortedList';
 import mangaSchemaToManga from '@helpers/mangaSchemaToManga';
-import { Manga, MangaChapter } from '@mangayomu/mangascraper';
+import { Manga, MangaChapter } from '@mangayomu/mangascraper/src';
 import { useUser } from '@realm/react';
 import { isToday } from 'date-fns';
 

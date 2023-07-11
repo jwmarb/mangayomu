@@ -5,7 +5,7 @@ import {
   setSort,
   setQuery,
 } from '@redux/slices/mainSourceSelector';
-import { MangaHost } from '@mangayomu/mangascraper';
+import { MangaHost } from '@mangayomu/mangascraper/src';
 import { addAllSources, removeAllSources } from '@redux/slices/host';
 
 const mapStateToProps = (state: AppState) => ({

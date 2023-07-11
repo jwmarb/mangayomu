@@ -4,7 +4,7 @@ import { AppState } from '@redux/main';
 import { inPlaceSort } from 'fast-sort';
 import React from 'react';
 import { getErrorMessage } from './getErrorMessage';
-import { MangaHost, Manga } from '@mangayomu/mangascraper';
+import { MangaHost, Manga } from '@mangayomu/mangascraper/src';
 
 export interface SourceError {
   error: string;

@@ -1,4 +1,4 @@
-import { Manga } from '@mangayomu/mangascraper';
+import { Manga } from '@mangayomu/mangascraper/src';
 
 export default function assertIsManga(t: unknown): t is Manga {
   return (

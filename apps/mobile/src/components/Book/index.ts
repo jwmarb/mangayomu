@@ -1,7 +1,7 @@
 import Book from './Book';
 export default Book;
 export { default as LoadingBook } from './Book.skeleton';
-import { Manga } from '@mangayomu/mangascraper';
+import { Manga } from '@mangayomu/mangascraper/src';
 import { SharedValue } from 'react-native-reanimated';
 import { BookStyle, TitleAlignment } from '@redux/slices/settings';
 export {

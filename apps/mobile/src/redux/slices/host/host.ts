@@ -1,5 +1,5 @@
 import integrateSortedList from '@helpers/integrateSortedList';
-import { MangaHost } from '@mangayomu/mangascraper';
+import { MangaHost } from '@mangayomu/mangascraper/src';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface HostState {

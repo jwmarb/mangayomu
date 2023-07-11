@@ -1,5 +1,5 @@
 import { MangaSchema } from '@database/schemas/Manga';
-import { Manga, MangaHost } from '@mangayomu/mangascraper';
+import { Manga, MangaHost } from '@mangayomu/mangascraper/src';
 
 const availableSources = MangaHost.sourcesMap;
 

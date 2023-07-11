@@ -14,7 +14,7 @@ import NetInfo, {
 } from '@react-native-community/netinfo';
 import React from 'react';
 import { ChapterSchema } from '@database/schemas/Chapter';
-import { MangaHost } from '@mangayomu/mangascraper';
+import { MangaHost } from '@mangayomu/mangascraper/src';
 import { useLocalRealm } from '@database/main';
 import { InteractionManager } from 'react-native';
 import { AutoFetchThreshold, AutoFetchType } from '@redux/slices/settings';

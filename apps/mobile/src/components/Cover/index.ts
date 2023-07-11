@@ -2,7 +2,7 @@ import Cover from './Cover';
 export default Cover;
 export { default as CustomizableCover } from './Cover.customizable';
 export { default as StaticCover } from './Cover.static';
-import { Manga } from '@mangayomu/mangascraper';
+import { Manga } from '@mangayomu/mangascraper/src';
 import { BookStyle } from '@redux/slices/settings';
 import React from 'react';
 import { SharedValue } from 'react-native-reanimated';

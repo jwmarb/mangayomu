@@ -3,7 +3,7 @@ import { MangaSchema } from '@database/schemas/Manga';
 import displayMessage from '@helpers/displayMessage';
 import integrateSortedList from '@helpers/integrateSortedList';
 import useMountedEffect from '@hooks/useMountedEffect';
-import { MangaHost } from '@mangayomu/mangascraper';
+import { MangaHost } from '@mangayomu/mangascraper/src';
 import { useIsFocused } from '@react-navigation/native';
 import { useUser } from '@realm/react';
 import { LibrarySortOption, SORT_LIBRARY_BY } from '@redux/slices/library';

@@ -1,5 +1,5 @@
 import { ISOLangCode } from '@mangayomu/language-codes';
-import { MangaChapter } from '@mangayomu/mangascraper';
+import { MangaChapter } from '@mangayomu/mangascraper/src';
 import { Dimensions } from 'react-native';
 import Realm from 'realm';
 

@@ -3,7 +3,7 @@ import {
   FetchMangaMetaStatus,
   useManga,
 } from '@database/schemas/Manga';
-import { Manga } from '@mangayomu/mangascraper';
+import { Manga } from '@mangayomu/mangascraper/src';
 import React from 'react';
 
 export interface MangaViewerHeaderProps extends React.PropsWithChildren {

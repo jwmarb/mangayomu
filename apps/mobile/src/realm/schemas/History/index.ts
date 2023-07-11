@@ -1,4 +1,4 @@
-import { Manga, MangaChapter } from '@mangayomu/mangascraper';
+import { Manga, MangaChapter } from '@mangayomu/mangascraper/src';
 import Realm from 'realm';
 
 export interface HistorySection {

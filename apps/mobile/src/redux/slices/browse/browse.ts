@@ -1,5 +1,5 @@
 import { getErrorMessage } from '@helpers/getErrorMessage';
-import { Manga } from '@mangayomu/mangascraper';
+import { Manga } from '@mangayomu/mangascraper/src';
 import { StatusAPI } from '@redux/slices/explore';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
