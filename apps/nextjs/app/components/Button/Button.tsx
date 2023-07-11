@@ -28,6 +28,11 @@ const disabledConfig: Record<ButtonVariant, string> = {
   outline: 'text-hint outline outline-2 outline-disabled',
 };
 
+const buttonSizes: Record<NonNullable<ButtonProps['size']>, string> = {
+  large: 'px-4 py-2 md:px-5 md:py-2.5',
+  medium: 'px-4 py-2',
+};
+
 export default function Button(props: ButtonProps) {
   const {
     children,
@@ -36,6 +41,7 @@ export default function Button(props: ButtonProps) {
     variant = 'text',
     icon,
     iconPlacement = 'left',
+    size = 'medium',
   } = props;
   const ref = React.useRef<HTMLButtonElement>(null);
   const { buttonProps } = useButton(
@@ -43,7 +49,9 @@ export default function Button(props: ButtonProps) {
     ref,
   );
   const className = useClassName(
-    `select-none px-4 py-2 rounded-lg text-variant-button transition ease-out hover:duration-250 duration-250 motion-reduce:transition-none motion-reduce:hover:transition-none flex flex-row items-center justify-center gap-2 ${
+    `select-none ${
+      buttonSizes[size]
+    } rounded-lg text-variant-button transition ease-out hover:duration-250 duration-250 motion-reduce:transition-none motion-reduce:hover:transition-none flex flex-row items-center justify-center gap-2 ${
       disabled ? disabledConfig[variant] : buttonConfig[color][variant]
     }`,
     props,

@@ -16,4 +16,5 @@ export interface ButtonProps
   icon?: React.ReactNode;
   iconPlacement?: 'left' | 'right';
   disabled?: boolean;
+  size?: 'medium' | 'large';
 }
