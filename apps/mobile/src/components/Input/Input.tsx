@@ -33,6 +33,9 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
     clear: () => {
       handleOnClear();
     },
+    focus: () => {
+      textRef.current?.focus();
+    },
   }));
   const theme = useTheme();
   function handleOnClear() {
