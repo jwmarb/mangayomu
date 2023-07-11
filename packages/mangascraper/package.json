@@ -1,7 +1,7 @@
 {
   "name": "@mangayomu/mangascraper",
   "version": "1.0.0",
-  "main": "./src/index.ts",
+  "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "private": true,
   "description": "A scraper for mangas",
@@ -15,7 +15,7 @@
     "url": "^0.11.0"
   },
   "scripts": {
-    "build": "rm -rf dist && tsc",
+    "build": "tsc --build",
     "reset": "rm -rf node_modules",
     "test": "jest"
   }
