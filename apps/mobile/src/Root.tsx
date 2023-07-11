@@ -18,6 +18,7 @@ import useDialog from '@hooks/useDialog';
 import UnfinishedMangaList from '@screens/UnfinishedMangaList';
 import GlobalReaderSettings from '@screens/GlobalReaderSettings';
 import Login from '@screens/Login';
+import Register from '@screens/Register';
 
 const mapStateToProps = (state: AppState) => ({
   showWelcomeScreen: state.__initial__.firstTimeUser,
@@ -97,6 +98,7 @@ const Root: React.FC<RootProps> = ({ showWelcomeScreen }) => {
         component={GlobalReaderSettings}
       />
       <RootStack.Screen name="Login" component={Login} />
+      <RootStack.Screen name="Register" component={Register} />
     </RootStack.Navigator>
   );
 };
