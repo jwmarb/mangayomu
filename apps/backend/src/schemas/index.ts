@@ -1,1 +1,4 @@
-export { default as SourceManga } from './sourcemanga';
+export {
+  default as SourceManga,
+  SourceManga as ISourceManga,
+} from './sourcemanga';
