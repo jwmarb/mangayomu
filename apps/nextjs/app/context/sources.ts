@@ -3,10 +3,17 @@ import { persist } from 'zustand/middleware';
 import { binary } from '@mangayomu/algorithms';
 import { MangaHost } from '@mangayomu/mangascraper';
 
+interface HostConfigState {
+  useWithUniversalSearch: boolean;
+  useLatestUpdates: boolean;
+  useHottestUpdates: boolean;
+}
+
 interface AddedSourcesStore {
   sources: string[];
   sortBy: HostSortType;
   reversed: boolean;
+  sourcesConfig: Record<string, HostConfigState>;
   addSource: (src: string) => void;
   removeSource: (src: string) => void;
 }
@@ -33,6 +40,7 @@ export const useAddedSources = create(
       sources: [],
       reversed: false,
       sortBy: 'Alphabetically',
+      sourcesConfig: {},
       addSource: (src: string) => {
         if (get().sources.length === 0) set({ sources: [src] });
         else {
@@ -43,7 +51,18 @@ export const useAddedSources = create(
             SORT_HOSTS_BY[get().sortBy](get().reversed),
           );
           newArray.splice(index, 0, src);
-          set({ sources: newArray });
+          set({
+            sources: newArray,
+            sourcesConfig: {
+              ...get().sourcesConfig,
+              [src]: {
+                ...(src in get().sourcesConfig ? get().sourcesConfig[src] : {}),
+                useHottestUpdates: true,
+                useWithUniversalSearch: true,
+                useLatestUpdates: true,
+              },
+            },
+          });
         }
       },
       removeSource: (src: string) => {
