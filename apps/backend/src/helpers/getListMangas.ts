@@ -1,4 +1,11 @@
-import { SourceError, SourceManga, redis, slugify, getErrorMessage } from '../';
+import {
+  SourceError,
+  SourceManga,
+  redis,
+  slugify,
+  getErrorMessage,
+  ISourceManga,
+} from '../';
 import { Manga, MangaHost } from '@mangayomu/mangascraper';
 
 export default async function getListMangas(
@@ -44,25 +51,30 @@ export default async function getListMangas(
     0,
   );
   const mangas: Manga[] = [];
-  const sourceMangas: Parameters<typeof SourceManga.bulkWrite<SourceManga>>[0] =
-    [];
+  const sourceMangas: Parameters<
+    typeof SourceManga.bulkWrite<ISourceManga>
+  >[0] = [];
+  const uniq = new Set<string>();
   for (let i = 0; i <= largestIndex; i++) {
     for (const collection of unsortedMangas) {
       if (i < collection.mangas.length) {
         mangas.push(collection.mangas[i]);
         if (isStale) {
           const _id = getId(collection.mangas[i]);
-          sourceMangas.push({
-            updateOne: {
-              upsert: true,
-              filter: { _id },
-              update: [
-                {
-                  $set: { _id, url: collection.mangas[i].link },
-                },
-              ],
-            },
-          });
+          if (!uniq.has(_id)) {
+            uniq.add(_id);
+            sourceMangas.push({
+              updateOne: {
+                upsert: true,
+                filter: { _id },
+                update: [
+                  {
+                    $set: { _id, ...collection.mangas[i] },
+                  },
+                ],
+              },
+            });
+          }
         }
       }
     }
@@ -72,14 +84,25 @@ export default async function getListMangas(
     await Promise.all([
       SourceManga.bulkWrite(sourceMangas),
       Promise.all(
-        mangas.map(async (x) => {
+        unique(mangas).map(async (x) => {
           const _id = getId(x);
-          await redis.setex(_id, 86400, x.link);
+          await redis.setex(_id, 86400, JSON.stringify(x));
         }),
       ),
     ]);
 
   return { errors, mangas };
+}
+
+function unique(mangas: Manga[]) {
+  const uniq = new Set();
+  return mangas.filter((manga) => {
+    if (!uniq.has(manga.link)) {
+      uniq.add(manga.link);
+      return true;
+    }
+    return false;
+  });
 }
 
 function getId(manga: Manga) {
