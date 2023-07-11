@@ -41,11 +41,9 @@ const PressableListItem: React.FC<PressableListItemProps> = (props) => {
           >
             {iconLeft != null &&
               React.cloneElement(iconLeft, {
-                color: {
-                  custom: theme.helpers.getContrastText(
-                    theme.palette.background.disabled,
-                  ),
-                },
+                color: theme.helpers.getContrastText(
+                  theme.palette.background.disabled,
+                ),
               })}
           </Box>
           <Text>{label}</Text>
