@@ -22,7 +22,7 @@ const authenticate = async (): Promise<AuthTokenResponse> => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body,
-      next: { revalidate: 0 },
+      next: { revalidate: false },
     });
     const data: { response: EmbeddedResponseStatus } = await response.json();
     switch (data.response.status_code) {
