@@ -10,6 +10,7 @@ export const typography = {
   'header-lg': css`
     font-family: Roboto;
     font-size: ${moderateScale(30) + 'px'};
+    font-weight: bold;
     letter-spacing: -0.19px;
   `,
   header: css`
