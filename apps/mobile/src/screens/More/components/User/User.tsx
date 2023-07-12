@@ -8,7 +8,6 @@ import Text from '@components/Text';
 import { useRealm } from '@database/main';
 import displayMessage from '@helpers/displayMessage';
 import { getErrorMessage } from '@helpers/getErrorMessage';
-import useAuth0 from '@hooks/useAuth0';
 import useDialog from '@hooks/useDialog';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { useApp, useUser } from '@realm/react';
