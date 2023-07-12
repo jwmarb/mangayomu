@@ -12,13 +12,15 @@ export default function useForm<TSchema>(
   const validation = React.useRef<Record<keyof TSchema, string>>(
     {} as Record<keyof TSchema, string>,
   );
-  const [errors, setErrors] = React.useState<Record<keyof TSchema, string>>(
-    {} as Record<keyof TSchema, string>,
-  );
+  const [errors, setErrors] = React.useState<
+    Record<keyof TSchema, string | boolean>
+  >({} as Record<keyof TSchema, string | boolean>);
   const clearErrors = () => {
     setErrors({} as Record<keyof TSchema, string>);
   };
-  const setError = (errors: Partial<Record<keyof TSchema, string>>) => {
+  const setError = (
+    errors: Partial<Record<keyof TSchema, string | boolean>>,
+  ) => {
     setErrors((prev) => {
       const copy = { ...prev };
       for (const key in errors) {
