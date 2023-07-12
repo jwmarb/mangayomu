@@ -1,6 +1,6 @@
 use http::StatusCode;
-use mongodb::{bson::oid::ObjectId, options::ClientOptions, Client};
-use redis::{aio::AsyncStream, AsyncCommands, Connection, RedisError};
+use mongodb::{options::ClientOptions, Client};
+use redis::{aio::AsyncStream, AsyncCommands, RedisError};
 use request_handler::{parse_payload, MiddlewareData, ResponseError};
 use serde::{Deserialize, Serialize};
 use std::{pin::Pin, sync::Arc};
