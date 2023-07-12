@@ -27,6 +27,8 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
   const opacity = useSharedValue(
     defaultValue.length > 0 || (props.value && props.value.length > 0) ? 1 : 0,
   );
+  const [isInputEmpty, toggleIsInputEmpty] = useBoolean();
+
   React.useImperativeHandle(ref, () => ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(textRef.current as any),
@@ -42,11 +44,17 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
     textRef.current?.clear();
     onChangeText('');
     opacity.value = 0;
+    toggleIsInputEmpty(true);
   }
   function handleOnChangeText(t: string) {
     onChangeText(t);
-    if (t.length > 0) opacity.value = 1;
-    else opacity.value = 0;
+    if (t.length > 0) {
+      opacity.value = 1;
+      toggleIsInputEmpty(false);
+    } else {
+      toggleIsInputEmpty(true);
+      opacity.value = 0;
+    }
   }
 
   function handleOnToggleShowPassword() {
@@ -98,6 +106,7 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
         align-self="center"
         mr="m"
         flex-direction="row"
+        pointerEvents={isInputEmpty ? 'none' : 'auto'}
       >
         {rest.textContentType === 'password' && (
           <AnimatedBox style={style}>
