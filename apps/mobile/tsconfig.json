@@ -11,7 +11,8 @@
       "@hooks/*": ["./src/hooks/*"],
       "@assets/*": ["./src/assets/*"],
       "@helpers/*": ["./src/helpers/*"],
-      "@database/*": ["./src/realm/*"]
+      "@database/*": ["./src/realm/*"],
+      "env": ["./src/constants.ts"]
     }
   }
 }

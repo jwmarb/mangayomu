@@ -18,6 +18,7 @@ module.exports = {
           '@assets': './src/assets',
           '@helpers': './src/helpers',
           '@database': './src/realm',
+          env: './src/constants',
         },
       },
     ],
