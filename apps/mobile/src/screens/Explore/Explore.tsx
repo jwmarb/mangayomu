@@ -4,7 +4,6 @@ import IconButton from '@components/IconButton';
 import Input from '@components/Input';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import useAuth0 from '@hooks/useAuth0';
 import useCollapsibleTabHeader from '@hooks/useCollapsibleTabHeader';
 import connector, {
   ConnectedExploreProps,
@@ -29,6 +28,7 @@ import { Freeze } from 'react-freeze';
 import Progress from '@components/Progress';
 import useTabNavigation from '@hooks/useTabNavigation';
 import ContinueReading from '@screens/Explore/components/ContinueReading/ContinueReading';
+import { useUser } from '@realm/react';
 
 const Explore: React.FC<ConnectedExploreProps> = ({
   source,
@@ -39,7 +39,7 @@ const Explore: React.FC<ConnectedExploreProps> = ({
   suspendRendering,
   internetStatus,
 }) => {
-  const { user } = useAuth0();
+  const user = useUser();
   const { height } = useWindowDimensions();
   const navigation = useTabNavigation();
   const sourceSelectorRef =
@@ -50,7 +50,7 @@ const Explore: React.FC<ConnectedExploreProps> = ({
   }
   const { onScroll, scrollViewStyle, contentContainerStyle } =
     useCollapsibleTabHeader({
-      dependencies: [source.getSourcesLength(), user?.picture],
+      dependencies: [source.getSourcesLength(), user?.profile.pictureUrl],
       loading,
       headerLeft: (
         <Badge type="number" count={source.getSourcesLength()} color="primary">

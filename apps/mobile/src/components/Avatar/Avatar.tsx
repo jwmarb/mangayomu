@@ -1,5 +1,4 @@
 import Icon from '@components/Icon';
-import useAuth0 from '@hooks/useAuth0';
 import { useUser } from '@realm/react';
 import React from 'react';
 import FastImage from 'react-native-fast-image';

@@ -16,10 +16,10 @@ import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import Page from '@screens/Welcome/components/Page';
 import MainSourceSelector from '@screens/Welcome/components/MainSourceSelector';
 import useRootNavigation from '@hooks/useRootNavigation';
-import useAuth0 from '@hooks/useAuth0';
 import connector, {
   ConnectedOnboardProps,
 } from '@screens/Welcome/components/Onboard/Onboard.redux';
+import { useUser } from '@realm/react';
 
 const Onboard: React.FC<ConnectedOnboardProps> = ({
   onScroll,
@@ -30,7 +30,7 @@ const Onboard: React.FC<ConnectedOnboardProps> = ({
   const theme = useTheme();
   const navigation = useRootNavigation();
   const { width } = useWindowDimensions();
-  const { authorize, user } = useAuth0();
+  const user = useUser();
   const ref = React.useRef<ScrollView>(null);
   const bottomSheet = React.useRef<BottomSheet>(null);
 
@@ -64,12 +64,8 @@ const Onboard: React.FC<ConnectedOnboardProps> = ({
     navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
   }
 
-  async function login() {
-    try {
-      await authorize({ scope: 'openid profile email' });
-    } catch (e) {
-      console.error(e);
-    }
+  function login() {
+    navigation.push('Login');
   }
 
   React.useLayoutEffect(() => {
@@ -178,16 +174,16 @@ const Onboard: React.FC<ConnectedOnboardProps> = ({
                     MangaYomu provides a free cloud storage solution to enable
                     easy access to your manga library anywhere on any device.
                   </Text>
-                  {user == null && (
+                  {user.profile.name == null && (
                     <Text align="center" color="textSecondary">
-                      Simply link a social media account to enable access,
-                      though this step is completely optional.
+                      Simply login with an existing MangaYomu account or with
+                      another authentication provider such as Google.
                     </Text>
                   )}
-                  {user == null ? (
+                  {user.profile.name == null ? (
                     <>
                       <Button
-                        label="Link an account"
+                        label="Sign in"
                         onPress={login}
                         variant="contained"
                       />

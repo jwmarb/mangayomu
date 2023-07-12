@@ -1,16 +1,16 @@
 import Box from '@components/Box';
 import Divider from '@components/Divider';
 import Icon from '@components/Icon';
-import useAuth0 from '@hooks/useAuth0';
 import useRootNavigation from '@hooks/useRootNavigation';
 import CloudSwitch from '@screens/More/components/CloudSwitch';
 import PressableListItem from '@screens/More/components/PressableListItem';
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import User from './components/User';
+import { useUser } from '@realm/react';
 
 const Settings: React.FC = () => {
-  const { user } = useAuth0();
+  const user = useUser();
   const navigation = useRootNavigation();
   const handleOnSettings = React.useCallback(() => {
     navigation.navigate('Settings');
@@ -26,7 +26,7 @@ const Settings: React.FC = () => {
         border-radius="@theme"
         overflow="hidden"
       >
-        {user != null && (
+        {user.identities.some((x) => x.providerType === 'custom-token') && (
           <>
             <CloudSwitch />
             <Divider />

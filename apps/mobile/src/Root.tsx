@@ -12,9 +12,6 @@ import Settings from '@screens/Settings';
 import Appearance from '@screens/Appearance';
 import Reader from '@screens/Reader';
 import MainSourceSelector from '@screens/MainSourceSelector/MainSourceSelector';
-import { useUser } from '@realm/react';
-import useAuth0 from '@hooks/useAuth0';
-import useDialog from '@hooks/useDialog';
 import UnfinishedMangaList from '@screens/UnfinishedMangaList';
 import GlobalReaderSettings from '@screens/GlobalReaderSettings';
 import Login from '@screens/Login';
@@ -25,38 +22,6 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const Root: React.FC<RootProps> = ({ showWelcomeScreen }) => {
-  const realmUser = useUser();
-  const { user, authorize, clearSession } = useAuth0();
-  const dialog = useDialog();
-  React.useEffect(() => {
-    if (
-      (user == null &&
-        realmUser != null &&
-        realmUser.isLoggedIn &&
-        realmUser.providerType !== 'anon-user') ||
-      (realmUser != null &&
-        !realmUser.isLoggedIn &&
-        realmUser.providerType !== 'anon-user')
-    )
-      (async () => {
-        try {
-          await authorize({ scope: 'openid profile email' });
-        } catch (e) {
-          await clearSession();
-          try {
-            await authorize({ scope: 'openid profile email' });
-          } catch (e) {
-            dialog.open({
-              title: 'Failed to login',
-              message:
-                'Two login attempts failed. This could be an issue with your client or the authentication server.',
-            });
-          }
-        }
-      })();
-    if (user != null && realmUser != null && !realmUser.isLoggedIn)
-      clearSession();
-  }, []);
   return (
     <RootStack.Navigator
       initialRouteName={showWelcomeScreen ? 'Welcome' : 'Home'}
