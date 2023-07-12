@@ -1,4 +1,4 @@
-import { DialogMethods } from '@components/Dialog/Dialog.interfaces';
+import { DialogMethods } from '@components/Dialog';
 import React from 'react';
 
 export const DialogContext = React.createContext<
