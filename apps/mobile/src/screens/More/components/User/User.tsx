@@ -6,38 +6,59 @@ import { Menu, MenuItem } from '@components/Menu';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useRealm } from '@database/main';
+import displayMessage from '@helpers/displayMessage';
 import { getErrorMessage } from '@helpers/getErrorMessage';
 import useAuth0 from '@hooks/useAuth0';
 import useDialog from '@hooks/useDialog';
-import { useUser } from '@realm/react';
+import useRootNavigation from '@hooks/useRootNavigation';
+import { useApp, useUser } from '@realm/react';
 import React from 'react';
+import Realm from 'realm';
 import { moderateScale } from 'react-native-size-matters';
 
 const User: React.FC = () => {
-  const { user, authorize, clearSession, error } = useAuth0();
   const realm = useRealm();
   const dialog = useDialog();
-  React.useEffect(() => {
-    if (error != null)
-      dialog.open({
-        title: 'There was an issue logging in',
-        message: `Auth0 threw an error: ${error?.message}`,
-      });
-  }, [error]);
-  async function login() {
-    try {
-      await authorize({ scope: 'openid profile email' });
-    } catch (e) {
-      console.error(e);
-    }
+  const navigation = useRootNavigation();
+  const user = useUser();
+  const app = useApp();
+
+  function login() {
+    navigation.navigate('Login');
   }
-  const currentUser = useUser();
+  async function logout() {
+    dialog.open({
+      title: 'Do you really want to log out?',
+      message:
+        'If you log out, all your saved data will be unavailable until you login again.',
+      actions: [
+        {
+          text: 'Log out',
+          type: 'destructive',
+          onPress: async () => {
+            displayMessage('Signing out...');
+            try {
+              await realm.syncSession?.uploadAllLocalChanges();
+              await user.logOut();
+            } catch (e) {
+              displayMessage('There was an error signing out');
+            } finally {
+              const anonymousCredentials = Realm.Credentials.anonymous();
+              await app.logIn(anonymousCredentials);
+              displayMessage('You have logged out');
+            }
+          },
+        },
+        { text: 'Stay signed in', type: 'normal' },
+      ],
+    });
+  }
   async function displayUserId() {
-    if (currentUser) dialog.open({ title: 'User ID', message: currentUser.id });
+    dialog.open({ title: 'User ID', message: user.id });
   }
   async function displayDeviceId() {
-    if (currentUser && currentUser.deviceId)
-      dialog.open({ title: 'Device ID', message: currentUser.deviceId });
+    if (user.deviceId)
+      dialog.open({ title: 'Device ID', message: user.deviceId });
   }
 
   async function handleOnForceSync() {
@@ -54,13 +75,6 @@ const User: React.FC = () => {
       }
   }
 
-  const subscriptionType = React.useMemo(() => {
-    if (user == null) return 'Not signed in';
-    return `Signed in via ${user.sub
-      .split('|')
-      .filter((c) => Number.isNaN(parseInt(c)))
-      .join(' & ')}`;
-  }, [user?.sub]);
   return (
     <Stack
       space="s"
@@ -73,9 +87,9 @@ const User: React.FC = () => {
       <Stack space="m" align-items="center" flex-direction="row">
         <Avatar size={moderateScale(48)} />
         <Box align-self="center">
-          <Text bold>{user?.name ?? 'Guest'}</Text>
+          <Text bold>{user.profile.name ?? 'Guest'}</Text>
           <Text color="textSecondary" variant="book-title" numberOfLines={1}>
-            {subscriptionType}
+            {user.profile.name ? user.id : 'Not signed in'}
           </Text>
         </Box>
       </Stack>
@@ -84,12 +98,12 @@ const User: React.FC = () => {
           <IconButton icon={<Icon type="font" name="dots-horizontal" />} />
         }
       >
-        {user != null ? (
+        {user.profile.name != null ? (
           <>
             <MenuItem
               color="secondary"
               icon={<Icon type="font" name="logout" />}
-              onPress={clearSession}
+              onPress={logout}
             >
               Log out
             </MenuItem>
@@ -116,7 +130,7 @@ const User: React.FC = () => {
         >
           Display user id
         </MenuItem>
-        {currentUser?.deviceId && (
+        {user?.deviceId && (
           <MenuItem
             icon={<Icon type="font" name="content-copy" />}
             onPress={displayDeviceId}
