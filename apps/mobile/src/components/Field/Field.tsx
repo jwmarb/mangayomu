@@ -8,7 +8,7 @@ import { useTheme } from '@emotion/react';
 import { Pressable } from 'react-native';
 
 const Field: React.FC<FieldProps> = (props) => {
-  const { onChange, label, error, ...rest } = props;
+  const { label, error, ...rest } = props;
   const theme = useTheme();
   const inputRef = React.useRef<React.ElementRef<typeof Input>>(null);
 
@@ -23,11 +23,13 @@ const Field: React.FC<FieldProps> = (props) => {
           <Pressable onPress={handleOnPress}>
             <Text>{label}</Text>
           </Pressable>
-          <Input ref={inputRef} placeholder={label} error {...rest} />
+          <Input ref={inputRef} expanded placeholder={label} error {...rest} />
         </Stack>
-        <Text variant="body-sub" color="error">
-          {error}
-        </Text>
+        {typeof error === 'string' && (
+          <Text variant="body-sub" color="error">
+            {error}
+          </Text>
+        )}
       </Stack>
     );
   return (
