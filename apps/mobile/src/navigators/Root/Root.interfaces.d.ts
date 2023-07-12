@@ -26,6 +26,7 @@ export type RootStackParamList = {
   MainSourceSelector: undefined;
   GlobalReaderSettings: undefined;
   Login: undefined;
+  Register: undefined;
 };
 
 export type RootStackProps<T extends keyof RootStackParamList> =
