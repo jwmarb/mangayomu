@@ -2,7 +2,7 @@ use argon2::{self, Argon2, PasswordHash, PasswordVerifier};
 use chrono::Duration;
 use futures::TryStreamExt;
 use http::{Method, StatusCode};
-use jsonwebtoken::{encode, Algorithm, EncodingKey, Header, TokenData};
+use jsonwebtoken::{encode, Algorithm, EncodingKey, Header};
 use mangayomu_rust::{
     connect_to_db, env_initializer, get_redis, map_redis_err, DecodedJWT, Env, User,
 };
@@ -32,6 +32,7 @@ async fn main() -> Result<(), Error> {
 struct RequestBody {
     username: String,
     password: String,
+    remember_me: Option<bool>,
 }
 
 async fn post(
@@ -42,6 +43,10 @@ async fn post(
     let r = parse_payload::<RequestBody>(&request)?;
     let username_or_email = r.username.as_str();
     let password = r.password.as_str();
+    let remember_me = match r.remember_me {
+        Some(val) => val,
+        None => false,
+    };
     let map = data.read().await;
 
     let env = map.get::<Env>("env")?;
@@ -64,7 +69,7 @@ async fn post(
         })?;
         if verify_password(password, &user.password)? {
             /* Create JWT and send it to the user via json */
-            let token = create_jwt(env, &user)?;
+            let token = create_jwt(env, &user, remember_me)?;
             let vercel_url = env.vercel_url.as_str();
 
             return Ok(Response::builder()
@@ -104,7 +109,7 @@ async fn post(
         })? {
             if verify_password(password, &user.password)? {
                 /* Create JWT and send it to the user via json */
-                let token = create_jwt(env, &user)?;
+                let token = create_jwt(env, &user, remember_me)?;
                 let vercel_url = env.vercel_url.as_str();
 
                 return Ok(Response::builder()
@@ -142,10 +147,13 @@ fn verify_password(password: &str, hashed_password: &String) -> Result<bool, Res
     Ok(password_matches)
 }
 
-fn create_jwt(env: &Env, user: &User) -> Result<String, ResponseError> {
+fn create_jwt(env: &Env, user: &User, remember_me: bool) -> Result<String, ResponseError> {
     let realm_app_id = env.react_app_realm_id.as_str();
     let current_time = chrono::Utc::now()
-        .checked_add_signed(Duration::days(env.jwt_exp_days.into()))
+        .checked_add_signed(match remember_me {
+            true => Duration::days(61),
+            false => Duration::days(env.jwt_exp_days.into()),
+        })
         .ok_or_else(|| ResponseError {
             response: StatusCode::INTERNAL_SERVER_ERROR.into(),
             error: "DateTime Overflow".to_string(),
