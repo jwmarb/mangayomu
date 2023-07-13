@@ -6,9 +6,8 @@ import useRootNavigation from '@hooks/useRootNavigation';
 import { Manga } from '@mangayomu/mangascraper/src';
 import { AUTO_HEIGHT_SCALAR } from '@redux/slices/settings';
 import React from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { Image, Pressable, StyleSheet } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { ScaledSheet, moderateScale } from 'react-native-size-matters';
 import { MangaSchema } from '@database/schemas/Manga';
@@ -84,7 +83,7 @@ const StaticCover: React.FC<StaticCoverProps> = (props) => {
     [theme.palette.skeleton, styles.cover],
   );
   return (
-    <TouchableWithoutFeedback disallowInterruption onPress={handleOnPressCover}>
+    <Pressable onPress={handleOnPressCover}>
       <FastImage
         onLoadStart={handleOnLoadStart}
         onLoadEnd={handleOnLoadEnd}
@@ -107,7 +106,7 @@ const StaticCover: React.FC<StaticCoverProps> = (props) => {
       >
         <Progress size="small" />
       </AnimatedBox>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 };
 
