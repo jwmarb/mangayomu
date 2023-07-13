@@ -1,7 +1,6 @@
 import React from 'react';
 import Form from '@app/(login)/login/components/form';
 import { nanoid } from 'nanoid';
-import redis from '@app/api/redis';
 import env from '@mangayomu/vercel-env';
 import Text from '@app/components/Text';
 import DarkMode from '@app/components/DarkMode';

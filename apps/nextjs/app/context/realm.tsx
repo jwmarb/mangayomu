@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 import * as Realm from 'realm-web';
-import jwt from 'jsonwebtoken';
 import { usePathname, useRouter } from 'next/navigation';
 
 const RealmContext = React.createContext<ReturnType<
