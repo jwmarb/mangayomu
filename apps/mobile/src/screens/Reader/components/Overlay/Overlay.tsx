@@ -65,14 +65,14 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
     (index: number) => {
       const indices = chapterIndices.get(chapter._id);
       if (indices != null) {
-        const { start } = indices;
+        const { start, end } = indices;
         scrollRef.current?.scrollToIndex({
           animated: false,
-          index: start + index,
+          index: reversedNav ? end - index : start + index,
         });
       }
     },
-    [chapter._id],
+    [chapter._id, reversedNav],
   );
 
   const handleOnSkipNext = React.useCallback(() => {
