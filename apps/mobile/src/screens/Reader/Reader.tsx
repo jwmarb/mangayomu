@@ -2,8 +2,7 @@ import Box from '@components/Box';
 import Progress from '@components/Progress';
 import { useLocalRealm, useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
-import { Page, chapterIndices } from '@redux/slices/reader/reader';
-import { useNetInfo } from '@react-native-community/netinfo';
+import { Page } from '@redux/slices/reader/reader';
 import { ReadingDirection } from '@redux/slices/settings';
 import Overlay from '@screens/Reader/components/Overlay';
 import React from 'react';
@@ -14,16 +13,10 @@ import useScreenDimensions from '@hooks/useScreenDimensions';
 import useReaderProps from '@screens/Reader/hooks/useReaderProps';
 import useData from '@screens/Reader/hooks/useData';
 import useChapterFetcher from '@screens/Reader/hooks/useChapterFetcher';
-import { FlashList, ListRenderItem } from '@shopify/flash-list';
-import TransitionPage, {
-  TransitionPageContext,
-} from '@screens/Reader/components/TransitionPage/TransitionPage';
+import { FlashList } from '@shopify/flash-list';
+import { TransitionPageContext } from '@screens/Reader/components/TransitionPage/TransitionPage';
 import { ViewToken, ViewabilityConfigCallbackPairs } from 'react-native';
-import NoMorePages from '@screens/Reader/components/NoMorePages/NoMorePages';
-import ChapterError, {
-  ChapterErrorContext,
-} from '@screens/Reader/components/ChapterError/ChapterError';
-import useUserHistory from '@hooks/useUserHistory';
+import { ChapterErrorContext } from '@screens/Reader/components/ChapterError/ChapterError';
 import usePageLayout from '@screens/Reader/hooks/usePageLayout';
 import useSavedChapterInfo from '@screens/Reader/hooks/useSavedChapterInfo';
 import { PageSliderNavigatorMethods } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator.interfaces';
@@ -33,7 +26,6 @@ import useOverlayGesture from '@screens/Reader/hooks/useOverlayGesture';
 import useNetworkToast from '@screens/Reader/hooks/useNetworkToast';
 import useFlashList from '@screens/Reader/hooks/useFlashList';
 import useCancellable from '@screens/Reader/hooks/useCancellable';
-import useBoolean from '@hooks/useBoolean';
 import PageList from '@screens/Reader/components/PageList';
 import displayMessage from '@helpers/displayMessage';
 import { ChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
