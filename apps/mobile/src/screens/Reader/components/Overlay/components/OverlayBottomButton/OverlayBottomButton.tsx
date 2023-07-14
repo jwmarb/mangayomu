@@ -19,6 +19,7 @@ const OverlayBottomButton: React.FC<OverlayBottomButtonProps> = (props) => {
     <Pressable
       android_ripple={{
         color: theme.palette.action.ripple,
+        borderless: true,
       }}
       {...rest}
       onLongPress={handleOnLongPress}
