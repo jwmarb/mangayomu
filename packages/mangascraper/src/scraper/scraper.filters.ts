@@ -12,15 +12,11 @@ export abstract class MangaHostWithFilters<T> extends MangaHost {
   /**
    * The filter schema of the manga host
    */
-  private readonly filterSchema: FilterSchemaObject<T>;
+  public readonly filterSchema: FilterSchemaObject<T>;
 
   public constructor(options: MangaHostFiltersInfo<T>) {
     super(options);
     this.filterSchema = options.filters;
-  }
-
-  public getFilterSchema() {
-    return this.filterSchema;
   }
 
   /**
