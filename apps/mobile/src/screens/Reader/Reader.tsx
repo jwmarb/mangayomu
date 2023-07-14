@@ -30,6 +30,7 @@ import PageList from '@screens/Reader/components/PageList';
 import displayMessage from '@helpers/displayMessage';
 import { ChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
 import { ImageMenuMethods } from '@screens/Reader/components/ImageMenu/ImageMenu.interfaces';
+import useViewableItemsChangedHandler from '@screens/Reader/hooks/useViewableItemsChangedHandler';
 
 const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const {
@@ -43,25 +44,23 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     globalImageScaling,
     globalZoomStartPosition,
     extendedState,
-    setCurrentChapter,
     notifyOnLastChapter,
     autoFetch,
   } = props;
   const { width, height } = useScreenDimensions();
   const overlayOpacity = useSharedValue(0);
-  const realm = useRealm();
-  const localRealm = useLocalRealm();
   const ref = React.useRef<FlashList<Page>>(null);
   const [manga, chapter, availableChapters] = useData(mangaKey, chapterKey);
   React.useEffect(() => {
     if (notifyOnLastChapter && availableChapters[0]._id === chapter._id)
       displayMessage('Final chapter');
   }, [notifyOnLastChapter, chapter._id]);
+
+  const pageSliderNavRef = React.useRef<PageSliderNavigatorMethods>(null);
+  const imageMenuRef = React.useRef<ImageMenuMethods>(null);
   const [currentPage, setCurrentPage] = React.useState<number>(
     chapter.indexPage + 1,
   );
-  const pageSliderNavRef = React.useRef<PageSliderNavigatorMethods>(null);
-  const imageMenuRef = React.useRef<ImageMenuMethods>(null);
   const [cancellable, isFetchingPrevious] = useCancellable(pages);
   const fetchPagesByChapter = useChapterFetcher({
     availableChapters,
@@ -73,6 +72,16 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     cancellable,
   });
   const { tapGesture, showOverlay } = useOverlayGesture({ overlayOpacity });
+  const viewabilityConfigCallbackPairs = useViewableItemsChangedHandler({
+    manga,
+    chapter,
+    pages,
+    fetchPagesByChapter,
+    pageSliderNavRef,
+    showOverlay,
+    setCurrentPage,
+    cancellable,
+  });
   const { topOverlayStyle, toastStyle } = useNetworkToast({
     overlayOpacity,
   });
@@ -117,61 +126,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     manga,
     incognito,
   });
-
-  const handleOnViewableItemsChanged = (info: {
-    viewableItems: ViewToken[];
-    changed: ViewToken[];
-  }) => {
-    const page = info.viewableItems[0];
-    if (page != null) {
-      const item = page.item as Page;
-
-      switch (item.type) {
-        case 'PAGE':
-          {
-            const chapter = localRealm.objectForPrimaryKey(
-              ChapterSchema,
-              item.chapter,
-            );
-            realm.write(() => {
-              if (chapter?.numberOfPages != null)
-                manga.currentlyReadingChapter = {
-                  _id: item.chapter,
-                  index: item.pageNumber - 1,
-                  numOfPages: chapter.numberOfPages,
-                };
-            });
-            localRealm.write(() => {
-              if (chapter != null) chapter.indexPage = item.pageNumber - 1;
-            });
-            setCurrentPage(item.pageNumber);
-            setCurrentChapter(item.chapter);
-            // pageSliderNavRef.current?.snapPointTo(reversed ? chapterIndices.get() (item.pageNumber - 1));
-
-            pageSliderNavRef.current?.snapPointTo(item.pageNumber - 1);
-          }
-          break;
-        case 'TRANSITION_PAGE':
-          cancellable(fetchPagesByChapter, item);
-          break;
-        case 'NO_MORE_PAGES':
-          runOnJS(showOverlay)();
-          break;
-      }
-    }
-  };
-
-  const viewabilityConfigCallbackPairs =
-    React.useRef<ViewabilityConfigCallbackPairs>([
-      {
-        onViewableItemsChanged: handleOnViewableItemsChanged,
-        viewabilityConfig: {
-          viewAreaCoveragePercentThreshold: 99,
-          waitForInteraction: false,
-          minimumViewTime: 0,
-        },
-      },
-    ]);
 
   const transitionPageContextValue = React.useMemo(
     () => ({ backgroundColor, currentChapter: chapter, tapGesture }),

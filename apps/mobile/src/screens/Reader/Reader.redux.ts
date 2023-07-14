@@ -18,9 +18,7 @@ const mapStateToProps = (state: AppState, props: RootStackProps<'Reader'>) => ({
   autoFetch: state.settings.reader.automaticallyFetchNextChapter,
 });
 
-const connector = connect(mapStateToProps, {
-  setCurrentChapter,
-});
+const connector = connect(mapStateToProps);
 
 export type ConnectedReaderProps = ConnectedProps<typeof connector>;
 
