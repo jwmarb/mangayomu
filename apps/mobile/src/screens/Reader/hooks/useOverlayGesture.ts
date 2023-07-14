@@ -3,18 +3,17 @@ import React from 'react';
 import { Gesture } from 'react-native-gesture-handler';
 import {
   Easing,
-  SharedValue,
   runOnJS,
+  useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 
 /**
  * A hook that provides a gesture to interact with the reader overlay
  */
-export default function useOverlayGesture(args: {
-  overlayOpacity: SharedValue<number>;
-}) {
-  const { overlayOpacity } = args;
+export default function useOverlayGesture() {
+  const overlayOpacity = useSharedValue(0);
+
   const [showStatusAndNavBar, hideStatusAndNavBar] = useImmersiveMode();
 
   function showOverlay() {
@@ -45,5 +44,5 @@ export default function useOverlayGesture(args: {
         .cancelsTouchesInView(false),
     [],
   );
-  return { tapGesture, hideOverlay, showOverlay };
+  return { tapGesture, hideOverlay, showOverlay, overlayOpacity };
 }

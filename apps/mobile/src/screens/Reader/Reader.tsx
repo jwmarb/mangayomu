@@ -48,7 +48,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     autoFetch,
   } = props;
   const { width, height } = useScreenDimensions();
-  const overlayOpacity = useSharedValue(0);
   const ref = React.useRef<FlashList<Page>>(null);
   const [manga, chapter, availableChapters] = useData(mangaKey, chapterKey);
   React.useEffect(() => {
@@ -71,7 +70,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     autoFetch,
     cancellable,
   });
-  const { tapGesture, showOverlay } = useOverlayGesture({ overlayOpacity });
+  const { tapGesture, showOverlay, overlayOpacity } = useOverlayGesture();
   const viewabilityConfigCallbackPairs = useViewableItemsChangedHandler({
     manga,
     chapter,
