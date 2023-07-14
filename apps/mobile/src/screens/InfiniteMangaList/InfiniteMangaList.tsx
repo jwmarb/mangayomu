@@ -17,7 +17,7 @@ import {
   NativeSyntheticEvent,
   TextInputSubmitEditingEventData,
 } from 'react-native';
-import { MangaHostWithFilters } from '@mangayomu/mangascraper/dist/src/scraper/scraper.filters';
+import { MangaHostWithFilters } from '@mangayomu/mangascraper/src/scraper/scraper.filters';
 import AdvancedSearchFilters from '@screens/InfiniteMangaList/components/AdvancedSearchFilters';
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
 import {
@@ -83,7 +83,7 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
     if (source instanceof MangaHostWithFilters === false) return null;
     const filters = (
       source as MangaHostWithFilters<Record<string, AbstractFilters>>
-    ).getFilterSchema().schema;
+    ).filterSchema.schema;
     const accordionOnlyKeys: string[] = [];
     const restKeys: string[] = [];
     const keys: string[] = [];
