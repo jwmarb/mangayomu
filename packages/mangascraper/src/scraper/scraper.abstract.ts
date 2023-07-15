@@ -8,6 +8,7 @@ import axios from 'axios';
 import url from 'url';
 import * as cheerio from 'cheerio';
 import { toPascalCase } from './scraper.helpers';
+import UserAgent from 'user-agents';
 
 abstract class MangaHost {
   /**
@@ -101,7 +102,9 @@ abstract class MangaHost {
     path: string | { url: string },
   ): Promise<cheerio.CheerioAPI> {
     if (typeof path === 'string') {
-      const { data } = await axios.get(`https://${this.link}${path}`);
+      const { data } = await axios.get(`https://${this.link}${path}`, {
+        headers: { 'User-Agent': new UserAgent().toString() },
+      });
       return cheerio.load(data, { decodeEntities: false });
     }
     const { data } = await axios.get(path.url);
