@@ -9,7 +9,6 @@
     "@mangayomu/algorithms": "^1.0.0",
     "@mangayomu/language-codes": "^1.0.0",
     "@mangayomu/schema-creator": "^1.0.0",
-    "axios": "^1.4.0",
     "cheerio": "^1.0.0-rc.10",
     "date-fns": "^2.28.0",
     "url": "^0.11.0",

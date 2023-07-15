@@ -4,7 +4,6 @@ import {
   MangaHostInfo,
   MangaMeta,
 } from './scraper.interfaces';
-import axios from 'axios';
 import url from 'url';
 import * as cheerio from 'cheerio';
 import { toPascalCase } from './scraper.helpers';
@@ -98,17 +97,30 @@ abstract class MangaHost {
     return this.version;
   }
 
-  protected async route(
+  protected async route<T = cheerio.CheerioAPI>(
     path: string | { url: string },
-  ): Promise<cheerio.CheerioAPI> {
-    if (typeof path === 'string') {
-      const { data } = await axios.get(`https://${this.link}${path}`, {
-        headers: { 'User-Agent': new UserAgent().toString() },
-      });
-      return cheerio.load(data, { decodeEntities: false });
-    }
-    const { data } = await axios.get(path.url);
-    return cheerio.load(data, { decodeEntities: false });
+    method: 'GET' | 'POST' = 'GET',
+    body?: Record<string, unknown>,
+  ): Promise<T> {
+    const response = await fetch(
+      typeof path === 'string' ? `https://${this.link}${path}` : path.url,
+      {
+        method,
+        headers: {
+          'User-Agent': new UserAgent().toString(),
+          ...(body != null
+            ? {
+                'Content-Type': 'application/json',
+              }
+            : {}),
+        },
+        body: JSON.stringify(body),
+      },
+    );
+    const data = await response[body ? 'json' : 'text']();
+    return body
+      ? (data as T)
+      : (cheerio.load(data, { decodeEntities: false }) as T);
   }
 
   public hasMangaDirectory() {

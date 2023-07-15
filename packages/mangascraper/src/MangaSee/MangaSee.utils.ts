@@ -4,7 +4,8 @@ export function extractDataFromVariable(html: string | null) {
   return <T>(variableName: string): T => {
     if (html == null) throw Error('HTML is null');
     const match = html.match(new RegExp(`${variableName} = .*;`, 'g'));
-    if (match == null) throw Error(`${variableName} does not exist`);
+    if (match == null)
+      throw Error(`${variableName} does not exist. Received html: ${html}`);
     const json = match[0].substring(
       variableName.length + 3,
       match[0].length - 1,
