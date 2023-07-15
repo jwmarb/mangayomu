@@ -14,19 +14,16 @@ export interface MangaHistory {
 
 export interface IUserHistorySchema {
   _id: string;
-  _realmId: string;
   history: HistorySection[];
 }
 
 export class UserHistorySchema extends Realm.Object<IUserHistorySchema> {
   _id!: string;
-  _realmId!: string;
   history!: HistorySection[];
   static schema: Realm.ObjectSchema = {
     name: 'UserHistory',
     properties: {
       _id: 'string',
-      _realmId: 'string',
       history: 'HistorySection[]',
     },
     primaryKey: '_id',

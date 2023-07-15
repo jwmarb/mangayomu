@@ -42,7 +42,7 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
         sub.add(
           realm
             .objects(UserHistorySchema)
-            .filtered(`_realmId == "${currentUser?.id}"`),
+            .filtered(`_id == "${currentUser?.id}"`),
         );
       });
     })();

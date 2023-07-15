@@ -68,7 +68,6 @@ const useUserHistory = (config?: { incognito: boolean }) => {
         realm.write(() => {
           realm.create<UserHistorySchema>(UserHistorySchema, {
             _id: currentUser.id,
-            _realmId: currentUser.id,
             history: [
               {
                 data: [
