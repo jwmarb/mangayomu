@@ -9,7 +9,7 @@ export interface IChapterSchema extends MangaChapter {
   numberOfPages?: number;
   indexPage?: number;
   dateRead?: number;
-  language?: ISOLangCode;
+  language: ISOLangCode;
   _mangaId: string;
   _id: string;
   _realmId: string;
@@ -25,7 +25,7 @@ export class ChapterSchema extends Realm.Object<IChapterSchema> {
   name!: string;
   index!: number;
   date!: string;
-  language?: ISOLangCode;
+  language!: ISOLangCode;
   _mangaId!: string;
   _id!: string;
   _realmId!: string;
