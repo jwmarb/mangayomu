@@ -300,8 +300,24 @@ export const useManga = (
                 source: _manga.source,
               },
         );
+        const chapters: string[] = [];
+        const availableLanguages: ISOLangCode[] = [];
+        const lookup = new Set<string>();
         localRealm.write(() => {
           for (const x of meta.chapters) {
+            chapters.push(x.link);
+            if ('language' in x) {
+              const multilingualChapter = x as MangaMultilingualChapter;
+              if (!lookup.has(multilingualChapter.language)) {
+                integrateSortedList(availableLanguages, SortLanguages).add(
+                  multilingualChapter.language,
+                );
+                lookup.add(multilingualChapter.language);
+              }
+            } else if (!lookup.has('en')) {
+              availableLanguages.push('en');
+              lookup.add('en');
+            }
             const existingChapter = localRealm.objectForPrimaryKey(
               ChapterSchema,
               x.link,
@@ -325,31 +341,6 @@ export const useManga = (
           }
         });
         mangaRealm.write(() => {
-          const { chapters, availableLanguages } = meta.chapters.reduce(
-            (prev, curr) => {
-              prev.chapters.push(curr.link);
-              const { add } = integrateSortedList(
-                prev.availableLanguages,
-                SortLanguages,
-              );
-              if ('language' in curr) {
-                const multilingualChapter = curr as MangaMultilingualChapter;
-                if (!prev.__memo__.has(multilingualChapter.language)) {
-                  add(multilingualChapter.language);
-                  prev.__memo__.add(multilingualChapter.language);
-                }
-              } else if (!prev.__memo__.has('en')) {
-                add('en');
-                prev.__memo__.add('en');
-              }
-              return prev;
-            },
-            {
-              chapters: [] as string[],
-              availableLanguages: [] as ISOLangCode[],
-              __memo__: new Set<ISOLangCode>(),
-            },
-          );
           mangaRealm.create<MangaSchema>(
             'Manga',
             {
