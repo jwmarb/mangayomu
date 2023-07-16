@@ -117,11 +117,8 @@ abstract class MangaHost {
       },
       body: JSON.stringify(body),
     });
-    const data = await response.text();
-    console.log(data);
-    return body
-      ? (JSON.parse(data) as T)
-      : (cheerio.load(data, { decodeEntities: false }) as T);
+    const data = await response[body ? 'json' : 'text']();
+    return body ? data : (cheerio.load(data, { decodeEntities: false }) as T);
   }
 
   public hasMangaDirectory() {
