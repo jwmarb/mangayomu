@@ -8,6 +8,8 @@ import url from 'url';
 import * as cheerio from 'cheerio';
 import { toPascalCase } from './scraper.helpers';
 import UserAgent from 'user-agents';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const fetch = require('node-fetch');
 
 abstract class MangaHost {
   /**
@@ -102,24 +104,23 @@ abstract class MangaHost {
     method: 'GET' | 'POST' = 'GET',
     body?: Record<string, unknown>,
   ): Promise<T> {
-    const response = await fetch(
-      typeof path === 'string' ? `https://${this.link}${path}` : path.url,
-      {
-        method,
-        headers: {
-          'User-Agent': new UserAgent().toString(),
-          ...(body != null
-            ? {
-                'Content-Type': 'application/json',
-              }
-            : {}),
-        },
-        body: JSON.stringify(body),
+    const url = `https://${this.link}${path}`;
+    const response = await fetch(typeof path === 'string' ? url : path.url, {
+      method,
+      headers: {
+        'User-Agent': new UserAgent().toString(),
+        ...(body != null
+          ? {
+              'Content-Type': 'application/json',
+            }
+          : {}),
       },
-    );
-    const data = await response[body ? 'json' : 'text']();
+      body: JSON.stringify(body),
+    });
+    const data = await response.text();
+    console.log(data);
     return body
-      ? (data as T)
+      ? (JSON.parse(data) as T)
       : (cheerio.load(data, { decodeEntities: false }) as T);
   }
 
