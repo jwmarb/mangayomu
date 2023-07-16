@@ -18,6 +18,7 @@ import {
   Linking,
   Dimensions,
   Pressable,
+  Alert,
 } from 'react-native';
 
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -144,6 +145,11 @@ const ImageMenu: React.ForwardRefRenderFunction<
         CameraRoll.save(url.current, { type: 'photo' })
           .then(() => displayMessage('Image saved.'))
           .catch(() => displayMessage('Failed to save image.'));
+    } else {
+      Alert.alert(
+        'Invalid image',
+        `Got ${page.current?._id} and ${url.current}`,
+      );
     }
   }
 
