@@ -62,7 +62,7 @@ export type CurrentlyReadingChapter = {
 };
 
 export const SORT_CHAPTERS_BY = {
-  'Chapter number': (a: MangaChapter) => {
+  'Chapter number': (a: Omit<MangaChapter, 'link'>) => {
     if (a.name) {
       const aName = a.name.match(/(0|[1-9]\d*)(\.\d+)?/g);
       if (aName != null) return parseFloat(aName[0]);
@@ -70,11 +70,14 @@ export const SORT_CHAPTERS_BY = {
     if (a.index != null) return a.index;
     throw Error('Chapter cannot be sorted due to undefined name and index');
   },
-  Timestamp: (a: MangaChapter) => Date.parse(a.date),
+  Timestamp: (a: Omit<MangaChapter, 'link'>) => Date.parse(a.date),
 };
 
 export const SORT_CHAPTERS_BY_LEGACY = {
-  'Chapter number': (a: MangaChapter, b: MangaChapter) => {
+  'Chapter number': (
+    a: Omit<MangaChapter, 'link'>,
+    b: Omit<MangaChapter, 'link'>,
+  ) => {
     if (a.name && b.name) {
       const aName = a.name.match(/(0|[1-9]\d*)(\.\d+)?/g);
       const bName = b.name.match(/(0|[1-9]\d*)(\.\d+)?/g);
@@ -188,13 +191,11 @@ export type FetchMangaMetaStatus = 'loading' | 'success' | 'local' | 'error';
 export const SortLanguages = (a: ISOLangCode, b: ISOLangCode) =>
   languages[a].name.localeCompare(languages[b].name);
 
-function deepEqual(a: MangaChapter, b: MangaChapter) {
-  return (
-    a.date === b.date &&
-    a.index === b.index &&
-    a.link === b.link &&
-    a.name === b.name
-  );
+function deepEqual(
+  a: Omit<MangaChapter, 'link'>,
+  b: Omit<MangaChapter, 'link'>,
+) {
+  return a.date === b.date && a.index === b.index && a.name === b.name;
 }
 
 export const useManga = (
@@ -327,11 +328,12 @@ export const useManga = (
               existingChapter == null
             ) {
               const copy = x;
-              (copy as ChapterSchema)._mangaId = meta.link;
-              (copy as ChapterSchema)._id = x.link;
-              (copy as ChapterSchema)._realmId = currentUser.id;
-              (copy as ChapterSchema).language =
+              (copy as unknown as ChapterSchema)._mangaId = meta.link;
+              (copy as unknown as ChapterSchema)._id = x.link;
+              (copy as unknown as ChapterSchema)._realmId = currentUser.id;
+              (copy as unknown as ChapterSchema).language =
                 (x as MangaMultilingualChapter).language ?? 'en';
+              delete (copy as Partial<MangaChapter>).link;
               localRealm.create<ChapterSchema>(
                 ChapterSchema,
                 copy,

@@ -30,7 +30,7 @@ export default function useUnfinishedMangas() {
       )
       .sorted('index');
     return prev;
-  }, {} as Record<string, Realm.Results<ChapterSchema & Realm.Object<unknown, never>>>);
+  }, {} as Record<string, Realm.Results<ChapterSchema>>);
   const unfinishedMangas = currentlyReadingMangas.filter(
     (manga) =>
       manga.currentlyReadingChapter?._id !==

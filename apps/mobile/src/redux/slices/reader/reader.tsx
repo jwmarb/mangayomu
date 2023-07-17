@@ -1,4 +1,4 @@
-import { ChapterSchema } from '@database/schemas/Chapter';
+import { ChapterSchema, IChapterSchema } from '@database/schemas/Chapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import { PageSchema } from '@database/schemas/Page';
 import { getErrorMessage } from '@helpers/getErrorMessage';
@@ -109,7 +109,12 @@ export const fetchPagesByChapter = createAsyncThunk(
       const { isInternetReachable } = await NetInfo.fetch();
       if (!isInternetReachable) throw Error('Internet unavailable');
       fetchingChapters.add(payload.chapter._id);
-      const response = await payload.source.getPages(payload.chapter);
+      const response = await payload.source.getPages({
+        date: payload.chapter.date,
+        index: payload.chapter.index,
+        link: payload.chapter._id,
+        name: payload.chapter.name,
+      });
       if (payload.mockError) mockError();
       payload.localRealm.write(() => {
         payload.chapter.numberOfPages = response.length;

@@ -5,22 +5,18 @@ import { UNFINISHED_MANGA_WIDTH } from '@theme/constants';
 import Box from '@components/Box';
 import { ChapterSchema } from '@database/schemas/Chapter';
 
-export const renderItem: ListRenderItem<
-  MangaSchema & Realm.Object<unknown, never>
-> = (info) => {
+export const renderItem: ListRenderItem<MangaSchema> = (info) => {
   const { item } = info;
   const extraData = info.extraData as Record<
     string,
-    Realm.Results<ChapterSchema & Realm.Object<unknown, never>>
+    Realm.Results<ChapterSchema>
   >;
   return <UnfinishedManga manga={item} chapters={extraData[item._id]} />;
 };
 
 export const ItemSeparatorComponent = () => <Box mx="s" />;
 
-export const keyExtractor = (
-  item: MangaSchema & Realm.Object<unknown, never>,
-) => item._id;
+export const keyExtractor = (item: MangaSchema) => item._id;
 
 export const overrideItemLayout: (
   layout: {

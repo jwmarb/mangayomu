@@ -6,7 +6,7 @@ import React from 'react';
 
 export default function useUnfinishedManga(
   manga: MangaSchema,
-  chapters: ArrayLike<ChapterSchema & Realm.Object<unknown, never>>,
+  chapters: ArrayLike<ChapterSchema>,
 ) {
   if (manga.currentlyReadingChapter == null)
     throw Error(
@@ -24,9 +24,7 @@ export default function useUnfinishedManga(
         : binary.search(chapters, currentChapter, (a, b) => a.index - b.index),
     [manga.currentlyReadingChapter._id, chapters.length],
   );
-  const nextChapter:
-    | (ChapterSchema & Realm.Object<unknown, never>)
-    | undefined =
+  const nextChapter: ChapterSchema | undefined =
     nextChapterIndex !== -1 ? chapters[nextChapterIndex - 1] : undefined;
   return { nextChapter, currentChapter };
 }

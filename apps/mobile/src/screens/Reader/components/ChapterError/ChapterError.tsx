@@ -102,7 +102,7 @@ const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
             icon={loading ? <Progress size="small" /> : undefined}
           />
           {chapter != null && (
-            <Hyperlink url={chapter.link} align="center" variant="book-title">
+            <Hyperlink url={chapter._id} align="center" variant="book-title">
               Open in browser
             </Hyperlink>
           )}

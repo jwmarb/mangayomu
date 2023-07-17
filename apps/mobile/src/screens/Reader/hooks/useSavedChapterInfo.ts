@@ -56,7 +56,7 @@ export default function useSavedChapterInfo(
       chapter: {
         date: chapter.date,
         index: chapter.index,
-        link: chapter.link,
+        link: chapter._id,
         name: chapter.name,
       },
     });
