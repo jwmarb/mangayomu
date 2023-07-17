@@ -111,7 +111,6 @@ export default function useFetchManga(
         error: '',
       });
       try {
-        console.log('Fetching meta');
         const meta = await source.getMeta(
           assertIsManga(_manga)
             ? _manga
@@ -129,7 +128,6 @@ export default function useFetchManga(
           meta,
         );
         writeManga(realm, meta, user, chapters, availableLanguages);
-        console.log('Finished getting meta');
       } catch (e) {
         console.error(e);
         throw Error(getErrorMessage(e));
