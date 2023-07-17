@@ -3,7 +3,7 @@ import Stack from '@components/Stack';
 import Text from '@components/Text';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import React from 'react';
-import { MangaSupportedLanguagesProps } from './MangaSupportedLanguages.interfaces';
+import { MangaSupportedLanguagesProps } from './';
 
 const MangaSupportedLanguages: React.FC<MangaSupportedLanguagesProps> = (
   props,

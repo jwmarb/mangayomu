@@ -1,9 +1,8 @@
-import Skeleton from '@components/Skeleton';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import React from 'react';
-import { MangaStatusProps } from './MangaStatus.interfaces';
+import { MangaStatusProps } from './';
 import { moderateScale } from 'react-native-size-matters';
 
 const ongoingSet = new Set(['ongoing', 'publishing']);

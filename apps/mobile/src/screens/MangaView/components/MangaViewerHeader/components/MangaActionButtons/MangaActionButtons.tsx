@@ -8,7 +8,7 @@ import { ChapterSchema } from '@database/schemas/Chapter';
 import useRootNavigation from '@hooks/useRootNavigation';
 import React from 'react';
 import { moderateScale } from 'react-native-size-matters';
-import { MangaActionButtonsProps } from './MangaActionButtons.interfaces';
+import { MangaActionButtonsProps } from './';
 
 const buttonLoading = {
   disabled: true,

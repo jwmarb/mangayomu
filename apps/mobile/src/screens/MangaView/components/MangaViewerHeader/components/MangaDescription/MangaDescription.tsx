@@ -1,10 +1,9 @@
 import Button from '@components/Button';
 import Icon from '@components/Icon';
-import Skeleton from '@components/Skeleton';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
-import { MangaDescriptionProps } from './MangaDescription.interfaces';
+import { MangaDescriptionProps } from './';
 import { useTheme } from '@emotion/react';
 import Box from '@components/Box/Box';
 import MangaDescriptionHTMLRenderer from '@screens/MangaView/components/MangaViewerHeader/components/MangaDescription/renderers';

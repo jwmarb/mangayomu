@@ -1,7 +1,7 @@
 import Text from '@components/Text';
 import copyTextToClipboard from '@helpers/copyTextToClipboard';
 import React from 'react';
-import { MangaTitleProps } from './MangaTitle.interfaces';
+import { MangaTitleProps } from './';
 
 const MangaTitle: React.FC<MangaTitleProps> = (props) => {
   const { title } = props;

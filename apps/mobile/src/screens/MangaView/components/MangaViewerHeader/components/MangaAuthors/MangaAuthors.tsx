@@ -1,9 +1,8 @@
 import Box from '@components/Box';
-import Skeleton from '@components/Skeleton';
 import Text from '@components/Text';
 import React from 'react';
 import { moderateScale } from 'react-native-size-matters';
-import { MangaAuthorsProps } from './MangaAuthors.interfaces';
+import { MangaAuthorsProps } from './';
 
 const MangaAuthors: React.FC<MangaAuthorsProps> = (props) => {
   const { data, loading } = props;

@@ -1,7 +1,7 @@
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
-import { MangaSourceProps } from './MangaSource.interfaces';
+import { MangaSourceProps } from './';
 
 const MangaSource: React.FC<MangaSourceProps> = (props) => {
   const { mangaSource } = props;
