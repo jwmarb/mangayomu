@@ -1,7 +1,6 @@
 import {
   Manga,
   MangaChapter,
-  MangaMultilingualChapter,
   WithAuthors,
   WithHentai,
   WithRating,
@@ -9,16 +8,10 @@ import {
 } from '@mangayomu/mangascraper/src';
 import Realm from 'realm';
 import React from 'react';
-import useMangaSource from '@hooks/useMangaSource';
-import { InteractionManager } from 'react-native';
 import { getErrorMessage } from '@helpers/getErrorMessage';
-import { useObject, useRealm, useLocalRealm } from '../../main';
+import { useRealm, useLocalRealm } from '../../main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
-import displayMessage from '@helpers/displayMessage';
-import integrateSortedList from '@helpers/integrateSortedList';
-import NetInfo from '@react-native-community/netinfo';
-import { useUser } from '@realm/react';
 import {
   ImageScaling,
   ReaderScreenOrientation,
@@ -26,6 +19,8 @@ import {
   ZoomStartPosition,
 } from '@redux/slices/settings';
 import assertIsManga from '@helpers/assertIsManga';
+import useMangaListener from '@database/schemas/Manga/useMangaListener';
+import useFetchManga from '@database/schemas/Manga/useFetchManga';
 
 export const MangaRatingSchema: Realm.ObjectSchema = {
   name: 'MangaRating',
@@ -186,27 +181,15 @@ export type UseMangaOptions = {
   preferredLanguage?: ISOLangCode;
 };
 
-export type FetchMangaMetaStatus = 'loading' | 'success' | 'local' | 'error';
-
 export const SortLanguages = (a: ISOLangCode, b: ISOLangCode) =>
   languages[a].name.localeCompare(languages[b].name);
-
-function deepEqual(
-  a: Omit<MangaChapter, 'link'>,
-  b: Omit<MangaChapter, 'link'>,
-) {
-  return a.date === b.date && a.index === b.index && a.name === b.name;
-}
 
 export const useManga = (
   link: string | Manga | MangaSchema,
   options: UseMangaOptions = { preferLocal: true },
 ) => {
-  const mangaRealm = useRealm();
+  const realm = useRealm();
   const localRealm = useLocalRealm();
-  const currentUser = useUser();
-  if (currentUser == null)
-    throw Error('currentUser is null in useManga() when it is required.');
   const mangaId =
     typeof link === 'string'
       ? link
@@ -214,188 +197,24 @@ export const useManga = (
       ? link.link
       : link._id;
 
-  const [isOffline, setIsOffline] = React.useState<boolean | null>(null);
-  const [status, setStatus] = React.useState<FetchMangaMetaStatus>(
-    options.preferLocal ? 'local' : 'loading',
-  );
-  const [error, setError] = React.useState<string>('');
-  const [manga, setManga] = React.useState<MangaSchema | undefined>(
-    mangaRealm.objectForPrimaryKey(MangaSchema, mangaId),
-  );
-  React.useEffect(() => {
-    const callback: Realm.CollectionChangeCallback<MangaSchema> = (
-      collection,
-      mods,
-    ) => {
-      for (const key in mods) {
-        if (mods[key as keyof typeof mods].length > 0) {
-          for (const index of mods[key as keyof typeof mods]) {
-            if (collection[index]._id === mangaId) setManga(collection[index]);
-          }
-        }
-      }
-    };
-    const listener = mangaRealm.objects(MangaSchema);
-    listener?.addListener(callback);
-    return () => {
-      listener?.removeListener(callback);
-    };
-  }, []);
-  React.useEffect(() => {
-    const netListener = NetInfo.addEventListener((state) => {
-      setIsOffline(state.isInternetReachable === false);
-      if (state.isInternetReachable === false)
-        setStatus((prevStatus) =>
-          prevStatus === 'loading' ? 'error' : 'local',
-        );
-    });
-    return () => {
-      netListener();
-    };
-  }, []);
-
-  React.useEffect(() => {
-    InteractionManager.runAfterInteractions(async () => {
-      if (isOffline === false) {
-        try {
-          await fetchData();
-          setStatus('success');
-        } catch (e) {
-          setStatus('error');
-          setError(e as string);
-        }
-      }
-    });
-  }, [isOffline]);
-  const source = typeof link !== 'string' ? useMangaSource(link) : null;
-
-  const fetchData = React.useCallback(async () => {
-    if (!options.preferLocal) {
-      if (isOffline) {
-        displayMessage('You are offline.');
-        return;
-      }
-      if (typeof link === 'string')
-        throw Error(
-          `"${link}" does not exist in the realm and is being called upon when it is undefined. Use type Manga instead of type string.`,
-        );
-      if (source == null)
-        throw Error(
-          `"${
-            link.source
-          }" is not a valid source. Cannot fetch manga metadata from ${
-            assertIsManga(link) ? link.link : link._id
-          }.`,
-        );
-      const _manga = link;
-      setStatus('loading');
-      setError('');
-      try {
-        const meta = await source.getMeta(
-          assertIsManga(_manga)
-            ? _manga
-            : {
-                link: _manga._id,
-                imageCover: _manga.imageCover,
-                title: _manga.title,
-                source: _manga.source,
-              },
-        );
-        const chapters: string[] = [];
-        const availableLanguages: ISOLangCode[] = [];
-        const lookup = new Set<string>();
-        localRealm.write(() => {
-          for (const x of meta.chapters) {
-            chapters.push(x.link);
-            if ('language' in x) {
-              const multilingualChapter = x as MangaMultilingualChapter;
-              if (!lookup.has(multilingualChapter.language)) {
-                integrateSortedList(availableLanguages, SortLanguages).add(
-                  multilingualChapter.language,
-                );
-                lookup.add(multilingualChapter.language);
-              }
-            } else if (!lookup.has('en')) {
-              availableLanguages.push('en');
-              lookup.add('en');
-            }
-            const existingChapter = localRealm.objectForPrimaryKey(
-              ChapterSchema,
-              x.link,
-            );
-            if (
-              (existingChapter != null && !deepEqual(existingChapter, x)) ||
-              existingChapter == null
-            ) {
-              const copy = x;
-              (copy as unknown as ChapterSchema)._mangaId = meta.link;
-              (copy as unknown as ChapterSchema)._id = x.link;
-              (copy as unknown as ChapterSchema)._realmId = currentUser.id;
-              (copy as unknown as ChapterSchema).language =
-                (x as MangaMultilingualChapter).language ?? 'en';
-              delete (copy as Partial<MangaChapter>).link;
-              localRealm.create<ChapterSchema>(
-                ChapterSchema,
-                copy,
-                Realm.UpdateMode.Modified,
-              );
-            }
-          }
-        });
-        mangaRealm.write(() => {
-          mangaRealm.create<MangaSchema>(
-            'Manga',
-            {
-              ...meta,
-              _id: meta.link,
-              _realmId: currentUser.id,
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              genres: meta.genres as unknown as Set<string>,
-              chapters,
-              availableLanguages,
-              readerDirection: meta.genres.some((genre) => {
-                const formatted = genre.toLowerCase();
-                return (
-                  formatted === 'manhwa' ||
-                  formatted === 'manhua' ||
-                  formatted === 'webtoon'
-                );
-              })
-                ? ReadingDirection.WEBTOON
-                : manga?.readerDirection ?? 'Use global setting',
-              notifyNewChaptersCount: 0,
-            },
-            Realm.UpdateMode.Modified,
-          );
-        });
-      } catch (e) {
-        console.error(e);
-        throw Error(getErrorMessage(e));
-      }
-    }
-  }, [
-    options.preferLocal,
-    link,
-    setStatus,
-    setError,
-    source,
-    mangaRealm,
-    manga,
-    isOffline,
-    localRealm,
-  ]);
+  const { state, setState, fetchData } = useFetchManga(options, link);
+  const manga = useMangaListener(mangaId);
 
   const refresh = React.useCallback(async () => {
     if (manga != null) {
       try {
         await fetchData();
-        setStatus('success');
+        setState({
+          status: 'success',
+        });
       } catch (e) {
-        setStatus('error');
-        setError(e as string);
+        setState({
+          error: getErrorMessage(e),
+          status: 'error',
+        });
       }
     }
-  }, [fetchData, manga == null]);
+  }, [fetchData, manga == null, setState]);
 
   const update = React.useCallback(
     (
@@ -405,15 +224,15 @@ export const useManga = (
       ) => void,
     ) => {
       if (manga != null && manga.isValid()) {
-        mangaRealm.write(() => {
+        realm.write(() => {
           fn(manga, (k: string) =>
             localRealm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
           );
         });
       }
     },
-    [manga, mangaRealm, localRealm],
+    [manga, realm, localRealm],
   );
 
-  return { manga, refresh, status, error, update };
+  return { manga, refresh, status: state.status, error: state.error, update };
 };
