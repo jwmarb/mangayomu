@@ -3,7 +3,7 @@ import Stack from '@components/Stack';
 import Tag from '@components/Tag';
 import useMangaSource from '@hooks/useMangaSource';
 import React from 'react';
-import { MangaGenresProps } from './MangaGenres.interfaces';
+import { MangaGenresProps } from './';
 import useRootNavigation from '@hooks/useRootNavigation';
 
 const MangaGenres: React.FC<MangaGenresProps> = (props) => {
