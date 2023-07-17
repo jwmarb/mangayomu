@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React from 'react';
-import { UnfinishedMangaProps } from './UnfinishedManga.interfaces';
+import { UnfinishedMangaProps } from './';
 import Box from '@components/Box';
 import Stack from '@components/Stack';
 import { StaticCover } from '@components/Cover';
