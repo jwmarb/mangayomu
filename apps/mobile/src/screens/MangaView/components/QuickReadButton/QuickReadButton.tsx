@@ -3,7 +3,7 @@ import { QuickReadButtonProps } from './QuickReadButton.interfaces';
 import { useIsFocused } from '@react-navigation/native';
 import Box, { AnimatedBox } from '@components/Box';
 import { moderateScale } from 'react-native-size-matters';
-import { StyleSheet, TouchableNativeFeedback } from 'react-native';
+import { Pressable, StyleSheet, TouchableNativeFeedback } from 'react-native';
 import { useTheme } from '@emotion/react';
 import Stack, { AnimatedStack } from '@components/Stack';
 import Icon from '@components/Icon';
@@ -20,7 +20,6 @@ import { ChapterSchema } from '@database/schemas/Chapter';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { MangaSchema } from '@database/schemas/Manga';
 
-const INTERPOLATION_VALUE = [moderateScale(64), moderateScale(128)];
 const styles = StyleSheet.create({
   icon: {
     transform: [{ rotate: '90deg' }],
@@ -36,6 +35,13 @@ const QuickReadButton: React.FC<QuickReadButtonProps> = (props) => {
     firstChapter,
   } = props;
   const navigation = useRootNavigation();
+  const INTERPOLATION_VALUE = React.useMemo(
+    () => [
+      moderateScale(64),
+      moderateScale(currentlyReadingChapter != null ? 128 : 154),
+    ],
+    [currentlyReadingChapter == null],
+  );
   const isFocused = useIsFocused();
   const theme = useTheme();
   const localRealm = useLocalRealm();
@@ -85,12 +91,11 @@ const QuickReadButton: React.FC<QuickReadButtonProps> = (props) => {
         right={moderateScale(16)}
         overflow="hidden"
       >
-        <TouchableNativeFeedback
-          useForeground
-          background={TouchableNativeFeedback.Ripple(
-            theme.palette.primary.ripple,
-            false,
-          )}
+        <Pressable
+          android_ripple={{
+            foreground: true,
+            color: theme.palette.primary.ripple,
+          }}
           onPress={handleOnPress}
           onLongPress={handleOnLongPress}
         >
@@ -118,12 +123,12 @@ const QuickReadButton: React.FC<QuickReadButtonProps> = (props) => {
                   bold
                   color="primary@contrast"
                 >
-                  Resume
+                  {currentlyReadingChapter == null ? 'Start reading' : 'Resume'}
                 </Text>
               </Box>
             </AnimatedStack>
           </Box>
-        </TouchableNativeFeedback>
+        </Pressable>
       </AnimatedBox>
     );
   return null;
