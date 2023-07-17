@@ -44,7 +44,7 @@ export default function useFetchManga(
         const newState = { ...prev };
         for (const k in newState) {
           const key = k as keyof FetchMangaState;
-          if (key in draft && parsed[key] != null)
+          if (key in parsed && parsed[key] != null)
             (newState[key] as unknown) = parsed[key];
         }
         return newState;
@@ -111,6 +111,7 @@ export default function useFetchManga(
         error: '',
       });
       try {
+        console.log('Fetching meta');
         const meta = await source.getMeta(
           assertIsManga(_manga)
             ? _manga
@@ -128,6 +129,7 @@ export default function useFetchManga(
           meta,
         );
         writeManga(realm, meta, user, chapters, availableLanguages);
+        console.log('Finished getting meta');
       } catch (e) {
         console.error(e);
         throw Error(getErrorMessage(e));
