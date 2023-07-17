@@ -18,14 +18,14 @@ function deepEqual(
 }
 
 export default function writeLocalChapters(
-  localRealm: Realm,
+  realm: Realm,
   currentUser: ReturnType<typeof useUser>,
   meta: MangaMeta & Manga,
 ) {
   const chapters: string[] = [];
   const availableLanguages: ISOLangCode[] = [];
   const lookup = new Set<string>();
-  localRealm.write(() => {
+  realm.write(() => {
     for (const x of meta.chapters) {
       chapters.push(x.link);
       if ('language' in x) {
@@ -40,10 +40,7 @@ export default function writeLocalChapters(
         availableLanguages.push('en');
         lookup.add('en');
       }
-      const existingChapter = localRealm.objectForPrimaryKey(
-        ChapterSchema,
-        x.link,
-      );
+      const existingChapter = realm.objectForPrimaryKey(ChapterSchema, x.link);
       if (
         (existingChapter != null && !deepEqual(existingChapter, x)) ||
         existingChapter == null
@@ -55,7 +52,7 @@ export default function writeLocalChapters(
         (copy as unknown as ChapterSchema).language =
           (x as MangaMultilingualChapter).language ?? 'en';
         delete (copy as Partial<MangaChapter>).link;
-        localRealm.create<ChapterSchema>(
+        realm.create<ChapterSchema>(
           ChapterSchema,
           copy,
           Realm.UpdateMode.Modified,

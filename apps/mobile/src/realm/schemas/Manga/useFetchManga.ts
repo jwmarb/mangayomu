@@ -1,6 +1,6 @@
 import { useRealm } from '@database/main';
 import { MangaSchema, UseMangaOptions } from '@database/schemas/Manga';
-import writeLocalChapters from '@database/schemas/Manga/writeLocalChapters';
+import writeChapters from '@database/schemas/Manga/writeChapters';
 import writeManga from '@database/schemas/Manga/writeManga';
 import assertIsManga from '@helpers/assertIsManga';
 import displayMessage from '@helpers/displayMessage';
@@ -121,7 +121,7 @@ export default function useFetchManga(
               },
         );
 
-        const { chapters, availableLanguages } = writeLocalChapters(
+        const { chapters, availableLanguages } = writeChapters(
           realm,
           user,
           meta,
