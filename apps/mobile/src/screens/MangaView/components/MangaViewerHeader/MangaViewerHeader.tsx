@@ -5,7 +5,7 @@ import Text from '@components/Text';
 import MangaAuthors from '@screens/MangaView/components/MangaViewerHeader/components/MangaAuthors';
 import MangaTitle from '@screens/MangaView/components/MangaViewerHeader/components/MangaTitle';
 import React from 'react';
-import { MangaViewerHeaderProps } from './MangaViewerHeader.interfaces';
+import { MangaViewerHeaderProps } from './';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 import { StyleSheet } from 'react-native';
