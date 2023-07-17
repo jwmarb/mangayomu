@@ -15,7 +15,7 @@ export default function Field(props: FieldProps) {
   const { error, name, register, hint } = props;
   const id = name.toLowerCase().replace(/\s/g, '_');
   return (
-    <div className="flex flex-col gap-1" aria-label="checkbox">
+    <div className="flex flex-col gap-1 flex-grow" aria-label="checkbox">
       <Text
         aria-label="label"
         component="label"
@@ -32,6 +32,7 @@ export default function Field(props: FieldProps) {
         id={id}
         placeholder={name}
         error={!!error}
+        className="w-full"
       />
       {error && (
         <Text variant="sm-label" color="error">
