@@ -1,20 +1,14 @@
 'use client';
 import Button from '@app/components/Button';
 import Text from '@app/components/Text';
-import TextField from '@app/components/TextField';
 import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Field from '@app/(login)/components/field';
 import useBoolean from '@app/hooks/useBoolean';
-import {
-  EmbeddedResponseStatus,
-  ResponseError,
-} from '@mangayomu/request-handler';
-import { useRealm } from '@app/context/realm';
+import { EmbeddedResponseStatus } from '@mangayomu/request-handler';
 
-type UserAPIRequestBodySchema = typeof userAPIRequestBodySchema;
 type UserAPIRequestFormBody = z.infer<typeof userAPIRequestBodySchema>;
 interface UserAPISchemaError {
   response: EmbeddedResponseStatus;
