@@ -1,18 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import Box from '@components/Box';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
-import {
-  IMangaSchema,
-  SORT_CHAPTERS_BY,
-  useManga,
-} from '@database/schemas/Manga';
-import { ListRenderItem } from '@shopify/flash-list';
+import { useManga } from '@database/schemas/Manga';
 import React from 'react';
 import MangaViewerHeader from './components/MangaViewerHeader';
 import { useTheme } from '@emotion/react';
 import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
-import { useLocalRealm } from '@database/main';
 import displayMessage from '@helpers/displayMessage';
 import { Linking, NativeScrollEvent, Share } from 'react-native';
 import {
@@ -23,15 +17,12 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 import { NAVHEADER_HEIGHT } from '@components/NavHeader';
-import { ChapterSchema } from '@database/schemas/Chapter';
-import RowChapter from '@screens/MangaView/components/RowChapter';
 import { ROW_CHAPTER_HEIGHT } from '@screens/MangaView/components/RowChapter/RowChapter';
 import Divider from '@components/Divider';
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
 import MangaViewModal from '@screens/MangaView/components/MangaViewModal';
 import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 import { ISOLangCode } from '@mangayomu/language-codes';
-import { sort } from 'fast-sort';
 import connector, {
   ConnectedMangaViewProps,
 } from '@screens/MangaView/MangaView.redux';

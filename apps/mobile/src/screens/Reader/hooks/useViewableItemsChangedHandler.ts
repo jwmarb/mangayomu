@@ -1,4 +1,4 @@
-import { useLocalRealm, useRealm } from '@database/main';
+import { useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import { useAppDispatch } from '@redux/main';
@@ -30,7 +30,6 @@ export default function useViewableItemsChangedHandler(args: {
   } = args;
   const dispatch = useAppDispatch();
 
-  const localRealm = useLocalRealm();
   const realm = useRealm();
   const handleOnViewableItemsChanged = (info: {
     viewableItems: ViewToken[];
@@ -43,7 +42,7 @@ export default function useViewableItemsChangedHandler(args: {
       switch (item.type) {
         case 'PAGE':
           {
-            const chapter = localRealm.objectForPrimaryKey(
+            const chapter = realm.objectForPrimaryKey(
               ChapterSchema,
               item.chapter,
             );
@@ -55,7 +54,7 @@ export default function useViewableItemsChangedHandler(args: {
                   numOfPages: chapter.numberOfPages,
                 };
             });
-            localRealm.write(() => {
+            realm.write(() => {
               if (chapter != null) chapter.indexPage = item.pageNumber - 1;
             });
             setCurrentPage(item.pageNumber);

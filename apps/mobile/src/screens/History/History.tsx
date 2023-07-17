@@ -16,17 +16,13 @@ import { moderateScale } from 'react-native-size-matters';
 import Stack from '@components/Stack';
 import useBoolean from '@hooks/useBoolean';
 import Input from '@components/Input';
-import { useLocalRealm, useQuery, useRealm } from '@database/main';
-import { MangaSchema } from '@database/schemas/Manga';
-import { FlashList, ListRenderItem } from '@shopify/flash-list';
-import { Manga, MangaChapter } from '@mangayomu/mangascraper/src';
-import { ChapterSchema } from '@database/schemas/Chapter';
+import { useRealm } from '@database/main';
+import { ListRenderItem } from '@shopify/flash-list';
 import {
   HistorySection,
   MangaHistory,
   UserHistorySchema,
 } from '@database/schemas/History';
-import { useUser } from '@realm/react';
 import useUserHistory from '@hooks/useUserHistory';
 import { AnimatedFlashList } from '@components/animated';
 import { MANGA_LIST_ITEM_HEIGHT } from '@theme/constants';

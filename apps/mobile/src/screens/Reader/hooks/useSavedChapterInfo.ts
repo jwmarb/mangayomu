@@ -1,4 +1,4 @@
-import { useLocalRealm } from '@database/main';
+import { useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import useBoolean from '@hooks/useBoolean';
@@ -35,7 +35,7 @@ export default function useSavedChapterInfo(
   } = args;
   const { addMangaToHistory } = useUserHistory({ incognito });
   const savedScrollPosition = useMutableObject(chapter.scrollPosition);
-  const localRealm = useLocalRealm();
+  const realm = useRealm();
   const scrollOffset = React.useRef<number>(0);
   const shouldSaveScrollOffset = React.useRef<boolean>(false);
   const chapterRef = useMutableObject(chapter);
@@ -43,7 +43,7 @@ export default function useSavedChapterInfo(
     useBoolean();
 
   React.useEffect(() => {
-    localRealm.write(() => {
+    realm.write(() => {
       chapter.dateRead = Date.now();
     });
     addMangaToHistory({
@@ -74,8 +74,8 @@ export default function useSavedChapterInfo(
         Math.max(min, scrollOffset.current),
         max,
       );
-      localRealm.write(() => {
-        localRealm.create(
+      realm.write(() => {
+        realm.create(
           ChapterSchema,
           {
             _id: chapterRef.current._id,

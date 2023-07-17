@@ -1,4 +1,4 @@
-import { useLocalRealm } from '@database/main';
+import { useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { useAppDispatch } from '@redux/main';
 import { ExtendedReaderPageState, setLocalPageURI } from '@redux/slices/reader';
@@ -19,7 +19,7 @@ export default function usePageDownloader(args: UsePageDownloaderArgs) {
   const { extendedPageState, pageKey, pageNumber, chapter } = args;
   const dispatch = useAppDispatch();
   const { sourceName, mangaTitle } = useChapterPageContext();
-  const localRealm = useLocalRealm();
+  const realm = useRealm();
   React.useEffect(() => {
     (async () => {
       if (
@@ -40,7 +40,7 @@ export default function usePageDownloader(args: UsePageDownloaderArgs) {
           '/' +
           encodePathName(
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            localRealm.objectForPrimaryKey(ChapterSchema, chapter)!.name,
+            realm.objectForPrimaryKey(ChapterSchema, chapter)!.name,
           ) +
           '/' +
           pageNumber +

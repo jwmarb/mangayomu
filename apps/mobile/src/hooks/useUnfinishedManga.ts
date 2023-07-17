@@ -1,4 +1,4 @@
-import { useLocalRealm } from '@database/main';
+import { useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import { binary } from '@mangayomu/algorithms';
@@ -12,7 +12,7 @@ export default function useUnfinishedManga(
     throw Error(
       `Cannot use ${manga._id} as an UnfinishedManga because there is no chapter the user is currently reading`,
     );
-  const localRealm = useLocalRealm();
+  const localRealm = useRealm();
   const currentChapter = localRealm.objectForPrimaryKey(
     ChapterSchema,
     manga.currentlyReadingChapter._id,

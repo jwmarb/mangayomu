@@ -1,4 +1,4 @@
-import { useLocalRealm, useObject } from '@database/main';
+import { useRealm, useObject } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import React from 'react';
@@ -10,15 +10,15 @@ import React from 'react';
  * @returns Returns objects derived from Realm
  */
 export default function useData(mangaKey: string, chapterKey: string) {
-  const localRealm = useLocalRealm();
+  const realm = useRealm();
   const manga = useObject(MangaSchema, mangaKey);
   const [chapter, setChapter] = React.useState(
-    localRealm.objectForPrimaryKey(ChapterSchema, chapterKey),
+    realm.objectForPrimaryKey(ChapterSchema, chapterKey),
   );
-  const collection = localRealm.objects(ChapterSchema);
+  const collection = realm.objects(ChapterSchema);
 
   React.useEffect(() => {
-    setChapter(localRealm.objectForPrimaryKey(ChapterSchema, chapterKey));
+    setChapter(realm.objectForPrimaryKey(ChapterSchema, chapterKey));
   }, [chapterKey]);
 
   if (manga == null)

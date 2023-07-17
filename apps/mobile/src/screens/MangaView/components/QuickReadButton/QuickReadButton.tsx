@@ -15,7 +15,7 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 import displayMessage from '@helpers/displayMessage';
-import { useLocalRealm, useRealm } from '@database/main';
+import { useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { MangaSchema } from '@database/schemas/Manga';
@@ -44,10 +44,10 @@ const QuickReadButton: React.FC<QuickReadButtonProps> = (props) => {
   );
   const isFocused = useIsFocused();
   const theme = useTheme();
-  const localRealm = useLocalRealm();
+  const realm = useRealm();
   const handleOnLongPress = () => {
     if (currentlyReadingChapter != null) {
-      const chapter = localRealm.objectForPrimaryKey(
+      const chapter = realm.objectForPrimaryKey(
         ChapterSchema,
         currentlyReadingChapter._id,
       );

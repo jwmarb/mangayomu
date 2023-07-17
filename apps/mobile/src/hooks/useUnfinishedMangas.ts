@@ -1,15 +1,15 @@
-import { useLocalQuery, useLocalRealm, useQuery } from '@database/main';
+import { useRealm, useQuery } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import { DEFAULT_LANGUAGE } from '@screens/MangaView/MangaView';
 
 export default function useUnfinishedMangas() {
   const mangas = useQuery(MangaSchema);
-  const chapters = useLocalQuery(ChapterSchema);
+  const chapters = useQuery(ChapterSchema);
   const currentlyReadingMangas = mangas.filtered(
     'currentlyReadingChapter != null && inLibrary == true',
   );
-  const localRealm = useLocalRealm();
+  const localRealm = useRealm();
   const isNotSynced = currentlyReadingMangas.some(
     (manga) =>
       manga.currentlyReadingChapter == null ||

@@ -1,4 +1,4 @@
-import { useLocalRealm } from '@database/main';
+import { useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { SORT_CHAPTERS_BY, useManga } from '@database/schemas/Manga';
 import { DEFAULT_LANGUAGE } from '@screens/MangaView/MangaView';
@@ -8,7 +8,7 @@ import React from 'react';
 export default function useChapters(
   manga: ReturnType<typeof useManga>['manga'],
 ) {
-  const localRealm = useLocalRealm();
+  const realm = useRealm();
 
   const selectedLanguage =
     manga?.selectedLanguage === 'Use default language'
@@ -16,7 +16,7 @@ export default function useChapters(
       : manga?.selectedLanguage;
   const [chapters, setChapters] = React.useState<Realm.Results<ChapterSchema>>(
     () =>
-      localRealm
+      realm
         .objects(ChapterSchema)
         .filtered(
           '_mangaId = $0 AND language = $1 SORT(index ASC)',
@@ -37,7 +37,7 @@ export default function useChapters(
         ),
       );
     };
-    const chapters = localRealm
+    const chapters = realm
       .objects(ChapterSchema)
       .filtered(
         '_mangaId = $0 AND language = $1 SORT(index ASC)',

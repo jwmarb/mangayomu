@@ -5,7 +5,7 @@ import Icon from '@components/Icon';
 import Progress from '@components/Progress';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import { useLocalRealm } from '@database/main';
+import { useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useBoolean from '@hooks/useBoolean';
 import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
@@ -31,8 +31,8 @@ const useChapterErrorContext = () => {
 const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
   const { backgroundColor, data } = props;
   const { error, current } = data;
-  const localRealm = useLocalRealm();
-  const chapter = localRealm.objectForPrimaryKey(ChapterSchema, current._id);
+  const realm = useRealm();
+  const chapter = realm.objectForPrimaryKey(ChapterSchema, current._id);
   const fetchPages = useChapterErrorContext();
   const { background, textPrimary, textSecondary } =
     useReaderBackgroundColor(backgroundColor);

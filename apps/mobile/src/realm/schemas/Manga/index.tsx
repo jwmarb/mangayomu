@@ -9,7 +9,7 @@ import {
 import Realm from 'realm';
 import React from 'react';
 import { getErrorMessage } from '@helpers/getErrorMessage';
-import { useRealm, useLocalRealm } from '../../main';
+import { useRealm } from '../../main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import {
@@ -189,7 +189,6 @@ export const useManga = (
   options: UseMangaOptions = { preferLocal: true },
 ) => {
   const realm = useRealm();
-  const localRealm = useLocalRealm();
   const mangaId =
     typeof link === 'string'
       ? link
@@ -226,12 +225,12 @@ export const useManga = (
       if (manga != null && manga.isValid()) {
         realm.write(() => {
           fn(manga, (k: string) =>
-            localRealm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
+            realm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
           );
         });
       }
     },
-    [manga, realm, localRealm],
+    [manga, realm],
   );
 
   return { manga, refresh, status: state.status, error: state.error, update };

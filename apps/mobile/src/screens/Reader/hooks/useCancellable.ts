@@ -3,12 +3,12 @@ import useChapterFetcher from '@screens/Reader/hooks/useChapterFetcher';
 import NetInfo from '@react-native-community/netinfo';
 import React from 'react';
 import { Page, TransitionPage, fetchedChapters } from '@redux/slices/reader';
-import { useLocalRealm } from '@database/main';
+import { useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 type Abortable = ReturnType<ReturnType<typeof useChapterFetcher>>;
 
 export default function useCancellable(pages: Page[]) {
-  const localRealm = useLocalRealm();
+  const realm = useRealm();
   const [previous, togglePrevious] = useBoolean();
   const [next, toggleNext] = useBoolean();
   const nextFnRef = React.useRef<() => Abortable>();
@@ -58,8 +58,8 @@ export default function useCancellable(pages: Page[]) {
     fetchPages: ReturnType<typeof useChapterFetcher>,
     state: Omit<TransitionPage, 'type'>,
   ) => {
-    const next = localRealm.objectForPrimaryKey(ChapterSchema, state.next._id);
-    const previous = localRealm.objectForPrimaryKey(
+    const next = realm.objectForPrimaryKey(ChapterSchema, state.next._id);
+    const previous = realm.objectForPrimaryKey(
       ChapterSchema,
       state.previous._id,
     );

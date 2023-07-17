@@ -28,8 +28,9 @@ export const { useObject, useQuery, useRealm, RealmProvider } =
       MangaHistorySchema,
       BaseMangaChapterSchema,
       BaseMangaSchema,
+      ChapterSchema,
     ],
-    schemaVersion: 49,
+    schemaVersion: 50,
   });
 
 export const {
@@ -38,7 +39,7 @@ export const {
   useQuery: useLocalQuery,
   useRealm: useLocalRealm,
 } = createRealmContext({
-  schema: [ChapterSchema, PageSchema],
-  schemaVersion: 9,
+  schema: [PageSchema],
+  schemaVersion: 10,
   path: Realm.defaultPath.replace('default.realm', 'local.realm'),
 });
