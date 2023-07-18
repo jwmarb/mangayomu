@@ -2,8 +2,7 @@ import Box from '@components/Box';
 import Progress from '@components/Progress';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import { useRealm } from '@database/main';
-import { ChapterSchema } from '@database/schemas/Chapter';
+import { useLocalRealm } from '@database/main';
 import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import { TransitionPageContextState } from '@screens/Reader/components/TransitionPage/TransitionPage.interfaces';
@@ -12,6 +11,7 @@ import { GestureDetector } from 'react-native-gesture-handler';
 import connector, {
   ConnectedTransitionPageProps,
 } from './TransitionPage.redux';
+import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 
 export const TransitionPageContext = React.createContext<
   TransitionPageContextState | undefined
@@ -29,13 +29,19 @@ const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
     useTransitionPageContext();
   const { background, textPrimary, textSecondary } =
     useReaderBackgroundColor(backgroundColor);
-  const realm = useRealm();
+  const localRealm = useLocalRealm();
   const isPrevious = props.page.next.index === currentChapter.index;
   const isNext = props.page.previous.index === currentChapter.index;
 
   const { width, height } = useScreenDimensions();
-  const previous = realm.objectForPrimaryKey(ChapterSchema, page.previous._id);
-  const next = realm.objectForPrimaryKey(ChapterSchema, page.next._id);
+  const previous = localRealm.objectForPrimaryKey(
+    LocalChapterSchema,
+    page.previous._id,
+  );
+  const next = localRealm.objectForPrimaryKey(
+    LocalChapterSchema,
+    page.next._id,
+  );
 
   return (
     <Box background-color={background}>

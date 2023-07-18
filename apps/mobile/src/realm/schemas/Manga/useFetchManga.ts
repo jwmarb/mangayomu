@@ -1,4 +1,4 @@
-import { useRealm } from '@database/main';
+import { useLocalRealm, useRealm } from '@database/main';
 import { MangaSchema, UseMangaOptions } from '@database/schemas/Manga';
 import writeChapters from '@database/schemas/Manga/writeChapters';
 import writeManga from '@database/schemas/Manga/writeManga';
@@ -25,6 +25,7 @@ export default function useFetchManga(
   link: string | Manga | MangaSchema,
 ) {
   const realm = useRealm();
+  const localRealm = useLocalRealm();
   const source = typeof link !== 'string' ? useMangaSource(link) : null;
   const user = useUser();
   const [state, _setState] = React.useState<FetchMangaState>({
@@ -122,8 +123,7 @@ export default function useFetchManga(
         );
 
         const { chapters, availableLanguages } = writeChapters(
-          realm,
-          user,
+          localRealm,
           meta,
         );
         writeManga(realm, meta, user, chapters, availableLanguages);

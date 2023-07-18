@@ -1,4 +1,4 @@
-import { ChapterSchema } from '@database/schemas/Chapter';
+import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { SortLanguages } from '@database/schemas/Manga';
 import integrateSortedList from '@helpers/integrateSortedList';
 import { ISOLangCode } from '@mangayomu/language-codes';
@@ -8,7 +8,6 @@ import {
   MangaMultilingualChapter,
   Manga,
 } from '@mangayomu/mangascraper/src';
-import { useUser } from '@realm/react';
 
 function deepEqual(
   a: Omit<MangaChapter, 'link'>,
@@ -18,14 +17,13 @@ function deepEqual(
 }
 
 export default function writeLocalChapters(
-  realm: Realm,
-  currentUser: ReturnType<typeof useUser>,
+  localRealm: Realm,
   meta: MangaMeta & Manga,
 ) {
   const chapters: string[] = [];
   const availableLanguages: ISOLangCode[] = [];
   const lookup = new Set<string>();
-  realm.write(() => {
+  localRealm.write(() => {
     for (const x of meta.chapters) {
       chapters.push(x.link);
       if ('language' in x) {
@@ -40,20 +38,22 @@ export default function writeLocalChapters(
         availableLanguages.push('en');
         lookup.add('en');
       }
-      const existingChapter = realm.objectForPrimaryKey(ChapterSchema, x.link);
+      const existingChapter = localRealm.objectForPrimaryKey(
+        LocalChapterSchema,
+        x.link,
+      );
       if (
         (existingChapter != null && !deepEqual(existingChapter, x)) ||
         existingChapter == null
       ) {
         const copy = x;
-        (copy as unknown as ChapterSchema)._mangaId = meta.link;
-        (copy as unknown as ChapterSchema)._id = x.link;
-        (copy as unknown as ChapterSchema)._realmId = currentUser.id;
-        (copy as unknown as ChapterSchema).language =
+        (copy as unknown as LocalChapterSchema)._mangaId = meta.link;
+        (copy as unknown as LocalChapterSchema)._id = x.link;
+        (copy as unknown as LocalChapterSchema).language =
           (x as MangaMultilingualChapter).language ?? 'en';
         delete (copy as Partial<MangaChapter>).link;
-        realm.create<ChapterSchema>(
-          ChapterSchema,
+        localRealm.create<LocalChapterSchema>(
+          LocalChapterSchema,
           copy,
           Realm.UpdateMode.Modified,
         );

@@ -53,7 +53,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   const { manga, status, error, refresh, update } = useManga(params, {
     preferLocal: false,
   });
-  const { data, firstChapter } = useChapters(manga);
+  const { data, firstChapter, chapterData } = useChapters(manga);
   const [refreshing, onRefresh] = useRefresh(refresh);
   const handleOnBookmark = React.useCallback(() => {
     update((mangaObj) => {
@@ -151,6 +151,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
 
   const extraData = {
     manga,
+    data: chapterData,
   };
 
   if (manga == null && internetStatus === 'offline')

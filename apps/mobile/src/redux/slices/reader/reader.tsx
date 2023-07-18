@@ -8,6 +8,8 @@ import { Image } from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
 import NetInfo from '@react-native-community/netinfo';
 import removeURLParams from '@screens/Reader/components/ChapterPage/helpers/removeURLParams';
+import { LocalChapterSchema } from '@database/schemas/LocalChapter';
+import { useUser } from '@realm/react';
 
 export type Page = ChapterPage | NoMorePages | TransitionPage | ChapterError;
 export type ChapterError = {
@@ -66,10 +68,12 @@ interface ReaderState {
 }
 
 export interface FetchPagesByChapterPayload {
-  chapter: ChapterSchema; // this is the chapter to fetch pages from
+  chapter: LocalChapterSchema; // this is the chapter to fetch pages from
   manga: MangaSchema;
-  availableChapters: (ChapterSchema & Realm.Object<ChapterSchema, never>)[];
+  availableChapters: LocalChapterSchema[];
   localRealm: Realm;
+  realm: Realm;
+  user: ReturnType<typeof useUser>;
   source: MangaHost;
   mockError?: boolean;
 }
@@ -116,8 +120,17 @@ export const fetchPagesByChapter = createAsyncThunk(
         name: payload.chapter.name,
       });
       if (payload.mockError) mockError();
-      payload.localRealm.write(() => {
-        payload.chapter.numberOfPages = response.length;
+      payload.realm.write(() => {
+        payload.realm.create(
+          ChapterSchema,
+          {
+            _id: payload.chapter._id,
+            _realmId: payload.user.id,
+            _mangaId: payload.manga._id,
+            numberOfPages: response.length,
+          },
+          Realm.UpdateMode.Modified,
+        );
       });
       const preload = Promise.all(response.map((x) => Image.prefetch(x)));
       const dimensions = Promise.all(
@@ -155,7 +168,7 @@ export const fetchPagesByChapter = createAsyncThunk(
             const { width, height } = await getImageSizeAsync(uri);
             payload.localRealm.write(() => {
               payload.localRealm.create<PageSchema>(
-                'Page',
+                PageSchema,
                 {
                   _id: removeURLParams(uri),
                   _chapterId: payload.chapter._id,
@@ -249,14 +262,12 @@ const readerSlice = createSlice({
       state.loading = false;
       fetchingChapters.delete(action.meta.arg.chapter._id);
 
-      const previousChapter:
-        | (ChapterSchema & Realm.Object<ChapterSchema, never>)
-        | undefined =
+      const previousChapter: LocalChapterSchema | undefined =
         action.meta.arg.availableChapters[action.meta.arg.chapter.index + 1];
-      const nextChapter:
-        | (ChapterSchema & Realm.Object<ChapterSchema, never>)
-        | undefined =
+      const nextChapter: LocalChapterSchema | undefined =
         action.meta.arg.availableChapters[action.meta.arg.chapter.index - 1];
+
+      console.log(`The next chapter is ${nextChapter?._id}`);
 
       if (action.payload.error != null) {
         const current = {

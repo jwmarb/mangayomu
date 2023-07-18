@@ -82,6 +82,8 @@ export const SORT_CHAPTERS_BY_LEGACY = {
     if (a.index != null && b.index != null) return b.index - a.index;
     throw Error('Chapter cannot be sorted due to undefined name and index');
   },
+  Timestamp: (a: Omit<MangaChapter, 'link'>, b: Omit<MangaChapter, 'link'>) =>
+    Date.parse(a.date) - Date.parse(b.date),
 };
 
 export const KEYS_OF_SORT_CHAPTERS_BY = Object.keys(

@@ -14,7 +14,7 @@ import useNetworkToast from '@screens/Reader/hooks/useNetworkToast';
 export interface OverlayProps extends React.PropsWithChildren {
   opacity: SharedValue<number>;
   currentPage: number;
-  chapter: ChapterSchema & Realm.Object<ChapterSchema, never>;
+  chapter: ChapterSchema;
   manga: MangaSchema;
   readerProps: ReturnType<typeof useReaderProps>;
   scrollRef: React.RefObject<FlashList<Page>>;

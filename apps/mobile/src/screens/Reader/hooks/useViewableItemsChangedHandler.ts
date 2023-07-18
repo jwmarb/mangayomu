@@ -9,10 +9,11 @@ import React from 'react';
 import { ViewToken, ViewabilityConfigCallbackPairs } from 'react-native';
 import useChapterFetcher from '@screens/Reader/hooks/useChapterFetcher';
 import { runOnJS } from 'react-native-reanimated';
+import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 
 export default function useViewableItemsChangedHandler(args: {
   manga: MangaSchema;
-  chapter: ChapterSchema;
+  chapter: LocalChapterSchema;
   pageSliderNavRef: React.RefObject<PageSliderNavigatorMethods>;
   pages: Page[];
   fetchPagesByChapter: ReturnType<typeof useChapterFetcher>;

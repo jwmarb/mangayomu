@@ -66,7 +66,7 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
             >
               {name}
             </Text>
-            {(dateRead || isReading) && (
+            {(dateRead || isReading) && indexPage != null && (
               <Text color="primary" variant="book-title">
                 ({indexPage + 1} / {numberOfPages})
               </Text>

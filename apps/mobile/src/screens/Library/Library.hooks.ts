@@ -1,8 +1,10 @@
-import { useQuery, useRealm } from '@database/main';
+import { useLocalRealm, useQuery, useRealm } from '@database/main';
+import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import displayMessage from '@helpers/displayMessage';
 import integrateSortedList from '@helpers/integrateSortedList';
 import useMountedEffect from '@hooks/useMountedEffect';
+import { MangaMultilingualChapter } from '@mangayomu/mangascraper';
 import { MangaHost } from '@mangayomu/mangascraper/src';
 import { useIsFocused } from '@react-navigation/native';
 import { useUser } from '@realm/react';
@@ -30,6 +32,7 @@ export function useLibraryData(args: {
   const mangasInLibrary = mangas.filtered('inLibrary == true');
   const isFocused = useIsFocused();
   const realm = useRealm();
+  const localRealm = useLocalRealm();
   const currentUser = useUser();
   const applyFilters = React.useMemo(() => {
     const ignoreGenres = new Set<string>();
@@ -126,6 +129,7 @@ export function useLibraryData(args: {
           limit(async () => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const host = MangaHost.sourcesMap.get(manga.source)!;
+            console.log(`Updating ${manga._id}`);
             const meta = await host.getMeta({
               imageCover: manga.imageCover,
               link: manga._id,
@@ -134,12 +138,32 @@ export function useLibraryData(args: {
             });
             if (meta.chapters.length !== manga.chapters.length) {
               numberOfUpdates++;
+              const chapters: string[] = [];
+              localRealm.write(() => {
+                for (const chapter of meta.chapters) {
+                  chapters.push(chapter.link);
+                  localRealm.create(
+                    LocalChapterSchema,
+                    {
+                      _id: chapter.link,
+                      _mangaId: meta.link,
+                      name: chapter.name,
+                      index: chapter.index,
+                      date: chapter.date,
+                      language:
+                        (chapter as Partial<MangaMultilingualChapter>)
+                          ?.language ?? 'en',
+                    },
+                    Realm.UpdateMode.Modified,
+                  );
+                }
+              });
               realm.write(() => {
                 realm.create<MangaSchema>(
                   MangaSchema,
                   {
                     _id: meta.link,
-                    _realmId: currentUser?.id,
+                    _realmId: currentUser.id,
                     notifyNewChaptersCount:
                       manga.notifyNewChaptersCount +
                       (meta.chapters.length - manga.chapters.length),
@@ -148,7 +172,7 @@ export function useLibraryData(args: {
                     imageCover: meta.imageCover,
                     source: meta.source,
                     title: meta.title,
-                    chapters: meta.chapters.map((x) => x.link),
+                    chapters,
                   },
                   Realm.UpdateMode.Modified,
                 );

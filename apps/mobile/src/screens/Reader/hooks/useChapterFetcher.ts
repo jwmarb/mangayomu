@@ -15,11 +15,13 @@ import NetInfo, {
 import React from 'react';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { MangaHost } from '@mangayomu/mangascraper/src';
-import { useLocalRealm } from '@database/main';
+import { useLocalRealm, useRealm } from '@database/main';
 import { InteractionManager } from 'react-native';
 import { AutoFetchThreshold, AutoFetchType } from '@redux/slices/settings';
 import useMutableObject from '@hooks/useMutableObject';
 import useCancellable from '@screens/Reader/hooks/useCancellable';
+import { LocalChapterSchema } from '@database/schemas/LocalChapter';
+import { useUser } from '@realm/react';
 
 /**
  * A hook to create a fetcher to fetch a chapter
@@ -35,15 +37,20 @@ export default function useChapterFetcher(
     autoFetch: AppState['settings']['reader']['automaticallyFetchNextChapter'];
     currentPage: number;
     cancellable: ReturnType<typeof useCancellable>[0];
+    chapterWithData: ChapterSchema;
+    chapter: LocalChapterSchema;
   },
 ) {
   const dispatch = useAppDispatch();
   const source = MangaHost.sourcesMap.get(args.manga.source);
-  const currentChapter = useMutableObject(args.chapter);
+  const currentChapter = useMutableObject(args.chapterWithData);
+  const currentLocalChapter = useMutableObject(args.chapter);
   const localRealm = useLocalRealm();
+  const realm = useRealm();
+  const user = useUser();
   if (source == null) throw Error(`${args.manga.source} does not exist`);
   const fetchPages = React.useCallback(
-    (chapter: ChapterSchema, mockError = false) => {
+    (chapter: LocalChapterSchema, mockError = false) => {
       if (
         fetchedChapters.has(chapter._id) ||
         fetchingChapters.has(chapter._id)
@@ -55,10 +62,12 @@ export default function useChapterFetcher(
         fetchPagesByChapter({
           source,
           localRealm,
+          realm,
           chapter,
           manga: args.manga,
           availableChapters: args.availableChapters,
           mockError,
+          user,
         }),
       );
     },
@@ -99,18 +108,20 @@ export default function useChapterFetcher(
                 );
                 break;
             }
-            if (offsetTillFetch === 0 && currentChapter.current.index > 0)
+            if (offsetTillFetch === 0 && currentLocalChapter.current.index > 0)
               args.cancellable(fetchPages, {
                 previous: {
-                  index: currentChapter.current.index,
+                  index: currentLocalChapter.current.index,
                   _id: currentChapter.current._id,
                 },
                 next: {
                   index:
-                    args.availableChapters[currentChapter.current.index - 1]
-                      .index,
-                  _id: args.availableChapters[currentChapter.current.index - 1]
-                    ._id,
+                    args.availableChapters[
+                      currentLocalChapter.current.index - 1
+                    ].index,
+                  _id: args.availableChapters[
+                    currentLocalChapter.current.index - 1
+                  ]._id,
                 },
               });
           }

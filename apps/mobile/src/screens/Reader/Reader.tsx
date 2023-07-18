@@ -45,7 +45,10 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   } = props;
   const { width, height } = useScreenDimensions();
   const ref = React.useRef<FlashList<Page>>(null);
-  const [manga, chapter, availableChapters] = useData(mangaKey, chapterKey);
+  const [manga, chapter, availableChapters, chapterWithData] = useData(
+    mangaKey,
+    chapterKey,
+  );
   React.useEffect(() => {
     if (notifyOnLastChapter && availableChapters[0]._id === chapter._id)
       displayMessage('Final chapter');
@@ -54,13 +57,14 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const pageSliderNavRef = React.useRef<PageSliderNavigatorMethods>(null);
   const imageMenuRef = React.useRef<ImageMenuMethods>(null);
   const [currentPage, setCurrentPage] = React.useState<number>(
-    chapter.indexPage + 1,
+    chapterWithData.indexPage + 1,
   );
   const [cancellable, isFetchingPrevious] = useCancellable(pages);
   const fetchPagesByChapter = useChapterFetcher({
     availableChapters,
     manga,
     chapter,
+    chapterWithData,
     pages,
     currentPage,
     autoFetch,
@@ -115,7 +119,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const { onScroll, isFinishedInitialScrollOffset } = useSavedChapterInfo({
     getSafeScrollRange,
     horizontal,
-    chapter,
+    chapter: chapterWithData,
     scrollRef: ref,
     pages,
     manga,
@@ -123,7 +127,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   });
 
   const transitionPageContextValue = React.useMemo(
-    () => ({ backgroundColor, currentChapter: chapter, tapGesture }),
+    () => ({ backgroundColor, currentChapter: chapterWithData, tapGesture }),
     [tapGesture, chapter._id, backgroundColor],
   );
 
@@ -153,7 +157,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
             readerProps={readerProps}
             currentPage={currentPage}
             manga={manga}
-            chapter={chapter}
+            chapter={chapterWithData}
             opacity={overlayOpacity}
           />
           <NetworkToast style={toastStyle} />
@@ -202,7 +206,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                   overrideItemLayout={overrideItemLayout}
                   keyExtractor={keyExtractor}
                   inverted={reversed.current}
-                  initialScrollIndex={chapter.indexPage}
+                  initialScrollIndex={chapterWithData.indexPage}
                   renderItem={renderItem}
                   getItemType={getItemType}
                   onScroll={onScroll}

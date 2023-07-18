@@ -3,11 +3,11 @@ import { MangaChapter } from '@mangayomu/mangascraper/src';
 import { Dimensions } from 'react-native';
 import Realm from 'realm';
 
-export interface IChapterSchema extends Omit<MangaChapter, 'link'> {
+export interface IChapterSchema {
   scrollPosition?: number;
   savedScrollPositionType?: 'landscape' | 'portrait';
   numberOfPages?: number;
-  indexPage?: number;
+  indexPage: number;
   dateRead?: number;
   language: ISOLangCode;
   _mangaId: string;
@@ -21,10 +21,6 @@ export class ChapterSchema extends Realm.Object<IChapterSchema> {
   indexPage!: number;
   numberOfPages?: number;
   dateRead?: number;
-  name!: string;
-  index!: number;
-  date!: string;
-  language!: ISOLangCode;
   _mangaId!: string;
   _id!: string;
   _realmId!: string;
@@ -34,12 +30,8 @@ export class ChapterSchema extends Realm.Object<IChapterSchema> {
     properties: {
       _id: 'string',
       _realmId: 'string',
-      name: 'string',
-      index: 'int',
-      date: 'string',
       _mangaId: 'string',
       numberOfPages: 'int?',
-      language: { type: 'string', default: 'en' },
       scrollPosition: 'int?',
       savedScrollPositionType: {
         type: 'string',
@@ -54,4 +46,8 @@ export class ChapterSchema extends Realm.Object<IChapterSchema> {
     },
     primaryKey: '_id',
   };
+}
+
+export function isChapterSchema(x: unknown): x is ChapterSchema {
+  return typeof x === 'object' && x != null && '_realmId' in x;
 }

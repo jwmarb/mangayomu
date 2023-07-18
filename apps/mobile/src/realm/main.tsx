@@ -15,6 +15,7 @@ import {
   BaseMangaChapterSchema,
   BaseMangaSchema,
 } from '@database/schemas/History';
+import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 export * from './providers/UserProvider';
 export const { useObject, useQuery, useRealm, RealmProvider } =
   createRealmContext({
@@ -30,7 +31,7 @@ export const { useObject, useQuery, useRealm, RealmProvider } =
       BaseMangaSchema,
       ChapterSchema,
     ],
-    schemaVersion: 50,
+    schemaVersion: 51,
   });
 
 export const {
@@ -39,7 +40,7 @@ export const {
   useQuery: useLocalQuery,
   useRealm: useLocalRealm,
 } = createRealmContext({
-  schema: [PageSchema],
-  schemaVersion: 10,
+  schema: [LocalChapterSchema, PageSchema],
+  schemaVersion: 14,
   path: Realm.defaultPath.replace('default.realm', 'local.realm'),
 });

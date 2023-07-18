@@ -1,5 +1,6 @@
 import { useRealm } from '@database/main';
-import { ChapterSchema } from '@database/schemas/Chapter';
+import { ChapterSchema, IChapterSchema } from '@database/schemas/Chapter';
+import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import useBoolean from '@hooks/useBoolean';
 import useMutableObject from '@hooks/useMutableObject';
@@ -17,7 +18,7 @@ import {
 export default function useSavedChapterInfo(
   args: Pick<ReturnType<typeof usePageLayout>, 'getSafeScrollRange'> & {
     horizontal: boolean;
-    chapter: ChapterSchema & Realm.Object<ChapterSchema, never>;
+    chapter: ChapterSchema;
     manga: MangaSchema;
     scrollRef: React.RefObject<FlashList<Page>>;
     incognito: boolean;

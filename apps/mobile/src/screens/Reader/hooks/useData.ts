@@ -1,6 +1,8 @@
-import { useRealm, useObject } from '@database/main';
-import { ChapterSchema } from '@database/schemas/Chapter';
+import { useRealm, useObject, useLocalRealm } from '@database/main';
+import { ChapterSchema, IChapterSchema } from '@database/schemas/Chapter';
+import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { MangaSchema } from '@database/schemas/Manga';
+import { useUser } from '@realm/react';
 import React from 'react';
 
 /**
@@ -10,15 +12,48 @@ import React from 'react';
  * @returns Returns objects derived from Realm
  */
 export default function useData(mangaKey: string, chapterKey: string) {
+  const localRealm = useLocalRealm();
   const realm = useRealm();
+  const user = useUser();
   const manga = useObject(MangaSchema, mangaKey);
   const [chapter, setChapter] = React.useState(
-    realm.objectForPrimaryKey(ChapterSchema, chapterKey),
+    localRealm.objectForPrimaryKey(LocalChapterSchema, chapterKey),
   );
-  const collection = realm.objects(ChapterSchema);
+  const chapterWithDataInitializer = () => {
+    const existingChapter = realm.objectForPrimaryKey(
+      ChapterSchema,
+      chapterKey,
+    );
+    if (existingChapter == null) {
+      let newChapter: ChapterSchema = {} as ChapterSchema;
+      const localChapter = localRealm.objectForPrimaryKey(
+        LocalChapterSchema,
+        chapterKey,
+      );
+      if (localChapter == null)
+        throw new Error(
+          `Tried to use ${chapterKey} from LocalChapter collection, but the value was undefined`,
+        );
+      realm.write(() => {
+        newChapter = realm.create(ChapterSchema, {
+          _id: chapterKey,
+          _realmId: user.id,
+          _mangaId: mangaKey,
+          indexPage: 0,
+        });
+      });
+      return newChapter;
+    }
+    return existingChapter;
+  };
+  const [chapterWithData, setChapterWithData] = React.useState<ChapterSchema>(
+    chapterWithDataInitializer,
+  );
+  const collection = localRealm.objects(LocalChapterSchema);
 
   React.useEffect(() => {
-    setChapter(realm.objectForPrimaryKey(ChapterSchema, chapterKey));
+    setChapter(localRealm.objectForPrimaryKey(LocalChapterSchema, chapterKey));
+    setChapterWithData(chapterWithDataInitializer);
   }, [chapterKey]);
 
   if (manga == null)
@@ -38,7 +73,9 @@ export default function useData(mangaKey: string, chapterKey: string) {
         chapter._mangaId,
       ) as unknown,
     [chapter.language, chapter._mangaId],
-  ) as (ChapterSchema & Realm.Object<ChapterSchema, never>)[];
+  ) as LocalChapterSchema[];
 
-  return [manga, chapter, readableChapters] as const;
+  console.log(readableChapters[0].index, chapter.index);
+
+  return [manga, chapter, readableChapters, chapterWithData] as const;
 }
