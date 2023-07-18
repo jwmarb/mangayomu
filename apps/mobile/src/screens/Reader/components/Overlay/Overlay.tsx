@@ -42,10 +42,11 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
     isFinishedInitialScrollOffset,
     topOverlayStyle,
     imageMenuRef,
+    savedChapterInfo,
   } = props;
   const insets = useSafeAreaInsets();
   const realm = useRealm();
-  const totalPages = chapter.numberOfPages;
+  const totalPages = savedChapterInfo.numberOfPages;
   const textOpacity = useDerivedValue(() =>
     interpolate(opacity.value, [0, 1], [1, 0]),
   );
@@ -234,7 +235,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
         <ParsedUserReaderSettingsContext.Provider value={readerProps}>
           <PageSliderNavigator
             isFinishedInitialScrollOffset={isFinishedInitialScrollOffset}
-            initialChapterPageIndex={chapter.indexPage}
+            initialChapterPageIndex={savedChapterInfo.indexPage}
             ref={pageSliderNavRef}
             onSnapToPoint={handleOnSnapToPoint}
             totalPages={totalPages}

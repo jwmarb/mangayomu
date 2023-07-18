@@ -10,11 +10,13 @@ import { FlashList } from '@shopify/flash-list';
 import { Page } from '@redux/slices/reader';
 import { PageSliderNavigatorMethods } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator.interfaces';
 import useNetworkToast from '@screens/Reader/hooks/useNetworkToast';
+import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 
 export interface OverlayProps extends React.PropsWithChildren {
   opacity: SharedValue<number>;
   currentPage: number;
-  chapter: ChapterSchema;
+  savedChapterInfo: ChapterSchema;
+  chapter: LocalChapterSchema;
   manga: MangaSchema;
   readerProps: ReturnType<typeof useReaderProps>;
   scrollRef: React.RefObject<FlashList<Page>>;

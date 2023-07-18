@@ -159,7 +159,8 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
             readerProps={readerProps}
             currentPage={currentPage}
             manga={manga}
-            chapter={chapterWithData}
+            chapter={chapter}
+            savedChapterInfo={chapterWithData}
             opacity={overlayOpacity}
           />
           <NetworkToast style={toastStyle} />
