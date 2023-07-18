@@ -1,5 +1,6 @@
 import { useLocalRealm, useQuery, useRealm } from '@database/main';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
+import useLocalManga from '@database/schemas/LocalManga/useLocalManga';
 import { MangaSchema } from '@database/schemas/Manga';
 import displayMessage from '@helpers/displayMessage';
 import integrateSortedList from '@helpers/integrateSortedList';
@@ -30,6 +31,7 @@ export function useLibraryData(args: {
   const [isLoading, setTransition] = useTransition();
   const mangas = useQuery(MangaSchema);
   const mangasInLibrary = mangas.filtered('inLibrary == true');
+  const { getLocalManga } = useLocalManga();
   const isFocused = useIsFocused();
   const realm = useRealm();
   const localRealm = useLocalRealm();
@@ -49,11 +51,12 @@ export function useLibraryData(args: {
     return (manga: MangaSchema) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const source = MangaHost.sourcesMap.get(manga.source)!;
+      const localManga = getLocalManga(manga._id);
       if (ignoreGenres.size > 0) {
         for (const genre of ignoreGenres) {
           if (
             source.getGenre(genre) != null &&
-            manga.genres.has(source.getGenre(genre))
+            localManga.genres.has(source.getGenre(genre))
           )
             return false;
         }
@@ -61,7 +64,7 @@ export function useLibraryData(args: {
       if (requireGenres.size > 0) {
         for (const genre of requireGenres) {
           if (source.getGenre(genre) == null) return false;
-          else if (!manga.genres.has(source.getGenre(genre))) return false;
+          else if (!localManga.genres.has(source.getGenre(genre))) return false;
         }
       }
       return filters.Sources[manga.source];
@@ -129,14 +132,14 @@ export function useLibraryData(args: {
           limit(async () => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const host = MangaHost.sourcesMap.get(manga.source)!;
-            console.log(`Updating ${manga._id}`);
+            const localManga = getLocalManga(manga._id);
             const meta = await host.getMeta({
               imageCover: manga.imageCover,
               link: manga._id,
               source: manga.source,
               title: manga.title,
             });
-            if (meta.chapters.length !== manga.chapters.length) {
+            if (meta.chapters.length !== localManga.chapters.length) {
               numberOfUpdates++;
               const chapters: string[] = [];
               localRealm.write(() => {
@@ -166,13 +169,13 @@ export function useLibraryData(args: {
                     _realmId: currentUser.id,
                     notifyNewChaptersCount:
                       manga.notifyNewChaptersCount +
-                      (meta.chapters.length - manga.chapters.length),
-                    description: meta.description,
-                    genres: meta.genres as unknown as Set<string>,
+                      (meta.chapters.length - localManga.chapters.length),
+                    // description: meta.description,
+                    // genres: meta.genres as unknown as Set<string>,
                     imageCover: meta.imageCover,
                     source: meta.source,
                     title: meta.title,
-                    chapters,
+                    // chapters,
                   },
                   Realm.UpdateMode.Modified,
                 );
