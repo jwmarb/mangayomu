@@ -6,8 +6,10 @@ export type Comparators<T, O> = {
 
 export default function integrateSortedList<T>(
   arr: T[],
-  comparator: Comparator<T, T>,
+  _comparator: Comparator<T, T>,
+  reversed?: boolean,
 ) {
+  const comparator = reversed ? (a: T, b: T) => _comparator(a, b) : _comparator;
   return {
     /**
      * Add an item to the list
