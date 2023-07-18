@@ -100,7 +100,6 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
-        manifestPlaceholders = [auth0Domain: "dev-wq6wbghv.us.auth0.com", auth0Scheme: "${applicationId}"]
     }
 
     splits {
