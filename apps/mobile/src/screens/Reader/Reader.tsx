@@ -120,7 +120,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     getSafeScrollRange,
     horizontal,
     chapter,
-
     savedChapterInfo: chapterWithData,
     scrollRef: ref,
     pages,
@@ -129,7 +128,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   });
 
   const transitionPageContextValue = React.useMemo(
-    () => ({ backgroundColor, currentChapter: chapterWithData, tapGesture }),
+    () => ({ backgroundColor, currentChapter: chapter, tapGesture }),
     [tapGesture, chapter._id, backgroundColor],
   );
 

@@ -1,4 +1,5 @@
 import { ChapterSchema } from '@database/schemas/Chapter';
+import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { TransitionPage } from '@redux/slices/reader';
 import { ReaderBackgroundColor } from '@redux/slices/settings';
 import React from 'react';
@@ -11,5 +12,5 @@ export interface TransitionPageProps extends React.PropsWithChildren {
 export interface TransitionPageContextState {
   tapGesture: TapGesture;
   backgroundColor: ReaderBackgroundColor;
-  currentChapter: ChapterSchema;
+  currentChapter: LocalChapterSchema;
 }

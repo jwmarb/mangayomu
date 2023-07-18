@@ -18,6 +18,7 @@ import NetInfo, {
   NetInfoSubscription,
   useNetInfo,
 } from '@react-native-community/netinfo';
+import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 
 export const ChapterErrorContext = React.createContext<
   ChapterErrorContextState | undefined
@@ -31,8 +32,11 @@ const useChapterErrorContext = () => {
 const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
   const { backgroundColor, data } = props;
   const { error, current } = data;
-  const realm = useRealm();
-  const chapter = realm.objectForPrimaryKey(ChapterSchema, current._id);
+  const localRealm = useRealm();
+  const chapter = localRealm.objectForPrimaryKey(
+    LocalChapterSchema,
+    current._id,
+  );
   const fetchPages = useChapterErrorContext();
   const { background, textPrimary, textSecondary } =
     useReaderBackgroundColor(backgroundColor);
