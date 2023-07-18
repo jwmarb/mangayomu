@@ -22,8 +22,6 @@ export const { useObject, useQuery, useRealm, RealmProvider } =
   createRealmContext({
     schema: [
       MangaSchema,
-      MangaRatingSchema,
-      MangaStatusSchema,
       MangaReadingChapter,
       UserHistorySchema,
       HistorySectionSchema,
@@ -32,7 +30,7 @@ export const { useObject, useQuery, useRealm, RealmProvider } =
       BaseMangaSchema,
       ChapterSchema,
     ],
-    schemaVersion: 51,
+    schemaVersion: 53,
   });
 
 export const {
@@ -48,6 +46,6 @@ export const {
     MangaRatingSchema,
     MangaStatusSchema,
   ],
-  schemaVersion: 15,
+  schemaVersion: 16,
   path: Realm.defaultPath.replace('default.realm', 'local.realm'),
 });

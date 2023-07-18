@@ -13,14 +13,17 @@ import React from 'react';
 
 export default function useChapters(
   manga: ReturnType<typeof useManga>['manga'],
+  meta: ReturnType<typeof useManga>['meta'],
 ) {
   const realm = useRealm();
   const localRealm = useLocalRealm();
 
   const selectedLanguage =
-    manga?.selectedLanguage === 'Use default language'
+    manga?.selectedLanguage === 'Use default language' ||
+    manga?.selectedLanguage == null
       ? DEFAULT_LANGUAGE
       : manga?.selectedLanguage;
+
   const [chapters, setChapters] = React.useState<
     Realm.Results<LocalChapterSchema>
   >(
@@ -29,7 +32,7 @@ export default function useChapters(
         .objects(LocalChapterSchema)
         .filtered(
           '_mangaId = $0 AND language = $1 SORT(index ASC)',
-          manga?._id,
+          meta?._id,
           selectedLanguage,
         ) ?? [],
   );
@@ -41,7 +44,7 @@ export default function useChapters(
       .objects(ChapterSchema)
       .filtered(
         '_mangaId = $0 AND language = $1 SORT(index ASC)',
-        manga?._id,
+        meta?._id,
         selectedLanguage,
       )
       .reduce((prev, curr) => {
@@ -57,7 +60,7 @@ export default function useChapters(
       setChapters(
         collection.filtered(
           '_mangaId = $0 AND language = $1 SORT(index ASC)',
-          manga?._id,
+          meta?._id,
           selectedLanguage,
         ),
       );
@@ -82,14 +85,14 @@ export default function useChapters(
       .objects(LocalChapterSchema)
       .filtered(
         '_mangaId = $0 AND language = $1 SORT(index ASC)',
-        manga?._id,
+        meta?._id,
         selectedLanguage,
       );
     const chapters = realm
       .objects(ChapterSchema)
       .filtered(
         '_mangaId = $0 AND language = $1 SORT(index ASC)',
-        manga?._id,
+        meta?._id,
         selectedLanguage,
       );
     localChapters.addListener(localCallback);
@@ -98,21 +101,21 @@ export default function useChapters(
       localChapters.removeListener(localCallback);
       chapters.removeListener(callback);
     };
-  }, [selectedLanguage, manga?._id]);
+  }, [selectedLanguage, meta?._id]);
 
   const data = React.useMemo(() => {
-    if (manga != null && chapters.length > 0) {
+    if (meta != null && chapters.length > 0) {
       const sorted = sort(Array.from(chapters))[
-        manga.reversedSort ? 'desc' : 'asc'
-      ](SORT_CHAPTERS_BY[manga.sortChaptersBy]);
+        meta.reversedSort ? 'desc' : 'asc'
+      ](SORT_CHAPTERS_BY[meta.sortChaptersBy]);
       return sorted;
     }
 
     return [];
   }, [
     manga?.selectedLanguage,
-    manga?.sortChaptersBy,
-    manga?.reversedSort,
+    meta?.sortChaptersBy,
+    meta?.reversedSort,
     chapters,
   ]);
 

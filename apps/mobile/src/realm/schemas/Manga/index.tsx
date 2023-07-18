@@ -9,7 +9,7 @@ import {
 import Realm from 'realm';
 import React from 'react';
 import { getErrorMessage } from '@helpers/getErrorMessage';
-import { useRealm } from '../../main';
+import { useLocalRealm, useRealm } from '../../main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import {
@@ -21,6 +21,8 @@ import {
 import assertIsManga from '@helpers/assertIsManga';
 import useMangaListener from '@database/schemas/Manga/useMangaListener';
 import useFetchManga from '@database/schemas/Manga/useFetchManga';
+import { LocalMangaSchema } from '@database/schemas/LocalManga';
+import { useUser } from '@realm/react';
 
 export const MangaRatingSchema: Realm.ObjectSchema = {
   name: 'MangaRating',
@@ -92,15 +94,7 @@ export const KEYS_OF_SORT_CHAPTERS_BY = Object.keys(
 
 export type SortChaptersMethod = keyof typeof SORT_CHAPTERS_BY;
 
-export interface IMangaSchema
-  extends Omit<Manga, 'link'>,
-    Partial<WithAuthors>,
-    Partial<WithStatus>,
-    Partial<WithHentai>,
-    Partial<WithRating> {
-  description: string | null;
-  genres: Set<string>;
-  chapters: string[];
+export interface IMangaSchema extends Omit<Manga, 'link'> {
   sortChaptersBy: SortChaptersMethod;
   reversedSort: boolean;
   currentlyReadingChapter?: CurrentlyReadingChapter;
@@ -108,7 +102,6 @@ export interface IMangaSchema
   notifyNewChaptersCount?: number;
   inLibrary: boolean;
   selectedLanguage: ISOLangCode | 'Use default language';
-  availableLanguages: ISOLangCode[];
   readerDirection: ReadingDirection | 'Use global setting';
   readerZoomStartPosition: ZoomStartPosition | 'Use global setting';
   readerImageScaling: ImageScaling | 'Use global setting';
@@ -121,21 +114,12 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
   title!: string;
   imageCover!: string;
   source!: string;
-  description!: string | null;
-  genres!: Set<string>;
   currentlyReadingChapter?: CurrentlyReadingChapter;
   dateAddedInLibrary?: number;
   notifyNewChaptersCount!: number;
-  chapters!: string[];
-  sortChaptersBy!: keyof typeof SORT_CHAPTERS_BY;
+
   inLibrary!: boolean;
-  authors?: string[];
-  isHentai?: boolean;
-  rating?: WithRating['rating'];
-  status?: WithStatus['status'];
-  reversedSort!: boolean;
   selectedLanguage!: ISOLangCode | 'Use default language';
-  availableLanguages!: ISOLangCode[];
   readerDirection!: ReadingDirection | 'Use global setting';
   readerZoomStartPosition!: ZoomStartPosition | 'Use global setting';
   readerImageScaling!: ImageScaling | 'Use global setting';
@@ -151,21 +135,12 @@ export class MangaSchema extends Realm.Object<IMangaSchema> {
       title: 'string',
       imageCover: 'string',
       source: 'string',
-      description: 'mixed',
-      genres: 'string<>',
       currentlyReadingChapter: 'MangaReadingChapter?',
       dateAddedInLibrary: 'int?',
       notifyNewChaptersCount: { type: 'int?', default: 0 },
-      chapters: 'string[]',
-      sortChaptersBy: { type: 'string', default: 'Chapter number' },
-      authors: { type: 'string[]', default: [] },
-      isHentai: { type: 'bool', default: false },
-      rating: 'MangaRating?',
+
       inLibrary: { type: 'bool', default: false },
-      status: 'MangaStatus?',
-      reversedSort: { type: 'bool', default: true },
       selectedLanguage: { type: 'string', default: 'Use default language' },
-      availableLanguages: 'string[]',
       readerDirection: { type: 'string', default: 'Use global setting' },
       readerZoomStartPosition: {
         type: 'string',
@@ -191,6 +166,8 @@ export const useManga = (
   options: UseMangaOptions = { preferLocal: true },
 ) => {
   const realm = useRealm();
+  const localRealm = useLocalRealm();
+  const user = useUser();
   const mangaId =
     typeof link === 'string'
       ? link
@@ -199,7 +176,7 @@ export const useManga = (
       : link._id;
 
   const { state, setState, fetchData } = useFetchManga(options, link);
-  const manga = useMangaListener(mangaId);
+  const { manga, meta } = useMangaListener(mangaId);
 
   const refresh = React.useCallback(async () => {
     if (manga != null) {
@@ -224,7 +201,21 @@ export const useManga = (
         getChapter: (key: string) => ChapterSchema | null,
       ) => void,
     ) => {
-      if (manga != null && manga.isValid()) {
+      if (manga == null && meta != null) {
+        realm.write(() => {
+          const p: MangaSchema = {
+            _id: meta._id,
+            _realmId: user.id,
+            title: meta.title,
+            imageCover: meta.imageCover,
+            source: meta.source,
+          } as unknown as MangaSchema;
+          fn(p, (k: string) =>
+            realm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
+          );
+          realm.create(MangaSchema, p);
+        });
+      } else if (manga?.isValid()) {
         realm.write(() => {
           fn(manga, (k: string) =>
             realm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
@@ -232,8 +223,34 @@ export const useManga = (
         });
       }
     },
-    [manga, realm],
+    [manga, realm, meta, user],
   );
 
-  return { manga, refresh, status: state.status, error: state.error, update };
+  const updateLocal = React.useCallback(
+    (
+      fn: (
+        mangaRealmObject: LocalMangaSchema,
+        getChapter: (key: string) => ChapterSchema | null,
+      ) => void,
+    ) => {
+      if (meta != null && meta.isValid()) {
+        localRealm.write(() => {
+          fn(meta, (k: string) =>
+            realm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
+          );
+        });
+      }
+    },
+    [meta, localRealm],
+  );
+
+  return {
+    manga,
+    meta,
+    refresh,
+    status: state.status,
+    error: state.error,
+    update,
+    updateLocal,
+  };
 };

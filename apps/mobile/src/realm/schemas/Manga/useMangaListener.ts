@@ -1,11 +1,16 @@
-import { useRealm } from '@database/main';
+import { useLocalRealm, useRealm } from '@database/main';
+import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import { MangaSchema } from '@database/schemas/Manga';
 import React from 'react';
 
 export default function useMangaListener(mangaId: string) {
   const realm = useRealm();
+  const localRealm = useLocalRealm();
   const [manga, setManga] = React.useState<MangaSchema | undefined>(
     realm.objectForPrimaryKey(MangaSchema, mangaId),
+  );
+  const [meta, setMeta] = React.useState<LocalMangaSchema | undefined>(
+    localRealm.objectForPrimaryKey(LocalMangaSchema, mangaId),
   );
   React.useEffect(() => {
     const callback: Realm.CollectionChangeCallback<MangaSchema> = (
@@ -20,12 +25,29 @@ export default function useMangaListener(mangaId: string) {
         }
       }
     };
+    const localCallback: Realm.CollectionChangeCallback<LocalMangaSchema> = (
+      collection,
+      mods,
+    ) => {
+      for (const key in mods) {
+        if (mods[key as keyof typeof mods].length > 0) {
+          for (const index of mods[key as keyof typeof mods]) {
+            if (collection[index]._id === mangaId) {
+              setMeta(collection[index]);
+            }
+          }
+        }
+      }
+    };
     const listener = realm.objects(MangaSchema);
+    const localMangas = localRealm.objects(LocalMangaSchema);
+    localMangas.addListener(localCallback);
     listener?.addListener(callback);
     return () => {
       listener?.removeListener(callback);
+      localMangas.removeListener(localCallback);
     };
   }, []);
 
-  return manga;
+  return { manga, meta };
 }

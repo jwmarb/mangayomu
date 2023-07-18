@@ -37,6 +37,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
     scrollViewStyle,
     status,
     // error,
+    localManga,
     firstChapterKey,
     numberOfSelectedLanguageChapters,
     onBookmark,
@@ -44,7 +45,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
   } = props;
   const theme = useTheme();
 
-  const isLoading = status === 'loading' || meta == null;
+  const isLoading = status === 'loading' || localManga == null;
   return (
     <Box>
       <FastImage
@@ -74,8 +75,8 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
                 <Cover cover={manga} scale={1.5} normalBookDimensions />
               </Box>
               <MangaTitle title={manga.title} />
-              <MangaAuthors data={meta?.authors} loading={isLoading} />
-              <MangaRating data={meta?.rating} loading={isLoading} />
+              <MangaAuthors data={localManga?.authors} loading={isLoading} />
+              <MangaRating data={localManga?.rating} loading={isLoading} />
             </Stack>
             <MangaActionButtons
               mangaKey={meta?._id}
@@ -98,14 +99,14 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
         align-self="center"
         width="100%"
       >
-        <MangaDescription loading={isLoading} data={meta?.description} />
-        <MangaGenres data={meta?.genres} source={manga.source} />
+        <MangaDescription loading={isLoading} data={localManga?.description} />
+        <MangaGenres data={localManga?.genres} source={manga.source} />
         <Text variant="header" bold>
           Additional info
         </Text>
-        <MangaStatus data={meta?.status} loading={isLoading} />
+        <MangaStatus data={localManga?.status} loading={isLoading} />
         <MangaSource mangaSource={manga.source} />
-        <MangaSupportedLanguages data={meta?.availableLanguages} />
+        <MangaSupportedLanguages data={localManga?.availableLanguages} />
 
         <Stack
           space="s"
@@ -113,7 +114,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
           justify-content="space-between"
           align-items="center"
         >
-          {meta ? (
+          {localManga ? (
             <Text variant="header" bold>
               {numberOfSelectedLanguageChapters} Chapters
             </Text>

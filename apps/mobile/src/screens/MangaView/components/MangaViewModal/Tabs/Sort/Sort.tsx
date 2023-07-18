@@ -10,18 +10,18 @@ import { ListRenderItem } from 'react-native';
 import SortItem from '@components/Filters/SortItem';
 
 const Sort: React.FC<SortProps> = (props) => {
-  const { update } = useManga(props.mangaLink);
+  const { update, updateLocal } = useManga(props.mangaLink);
 
   const onChange = React.useCallback(
     (t: SortChaptersMethod) => {
-      update((obj) => {
+      updateLocal((obj) => {
         obj.sortChaptersBy = t;
       });
     },
     [update],
   );
   const onToggleReverse = React.useCallback(() => {
-    update((obj) => {
+    updateLocal((obj) => {
       obj.reversedSort = !obj.reversedSort;
     });
   }, [update]);
