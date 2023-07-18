@@ -1,12 +1,9 @@
 import React from 'react';
-import { OverlayHeaderProps } from './OverlayHeader.interfaces';
 import { AnimatedBox } from '@components/Box';
 import {
   OVERLAY_COLOR,
-  OVERLAY_HEADER_HEIGHT,
   OVERLAY_TEXT_PRIMARY,
   OVERLAY_TEXT_SECONDARY,
-  READER_NETWORK_TOAST_HEIGHT,
 } from '@theme/constants';
 import { useTheme } from '@emotion/react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,14 +12,6 @@ import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
 import { TouchableWithoutFeedback } from 'react-native';
 import Text from '@components/Text';
-import useRootNavigation from '@hooks/useRootNavigation';
-import { IMangaSchema } from '@database/schemas/Manga';
-import {
-  interpolate,
-  useAnimatedProps,
-  useAnimatedStyle,
-  useDerivedValue,
-} from 'react-native-reanimated';
 import connector, { ConnectedOverlayHeaderProps } from './OverlayHeader.redux';
 
 const OverlayHeader: React.FC<ConnectedOverlayHeaderProps> = (props) => {
