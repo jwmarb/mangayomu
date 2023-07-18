@@ -18,7 +18,8 @@ import {
 export default function useSavedChapterInfo(
   args: Pick<ReturnType<typeof usePageLayout>, 'getSafeScrollRange'> & {
     horizontal: boolean;
-    chapter: ChapterSchema;
+    savedChapterInfo: ChapterSchema;
+    chapter: LocalChapterSchema;
     manga: MangaSchema;
     scrollRef: React.RefObject<FlashList<Page>>;
     incognito: boolean;
@@ -33,9 +34,10 @@ export default function useSavedChapterInfo(
     pages,
     incognito,
     manga,
+    savedChapterInfo,
   } = args;
   const { addMangaToHistory } = useUserHistory({ incognito });
-  const savedScrollPosition = useMutableObject(chapter.scrollPosition);
+  const savedScrollPosition = useMutableObject(savedChapterInfo.scrollPosition);
   const realm = useRealm();
   const scrollOffset = React.useRef<number>(0);
   const shouldSaveScrollOffset = React.useRef<boolean>(false);
@@ -45,7 +47,7 @@ export default function useSavedChapterInfo(
 
   React.useEffect(() => {
     realm.write(() => {
-      chapter.dateRead = Date.now();
+      savedChapterInfo.dateRead = Date.now();
     });
     addMangaToHistory({
       manga: {

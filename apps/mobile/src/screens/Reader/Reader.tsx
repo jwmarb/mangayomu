@@ -119,7 +119,9 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const { onScroll, isFinishedInitialScrollOffset } = useSavedChapterInfo({
     getSafeScrollRange,
     horizontal,
-    chapter: chapterWithData,
+    chapter,
+
+    savedChapterInfo: chapterWithData,
     scrollRef: ref,
     pages,
     manga,
