@@ -75,7 +75,5 @@ export default function useData(mangaKey: string, chapterKey: string) {
     [chapter.language, chapter._mangaId],
   ) as LocalChapterSchema[];
 
-  console.log(readableChapters[0].index, chapter.index);
-
   return [manga, chapter, readableChapters, chapterWithData] as const;
 }

@@ -267,8 +267,6 @@ const readerSlice = createSlice({
       const nextChapter: LocalChapterSchema | undefined =
         action.meta.arg.availableChapters[action.meta.arg.chapter.index - 1];
 
-      console.log(`The next chapter is ${nextChapter?._id}`);
-
       if (action.payload.error != null) {
         const current = {
           _id: action.meta.arg.chapter._id,
