@@ -148,6 +148,9 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
             left.value = snapPoint - OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS;
             runOnJS(onSnapToPoint)(index);
           }
+        })
+        .onEnd(() => {
+          runOnJS(setIsUserInput)(false);
         }),
     [snapPoints, maxLeftDistance, totalPages, setIsUserInput, onSnapToPoint],
   );
