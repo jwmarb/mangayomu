@@ -2,6 +2,7 @@ import { useLocalRealm, useRealm } from '@database/main';
 import { ILocalManga, LocalMangaSchema } from '@database/schemas/LocalManga';
 import { IMangaSchema, MangaSchema } from '@database/schemas/Manga';
 import { useUser } from '@realm/react';
+import { DEFAULT_LANGUAGE } from '@screens/MangaView/MangaView';
 import React from 'react';
 import Realm from 'realm';
 
@@ -16,24 +17,19 @@ export type CombinedMangaWithLocalUpdater = (
 
 export default function useCombinedMangaWithLocal<T extends boolean>(
   mangaId: string,
-  localMangaInitializer: () => ILocalManga = () => {
-    throw new Error(
-      'In order to access a local manga, it must be defined first. To define all local mangas, call a method that initializes local mangas, then this hook can be used',
-    );
-  },
   shouldInitializeManga?: T,
 ): T extends true ? CombinedMangaWithLocal : CombinedMangaWithLocal | null {
   const realm = useRealm();
   const user = useUser();
   const localRealm = useLocalRealm();
-  const [localManga, setLocalManga] = React.useState<ILocalManga | undefined>(
-    localRealm.objectForPrimaryKey(LocalMangaSchema, mangaId),
-  );
+  const [localManga, setLocalManga] = React.useState<
+    LocalMangaSchema | undefined
+  >(localRealm.objectForPrimaryKey(LocalMangaSchema, mangaId));
   if (localManga == null) return null as any;
-  const [manga, setManga] = React.useState<IMangaSchema | undefined>(() => {
+  const [manga, setManga] = React.useState<MangaSchema | undefined>(() => {
     const x = realm.objectForPrimaryKey(MangaSchema, mangaId);
     if (x == null && shouldInitializeManga) {
-      let obj = {} as IMangaSchema;
+      let obj = {} as MangaSchema;
       realm.write(() => {
         obj = realm.create(MangaSchema, {
           _id: mangaId,
@@ -45,49 +41,120 @@ export default function useCombinedMangaWithLocal<T extends boolean>(
       });
       return obj;
     }
-    return x?.toJSON() as IMangaSchema | undefined;
+    return x as MangaSchema | undefined;
   });
   React.useEffect(() => {
-    const callback: Realm.ObjectChangeCallback<IMangaSchema> = (change) => {
-      setManga(change);
+    const callback: Realm.CollectionChangeCallback<MangaSchema> = (
+      collection,
+      mods,
+    ) => {
+      for (const key in mods) {
+        if (key === 'deletions') continue;
+        if (mods[key as keyof typeof mods].length > 0) {
+          for (const index of mods[key as keyof typeof mods]) {
+            if (collection[index]._id === mangaId) {
+              setManga(collection[index]);
+            }
+          }
+        }
+      }
     };
-    const localCallback: Realm.ObjectChangeCallback<ILocalManga> = (change) => {
-      setLocalManga(change);
+    const localCallback: Realm.CollectionChangeCallback<LocalMangaSchema> = (
+      collection,
+      mods,
+    ) => {
+      for (const key in mods) {
+        if (mods[key as keyof typeof mods].length > 0) {
+          for (const index of mods[key as keyof typeof mods]) {
+            if (collection[index]._id === mangaId) {
+              setLocalManga(collection[index]);
+            }
+          }
+        }
+      }
     };
-    const obj = realm.objectForPrimaryKey(MangaSchema, mangaId);
-    const localObj = localRealm.objectForPrimaryKey(LocalMangaSchema, mangaId);
-    setLocalManga(localMangaInitializer());
-    obj?.addListener(callback);
-    localObj?.addListener(localCallback);
+    const listener = realm.objects(MangaSchema);
+    const localMangas = localRealm.objects(LocalMangaSchema);
+    localMangas.addListener(localCallback);
+    listener?.addListener(callback);
     return () => {
-      obj?.removeListener(callback);
-      localObj?.removeListener(localCallback);
+      listener?.removeListener(callback);
+      localMangas.removeListener(localCallback);
     };
   }, [mangaId]);
   const combinedManga: T extends true
     ? CombinedMangaWithLocal
     : CombinedMangaWithLocal | null = React.useMemo(() => {
-    if (localManga == null || manga == null) return null as any;
-    const obj = { ...localManga, ...manga } as CombinedMangaWithLocal;
+    if (localManga == null) return null as any;
+    const obj = {
+      ...(localManga.toJSON() as unknown as ILocalManga),
+      ...(manga?.toJSON() as unknown as IMangaSchema),
+    } as CombinedMangaWithLocal;
     obj.update = (fn: (obj: CombinedMangaWithLocal) => void) => {
-      const deepClonedCombinedManga = structuredClone(obj);
-      fn(deepClonedCombinedManga);
-      for (const x in deepClonedCombinedManga) {
-        const key = x as keyof typeof deepClonedCombinedManga;
-        if (deepClonedCombinedManga[key] !== obj[key]) {
-          if (manga != null && key in manga)
-            realm.write(() => {
-              (manga as any)[key] = deepClonedCombinedManga[key];
-            });
-          else if (localManga != null && key in localManga)
-            localRealm.write(() => {
-              (localManga as any)[key] = deepClonedCombinedManga[key];
-            });
+      const copy = { ...obj };
+      fn(copy);
+      const changedLocalMangaProperties: (keyof ILocalManga)[] = [];
+      const changedMangaProperties: (keyof IMangaSchema)[] = [];
+      for (const x in copy) {
+        const key = x as keyof typeof copy;
+        if (obj[key] !== copy[key]) {
+          if (key in localManga)
+            changedLocalMangaProperties.push(key as keyof ILocalManga);
+          else changedMangaProperties.push(key as keyof IMangaSchema);
         }
+      }
+      if (changedLocalMangaProperties.length > 0) {
+        const overrideLocalProperties = {
+          _id: mangaId,
+        } as Partial<ILocalManga>;
+        for (const x of changedLocalMangaProperties) {
+          (overrideLocalProperties as any)[x] = copy[x];
+        }
+
+        localRealm.write(() => {
+          localRealm.create(
+            LocalMangaSchema,
+            overrideLocalProperties,
+            Realm.UpdateMode.Modified,
+          );
+        });
+      }
+      if (changedMangaProperties.length > 0) {
+        const overrideProperties = {
+          _id: mangaId,
+          _realmId: user.id,
+          title: obj.title,
+          imageCover: obj.imageCover,
+          source: obj.source,
+        } as Partial<IMangaSchema>;
+
+        for (const x of changedMangaProperties) {
+          (overrideProperties as any)[x] = copy[x];
+        }
+
+        realm.write(() => {
+          const updatedManga = realm.create<MangaSchema>(
+            MangaSchema,
+            overrideProperties,
+            Realm.UpdateMode.Modified,
+          );
+          const isNotWorthSavingToCloud =
+            !updatedManga.inLibrary &&
+            (updatedManga.selectedLanguage === 'Use default language' ||
+              updatedManga.selectedLanguage === DEFAULT_LANGUAGE) &&
+            (updatedManga.currentlyReadingChapter == null ||
+              (updatedManga.currentlyReadingChapter != null &&
+                updatedManga.currentlyReadingChapter._id ===
+                  localManga.chapters[localManga.chapters.length - 1]));
+          if (isNotWorthSavingToCloud) {
+            setManga(undefined); // prevents access to invalidated fields
+            realm.delete(updatedManga);
+          }
+        });
       }
     };
     return obj;
-  }, [localManga, manga]);
+  }, [localManga, manga, mangaId, user.id]);
 
   return combinedManga;
 }
