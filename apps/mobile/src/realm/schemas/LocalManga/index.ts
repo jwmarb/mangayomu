@@ -16,6 +16,7 @@ export interface ILocalManga
   availableLanguages: ISOLangCode[];
   sortChaptersBy: keyof typeof SORT_CHAPTERS_BY;
   reversedSort: boolean;
+  description: string | null;
 }
 
 export class LocalMangaSchema extends Realm.Object<ILocalManga> {
