@@ -197,14 +197,17 @@ export const useManga = (
   const update = React.useCallback(
     (
       fn: (
-        mangaRealmObject: CombinedMangaWithLocal,
+        mangaRealmObject: Omit<CombinedMangaWithLocal, 'update'>,
         getChapter: (key: string) => ChapterSchema | null,
       ) => void,
     ) => {
-      if (combinedManga != null)
-        fn(combinedManga, (k: string) =>
-          realm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
+      if (combinedManga != null) {
+        combinedManga.update((draft) =>
+          fn(draft, (k: string) =>
+            realm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
+          ),
         );
+      }
       // if (combinedManga == null && combinedManga != null) {
       //   realm.write(() => {
       //     fn(combinedManga, (k: string) =>
