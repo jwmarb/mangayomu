@@ -3,12 +3,13 @@ import Button from '@components/Button';
 import Icon from '@components/Icon';
 import Progress from '@components/Progress';
 import Stack from '@components/Stack';
-import { useRealm } from '@database/main';
+import { useLocalRealm, useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useRootNavigation from '@hooks/useRootNavigation';
 import React from 'react';
 import { moderateScale } from 'react-native-size-matters';
 import { MangaActionButtonsProps } from './';
+import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 
 const buttonLoading = {
   disabled: true,
@@ -26,7 +27,7 @@ const MangaActionButtons: React.FC<MangaActionButtonsProps> = (props) => {
     firstChapterKey,
   } = props;
   const navigation = useRootNavigation();
-  const realm = useRealm();
+  const localRealm = useLocalRealm();
   function handleOnRead() {
     if (mangaKey != null && firstChapterKey != null)
       navigation.navigate('Reader', {
@@ -51,8 +52,8 @@ const MangaActionButtons: React.FC<MangaActionButtonsProps> = (props) => {
             : {
                 label:
                   currentlyReadingChapterKey != null
-                    ? realm.objectForPrimaryKey(
-                        ChapterSchema,
+                    ? localRealm.objectForPrimaryKey(
+                        LocalChapterSchema,
                         currentlyReadingChapterKey,
                       )?.name
                     : 'Read',
