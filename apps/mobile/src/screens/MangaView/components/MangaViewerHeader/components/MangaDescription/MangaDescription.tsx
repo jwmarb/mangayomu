@@ -44,7 +44,7 @@ const MangaDescription: React.FC<MangaDescriptionProps> = (props) => {
         )}
       </Stack>
 
-      {data == null || loading ? (
+      {loading ? (
         <Text.Skeleton numberOfLines={6} />
       ) : data ? (
         <Box
