@@ -17,6 +17,7 @@ export interface ILocalManga
   sortChaptersBy: keyof typeof SORT_CHAPTERS_BY;
   reversedSort: boolean;
   description: string | null;
+  genres: Set<string>;
 }
 
 export class LocalMangaSchema extends Realm.Object<ILocalManga> {

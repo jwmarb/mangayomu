@@ -50,10 +50,10 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   } = props;
   const theme = useTheme();
   const ref = React.useRef<BottomSheet>(null);
-  const { manga, status, error, refresh, update, meta } = useManga(params, {
+  const { manga, status, error, refresh, update } = useManga(params, {
     preferLocal: false,
   });
-  const { data, firstChapter, chapterData } = useChapters(manga, meta);
+  const { data, firstChapter, chapterData } = useChapters(manga);
   const [refreshing, onRefresh] = useRefresh(refresh);
   const handleOnBookmark = React.useCallback(() => {
     update((mangaObj) => {
@@ -197,7 +197,6 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
         }
         ListHeaderComponent={
           <MangaViewerHeader
-            localManga={meta}
             firstChapterKey={firstChapter?._id}
             onOpenMenu={handleOnOpenMenu}
             numberOfSelectedLanguageChapters={data.length}
@@ -218,14 +217,14 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
         keyExtractor={keyExtractor}
         onScroll={onScroll}
       />
-      {meta != null && (
+      {manga != null && (
         <MangaViewModal
           ref={ref}
-          sortMethod={meta.sortChaptersBy}
-          reversed={meta.reversedSort ?? false}
+          sortMethod={manga.sortChaptersBy}
+          reversed={manga.reversedSort ?? false}
           mangaLink={params.link}
           selectedLanguage={manga?.selectedLanguage ?? DEFAULT_LANGUAGE}
-          supportedLanguages={meta.availableLanguages}
+          supportedLanguages={manga.availableLanguages}
         />
       )}
       <Box

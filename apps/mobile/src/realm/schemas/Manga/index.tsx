@@ -23,6 +23,9 @@ import useMangaListener from '@database/schemas/Manga/useMangaListener';
 import useFetchManga from '@database/schemas/Manga/useFetchManga';
 import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import { useUser } from '@realm/react';
+import useCombinedMangaWithLocal, {
+  CombinedMangaWithLocal,
+} from '@hooks/useCombinedMangaWithLocal';
 
 export const MangaRatingSchema: Realm.ObjectSchema = {
   name: 'MangaRating',
@@ -95,8 +98,6 @@ export const KEYS_OF_SORT_CHAPTERS_BY = Object.keys(
 export type SortChaptersMethod = keyof typeof SORT_CHAPTERS_BY;
 
 export interface IMangaSchema extends Omit<Manga, 'link'> {
-  sortChaptersBy: SortChaptersMethod;
-  reversedSort: boolean;
   currentlyReadingChapter?: CurrentlyReadingChapter;
   dateAddedInLibrary?: number;
   notifyNewChaptersCount?: number;
@@ -166,7 +167,6 @@ export const useManga = (
   options: UseMangaOptions = { preferLocal: true },
 ) => {
   const realm = useRealm();
-  const localRealm = useLocalRealm();
   const user = useUser();
   const mangaId =
     typeof link === 'string'
@@ -176,10 +176,10 @@ export const useManga = (
       : link._id;
 
   const { state, setState, fetchData } = useFetchManga(options, link);
-  const { manga, meta } = useMangaListener(mangaId);
+  const combinedManga = useCombinedMangaWithLocal(mangaId);
 
   const refresh = React.useCallback(async () => {
-    if (manga != null) {
+    if (combinedManga != null) {
       try {
         await fetchData();
         setState({
@@ -192,65 +192,42 @@ export const useManga = (
         });
       }
     }
-  }, [fetchData, manga == null, setState]);
+  }, [fetchData, combinedManga == null, setState]);
 
   const update = React.useCallback(
     (
       fn: (
-        mangaRealmObject: MangaSchema,
+        mangaRealmObject: CombinedMangaWithLocal,
         getChapter: (key: string) => ChapterSchema | null,
       ) => void,
     ) => {
-      if (manga == null && meta != null) {
-        realm.write(() => {
-          const p: MangaSchema = {
-            _id: meta._id,
-            _realmId: user.id,
-            title: meta.title,
-            imageCover: meta.imageCover,
-            source: meta.source,
-          } as unknown as MangaSchema;
-          fn(p, (k: string) =>
-            realm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
-          );
-          realm.create(MangaSchema, p);
-        });
-      } else if (manga?.isValid()) {
-        realm.write(() => {
-          fn(manga, (k: string) =>
-            realm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
-          );
-        });
-      }
+      if (combinedManga != null)
+        fn(combinedManga, (k: string) =>
+          realm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
+        );
+      // if (combinedManga == null && combinedManga != null) {
+      //   realm.write(() => {
+      //     fn(combinedManga, (k: string) =>
+      //       realm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
+      //     );
+      //     realm.create(MangaSchema, p);
+      //   });
+      // } else if (manga?.isValid()) {
+      // realm.write(() => {
+      //   fn(manga, (k: string) =>
+      //     realm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
+      //   );
+      // });
+      // }
     },
-    [manga, realm, meta, user],
-  );
-
-  const updateLocal = React.useCallback(
-    (
-      fn: (
-        mangaRealmObject: LocalMangaSchema,
-        getChapter: (key: string) => ChapterSchema | null,
-      ) => void,
-    ) => {
-      if (meta != null && meta.isValid()) {
-        localRealm.write(() => {
-          fn(meta, (k: string) =>
-            realm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
-          );
-        });
-      }
-    },
-    [meta, localRealm],
+    [combinedManga, realm, user],
   );
 
   return {
-    manga,
-    meta,
+    manga: combinedManga,
     refresh,
     status: state.status,
     error: state.error,
     update,
-    updateLocal,
   };
 };

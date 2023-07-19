@@ -6,7 +6,6 @@ import { Manga } from '@mangayomu/mangascraper/src';
 import React from 'react';
 
 export interface MangaViewerHeaderProps extends React.PropsWithChildren {
-  localManga?: ReturnType<typeof useManga>['meta'];
   meta?: ReturnType<typeof useManga>['manga'];
   manga: Manga;
   status: FetchMangaMetaStatus;

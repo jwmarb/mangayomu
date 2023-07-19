@@ -13,7 +13,6 @@ import React from 'react';
 
 export default function useChapters(
   manga: ReturnType<typeof useManga>['manga'],
-  meta: ReturnType<typeof useManga>['meta'],
 ) {
   const realm = useRealm();
   const localRealm = useLocalRealm();
@@ -32,7 +31,7 @@ export default function useChapters(
         .objects(LocalChapterSchema)
         .filtered(
           '_mangaId = $0 AND language = $1 SORT(index ASC)',
-          meta?._id,
+          manga?._id,
           selectedLanguage,
         ) ?? [],
   );
@@ -44,7 +43,7 @@ export default function useChapters(
       .objects(ChapterSchema)
       .filtered(
         '_mangaId = $0 AND language = $1 SORT(index ASC)',
-        meta?._id,
+        manga?._id,
         selectedLanguage,
       )
       .reduce((prev, curr) => {
@@ -60,7 +59,7 @@ export default function useChapters(
       setChapters(
         collection.filtered(
           '_mangaId = $0 AND language = $1 SORT(index ASC)',
-          meta?._id,
+          manga?._id,
           selectedLanguage,
         ),
       );
@@ -85,14 +84,14 @@ export default function useChapters(
       .objects(LocalChapterSchema)
       .filtered(
         '_mangaId = $0 AND language = $1 SORT(index ASC)',
-        meta?._id,
+        manga?._id,
         selectedLanguage,
       );
     const chapters = realm
       .objects(ChapterSchema)
       .filtered(
         '_mangaId = $0 AND language = $1 SORT(index ASC)',
-        meta?._id,
+        manga?._id,
         selectedLanguage,
       );
     localChapters.addListener(localCallback);
@@ -101,21 +100,21 @@ export default function useChapters(
       localChapters.removeListener(localCallback);
       chapters.removeListener(callback);
     };
-  }, [selectedLanguage, meta?._id]);
+  }, [selectedLanguage, manga?._id]);
 
   const data = React.useMemo(() => {
-    if (meta != null && chapters.length > 0) {
+    if (manga != null && chapters.length > 0) {
       const sorted = sort(Array.from(chapters))[
-        meta.reversedSort ? 'desc' : 'asc'
-      ](SORT_CHAPTERS_BY[meta.sortChaptersBy]);
+        manga.reversedSort ? 'desc' : 'asc'
+      ](SORT_CHAPTERS_BY[manga.sortChaptersBy]);
       return sorted;
     }
 
     return [];
   }, [
     manga?.selectedLanguage,
-    meta?.sortChaptersBy,
-    meta?.reversedSort,
+    manga?.sortChaptersBy,
+    manga?.reversedSort,
     chapters,
   ]);
 
