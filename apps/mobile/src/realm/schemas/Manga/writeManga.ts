@@ -6,10 +6,8 @@ import { useUser } from '@realm/react';
 import { ReadingDirection } from '@redux/slices/settings';
 
 export default function writeManga(
-  mangaRealm: Realm,
   localRealm: Realm,
   meta: MangaMeta & Manga,
-  currentUser: ReturnType<typeof useUser>,
   chapters: string[],
   availableLanguages: ISOLangCode[],
 ) {
