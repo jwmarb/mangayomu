@@ -19,8 +19,9 @@ import Input from '@components/Input';
 import { RefreshControl } from 'react-native-gesture-handler';
 import useBoolean from '@hooks/useBoolean';
 
-import { useLibraryData } from '@screens/Library/Library.hooks';
+import { useIsDataStale, useLibraryData } from '@screens/Library/Library.hooks';
 import { AnimatedFlashList } from '@components/animated';
+import Progress from '@components/Progress';
 
 const Library: React.FC<ConnectedLibraryProps> = ({
   sortBy,
@@ -35,6 +36,31 @@ const Library: React.FC<ConnectedLibraryProps> = ({
   const [refreshing, setRefreshing] = useBoolean();
   const [showSearchBar, setShowSearchBar] = React.useState<boolean>(false);
   const [query, setQuery] = React.useState<string>('');
+  const { dataIsStale, syncing } = useIsDataStale();
+
+  if (dataIsStale)
+    return (
+      <Stack space="s" height="100%" p="m" justify-content="center">
+        <Progress />
+        <Stack
+          space="s"
+          flex-direction="row"
+          align-self="center"
+          align-items="center"
+        >
+          <Text align="center" bold variant="header">
+            {syncing.count} / {syncing.totalToSync}
+          </Text>
+          <Text align="center" color="textSecondary">
+            mangas synced
+          </Text>
+        </Stack>
+        <Box align-self="center" flex-direction="row">
+          <Text color="textSecondary">Syncing </Text>
+          <Text>{syncing.current?.title}</Text>
+        </Box>
+      </Stack>
+    );
 
   function handleOnPress() {
     ref.current?.snapToIndex(1);
@@ -48,6 +74,7 @@ const Library: React.FC<ConnectedLibraryProps> = ({
     refreshing,
     setRefreshing,
   });
+
   function handleOnShowSearchBar() {
     setShowSearchBar(true);
   }

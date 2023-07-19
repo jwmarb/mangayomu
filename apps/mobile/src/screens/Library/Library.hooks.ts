@@ -1,8 +1,17 @@
-import { useLocalRealm, useQuery, useRealm } from '@database/main';
+import {
+  useLocalQuery,
+  useLocalRealm,
+  useQuery,
+  useRealm,
+} from '@database/main';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
+import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import useLocalManga from '@database/schemas/LocalManga/useLocalManga';
 import { MangaSchema } from '@database/schemas/Manga';
+import writeLocalChapters from '@database/schemas/Manga/writeChapters';
+import writeManga from '@database/schemas/Manga/writeManga';
 import displayMessage from '@helpers/displayMessage';
+import { getErrorMessage } from '@helpers/getErrorMessage';
 import integrateSortedList from '@helpers/integrateSortedList';
 import useMountedEffect from '@hooks/useMountedEffect';
 import { MangaMultilingualChapter } from '@mangayomu/mangascraper';
@@ -213,3 +222,87 @@ export function useLibraryData(args: {
 
   return { data, mangasInLibrary, updateQuerifiedData };
 }
+
+export const useIsDataStale = () => {
+  const localRealm = useLocalRealm();
+  const realm = useRealm();
+  const localMangas = useLocalQuery(LocalMangaSchema);
+  const [mangas, setMangas] = React.useState<Realm.Results<MangaSchema>>(
+    realm.objects(MangaSchema).filtered('inLibrary == true'),
+  );
+  const [syncedCount, setSyncedCount] = React.useState<number>(0);
+  const [currentlySyncing, setCurrentlySyncing] = React.useState<string>('');
+  const [syncError, setSyncError] = React.useState<string>('');
+  React.useEffect(() => {
+    const callback: Realm.CollectionChangeCallback<MangaSchema> = (
+      collection,
+    ) => {
+      setMangas(collection.filtered('inLibrary == true'));
+    };
+    const collection = realm.objects(MangaSchema).filtered('inLibrary == true');
+    collection.addListener(callback);
+    return () => {
+      collection.removeListener(callback);
+    };
+  }, []);
+
+  const dataIsStale = React.useMemo(() => {
+    if (mangas.length > localMangas.length) return true;
+    for (let i = 0; i < mangas.length; i++) {
+      const obj = localRealm.objectForPrimaryKey(
+        LocalMangaSchema,
+        mangas[i]._id,
+      );
+      if (obj == null) return true;
+    }
+    return false;
+  }, [mangas, localMangas]);
+
+  React.useEffect(() => {
+    if (dataIsStale) {
+      (async () => {
+        const syncCollection = mangas.map(async (manga) => {
+          const localManga = localRealm.objectForPrimaryKey(
+            LocalMangaSchema,
+            manga._id,
+          );
+          if (localManga == null) {
+            const source = MangaHost.sourcesMap.get(manga.source);
+            if (source == null)
+              throw new Error(`${source} as a source does not exist`);
+            setCurrentlySyncing(manga._id);
+            const meta = await source.getMeta({
+              link: manga._id,
+              imageCover: manga.imageCover,
+              title: manga.title,
+              source: manga.source,
+            });
+            const { chapters, availableLanguages } = writeLocalChapters(
+              localRealm,
+              meta,
+            );
+            writeManga(localRealm, meta, chapters, availableLanguages);
+          }
+          setSyncedCount((prev) => prev + 1);
+        });
+        try {
+          await Promise.all(syncCollection);
+        } catch (e) {
+          setSyncError(getErrorMessage(e));
+        } finally {
+          setCurrentlySyncing('');
+        }
+      })();
+    }
+  }, []);
+
+  return {
+    dataIsStale,
+    syncing: {
+      count: syncedCount,
+      totalToSync: mangas.length,
+      error: syncError,
+      current: realm.objectForPrimaryKey(MangaSchema, currentlySyncing),
+    },
+  };
+};
