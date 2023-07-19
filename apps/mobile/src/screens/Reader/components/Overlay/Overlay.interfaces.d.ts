@@ -11,13 +11,14 @@ import { Page } from '@redux/slices/reader';
 import { PageSliderNavigatorMethods } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator.interfaces';
 import useNetworkToast from '@screens/Reader/hooks/useNetworkToast';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
+import { CombinedMangaWithLocal } from '@hooks/useCombinedMangaWithLocal';
 
 export interface OverlayProps extends React.PropsWithChildren {
   opacity: SharedValue<number>;
   currentPage: number;
   savedChapterInfo: ChapterSchema;
   chapter: LocalChapterSchema;
-  manga: MangaSchema;
+  manga: CombinedMangaWithLocal;
   readerProps: ReturnType<typeof useReaderProps>;
   scrollRef: React.RefObject<FlashList<Page>>;
   imageMenuRef: React.RefObject<ImageMenuMethods>;

@@ -10,9 +10,10 @@ import { ViewToken, ViewabilityConfigCallbackPairs } from 'react-native';
 import useChapterFetcher from '@screens/Reader/hooks/useChapterFetcher';
 import { runOnJS } from 'react-native-reanimated';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
+import { CombinedMangaWithLocal } from '@hooks/useCombinedMangaWithLocal';
 
 export default function useViewableItemsChangedHandler(args: {
-  manga: MangaSchema;
+  manga: CombinedMangaWithLocal;
   chapter: LocalChapterSchema;
   pageSliderNavRef: React.RefObject<PageSliderNavigatorMethods>;
   pages: Page[];
@@ -47,14 +48,16 @@ export default function useViewableItemsChangedHandler(args: {
               ChapterSchema,
               item.chapter,
             );
-            realm.write(() => {
+
+            manga.update((draft) => {
               if (chapter?.numberOfPages != null)
-                manga.currentlyReadingChapter = {
+                draft.currentlyReadingChapter = {
                   _id: item.chapter,
                   index: item.pageNumber - 1,
                   numOfPages: chapter.numberOfPages,
                 };
             });
+
             realm.write(() => {
               if (chapter != null) chapter.indexPage = item.pageNumber - 1;
             });

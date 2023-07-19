@@ -19,7 +19,6 @@ import OverlayHeader from '@screens/Reader/components/Overlay/components/Overlay
 import PageCounter from '@screens/Reader/components/Overlay/components/PageCounter/PageCounter';
 import OverlayFooter from '@screens/Reader/components/Overlay/components/OverlayFooter/OverlayFooter';
 import useRootNavigation from '@hooks/useRootNavigation';
-import useBookmark from '@screens/Reader/components/Overlay/hooks/useBookmark';
 import PageSliderNavigator from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator';
 import { chapterIndices } from '@redux/slices/reader';
 import { ReadingDirection } from '@redux/slices/settings';
@@ -45,7 +44,6 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
     savedChapterInfo,
   } = props;
   const insets = useSafeAreaInsets();
-  const realm = useRealm();
   const totalPages = savedChapterInfo.numberOfPages;
   const textOpacity = useDerivedValue(() =>
     interpolate(opacity.value, [0, 1], [1, 0]),
@@ -96,7 +94,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
 
   const navigation = useRootNavigation();
 
-  const isBookmark = useBookmark(manga);
+  const isBookmark = manga.inLibrary;
 
   const style = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -127,21 +125,16 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   }, []);
 
   const handleOnBookmark = React.useCallback(() => {
-    realm.write(() => {
-      addIfNewSourceToLibrary(manga.source);
-      manga.inLibrary = !manga.inLibrary;
+    manga.update((obj) => {
+      addIfNewSourceToLibrary(obj.source);
+      obj.inLibrary = !obj.inLibrary;
       displayMessage(
-        manga.inLibrary ? 'Added to library' : 'Removed from library',
+        obj.inLibrary ? 'Added to library' : 'Removed from library',
       );
-      if (manga.inLibrary) manga.dateAddedInLibrary = Date.now();
-      else manga.dateAddedInLibrary = undefined;
+      if (obj.inLibrary) obj.dateAddedInLibrary = Date.now();
+      else obj.dateAddedInLibrary = undefined;
     });
-  }, [
-    manga.inLibrary,
-    manga.dateAddedInLibrary,
-    addIfNewSourceToLibrary,
-    realm,
-  ]);
+  }, [manga.update]);
 
   const bottomOverlayTranslation = useDerivedValue(() =>
     interpolate(opacity.value, [0, 1], [64, 0]),

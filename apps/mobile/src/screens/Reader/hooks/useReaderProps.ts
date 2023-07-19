@@ -1,5 +1,6 @@
 import { MangaSchema } from '@database/schemas/Manga';
 import displayMessage from '@helpers/displayMessage';
+import { CombinedMangaWithLocal } from '@hooks/useCombinedMangaWithLocal';
 import {
   ImageScaling,
   ReaderScreenOrientation,
@@ -29,7 +30,7 @@ type ReaderProps = Omit<
  * @returns Returns manga settings with proper user configuration
  */
 export default function useReaderProps(
-  manga: MangaSchema,
+  manga: CombinedMangaWithLocal,
   readerProps: ReaderProps,
 ) {
   const readingDirection = React.useMemo(

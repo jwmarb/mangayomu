@@ -10,6 +10,7 @@ import NetInfo from '@react-native-community/netinfo';
 import removeURLParams from '@screens/Reader/components/ChapterPage/helpers/removeURLParams';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { useUser } from '@realm/react';
+import { CombinedMangaWithLocal } from '@hooks/useCombinedMangaWithLocal';
 
 export type Page = ChapterPage | NoMorePages | TransitionPage | ChapterError;
 export type ChapterError = {
@@ -69,7 +70,7 @@ interface ReaderState {
 
 export interface FetchPagesByChapterPayload {
   chapter: LocalChapterSchema; // this is the chapter to fetch pages from
-  manga: MangaSchema;
+  manga: CombinedMangaWithLocal;
   availableChapters: LocalChapterSchema[];
   localRealm: Realm;
   realm: Realm;

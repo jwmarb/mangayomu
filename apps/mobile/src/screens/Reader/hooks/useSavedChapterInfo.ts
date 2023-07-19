@@ -3,6 +3,7 @@ import { ChapterSchema, IChapterSchema } from '@database/schemas/Chapter';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import useBoolean from '@hooks/useBoolean';
+import { CombinedMangaWithLocal } from '@hooks/useCombinedMangaWithLocal';
 import useMutableObject from '@hooks/useMutableObject';
 import useUserHistory from '@hooks/useUserHistory';
 import { Page } from '@redux/slices/reader';
@@ -20,7 +21,7 @@ export default function useSavedChapterInfo(
     horizontal: boolean;
     savedChapterInfo: ChapterSchema;
     chapter: LocalChapterSchema;
-    manga: MangaSchema;
+    manga: CombinedMangaWithLocal;
     scrollRef: React.RefObject<FlashList<Page>>;
     incognito: boolean;
     pages: Page[];
