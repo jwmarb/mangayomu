@@ -29,6 +29,7 @@ import Progress from '@components/Progress';
 import useTabNavigation from '@hooks/useTabNavigation';
 import ContinueReading from '@screens/Explore/components/ContinueReading/ContinueReading';
 import { useUser } from '@realm/react';
+import { useIsFocused } from '@react-navigation/native';
 
 const Explore: React.FC<ConnectedExploreProps> = ({
   source,
@@ -93,6 +94,7 @@ const Explore: React.FC<ConnectedExploreProps> = ({
     navigation.navigate('Browse', { initialQuery: e.nativeEvent.text });
     inputRef.current?.clear();
   }
+  const focused = useIsFocused();
   return (
     <>
       <Animated.ScrollView
@@ -120,7 +122,9 @@ const Explore: React.FC<ConnectedExploreProps> = ({
               placeholder="Titles, authors, or topics"
             />
           </Box>
-          <ContinueReading />
+          <Freeze freeze={!focused}>
+            <ContinueReading />
+          </Freeze>
           <Freeze freeze={suspendRendering} placeholder={<Progress />}>
             {source.hasNoSources() ? (
               <Stack space="s" mx="m" align-self="center">
