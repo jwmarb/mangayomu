@@ -15,10 +15,11 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 import displayMessage from '@helpers/displayMessage';
-import { useRealm } from '@database/main';
+import { useLocalRealm, useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { MangaSchema } from '@database/schemas/Manga';
+import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 
 const styles = StyleSheet.create({
   icon: {
@@ -44,11 +45,11 @@ const QuickReadButton: React.FC<QuickReadButtonProps> = (props) => {
   );
   const isFocused = useIsFocused();
   const theme = useTheme();
-  const realm = useRealm();
+  const localRealm = useLocalRealm();
   const handleOnLongPress = () => {
     if (currentlyReadingChapter != null) {
-      const chapter = realm.objectForPrimaryKey(
-        ChapterSchema,
+      const chapter = localRealm.objectForPrimaryKey(
+        LocalChapterSchema,
         currentlyReadingChapter._id,
       );
       if (chapter != null) displayMessage(chapter?.name);
