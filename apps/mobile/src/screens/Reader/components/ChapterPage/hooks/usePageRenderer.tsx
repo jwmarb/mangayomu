@@ -88,6 +88,8 @@ export default function usePageRenderer(args: UsePageRendererArgs) {
   const Renderer: React.FC = React.useCallback(
     () => (
       <Box
+        minWidth={width}
+        minHeight={height}
         overflow="hidden"
         background-color={backgroundColor}
         justify-content="center"
