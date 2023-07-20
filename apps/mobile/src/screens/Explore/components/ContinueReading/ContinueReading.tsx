@@ -1,17 +1,9 @@
-import Box from '@components/Box';
 import Stack from '@components/Stack/Stack';
-import Realm from 'realm';
 import Text from '@components/Text';
-import { useLocalQuery, useQuery } from '@database/main';
-import { ChapterSchema } from '@database/schemas/Chapter';
-import { MangaSchema, SORT_CHAPTERS_BY } from '@database/schemas/Manga';
-import { DEFAULT_LANGUAGE } from '@screens/MangaView/MangaView';
-import { sort } from 'fast-sort';
 import React from 'react';
 import {
   renderItem,
   keyExtractor,
-  overrideItemLayout,
   ItemSeparatorComponent,
 } from './ContinueReading.flatlist';
 import { FlashList } from '@shopify/flash-list';
