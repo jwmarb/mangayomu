@@ -51,7 +51,17 @@ Before starting the server, it is required to setup variables in a `.env` in the
 ```
 # Replace the following encapsulated by curly brackets
 REACT_APP_REALM_ID={realmId}
+BACK_END_DOMAIN={api.mydomain.com} # Auth requests are sent here
+GOOGLE_OAUTH2_ID={id} # Should be a web application id
 ```
+
+#### Generating a SHA1 keystore
+
+Using a terminal, navigate to the `android` folder and run `./gradlew signingReport`. This will generate SHA1 keystores for both `release` and `debug`. Add the SHA1 certificates in the [Google Developer Console](https://console.developers.google.com/apis/credentials) under OAuth 2.0 Client IDs, in which the credentials are type `Android`.
+
+Additionally, you must create a web client id. Follow the instructions [here](https://developers.google.com/identity/sign-in/android/start#configure-a-google-api-project)
+
+Make sure to make changes to `apps\mobile\android\app\src\main\res\values\strings.xml` if you wish to use different values.
 
 To start the development server from the root directory:
 
