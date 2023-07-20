@@ -7,6 +7,7 @@ import {
   useManga,
 } from '@database/schemas/Manga';
 import integrateSortedList from '@helpers/integrateSortedList';
+import { useFocusEffect } from '@react-navigation/native';
 import { DEFAULT_LANGUAGE } from '@screens/MangaView/MangaView';
 import { sort } from 'fast-sort';
 import React from 'react';
@@ -52,54 +53,59 @@ export default function useChapters(
       }, {} as Record<string, ChapterSchema | undefined>),
   );
 
-  React.useEffect(() => {
-    const localCallback: Realm.CollectionChangeCallback<LocalChapterSchema> = (
-      collection,
-    ) => {
-      setChapters(
-        collection.filtered(
-          '_mangaId = $0 AND language = $1 SORT(index ASC)',
-          manga?._id,
-          selectedLanguage,
-        ),
-      );
-    };
-    const callback: Realm.CollectionChangeCallback<ChapterSchema> = () => {
-      setChapterData(
-        localRealm
-          .objects(LocalChapterSchema)
-          .filtered(
+  useFocusEffect(
+    React.useCallback(() => {
+      const localCallback: Realm.CollectionChangeCallback<
+        LocalChapterSchema
+      > = (collection) => {
+        setChapters(
+          collection.filtered(
             '_mangaId = $0 AND language = $1 SORT(index ASC)',
             manga?._id,
             selectedLanguage,
-          )
-          .reduce((prev, curr) => {
-            prev[curr._id] = realm.objectForPrimaryKey(ChapterSchema, curr._id);
-            return prev;
-          }, {} as Record<string, ChapterSchema | undefined>),
-      );
-    };
-    const localChapters = localRealm
-      .objects(LocalChapterSchema)
-      .filtered(
-        '_mangaId = $0 AND language = $1 SORT(index ASC)',
-        manga?._id,
-        selectedLanguage,
-      );
-    const chapters = realm
-      .objects(ChapterSchema)
-      .filtered(
-        '_mangaId = $0 AND language = $1 SORT(index ASC)',
-        manga?._id,
-        selectedLanguage,
-      );
-    localChapters.addListener(localCallback);
-    chapters.addListener(callback);
-    return () => {
-      localChapters.removeListener(localCallback);
-      chapters.removeListener(callback);
-    };
-  }, [selectedLanguage, manga?._id]);
+          ),
+        );
+      };
+      const callback: Realm.CollectionChangeCallback<ChapterSchema> = () => {
+        setChapterData(
+          localRealm
+            .objects(LocalChapterSchema)
+            .filtered(
+              '_mangaId = $0 AND language = $1 SORT(index ASC)',
+              manga?._id,
+              selectedLanguage,
+            )
+            .reduce((prev, curr) => {
+              prev[curr._id] = realm.objectForPrimaryKey(
+                ChapterSchema,
+                curr._id,
+              );
+              return prev;
+            }, {} as Record<string, ChapterSchema | undefined>),
+        );
+      };
+      const localChapters = localRealm
+        .objects(LocalChapterSchema)
+        .filtered(
+          '_mangaId = $0 AND language = $1 SORT(index ASC)',
+          manga?._id,
+          selectedLanguage,
+        );
+      const chapters = realm
+        .objects(ChapterSchema)
+        .filtered(
+          '_mangaId = $0 AND language = $1 SORT(index ASC)',
+          manga?._id,
+          selectedLanguage,
+        );
+      localChapters.addListener(localCallback);
+      chapters.addListener(callback);
+      return () => {
+        localChapters.removeListener(localCallback);
+        chapters.removeListener(callback);
+      };
+    }, [selectedLanguage, manga?._id]),
+  );
 
   const data = React.useMemo(() => {
     if (manga != null && chapters.length > 0) {
