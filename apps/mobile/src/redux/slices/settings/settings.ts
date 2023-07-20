@@ -1,10 +1,9 @@
 import { BOOK_COVER_RATIO } from '@components/Book';
-import { IMangaSchema, MangaSchema } from '@database/schemas/Manga';
+import { IMangaSchema } from '@database/schemas/Manga';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { moderateScale } from 'react-native-size-matters';
-import Realm from 'realm';
 import React from 'react';
-import { useObject, useRealm } from '@database/main';
+import useCombinedMangaWithLocal from '@hooks/useCombinedMangaWithLocal';
 
 export enum ReadingDirection {
   LEFT_TO_RIGHT = 'Left to right',
@@ -317,18 +316,11 @@ export function useReaderSetting<
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return [globalSettingValue, payload] as any;
   }
-  const realm = useRealm();
-  const manga = useObject(MangaSchema, payload);
+  const manga = useCombinedMangaWithLocal(payload, true);
   const setter = React.useCallback(
     (val: IMangaSchema[T]) => {
-      if (manga == null) {
-        console.error(
-          `Tried to set a value in an non-existant manga object with the key ${payload}.`,
-        );
-        return;
-      }
-      realm.write(() => {
-        (manga as IMangaSchema)[key] = val;
+      manga.update((draft) => {
+        (draft as IMangaSchema)[key] = val;
       });
     },
     [manga, key],
@@ -339,21 +331,9 @@ export function useReaderSetting<
     );
     return [globalSettingValue, setter];
   }
-  const [setting, setSetting] = React.useState<
-    IMangaSchema[T] | 'Use global setting'
-  >(manga[key as keyof MangaSchema] as IMangaSchema[T] | 'Use global setting');
-  React.useEffect(() => {
-    const callback: Realm.ObjectChangeCallback<IMangaSchema> = (change) => {
-      setSetting(change[key]);
-    };
-    manga.addListener(callback);
-    return () => {
-      manga.removeListener(callback);
-    };
-  }, [globalSettingValue]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return [setting, setter] as any;
+  return [manga[key], setter] as any;
 }
 
 export default settingsSlice.reducer;
