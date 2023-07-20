@@ -127,12 +127,11 @@ const Onboard: React.FC<ConnectedOnboardProps> = ({
               <Box align-self="center" maxWidth={moderateScale(350)}>
                 <Stack space="m">
                   <Text align="center" bold variant="header-lg">
-                    Select a main source
+                    Select your sources
                   </Text>
                   <Text align="center" color="textSecondary">
-                    This will be your main source. Whenever you open the
-                    application, the source's contents will be displayed in
-                    Explore page.
+                    Whenever you open the application, the source's contents
+                    will be displayed in the Explore page.
                   </Text>
                   <Text align="center" color="textSecondary">
                     You can change this whenever you want.
@@ -143,7 +142,7 @@ const Onboard: React.FC<ConnectedOnboardProps> = ({
                         ? `${hostName.length} source${
                             hostName.length > 1 ? 's' : ''
                           } selected`
-                        : 'Select a main source'
+                        : 'Open source selector menu'
                     }
                     variant={hostName.length > 0 ? 'outline' : 'contained'}
                     onPress={openMainSourceSelector}
