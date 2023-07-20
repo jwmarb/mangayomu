@@ -2,7 +2,7 @@ import Box, { AnimatedBox } from '@components/Box';
 import Icon from '@components/Icon';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import { useRealm } from '@database/main';
+import { useLocalRealm, useRealm } from '@database/main';
 import { PageSchema } from '@database/schemas/Page';
 import { useTheme } from '@emotion/react';
 import { Portal } from '@gorhom/portal';
@@ -40,7 +40,7 @@ const ImageMenu: React.ForwardRefRenderFunction<
   ConnectedImageMenuProps
 > = (props, ref) => {
   const { toggleImageModal, show } = props;
-  const localRealm = useRealm();
+  const localRealm = useLocalRealm();
   const theme = useTheme();
   const { width, height } = useScreenDimensions();
   const page = React.useRef<PageSchema>();
