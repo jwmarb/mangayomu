@@ -94,7 +94,6 @@ const Explore: React.FC<ConnectedExploreProps> = ({
     navigation.navigate('Browse', { initialQuery: e.nativeEvent.text });
     inputRef.current?.clear();
   }
-  const focused = useIsFocused();
   return (
     <>
       <Animated.ScrollView
@@ -122,9 +121,7 @@ const Explore: React.FC<ConnectedExploreProps> = ({
               placeholder="Titles, authors, or topics"
             />
           </Box>
-          <Freeze freeze={!focused}>
-            <ContinueReading />
-          </Freeze>
+          <ContinueReading />
           <Freeze freeze={suspendRendering} placeholder={<Progress />}>
             {source.hasNoSources() ? (
               <Stack space="s" mx="m" align-self="center">

@@ -1,21 +1,53 @@
-import {
-  useRealm,
-  useQuery,
-  useLocalQuery,
-  useLocalRealm,
-} from '@database/main';
-import { ChapterSchema } from '@database/schemas/Chapter';
+import { useRealm, useLocalRealm } from '@database/main';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { MangaSchema } from '@database/schemas/Manga';
+import { useFocusEffect } from '@react-navigation/native';
 import { DEFAULT_LANGUAGE } from '@screens/MangaView/MangaView';
+import React from 'react';
+import Realm from 'realm';
 
 export default function useUnfinishedMangas() {
-  const mangas = useQuery(MangaSchema);
-  const chapters = useLocalQuery(LocalChapterSchema);
-  const currentlyReadingMangas = mangas.filtered(
-    'currentlyReadingChapter != null && inLibrary == true',
-  );
+  const s = performance.now();
   const localRealm = useLocalRealm();
+  const [chapters, setChapters] = React.useState<
+    Realm.Collection<LocalChapterSchema>
+  >(localRealm.objects(LocalChapterSchema));
+  // const isFocused = useMutableObject(focused);
+  const realm = useRealm();
+
+  const [currentlyReadingMangas, setCurrentlyReadingMangas] = React.useState<
+    Realm.Results<MangaSchema>
+  >(
+    realm
+      .objects(MangaSchema)
+      .filtered('currentlyReadingChapter != null && inLibrary == true'),
+  );
+  useFocusEffect(
+    React.useCallback(() => {
+      const callback: Realm.CollectionChangeCallback<MangaSchema> = (
+        collection,
+      ) => {
+        setCurrentlyReadingMangas(
+          collection.filtered(
+            'currentlyReadingChapter != null && inLibrary == true',
+          ),
+        );
+      };
+      const chaptersCallback: Realm.CollectionChangeCallback<
+        LocalChapterSchema
+      > = (collection) => {
+        setChapters(collection);
+      };
+      const mangas = realm.objects(MangaSchema);
+      const chapters = localRealm.objects(LocalChapterSchema);
+      mangas.addListener(callback);
+      chapters.addListener(chaptersCallback);
+      return () => {
+        mangas.removeListener(callback);
+        chapters.removeListener(chaptersCallback);
+      };
+    }, [setCurrentlyReadingMangas, setChapters]),
+  );
   const isNotSynced = currentlyReadingMangas.some(
     (manga) =>
       manga.currentlyReadingChapter != null &&
@@ -24,20 +56,7 @@ export default function useUnfinishedMangas() {
         manga.currentlyReadingChapter._id,
       ) == null,
   );
-  console.log(
-    currentlyReadingMangas.reduce((prev, manga) => {
-      if (
-        manga.currentlyReadingChapter != null &&
-        localRealm.objectForPrimaryKey(
-          LocalChapterSchema,
-          manga.currentlyReadingChapter._id,
-        ) == null
-      )
-        prev.push(manga._id);
 
-      return prev;
-    }, [] as string[]),
-  );
   const unfinishedDictionary = currentlyReadingMangas.reduce((prev, curr) => {
     prev[curr._id] = chapters
       .filtered(
