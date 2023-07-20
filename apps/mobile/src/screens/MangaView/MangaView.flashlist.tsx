@@ -18,7 +18,7 @@ export const renderItem: ListRenderItem<LocalChapterSchema> = (info) => {
   const { item } = info;
   const extra = info.extraData as {
     manga: IMangaSchema | undefined;
-    data: Record<string, ChapterSchema>;
+    data: Record<string, ChapterSchema | undefined>;
   };
   return (
     <RowChapter
