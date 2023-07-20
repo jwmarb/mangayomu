@@ -13,22 +13,49 @@ const ImageBaseRenderer: React.ForwardRefRenderFunction<
   WebView,
   ConnectedImageBaseRendererProps
 > = (props, ref) => {
-  const { error, imageComponentType, fallbackToWebView, onMessage, ...rest } =
-    props;
+  const {
+    error,
+    imageComponentType,
+    fallbackToWebView,
+    onMessage,
+    style,
+    ...rest
+  } = props;
+  const baseStyle = React.useMemo(
+    () => ({ width: style[1].width, height: style[1].height }),
+    [style[1].width, style[1].height],
+  );
   if (error) return null;
   switch (imageComponentType) {
     case ReaderImageComponent.AUTO:
       return fallbackToWebView ? (
-        <WebViewImageElement ref={ref} onMessage={onMessage} {...rest} />
+        <WebViewImageElement
+          ref={ref}
+          onMessage={onMessage}
+          style={baseStyle}
+          {...rest}
+        />
       ) : (
-        <ImageElement {...rest} />
+        <ImageElement style={style as any} {...rest} />
       );
     case ReaderImageComponent.FAST_IMAGE:
-      return <FastImageElement {...(rest as FastImageElementProps)} />;
+      return (
+        <FastImageElement
+          style={baseStyle}
+          {...(rest as FastImageElementProps)}
+        />
+      );
     case ReaderImageComponent.IMAGE:
-      return <ImageElement {...rest} />;
+      return <ImageElement style={style as any} {...rest} />;
     case ReaderImageComponent.WEBVIEW:
-      return <WebViewImageElement ref={ref} onMessage={onMessage} {...rest} />;
+      return (
+        <WebViewImageElement
+          ref={ref}
+          style={baseStyle}
+          onMessage={onMessage}
+          {...rest}
+        />
+      );
   }
 };
 

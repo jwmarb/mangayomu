@@ -1,4 +1,4 @@
-import Box from '@components/Box';
+import Box, { AnimatedBox } from '@components/Box';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import { useAppDispatch } from '@redux/main';
 import { ExtendedReaderPageState, setPageError } from '@redux/slices/reader';
@@ -13,10 +13,17 @@ type ParsedWebViewData =
 
 interface UsePageRendererArgs {
   pageKey: string;
-  style: {
-    width: number;
-    height: number;
-  };
+  style: readonly [
+    {
+      transform: {
+        scale: number;
+      }[];
+    },
+    {
+      readonly width: number;
+      readonly height: number;
+    },
+  ];
   extendedPageState?: ExtendedReaderPageState;
   stylizedHeight: number;
   backgroundColor: string;
@@ -24,7 +31,7 @@ interface UsePageRendererArgs {
 export default function usePageRenderer(args: UsePageRendererArgs) {
   const { pageKey, style, extendedPageState, stylizedHeight, backgroundColor } =
     args;
-  const { height } = useScreenDimensions();
+  const { width, height } = useScreenDimensions();
   /**
    * In the case of very large images which can be observed in some webtoons (e.g. images that exceed the device's height by 5-8 times),
    * Image performs downsampling on the image, reducing its quality that could make its text unreadable or its content uncomprehensible. As a workaround, the page will fallback to using WebView, which is
@@ -66,7 +73,13 @@ export default function usePageRenderer(args: UsePageRendererArgs) {
 
   const Renderer: React.FC = React.useCallback(
     () => (
-      <Box style={style} align-self="center" background-color={backgroundColor}>
+      <Box
+        overflow="hidden"
+        width={width}
+        minHeight={height}
+        background-color={backgroundColor}
+        justify-content="center"
+      >
         <ImageBaseRenderer
           onError={handleOnError}
           onMessage={handleOnMessage}

@@ -8,24 +8,26 @@ import { useChapterPageContext } from '@screens/Reader/components/ChapterPage/co
 import usePageGestures from '@screens/Reader/components/ChapterPage/hooks/usePageGestures';
 import usePageRenderer from '@screens/Reader/components/ChapterPage/hooks/usePageRenderer';
 import usePageDownloader from '@screens/Reader/components/ChapterPage/hooks/usePageDownloader';
+import { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   const { readingDirection } = useChapterPageContext();
   const { width, height } = useScreenDimensions();
   const { page: pageKey, chapter, pageNumber } = props.page;
   const { extendedPageState, backgroundColor } = props;
-  const gestures = usePageGestures({ pageKey });
   const imageWidth = props.page.width;
   const imageHeight = props.page.height;
   const scale = width / imageWidth;
+  const pinchScale = useSharedValue(1);
+  const gestures = usePageGestures({ pageKey, pinchScale });
   const stylizedHeight = ReadingDirection.WEBTOON
     ? scale * imageHeight
     : height;
+  const pinchStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pinchScale.value }],
+  }));
   const style = React.useMemo(
-    () => ({
-      width,
-      height: stylizedHeight,
-    }),
+    () => [pinchStyle, { width, height: stylizedHeight }] as const,
     [width, stylizedHeight],
   );
   const PageRenderer = usePageRenderer({

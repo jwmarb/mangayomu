@@ -9,4 +9,15 @@ export interface ImageBaseRendererProps
     FastImageElementProps {
   error?: string;
   fallbackToWebView: boolean;
+  style: readonly [
+    {
+      transform: {
+        scale: number;
+      }[];
+    },
+    {
+      readonly width: number;
+      readonly height: number;
+    },
+  ];
 }

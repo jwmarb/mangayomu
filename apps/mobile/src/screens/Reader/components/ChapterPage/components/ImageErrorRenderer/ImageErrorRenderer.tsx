@@ -9,9 +9,16 @@ import { moderateScale } from 'react-native-size-matters';
 
 const ImageErrorRenderer: React.FC<ImageErrorRendererProps> = (props) => {
   const { style, onReload, pageKey } = props;
+  const baseStyle = React.useMemo(
+    () => ({
+      width: style[1].width,
+      height: style[1].height,
+    }),
+    [style[1].width, style[1].height],
+  );
   return (
     <Stack
-      style={style}
+      style={baseStyle}
       space="s"
       position="absolute"
       align-items="center"

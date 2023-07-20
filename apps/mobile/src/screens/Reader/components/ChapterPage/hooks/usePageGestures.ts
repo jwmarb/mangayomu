@@ -4,14 +4,15 @@ import { toggleImageModal } from '@redux/slices/reader';
 import { useChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
 import React from 'react';
 import { Gesture } from 'react-native-gesture-handler';
-import { runOnJS } from 'react-native-reanimated';
+import { SharedValue, runOnJS } from 'react-native-reanimated';
 
 interface UsePageGesturesArgs {
   pageKey: string;
+  pinchScale: SharedValue<number>;
 }
 
 export default function usePageGestures(args: UsePageGesturesArgs) {
-  const { pageKey } = args;
+  const { pageKey, pinchScale } = args;
   const mutablePageKey = useMutableObject(pageKey);
   const { tapGesture, imageMenuRef } = useChapterPageContext();
   const dispatch = useAppDispatch();
@@ -32,6 +33,17 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
     [toggle],
   );
 
-  const gestures = React.useMemo(() => holdGesture, [holdGesture, tapGesture]);
+  const pinchGesture = React.useMemo(
+    () =>
+      Gesture.Pinch().onChange((e) => {
+        pinchScale.value = Math.max(pinchScale.value + e.scaleChange - 1, 1);
+      }),
+    [],
+  );
+
+  const gestures = React.useMemo(
+    () => Gesture.Simultaneous(pinchGesture, holdGesture),
+    [holdGesture, tapGesture],
+  );
   return gestures;
 }
