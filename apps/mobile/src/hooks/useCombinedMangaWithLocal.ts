@@ -103,6 +103,7 @@ export default function useCombinedMangaWithLocal<T extends boolean>(
           else changedMangaProperties.push(key as keyof IMangaSchema);
         }
       }
+
       if (changedLocalMangaProperties.length > 0) {
         const overrideLocalProperties = {
           _id: mangaId,
@@ -140,6 +141,10 @@ export default function useCombinedMangaWithLocal<T extends boolean>(
           );
           const isNotWorthSavingToCloud =
             !updatedManga.inLibrary &&
+            updatedManga.readerDirection === 'Use global setting' &&
+            updatedManga.readerImageScaling === 'Use global setting' &&
+            updatedManga.readerLockOrientation === 'Use global setting' &&
+            updatedManga.readerZoomStartPosition === 'Use global setting' &&
             (updatedManga.selectedLanguage === 'Use default language' ||
               updatedManga.selectedLanguage === DEFAULT_LANGUAGE) &&
             (updatedManga.currentlyReadingChapter == null ||
