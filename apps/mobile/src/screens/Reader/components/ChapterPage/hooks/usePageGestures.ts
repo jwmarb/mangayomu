@@ -155,23 +155,18 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
         ) {
           runOnJS(togglePan)(true);
         }
-        // else {
-        //   console.log('enabling pan');
-        //   runOnJS(togglePan)(true);
-        // }
       }
     },
   );
-  React.useEffect(() => {
-    if (
-      !enablePan &&
-      maxTranslateX.value !== 0 &&
-      maxTranslateX.value === Math.abs(translateX.value)
-    ) {
-      console.log('re enable pan');
-      // togglePan(true);
-    }
-  }, [enablePan]);
+  // React.useEffect(() => {
+  //   if (
+  //     !enablePan &&
+  //     maxTranslateX.value !== 0 &&
+  //     maxTranslateX.value === Math.abs(translateX.value)
+  //   ) {
+  //     // togglePan(true);
+  //   }
+  // }, [enablePan]);
 
   const imageMovementGestures = React.useMemo(
     () => Gesture.Simultaneous(panGesture, pinchGesture),
