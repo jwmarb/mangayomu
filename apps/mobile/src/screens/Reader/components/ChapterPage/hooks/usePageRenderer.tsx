@@ -89,8 +89,6 @@ export default function usePageRenderer(args: UsePageRendererArgs) {
     () => (
       <Box
         overflow="hidden"
-        width={width}
-        minHeight={height}
         background-color={backgroundColor}
         justify-content="center"
       >
