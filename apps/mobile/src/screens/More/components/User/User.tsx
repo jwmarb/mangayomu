@@ -38,8 +38,15 @@ const User: React.FC = () => {
             displayMessage('Signing out...');
             try {
               await realm.syncSession?.uploadAllLocalChanges();
-              await user.logOut();
-              await app.logIn(Realm.Credentials.anonymous());
+              const anonymousUser = await app.logIn(
+                Realm.Credentials.anonymous(),
+              );
+              for (const userId in app.allUsers) {
+                const user = app.allUsers[userId];
+                if (user.id !== anonymousUser.id) {
+                  if (user.isLoggedIn) await user.logOut();
+                }
+              }
               displayMessage('You have logged out');
             } catch (e) {
               displayMessage('There was an error signing out');
