@@ -163,8 +163,7 @@ const ImageMenu: React.ForwardRefRenderFunction<
     displayMessage('View in browser');
   }
   async function handleOnViewInBrowser() {
-    if (url.current && (await Linking.canOpenURL(url.current)))
-      await Linking.openURL(url.current);
+    if (url.current) await Linking.openURL(url.current);
   }
   function handleOnLayout(e: LayoutChangeEvent) {
     setContainerHeight(e.nativeEvent.layout.height);
