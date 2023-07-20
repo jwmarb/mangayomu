@@ -29,7 +29,6 @@ import Progress from '@components/Progress';
 import useTabNavigation from '@hooks/useTabNavigation';
 import ContinueReading from '@screens/Explore/components/ContinueReading/ContinueReading';
 import { useUser } from '@realm/react';
-import { useIsFocused } from '@react-navigation/native';
 
 const Explore: React.FC<ConnectedExploreProps> = ({
   source,
