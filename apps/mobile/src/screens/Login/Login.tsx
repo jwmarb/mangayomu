@@ -12,15 +12,27 @@ import useBoolean from '@hooks/useBoolean';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import useForm from '@hooks/useForm';
 import { RootStackProps } from '@navigators/Root/Root.interfaces';
-import { useUser } from '@realm/react';
+import { useApp, useUser } from '@realm/react';
 import axios from 'axios';
 import { BACKEND_URL } from 'env';
+import { GOOGLE_OAUTH2_ID } from '@env';
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { moderateScale } from 'react-native-size-matters';
 import zod from 'zod';
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+  NativeModuleError,
+} from '@react-native-google-signin/google-signin';
+
+GoogleSignin.configure({
+  webClientId: GOOGLE_OAUTH2_ID,
+  offlineAccess: true,
+});
 
 const styles = StyleSheet.create({
   content: {
@@ -45,6 +57,7 @@ const Login: React.FC<RootStackProps<'Login'>> = ({ navigation }) => {
   const [isInvalid, toggleInvalid] = useBoolean();
   const [loading, toggleLoading] = useBoolean();
   const user = useUser();
+  const app = useApp();
 
   const { register, handleSubmit, setError } = useForm<FormInput>(formSchema);
 
@@ -80,6 +93,43 @@ const Login: React.FC<RootStackProps<'Login'>> = ({ navigation }) => {
     }
   });
 
+  const signIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      toggleLoading(true);
+      const userInfo = await GoogleSignin.signIn();
+      if (userInfo.idToken != null) {
+        const googleCredentials = Realm.Credentials.google({
+          idToken: userInfo.idToken,
+        });
+        try {
+          await user.linkCredentials(googleCredentials);
+        } catch {
+          await app.logIn(googleCredentials);
+        }
+        displayMessage('Successfully logged in');
+        if (navigation.canGoBack()) navigation.goBack();
+      } else displayMessage('Google Sign-in failed');
+    } catch (e) {
+      const error = e as NativeModuleError;
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // user cancelled the login flow
+        displayMessage('Login cancelled');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        displayMessage('Please wait for login to complete');
+        // operation (e.g. sign in) is in progress already
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        // play services not available or outdated
+        displayMessage('Google Play Services is not available');
+      } else {
+        // some other error happened
+        console.error(e);
+      }
+    } finally {
+      toggleLoading(false);
+    }
+  };
+
   return (
     <Animated.ScrollView
       onScroll={onScroll}
@@ -93,6 +143,7 @@ const Login: React.FC<RootStackProps<'Login'>> = ({ navigation }) => {
           maxWidth={moderateScale(480)}
           width="100%"
           align-self="center"
+          align-items="center"
         >
           <Text variant="header-lg" align="center">
             Sign into your account
@@ -131,6 +182,14 @@ const Login: React.FC<RootStackProps<'Login'>> = ({ navigation }) => {
             <Text color="textSecondary">or use another provider</Text>
             <Divider shrink align-self="center" />
           </Stack>
+          <GoogleSigninButton
+            size={GoogleSigninButton.Size.Wide}
+            color={
+              GoogleSigninButton.Color[theme.mode === 'dark' ? 'Dark' : 'Light']
+            }
+            onPress={signIn}
+            disabled={loading}
+          />
         </Stack>
       </Box>
     </Animated.ScrollView>

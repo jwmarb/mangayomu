@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">MangaYomu</string>
+  <string name="app_name">MangaYomu</string>
+  <string name="server_client_id">
+    741457003739-vdsd00abig6efjimen55scdc886stn6s.apps.googleusercontent.com</string>
 </resources>

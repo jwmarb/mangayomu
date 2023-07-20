@@ -12,7 +12,7 @@ import useDialog from '@hooks/useDialog';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { useApp, useUser } from '@realm/react';
 import React from 'react';
-import Realm from 'realm';
+import Realm, { UserChangeCallback } from 'realm';
 import { moderateScale } from 'react-native-size-matters';
 
 const User: React.FC = () => {
@@ -39,12 +39,10 @@ const User: React.FC = () => {
             try {
               await realm.syncSession?.uploadAllLocalChanges();
               await user.logOut();
+              await app.logIn(Realm.Credentials.anonymous());
+              displayMessage('You have logged out');
             } catch (e) {
               displayMessage('There was an error signing out');
-            } finally {
-              const anonymousCredentials = Realm.Credentials.anonymous();
-              await app.logIn(anonymousCredentials);
-              displayMessage('You have logged out');
             }
           },
         },
