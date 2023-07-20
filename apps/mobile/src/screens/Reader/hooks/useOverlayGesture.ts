@@ -1,6 +1,6 @@
 import useImmersiveMode from '@hooks/useImmersiveMode';
 import React from 'react';
-import { Gesture } from 'react-native-gesture-handler';
+import { FlatList, Gesture, GestureType } from 'react-native-gesture-handler';
 import {
   Easing,
   runOnJS,
@@ -11,8 +11,11 @@ import {
 /**
  * A hook that provides a gesture to interact with the reader overlay
  */
-export default function useOverlayGesture() {
+export default function useOverlayGesture(
+  ref: React.MutableRefObject<GestureType | undefined>,
+) {
   const overlayOpacity = useSharedValue(0);
+  const velocityX = useSharedValue(0);
 
   const [showStatusAndNavBar, hideStatusAndNavBar] = useImmersiveMode();
 
@@ -44,5 +47,21 @@ export default function useOverlayGesture() {
         .cancelsTouchesInView(false),
     [],
   );
-  return { tapGesture, hideOverlay, showOverlay, overlayOpacity };
+  const panGesture = React.useMemo(
+    () =>
+      Gesture.Pan()
+        .onUpdate((e) => {
+          velocityX.value = e.velocityX;
+        })
+        .withRef(ref),
+    [],
+  );
+  return {
+    tapGesture,
+    hideOverlay,
+    showOverlay,
+    overlayOpacity,
+    panGesture,
+    velocityX,
+  };
 }

@@ -15,9 +15,23 @@ interface UsePageRendererArgs {
   pageKey: string;
   style: readonly [
     {
-      transform: {
-        scale: number;
-      }[];
+      transform: (
+        | {
+            scale: number;
+            translateX?: undefined;
+            translateY?: undefined;
+          }
+        | {
+            translateX: number;
+            scale?: undefined;
+            translateY?: undefined;
+          }
+        | {
+            translateY: number;
+            scale?: undefined;
+            translateX?: undefined;
+          }
+      )[];
     },
     {
       readonly width: number;

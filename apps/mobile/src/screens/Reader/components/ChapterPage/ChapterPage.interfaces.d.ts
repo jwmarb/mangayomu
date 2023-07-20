@@ -4,7 +4,8 @@ import {
 } from '@redux/slices/reader/reader';
 import { ReadingDirection } from '@redux/slices/settings';
 import { ImageMenuMethods } from '@screens/Reader/components/ImageMenu/ImageMenu.interfaces';
-import { TapGesture } from 'react-native-gesture-handler';
+import { PanGesture, TapGesture } from 'react-native-gesture-handler';
+import { SharedValue } from 'react-native-reanimated';
 
 export interface ChapterPageProps {
   page: ChapterPage;
@@ -12,7 +13,8 @@ export interface ChapterPageProps {
 }
 
 export interface ChapterPageContextState {
-  tapGesture: TapGesture;
+  velocityX: SharedValue<number>;
+  rootPanGesture: PanGesture;
   readingDirection: ReadingDirection;
   sourceName: string;
   mangaTitle: string;

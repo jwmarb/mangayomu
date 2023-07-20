@@ -4,7 +4,11 @@ import { Page } from '@redux/slices/reader/reader';
 import { ReadingDirection } from '@redux/slices/settings';
 import Overlay from '@screens/Reader/components/Overlay';
 import React from 'react';
-import { GestureDetector } from 'react-native-gesture-handler';
+import {
+  Gesture,
+  GestureDetector,
+  GestureType,
+} from 'react-native-gesture-handler';
 import connector, { ConnectedReaderProps } from './Reader.redux';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import useReaderProps from '@screens/Reader/hooks/useReaderProps';
@@ -70,7 +74,9 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     autoFetch,
     cancellable,
   });
-  const { tapGesture, showOverlay, overlayOpacity } = useOverlayGesture();
+  const panRef = React.useRef<GestureType>();
+  const { tapGesture, showOverlay, overlayOpacity, panGesture, velocityX } =
+    useOverlayGesture(panRef);
   const viewabilityConfigCallbackPairs = useViewableItemsChangedHandler({
     manga,
     chapter,
@@ -137,10 +143,16 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       mangaTitle: manga.title,
       readingDirection,
       sourceName: manga.source,
-      tapGesture,
       imageMenuRef,
+      velocityX,
+      rootPanGesture: panGesture,
     }),
     [tapGesture, manga.source, readingDirection, manga.title],
+  );
+
+  const composedGestures = React.useMemo(
+    () => Gesture.Simultaneous(panGesture, tapGesture),
+    [panGesture, tapGesture],
   );
 
   const extraData = { extendedState, readingDirection, chapter };
@@ -163,7 +175,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
             opacity={overlayOpacity}
           />
           <NetworkToast style={toastStyle} />
-          <GestureDetector gesture={tapGesture}>
+          <GestureDetector gesture={composedGestures}>
             {pages.length === 0 ? (
               <Box
                 flex-grow
@@ -183,6 +195,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                 background-color={backgroundColor.toLowerCase()}
               >
                 <PageList
+                  panRef={panRef}
                   ref={ref}
                   readingDirection={readingDirection}
                   getItemLayout={getItemLayout}

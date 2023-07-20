@@ -1,7 +1,8 @@
 import React from 'react';
 import { ReadingDirection } from '@redux/slices/settings';
 import { PageListProps } from '@screens/Reader/components/PageList/PageList.interfaces';
-import { FlatList, FlatListProps } from 'react-native';
+import { FlatListProps } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import {
   FlashList,
   ListRenderItemInfo as FlashListRenderItemInfo,
@@ -18,12 +19,15 @@ const PageList: React.ForwardRefRenderFunction<
     extraData,
     initialScrollIndex,
     estimatedFirstItemOffset,
+    panRef,
     ...rest
   } = props;
   switch (readingDirection) {
-    case ReadingDirection.WEBTOON: {
+    default: {
       return (
         <FlatList
+          // scrollEnabled={false}
+          simultaneousHandlers={panRef}
           ref={ref as React.ForwardedRef<FlatList<Page>>}
           {...(rest as FlatListProps<Page>)}
           initialScrollIndex={
@@ -48,17 +52,17 @@ const PageList: React.ForwardRefRenderFunction<
         />
       );
     }
-    default:
-      return (
-        <FlashList
-          ref={ref as React.ForwardedRef<FlashList<Page>>}
-          {...rest}
-          estimatedFirstItemOffset={estimatedFirstItemOffset}
-          initialScrollIndex={initialScrollIndex}
-          renderItem={preDeterminedRenderItem}
-          extraData={extraData}
-        />
-      );
+    // default:
+    //   return (
+    //     <FlashList
+    //       ref={ref as React.ForwardedRef<FlashList<Page>>}
+    //       {...rest}
+    //       estimatedFirstItemOffset={estimatedFirstItemOffset}
+    //       initialScrollIndex={initialScrollIndex}
+    //       renderItem={preDeterminedRenderItem}
+    //       extraData={extraData}
+    //     />
+    //   );
   }
 };
 

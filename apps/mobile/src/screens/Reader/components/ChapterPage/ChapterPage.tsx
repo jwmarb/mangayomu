@@ -19,15 +19,35 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   const imageHeight = props.page.height;
   const scale = width / imageWidth;
   const pinchScale = useSharedValue(1);
-  const gestures = usePageGestures({ pageKey, pinchScale });
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
   const stylizedHeight = ReadingDirection.WEBTOON
     ? scale * imageHeight
     : height;
-  const pinchStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: pinchScale.value }],
+  const gestures = usePageGestures({
+    pageKey,
+    pinchScale,
+    translateX,
+    translateY,
+    width,
+    stylizedHeight,
+  });
+
+  const gestureStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scale: pinchScale.value,
+      },
+      {
+        translateX: translateX.value,
+      },
+      {
+        translateY: translateY.value,
+      },
+    ],
   }));
   const style = React.useMemo(
-    () => [pinchStyle, { width, height: stylizedHeight }] as const,
+    () => [gestureStyle, { width, height: stylizedHeight }] as const,
     [width, stylizedHeight],
   );
   const PageRenderer = usePageRenderer({
