@@ -1,7 +1,7 @@
 import Box, { AnimatedBox } from '@components/Box';
 import { coverStyles } from '@components/Cover/Cover';
 import Stack from '@components/Stack';
-import { useIsFocused } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '@emotion/react';
 import React from 'react';
 import Text from '@components/Text';
@@ -17,7 +17,6 @@ import Animated, {
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
 import { BookStyle } from '@redux/slices/settings';
-import { moderateScale } from 'react-native-size-matters';
 
 const mapStateToProps = (state: AppState) => state.settings.book;
 
@@ -32,7 +31,6 @@ const LoadingBook: React.FC<LoadingBookProps> = ({
   style,
 }) => {
   const opacity = useSharedValue(0.5);
-  const isFocused = useIsFocused();
   const theme = useTheme();
   const textStyle = React.useMemo(
     () => [
@@ -42,8 +40,8 @@ const LoadingBook: React.FC<LoadingBookProps> = ({
     [title.size, title.letterSpacing],
   );
 
-  React.useEffect(() => {
-    if (isFocused) {
+  useFocusEffect(
+    React.useCallback(() => {
       opacity.value = withRepeat(
         withSequence(
           withTiming(1, { duration: 1000, easing: Easing.ease }),
@@ -54,8 +52,8 @@ const LoadingBook: React.FC<LoadingBookProps> = ({
       return () => {
         cancelAnimation(opacity);
       };
-    }
-  }, [isFocused]);
+    }, []),
+  );
   const loading = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
