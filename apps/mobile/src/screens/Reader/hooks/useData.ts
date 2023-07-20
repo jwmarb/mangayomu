@@ -50,6 +50,7 @@ export default function useData(mangaKey: string, chapterKey: string) {
   const [chapterWithData, setChapterWithData] = React.useState<ChapterSchema>(
     chapterWithDataInitializer,
   );
+
   const collection = localRealm.objects(LocalChapterSchema);
 
   React.useEffect(() => {

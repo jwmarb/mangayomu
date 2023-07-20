@@ -37,19 +37,19 @@ export default function useChapters(
   );
 
   const [chapterData, setChapterData] = React.useState<
-    Record<string, ChapterSchema>
+    Record<string, ChapterSchema | undefined>
   >(() =>
-    realm
-      .objects(ChapterSchema)
+    localRealm
+      .objects(LocalChapterSchema)
       .filtered(
         '_mangaId = $0 AND language = $1 SORT(index ASC)',
         manga?._id,
         selectedLanguage,
       )
       .reduce((prev, curr) => {
-        prev[curr._id] = curr;
+        prev[curr._id] = realm.objectForPrimaryKey(ChapterSchema, curr._id);
         return prev;
-      }, {} as Record<string, ChapterSchema>),
+      }, {} as Record<string, ChapterSchema | undefined>),
   );
 
   React.useEffect(() => {
@@ -64,20 +64,19 @@ export default function useChapters(
         ),
       );
     };
-    const callback: Realm.CollectionChangeCallback<ChapterSchema> = (
-      collection,
-    ) => {
+    const callback: Realm.CollectionChangeCallback<ChapterSchema> = () => {
       setChapterData(
-        collection
+        localRealm
+          .objects(LocalChapterSchema)
           .filtered(
             '_mangaId = $0 AND language = $1 SORT(index ASC)',
             manga?._id,
             selectedLanguage,
           )
           .reduce((prev, curr) => {
-            prev[curr._id] = curr;
+            prev[curr._id] = realm.objectForPrimaryKey(ChapterSchema, curr._id);
             return prev;
-          }, {} as Record<string, ChapterSchema>),
+          }, {} as Record<string, ChapterSchema | undefined>),
       );
     };
     const localChapters = localRealm
