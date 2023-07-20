@@ -240,8 +240,8 @@ const Onboard: React.FC<ConnectedOnboardProps> = ({
 };
 const styles = ScaledSheet.create({
   fastImage: {
-    width: '350@ms',
-    height: '280@ms',
+    width: '350@ms' as unknown as number,
+    height: '280@ms' as unknown as number,
   },
 });
 
