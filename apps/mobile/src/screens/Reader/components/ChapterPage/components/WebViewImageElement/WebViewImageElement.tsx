@@ -16,6 +16,8 @@ const WebViewImageElement: React.ForwardRefRenderFunction<
         style={{ opacity: 0.99 }}
         scrollEnabled={false}
         scalesPageToFit={false}
+        setDisplayZoomControls={false}
+        nestedScrollEnabled={false}
         setBuiltInZoomControls={false}
         useWebView2
         pointerEvents="none"
@@ -37,7 +39,7 @@ const WebViewImageElement: React.ForwardRefRenderFunction<
           <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
         </head>
         <body style="margin: 0;background-color: ${backgroundColor};">
-          <img src="${uri}" id="page" style="object-fit: cover;width: ${style.width}px;height: ${style.height}px"  />
+          <img src="${uri}" id="page" style="pointer-events: none;object-fit: contain;width: ${style.width}px;height: ${style.height}px"  />
         </body>
       </html>
    `,
