@@ -1,7 +1,7 @@
 import { useLocalRealm, useRealm } from '@database/main';
 import { ILocalManga, LocalMangaSchema } from '@database/schemas/LocalManga';
 import { IMangaSchema, MangaSchema } from '@database/schemas/Manga';
-import { useUser } from '@realm/react';
+import { useApp, useUser } from '@realm/react';
 import { DEFAULT_LANGUAGE } from '@screens/MangaView/MangaView';
 import React from 'react';
 import Realm from 'realm';
@@ -26,19 +26,24 @@ export default function useCombinedMangaWithLocal<T extends boolean>(
     LocalMangaSchema | undefined
   >(localRealm.objectForPrimaryKey(LocalMangaSchema, mangaId));
   const [manga, setManga] = React.useState<MangaSchema | undefined>(() => {
-    const x = realm.objectForPrimaryKey(MangaSchema, mangaId);
+    let x: MangaSchema | undefined = realm.objectForPrimaryKey(
+      MangaSchema,
+      mangaId,
+    );
     if (x == null && localManga != null && shouldInitializeManga) {
-      let obj = {} as MangaSchema;
       realm.write(() => {
-        obj = realm.create(MangaSchema, {
-          _id: mangaId,
-          _realmId: user.id,
-          title: localManga.title,
-          imageCover: localManga.imageCover,
-          source: localManga.source,
-        });
+        x = realm.create<MangaSchema>(
+          MangaSchema,
+          {
+            _id: mangaId,
+            _realmId: user.id,
+            title: localManga.title,
+            imageCover: localManga.imageCover,
+            source: localManga.source,
+          },
+          Realm.UpdateMode.Modified,
+        );
       });
-      return obj;
     }
     return x as MangaSchema | undefined;
   });
