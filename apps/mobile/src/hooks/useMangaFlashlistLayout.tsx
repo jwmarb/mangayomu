@@ -9,31 +9,35 @@ import { ListRenderItemInfo } from '@shopify/flash-list';
 import React from 'react';
 import { Dimensions, useWindowDimensions } from 'react-native';
 
-const Item: React.FC<{ item: Manga }> = React.memo(({ item }) => (
-  <Box my="s" align-items="center" flex-grow>
-    <Book manga={item} />
-  </Box>
-));
+const Item: React.FC<{ item: Manga | MangaSchema }> = React.memo(({ item }) => {
+  const manga = React.useMemo(() => {
+    if (assertIsManga(item)) return item;
+    return {
+      link: item._id,
+      imageCover: item.imageCover,
+      source: item.source,
+      title: item.title,
+    };
+  }, [item.source, item.title, item.imageCover]);
+  return (
+    <Box my="s" align-items="center" flex-grow>
+      <Book manga={manga} />
+    </Box>
+  );
+});
 function keyExtractor<T extends Manga | MangaSchema>(i: T, index: number) {
-  return assertIsManga(i) ? i.link + index : i._id + index;
+  return assertIsManga(i) ? i.link + index : (i.isValid() ? i._id : '') + index;
 }
 function renderItem<T extends Manga | MangaSchema>({
   item,
 }: ListRenderItemInfo<T>) {
-  return (
-    <Item
-      item={
-        assertIsManga(item)
-          ? item
-          : {
-              link: item._id,
-              imageCover: item.imageCover,
-              source: item.source,
-              title: item.title,
-            }
-      }
-    />
-  );
+  if (assertIsManga(item)) {
+    return <Item item={item} />;
+  } else if (item.isValid()) {
+    return <Item item={item} />;
+  }
+
+  return null;
 }
 
 export default function useMangaFlashlistLayout(
