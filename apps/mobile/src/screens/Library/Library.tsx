@@ -22,6 +22,7 @@ import useBoolean from '@hooks/useBoolean';
 import { useIsDataStale, useLibraryData } from '@screens/Library/Library.hooks';
 import { AnimatedFlashList } from '@components/animated';
 import Progress from '@components/Progress';
+import { useUser } from '@realm/react';
 
 const Library: React.FC<ConnectedLibraryProps> = ({
   sortBy,
@@ -37,6 +38,7 @@ const Library: React.FC<ConnectedLibraryProps> = ({
   const [showSearchBar, setShowSearchBar] = React.useState<boolean>(false);
   const [query, setQuery] = React.useState<string>('');
   const { dataIsStale, syncing } = useIsDataStale();
+  const user = useUser();
 
   if (dataIsStale)
     return (
@@ -168,7 +170,7 @@ const Library: React.FC<ConnectedLibraryProps> = ({
         data={data}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        key={key}
+        key={key + user.id}
         numColumns={columns}
         ListHeaderComponent={
           <>{data.length > 0 && <Box style={scrollViewStyle} />}</>
