@@ -78,7 +78,11 @@ const Login: React.FC<RootStackProps<'Login'>> = ({ navigation }) => {
         value,
       );
       const credentials = Realm.Credentials.jwt(data.id_token);
-      await user.linkCredentials(credentials);
+      try {
+        await user.linkCredentials(credentials);
+      } catch (e) {
+        await app.logIn(credentials);
+      }
       displayMessage('Successfully logged in');
       if (navigation.canGoBack()) navigation.goBack();
     } catch (e) {
