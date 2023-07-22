@@ -26,17 +26,10 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
   // }, []);
 
   React.useEffect(() => {
-    if (currentUser != null && currentUser.isLoggedIn) {
-      if (enableCloud) realm.syncSession?.resume();
-      else realm.syncSession?.pause();
-    }
-  }, [enableCloud, currentUser]);
-
-  React.useEffect(() => {
     const addSubscriptions = async () => {
-      await realm.subscriptions.update((sub) => {
-        for (const userId in app.allUsers) {
-          if (app.allUsers[userId].isLoggedIn) {
+      for (const userId in app.allUsers) {
+        if (app.allUsers[userId].isLoggedIn && userId === currentUser.id) {
+          await realm.subscriptions.update((sub) => {
             console.log(`Setting subscription for ${userId}`);
             sub.add(
               realm.objects(MangaSchema).filtered(`_realmId == "${userId}"`),
@@ -47,13 +40,17 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
             sub.add(
               realm.objects(ChapterSchema).filtered(`_realmId == "${userId}"`),
             );
-          }
+          });
+        } else {
+          await app.allUsers[userId].logOut();
+          console.log(
+            `Logged out ${userId} because they are not the active user`,
+          );
         }
-      });
+      }
     };
 
-    realm.subscriptions.waitForSynchronization();
-    addSubscriptions();
+    realm.subscriptions.waitForSynchronization().then(() => addSubscriptions());
     return () => {
       console.log('Removing all subscriptions');
       realm.subscriptions.update((sub) => {
@@ -61,6 +58,14 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
       });
     };
   }, [currentUser.id]);
+
+  React.useEffect(() => {
+    if (currentUser != null && currentUser.isLoggedIn) {
+      if (enableCloud) realm.syncSession?.resume();
+      else realm.syncSession?.pause();
+    }
+  }, [enableCloud, currentUser]);
+
   return <>{children}</>;
 };
 
