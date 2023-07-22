@@ -1,6 +1,6 @@
 import { MangaSchema } from '../schemas/Manga';
 import { useRealm } from '@database/main';
-import { useUser } from '@realm/react';
+import { useApp, useUser } from '@realm/react';
 import React from 'react';
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
@@ -14,6 +14,7 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
   // const mangas = useQuery(MangaSchema);
   const realm = useRealm();
   const currentUser = useUser();
+  const app = useApp();
 
   // const callback: Realm.CollectionChangeCallback<
   //   MangaSchema & Realm.Object<unknown, never>
@@ -25,45 +26,41 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
   // }, []);
 
   React.useEffect(() => {
-    if (currentUser != null) {
+    if (currentUser != null && currentUser.isLoggedIn) {
       if (enableCloud) realm.syncSession?.resume();
       else realm.syncSession?.pause();
     }
   }, [enableCloud, currentUser]);
 
   React.useEffect(() => {
-    (async () => {
-      await realm.subscriptions.waitForSynchronization();
+    const addSubscriptions = async () => {
       await realm.subscriptions.update((sub) => {
-        sub.add(
-          realm
-            .objects(MangaSchema)
-            .filtered(`_realmId == "${currentUser?.id}"`),
-        );
-        sub.add(
-          realm
-            .objects(UserHistorySchema)
-            .filtered(`_id == "${currentUser?.id}"`),
-        );
-        sub.add(
-          realm
-            .objects(ChapterSchema)
-            .filtered(`_realmId == "${currentUser.id}"`),
-        );
+        for (const userId in app.allUsers) {
+          if (app.allUsers[userId].isLoggedIn) {
+            console.log(`Setting subscription for ${userId}`);
+            sub.add(
+              realm.objects(MangaSchema).filtered(`_realmId == "${userId}"`),
+            );
+            sub.add(
+              realm.objects(UserHistorySchema).filtered(`_id == "${userId}"`),
+            );
+            sub.add(
+              realm.objects(ChapterSchema).filtered(`_realmId == "${userId}"`),
+            );
+          }
+        }
       });
-    })();
-    return () => {
-      (async () => {
-        await realm.subscriptions.update((sub) => {
-          sub.removeAll();
-        });
-      })();
     };
-    // mangas.addListener(callback);
-    // return () => {
-    //   mangas.removeListener(callback);
-    // };
-  }, [currentUser?.id]);
+
+    realm.subscriptions.waitForSynchronization();
+    addSubscriptions();
+    return () => {
+      console.log('Removing all subscriptions');
+      realm.subscriptions.update((sub) => {
+        sub.removeAll();
+      });
+    };
+  }, [currentUser.id]);
   return <>{children}</>;
 };
 
