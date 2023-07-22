@@ -27,27 +27,27 @@ const PageList: React.ForwardRefRenderFunction<
     ...rest
   } = props;
   const handleOnActivated = () => {
-    console.log('flashlist active');
     pageGestures.current[currentPageKey.current].onFlashlistActive();
   };
-  const renderScrollComponent = React.useMemo(
-    () =>
-      React.forwardRef<ScrollView>((props, ref) => (
-        <ScrollView
-          ref={ref}
-          {...props}
-          simultaneousHandlers={panRef}
-          onActivated={handleOnActivated}
-        />
-      )),
-    [],
-  ) as unknown as React.FC<ScrollViewProps>;
+  // const renderScrollComponent = React.useMemo(
+  //   () =>
+  //     React.forwardRef<ScrollView>((props, ref) => (
+  //       <ScrollView
+  //         ref={ref}
+  //         {...props}
+  //         simultaneousHandlers={panRef}
+  //         onActivated={handleOnActivated}
+  //       />
+  //     )),
+  //   [],
+  // ) as unknown as React.FC<ScrollViewProps>;
   switch (readingDirection) {
-    case ReadingDirection.WEBTOON: {
+    default: {
       return (
         <FlatList
           // scrollEnabled={false}
-          simultaneousHandlers={[panRef, pinchRef]}
+          simultaneousHandlers={panRef}
+          onActivated={handleOnActivated}
           ref={ref as React.ForwardedRef<FlatList<Page>>}
           {...(rest as FlatListProps<Page>)}
           initialScrollIndex={
@@ -72,18 +72,18 @@ const PageList: React.ForwardRefRenderFunction<
         />
       );
     }
-    default:
-      return (
-        <FlashList
-          renderScrollComponent={renderScrollComponent}
-          ref={ref as React.ForwardedRef<FlashList<Page>>}
-          {...rest}
-          estimatedFirstItemOffset={estimatedFirstItemOffset}
-          initialScrollIndex={initialScrollIndex}
-          renderItem={preDeterminedRenderItem}
-          extraData={extraData}
-        />
-      );
+    // default:
+    //   return (
+    //     <FlashList
+    //       renderScrollComponent={renderScrollComponent}
+    //       ref={ref as React.ForwardedRef<FlashList<Page>>}
+    //       {...rest}
+    //       estimatedFirstItemOffset={estimatedFirstItemOffset}
+    //       initialScrollIndex={initialScrollIndex}
+    //       renderItem={preDeterminedRenderItem}
+    //       extraData={extraData}
+    //     />
+    //   );
   }
 };
 
