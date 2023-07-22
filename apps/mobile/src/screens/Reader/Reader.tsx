@@ -63,6 +63,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const [currentPage, setCurrentPage] = React.useState<number>(
     chapterWithData.indexPage + 1,
   );
+  const currentPageKey = React.useRef<string>('');
   const [cancellable, isFetchingPrevious] = useCancellable(pages);
   const fetchPagesByChapter = useChapterFetcher({
     availableChapters,
@@ -74,9 +75,29 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     autoFetch,
     cancellable,
   });
+  const readerProps = useReaderProps(manga, {
+    readingDirection: globalReadingDirection,
+    lockOrientation: globalDeviceOrientation,
+    imageScaling: globalImageScaling,
+    zoomStartPosition: globalZoomStartPosition,
+  });
+  const { readingDirection } = readerProps;
   const panRef = React.useRef<GestureType>();
-  const { tapGesture, showOverlay, overlayOpacity, panGesture, velocityX } =
-    useOverlayGesture(panRef);
+  const pinchRef = React.useRef<GestureType>();
+  const {
+    tapGesture,
+    showOverlay,
+    overlayOpacity,
+    panGesture,
+    velocityX,
+    pinchGesture,
+    pageGestures,
+  } = useOverlayGesture({
+    panRef,
+    pageKey: currentPageKey,
+    pinchRef,
+    readingDirection,
+  });
   const viewabilityConfigCallbackPairs = useViewableItemsChangedHandler({
     manga,
     chapter,
@@ -86,17 +107,12 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     showOverlay,
     setCurrentPage,
     cancellable,
+    currentPageKey,
   });
   const { topOverlayStyle, toastStyle } = useNetworkToast({
     overlayOpacity,
   });
-  const readerProps = useReaderProps(manga, {
-    readingDirection: globalReadingDirection,
-    lockOrientation: globalDeviceOrientation,
-    imageScaling: globalImageScaling,
-    zoomStartPosition: globalZoomStartPosition,
-  });
-  const { readingDirection } = readerProps;
+
   const {
     getPageOffset,
     getSafeScrollRange,
@@ -146,13 +162,15 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       imageMenuRef,
       velocityX,
       rootPanGesture: panGesture,
+      pageGestures,
+      rootPinchGesture: pinchGesture,
     }),
     [tapGesture, manga.source, readingDirection, manga.title],
   );
 
   const composedGestures = React.useMemo(
-    () => Gesture.Simultaneous(panGesture, tapGesture),
-    [panGesture, tapGesture],
+    () => Gesture.Simultaneous(panGesture, pinchGesture, tapGesture),
+    [panGesture, tapGesture, pinchGesture],
   );
 
   const extraData = { extendedState, readingDirection, chapter };
@@ -195,6 +213,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                 background-color={backgroundColor.toLowerCase()}
               >
                 <PageList
+                  pinchRef={pinchRef}
                   panRef={panRef}
                   ref={ref}
                   readingDirection={readingDirection}

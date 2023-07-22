@@ -30,8 +30,15 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
     args;
   const [enablePan, togglePan] = useBoolean();
   const mutablePageKey = useMutableObject(pageKey);
-  const { height } = useScreenDimensions();
-  const { imageMenuRef, velocityX, rootPanGesture } = useChapterPageContext();
+  const { height: screenHeight } = useScreenDimensions();
+  const height = useMutableObject(screenHeight);
+  const {
+    imageMenuRef,
+    velocityX,
+    rootPanGesture,
+    pageGestures,
+    rootPinchGesture,
+  } = useChapterPageContext();
   const maxTranslateX = useSharedValue(0);
   const maxTranslateY = useSharedValue(0);
   const dispatch = useAppDispatch();
@@ -52,18 +59,19 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
     [toggle],
   );
 
-  const pinchGesture = React.useMemo(
-    () =>
-      Gesture.Pinch().onChange((e) => {
+  React.useEffect(() => {
+    pageGestures.current[pageKey] = {
+      onPinchChange(e) {
+        'worklet';
         pinchScale.value = Math.max(pinchScale.value + e.scaleChange - 1, 1);
         maxTranslateX.value = width / 2 - width / (pinchScale.value * 2);
         maxTranslateY.value = Math.max(
           0,
-          stylizedHeight / 2 - height / (pinchScale.value * 2),
+          stylizedHeight / 2 - height.current / (pinchScale.value * 2),
         );
-      }),
-    [height],
-  );
+      },
+    };
+  }, []);
 
   const doubleTap = React.useMemo(
     () =>
@@ -145,7 +153,7 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
           )
             runOnJS(togglePan)(false);
         })
-        .simultaneousWithExternalGesture(rootPanGesture)
+        .simultaneousWithExternalGesture(rootPanGesture, rootPinchGesture)
         .enabled(enablePan),
     [enablePan],
   );
@@ -162,6 +170,7 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
       }
     },
   );
+
   // React.useEffect(() => {
   //   if (
   //     !enablePan &&
@@ -172,14 +181,9 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
   //   }
   // }, [enablePan]);
 
-  const imageMovementGestures = React.useMemo(
-    () => Gesture.Simultaneous(pinchGesture, panGesture),
-    [panGesture, pinchGesture],
-  );
-
   const gestures = React.useMemo(
-    () => Gesture.Exclusive(imageMovementGestures, holdGesture, doubleTap),
-    [holdGesture, imageMovementGestures, doubleTap],
+    () => Gesture.Exclusive(panGesture, holdGesture, doubleTap),
+    [holdGesture, doubleTap, panGesture],
   );
   return gestures;
 }

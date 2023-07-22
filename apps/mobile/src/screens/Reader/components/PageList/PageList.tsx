@@ -1,6 +1,6 @@
 import React from 'react';
 import { ReadingDirection } from '@redux/slices/settings';
-import { PageListProps } from '@screens/Reader/components/PageList/PageList.interfaces';
+import { PageListProps } from './';
 import { FlatListProps, ScrollViewProps } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import {
@@ -21,6 +21,7 @@ const PageList: React.ForwardRefRenderFunction<
     initialScrollIndex,
     estimatedFirstItemOffset,
     panRef,
+    pinchRef,
     ...rest
   } = props;
   const renderScrollComponent = React.useMemo(
@@ -35,7 +36,7 @@ const PageList: React.ForwardRefRenderFunction<
       return (
         <FlatList
           // scrollEnabled={false}
-          simultaneousHandlers={panRef}
+          simultaneousHandlers={[panRef, pinchRef]}
           ref={ref as React.ForwardedRef<FlatList<Page>>}
           {...(rest as FlatListProps<Page>)}
           initialScrollIndex={

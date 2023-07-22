@@ -21,6 +21,7 @@ export default function useViewableItemsChangedHandler(args: {
   showOverlay: () => void;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   cancellable: ReturnType<typeof useCancellable>[0];
+  currentPageKey: React.MutableRefObject<string>;
 }) {
   const {
     manga,
@@ -29,6 +30,7 @@ export default function useViewableItemsChangedHandler(args: {
     cancellable,
     setCurrentPage,
     showOverlay,
+    currentPageKey,
   } = args;
   const dispatch = useAppDispatch();
 
@@ -62,6 +64,7 @@ export default function useViewableItemsChangedHandler(args: {
               if (chapter != null) chapter.indexPage = item.pageNumber - 1;
             });
             setCurrentPage(item.pageNumber);
+            currentPageKey.current = item.page;
             dispatch(setCurrentChapter(item.chapter));
             pageSliderNavRef.current?.snapPointTo(item.pageNumber - 1);
           }
