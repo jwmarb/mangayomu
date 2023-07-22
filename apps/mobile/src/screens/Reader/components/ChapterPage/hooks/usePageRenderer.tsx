@@ -91,7 +91,7 @@ export default function usePageRenderer(args: UsePageRendererArgs) {
         minWidth={width}
         minHeight={height}
         overflow="hidden"
-        background-color={backgroundColor}
+        background-color={backgroundColor.toLowerCase()}
         justify-content="center"
       >
         <ImageBaseRenderer
@@ -121,6 +121,7 @@ export default function usePageRenderer(args: UsePageRendererArgs) {
       fallbackToWebView,
       extendedPageState?.error,
       pageKey,
+      backgroundColor,
     ],
   );
 

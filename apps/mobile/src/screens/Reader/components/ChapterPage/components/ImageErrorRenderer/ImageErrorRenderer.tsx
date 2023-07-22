@@ -1,14 +1,21 @@
 import React from 'react';
-import { ImageErrorRendererProps } from './ImageErrorRenderer.interfaces';
+import connector, {
+  ConnectedImageErrorRendererProps,
+} from './ImageErrorRenderer.redux';
 import Stack from '@components/Stack';
 import Icon from '@components/Icon';
 import Hyperlink from '@components/Hyperlink';
 import Button from '@components/Button';
 import Text from '@components/Text';
 import { moderateScale } from 'react-native-size-matters';
+import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
 
-const ImageErrorRenderer: React.FC<ImageErrorRendererProps> = (props) => {
-  const { style, onReload, pageKey } = props;
+const ImageErrorRenderer: React.FC<ConnectedImageErrorRendererProps> = (
+  props,
+) => {
+  const { style, onReload, pageKey, backgroundColor } = props;
+  const { textSecondary, textPrimary } =
+    useReaderBackgroundColor(backgroundColor);
   const baseStyle = React.useMemo(
     () => ({
       width: style[1].width,
@@ -23,20 +30,18 @@ const ImageErrorRenderer: React.FC<ImageErrorRendererProps> = (props) => {
       position="absolute"
       align-items="center"
       flex-grow
-      top={0}
-      left={0}
-      right={0}
-      bottom={0}
       justify-content="center"
       px="m"
     >
       <Icon
         type="font"
         name="wifi-alert"
-        color="textSecondary"
+        color={textSecondary}
         size={moderateScale(128)}
       />
-      <Text align="center">There was an error loading this page.</Text>
+      <Text align="center" color={textPrimary}>
+        There was an error loading this page.
+      </Text>
       <Stack space="s" mx="m" mt="s">
         <Button
           onPress={onReload}
@@ -52,4 +57,4 @@ const ImageErrorRenderer: React.FC<ImageErrorRendererProps> = (props) => {
   );
 };
 
-export default ImageErrorRenderer;
+export default connector(ImageErrorRenderer);
