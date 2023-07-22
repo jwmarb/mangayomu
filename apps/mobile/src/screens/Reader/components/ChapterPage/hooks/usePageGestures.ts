@@ -127,13 +127,13 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
         .onEnd((e) => {
           translateX.value = withDecay({
             velocity: e.velocityX,
-            velocityFactor: 0.1,
+            velocityFactor: 0.3,
 
             clamp: [-maxTranslateX.value, maxTranslateX.value],
           });
           translateY.value = withDecay({
             velocity: e.velocityY,
-            velocityFactor: 0.1,
+            velocityFactor: 0.3,
             clamp: [-maxTranslateY.value, maxTranslateY.value],
           });
         })
