@@ -1,4 +1,4 @@
-import { ChapterPageContextState } from '@screens/Reader/components/ChapterPage/ChapterPage.interfaces';
+import { ChapterPageContextState } from '@screens/Reader/components/ChapterPage/';
 import React from 'react';
 
 export const ChapterPageContext = React.createContext<

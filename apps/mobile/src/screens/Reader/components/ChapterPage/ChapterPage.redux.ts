@@ -1,12 +1,7 @@
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
 import React from 'react';
-import { ChapterPageProps } from '@screens/Reader/components/ChapterPage/ChapterPage.interfaces';
-import {
-  setPageError,
-  setLocalPageURI,
-  toggleImageModal,
-} from '@redux/slices/reader';
+import { ChapterPageProps } from '@screens/Reader/components/ChapterPage/';
 
 const mapStateToProps = (
   state: AppState,
