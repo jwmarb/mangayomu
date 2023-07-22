@@ -27,6 +27,7 @@ export type PageGestureEventHandlers = {
   onDoubleTap: (
     e: GestureStateChangeEvent<TapGestureHandlerEventPayload>,
   ) => void;
+  onFlashlistActive: () => void;
 };
 
 export type PageGestures = React.MutableRefObject<

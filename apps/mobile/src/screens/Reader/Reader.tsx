@@ -221,7 +221,9 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                 background-color={backgroundColor.toLowerCase()}
               >
                 <PageList
+                  currentPageKey={currentPageKey}
                   pinchRef={pinchRef}
+                  pageGestures={pageGestures}
                   panRef={panRef}
                   ref={ref}
                   readingDirection={readingDirection}

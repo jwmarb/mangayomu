@@ -22,12 +22,23 @@ const PageList: React.ForwardRefRenderFunction<
     estimatedFirstItemOffset,
     panRef,
     pinchRef,
+    pageGestures,
+    currentPageKey,
     ...rest
   } = props;
+  const handleOnActivated = () => {
+    console.log('flashlist active');
+    pageGestures.current[currentPageKey.current].onFlashlistActive();
+  };
   const renderScrollComponent = React.useMemo(
     () =>
       React.forwardRef<ScrollView>((props, ref) => (
-        <ScrollView ref={ref} {...props} simultaneousHandlers={panRef} />
+        <ScrollView
+          ref={ref}
+          {...props}
+          simultaneousHandlers={panRef}
+          onActivated={handleOnActivated}
+        />
       )),
     [],
   ) as unknown as React.FC<ScrollViewProps>;
