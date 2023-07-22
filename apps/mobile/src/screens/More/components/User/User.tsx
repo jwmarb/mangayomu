@@ -12,7 +12,7 @@ import useDialog from '@hooks/useDialog';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { useApp, useUser } from '@realm/react';
 import React from 'react';
-import Realm, { UserChangeCallback } from 'realm';
+import Realm from 'realm';
 import { moderateScale } from 'react-native-size-matters';
 
 const User: React.FC = () => {
@@ -38,17 +38,10 @@ const User: React.FC = () => {
             displayMessage('Signing out...');
             try {
               await realm.syncSession?.uploadAllLocalChanges();
-              const anonymousUser = await app.logIn(
-                Realm.Credentials.anonymous(),
-              );
-              for (const userId in app.allUsers) {
-                const user = app.allUsers[userId];
-                if (user.id !== anonymousUser.id) {
-                  if (user.isLoggedIn) await user.logOut();
-                }
-              }
+              await app.logIn(Realm.Credentials.anonymous());
               displayMessage('You have logged out');
             } catch (e) {
+              console.error(e);
               displayMessage('There was an error signing out');
             }
           },
@@ -102,6 +95,22 @@ const User: React.FC = () => {
           <IconButton icon={<Icon type="font" name="dots-horizontal" />} />
         }
       >
+        <MenuItem
+          onPress={() => {
+            for (const userId in app.allUsers) {
+              const foundUser = app.allUsers[userId];
+              console.log(
+                `${userId}${userId === user.id ? '(active)' : ''} {
+                  name = ${foundUser.profile.name},
+                  loggedIn = ${foundUser.isLoggedIn},
+                  state = ${foundUser.state}
+                }`,
+              );
+            }
+          }}
+        >
+          Log users
+        </MenuItem>
         {user.profile.name != null ? (
           <>
             <MenuItem
