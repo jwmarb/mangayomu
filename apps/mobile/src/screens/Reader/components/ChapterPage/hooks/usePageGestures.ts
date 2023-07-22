@@ -21,17 +21,16 @@ interface UsePageGesturesArgs {
   pinchScale: SharedValue<number>;
   translateX: SharedValue<number>;
   translateY: SharedValue<number>;
-  width: number;
   stylizedHeight: number;
 }
 
 export default function usePageGestures(args: UsePageGesturesArgs) {
-  const { pageKey, pinchScale, translateX, translateY, width, stylizedHeight } =
-    args;
+  const { pageKey, pinchScale, translateX, translateY, stylizedHeight } = args;
   const [enablePan, togglePan] = useBoolean();
   const mutablePageKey = useMutableObject(pageKey);
-  const { height: screenHeight } = useScreenDimensions();
+  const { height: screenHeight, width: screenWidth } = useScreenDimensions();
   const height = useMutableObject(screenHeight);
+  const width = useMutableObject(screenWidth);
   const {
     imageMenuRef,
     velocityX,
@@ -64,35 +63,58 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
       onPinchChange(e) {
         'worklet';
         pinchScale.value = Math.max(pinchScale.value + e.scaleChange - 1, 1);
-        maxTranslateX.value = width / 2 - width / (pinchScale.value * 2);
+        maxTranslateX.value =
+          width.current / 2 - width.current / (pinchScale.value * 2);
         maxTranslateY.value = Math.max(
           0,
           stylizedHeight / 2 - height.current / (pinchScale.value * 2),
         );
       },
-    };
-  }, []);
-
-  const doubleTap = React.useMemo(
-    () =>
-      Gesture.Tap()
-        .numberOfTaps(2)
-        .onStart(() => {
+      onDoubleTap(e) {
+        'worklet';
+        if (pinchScale.value > 1) {
           pinchScale.value = withTiming(1, {
-            duration: 150,
+            duration: 200,
             easing: Easing.ease,
           });
           translateX.value = withTiming(0, {
-            duration: 150,
+            duration: 200,
             easing: Easing.ease,
           });
           translateY.value = withTiming(0, {
-            duration: 150,
+            duration: 200,
             easing: Easing.ease,
           });
-        }),
-    [],
-  );
+        } else {
+          const config = { duration: 200, easing: Easing.ease };
+          const scaleValue = 3;
+          pinchScale.value = withTiming(scaleValue, config);
+          const calculatedMaxTranslateY = Math.max(
+            0,
+            stylizedHeight / 2 - height.current / (scaleValue * 2),
+          );
+          const calculatedMaxTranslateX =
+            width.current / 2 - width.current / (scaleValue * 2);
+          maxTranslateX.value = withTiming(calculatedMaxTranslateX, config);
+          maxTranslateY.value = withTiming(calculatedMaxTranslateY, config);
+          translateX.value = withTiming(
+            Math.min(
+              Math.max(-calculatedMaxTranslateX, width.current / 2 - e.x),
+              calculatedMaxTranslateX,
+            ),
+            config,
+          );
+          translateY.value = withTiming(
+            Math.min(
+              calculatedMaxTranslateY,
+              Math.max(-calculatedMaxTranslateY, height.current / 2 - e.y),
+            ),
+            config,
+          );
+        }
+      },
+    };
+  }, []);
 
   useAnimatedReaction(
     () => pinchScale.value,
@@ -120,6 +142,7 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
             ),
             -maxTranslateY.value,
           );
+
           if (maxTranslateX.value === 0) {
             translateX.value = withTiming(0, {
               duration: 150,
@@ -182,8 +205,8 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
   // }, [enablePan]);
 
   const gestures = React.useMemo(
-    () => Gesture.Exclusive(panGesture, holdGesture, doubleTap),
-    [holdGesture, doubleTap, panGesture],
+    () => Gesture.Exclusive(panGesture, holdGesture),
+    [holdGesture, panGesture],
   );
   return gestures;
 }

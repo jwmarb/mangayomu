@@ -92,6 +92,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     velocityX,
     pinchGesture,
     pageGestures,
+    doubleTapGesture,
   } = useOverlayGesture({
     panRef,
     pageKey: currentPageKey,
@@ -169,8 +170,15 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   );
 
   const composedGestures = React.useMemo(
-    () => Gesture.Simultaneous(panGesture, pinchGesture, tapGesture),
-    [panGesture, tapGesture, pinchGesture],
+    () =>
+      Gesture.Simultaneous(
+        panGesture,
+        Gesture.Race(
+          pinchGesture,
+          Gesture.Exclusive(doubleTapGesture, tapGesture),
+        ),
+      ),
+    [panGesture, tapGesture, pinchGesture, doubleTapGesture],
   );
 
   const extraData = { extendedState, readingDirection, chapter };

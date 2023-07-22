@@ -7,6 +7,8 @@ import {
   GestureUpdateEvent,
   PinchGestureHandlerEventPayload,
   PinchGestureChangeEventPayload,
+  TapGestureHandlerEventPayload,
+  GestureStateChangeEvent,
 } from 'react-native-gesture-handler';
 import {
   Easing,
@@ -16,17 +18,19 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 
+export type PageGestureEventHandlers = {
+  onPinchChange: (
+    e: GestureUpdateEvent<
+      PinchGestureHandlerEventPayload & PinchGestureChangeEventPayload
+    >,
+  ) => void;
+  onDoubleTap: (
+    e: GestureStateChangeEvent<TapGestureHandlerEventPayload>,
+  ) => void;
+};
+
 export type PageGestures = React.MutableRefObject<
-  Record<
-    string,
-    {
-      onPinchChange: (
-        e: GestureUpdateEvent<
-          PinchGestureHandlerEventPayload & PinchGestureChangeEventPayload
-        >,
-      ) => void;
-    }
-  >
+  Record<string, PageGestureEventHandlers>
 >;
 /**
  * A hook that provides a gesture to interact with the reader overlay
@@ -42,18 +46,9 @@ export default function useOverlayGesture(args: {
   const velocityX = useSharedValue(0);
 
   const [showStatusAndNavBar, hideStatusAndNavBar] = useImmersiveMode();
-  const pageGestures = React.useRef<
-    Record<
-      string,
-      {
-        onPinchChange: (
-          e: GestureUpdateEvent<
-            PinchGestureHandlerEventPayload & PinchGestureChangeEventPayload
-          >,
-        ) => void;
-      }
-    >
-  >({});
+  const pageGestures = React.useRef<Record<string, PageGestureEventHandlers>>(
+    {},
+  );
 
   function showOverlay() {
     'worklet';
@@ -83,6 +78,16 @@ export default function useOverlayGesture(args: {
         .cancelsTouchesInView(false),
     [],
   );
+  const doubleTapGesture = React.useMemo(
+    () =>
+      Gesture.Tap()
+        .numberOfTaps(2)
+        .onStart((e) => {
+          runOnJS(passToUI)('onDoubleTap', e);
+        })
+        .maxDelay(200),
+    [],
+  );
   const panGesture = React.useMemo(
     () =>
       Gesture.Pan()
@@ -92,12 +97,12 @@ export default function useOverlayGesture(args: {
         .withRef(panRef),
     [],
   );
-  function passToUI(
-    e: GestureUpdateEvent<
-      PinchGestureHandlerEventPayload & PinchGestureChangeEventPayload
-    >,
+  function passToUI<T extends keyof PageGestureEventHandlers>(
+    key: T,
+    e: Parameters<PageGestureEventHandlers[T]>[0],
   ) {
-    runOnUI(pageGestures.current[pageKey.current].onPinchChange)(e);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    runOnUI((pageGestures.current[pageKey.current] as any)[key])(e);
   }
 
   const pinchGesture = React.useMemo(
@@ -105,7 +110,7 @@ export default function useOverlayGesture(args: {
       Gesture.Pinch()
         .onChange((e) => {
           if (readingDirection !== ReadingDirection.WEBTOON)
-            runOnJS(passToUI)(e);
+            runOnJS(passToUI)('onPinchChange', e);
         })
         .withRef(pinchRef),
     [readingDirection],
@@ -119,5 +124,6 @@ export default function useOverlayGesture(args: {
     velocityX,
     pinchGesture,
     pageGestures,
+    doubleTapGesture,
   };
 }

@@ -29,7 +29,6 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     pinchScale,
     translateX,
     translateY,
-    width,
     stylizedHeight,
   });
 
