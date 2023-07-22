@@ -199,13 +199,14 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
         .onTouchesUp(() => {
           if (
             (maxTranslateX.value === Math.abs(translateX.value) &&
-              isHorizontal.current) ||
-            (isVertical.current &&
-              maxTranslateY.value === Math.abs(translateY.value) &&
-              ((translateX.value < 0 && velocityX.value < -10) ||
-                (translateX.value > 0 && velocityX.value > 10)))
+              isHorizontal.current &&
+              ((translateX.value <= 0 && velocityX.value < -10) ||
+                (translateX.value >= 0 && velocityX.value > 10))) ||
+            (maxTranslateY.value === Math.abs(translateY.value) &&
+              isVertical.current &&
+              ((translateY.value <= 0 && velocityY.value < -10) ||
+                (translateY.value >= 0 && velocityY.value > 10)))
           ) {
-            console.log('touches up pan disabled');
             runOnJS(togglePan)(false);
           }
         })
