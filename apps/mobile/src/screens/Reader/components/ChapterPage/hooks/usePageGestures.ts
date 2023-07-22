@@ -132,15 +132,17 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
       },
       onFlashlistActive() {
         if (
-          maxTranslateX.value === Math.abs(translateX.value) &&
-          isHorizontal.current &&
+          ((maxTranslateX.value === Math.abs(translateX.value) &&
+            isHorizontal.current) ||
+            (maxTranslateY.value === Math.abs(translateY.value) &&
+              isVertical.current)) &&
           !enablePan &&
           pinchScale.value > 1
         )
           togglePan(true);
       },
     };
-  }, []);
+  }, [pageKey]);
 
   useAnimatedReaction(
     () => pinchScale.value,
@@ -238,12 +240,12 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
 
   React.useEffect(() => {
     if (
-      (maxTranslateX.value === Math.abs(translateX.value) &&
+      ((maxTranslateX.value === Math.abs(translateX.value) &&
         isHorizontal.current) ||
-      (isVertical.current &&
-        maxTranslateY.value === Math.abs(translateY.value) &&
-        !enablePan &&
-        pinchScale.value > 1)
+        (maxTranslateY.value === Math.abs(translateY.value) &&
+          isVertical.current)) &&
+      !enablePan &&
+      pinchScale.value > 1
     ) {
       const p = setTimeout(() => {
         togglePan(true);
