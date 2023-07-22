@@ -3,6 +3,7 @@ import useMutableObject from '@hooks/useMutableObject';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import { useAppDispatch } from '@redux/main';
 import { toggleImageModal } from '@redux/slices/reader';
+import { ReadingDirection } from '@redux/slices/settings';
 import { useChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
 import React from 'react';
 import { Gesture } from 'react-native-gesture-handler';
@@ -22,14 +23,29 @@ interface UsePageGesturesArgs {
   translateX: SharedValue<number>;
   translateY: SharedValue<number>;
   stylizedHeight: number;
+  readingDirection: ReadingDirection;
 }
 
 export default function usePageGestures(args: UsePageGesturesArgs) {
-  const { pageKey, pinchScale, translateX, translateY, stylizedHeight } = args;
+  const {
+    pageKey,
+    pinchScale,
+    translateX,
+    translateY,
+    stylizedHeight,
+    readingDirection,
+  } = args;
   const [enablePan, togglePan] = useBoolean();
   const mutablePageKey = useMutableObject(pageKey);
   const { height: screenHeight, width: screenWidth } = useScreenDimensions();
   const height = useMutableObject(screenHeight);
+  const isHorizontal = useMutableObject(
+    readingDirection === ReadingDirection.LEFT_TO_RIGHT ||
+      readingDirection === ReadingDirection.RIGHT_TO_LEFT,
+  );
+  const isVertical = useMutableObject(
+    readingDirection === ReadingDirection.VERTICAL,
+  );
   const width = useMutableObject(screenWidth);
   const {
     imageMenuRef,
@@ -37,6 +53,7 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
     rootPanGesture,
     pageGestures,
     rootPinchGesture,
+    velocityY,
   } = useChapterPageContext();
   const maxTranslateX = useSharedValue(0);
   const maxTranslateY = useSharedValue(0);
@@ -116,6 +133,7 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
       onFlashlistActive() {
         if (
           maxTranslateX.value === Math.abs(translateX.value) &&
+          isHorizontal.current &&
           !enablePan &&
           pinchScale.value > 1
         )
@@ -178,11 +196,16 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
         })
         .onTouchesUp(() => {
           if (
-            maxTranslateX.value === Math.abs(translateX.value) &&
-            ((translateX.value < 0 && velocityX.value < -10) ||
-              (translateX.value > 0 && velocityX.value > 10))
-          )
+            (maxTranslateX.value === Math.abs(translateX.value) &&
+              isHorizontal.current) ||
+            (isVertical.current &&
+              maxTranslateY.value === Math.abs(translateY.value) &&
+              ((translateX.value < 0 && velocityX.value < -10) ||
+                (translateX.value > 0 && velocityX.value > 10)))
+          ) {
+            console.log('touches up pan disabled');
             runOnJS(togglePan)(false);
+          }
         })
         .simultaneousWithExternalGesture(rootPanGesture, rootPinchGesture)
         .enabled(enablePan),
@@ -191,22 +214,36 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
   useAnimatedReaction(
     () => velocityX.value,
     (res) => {
-      if (maxTranslateX.value === Math.abs(translateX.value)) {
-        if (
-          (translateX.value < 0 && res > 0) ||
-          (translateX.value > 0 && res < 0)
-        ) {
-          runOnJS(togglePan)(true);
-        }
+      if (
+        maxTranslateX.value === Math.abs(translateX.value) &&
+        isHorizontal.current &&
+        ((translateX.value < 0 && res > 0) || (translateX.value > 0 && res < 0))
+      )
+        runOnJS(togglePan)(true);
+    },
+  );
+
+  useAnimatedReaction(
+    () => velocityY.value,
+    (res) => {
+      if (
+        maxTranslateY.value === Math.abs(translateY.value) &&
+        isVertical.current &&
+        ((translateY.value < 0 && res > 0) || (translateY.value > 0 && res < 0))
+      ) {
+        runOnJS(togglePan)(true);
       }
     },
   );
 
   React.useEffect(() => {
     if (
-      maxTranslateX.value === Math.abs(translateX.value) &&
-      !enablePan &&
-      pinchScale.value > 1
+      (maxTranslateX.value === Math.abs(translateX.value) &&
+        isHorizontal.current) ||
+      (isVertical.current &&
+        maxTranslateY.value === Math.abs(translateY.value) &&
+        !enablePan &&
+        pinchScale.value > 1)
     ) {
       const p = setTimeout(() => {
         togglePan(true);

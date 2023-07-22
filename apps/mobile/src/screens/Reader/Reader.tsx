@@ -93,6 +93,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     pinchGesture,
     pageGestures,
     doubleTapGesture,
+    velocityY,
   } = useOverlayGesture({
     panRef,
     pageKey: currentPageKey,
@@ -165,6 +166,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       rootPanGesture: panGesture,
       pageGestures,
       rootPinchGesture: pinchGesture,
+      velocityY,
     }),
     [tapGesture, manga.source, readingDirection, manga.title],
   );

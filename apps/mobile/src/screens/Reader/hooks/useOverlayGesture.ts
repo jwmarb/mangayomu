@@ -45,6 +45,7 @@ export default function useOverlayGesture(args: {
   const { panRef, pageKey, pinchRef, readingDirection } = args;
   const overlayOpacity = useSharedValue(0);
   const velocityX = useSharedValue(0);
+  const velocityY = useSharedValue(0);
 
   const [showStatusAndNavBar, hideStatusAndNavBar] = useImmersiveMode();
   const pageGestures = React.useRef<Record<string, PageGestureEventHandlers>>(
@@ -94,6 +95,7 @@ export default function useOverlayGesture(args: {
       Gesture.Pan()
         .onUpdate((e) => {
           velocityX.value = e.velocityX;
+          velocityY.value = e.velocityY;
         })
         .withRef(panRef),
     [],
@@ -123,6 +125,7 @@ export default function useOverlayGesture(args: {
     overlayOpacity,
     panGesture,
     velocityX,
+    velocityY,
     pinchGesture,
     pageGestures,
     doubleTapGesture,

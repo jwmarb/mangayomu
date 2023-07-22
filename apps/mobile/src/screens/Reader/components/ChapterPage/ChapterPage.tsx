@@ -30,6 +30,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     translateX,
     translateY,
     stylizedHeight,
+    readingDirection,
   });
 
   const gestureStyle = useAnimatedStyle(() => ({

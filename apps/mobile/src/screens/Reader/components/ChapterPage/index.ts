@@ -16,6 +16,7 @@ export interface ChapterPageProps {
 
 export interface ChapterPageContextState {
   velocityX: SharedValue<number>;
+  velocityY: SharedValue<number>;
   rootPanGesture: PanGesture;
   rootPinchGesture: PinchGesture;
   readingDirection: ReadingDirection;
