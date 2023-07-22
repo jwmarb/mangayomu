@@ -69,6 +69,14 @@ const Login: React.FC<RootStackProps<'Login'>> = ({ navigation }) => {
     navigation.navigate('Register');
   };
 
+  async function loginUser(credentials: Realm.Credentials) {
+    try {
+      await user.linkCredentials(credentials);
+    } catch {
+      await app.logIn(credentials);
+    }
+  }
+
   const handleOnLogin = handleSubmit(async (value) => {
     toggleInvalid(false);
     toggleLoading(true);
@@ -78,11 +86,7 @@ const Login: React.FC<RootStackProps<'Login'>> = ({ navigation }) => {
         value,
       );
       const credentials = Realm.Credentials.jwt(data.id_token);
-      try {
-        await user.linkCredentials(credentials);
-      } catch (e) {
-        await app.logIn(credentials);
-      }
+      await loginUser(credentials);
       displayMessage('Successfully logged in');
       if (navigation.canGoBack()) navigation.goBack();
     } catch (e) {
@@ -106,11 +110,7 @@ const Login: React.FC<RootStackProps<'Login'>> = ({ navigation }) => {
         const googleCredentials = Realm.Credentials.google({
           idToken: userInfo.idToken,
         });
-        try {
-          await user.linkCredentials(googleCredentials);
-        } catch {
-          await app.logIn(googleCredentials);
-        }
+        await loginUser(googleCredentials);
         displayMessage('Successfully logged in');
         if (navigation.canGoBack()) navigation.goBack();
       } else displayMessage('Google Sign-in failed');
