@@ -2,6 +2,7 @@ import Box, { AnimatedBox } from '@components/Box';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import { useAppDispatch } from '@redux/main';
 import { ExtendedReaderPageState, setPageError } from '@redux/slices/reader';
+import { ReadingDirection } from '@redux/slices/settings';
 import ImageBaseRenderer from '@screens/Reader/components/ChapterPage/components/ImageBaseRenderer/ImageBaseRenderer';
 import ImageErrorRenderer from '@screens/Reader/components/ChapterPage/components/ImageErrorRenderer/ImageErrorRenderer';
 import React from 'react';
@@ -41,10 +42,17 @@ interface UsePageRendererArgs {
   extendedPageState?: ExtendedReaderPageState;
   stylizedHeight: number;
   backgroundColor: string;
+  readingDirection: ReadingDirection;
 }
 export default function usePageRenderer(args: UsePageRendererArgs) {
-  const { pageKey, style, extendedPageState, stylizedHeight, backgroundColor } =
-    args;
+  const {
+    pageKey,
+    style,
+    extendedPageState,
+    stylizedHeight,
+    backgroundColor,
+    readingDirection,
+  } = args;
   const { width, height } = useScreenDimensions();
   /**
    * In the case of very large images which can be observed in some webtoons (e.g. images that exceed the device's height by 5-8 times),
@@ -88,11 +96,12 @@ export default function usePageRenderer(args: UsePageRendererArgs) {
   const Renderer: React.FC = React.useCallback(
     () => (
       <Box
-        minWidth={width}
-        minHeight={height}
         overflow="hidden"
         background-color={backgroundColor.toLowerCase()}
         justify-content="center"
+        {...(readingDirection !== ReadingDirection.WEBTOON
+          ? { width, height }
+          : undefined)}
       >
         <ImageBaseRenderer
           onError={handleOnError}
@@ -122,6 +131,7 @@ export default function usePageRenderer(args: UsePageRendererArgs) {
       extendedPageState?.error,
       pageKey,
       backgroundColor,
+      readingDirection,
     ],
   );
 

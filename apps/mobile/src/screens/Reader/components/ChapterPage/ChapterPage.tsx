@@ -56,6 +56,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     style,
     stylizedHeight,
     backgroundColor,
+    readingDirection,
   });
   usePageDownloader({ chapter, extendedPageState, pageKey, pageNumber });
 
