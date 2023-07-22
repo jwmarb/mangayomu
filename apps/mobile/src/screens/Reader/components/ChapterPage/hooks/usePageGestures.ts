@@ -1,5 +1,6 @@
 import useBoolean from '@hooks/useBoolean';
 import useMutableObject from '@hooks/useMutableObject';
+import useScreenDimensions from '@hooks/useScreenDimensions';
 import { useAppDispatch } from '@redux/main';
 import { toggleImageModal } from '@redux/slices/reader';
 import { useChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
@@ -29,6 +30,7 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
     args;
   const [enablePan, togglePan] = useBoolean();
   const mutablePageKey = useMutableObject(pageKey);
+  const { height } = useScreenDimensions();
   const { imageMenuRef, velocityX, rootPanGesture } = useChapterPageContext();
   const maxTranslateX = useSharedValue(0);
   const maxTranslateY = useSharedValue(0);
@@ -55,10 +57,12 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
       Gesture.Pinch().onChange((e) => {
         pinchScale.value = Math.max(pinchScale.value + e.scaleChange - 1, 1);
         maxTranslateX.value = width / 2 - width / (pinchScale.value * 2);
-        maxTranslateY.value =
-          stylizedHeight / 2 - stylizedHeight / (pinchScale.value * 2);
+        maxTranslateY.value = Math.max(
+          0,
+          stylizedHeight / 2 - height / (pinchScale.value * 2),
+        );
       }),
-    [],
+    [height],
   );
 
   const doubleTap = React.useMemo(
@@ -169,12 +173,12 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
   // }, [enablePan]);
 
   const imageMovementGestures = React.useMemo(
-    () => Gesture.Simultaneous(panGesture, pinchGesture),
+    () => Gesture.Simultaneous(pinchGesture, panGesture),
     [panGesture, pinchGesture],
   );
 
   const gestures = React.useMemo(
-    () => Gesture.Race(imageMovementGestures, holdGesture, doubleTap),
+    () => Gesture.Exclusive(imageMovementGestures, holdGesture, doubleTap),
     [holdGesture, imageMovementGestures, doubleTap],
   );
   return gestures;
