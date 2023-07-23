@@ -117,7 +117,6 @@ const ImageMenu: React.ForwardRefRenderFunction<
             removeURLParams(url.current).substring(
               url.current.lastIndexOf('/'),
             );
-      console.log(path);
       if (Platform.OS === 'android') {
         RNFetchBlob.config({
           fileCache: true,
