@@ -70,44 +70,46 @@ const Book: React.FC<ConnectedBookProps> = (props) => {
 
   if (bookStyle === BookStyle.TACHIYOMI)
     return (
-      <Pressable
-        android_ripple={{
-          color: theme.palette.action.ripple,
-        }}
-        style={coverStyles.button}
-        onPress={handleOnPress}
-        onLongPress={handleOnLongPress}
-      >
-        <Stack space="s" width={width} minHeight={height}>
-          <Badge
-            type="number"
-            count={dbManga?.notifyNewChaptersCount ?? 0}
-            placement={BadgeLocation.TOP_LEFT}
-            color="primary"
-          >
-            <Badge type="image" uri={source.icon} show>
-              <Cover cover={manga}>
-                <LinearGradient
-                  colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 0, y: 1 }}
-                  style={linearGradientStyle}
-                >
-                  <Text
-                    style={textStyle}
-                    numberOfLines={2}
-                    bold={bold}
-                    align={align}
-                    color={theme.helpers.getContrastText('#000000')}
+      <Box align-self="center" overflow="hidden" style={coverStyles.button}>
+        <Pressable
+          android_ripple={{
+            color: theme.palette.action.ripple,
+            foreground: true,
+          }}
+          onPress={handleOnPress}
+          onLongPress={handleOnLongPress}
+        >
+          <Stack space="s" width={width} minHeight={height}>
+            <Badge
+              type="number"
+              count={dbManga?.notifyNewChaptersCount ?? 0}
+              placement={BadgeLocation.TOP_LEFT}
+              color="primary"
+            >
+              <Badge type="image" uri={source.icon} show>
+                <Cover cover={manga}>
+                  <LinearGradient
+                    colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 0, y: 1 }}
+                    style={linearGradientStyle}
                   >
-                    {manga.title}
-                  </Text>
-                </LinearGradient>
-              </Cover>
+                    <Text
+                      style={textStyle}
+                      numberOfLines={2}
+                      bold={bold}
+                      align={align}
+                      color={theme.helpers.getContrastText('#000000')}
+                    >
+                      {manga.title}
+                    </Text>
+                  </LinearGradient>
+                </Cover>
+              </Badge>
             </Badge>
-          </Badge>
-        </Stack>
-      </Pressable>
+          </Stack>
+        </Pressable>
+      </Box>
     );
 
   return (
