@@ -60,7 +60,8 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
   const reversed = readingDirection === ReadingDirection.RIGHT_TO_LEFT;
   const snapPoints = React.useMemo(() => {
     if (totalPages == null || !maxLeftDistance) return [];
-    const snapLocation = maxLeftDistance / (totalPages - 1);
+    const snapLocation =
+      totalPages > 1 ? maxLeftDistance / (totalPages - 1) : maxLeftDistance;
     const values: number[] = new Array(totalPages);
     if (reversed)
       for (let i = 0; i < totalPages; i++) {
@@ -107,12 +108,15 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
       Gesture.Pan()
         .onChange((e) => {
           const parsed = Math.min(Math.max(0, e.x), maxLeftDistance);
-          if (totalPages != null) {
+          if (totalPages != null && totalPages > 1) {
             const snapLocation = maxLeftDistance / (totalPages - 1);
             const index = Math.round(parsed / snapLocation);
             const snapPoint = index * snapLocation;
             left.value = snapPoint - OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS;
             runOnJS(onSnapToPoint)(index);
+          } else {
+            left.value = -OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS;
+            runOnJS(onSnapToPoint)(0);
           }
         })
         .onStart(() => {
@@ -140,13 +144,16 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
       Gesture.LongPress()
         .minDuration(0)
         .onStart((e) => {
-          if (totalPages != null) {
-            runOnJS(setIsUserInput)(true);
+          runOnJS(setIsUserInput)(true);
+          if (totalPages != null && totalPages > 1) {
             const snapLocation = maxLeftDistance / (totalPages - 1);
             const index = Math.round(e.x / snapLocation);
             const snapPoint = index * snapLocation;
             left.value = snapPoint - OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS;
             runOnJS(onSnapToPoint)(index);
+          } else {
+            left.value = -OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS;
+            runOnJS(onSnapToPoint)(0);
           }
         })
         .onEnd(() => {
