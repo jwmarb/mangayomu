@@ -35,30 +35,22 @@ import RNFetchBlob from 'rn-fetch-blob';
 import connected, { ConnectedImageMenuProps } from './ImageMenu.redux';
 import { ImageMenuMethods } from '@screens/Reader/components/ImageMenu/ImageMenu.interfaces';
 import useScreenDimensions from '@hooks/useScreenDimensions';
+import removeURLParams from '@screens/Reader/components/ChapterPage/helpers/removeURLParams';
 const ImageMenu: React.ForwardRefRenderFunction<
   ImageMenuMethods,
   ConnectedImageMenuProps
 > = (props, ref) => {
   const { toggleImageModal, show } = props;
-  const localRealm = useLocalRealm();
   const theme = useTheme();
   const { width, height } = useScreenDimensions();
-  const page = React.useRef<PageSchema>();
   const url = React.useRef<string>();
   React.useImperativeHandle(ref, () => ({
     setImageMenuPageKey: (pageKey: string) => {
-      const pageObj = localRealm.objectForPrimaryKey(PageSchema, pageKey);
-      if (pageObj != null) {
-        page.current = pageObj;
-        url.current = pageKey;
-      }
+      url.current = pageKey;
     },
   }));
   React.useEffect(() => {
-    if (!show) {
-      page.current = undefined;
-      url.current = undefined;
-    }
+    if (!show) url.current = undefined;
   }, [show]);
   const [containerHeight, setContainerHeight] = React.useState<number>(2000);
   const translationY = useSharedValue(containerHeight);
@@ -115,14 +107,17 @@ const ImageMenu: React.ForwardRefRenderFunction<
   }
 
   async function handleOnSaveImage() {
-    if (page.current != null && url.current != null) {
+    if (url.current != null) {
       handleOnClose();
       const path =
         Platform.OS === 'ios'
           ? RNFetchBlob.fs.dirs['MainBundleDir'] +
-            page.current._id.substring(page.current._id.lastIndexOf('/'))
+            removeURLParams(url.current).substring(url.current.lastIndexOf('/'))
           : RNFetchBlob.fs.dirs['PictureDir'] +
-            page.current._id.substring(page.current._id.lastIndexOf('/'));
+            removeURLParams(url.current).substring(
+              url.current.lastIndexOf('/'),
+            );
+      console.log(path);
       if (Platform.OS === 'android') {
         RNFetchBlob.config({
           fileCache: true,
@@ -146,10 +141,7 @@ const ImageMenu: React.ForwardRefRenderFunction<
           .then(() => displayMessage('Image saved.'))
           .catch(() => displayMessage('Failed to save image.'));
     } else {
-      Alert.alert(
-        'Invalid image',
-        `Got ${page.current?._id} and ${url.current}`,
-      );
+      Alert.alert('Invalid image', `Got ${url.current}`);
     }
   }
 
