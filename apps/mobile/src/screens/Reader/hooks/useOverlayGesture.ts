@@ -87,7 +87,7 @@ export default function useOverlayGesture(args: {
         .onStart((e) => {
           runOnJS(passToUI)('onDoubleTap', e);
         })
-        .maxDelay(200),
+        .maxDelay(150),
     [],
   );
   const panGesture = React.useMemo(
