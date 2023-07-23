@@ -34,6 +34,7 @@ const ImageBaseRenderer: React.ForwardRefRenderFunction<
           onMessage={onMessage}
           style={baseStyle}
           {...rest}
+          animatedStyle={style}
         />
       ) : (
         <ImageElement style={style as any} {...rest} />
@@ -41,7 +42,7 @@ const ImageBaseRenderer: React.ForwardRefRenderFunction<
     case ReaderImageComponent.FAST_IMAGE:
       return (
         <FastImageElement
-          style={baseStyle}
+          style={style as any}
           {...(rest as FastImageElementProps)}
         />
       );
@@ -54,6 +55,7 @@ const ImageBaseRenderer: React.ForwardRefRenderFunction<
           style={baseStyle}
           onMessage={onMessage}
           {...rest}
+          animatedStyle={style}
         />
       );
   }

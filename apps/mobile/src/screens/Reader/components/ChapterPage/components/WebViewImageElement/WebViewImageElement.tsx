@@ -2,17 +2,22 @@ import React from 'react';
 import connector, {
   ConnectedWebViewImageElementProps,
 } from './WebViewImageElement.redux';
-import { AnimatedBox } from '@components/Box';
+import Box, { AnimatedBox } from '@components/Box';
 import WebView from 'react-native-webview';
+import { ViewStyle } from 'react-native';
 
 const WebViewImageElement: React.ForwardRefRenderFunction<
   WebView,
   ConnectedWebViewImageElementProps
 > = (props, ref) => {
-  const { style, onMessage, uri, backgroundColor } = props;
+  const { style, onMessage, uri, backgroundColor, animatedStyle } = props;
   return (
-    <AnimatedBox style={style} renderToHardwareTextureAndroid>
+    <AnimatedBox
+      style={animatedStyle as ViewStyle}
+      renderToHardwareTextureAndroid
+    >
       <WebView
+        androidLayerType="hardware"
         style={{ opacity: 0.99 }}
         scrollEnabled={false}
         scalesPageToFit={false}
