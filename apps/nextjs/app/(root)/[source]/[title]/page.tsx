@@ -1,14 +1,30 @@
 import Screen from '@app/components/Screen';
 import Text from '@app/components/Text';
 import React from 'react';
-import { redis, SourceManga } from '@mangayomu/backend';
+import {
+  redis,
+  SourceManga,
+  mongodb,
+  getMongooseConnection,
+} from '@mangayomu/backend';
 import { Manga, MangaHost } from '@mangayomu/mangascraper';
 import MangaViewer from '@app/(root)/[source]/[title]/components/mangaviewer';
+import Link from 'next/link';
+import getSlug from '@app/helpers/getSlug';
+import { TbError404 } from 'react-icons/tb';
+import GoBackButton from '@app/(root)/[source]/[title]/components/gobackbutton';
 interface PageProps {
   params: {
     source: string;
     title: string;
   };
+}
+
+function getSourceFromSlug(sourceSlug: string) {
+  const idx = MangaHost.sources.findIndex(
+    (source) => getSlug(source) === sourceSlug,
+  );
+  return MangaHost.sourcesMap.get(MangaHost.sources[idx]);
 }
 
 export default async function Page(props: PageProps) {
@@ -17,21 +33,33 @@ export default async function Page(props: PageProps) {
   } = props;
   const pathName = source + '/' + title;
   const manga = await getSourceManga(pathName);
-  if (manga == null)
-    return (
-      <Screen>
-        <Screen.Content>
-          <Text variant="header">Not found</Text>
-          <Text color="text-secondary">There is no manga</Text>
-        </Screen.Content>
-      </Screen>
-    );
-  const host = MangaHost.sourcesMap.get(manga.source);
+  const host = getSourceFromSlug(source);
   if (host == null)
     return (
       <Screen>
         <Screen.Content>
-          <Text>{manga.source} does not exist</Text>
+          <Text>{source} does not exist</Text>
+        </Screen.Content>
+      </Screen>
+    );
+
+  if (manga == null)
+    return (
+      <Screen>
+        <Screen.Content className="flex flex-col items-center justify-center gap-4">
+          <div>
+            <TbError404 className="text-primary w-20 h-20 mx-auto" />
+            <Text variant="header" className="text-center">
+              Not found
+            </Text>
+            <Text color="text-secondary" className="text-center">
+              The manga you are looking for does not exist in{' '}
+              <Text color="primary">
+                <Link href={`https://${host.link}/`}>{host.name}</Link>
+              </Text>
+            </Text>
+          </div>
+          <GoBackButton />
         </Screen.Content>
       </Screen>
     );
@@ -47,9 +75,14 @@ export default async function Page(props: PageProps) {
 async function getSourceManga(pathName: string): Promise<Manga | null> {
   const cached = await redis.get(pathName);
   if (cached == null) {
-    const value = await SourceManga.findById(pathName).exec();
+    const { connect, close } = getMongooseConnection();
+    await connect();
+    const value = await SourceManga.findById(pathName);
     if (value == null) return null;
-    await redis.set(pathName, JSON.stringify(value.toJSON()));
+    await Promise.all([
+      redis.set(pathName, JSON.stringify(value.toJSON())),
+      close,
+    ]);
     return value;
   }
 
