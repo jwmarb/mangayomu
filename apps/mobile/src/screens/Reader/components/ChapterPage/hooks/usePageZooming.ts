@@ -97,7 +97,6 @@ export default function usePageZooming(
     pinchScale: number,
     readingDirection: ReadingDirection,
     stylizedHeight: number,
-    zoomStartPosition: ZoomStartPosition,
   ) => {
     if (readingDirection === ReadingDirection.WEBTOON) return 0;
     const { height } = Dimensions.get('screen');
@@ -105,17 +104,7 @@ export default function usePageZooming(
       0,
       stylizedHeight / 2 - height / (pinchScale * 2),
     );
-    switch (zoomStartPosition) {
-      case ZoomStartPosition.AUTOMATIC:
-        switch (readingDirection) {
-          case ReadingDirection.VERTICAL:
-            return startingY;
-          default:
-            return 0;
-        }
-      default:
-        return 0;
-    }
+    return startingY;
   };
 
   React.useEffect(() => {
@@ -131,15 +120,11 @@ export default function usePageZooming(
       val > 1
         ? initializeZoomStartPositionX(val, readingDirection, zoomStartPosition)
         : 0;
-    translateY.value =
-      val > 1
-        ? initializeZoomStartPositionY(
-            val,
-            readingDirection,
-            stylizedHeight,
-            zoomStartPosition,
-          )
-        : 0;
+    translateY.value = initializeZoomStartPositionY(
+      val,
+      readingDirection,
+      stylizedHeight,
+    );
   }, [imageScaling, zoomStartPosition]);
 
   React.useEffect(() => {
@@ -152,6 +137,19 @@ export default function usePageZooming(
       );
       pinchScale.value = val;
       minScale.value = val;
+      translateX.value =
+        val > 1
+          ? initializeZoomStartPositionX(
+              val,
+              readingDirection,
+              zoomStartPosition,
+            )
+          : 0;
+      translateY.value = initializeZoomStartPositionY(
+        val,
+        readingDirection,
+        stylizedHeight,
+      );
     });
     return () => {
       listener.remove();
@@ -168,14 +166,11 @@ export default function usePageZooming(
       : 0,
   );
   const translateY = useSharedValue(
-    minScale.value > 1
-      ? initializeZoomStartPositionY(
-          pinchScale.value,
-          readingDirection,
-          stylizedHeight,
-          zoomStartPosition,
-        )
-      : 0,
+    initializeZoomStartPositionY(
+      pinchScale.value,
+      readingDirection,
+      stylizedHeight,
+    ),
   );
 
   return { translateX, translateY, pinchScale, minScale };

@@ -4,7 +4,7 @@ import useMutableObject from '@hooks/useMutableObject';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import { useAppDispatch } from '@redux/main';
 import { toggleImageModal } from '@redux/slices/reader';
-import { ReadingDirection } from '@redux/slices/settings';
+import { ImageScaling, ReadingDirection } from '@redux/slices/settings';
 import { ConnectedChapterPageProps } from '@screens/Reader/components/ChapterPage/ChapterPage.redux';
 import { useChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
 import usePageZooming from '@screens/Reader/components/ChapterPage/hooks/usePageZooming';
@@ -160,10 +160,16 @@ export default function usePageGestures(
         0,
         stylizedHeight / 2 - height.value / (pinchScale.value * 2),
       );
-      const isImageWide = result > 1; // Originally, all images are fitted to match screen width then scaled from their size, so this technically works
+
+      const isPortrait = width.value < height.value;
+      const isLandscape = width.value > height.value;
+      const isImageWide = isPortrait && result > 1; // Originally, all images are fitted to match screen width then scaled from their size, so this technically works
+      const isImageTall = isLandscape && minScale.value >= 1;
 
       runOnJS(togglePan)(
-        isImageWide ? result >= minScale.value : result > minScale.value,
+        isImageWide || isImageTall
+          ? result >= minScale.value
+          : result > minScale.value,
       );
     },
     [stylizedHeight, _imageScaling],
@@ -218,12 +224,13 @@ export default function usePageGestures(
           if (
             (maxTranslateX.value === Math.abs(translateX.value) &&
               isHorizontal.value &&
-              ((translateX.value <= 0 && velocityX.value < -500) ||
-                (translateX.value >= 0 && velocityX.value > 500))) ||
+              Math.abs(velocityY.value) <= 5000 &&
+              ((translateX.value <= 0 && velocityX.value < -1500) ||
+                (translateX.value >= 0 && velocityX.value > 1500))) ||
             (maxTranslateY.value === Math.abs(translateY.value) &&
               isVertical.value &&
-              ((translateY.value <= 0 && velocityY.value < -500) ||
-                (translateY.value >= 0 && velocityY.value > 500)))
+              ((translateY.value <= 0 && velocityY.value < -1500) ||
+                (translateY.value >= 0 && velocityY.value > 1500)))
           ) {
             runOnJS(togglePan)(false);
           }
