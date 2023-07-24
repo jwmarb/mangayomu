@@ -43,4 +43,23 @@ const connectMongoDB = (condition?: (request: HandlerRequest) => boolean) => {
   return m;
 };
 
+export function getMongooseConnection() {
+  return {
+    async connect() {
+      if (cached != null) {
+        console.log('Found existing MongoDB connection');
+        return cached;
+      }
+      cached = await mongoose.connect(env().MONGODB_URI, {
+        bufferCommands: false,
+        dbName: env().MONGODB_DATABASE_NAME,
+      });
+      console.log('Established MongoDB connection');
+    },
+    async close() {
+      if (cached != null) await cached.disconnect();
+      cached = null;
+    },
+  };
+}
 export default connectMongoDB;
