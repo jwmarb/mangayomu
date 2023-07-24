@@ -1,6 +1,6 @@
 import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
-import { ImageBaseRendererProps } from '@screens/Reader/components/ChapterPage/components/ImageBaseRenderer/ImageBaseRenderer.interfaces';
+import { ImageBaseRendererProps } from './';
 
 const mapStateToProps = (state: AppState, props: ImageBaseRendererProps) => ({
   ...props,

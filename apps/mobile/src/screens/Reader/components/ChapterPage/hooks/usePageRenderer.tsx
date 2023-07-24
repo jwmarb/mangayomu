@@ -3,8 +3,10 @@ import useScreenDimensions from '@hooks/useScreenDimensions';
 import { useAppDispatch } from '@redux/main';
 import { ExtendedReaderPageState, setPageError } from '@redux/slices/reader';
 import { ReadingDirection } from '@redux/slices/settings';
+import { ConnectedChapterPageProps } from '@screens/Reader/components/ChapterPage/ChapterPage.redux';
 import ImageBaseRenderer from '@screens/Reader/components/ChapterPage/components/ImageBaseRenderer/ImageBaseRenderer';
 import ImageErrorRenderer from '@screens/Reader/components/ChapterPage/components/ImageErrorRenderer/ImageErrorRenderer';
+import { useChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
 import React from 'react';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
 
@@ -12,8 +14,8 @@ type ParsedWebViewData =
   | { type: 'load'; width: number; height: number }
   | { type: 'error' };
 
-interface UsePageRendererArgs {
-  pageKey: string;
+export default function usePageRenderer(
+  props: ConnectedChapterPageProps,
   style: readonly [
     {
       transform: (
@@ -38,21 +40,15 @@ interface UsePageRendererArgs {
       readonly width: number;
       readonly height: number;
     },
-  ];
-  extendedPageState?: ExtendedReaderPageState;
-  stylizedHeight: number;
-  backgroundColor: string;
-  readingDirection: ReadingDirection;
-}
-export default function usePageRenderer(args: UsePageRendererArgs) {
+  ],
+  stylizedHeight: number,
+) {
   const {
-    pageKey,
-    style,
+    page: { page: pageKey },
     extendedPageState,
-    stylizedHeight,
     backgroundColor,
-    readingDirection,
-  } = args;
+  } = props;
+  const { readingDirection } = useChapterPageContext();
   const { width, height } = useScreenDimensions();
   /**
    * In the case of very large images which can be observed in some webtoons (e.g. images that exceed the device's height by 5-8 times),
@@ -93,33 +89,34 @@ export default function usePageRenderer(args: UsePageRendererArgs) {
     [handleOnError],
   );
 
-  const Renderer: React.FC = React.useCallback(
-    () => (
-      <Box
-        overflow="hidden"
-        background-color={backgroundColor.toLowerCase()}
-        justify-content="center"
-        {...(readingDirection !== ReadingDirection.WEBTOON
-          ? { width, height }
-          : undefined)}
-      >
-        <ImageBaseRenderer
-          onError={handleOnError}
-          onMessage={handleOnMessage}
-          ref={webViewRef}
-          uri={uri}
-          style={style}
-          fallbackToWebView={fallbackToWebView}
-        />
-        {extendedPageState?.error && (
-          <ImageErrorRenderer
-            pageKey={pageKey}
-            onReload={handleOnReload}
+  const Renderer: React.FC = React.useMemo(
+    () =>
+      React.memo(() => (
+        <Box
+          overflow="hidden"
+          background-color={backgroundColor.toLowerCase()}
+          justify-content="center"
+          {...(readingDirection !== ReadingDirection.WEBTOON
+            ? { width, height }
+            : undefined)}
+        >
+          <ImageBaseRenderer
+            onError={handleOnError}
+            onMessage={handleOnMessage}
+            ref={webViewRef}
+            uri={uri}
             style={style}
+            fallbackToWebView={fallbackToWebView}
           />
-        )}
-      </Box>
-    ),
+          {extendedPageState?.error && (
+            <ImageErrorRenderer
+              pageKey={pageKey}
+              onReload={handleOnReload}
+              style={style}
+            />
+          )}
+        </Box>
+      )),
     [
       style,
       handleOnError,
@@ -131,7 +128,7 @@ export default function usePageRenderer(args: UsePageRendererArgs) {
       extendedPageState?.error,
       pageKey,
       backgroundColor,
-      readingDirection,
+      readingDirection !== ReadingDirection.WEBTOON,
     ],
   );
 

@@ -156,30 +156,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     [tapGesture, chapter._id, backgroundColor],
   );
 
-  const chapterPageContextValue = React.useMemo(
-    () => ({
-      mangaTitle: manga.title,
-      readingDirection,
-      sourceName: manga.source,
-      imageMenuRef,
-      velocityX,
-      rootPanGesture: panGesture,
-      pageGestures,
-      rootPinchGesture: pinchGesture,
-      velocityY,
-      imageScaling,
-      zoomStartPosition,
-    }),
-    [
-      tapGesture,
-      manga.source,
-      readingDirection,
-      manga.title,
-      imageScaling,
-      zoomStartPosition,
-    ],
-  );
-
   const composedGestures = React.useMemo(
     () =>
       Gesture.Simultaneous(
@@ -196,7 +172,21 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
 
   return (
     <ChapterErrorContext.Provider value={fetchPagesByChapter}>
-      <ChapterPageContext.Provider value={chapterPageContextValue}>
+      <ChapterPageContext.Provider
+        value={{
+          mangaTitle: manga.title,
+          readingDirection,
+          sourceName: manga.source,
+          imageMenuRef,
+          velocityX,
+          rootPanGesture: panGesture,
+          pageGestures,
+          rootPinchGesture: pinchGesture,
+          velocityY,
+          imageScaling,
+          zoomStartPosition,
+        }}
+      >
         <TransitionPageContext.Provider value={transitionPageContextValue}>
           <Overlay
             imageMenuRef={imageMenuRef}

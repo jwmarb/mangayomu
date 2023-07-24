@@ -5,7 +5,9 @@ import useScreenDimensions from '@hooks/useScreenDimensions';
 import { useAppDispatch } from '@redux/main';
 import { toggleImageModal } from '@redux/slices/reader';
 import { ReadingDirection } from '@redux/slices/settings';
+import { ConnectedChapterPageProps } from '@screens/Reader/components/ChapterPage/ChapterPage.redux';
 import { useChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
+import usePageZooming from '@screens/Reader/components/ChapterPage/hooks/usePageZooming';
 import React from 'react';
 import { Gesture } from 'react-native-gesture-handler';
 import {
@@ -28,20 +30,21 @@ interface UsePageGesturesArgs {
   minScale: SharedValue<number>;
 }
 
-export default function usePageGestures(args: UsePageGesturesArgs) {
+export default function usePageGestures(
+  pageZoomingProps: ReturnType<typeof usePageZooming>,
+  props: ConnectedChapterPageProps,
+  stylizedHeight: number,
+) {
+  const { pinchScale, translateX, translateY, minScale } = pageZoomingProps;
   const {
-    pageKey,
-    pinchScale,
-    translateX,
-    translateY,
-    stylizedHeight,
-    readingDirection,
-    minScale,
-  } = args;
+    page: { page: pageKey },
+  } = props;
+  const { height: screenHeight, width: screenWidth } = useScreenDimensions();
+
+  const { readingDirection } = useChapterPageContext();
   const [enablePan, togglePan] = useBoolean(pinchScale.value > minScale.value);
 
   const mutablePageKey = useMutableObject(pageKey);
-  const { height: screenHeight, width: screenWidth } = useScreenDimensions();
   const height = useAnimatedMutableObject(screenHeight);
   const width = useAnimatedMutableObject(screenWidth);
   const isHorizontal = useAnimatedMutableObject(
