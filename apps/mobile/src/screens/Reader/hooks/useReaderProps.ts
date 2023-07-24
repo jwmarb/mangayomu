@@ -49,7 +49,7 @@ export default function useReaderProps(
           ? readerProps.imageScaling
           : manga.readerImageScaling
         : ImageScaling.SMART_FIT,
-    [readerProps.imageScaling, manga.readerDirection],
+    [readerProps.imageScaling, manga.readerImageScaling],
   );
   const zoomStartPosition = React.useMemo(
     () =>
