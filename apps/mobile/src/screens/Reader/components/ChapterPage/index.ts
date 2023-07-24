@@ -3,7 +3,11 @@ import {
   ChapterPage,
   ExtendedReaderPageState,
 } from '@redux/slices/reader/reader';
-import { ReadingDirection } from '@redux/slices/settings';
+import {
+  ImageScaling,
+  ReadingDirection,
+  ZoomStartPosition,
+} from '@redux/slices/settings';
 import { ImageMenuMethods } from '@screens/Reader/components/ImageMenu/ImageMenu.interfaces';
 import { PageGestures } from '@screens/Reader/hooks/useOverlayGesture';
 import { PanGesture, PinchGesture } from 'react-native-gesture-handler';
@@ -24,4 +28,6 @@ export interface ChapterPageContextState {
   mangaTitle: string;
   imageMenuRef: React.RefObject<ImageMenuMethods>;
   pageGestures: PageGestures;
+  imageScaling: ImageScaling;
+  zoomStartPosition: ZoomStartPosition;
 }

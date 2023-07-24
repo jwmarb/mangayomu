@@ -1,3 +1,4 @@
+import useAnimatedMutableObject from '@hooks/useAnimatedMutableObject';
 import useBoolean from '@hooks/useBoolean';
 import useMutableObject from '@hooks/useMutableObject';
 import useScreenDimensions from '@hooks/useScreenDimensions';
@@ -24,6 +25,9 @@ interface UsePageGesturesArgs {
   translateY: SharedValue<number>;
   stylizedHeight: number;
   readingDirection: ReadingDirection;
+  minScale: SharedValue<number>;
+  imageWidth: number;
+  imageHeight: number;
 }
 
 export default function usePageGestures(args: UsePageGesturesArgs) {
@@ -34,19 +38,23 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
     translateY,
     stylizedHeight,
     readingDirection,
+    minScale,
+    imageWidth,
+    imageHeight,
   } = args;
-  const [enablePan, togglePan] = useBoolean();
+  const [enablePan, togglePan] = useBoolean(pinchScale.value > minScale.value);
+
   const mutablePageKey = useMutableObject(pageKey);
   const { height: screenHeight, width: screenWidth } = useScreenDimensions();
-  const height = useMutableObject(screenHeight);
-  const isHorizontal = useMutableObject(
+  const height = useAnimatedMutableObject(screenHeight);
+  const width = useAnimatedMutableObject(screenWidth);
+  const isHorizontal = useAnimatedMutableObject(
     readingDirection === ReadingDirection.LEFT_TO_RIGHT ||
       readingDirection === ReadingDirection.RIGHT_TO_LEFT,
   );
-  const isVertical = useMutableObject(
+  const isVertical = useAnimatedMutableObject(
     readingDirection === ReadingDirection.VERTICAL,
   );
-  const width = useMutableObject(screenWidth);
   const {
     imageMenuRef,
     velocityX,
@@ -54,9 +62,13 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
     pageGestures,
     rootPinchGesture,
     velocityY,
+    imageScaling: _imageScaling,
   } = useChapterPageContext();
-  const maxTranslateX = useSharedValue(0);
-  const maxTranslateY = useSharedValue(0);
+  const imageScaling = useAnimatedMutableObject(_imageScaling);
+
+  const maxTranslateX = useSharedValue(Math.abs(translateX.value));
+  const maxTranslateY = useSharedValue(Math.abs(translateY.value));
+
   const dispatch = useAppDispatch();
   const toggle = React.useCallback(
     () => dispatch(toggleImageModal()),
@@ -79,18 +91,15 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
     pageGestures.current[pageKey] = {
       onPinchChange(e) {
         'worklet';
-        pinchScale.value = Math.max(pinchScale.value + e.scaleChange - 1, 1);
-        maxTranslateX.value =
-          width.current / 2 - width.current / (pinchScale.value * 2);
-        maxTranslateY.value = Math.max(
-          0,
-          stylizedHeight / 2 - height.current / (pinchScale.value * 2),
+        pinchScale.value = Math.max(
+          pinchScale.value + e.scaleChange - 1,
+          minScale.value,
         );
       },
       onDoubleTap(e) {
         'worklet';
-        if (pinchScale.value > 1) {
-          pinchScale.value = withTiming(1, {
+        if (pinchScale.value > minScale.value) {
+          pinchScale.value = withTiming(minScale.value, {
             duration: 200,
             easing: Easing.ease,
           });
@@ -108,15 +117,15 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
           pinchScale.value = withTiming(scaleValue, config);
           const calculatedMaxTranslateY = Math.max(
             0,
-            stylizedHeight / 2 - height.current / (scaleValue * 2),
+            stylizedHeight / 2 - height.value / (scaleValue * 2),
           );
           const calculatedMaxTranslateX =
-            width.current / 2 - width.current / (scaleValue * 2);
+            width.value / 2 - width.value / (scaleValue * 2);
           maxTranslateX.value = withTiming(calculatedMaxTranslateX, config);
           maxTranslateY.value = withTiming(calculatedMaxTranslateY, config);
           translateX.value = withTiming(
             Math.min(
-              Math.max(-calculatedMaxTranslateX, width.current / 2 - e.x),
+              Math.max(-calculatedMaxTranslateX, width.value / 2 - e.x),
               calculatedMaxTranslateX,
             ),
             config,
@@ -124,7 +133,7 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
           translateY.value = withTiming(
             Math.min(
               calculatedMaxTranslateY,
-              Math.max(-calculatedMaxTranslateY, height.current / 2 - e.y),
+              Math.max(-calculatedMaxTranslateY, height.value / 2 - e.y),
             ),
             config,
           );
@@ -133,11 +142,11 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
       onFlashlistActive() {
         if (
           ((maxTranslateX.value === Math.abs(translateX.value) &&
-            isHorizontal.current) ||
+            isHorizontal.value) ||
             (maxTranslateY.value === Math.abs(translateY.value) &&
-              isVertical.current)) &&
+              isVertical.value)) &&
           !enablePan &&
-          pinchScale.value > 1
+          pinchScale.value > minScale.value
         )
           togglePan(true);
       },
@@ -147,8 +156,19 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
   useAnimatedReaction(
     () => pinchScale.value,
     (result) => {
-      runOnJS(togglePan)(result > 1);
+      maxTranslateX.value =
+        result > 1 ? width.value / 2 - width.value / (pinchScale.value * 2) : 0;
+      maxTranslateY.value = Math.max(
+        0,
+        stylizedHeight / 2 - height.value / (pinchScale.value * 2),
+      );
+      const isImageWide = result > 1; // Originally, all images are fitted to match screen width then scaled from their size, so this technically works
+
+      runOnJS(togglePan)(
+        isImageWide ? result >= minScale.value : result > minScale.value,
+      );
     },
+    [stylizedHeight, _imageScaling],
   );
 
   const panGesture = React.useMemo(
@@ -171,7 +191,7 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
             -maxTranslateY.value,
           );
 
-          if (maxTranslateX.value === 0) {
+          if (maxTranslateX.value === 0 && maxTranslateY.value === 0) {
             translateX.value = withTiming(0, {
               duration: 150,
               easing: Easing.ease,
@@ -199,13 +219,13 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
         .onTouchesUp(() => {
           if (
             (maxTranslateX.value === Math.abs(translateX.value) &&
-              isHorizontal.current &&
-              ((translateX.value <= 0 && velocityX.value < -10) ||
-                (translateX.value >= 0 && velocityX.value > 10))) ||
+              isHorizontal.value &&
+              ((translateX.value <= 0 && velocityX.value < -500) ||
+                (translateX.value >= 0 && velocityX.value > 500))) ||
             (maxTranslateY.value === Math.abs(translateY.value) &&
-              isVertical.current &&
-              ((translateY.value <= 0 && velocityY.value < -10) ||
-                (translateY.value >= 0 && velocityY.value > 10)))
+              isVertical.value &&
+              ((translateY.value <= 0 && velocityY.value < -500) ||
+                (translateY.value >= 0 && velocityY.value > 500)))
           ) {
             runOnJS(togglePan)(false);
           }
@@ -219,7 +239,7 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
     (res) => {
       if (
         maxTranslateX.value === Math.abs(translateX.value) &&
-        isHorizontal.current &&
+        isHorizontal.value &&
         ((translateX.value < 0 && res > 0) || (translateX.value > 0 && res < 0))
       )
         runOnJS(togglePan)(true);
@@ -231,7 +251,7 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
     (res) => {
       if (
         maxTranslateY.value === Math.abs(translateY.value) &&
-        isVertical.current &&
+        isVertical.value &&
         ((translateY.value < 0 && res > 0) || (translateY.value > 0 && res < 0))
       ) {
         runOnJS(togglePan)(true);
@@ -242,11 +262,11 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
   React.useEffect(() => {
     if (
       ((maxTranslateX.value === Math.abs(translateX.value) &&
-        isHorizontal.current) ||
+        isHorizontal.value) ||
         (maxTranslateY.value === Math.abs(translateY.value) &&
-          isVertical.current)) &&
+          isVertical.value)) &&
       !enablePan &&
-      pinchScale.value > 1
+      pinchScale.value > minScale.value
     ) {
       const p = setTimeout(() => {
         togglePan(true);

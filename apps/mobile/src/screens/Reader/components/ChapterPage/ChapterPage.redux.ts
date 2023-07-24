@@ -9,6 +9,7 @@ const mapStateToProps = (
 ) => ({
   ...props,
   backgroundColor: state.settings.reader.backgroundColor.toLowerCase(),
+  pageAspectRatio: state.reader.pageAspectRatio,
 });
 
 const connector = connect(mapStateToProps);

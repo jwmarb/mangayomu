@@ -81,7 +81,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     imageScaling: globalImageScaling,
     zoomStartPosition: globalZoomStartPosition,
   });
-  const { readingDirection, imageScaling } = readerProps;
+  const { readingDirection, imageScaling, zoomStartPosition } = readerProps;
   const panRef = React.useRef<GestureType>();
   const pinchRef = React.useRef<GestureType>();
   const {
@@ -168,8 +168,16 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
       rootPinchGesture: pinchGesture,
       velocityY,
       imageScaling,
+      zoomStartPosition,
     }),
-    [tapGesture, manga.source, readingDirection, manga.title, imageScaling],
+    [
+      tapGesture,
+      manga.source,
+      readingDirection,
+      manga.title,
+      imageScaling,
+      zoomStartPosition,
+    ],
   );
 
   const composedGestures = React.useMemo(

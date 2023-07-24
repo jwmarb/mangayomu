@@ -66,6 +66,7 @@ interface ReaderState {
   extendedState: Record<string, ExtendedReaderPageState | undefined>;
   currentChapter: string | null;
   showImageModal: boolean;
+  pageAspectRatio: number;
 }
 
 export interface FetchPagesByChapterPayload {
@@ -85,6 +86,7 @@ const initialReaderState: ReaderState = {
   extendedState: {},
   showImageModal: false,
   currentChapter: null,
+  pageAspectRatio: 0.7, // It's common for manga pages to be within 0.69 to 0.71 for aspect ratio ( width / height )
 };
 
 function getImageSizeAsync(
@@ -402,6 +404,7 @@ const readerSlice = createSlice({
        * Traverse through each item in state.pages and add corresponding index to TransitionPages
        */
       let start = 0;
+      const mostFrequentAspectRatio = new Map<number, number>();
       for (let i = 0; i < state.pages.length; i++) {
         const item = state.pages[i];
         switch (item.type) {
@@ -424,6 +427,22 @@ const readerSlice = createSlice({
               start = i;
             }
             break;
+          case 'PAGE': {
+            const aspectRatio = item.width / item.height;
+            const count = mostFrequentAspectRatio.get(aspectRatio);
+            if (count == null) mostFrequentAspectRatio.set(aspectRatio, 1);
+            else mostFrequentAspectRatio.set(aspectRatio, count + 1);
+            break;
+          }
+        }
+      }
+
+      let mostFrequent = 0;
+      for (const [key, value] of mostFrequentAspectRatio) {
+        const result = Math.max(mostFrequent, value);
+        if (result > mostFrequent) {
+          mostFrequent = result;
+          state.pageAspectRatio = key;
         }
       }
 
