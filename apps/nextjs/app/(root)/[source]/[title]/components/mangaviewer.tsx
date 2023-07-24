@@ -28,6 +28,7 @@ import Action from '@app/(root)/[source]/[title]/components/actions';
 import Synopsis from '@app/(root)/[source]/[title]/components/synopsis';
 import Status from '@app/(root)/[source]/[title]/components/status';
 import Genre from '@app/(root)/[source]/[title]/components/genre';
+import RowChapter from '@app/(root)/[source]/[title]/components/rowchapter';
 
 interface MangaViewerProps {
   meta: MangaMeta<MangaChapter> &
@@ -54,7 +55,7 @@ export default function MangaViewer(props: MangaViewerProps) {
       </div> */}
       <MangaViewerHeader title={meta.title} />
       <Screen.Content overrideClassName="relative flex flex-col">
-        <div className="md:h-[35rem] h-[15rem] md:-mt-64 w-full bg-gradient-to-b from-transparent to-default absolute">
+        <div className="md:h-[35rem] h-[15rem] md:-mt-64 w-full bg-gradient-to-b from-transparent to-paper absolute">
           <div
             className="w-full h-full absolute -z-10"
             style={{
@@ -111,7 +112,7 @@ export default function MangaViewer(props: MangaViewerProps) {
         <div className="h-0.5 w-full bg-border max-w-screen-md mx-auto" />
         <div className="max-w-screen-md mx-auto w-full flex flex-col">
           {meta.chapters.map((x) => (
-            <Text key={x.link}>{x.name}</Text>
+            <RowChapter chapter={x} key={x.link} />
           ))}
         </div>
       </Screen.Content>
