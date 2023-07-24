@@ -141,7 +141,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     pinchScale.value = val;
     minScale.value = val;
     translateX.value =
-      minScale.value > 1
+      val > 1
         ? initializeZoomStartPositionX(
             val,
             readingDirection,
@@ -149,7 +149,7 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
           )
         : 0;
     translateY.value =
-      minScale.value > 1
+      val > 1
         ? initializeZoomStartPositionY(
             val,
             readingDirection,
