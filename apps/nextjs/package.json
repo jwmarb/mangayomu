@@ -21,6 +21,7 @@
     "@react-spring/web": "^9.7.3",
     "@use-gesture/react": "^10.2.27",
     "axios": "^1.4.0",
+    "date-fns": "^2.30.0",
     "dompurify": "^3.0.4",
     "fast-sort": "^3.4.0",
     "googleapis": "^118.0.0",
