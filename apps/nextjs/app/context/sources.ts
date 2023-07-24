@@ -42,7 +42,19 @@ export const useAddedSources = create(
       sortBy: 'Alphabetically',
       sourcesConfig: {},
       addSource: (src: string) => {
-        if (get().sources.length === 0) set({ sources: [src] });
+        if (get().sources.length === 0)
+          set({
+            sources: [src],
+            sourcesConfig: {
+              ...get().sourcesConfig,
+              [src]: {
+                ...get().sourcesConfig[src],
+                useHottestUpdates: true,
+                useWithUniversalSearch: true,
+                useLatestUpdates: true,
+              },
+            },
+          });
         else {
           const newArray = [...get().sources];
           const index = binary.suggest(
