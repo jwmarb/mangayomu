@@ -26,8 +26,6 @@ interface UsePageGesturesArgs {
   stylizedHeight: number;
   readingDirection: ReadingDirection;
   minScale: SharedValue<number>;
-  imageWidth: number;
-  imageHeight: number;
 }
 
 export default function usePageGestures(args: UsePageGesturesArgs) {
@@ -39,8 +37,6 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
     stylizedHeight,
     readingDirection,
     minScale,
-    imageWidth,
-    imageHeight,
   } = args;
   const [enablePan, togglePan] = useBoolean(pinchScale.value > minScale.value);
 
@@ -64,7 +60,6 @@ export default function usePageGestures(args: UsePageGesturesArgs) {
     velocityY,
     imageScaling: _imageScaling,
   } = useChapterPageContext();
-  const imageScaling = useAnimatedMutableObject(_imageScaling);
 
   const maxTranslateX = useSharedValue(Math.abs(translateX.value));
   const maxTranslateY = useSharedValue(Math.abs(translateY.value));

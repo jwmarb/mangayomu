@@ -203,8 +203,6 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
     stylizedHeight,
     readingDirection,
     minScale,
-    imageHeight,
-    imageWidth,
   });
 
   const gestureStyle = useAnimatedStyle(() => ({
