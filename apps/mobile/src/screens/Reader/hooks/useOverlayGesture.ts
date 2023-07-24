@@ -85,10 +85,11 @@ export default function useOverlayGesture(args: {
       Gesture.Tap()
         .numberOfTaps(2)
         .onStart((e) => {
-          runOnJS(passToUI)('onDoubleTap', e);
+          if (readingDirection !== ReadingDirection.WEBTOON)
+            runOnJS(passToUI)('onDoubleTap', e);
         })
         .maxDelay(150),
-    [],
+    [readingDirection !== ReadingDirection.WEBTOON],
   );
   const panGesture = React.useMemo(
     () =>
@@ -116,7 +117,7 @@ export default function useOverlayGesture(args: {
             runOnJS(passToUI)('onPinchChange', e);
         })
         .withRef(pinchRef),
-    [readingDirection],
+    [readingDirection !== ReadingDirection.WEBTOON],
   );
   return {
     tapGesture,
