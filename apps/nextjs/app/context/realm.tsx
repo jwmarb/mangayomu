@@ -3,7 +3,7 @@ import React from 'react';
 import * as Realm from 'realm-web';
 import { usePathname, useRouter } from 'next/navigation';
 
-const RealmContext = React.createContext<ReturnType<
+const AppContext = React.createContext<ReturnType<
   typeof Realm.App.getApp
 > | null>(null);
 
@@ -14,7 +14,7 @@ const UserSetterContext = React.createContext<React.Dispatch<
 > | null>(null);
 
 export const useApp = () => {
-  const ctx = React.useContext(RealmContext);
+  const ctx = React.useContext(AppContext);
   if (ctx == null)
     throw new Error(
       'Tried using RealmContext when component is not a child of it',
@@ -103,12 +103,12 @@ export function ClientRealmProvider({
 
   if (app == null || user == null) return null;
   return (
-    <RealmContext.Provider value={app}>
+    <AppContext.Provider value={app}>
       <UserContext.Provider value={user}>
         <UserSetterContext.Provider value={setUser}>
           {children}
         </UserSetterContext.Provider>
       </UserContext.Provider>
-    </RealmContext.Provider>
+    </AppContext.Provider>
   );
 }
