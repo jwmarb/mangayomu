@@ -32,7 +32,6 @@ export default async function Page(props: PageProps) {
     params: { source, title },
   } = props;
   const pathName = source + '/' + title;
-  const manga = await getSourceManga(pathName);
   const host = getSourceFromSlug(source);
   if (host == null)
     return (
@@ -42,6 +41,7 @@ export default async function Page(props: PageProps) {
         </Screen.Content>
       </Screen>
     );
+  const manga = await getSourceManga(pathName);
 
   if (manga == null)
     return (
