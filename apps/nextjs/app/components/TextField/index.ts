@@ -1,8 +1,6 @@
 import TextField from './TextField';
 export default TextField;
 import { OverrideClassName } from '@app/hooks/useClassName';
-import { HTMLProps } from 'react';
-import { AriaTextFieldProps } from 'react-aria';
 
 export interface TextFieldProps
   extends Omit<
