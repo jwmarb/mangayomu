@@ -37,13 +37,14 @@ const authenticate = async (): Promise<AuthTokenResponse> => {
 
 export default async function RootLayout({
   children,
-}: React.PropsWithChildren) {
+  backgroundColor = 'bg-default',
+}: React.PropsWithChildren<{ backgroundColor?: string }>) {
   const auth = await authenticate();
   const idToken = auth.type === 'TOKEN_VALID' ? auth.idToken : undefined;
 
   return (
     <html lang="en">
-      <body className="bg-default flex">
+      <body className={`${backgroundColor} flex`}>
         <Providers
           idToken={idToken}
           idTokenInvalid={auth.type === 'INVALID_TOKEN'}
