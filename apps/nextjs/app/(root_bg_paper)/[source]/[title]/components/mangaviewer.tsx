@@ -111,7 +111,7 @@ export default function MangaViewer(props: MangaViewerProps) {
           </div>
         </div>
         <div className="h-0.5 w-full bg-border max-w-screen-md mx-auto" />
-        <DisplayRowChapters chapters={meta.chapters} />
+        <DisplayRowChapters chapters={meta.chapters} mangaId={meta.link} />
       </Screen.Content>
     </>
   );
