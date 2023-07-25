@@ -29,6 +29,7 @@ import Synopsis from '@app/(root)/[source]/[title]/components/synopsis';
 import Status from '@app/(root)/[source]/[title]/components/status';
 import Genre from '@app/(root)/[source]/[title]/components/genre';
 import RowChapter from '@app/(root)/[source]/[title]/components/rowchapter';
+import DisplayRowChapters from '@app/(root)/[source]/[title]/components/displayrowchapters';
 
 interface MangaViewerProps {
   meta: MangaMeta<MangaChapter> &
@@ -110,11 +111,7 @@ export default function MangaViewer(props: MangaViewerProps) {
           </div>
         </div>
         <div className="h-0.5 w-full bg-border max-w-screen-md mx-auto" />
-        <div className="max-w-screen-md mx-auto w-full flex flex-col">
-          {meta.chapters.map((x) => (
-            <RowChapter chapter={x} key={x.link} />
-          ))}
-        </div>
+        <DisplayRowChapters chapters={meta.chapters} />
       </Screen.Content>
     </>
   );
