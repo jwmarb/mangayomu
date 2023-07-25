@@ -24,6 +24,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useDrawer } from '@app/context/drawer';
 import { useAddedSources } from '@app/context/sources';
 import ListSource from '@app/(root)/components/source';
+import TopNavBar from '@app/(root)/components/topnavbar';
+import User from '@app/(root)/components/user';
 
 export default function Navbar() {
   const drawerRef = React.useRef<DrawerMethods>(null);
@@ -36,45 +38,19 @@ export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
 
-  React.useEffect(() => {
-    if (navRef.current) setNavbarHeight(navRef.current.offsetHeight);
-  }, []);
+  function handleOnOpenDrawer() {
+    drawerRef.current?.open();
+  }
+
+  function handleOnCloseDrawer() {
+    drawerRef.current?.close();
+  }
 
   return (
     <>
-      <nav
-        ref={navRef}
-        className={`lg:opacity-0 lg:pointer-events-none fixed w-full flex flex-row items-center px-4 py-2 bg-paper ${
-          !drawerVisible ? 'z-50' : ''
-        }`}
-      >
-        <IconButton
-          icon={<MdMenu />}
-          onClick={() => drawerRef.current?.open()}
-        />
-      </nav>
+      <TopNavBar onOpenDrawer={handleOnOpenDrawer} />
       <Drawer ref={drawerRef} className="w-64 p-4 flex flex-col gap-2">
-        <div className="flex flex-row justify-between gap-2">
-          <div className="flex flex-row gap-2 items-center">
-            <div className="w-10 h-10 bg-default rounded-lg items-center justify-center flex">
-              <MdPerson className="text-text-primary" />
-            </div>
-            <Text>{user.profile.name ?? 'Guest'}</Text>
-          </div>
-          <div className="flex flex-row">
-            <DarkMode />
-            <IconButton
-              icon={<MdSettings />}
-              onPress={() => drawerRef.current?.close()}
-            />
-            {mobile && (
-              <IconButton
-                icon={<MdChevronLeft />}
-                onPress={() => drawerRef.current?.close()}
-              />
-            )}
-          </div>
-        </div>
+        <User onDrawerClose={handleOnCloseDrawer} />
         <div className="flex flex-col space-y-2">
           <List.Category>
             <List.Accordion persist="accordion_list_home">
