@@ -30,7 +30,7 @@ async function RootLayout({
 }
 
 export default function generateLayout(layout?: RootLayoutProps) {
-  async function Layout(props?: RootLayoutProps) {
+  async function Layout(props: React.PropsWithChildren) {
     const auth = await authenticate();
     const idToken = auth.type === 'TOKEN_VALID' ? auth.idToken : undefined;
     return (
