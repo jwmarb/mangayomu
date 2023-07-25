@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import * as Realm from 'realm-web';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const AppContext = React.createContext<ReturnType<
   typeof Realm.App.getApp
@@ -58,6 +58,7 @@ export function ClientRealmProvider({
   const [user, setUser] = React.useState<Realm.User | null>(
     app?.currentUser || null,
   );
+
   const router = useRouter();
   React.useEffect(() => {
     const _app = Realm.App.getApp(appId);
@@ -99,7 +100,7 @@ export function ClientRealmProvider({
     //   const anonymousCredentials = Realm.Credentials.anonymous();
     //   _app.logIn(anonymousCredentials).then(setUser);
     // } else setUser(_app.currentUser);
-  }, [appId, idToken]);
+  }, [appId, idToken, idTokenInvalid, router]);
 
   if (app == null || user == null) return null;
   return (
