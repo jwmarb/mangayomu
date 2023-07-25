@@ -1,7 +1,8 @@
 import * as Realm from 'realm-web';
-import { useRealm, useUserSetter } from '@app/context/realm';
+import { useApp } from '@app/context/realm';
 import useBoolean from '@app/hooks/useBoolean';
 import React from 'react';
+import { useRouter } from 'next/navigation';
 
 const button: React.FC = () => <div id="__google_sign_in_button__" />;
 
@@ -12,6 +13,8 @@ const button: React.FC = () => <div id="__google_sign_in_button__" />;
 export function useLoadGSIScript(clientId: string) {
   const [loaded, toggle] = useBoolean();
   const [error, setError] = React.useState<string>('');
+  const app = useApp();
+  const router = useRouter();
   React.useInsertionEffect(() => {
     const scriptTag = document.createElement('script');
     scriptTag.src = 'https://accounts.google.com/gsi/client';
@@ -22,15 +25,11 @@ export function useLoadGSIScript(clientId: string) {
         client_id: clientId,
         callback: async (response) => {
           if (response.credential != null) {
-            // const googleCredentials = Realm.Credentials.google({
-            //   idToken: response.credential,
-            // });
-            // const user = await realm.logIn(googleCredentials);
-            /**
-             * Store id in localStorage
-             */
-            // console.log(user.profile.);
-            // setUser(user);
+            const googleCredentials = Realm.Credentials.google({
+              idToken: response.credential,
+            });
+            await app.logIn(googleCredentials);
+            router.push('/');
           }
         },
         ux_mode: 'popup',
