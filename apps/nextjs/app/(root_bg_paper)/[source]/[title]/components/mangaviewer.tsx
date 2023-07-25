@@ -23,13 +23,13 @@ import {
 } from 'react-icons/md';
 import DOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
-import MangaViewerHeader from '@app/(root)/[source]/[title]/components/mangaviewerheader';
-import Action from '@app/(root)/[source]/[title]/components/actions';
-import Synopsis from '@app/(root)/[source]/[title]/components/synopsis';
-import Status from '@app/(root)/[source]/[title]/components/status';
-import Genre from '@app/(root)/[source]/[title]/components/genre';
-import RowChapter from '@app/(root)/[source]/[title]/components/rowchapter';
-import DisplayRowChapters from '@app/(root)/[source]/[title]/components/displayrowchapters';
+import MangaViewerHeader from '@app/(root_bg_paper)/[source]/[title]/components/mangaviewerheader';
+import Action from '@app/(root_bg_paper)/[source]/[title]/components/actions';
+import Synopsis from '@app/(root_bg_paper)/[source]/[title]/components/synopsis';
+import Status from '@app/(root_bg_paper)/[source]/[title]/components/status';
+import Genre from '@app/(root_bg_paper)/[source]/[title]/components/genre';
+import RowChapter from '@app/(root_bg_paper)/[source]/[title]/components/rowchapter';
+import DisplayRowChapters from '@app/(root_bg_paper)/[source]/[title]/components/displayrowchapters';
 
 interface MangaViewerProps {
   meta: MangaMeta<MangaChapter> &

@@ -8,11 +8,11 @@ import {
   getMongooseConnection,
 } from '@mangayomu/backend';
 import { Manga, MangaHost } from '@mangayomu/mangascraper';
-import MangaViewer from '@app/(root)/[source]/[title]/components/mangaviewer';
+import MangaViewer from '@app/(root_bg_paper)/[source]/[title]/components/mangaviewer';
 import Link from 'next/link';
 import getSlug from '@app/helpers/getSlug';
 import { TbError404 } from 'react-icons/tb';
-import GoBackButton from '@app/(root)/[source]/[title]/components/gobackbutton';
+import GoBackButton from '@app/(root_bg_paper)/[source]/[title]/components/gobackbutton';
 interface PageProps {
   params: {
     source: string;
