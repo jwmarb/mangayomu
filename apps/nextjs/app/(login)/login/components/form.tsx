@@ -11,7 +11,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Field from '@app/(login)/components/field';
 import { EmbeddedResponseStatus } from '@mangayomu/request-handler';
 import { useRouter } from 'next/navigation';
-import { useRealm, useUser } from '@app/context/realm';
+import { useApp, useUser } from '@app/context/realm';
+import { useLoadGSIScript } from '@app/(login)/login/hooks/useLoadGSIScript';
 
 interface FormProps {
   clientId: string;
@@ -29,9 +30,8 @@ type AuthAPIResponse =
   | { response: EmbeddedResponseStatus; error: string };
 
 export default function Form({ clientId }: FormProps) {
-  // const [success, error, SignInWithGoogle] = useLoadGSIScript(clientId);
-  const realm = useRealm();
-  const user = useUser();
+  const [success, error, SignInWithGoogle] = useLoadGSIScript(clientId);
+  const realm = useApp();
   const [loading, setLoading] = useBoolean();
   const [authError, setAuthError] = useBoolean();
   const router = useRouter();
@@ -148,7 +148,9 @@ export default function Form({ clientId }: FormProps) {
         </div>
         <div className="h-0.5 flex-grow bg-border" />
       </div>
-      <div className="grid grid-row-2 gap-1 justify-center">{/** Todo */}</div>
+      <div className="grid grid-row-2 gap-1 justify-center">
+        <SignInWithGoogle />
+      </div>
     </>
   );
 }
