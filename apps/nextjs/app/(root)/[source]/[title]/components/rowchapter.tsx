@@ -9,11 +9,12 @@ import React from 'react';
 
 interface RowChapterProps {
   chapter: MangaChapter;
+  isLastItem: boolean;
 }
 
 function RowChapter(props: RowChapterProps) {
   const pathName = usePathname();
-  const { chapter } = props;
+  const { chapter, isLastItem } = props;
   const { name, date } = chapter;
   const parsed = Date.parse(date);
   const isRecent = Date.now() - 6.048e7 < parsed;
@@ -24,7 +25,9 @@ function RowChapter(props: RowChapterProps) {
   return (
     <Link
       href={pathName + '/' + getSlug(chapter.name)}
-      className="px-4 py-2 hover:bg-hover active:bg-pressed transition duration-250"
+      className={`px-4 py-2 hover:bg-hover active:bg-pressed transition duration-250 bg-default ${
+        !isLastItem ? 'border-b-2 border-default' : ''
+      }`}
     >
       <Text>{name}</Text>
       <Text color={isRecent ? 'secondary' : 'text-secondary'}>
