@@ -28,7 +28,9 @@ export default function Field(props: FieldProps) {
         {...props}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         {...(register as any)}
-        onChange={(event) => register.onChange({ target: { event } })}
+        onChange={(event) => {
+          register.onChange({ target: { event } });
+        }}
         id={id}
         placeholder={name}
         error={!!error}
