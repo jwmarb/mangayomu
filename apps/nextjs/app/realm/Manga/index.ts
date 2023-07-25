@@ -1,4 +1,4 @@
-import Collection, { RealmObjectSchema } from '@app/realm/collection';
+import Collection from '@app/realm/collection';
 import { ISOLangCode } from '@mangayomu/language-codes';
 import { Manga } from '@mangayomu/mangascraper';
 
