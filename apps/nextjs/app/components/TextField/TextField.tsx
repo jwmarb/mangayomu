@@ -9,7 +9,7 @@ import IconButton from '@app/components/IconButton';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function TextField(props: TextFieldProps, ref: any) {
-  const { error = false, adornment, onChange } = props;
+  const { error = false, adornment, onChange, ...rest } = props;
   const [show, toggle] = useBoolean();
   const inputRef = React.useRef<HTMLInputElement | null>(null);
   const className = useClassName(
@@ -31,15 +31,6 @@ function TextField(props: TextFieldProps, ref: any) {
     if (onChange != null) onChange(e);
     toggle(e.length > 0);
   }
-
-  const { inputProps } = useTextField(
-    {
-      ...(props as AriaTextFieldProps),
-      inputElementType: 'input',
-      onChange: handleOnChange,
-    },
-    inputRef,
-  );
   return (
     <div className="relative">
       {adornment && (
@@ -50,11 +41,11 @@ function TextField(props: TextFieldProps, ref: any) {
         </div>
       )}
       <input
-        {...(inputProps as React.HTMLProps<HTMLInputElement>)}
-        ref={(r) => {
-          if (ref) ref.current = r;
-          inputRef.current = r;
+        {...(rest as React.HTMLProps<HTMLInputElement>)}
+        onChange={(e) => {
+          handleOnChange(e.currentTarget.value);
         }}
+        ref={ref}
         aria-invalid={error}
         className={className}
       />
