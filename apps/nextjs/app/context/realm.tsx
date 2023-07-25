@@ -13,7 +13,7 @@ const UserSetterContext = React.createContext<React.Dispatch<
   React.SetStateAction<Realm.User | null>
 > | null>(null);
 
-export const useRealm = () => {
+export const useApp = () => {
   const ctx = React.useContext(RealmContext);
   if (ctx == null)
     throw new Error(
