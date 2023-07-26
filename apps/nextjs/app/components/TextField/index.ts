@@ -12,6 +12,6 @@ export interface TextFieldProps
     >,
     OverrideClassName {
   error?: boolean;
-  onChange: (e: string) => void;
+  onChange?: (e: string) => void;
   adornment?: React.ReactElement;
 }
