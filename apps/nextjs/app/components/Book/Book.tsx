@@ -3,7 +3,6 @@ import React from 'react';
 import type { BookProps } from './';
 import Text from '@app/components/Text';
 import getMangaHost from '@app/helpers/getMangaHost';
-import Image from 'next/image';
 import { IconBadge } from '@app/components/Badge';
 import Link from 'next/link';
 import getSlug from '@app/helpers/getSlug';
@@ -18,12 +17,11 @@ function Book(props: BookProps) {
       <IconBadge src={host.icon} alt={source + ' Icon'}>
         <button className="transition duration-250 ease-in-out flex flex-col items-start w-[7rem] sm:w-[7.5rem] md:w-[8.5rem] gap-2 hover:bg-hover active:bg-pressed rounded-lg p-2 focus:bg-hover">
           <div className="w-full md:h-[10.5rem] sm:h-[9.26471rem] h-[8.64706rem] relative">
-            <Image
-              fill
+            <img
               loading="lazy"
               src={imageCover}
               alt="cover image"
-              className="rounded-lg object-cover"
+              className="rounded-lg object-cover w-full h-full"
             />
           </div>
           <Text
