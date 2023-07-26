@@ -1,9 +1,15 @@
 'use client';
 import Button from '@app/components/Button';
 import React from 'react';
-import { MdBook, MdBookmarkAdd } from 'react-icons/md';
+import { MdBook, MdBookmarkAdd, MdOutlineBookmarkRemove } from 'react-icons/md';
 
-export default function Action() {
+export interface ActionProps {
+  inLibrary?: boolean;
+  onToggleLibrary: () => void;
+}
+
+export default function Action(props: ActionProps) {
+  const { inLibrary, onToggleLibrary } = props;
   return (
     <div className="flex flex-row space-x-2 justify-center items-center">
       <Button
@@ -15,12 +21,13 @@ export default function Action() {
         Read
       </Button>
       <Button
-        variant="contained"
+        onPress={onToggleLibrary}
+        variant={inLibrary ? 'outline' : 'contained'}
         color="secondary"
         size="large"
-        icon={<MdBookmarkAdd />}
+        icon={inLibrary ? <MdOutlineBookmarkRemove /> : <MdBookmarkAdd />}
       >
-        Save
+        {inLibrary ? 'Remove' : 'Save'}
       </Button>
     </div>
   );

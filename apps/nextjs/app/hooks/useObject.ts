@@ -26,7 +26,13 @@ export default function useObject<
       for await (const change of collection.watch({
         filter: { 'fullDocument._realmId': user.id },
       })) {
-        console.log(change);
+        switch (change.operationType) {
+          case 'insert':
+          case 'update':
+            if (change.documentKey._id === id)
+              setDoc(change.fullDocument || null);
+            break;
+        }
       }
     }
     async function init() {

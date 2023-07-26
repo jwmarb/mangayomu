@@ -1,3 +1,4 @@
+'use client';
 import Button from '@app/components/Button';
 import IconButton from '@app/components/IconButton';
 import Screen from '@app/components/Screen';
@@ -30,30 +31,72 @@ import Status from '@app/(root_bg_paper)/[source]/[title]/components/status';
 import Genre from '@app/(root_bg_paper)/[source]/[title]/components/genre';
 import RowChapter from '@app/(root_bg_paper)/[source]/[title]/components/rowchapter';
 import DisplayRowChapters from '@app/(root_bg_paper)/[source]/[title]/components/displayrowchapters';
+import useBoolean from '@app/hooks/useBoolean';
+import ChaptersHeader from '@app/(root_bg_paper)/[source]/[title]/components/chaptersheader';
+import { ISOLangCode } from '@mangayomu/language-codes';
+import isMultilingual from '@app/helpers/isMultilingualChapter';
+import Genres from '@app/(root_bg_paper)/[source]/[title]/components/genres';
+import SupportedLanguages from '@app/(root_bg_paper)/[source]/[title]/components/supportedlanguages';
+import Authors from '@app/(root_bg_paper)/[source]/[title]/components/authors';
+import MangaSource from '@app/(root_bg_paper)/[source]/[title]/components/mangasource';
+import useObject from '@app/hooks/useObject';
+import MangaSchema, { IMangaSchema } from '@app/realm/Manga';
+import useMongoClient from '@app/hooks/useMongoClient';
+import { useUser } from '@app/context/realm';
 
 interface MangaViewerProps {
   meta: MangaMeta<MangaChapter> &
     Manga &
     Partial<WithAuthors> &
     Partial<WithStatus>;
-  host: MangaHost;
+  source: string;
+  sanitizedDescription: string;
+  supportedLanguages: [ISOLangCode, string][];
 }
 
+export const DEFAULT_LANGUAGE: ISOLangCode = 'en';
+
 export default function MangaViewer(props: MangaViewerProps) {
-  const { meta, host } = props;
-  const window = new JSDOM('').window;
-  const purify = DOMPurify(window);
-  const sanitizedDescription = purify.sanitize(meta.description);
+  const { meta, source, sanitizedDescription, supportedLanguages } = props;
+  const [expandChapters, toggleExpandChapters] = useBoolean();
+  const mangas = useMongoClient(MangaSchema);
+  const manga = useObject<IMangaSchema>(MangaSchema, meta.link);
+  const user = useUser();
+  const filteredChapters = React.useMemo(() => {
+    if (isMultilingual(meta.chapters)) {
+      return meta.chapters.filter((chapter) =>
+        manga?.selectedLanguage === 'Use default language'
+          ? chapter.language === DEFAULT_LANGUAGE
+          : manga != null
+          ? chapter.language === manga.selectedLanguage
+          : chapter.language === DEFAULT_LANGUAGE,
+      );
+    }
+    return meta.chapters;
+  }, [manga, meta.chapters]);
+  const handleOnToggleLibrary = async () => {
+    if (manga != null) {
+      manga.update((draft) => {
+        draft.inLibrary = !draft.inLibrary;
+      });
+    } else {
+      console.log('Adding to cloud');
+      await mangas.insertOne({
+        ...meta,
+        _id: meta.link,
+        _realmId: user.id,
+        inLibrary: true,
+        selectedLanguage: 'Use default language',
+        readerDirection: 'Use global setting',
+        readerImageScaling: 'Use global setting',
+        readerLockOrientation: 'Use global setting',
+        readerZoomStartPosition: 'Use global setting',
+      });
+    }
+  };
+
   return (
     <>
-      {/* <div className="md:h-[35rem] h-[15rem] relative md:-mt-64 bg-gradient-to-b from-transparent to-default">
-        <Image
-          fill
-          src={meta.imageCover}
-          className="object-cover object-top brightness-50 -z-10"
-          alt="Image cover"
-        />
-      </div> */}
       <MangaViewerHeader title={meta.title} />
       <Screen.Content overrideClassName="relative flex flex-col">
         <div className="md:h-[35rem] h-[15rem] md:-mt-64 w-full bg-gradient-to-b from-transparent to-paper absolute">
@@ -81,42 +124,30 @@ export default function MangaViewer(props: MangaViewerProps) {
           >
             {meta.title}
           </Text>
-          <Text color="text-secondary" className="text-center">
-            by {meta.authors?.join(', ') ?? 'unknown'}
-          </Text>
-          <Action />
+          <Authors authors={meta.authors} />
+          <Action
+            inLibrary={manga?.inLibrary}
+            onToggleLibrary={handleOnToggleLibrary}
+          />
           <Synopsis sanitized={sanitizedDescription} />
           <div className="h-0.5 w-full bg-border" />
-          <div className="flex flex-row flex-wrap gap-2">
-            {meta.genres.map((x) => (
-              <Genre key={x} genre={host.getGenre(x)} />
-            ))}
-          </div>
+          <Genres genres={meta.genres} source={source} />
           <Text variant="header">Additional info</Text>
           <Status status={meta.status} />
-          <div className="flex flex-row justify-between gap-2">
-            <Text color="text-secondary">Source</Text>
-            <Text className="font-medium">{meta.source}</Text>
-          </div>
-          <div className="grid grid-cols-2 justify-between gap-2">
-            <Text color="text-secondary">Supported languages</Text>
-            <Text className="font-medium text-end">English</Text>
-          </div>
-          <div className="flex flex-row justify-between gap-2 items-center">
-            <Text variant="header">
-              {meta.chapters.length} Chapter
-              {meta.chapters.length !== 1 ? 's' : ''}
-            </Text>
-            <Button icon={<MdFilterList />}>Filters</Button>
-          </div>
+          <MangaSource source={meta.source} />
+          <SupportedLanguages languages={supportedLanguages} />
+          <ChaptersHeader
+            expanded={expandChapters}
+            toggleExpanded={toggleExpandChapters}
+            chaptersLen={filteredChapters.length}
+          />
         </div>
         <div className="h-0.5 w-full bg-border max-w-screen-md mx-auto" />
-        <DisplayRowChapters chapters={meta.chapters} mangaId={meta.link} />
+        <DisplayRowChapters
+          chapters={filteredChapters}
+          expanded={expandChapters}
+        />
       </Screen.Content>
     </>
   );
-}
-
-function isMultilingualChapter(x: MangaChapter): x is MangaMultilingualChapter {
-  return 'language' in x;
 }
