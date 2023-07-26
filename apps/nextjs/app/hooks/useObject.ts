@@ -66,7 +66,6 @@ export default function useObject<
         }
 
         if (isModified) {
-          console.log('Changes have been set');
           setDoc(draft);
           setDraft(newObj);
         }
