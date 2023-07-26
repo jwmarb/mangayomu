@@ -5,18 +5,13 @@ import React from 'react';
 
 interface DisplayRowChaptersProps {
   chapters: MangaChapter[];
-  expanded: boolean;
 }
 
 export default function DisplayRowChapters(props: DisplayRowChaptersProps) {
-  const { chapters, expanded } = props;
+  const { chapters } = props;
 
   return (
-    <div
-      className={`max-w-screen-md mx-auto w-full flex flex-col ${
-        expanded ? '' : 'max-h-[100px]'
-      } overflow-hidden`}
-    >
+    <div className="max-w-screen-md mx-auto w-full flex flex-col max-h-[41.25rem] overflow-y-auto pb-96">
       {chapters.map((x, i, self) => (
         <RowChapter
           chapter={x}

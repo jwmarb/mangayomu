@@ -58,7 +58,6 @@ export const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 
 export default function MangaViewer(props: MangaViewerProps) {
   const { meta, source, sanitizedDescription, supportedLanguages } = props;
-  const [expandChapters, toggleExpandChapters] = useBoolean();
   const mangas = useMongoClient(MangaSchema);
   const manga = useObject<IMangaSchema>(MangaSchema, meta.link);
   const user = useUser();
@@ -136,17 +135,10 @@ export default function MangaViewer(props: MangaViewerProps) {
           <Status status={meta.status} />
           <MangaSource source={meta.source} />
           <SupportedLanguages languages={supportedLanguages} />
-          <ChaptersHeader
-            expanded={expandChapters}
-            toggleExpanded={toggleExpandChapters}
-            chaptersLen={filteredChapters.length}
-          />
+          <ChaptersHeader chaptersLen={filteredChapters.length} />
         </div>
         <div className="h-0.5 w-full bg-border max-w-screen-md mx-auto" />
-        <DisplayRowChapters
-          chapters={filteredChapters}
-          expanded={expandChapters}
-        />
+        <DisplayRowChapters chapters={filteredChapters} />
       </Screen.Content>
     </>
   );
