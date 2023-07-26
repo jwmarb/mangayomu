@@ -46,7 +46,7 @@ abstract class MangaHost {
    */
   public readonly genres: string[];
 
-  private readonly genresDictionary: Record<string, string>;
+  public readonly genresDictionary: Record<string, string>;
 
   private readonly formattedGenres: string[];
 
