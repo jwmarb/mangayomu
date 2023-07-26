@@ -14,6 +14,7 @@
     "@hookform/resolvers": "^3.1.1",
     "@mangayomu/algorithms": "1.0.0",
     "@mangayomu/backend": "1.0.0",
+    "@mangayomu/language-codes": "1.0.0",
     "@mangayomu/mangascraper": "1.0.0",
     "@mangayomu/request-handler": "1.0.0",
     "@mangayomu/vercel-env": "1.0.0",
