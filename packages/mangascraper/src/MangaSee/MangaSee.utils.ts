@@ -19,7 +19,7 @@ export function extractDataFromApplicationLDJson<T>(html: string | null): T {
   const target = /"mainEntity":{((\s|.)*?)}/g;
   const obj = html.match(target);
 
-  if (obj == null) throw Error('Invalid regular expression');
+  if (obj == null) throw Error(`Invalid regular expression. Got ${html}`);
   const parsed = JSON.parse(
     `{${obj[0].replace(/ ".*" /g, (s) => {
       return s.replace(/"/g, '\\"');
