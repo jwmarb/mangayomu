@@ -11,7 +11,7 @@ export interface RootLayoutProps extends React.PropsWithChildren {
   idTokenInvalid?: boolean;
 }
 
-async function RootLayout({
+function RootLayout({
   children,
   paper,
   idToken,
@@ -21,6 +21,7 @@ async function RootLayout({
     <html lang="en">
       <body className={`${paper ? 'bg-paper' : 'bg-default'} flex`}>
         <Providers idToken={idToken} idTokenInvalid={idTokenInvalid}>
+          <div id="__modal__" />
           <Navbar />
           <SafeArea>{children}</SafeArea>
         </Providers>
