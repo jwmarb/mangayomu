@@ -18,6 +18,7 @@ import GoBackButton from '@app/(root_bg_paper)/[source]/[title]/components/gobac
 import Genre from '@app/(root_bg_paper)/[source]/[title]/components/genre';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import { integrateSortedList } from '@mangayomu/algorithms';
+import { Metadata, ResolvingMetadata } from 'next';
 import isMultilingual from '@app/helpers/isMultilingualChapter';
 interface PageProps {
   params: {
@@ -25,6 +26,31 @@ interface PageProps {
     title: string;
   };
 }
+
+export async function generateMetadata(
+  { params: { source, title } }: PageProps,
+  parent?: ResolvingMetadata,
+): Promise<Metadata> {
+  const pathName = source + '/' + title;
+  const manga = await getSourceManga(pathName);
+  const host = getSourceFromSlug(source);
+  if (host == null || manga == null)
+    return {
+      title: '404 Not Found',
+    };
+  const meta = await host.getMeta(manga);
+  return {
+    title: meta.title,
+    description: meta.description,
+    openGraph: {
+      description: meta.description,
+      title: meta.title,
+      images: [meta.imageCover],
+      type: 'book',
+    },
+  };
+}
+
 const SortLanguages = (a: ISOLangCode, b: ISOLangCode) => {
   const lang1 = languages[a].name;
   const lang2 = languages[b].name;
