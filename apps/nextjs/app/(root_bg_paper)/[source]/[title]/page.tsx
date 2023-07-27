@@ -27,13 +27,13 @@ interface PageProps {
   };
 }
 
-export async function generateMetadata(
-  { params: { source, title } }: PageProps,
-  parent?: ResolvingMetadata,
-): Promise<Metadata> {
+export async function generateMetadata({
+  params: { source, title },
+}: PageProps): Promise<Metadata> {
   const pathName = source + '/' + title;
   const manga = await getSourceManga(pathName);
   const host = getSourceFromSlug(source);
+
   if (host == null || manga == null)
     return {
       title: '404 Not Found',
