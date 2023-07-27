@@ -1,7 +1,5 @@
 import { useUser } from '@app/context/realm';
 import useMongoClient from '@app/hooks/useMongoClient';
-import MangaSchema from '@app/realm/Manga';
-import { RealmUser } from '@app/realm/collection';
 import React from 'react';
 
 export type UpdateOptions = {
@@ -95,16 +93,12 @@ export default function useObject<
   React.useEffect(() => {
     async function uploadChanges() {
       if (draft != null) {
-        console.log('Uploading changes...');
-        console.log(draft);
         await collection.updateOne(
           { _id: id, _realmId: user.id },
           { $set: draft },
           { upsert: shouldUpsert.current },
         );
-        console.log(
-          'Changes have been fully uploaded to DB and doc has been rehydrated',
-        );
+
         shouldUpsert.current = false;
         setDraft(null);
       }
