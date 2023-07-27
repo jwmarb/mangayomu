@@ -1,4 +1,5 @@
 import { useUser } from '@app/context/realm';
+import useBoolean from '@app/hooks/useBoolean';
 import useMongoClient from '@app/hooks/useMongoClient';
 import React from 'react';
 
@@ -11,7 +12,8 @@ export type UpdateOptions = {
 
 export default function useObject<
   TSchema extends { _id: string; _realmId: string },
-  RealmObject = TSchema & {
+  RealmObject = Partial<TSchema> & {
+    initializing: boolean;
     update: (fn: (draft: TSchema) => void, options?: UpdateOptions) => void;
     create: (obj: TSchema) => void;
   },
@@ -24,6 +26,7 @@ export default function useObject<
   const [doc, setDoc] = React.useState<TSchema | null>(null);
   const [draft, setDraft] = React.useState<TSchema | null>(null);
   const [insert, setInsert] = React.useState<TSchema | null>(null);
+  const [loading, toggleLoading] = useBoolean(true);
   const shouldUpsert = React.useRef<boolean>(false);
 
   React.useEffect(() => {
@@ -47,17 +50,20 @@ export default function useObject<
           _realmId: user.id,
         });
         setDoc(document);
+        toggleLoading(false);
       }
     }
     init();
     listener();
-  }, [collection, id, user.id]);
+  }, [collection, id, toggleLoading, user.id]);
 
   const obj = React.useMemo(() => {
     const object = { ...doc } as unknown as TSchema & {
+      initializing: boolean;
       update: (fn: (draft: TSchema) => void) => void;
       insert: (obj: TSchema) => void;
     };
+    object.initializing = loading;
     object.update = (fn, options = { upsert: false }) => {
       const { upsert } = options;
       let isModified = true;
@@ -88,7 +94,7 @@ export default function useObject<
       setInsert({ ...collection.initFields(), ...obj });
     };
     return object as RealmObject;
-  }, [collection, doc, id, user.id]);
+  }, [collection, doc, id, user.id, loading]);
 
   React.useEffect(() => {
     async function uploadChanges() {
