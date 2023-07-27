@@ -1,37 +1,20 @@
 'use client';
-import Button from '@app/components/Button';
-import IconButton from '@app/components/IconButton';
 import Screen from '@app/components/Screen';
 import Text from '@app/components/Text';
 import {
   Manga,
   MangaChapter,
-  MangaHost,
   MangaMeta,
-  MangaMultilingualChapter,
   WithAuthors,
   WithStatus,
 } from '@mangayomu/mangascraper';
 import Image from 'next/image';
 import React from 'react';
-import {
-  MdArrowBack,
-  MdArrowDropDown,
-  MdArrowDropUp,
-  MdBook,
-  MdBookmarkAdd,
-  MdFilterList,
-} from 'react-icons/md';
-import DOMPurify from 'dompurify';
-import { JSDOM } from 'jsdom';
 import MangaViewerHeader from '@app/(root_bg_paper)/[source]/[title]/components/mangaviewerheader';
 import Action from '@app/(root_bg_paper)/[source]/[title]/components/actions';
 import Synopsis from '@app/(root_bg_paper)/[source]/[title]/components/synopsis';
 import Status from '@app/(root_bg_paper)/[source]/[title]/components/status';
-import Genre from '@app/(root_bg_paper)/[source]/[title]/components/genre';
-import RowChapter from '@app/(root_bg_paper)/[source]/[title]/components/rowchapter';
 import DisplayRowChapters from '@app/(root_bg_paper)/[source]/[title]/components/displayrowchapters';
-import useBoolean from '@app/hooks/useBoolean';
 import ChaptersHeader from '@app/(root_bg_paper)/[source]/[title]/components/chaptersheader';
 import { ISOLangCode } from '@mangayomu/language-codes';
 import isMultilingual from '@app/helpers/isMultilingualChapter';
@@ -43,6 +26,8 @@ import useObject from '@app/hooks/useObject';
 import MangaSchema, { IMangaSchema } from '@app/realm/Manga';
 import useMongoClient from '@app/hooks/useMongoClient';
 import { useUser } from '@app/context/realm';
+import { ModalMethods } from '@app/components/Modal';
+import FilterModal from '@app/(root_bg_paper)/[source]/[title]/components/filtermodal';
 
 interface MangaViewerProps {
   meta: MangaMeta<MangaChapter> &
@@ -61,6 +46,7 @@ export default function MangaViewer(props: MangaViewerProps) {
   const mangas = useMongoClient(MangaSchema);
   const manga = useObject<IMangaSchema>(MangaSchema, meta.link);
   const user = useUser();
+  const modal = React.useRef<ModalMethods>(null);
   const filteredChapters = React.useMemo(() => {
     if (isMultilingual(meta.chapters)) {
       return meta.chapters.filter((chapter) =>
@@ -94,6 +80,33 @@ export default function MangaViewer(props: MangaViewerProps) {
     }
   };
 
+  const handleOnSelectLanguage = React.useCallback(
+    async (lang: IMangaSchema['selectedLanguage']) => {
+      if (manga != null) {
+        manga.update((draft) => {
+          draft.selectedLanguage = lang;
+        });
+      } else {
+        console.log('Adding to cloud');
+        await mangas.insertOne({
+          ...meta,
+          _id: meta.link,
+          _realmId: user.id,
+          inLibrary: false,
+          selectedLanguage: lang,
+          readerDirection: 'Use global setting',
+          readerImageScaling: 'Use global setting',
+          readerLockOrientation: 'Use global setting',
+          readerZoomStartPosition: 'Use global setting',
+        });
+      }
+    },
+    [manga, mangas, meta, user.id],
+  );
+
+  function handleOnOpenFilters() {
+    modal.current?.open();
+  }
   return (
     <>
       <MangaViewerHeader title={meta.title} />
@@ -135,11 +148,20 @@ export default function MangaViewer(props: MangaViewerProps) {
           <Status status={meta.status} />
           <MangaSource source={meta.source} />
           <SupportedLanguages languages={supportedLanguages} />
-          <ChaptersHeader chaptersLen={filteredChapters.length} />
+          <ChaptersHeader
+            chaptersLen={filteredChapters.length}
+            onOpenFilters={handleOnOpenFilters}
+          />
         </div>
         <div className="h-0.5 w-full bg-border max-w-screen-md mx-auto" />
         <DisplayRowChapters chapters={filteredChapters} />
       </Screen.Content>
+      <FilterModal
+        ref={modal}
+        supportedLanguages={supportedLanguages}
+        selectedLanguage={manga?.selectedLanguage ?? 'Use default language'}
+        onSelectLanguage={handleOnSelectLanguage}
+      />
     </>
   );
 }
