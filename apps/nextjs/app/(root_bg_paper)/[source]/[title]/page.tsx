@@ -25,7 +25,7 @@ interface PageProps {
     title: string;
   };
 }
-export const SortLanguages = (a: ISOLangCode, b: ISOLangCode) => {
+const SortLanguages = (a: ISOLangCode, b: ISOLangCode) => {
   const lang1 = languages[a].name;
   const lang2 = languages[b].name;
   return lang1.localeCompare(lang2);

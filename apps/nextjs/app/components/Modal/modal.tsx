@@ -69,10 +69,7 @@ function Modal(props: ModalProps, forwardedRef: React.Ref<ModalMethods>) {
             style={{
               opacity,
             }}
-            {...(buttonProps as React.DetailedHTMLProps<
-              React.HTMLAttributes<HTMLButtonElement>,
-              HTMLButtonElement
-            >)}
+            {...(buttonProps as React.ComponentProps<typeof animated.div>)}
             ref={ref}
             className={
               'bg-black/[.3] z-50 fixed top-0 left-0 right-0 bottom-0 w-full h-full cursor-default'
