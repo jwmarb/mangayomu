@@ -108,7 +108,7 @@ export default function MangaViewer(props: MangaViewerProps) {
         { upsert: true },
       );
     },
-    [manga],
+    [manga, meta.imageCover, meta.source, meta.title],
   );
 
   function handleOnOpenFilters() {
