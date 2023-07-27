@@ -21,7 +21,7 @@ export default function TopNavBar(props: TopNavBarProps) {
     <nav
       ref={navRef}
       className={`lg:opacity-0 lg:pointer-events-none fixed w-full flex flex-row items-center px-4 py-2 bg-paper ${
-        !drawerVisible ? 'z-50' : ''
+        !drawerVisible ? 'z-30' : ''
       }`}
     >
       <IconButton icon={<MdMenu />} onClick={onOpenDrawer} />
