@@ -6,23 +6,30 @@ import React from 'react';
 import { MdArrowUpward, MdCheck } from 'react-icons/md';
 import Filter from '@app/components/Filter';
 import useBoolean from '@app/hooks/useBoolean';
-import { IMangaSchema } from '@app/realm/Manga';
+import { IMangaSchema, SortChaptersByType } from '@app/realm/Manga';
 
 interface FilterModalProps extends React.PropsWithChildren {
   supportedLanguages: [ISOLangCode, string][];
   onSelectLanguage: (val: IMangaSchema['selectedLanguage']) => void;
   selectedLanguage: IMangaSchema['selectedLanguage'];
+  onSort: (val: SortChaptersByType, reversed: boolean) => void;
+  sortBy: SortChaptersByType;
+  reversed: boolean;
 }
 
 function FilterModal(
   props: FilterModalProps,
   ref: React.ForwardedRef<ModalMethods>,
 ) {
-  const { supportedLanguages, onSelectLanguage, selectedLanguage } = props;
-  const [selected, setSelected] = React.useState<
-    'Chapter number' | 'Timestamp'
-  >('Chapter number');
-  const [reversed, setReversed] = useBoolean(false);
+  const {
+    supportedLanguages,
+    onSelectLanguage,
+    selectedLanguage,
+    onSort,
+    sortBy,
+    reversed,
+  } = props;
+
   return (
     <Modal ref={ref} className="h-96">
       <Tabs>
@@ -33,12 +40,9 @@ function FilterModal(
         <Tabs.Panel>
           <Filter
             type="sort"
-            selected={selected}
+            selected={sortBy}
             reversed={reversed}
-            onChange={(val, r) => {
-              setSelected(val);
-              setReversed(r);
-            }}
+            onChange={onSort}
           >
             <Filter.Sort value="Chapter number" />
             <Filter.Sort value="Timestamp" />

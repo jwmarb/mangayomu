@@ -23,11 +23,17 @@ import SupportedLanguages from '@app/(root_bg_paper)/[source]/[title]/components
 import Authors from '@app/(root_bg_paper)/[source]/[title]/components/authors';
 import MangaSource from '@app/(root_bg_paper)/[source]/[title]/components/mangasource';
 import useObject from '@app/hooks/useObject';
-import MangaSchema, { IMangaSchema } from '@app/realm/Manga';
+import MangaSchema, {
+  IMangaSchema,
+  SORT_CHAPTERS_BY,
+  SortChaptersByType,
+} from '@app/realm/Manga';
 import useMongoClient from '@app/hooks/useMongoClient';
 import { useUser } from '@app/context/realm';
 import { ModalMethods } from '@app/components/Modal';
 import FilterModal from '@app/(root_bg_paper)/[source]/[title]/components/filtermodal';
+import { inPlaceSort } from 'fast-sort';
+import useBoolean from '@app/hooks/useBoolean';
 
 interface MangaViewerProps {
   meta: MangaMeta<MangaChapter> &
@@ -43,65 +49,60 @@ export const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 
 export default function MangaViewer(props: MangaViewerProps) {
   const { meta, source, sanitizedDescription, supportedLanguages } = props;
-  const mangas = useMongoClient(MangaSchema);
-  const manga = useObject<IMangaSchema>(MangaSchema, meta.link);
-  const user = useUser();
+  const manga = useObject(MangaSchema, meta.link);
   const modal = React.useRef<ModalMethods>(null);
+  const [sortBy, setSortBy] =
+    React.useState<SortChaptersByType>('Chapter number');
+  const [reversed, setReversed] = useBoolean();
+
   const filteredChapters = React.useMemo(() => {
+    let chapters: MangaChapter[];
     if (isMultilingual(meta.chapters)) {
-      return meta.chapters.filter((chapter) =>
+      chapters = meta.chapters.filter((chapter) =>
         manga?.selectedLanguage === 'Use default language'
           ? chapter.language === DEFAULT_LANGUAGE
           : manga != null
           ? chapter.language === manga.selectedLanguage
           : chapter.language === DEFAULT_LANGUAGE,
       );
-    }
-    return meta.chapters;
+    } else chapters = meta.chapters;
+
+    return chapters;
   }, [manga, meta.chapters]);
+  const sortedChapters = React.useMemo(
+    () =>
+      inPlaceSort(filteredChapters).by(
+        reversed
+          ? [{ asc: SORT_CHAPTERS_BY[sortBy] }]
+          : [{ desc: SORT_CHAPTERS_BY[sortBy] }],
+      ),
+    [filteredChapters, sortBy, reversed],
+  );
   const handleOnToggleLibrary = async () => {
-    if (manga != null) {
-      manga.update((draft) => {
+    manga.update(
+      (draft) => {
         draft.inLibrary = !draft.inLibrary;
-      });
-    } else {
-      console.log('Adding to cloud');
-      await mangas.insertOne({
-        ...meta,
-        _id: meta.link,
-        _realmId: user.id,
-        inLibrary: true,
-        selectedLanguage: 'Use default language',
-        readerDirection: 'Use global setting',
-        readerImageScaling: 'Use global setting',
-        readerLockOrientation: 'Use global setting',
-        readerZoomStartPosition: 'Use global setting',
-      });
-    }
+        draft.dateAddedInLibrary = Date.now();
+      },
+      { upsert: true },
+    );
+  };
+
+  const handleOnSortBy = (val: SortChaptersByType, r: boolean) => {
+    setSortBy(val);
+    setReversed(r);
   };
 
   const handleOnSelectLanguage = React.useCallback(
     async (lang: IMangaSchema['selectedLanguage']) => {
-      if (manga != null) {
-        manga.update((draft) => {
+      manga.update(
+        (draft) => {
           draft.selectedLanguage = lang;
-        });
-      } else {
-        console.log('Adding to cloud');
-        await mangas.insertOne({
-          ...meta,
-          _id: meta.link,
-          _realmId: user.id,
-          inLibrary: false,
-          selectedLanguage: lang,
-          readerDirection: 'Use global setting',
-          readerImageScaling: 'Use global setting',
-          readerLockOrientation: 'Use global setting',
-          readerZoomStartPosition: 'Use global setting',
-        });
-      }
+        },
+        { upsert: true },
+      );
     },
-    [manga, mangas, meta, user.id],
+    [manga],
   );
 
   function handleOnOpenFilters() {
@@ -154,10 +155,13 @@ export default function MangaViewer(props: MangaViewerProps) {
           />
         </div>
         <div className="h-0.5 w-full bg-border max-w-screen-md mx-auto" />
-        <DisplayRowChapters chapters={filteredChapters} />
+        <DisplayRowChapters chapters={sortedChapters} />
       </Screen.Content>
       <FilterModal
         ref={modal}
+        onSort={handleOnSortBy}
+        sortBy={sortBy}
+        reversed={reversed}
         supportedLanguages={supportedLanguages}
         selectedLanguage={manga?.selectedLanguage ?? 'Use default language'}
         onSelectLanguage={handleOnSelectLanguage}
