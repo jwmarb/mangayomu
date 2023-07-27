@@ -81,6 +81,9 @@ export default function MangaViewer(props: MangaViewerProps) {
   const handleOnToggleLibrary = async () => {
     manga.update(
       (draft) => {
+        draft.title = meta.title;
+        draft.source = meta.source;
+        draft.imageCover = meta.imageCover;
         draft.inLibrary = !draft.inLibrary;
         draft.dateAddedInLibrary = Date.now();
       },
@@ -97,6 +100,9 @@ export default function MangaViewer(props: MangaViewerProps) {
     async (lang: IMangaSchema['selectedLanguage']) => {
       manga.update(
         (draft) => {
+          draft.title = meta.title;
+          draft.source = meta.source;
+          draft.imageCover = meta.imageCover;
           draft.selectedLanguage = lang;
         },
         { upsert: true },
