@@ -55,6 +55,15 @@ export default function MangaViewer(props: MangaViewerProps) {
     React.useState<SortChaptersByType>('Chapter number');
   const [reversed, setReversed] = useBoolean();
 
+  const currentlyReadingChapter = React.useMemo(() => {
+    if (manga.currentlyReadingChapter) {
+      return meta.chapters.find(
+        (x) => x.link === manga.currentlyReadingChapter?._id,
+      );
+    }
+    return undefined;
+  }, [manga.currentlyReadingChapter, meta.chapters]);
+
   const filteredChapters = React.useMemo(() => {
     let chapters: MangaChapter[];
     if (isMultilingual(meta.chapters)) {
@@ -145,7 +154,9 @@ export default function MangaViewer(props: MangaViewerProps) {
           </Text>
           <Authors authors={meta.authors} />
           <Action
-            inLibrary={manga?.inLibrary}
+            loading={manga.initializing}
+            currentlyReadingChapter={currentlyReadingChapter}
+            inLibrary={manga?.inLibrary ?? false}
             onToggleLibrary={handleOnToggleLibrary}
           />
           <Synopsis sanitized={sanitizedDescription} />
