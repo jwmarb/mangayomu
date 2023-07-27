@@ -1,6 +1,6 @@
 import Collection from '@app/realm/collection';
 import { ISOLangCode } from '@mangayomu/language-codes';
-import { Manga } from '@mangayomu/mangascraper';
+import { Manga, MangaChapter } from '@mangayomu/mangascraper';
 
 export interface IMangaSchema extends Omit<Manga, 'link'> {
   currentlyReadingChapter?: CurrentlyReadingChapter;
@@ -55,6 +55,29 @@ export enum ReaderBackgroundColor {
   WHITE = 'White',
 }
 
+export const SORT_CHAPTERS_BY = {
+  'Chapter number': (a: Omit<MangaChapter, 'link'>) => {
+    if (a.name) {
+      const aName = a.name.match(/(0|[1-9]\d*)(\.\d+)?/g);
+      if (aName != null) return parseFloat(aName[0]);
+    }
+    if (a.index != null) return a.index;
+    throw Error('Chapter cannot be sorted due to undefined name and index');
+  },
+  Timestamp: (a: Omit<MangaChapter, 'link'>) => Date.parse(a.date),
+};
+
+export type SortChaptersByType = keyof typeof SORT_CHAPTERS_BY;
+
 export default class MangaSchema extends Collection<IMangaSchema>({
   name: 'Manga',
+  defaults: {
+    selectedLanguage: 'Use default language',
+    readerDirection: 'Use global setting',
+    readerImageScaling: 'Use global setting',
+    readerLockOrientation: 'Use global setting',
+    readerZoomStartPosition: 'Use global setting',
+    inLibrary: false,
+    notifyNewChaptersCount: 0,
+  },
 }) {}

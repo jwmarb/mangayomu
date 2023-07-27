@@ -2,15 +2,19 @@ import { useUser } from '@app/context/realm';
 
 export type RealmUser = ReturnType<typeof useUser>;
 
-export type RealmObjectSchema = {
-  name: string;
+export type RealmObjectSchemaPropertyInitializer<T> = {
+  [K in keyof T]?: T[K] | (() => T[K]);
 };
 
+export type RealmObjectSchema<T> = {
+  name: string;
+  defaults?: RealmObjectSchemaPropertyInitializer<T>;
+};
 export default function Collection<TObject extends { _id: string }>(
-  schema: RealmObjectSchema,
+  schema: RealmObjectSchema<TObject>,
 ) {
   return class Collection {
-    static schema: RealmObjectSchema = schema;
+    static schema: RealmObjectSchema<TObject> = schema;
     readonly collection: Realm.Services.MongoDB.MongoDBCollection<TObject>;
     public constructor(user: RealmUser) {
       this.collection = user
