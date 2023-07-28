@@ -16,11 +16,13 @@
     "user-agents": "^1.0.1440"
   },
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsc --build && webpack",
     "reset": "rm -rf node_modules",
     "test": "jest"
   },
   "devDependencies": {
-    "@types/user-agents": "^1.0.2"
+    "@types/user-agents": "^1.0.2",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
   }
 }
