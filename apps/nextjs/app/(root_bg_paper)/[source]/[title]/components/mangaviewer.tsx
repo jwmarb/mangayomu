@@ -38,6 +38,7 @@ import useBoolean from '@app/hooks/useBoolean';
 import { integrateSortedList } from '@mangayomu/algorithms';
 import getMangaHost from '@app/helpers/getMangaHost';
 import * as DOMPurify from 'dompurify';
+import ImageCover from '@app/(root_bg_paper)/[source]/[title]/components/imagecover';
 
 interface MangaViewerProps {
   // meta: MangaMeta<MangaChapter> &
@@ -202,13 +203,7 @@ export default function MangaViewer(props: MangaViewerProps) {
           />
         </div>
         <div className="z-10 flex flex-col gap-2 m-4 max-w-screen-md flex-grow w-full mx-auto px-4">
-          <Image
-            width={768}
-            height={768}
-            src={_manga.imageCover}
-            className="mx-auto object-contain rounded-lg max-w-full w-40 md:w-52 top-4"
-            alt="Image cover"
-          />
+          <ImageCover imageCover={_manga.imageCover} />
           <Text
             variant="header"
             className="text-center lg:text-variant-header-emphasized md:text-2xl"
