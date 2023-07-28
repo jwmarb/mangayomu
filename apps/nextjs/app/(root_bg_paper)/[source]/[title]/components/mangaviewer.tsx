@@ -125,13 +125,14 @@ export default function MangaViewer(props: MangaViewerProps) {
     if (meta == null) return null;
     let chapters: MangaChapter[];
     if (isMultilingual(meta.chapters)) {
-      chapters = meta.chapters.filter((chapter) =>
-        manga?.selectedLanguage === 'Use default language'
-          ? chapter.language === DEFAULT_LANGUAGE
-          : manga != null
-          ? chapter.language === manga.selectedLanguage
-          : chapter.language === DEFAULT_LANGUAGE,
-      );
+      chapters = meta.chapters.filter((chapter) => {
+        if (
+          manga.selectedLanguage === 'Use default language' ||
+          manga.selectedLanguage == null
+        )
+          return chapter.language === DEFAULT_LANGUAGE;
+        return manga.selectedLanguage === chapter.language;
+      });
     } else chapters = meta.chapters;
 
     return chapters;
