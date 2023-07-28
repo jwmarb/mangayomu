@@ -7,13 +7,8 @@ import MangaViewer from '@app/(root_bg_paper)/[source]/[title]/components/mangav
 import Link from 'next/link';
 import getSlug from '@app/helpers/getSlug';
 import { TbError404 } from 'react-icons/tb';
-import DOMPurify from 'dompurify';
-import { JSDOM } from 'jsdom';
 import GoBackButton from '@app/(root_bg_paper)/[source]/[title]/components/gobackbutton';
-import languages, { ISOLangCode } from '@mangayomu/language-codes';
-import { integrateSortedList } from '@mangayomu/algorithms';
 import { Metadata } from 'next';
-import isMultilingual from '@app/helpers/isMultilingualChapter';
 interface PageProps {
   params: {
     source: string;
@@ -44,13 +39,6 @@ export async function generateMetadata({
     },
   };
 }
-
-const SortLanguages = (a: ISOLangCode, b: ISOLangCode) => {
-  const lang1 = languages[a].name;
-  const lang2 = languages[b].name;
-  return lang1.localeCompare(lang2);
-};
-
 function getSourceFromSlug(sourceSlug: string) {
   const idx = MangaHost.sources.findIndex(
     (source) => getSlug(source) === sourceSlug,
@@ -95,40 +83,12 @@ export default async function Page(props: PageProps) {
       </Screen>
     );
 
-  const meta = await host.getMeta(manga);
-  const window = new JSDOM('').window;
-  const purify = DOMPurify(window);
-  const sanitizedDescription = purify.sanitize(meta.description);
-  const supportedLanguages: ISOLangCode[] = [];
-  const foundLanguages: Set<ISOLangCode> = new Set();
-  const sorted = integrateSortedList(supportedLanguages, SortLanguages);
-  if (isMultilingual(meta.chapters)) {
-    for (const chapter of meta.chapters) {
-      if (!foundLanguages.has(chapter.language)) {
-        sorted.add(chapter.language);
-        foundLanguages.add(chapter.language);
-      }
-    }
-  } else {
-    supportedLanguages.push('en'); // should be host.defaultLanguage; todo later
-  }
-
   return (
     <Screen>
-      <MangaViewer
-        supportedLanguages={supportedLanguages.map((x) => [
-          x,
-          languages[x].name,
-        ])}
-        sanitizedDescription={sanitizedDescription}
-        meta={meta}
-        source={host.name}
-      />
+      <MangaViewer manga={manga} source={host.name} />
     </Screen>
   );
 }
-
-export const revalidate = 300;
 
 async function getSourceManga(pathName: string): Promise<Manga | null> {
   const cached = await redis.get(pathName);

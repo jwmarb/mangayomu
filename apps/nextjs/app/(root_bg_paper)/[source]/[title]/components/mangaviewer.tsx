@@ -4,6 +4,7 @@ import Text from '@app/components/Text';
 import {
   Manga,
   MangaChapter,
+  MangaHost,
   MangaMeta,
   WithAuthors,
   WithStatus,
@@ -16,7 +17,7 @@ import Synopsis from '@app/(root_bg_paper)/[source]/[title]/components/synopsis'
 import Status from '@app/(root_bg_paper)/[source]/[title]/components/status';
 import DisplayRowChapters from '@app/(root_bg_paper)/[source]/[title]/components/displayrowchapters';
 import ChaptersHeader from '@app/(root_bg_paper)/[source]/[title]/components/chaptersheader';
-import { ISOLangCode } from '@mangayomu/language-codes';
+import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import isMultilingual from '@app/helpers/isMultilingualChapter';
 import Genres from '@app/(root_bg_paper)/[source]/[title]/components/genres';
 import SupportedLanguages from '@app/(root_bg_paper)/[source]/[title]/components/supportedlanguages';
@@ -34,22 +35,86 @@ import { ModalMethods } from '@app/components/Modal';
 import FilterModal from '@app/(root_bg_paper)/[source]/[title]/components/filtermodal';
 import { inPlaceSort } from 'fast-sort';
 import useBoolean from '@app/hooks/useBoolean';
+import { integrateSortedList } from '@mangayomu/algorithms';
+import getMangaHost from '@app/helpers/getMangaHost';
+import * as DOMPurify from 'dompurify';
+import MangaViewerLoading from '@app/(root_bg_paper)/[source]/[title]/components/mangaviewerloading';
 
 interface MangaViewerProps {
-  meta: MangaMeta<MangaChapter> &
-    Manga &
-    Partial<WithAuthors> &
-    Partial<WithStatus>;
+  // meta: MangaMeta<MangaChapter> &
+  //   Manga &
+  //   Partial<WithAuthors> &
+  //   Partial<WithStatus>;
   source: string;
-  sanitizedDescription: string;
-  supportedLanguages: [ISOLangCode, string][];
+  manga: Manga;
+
+  // sanitizedDescription: string;
+  // supportedLanguages: [ISOLangCode, string][];
 }
 
 export const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 
-export default function MangaViewer(props: MangaViewerProps) {
-  const { meta, source, sanitizedDescription, supportedLanguages } = props;
-  const manga = useObject(MangaSchema, meta.link);
+const SortLanguages = (a: ISOLangCode, b: ISOLangCode) => {
+  const lang1 = languages[a].name;
+  const lang2 = languages[b].name;
+  return lang1.localeCompare(lang2);
+};
+
+export default function MangaViewerWrapper(props: MangaViewerProps) {
+  const { source, manga } = props;
+  const host = getMangaHost(source);
+  const cloudManga = useObject(MangaSchema, manga.link);
+  const [meta, setMeta] = React.useState<
+    MangaMeta<MangaChapter> & Manga & Partial<WithAuthors> & Partial<WithStatus>
+  >();
+  React.useEffect(() => {
+    async function init() {
+      const res = await fetch('/api/v1/manga', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(manga),
+      });
+      const { data: p } = await res.json();
+      setMeta(p);
+    }
+    init();
+  }, [host, manga]);
+  if (meta == null) return <MangaViewerLoading meta={manga} />;
+
+  return <MangaViewer meta={meta} cloudManga={cloudManga} {...props} />;
+}
+
+function MangaViewer(
+  props: MangaViewerProps & {
+    meta: MangaMeta<MangaChapter> &
+      Manga &
+      Partial<WithAuthors> &
+      Partial<WithStatus>;
+    cloudManga: ReturnType<typeof useObject<IMangaSchema>>;
+  },
+) {
+  const { source, meta, cloudManga: manga } = props;
+
+  const supportedLanguages: [ISOLangCode, string][] = React.useMemo(() => {
+    const supportedLanguages: ISOLangCode[] = [];
+    const foundLanguages: Set<ISOLangCode> = new Set();
+    const sorted = integrateSortedList(supportedLanguages, SortLanguages);
+    if (isMultilingual(meta.chapters)) {
+      for (const chapter of meta.chapters) {
+        if (!foundLanguages.has(chapter.language)) {
+          sorted.add(chapter.language);
+          foundLanguages.add(chapter.language);
+        }
+      }
+    } else {
+      supportedLanguages.push('en'); // should be host.defaultLanguage; todo later
+    }
+    return supportedLanguages.map((x) => [x, languages[x].name]);
+  }, [meta.chapters]);
+  const sanitizedDescription = React.useMemo(
+    () => DOMPurify.sanitize(meta.description),
+    [meta.description],
+  );
   const modal = React.useRef<ModalMethods>(null);
   const [sortBy, setSortBy] =
     React.useState<SortChaptersByType>('Chapter number');
