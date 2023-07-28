@@ -1,33 +1,55 @@
 'use client';
 import Button from '@app/components/Button';
+import Text from '@app/components/Text';
+import { MangaChapter } from '@mangayomu/mangascraper';
 import React from 'react';
 import { MdBook, MdBookmarkAdd, MdOutlineBookmarkRemove } from 'react-icons/md';
 
 export interface ActionProps {
-  inLibrary?: boolean;
+  inLibrary: boolean;
   onToggleLibrary: () => void;
+  currentlyReadingChapter?: MangaChapter;
+  loading: boolean;
 }
 
 export default function Action(props: ActionProps) {
-  const { inLibrary, onToggleLibrary } = props;
+  const { inLibrary, onToggleLibrary, currentlyReadingChapter, loading } =
+    props;
   return (
     <div className="flex flex-row space-x-2 justify-center items-center">
       <Button
+        disabled={loading}
         size="large"
         variant="contained"
-        icon={<MdBook />}
+        icon={!loading && <MdBook />}
         className="flex-grow max-w-screen-sm"
       >
-        Read
+        {loading ? (
+          <Text.Skeleton width="100%" variant="button" />
+        ) : currentlyReadingChapter != null ? (
+          currentlyReadingChapter.name
+        ) : (
+          'Read'
+        )}
       </Button>
       <Button
+        disabled={loading}
         onPress={onToggleLibrary}
         variant={inLibrary ? 'outline' : 'contained'}
         color="secondary"
         size="large"
-        icon={inLibrary ? <MdOutlineBookmarkRemove /> : <MdBookmarkAdd />}
+        icon={
+          !loading &&
+          (inLibrary ? <MdOutlineBookmarkRemove /> : <MdBookmarkAdd />)
+        }
       >
-        {inLibrary ? 'Remove' : 'Save'}
+        {loading ? (
+          <Text.Skeleton width="100%" variant="button" />
+        ) : inLibrary ? (
+          'Remove'
+        ) : (
+          'Save'
+        )}
       </Button>
     </div>
   );
