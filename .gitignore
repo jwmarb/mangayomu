@@ -87,3 +87,4 @@ npm-debug.log
 .env*.local
 apps/nextjs/api/**/*.js
 **/*.tsbuildinfo
+**/*/bundle
