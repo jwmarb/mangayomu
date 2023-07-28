@@ -98,10 +98,10 @@ async function getSourceManga(pathName: string): Promise<Manga | null> {
     const value = await SourceManga.findById(pathName);
     if (value == null) return null;
     await Promise.all([
-      redis.set(pathName, JSON.stringify(value.toJSON())),
+      redis.setex(pathName, 300, JSON.stringify(value.toJSON())),
       close,
     ]);
-    return value;
+    return value.toObject();
   }
 
   return JSON.parse(cached);
