@@ -1,12 +1,7 @@
 import Screen from '@app/components/Screen';
 import Text from '@app/components/Text';
 import React from 'react';
-import {
-  redis,
-  SourceManga,
-  mongodb,
-  getMongooseConnection,
-} from '@mangayomu/backend';
+import { redis, SourceManga, getMongooseConnection } from '@mangayomu/backend';
 import { Manga, MangaHost } from '@mangayomu/mangascraper';
 import MangaViewer from '@app/(root_bg_paper)/[source]/[title]/components/mangaviewer';
 import Link from 'next/link';
@@ -15,10 +10,9 @@ import { TbError404 } from 'react-icons/tb';
 import DOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
 import GoBackButton from '@app/(root_bg_paper)/[source]/[title]/components/gobackbutton';
-import Genre from '@app/(root_bg_paper)/[source]/[title]/components/genre';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import { integrateSortedList } from '@mangayomu/algorithms';
-import { Metadata, ResolvingMetadata } from 'next';
+import { Metadata } from 'next';
 import isMultilingual from '@app/helpers/isMultilingualChapter';
 interface PageProps {
   params: {
@@ -133,6 +127,8 @@ export default async function Page(props: PageProps) {
     </Screen>
   );
 }
+
+export const revalidate = 300;
 
 async function getSourceManga(pathName: string): Promise<Manga | null> {
   const cached = await redis.get(pathName);
