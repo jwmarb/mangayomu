@@ -2,6 +2,8 @@ import { FilterSchemaObject } from '@mangayomu/schema-creator';
 import { ISOLangCode } from '@mangayomu/language-codes';
 import { MangaSortType } from './scraper.filters';
 
+export type GetMeta = Pick<Manga, 'link'> | { html: string; link: string };
+
 /**
  * A manga that has official translations
  */

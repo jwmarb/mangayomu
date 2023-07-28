@@ -93,8 +93,10 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     return this.memoizedDir;
   }
 
-  public async getMeta(manga: Manga): Promise<MangaSeeMangaMeta & Manga> {
-    const $ = await super.route({ url: manga.link });
+  public async getMeta(
+    manga: Pick<Manga, 'link'> | { html: string; link: string },
+  ): Promise<MangaSeeMangaMeta & Manga> {
+    const $ = await super.route(manga);
 
     const html = $.html();
 
@@ -165,7 +167,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   }
 
   async getPages(chapter: MangaChapter) {
-    const $ = await super.route({ url: chapter.link });
+    const $ = await super.route(chapter);
     const html = $.html();
     const { variable } = processScript(html);
     const CurChapter = variable<CurChapter>('vm.CurChapter');

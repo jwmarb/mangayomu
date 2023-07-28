@@ -1,4 +1,5 @@
 import {
+  GetMeta,
   Manga,
   MangaChapter,
   MangaHostInfo,
@@ -100,12 +101,16 @@ abstract class MangaHost {
   }
 
   protected async route<T = cheerio.CheerioAPI>(
-    path: string | { url: string },
+    path: string | GetMeta,
     method: 'GET' | 'POST' = 'GET',
     body?: Record<string, unknown>,
   ): Promise<T> {
-    const url = `https://${this.link}${path}`;
-    const response = await fetch(typeof path === 'string' ? url : path.url, {
+    if (typeof path === 'object' && 'html' in path) {
+      return cheerio.load(path.html, { decodeEntities: false }) as T;
+    }
+    const url =
+      typeof path === 'string' ? `https://${this.link}${path}` : path.link;
+    const response = await fetch(url, {
       method,
       headers: {
         'User-Agent': new UserAgent().toString(),
@@ -197,7 +202,7 @@ abstract class MangaHost {
    * @param manga The manga to fetch the meta data from
    * @returns Returns the meta of the manga from the parameters. Will also return an updated version of the params.
    */
-  public abstract getMeta(manga: Manga): Promise<MangaMeta & Manga>;
+  public abstract getMeta(manga: GetMeta): Promise<MangaMeta & Manga>;
 
   /**
    * Get the pages of a manga chapter

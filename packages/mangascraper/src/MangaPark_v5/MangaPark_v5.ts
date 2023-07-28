@@ -20,6 +20,7 @@ import {
 } from './MangaPark_v5.interfaces';
 import { MangaHostWithFilters } from '../scraper/scraper.filters';
 import {
+  GetMeta,
   Manga,
   MangaChapter,
   MangaMultilingualChapter,
@@ -30,7 +31,7 @@ import { MangaParkV5Filter, MANGAPARKV5_INFO } from './MangaPark_v5.constants';
 class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
   private static API_ROUTE = 'https://mangapark.net/apo/';
   public async getPages(chapter: MangaChapter): Promise<string[]> {
-    const _$ = await super.route({ url: chapter.link });
+    const _$ = await super.route(chapter);
     const $ = await super.route(
       _$('a.btn.btn-outline-info.btn-block').attr('href')!,
     );
@@ -47,7 +48,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
   }
   public async listRecentlyUpdatedManga(): Promise<Manga[]> {
     const { data } = await super.route<MangaParkV5HotMangas>(
-      { url: MangaParkV5.API_ROUTE },
+      { link: MangaParkV5.API_ROUTE },
       'POST',
       {
         query:
@@ -73,7 +74,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
   }
   public async listHotMangas(): Promise<Manga[]> {
     const { data } = await super.route<MangaParkV5HotMangas>(
-      { url: MangaParkV5.API_ROUTE },
+      { link: MangaParkV5.API_ROUTE },
       'POST',
       {
         query:
@@ -107,7 +108,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
           get_content_browse_search: { items },
         },
       } = await super.route<MangaParkV5SearchManga>(
-        { url: MangaParkV5.API_ROUTE },
+        { link: MangaParkV5.API_ROUTE },
         'POST',
         {
           operationName: 'get_content_browse_search',
@@ -147,7 +148,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
         get_content_browse_search: { items },
       },
     } = await super.route<MangaParkV5SearchManga>(
-      { url: MangaParkV5.API_ROUTE },
+      { link: MangaParkV5.API_ROUTE },
       'POST',
       {
         operationName: 'get_content_browse_search',
@@ -176,9 +177,9 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       }),
     );
   }
-  public async getMeta(manga: Manga): Promise<MangaParkV5MangaMeta & Manga> {
-    const $ = await super.route({ url: manga.link });
-    const _$ = await super.route({ url: getV5URL(manga.link) });
+  public async getMeta(manga: GetMeta): Promise<MangaParkV5MangaMeta & Manga> {
+    const $ = await super.route(manga);
+    const _$ = await super.route({ link: getV5URL(manga.link) });
     const html = _$('script#__NEXT_DATA__').html();
     if (html == null) throw Error('Unknown page');
     const parsedData: MangaParkV5NextDataMeta = JSON.parse(html);
