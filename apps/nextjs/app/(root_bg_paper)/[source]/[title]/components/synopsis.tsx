@@ -7,7 +7,7 @@ import { MdChevronRight } from 'react-icons/md';
 import { animated, useSpring } from '@react-spring/web';
 
 interface SynopsisProps {
-  sanitized: string;
+  sanitized: string | null;
 }
 
 export default function Synopsis(props: SynopsisProps) {
@@ -41,6 +41,21 @@ export default function Synopsis(props: SynopsisProps) {
     if (hidden) api.start({ rotate: -90 });
     else api.start({ rotate: 90 });
   }, [hidden, api]);
+
+  if (sanitized === null)
+    return (
+      <>
+        <div className="mt-10 flex flex-row items-center justify-between space-x-2">
+          <Text variant="header">Synopsis</Text>
+        </div>
+        <div>
+          <Text.Skeleton
+            numberOfLines={6}
+            classNames={['', '', '', '', '', 'w-[60%]']}
+          />
+        </div>
+      </>
+    );
   return (
     <>
       <div className="mt-10 flex flex-row items-center justify-between space-x-2">

@@ -9,7 +9,7 @@ import useBoolean from '@app/hooks/useBoolean';
 import { IMangaSchema, SortChaptersByType } from '@app/realm/Manga';
 
 interface FilterModalProps extends React.PropsWithChildren {
-  supportedLanguages: [ISOLangCode, string][];
+  supportedLanguages?: [ISOLangCode, string][] | null;
   onSelectLanguage: (val: IMangaSchema['selectedLanguage']) => void;
   selectedLanguage: IMangaSchema['selectedLanguage'];
   onSort: (val: SortChaptersByType, reversed: boolean) => void;
@@ -29,6 +29,8 @@ function FilterModal(
     sortBy,
     reversed,
   } = props;
+
+  if (supportedLanguages == null) return null;
 
   return (
     <Modal ref={ref} className="h-96">

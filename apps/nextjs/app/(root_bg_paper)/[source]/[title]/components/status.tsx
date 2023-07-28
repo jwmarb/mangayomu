@@ -2,7 +2,9 @@ import Text from '@app/components/Text';
 import { WithStatus } from '@mangayomu/mangascraper';
 import React from 'react';
 
-type StatusProps = Partial<WithStatus>;
+type StatusProps = Partial<WithStatus> & {
+  loading: boolean;
+};
 
 const ongoingSet = new Set(['ongoing', 'publishing']);
 
@@ -22,12 +24,19 @@ function getColor(status: string) {
 }
 
 export default function Status(props: StatusProps) {
-  const { status } = props;
+  const { status, loading } = props;
   return (
     <>
       <div className="flex flex-row justify-between gap-2">
         <Text color="text-secondary">Scan Status</Text>
-        {status?.scan ? (
+        {loading ? (
+          <div>
+            <Text.Skeleton
+              className="text-disabled font-medium"
+              text={['Unknown']}
+            />
+          </div>
+        ) : status?.scan ? (
           <Text className={`${getColor(status.scan)} font-medium`}>
             {status.scan.substring(0, status.scan.indexOf(' '))}
           </Text>
@@ -37,7 +46,14 @@ export default function Status(props: StatusProps) {
       </div>
       <div className="flex flex-row justify-between gap-2">
         <Text color="text-secondary">Publish Status</Text>
-        {status?.publish ? (
+        {loading ? (
+          <div>
+            <Text.Skeleton
+              className="text-disabled font-medium"
+              text={['Unknown']}
+            />
+          </div>
+        ) : status?.publish ? (
           <Text className={`${getColor(status.publish)} font-medium`}>
             {status.publish.substring(0, status.publish.indexOf(' '))}
           </Text>

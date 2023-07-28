@@ -5,7 +5,7 @@ import React from 'react';
 import { MdFilterList } from 'react-icons/md';
 
 interface ChaptersHeaderProps {
-  chaptersLen: number;
+  chaptersLen?: number | null;
   onOpenFilters: () => void;
 }
 
@@ -14,11 +14,21 @@ export default function ChaptersHeader(props: ChaptersHeaderProps) {
 
   return (
     <div className="flex flex-row justify-between gap-2 items-center">
-      <Text variant="header">
-        {chaptersLen} Chapter
-        {chaptersLen !== 1 ? 's' : ''}
-      </Text>
-      <Button onPress={onOpenFilters} icon={<MdFilterList />}>
+      {chaptersLen != null ? (
+        <Text variant="header">
+          {chaptersLen} Chapter
+          {chaptersLen !== 1 ? 's' : ''}
+        </Text>
+      ) : (
+        <div>
+          <Text.Skeleton variant="header" text={['100 Chapters']} />
+        </div>
+      )}
+      <Button
+        onPress={onOpenFilters}
+        disabled={chaptersLen == null}
+        icon={<MdFilterList />}
+      >
         Filters
       </Button>
     </div>

@@ -38,7 +38,6 @@ import useBoolean from '@app/hooks/useBoolean';
 import { integrateSortedList } from '@mangayomu/algorithms';
 import getMangaHost from '@app/helpers/getMangaHost';
 import * as DOMPurify from 'dompurify';
-import MangaViewerLoading from '@app/(root_bg_paper)/[source]/[title]/components/mangaviewerloading';
 
 interface MangaViewerProps {
   // meta: MangaMeta<MangaChapter> &
@@ -60,60 +59,52 @@ const SortLanguages = (a: ISOLangCode, b: ISOLangCode) => {
   return lang1.localeCompare(lang2);
 };
 
-export default function MangaViewerWrapper(props: MangaViewerProps) {
-  const { source, manga } = props;
+export default function MangaViewer(props: MangaViewerProps) {
+  const { source, manga: _manga } = props;
+
   const host = getMangaHost(source);
-  const cloudManga = useObject(MangaSchema, manga.link);
+  const manga = useObject(MangaSchema, _manga.link);
   const [meta, setMeta] = React.useState<
-    MangaMeta<MangaChapter> & Manga & Partial<WithAuthors> & Partial<WithStatus>
-  >();
+    | (MangaMeta<MangaChapter> &
+        Manga &
+        Partial<WithAuthors> &
+        Partial<WithStatus>)
+    | null
+  >(null);
   React.useEffect(() => {
     async function init() {
       const res = await fetch('/api/v1/manga', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(manga),
+        body: JSON.stringify(_manga),
       });
       const { data: p } = await res.json();
       setMeta(p);
     }
     init();
-  }, [host, manga]);
-  if (meta == null) return <MangaViewerLoading meta={manga} />;
+  }, [host, _manga]);
 
-  return <MangaViewer meta={meta} cloudManga={cloudManga} {...props} />;
-}
-
-function MangaViewer(
-  props: MangaViewerProps & {
-    meta: MangaMeta<MangaChapter> &
-      Manga &
-      Partial<WithAuthors> &
-      Partial<WithStatus>;
-    cloudManga: ReturnType<typeof useObject<IMangaSchema>>;
-  },
-) {
-  const { source, meta, cloudManga: manga } = props;
-
-  const supportedLanguages: [ISOLangCode, string][] = React.useMemo(() => {
-    const supportedLanguages: ISOLangCode[] = [];
-    const foundLanguages: Set<ISOLangCode> = new Set();
-    const sorted = integrateSortedList(supportedLanguages, SortLanguages);
-    if (isMultilingual(meta.chapters)) {
-      for (const chapter of meta.chapters) {
-        if (!foundLanguages.has(chapter.language)) {
-          sorted.add(chapter.language);
-          foundLanguages.add(chapter.language);
+  const supportedLanguages: [ISOLangCode, string][] | null =
+    React.useMemo(() => {
+      if (meta == null) return null;
+      const supportedLanguages: ISOLangCode[] = [];
+      const foundLanguages: Set<ISOLangCode> = new Set();
+      const sorted = integrateSortedList(supportedLanguages, SortLanguages);
+      if (isMultilingual(meta.chapters)) {
+        for (const chapter of meta.chapters) {
+          if (!foundLanguages.has(chapter.language)) {
+            sorted.add(chapter.language);
+            foundLanguages.add(chapter.language);
+          }
         }
+      } else {
+        supportedLanguages.push('en'); // should be host.defaultLanguage; todo later
       }
-    } else {
-      supportedLanguages.push('en'); // should be host.defaultLanguage; todo later
-    }
-    return supportedLanguages.map((x) => [x, languages[x].name]);
-  }, [meta.chapters]);
+      return supportedLanguages.map((x) => [x, languages[x].name]);
+    }, [meta]);
   const sanitizedDescription = React.useMemo(
-    () => DOMPurify.sanitize(meta.description),
-    [meta.description],
+    () => (meta != null ? DOMPurify.sanitize(meta.description) : null),
+    [meta],
   );
   const modal = React.useRef<ModalMethods>(null);
   const [sortBy, setSortBy] =
@@ -121,15 +112,16 @@ function MangaViewer(
   const [reversed, setReversed] = useBoolean();
 
   const currentlyReadingChapter = React.useMemo(() => {
-    if (manga.currentlyReadingChapter) {
-      return meta.chapters.find(
+    if (meta != null && manga.currentlyReadingChapter != null) {
+      return meta.chapters?.find(
         (x) => x.link === manga.currentlyReadingChapter?._id,
       );
     }
-    return undefined;
-  }, [manga.currentlyReadingChapter, meta.chapters]);
+    return null;
+  }, [manga.currentlyReadingChapter, meta]);
 
   const filteredChapters = React.useMemo(() => {
+    if (meta == null) return null;
     let chapters: MangaChapter[];
     if (isMultilingual(meta.chapters)) {
       chapters = meta.chapters.filter((chapter) =>
@@ -142,24 +134,28 @@ function MangaViewer(
     } else chapters = meta.chapters;
 
     return chapters;
-  }, [manga, meta.chapters]);
+  }, [manga, meta]);
   const sortedChapters = React.useMemo(
     () =>
-      inPlaceSort(filteredChapters).by(
-        reversed
-          ? [{ asc: SORT_CHAPTERS_BY[sortBy] }]
-          : [{ desc: SORT_CHAPTERS_BY[sortBy] }],
-      ),
+      filteredChapters != null
+        ? inPlaceSort(filteredChapters).by(
+            reversed
+              ? [{ asc: SORT_CHAPTERS_BY[sortBy] }]
+              : [{ desc: SORT_CHAPTERS_BY[sortBy] }],
+          )
+        : null,
     [filteredChapters, sortBy, reversed],
   );
   const handleOnToggleLibrary = async () => {
     manga.update(
       (draft) => {
-        draft.title = meta.title;
-        draft.source = meta.source;
-        draft.imageCover = meta.imageCover;
-        draft.inLibrary = !draft.inLibrary;
-        draft.dateAddedInLibrary = Date.now();
+        if (meta != null) {
+          draft.title = meta.title;
+          draft.source = meta.source;
+          draft.imageCover = meta.imageCover;
+          draft.inLibrary = !draft.inLibrary;
+          draft.dateAddedInLibrary = Date.now();
+        }
       },
       { upsert: true },
     );
@@ -174,15 +170,17 @@ function MangaViewer(
     async (lang: IMangaSchema['selectedLanguage']) => {
       manga.update(
         (draft) => {
-          draft.title = meta.title;
-          draft.source = meta.source;
-          draft.imageCover = meta.imageCover;
-          draft.selectedLanguage = lang;
+          if (meta != null) {
+            draft.title = meta.title;
+            draft.source = meta.source;
+            draft.imageCover = meta.imageCover;
+            draft.selectedLanguage = lang;
+          }
         },
         { upsert: true },
       );
     },
-    [manga, meta.imageCover, meta.source, meta.title],
+    [manga, meta],
   );
 
   function handleOnOpenFilters() {
@@ -190,13 +188,13 @@ function MangaViewer(
   }
   return (
     <>
-      <MangaViewerHeader title={meta.title} />
+      <MangaViewerHeader title={_manga.title} />
       <Screen.Content overrideClassName="relative flex flex-col">
         <div className="md:h-[35rem] h-[15rem] md:-mt-64 w-full bg-gradient-to-b from-transparent to-paper absolute">
           <div
             className="w-full h-full absolute -z-10"
             style={{
-              backgroundImage: `url("${meta.imageCover}")`,
+              backgroundImage: `url("${_manga.imageCover}")`,
               backgroundSize: 'cover',
               backgroundPosition: 'top',
               backgroundRepeat: 'no-repeat',
@@ -207,7 +205,7 @@ function MangaViewer(
           <Image
             width={768}
             height={768}
-            src={meta.imageCover}
+            src={_manga.imageCover}
             className="mx-auto object-contain rounded-lg max-w-full w-40 md:w-52 top-4"
             alt="Image cover"
           />
@@ -215,9 +213,9 @@ function MangaViewer(
             variant="header"
             className="text-center lg:text-variant-header-emphasized md:text-2xl"
           >
-            {meta.title}
+            {_manga.title}
           </Text>
-          <Authors authors={meta.authors} />
+          <Authors authors={meta?.authors} />
           <Action
             loading={manga.initializing}
             currentlyReadingChapter={currentlyReadingChapter}
@@ -226,13 +224,13 @@ function MangaViewer(
           />
           <Synopsis sanitized={sanitizedDescription} />
           <div className="h-0.5 w-full bg-border" />
-          <Genres genres={meta.genres} source={source} />
+          <Genres genres={meta?.genres} source={source} />
           <Text variant="header">Additional info</Text>
-          <Status status={meta.status} />
-          <MangaSource source={meta.source} />
+          <Status status={meta?.status} loading={meta == null} />
+          <MangaSource source={_manga.source} />
           <SupportedLanguages languages={supportedLanguages} />
           <ChaptersHeader
-            chaptersLen={filteredChapters.length}
+            chaptersLen={filteredChapters?.length}
             onOpenFilters={handleOnOpenFilters}
           />
         </div>

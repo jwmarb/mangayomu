@@ -8,7 +8,7 @@ import { MdBook, MdBookmarkAdd, MdOutlineBookmarkRemove } from 'react-icons/md';
 export interface ActionProps {
   inLibrary: boolean;
   onToggleLibrary: () => void;
-  currentlyReadingChapter?: MangaChapter;
+  currentlyReadingChapter?: MangaChapter | null;
   loading: boolean;
 }
 
