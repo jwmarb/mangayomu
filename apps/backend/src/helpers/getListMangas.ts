@@ -1,3 +1,4 @@
+import puppeteer, { Page } from 'puppeteer';
 import {
   SourceError,
   SourceManga,
@@ -18,9 +19,10 @@ export default async function getListMangas(
   },
 ) {
   const s = performance.now();
-  const cachedValues = await redis.mget(
-    sources.map((source) => source + '/' + key),
-  );
+  const [cachedValues, client] = await Promise.all([
+    redis.mget(sources.map((source) => source + '/' + key)),
+    puppeteer.launch({ headless: true }),
+  ]);
   const setExpPipeline = redis.pipeline();
   const mangaCollection = await Promise.allSettled(
     sources.map(async (source, i) => {
@@ -28,8 +30,23 @@ export default async function getListMangas(
       const host = MangaHost.sourcesMap.get(source);
       if (host == null) throw new Error(`Invalid host "${source}"`);
       if (cached) return JSON.parse(cached) as Manga[];
-
-      const data = await host[mangaFetchFn]();
+      let page: Page;
+      switch (i) {
+        case 0:
+          page = (await client.pages())[0];
+          break;
+        default:
+          page = await client.newPage();
+          break;
+      }
+      await page.exposeFunction('x', () => host[mangaFetchFn]());
+      await page.goto(`https://${host.link}/`, {
+        waitUntil: 'domcontentloaded',
+      });
+      const data = await page.evaluate(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (window as typeof window & { x: () => Promise<any> }).x();
+      });
       setExpPipeline.setex(source + '/' + key, 60, JSON.stringify(data));
       return data;
     }),
@@ -87,7 +104,9 @@ export default async function getListMangas(
     await Promise.all([
       SourceManga.bulkWrite(sourceMangas),
       setExpPipeline.exec(),
+      client.close(),
     ]);
+  else client.close();
 
   return { runtime: performance.now() - s, errors, mangas };
 }
