@@ -21,7 +21,7 @@ export default async function getListMangas(
   const s = performance.now();
   const [cachedValues, client] = await Promise.all([
     redis.mget(sources.map((source) => source + '/' + key)),
-    puppeteer.launch({ headless: true }),
+    puppeteer.launch({ headless: 'new' }),
   ]);
   const setExpPipeline = redis.pipeline();
   const mangaCollection = await Promise.allSettled(
