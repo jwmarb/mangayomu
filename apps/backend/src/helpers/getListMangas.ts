@@ -1,4 +1,4 @@
-import puppeteer, { Page } from 'puppeteer';
+import { Page } from 'puppeteer';
 import {
   SourceError,
   SourceManga,
@@ -7,6 +7,7 @@ import {
   getErrorMessage,
   ISourceManga,
 } from '../';
+import { launchPuppeteer } from '@mangayomu/puppeteer';
 import { Manga, MangaHost } from '@mangayomu/mangascraper';
 
 export default async function getListMangas(
@@ -19,36 +20,53 @@ export default async function getListMangas(
   },
 ) {
   const s = performance.now();
-  const [cachedValues, client] = await Promise.all([
-    redis.mget(sources.map((source) => source + '/' + key)),
-    puppeteer.launch({ headless: 'new' }),
-  ]);
+  const cachedValues = await redis.mget(
+    sources.map((source) => source + '/' + key),
+  );
   const setExpPipeline = redis.pipeline();
+  let client: Awaited<ReturnType<typeof launchPuppeteer>> | null = null;
+
   const mangaCollection = await Promise.allSettled(
     sources.map(async (source, i) => {
       const cached = cachedValues[i];
       const host = MangaHost.sourcesMap.get(source);
       if (host == null) throw new Error(`Invalid host "${source}"`);
       if (cached) return JSON.parse(cached) as Manga[];
-      let page: Page;
-      switch (i) {
-        case 0:
-          page = (await client.pages())[0];
-          break;
-        default:
-          page = await client.newPage();
-          break;
+
+      try {
+        const data = await host[mangaFetchFn]();
+        setExpPipeline.setex(source + '/' + key, 60, JSON.stringify(data));
+        return data;
+      } catch (e) {
+        console.error(
+          `Failed getting updates with fetch implementation. Got error: ${getErrorMessage(
+            e,
+          )}`,
+        );
+        if (client == null) {
+          console.log(`launching puppeteer for ${source}`);
+          client = await launchPuppeteer();
+        }
+        let page: Page;
+        switch (i) {
+          case 0:
+            page = (await client.pages())[0];
+            break;
+          default:
+            page = await client.newPage();
+            break;
+        }
+        await page.exposeFunction('x', () => host[mangaFetchFn]());
+        await page.goto(`https://${host.link}/duiasu8d82y8u13`, {
+          waitUntil: 'domcontentloaded',
+        });
+        const data = await page.evaluate(() => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return (window as typeof window & { x: () => Promise<any> }).x();
+        });
+        setExpPipeline.setex(source + '/' + key, 60, JSON.stringify(data));
+        return data;
       }
-      await page.exposeFunction('x', () => host[mangaFetchFn]());
-      await page.goto(`https://${host.link}/`, {
-        waitUntil: 'domcontentloaded',
-      });
-      const data = await page.evaluate(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return (window as typeof window & { x: () => Promise<any> }).x();
-      });
-      setExpPipeline.setex(source + '/' + key, 60, JSON.stringify(data));
-      return data;
     }),
   );
 
@@ -104,9 +122,7 @@ export default async function getListMangas(
     await Promise.all([
       SourceManga.bulkWrite(sourceMangas),
       setExpPipeline.exec(),
-      client.close(),
     ]);
-  else client.close();
 
   return { runtime: performance.now() - s, errors, mangas };
 }

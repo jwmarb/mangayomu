@@ -7,6 +7,7 @@ const REQUIRED_VARS = [
   'GOOGLE_OAUTH2_SECRET',
   'JWT_SECRET',
   'JWT_EXP_DAYS',
+  'BROWSERLESS_API_TOKEN',
 ];
 
 interface EnvironmentVariables {
@@ -21,6 +22,7 @@ interface EnvironmentVariables {
   GOOGLE_OAUTH2_SECRET: string;
   JWT_SECRET: string;
   JWT_EXP_DAYS: string;
+  BROWSERLESS_API_TOKEN: string;
 }
 
 function generateUrl(environment: 'production' | 'development', host?: string) {

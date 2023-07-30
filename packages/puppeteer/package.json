@@ -1,0 +1,13 @@
+{
+  "name": "@mangayomu/puppeteer",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc --build"
+  },
+  "dependencies": {
+    "@mangayomu/vercel-env": "1.0.0",
+    "puppeteer": "^20.9.0"
+  }
+}
