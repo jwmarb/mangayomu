@@ -19,7 +19,7 @@ export default function MangaViewerHeader(props: MangaViewerHeaderProps) {
   return (
     <Screen.Header className="z-20 pb-2 flex flex-row gap-2 items-center">
       <IconButton onPress={onBack} icon={<MdArrowBack />} />
-      <Text>{title}</Text>
+      <Text className="font-medium">{title}</Text>
     </Screen.Header>
   );
 }
