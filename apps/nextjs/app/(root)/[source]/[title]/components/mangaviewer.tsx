@@ -193,7 +193,7 @@ export default function MangaViewer(props: MangaViewerProps) {
   }
   return (
     <>
-      <MangaViewerHeader title={_manga.title} />
+      <MangaViewerHeader title={_manga.title} originalUrl={_manga.link} />
 
       <Screen.Content overrideClassName="relative flex flex-col">
         <div className="md:h-[35rem] h-[15rem] md:-mt-64 w-full bg-gradient-to-b from-transparent to-paper absolute">
