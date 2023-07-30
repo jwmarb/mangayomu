@@ -63,12 +63,12 @@ export default function integrateSortedList<T>(
      * @param item The item to find
      * @returns Returns a number indicating the index position of the item
      */
-    indexOf(item: T) {
+    indexOf(item: Partial<T>) {
       if (comparator == null)
         throw Error(
           'A comparator is required in order to perform the operation',
         );
-      return binary.search(arr, item, comparator);
+      return binary.search(arr, item as T, comparator);
     },
     /**
      * Sorts the array using insertion sort. Best for nearly-sorted arrays
