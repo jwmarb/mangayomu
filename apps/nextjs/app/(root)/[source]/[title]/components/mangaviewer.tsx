@@ -39,6 +39,7 @@ import { integrateSortedList } from '@mangayomu/algorithms';
 import getMangaHost from '@app/helpers/getMangaHost';
 import * as DOMPurify from 'dompurify';
 import ImageCover from './imagecover';
+import usePaperBackground from '@app/hooks/usePaperBackground';
 
 interface MangaViewerProps {
   // meta: MangaMeta<MangaChapter> &
@@ -185,12 +186,7 @@ export default function MangaViewer(props: MangaViewerProps) {
     [manga, meta],
   );
 
-  React.useLayoutEffect(() => {
-    document.body.classList.replace('bg-default', 'bg-paper');
-    return () => {
-      document.body.classList.replace('bg-paper', 'bg-default');
-    };
-  }, []);
+  usePaperBackground();
 
   function handleOnOpenFilters() {
     modal.current?.open();
