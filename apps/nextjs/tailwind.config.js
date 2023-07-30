@@ -45,6 +45,8 @@ module.exports = {
       backgroundColor: {
         ...staticBackgroundColors,
         default: bgdefault,
+        'text-primary': 'var(--color-text-primary)',
+        'text-secondary': 'var(--color-text-secondary)',
         paper: bgpaper,
         disabled: disabledBackground,
         tag: 'var(--background-color-tag)',
@@ -61,6 +63,8 @@ module.exports = {
         primary,
         secondary,
         default: 'var(--border-color-default)',
+        'text-primary': 'var(--color-text-primary)',
+        'text-secondary': 'var(--color-text-secondary)',
       },
       ringColor: {
         primary,
