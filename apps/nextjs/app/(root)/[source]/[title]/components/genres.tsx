@@ -16,7 +16,13 @@ export default function Genres(props: GenresProps) {
   return (
     <div className="flex flex-row flex-wrap gap-2">
       {genres
-        ? genres.map((x) => <Genre key={x} genre={host.genresDictionary[x]} />)
+        ? genres.map((x) => (
+            <Genre
+              key={x}
+              genre={host.genresDictionary[x] ?? x}
+              error={x in host.genresDictionary === false}
+            />
+          ))
         : ['Action', 'Adventure', 'Comedy', 'Drama', 'Romance'].map((x) => (
             <button
               key={x}
