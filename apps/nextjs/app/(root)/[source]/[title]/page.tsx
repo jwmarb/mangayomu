@@ -3,12 +3,12 @@ import Text from '@app/components/Text';
 import React from 'react';
 import { redis, SourceManga, getMongooseConnection } from '@mangayomu/backend';
 import { Manga, MangaHost } from '@mangayomu/mangascraper';
-import MangaViewer from '@app/(root_bg_paper)/[source]/[title]/components/mangaviewer';
 import Link from 'next/link';
 import getSlug from '@app/helpers/getSlug';
 import { TbError404 } from 'react-icons/tb';
-import GoBackButton from '@app/(root_bg_paper)/[source]/[title]/components/gobackbutton';
 import { Metadata } from 'next';
+import MangaViewer from './components/mangaviewer';
+import GoBackButton from './components/gobackbutton';
 interface PageProps {
   params: {
     source: string;

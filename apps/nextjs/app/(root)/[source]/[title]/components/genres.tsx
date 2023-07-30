@@ -1,4 +1,4 @@
-import Genre from '@app/(root_bg_paper)/[source]/[title]/components/genre';
+import Genre from './genre';
 import Text from '@app/components/Text';
 import { MangaHost } from '@mangayomu/mangascraper';
 import React from 'react';

@@ -11,18 +11,18 @@ import {
 } from '@mangayomu/mangascraper';
 import Image from 'next/image';
 import React from 'react';
-import MangaViewerHeader from '@app/(root_bg_paper)/[source]/[title]/components/mangaviewerheader';
-import Action from '@app/(root_bg_paper)/[source]/[title]/components/actions';
-import Synopsis from '@app/(root_bg_paper)/[source]/[title]/components/synopsis';
-import Status from '@app/(root_bg_paper)/[source]/[title]/components/status';
-import DisplayRowChapters from '@app/(root_bg_paper)/[source]/[title]/components/displayrowchapters';
-import ChaptersHeader from '@app/(root_bg_paper)/[source]/[title]/components/chaptersheader';
+import MangaViewerHeader from './mangaviewerheader';
+import Action from './actions';
+import Synopsis from './synopsis';
+import Status from './status';
+import DisplayRowChapters from './displayrowchapters';
+import ChaptersHeader from './chaptersheader';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import isMultilingual from '@app/helpers/isMultilingualChapter';
-import Genres from '@app/(root_bg_paper)/[source]/[title]/components/genres';
-import SupportedLanguages from '@app/(root_bg_paper)/[source]/[title]/components/supportedlanguages';
-import Authors from '@app/(root_bg_paper)/[source]/[title]/components/authors';
-import MangaSource from '@app/(root_bg_paper)/[source]/[title]/components/mangasource';
+import Genres from './genres';
+import SupportedLanguages from './supportedlanguages';
+import Authors from './authors';
+import MangaSource from './mangasource';
 import useObject from '@app/hooks/useObject';
 import MangaSchema, {
   IMangaSchema,
@@ -32,13 +32,13 @@ import MangaSchema, {
 import useMongoClient from '@app/hooks/useMongoClient';
 import { useUser } from '@app/context/realm';
 import { ModalMethods } from '@app/components/Modal';
-import FilterModal from '@app/(root_bg_paper)/[source]/[title]/components/filtermodal';
+import FilterModal from './filtermodal';
 import { inPlaceSort } from 'fast-sort';
 import useBoolean from '@app/hooks/useBoolean';
 import { integrateSortedList } from '@mangayomu/algorithms';
 import getMangaHost from '@app/helpers/getMangaHost';
 import * as DOMPurify from 'dompurify';
-import ImageCover from '@app/(root_bg_paper)/[source]/[title]/components/imagecover';
+import ImageCover from './imagecover';
 
 interface MangaViewerProps {
   // meta: MangaMeta<MangaChapter> &
@@ -185,12 +185,20 @@ export default function MangaViewer(props: MangaViewerProps) {
     [manga, meta],
   );
 
+  React.useLayoutEffect(() => {
+    document.body.classList.replace('bg-default', 'bg-paper');
+    return () => {
+      document.body.classList.replace('bg-paper', 'bg-default');
+    };
+  }, []);
+
   function handleOnOpenFilters() {
     modal.current?.open();
   }
   return (
     <>
       <MangaViewerHeader title={_manga.title} />
+
       <Screen.Content overrideClassName="relative flex flex-col">
         <div className="md:h-[35rem] h-[15rem] md:-mt-64 w-full bg-gradient-to-b from-transparent to-paper absolute">
           <div
