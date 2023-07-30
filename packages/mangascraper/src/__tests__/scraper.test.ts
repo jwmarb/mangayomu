@@ -9,9 +9,9 @@ interface DomainErrorException {
 }
 
 describe('Connection tests', () => {
-  const hosts = MangaHost.getAvailableSources();
+  const hosts = MangaHost.sourcesMap;
   const hostCollection: MangaHost[] = [];
-  for (const x of hosts.values()) {
+  for (const x of Object.values(hosts)) {
     hostCollection.push(x);
   }
 
@@ -26,10 +26,10 @@ describe('Connection tests', () => {
             axios
               .get(toURL(x.getLink()))
               .then(() => {
-                res({ source: x.getName() });
+                res({ source: x.name });
               })
               .catch((e) => {
-                rej({ error: e, source: x.getName() } as DomainErrorException);
+                rej({ error: e, source: x.name } as DomainErrorException);
               });
           }),
       ),
