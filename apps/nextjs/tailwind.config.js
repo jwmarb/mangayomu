@@ -1,8 +1,22 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
 const path = require('path');
 
+const extract = (prev, curr) => {
+  const idx = curr.indexOf(')');
+  const p = curr.substring(0, idx);
+  const name = p.substring(p.lastIndexOf('-') + 1);
+  const color = (x) => p + '-' + x + ')' + curr.substring(idx + 1);
+  prev[name + '-light'] = color('light');
+  prev[name + '-dark'] = color('dark');
+  return prev;
+};
+
 const primary = 'rgba(var(--color-primary) / <alpha-value>)';
 const secondary = 'rgba(var(--color-secondary) / <alpha-value>)';
+const bgpaper = 'rgba(var(--background-color-paper) / <alpha-value>)';
+const bgdefault = 'rgba(var(--background-color-default) / <alpha-value>)';
+const staticColors = [primary, secondary].reduce(extract, {});
+const staticBackgroundColors = [bgpaper, bgdefault].reduce(extract, {});
 const error = 'rgba(var(--color-error) / <alpha-value>)';
 const disabledBackground =
   'rgba(var(--background-color-disabled) / <alpha-value>)';
@@ -14,6 +28,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        ...staticColors,
         primary,
         'primary-contrast': 'var(--color-primary-contrast)',
         'secondary-contrast': 'var(--color-secondary-contrast)',
@@ -28,11 +43,14 @@ module.exports = {
         paper: 'rgba(var(--background-color-paper) / <alpha-value>)',
       },
       backgroundColor: {
-        default: 'rgba(var(--background-color-default) / <alpha-value>)',
-        paper: 'rgba(var(--background-color-paper) / <alpha-value>)',
+        ...staticBackgroundColors,
+        default: bgdefault,
+        paper: bgpaper,
         disabled: disabledBackground,
         tag: 'var(--background-color-tag)',
         border: 'var(--border-color-default)',
+        'border-light': 'var(--border-color-default-light)',
+        'border-dark': 'var(--border-color-default-dark)',
         primary,
         secondary,
         hover: 'rgba(var(--action-hover) / 0.2)',
