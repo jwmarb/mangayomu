@@ -45,7 +45,10 @@ function TextField(props: TextFieldProps, ref: any) {
         onChange={(e) => {
           handleOnChange(e.currentTarget.value);
         }}
-        ref={ref}
+        ref={(r) => {
+          if (ref) ref.current = r;
+          inputRef.current = r;
+        }}
         aria-invalid={error}
         className={className}
       />
