@@ -50,12 +50,12 @@ export default function integrateSortedList<T>(
      * Remove an item in the array while persisting its order
      * @param item The item to remove in the array
      */
-    remove(item: T) {
+    remove(item: Partial<T>) {
       if (comparator == null)
         throw Error(
           'A comparator is required in order to perform the operation',
         );
-      const indexToRemove = binary.suggest(arr, item, comparator);
+      const indexToRemove = binary.suggest(arr, item as T, comparator);
       arr.splice(indexToRemove, 1);
     },
     /**
