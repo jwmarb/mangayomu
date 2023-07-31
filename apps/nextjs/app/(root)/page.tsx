@@ -1,8 +1,5 @@
 'use client';
 import React from 'react';
-import Text from '@app/components/Text';
-import { GiBookshelf } from 'react-icons/gi';
-import Button from '@app/components/Button';
 import Screen from '@app/components/Screen';
 import { useAddedSources } from '@app/context/sources';
 import NoSelectedSources from '@app/(root)/components/noselectedsources';
