@@ -1,4 +1,5 @@
 import { DarkModeInitializer } from '@app/context/darkmode';
+import MangaLibraryInitializer from '@app/context/library';
 import { ClientRealmProvider } from '@app/context/realm';
 import env from '@mangayomu/vercel-env';
 
@@ -23,7 +24,9 @@ export function Providers({
       idToken={idToken}
       idTokenInvalid={idTokenInvalid}
     >
-      <DarkModeInitializer>{children}</DarkModeInitializer>
+      <DarkModeInitializer>
+        <MangaLibraryInitializer>{children}</MangaLibraryInitializer>
+      </DarkModeInitializer>
     </ClientRealmProvider>
   );
 }
