@@ -53,7 +53,7 @@ function LibraryFilter(
               Reset Filters
             </Button>
           </div>
-          <Accordion title="Sources">
+          <Accordion title="Sources" defaultOpened>
             <Filter type="checkbox" selected={sources} onChange={setSources}>
               {numberInLibrary.map(([source, count]) => (
                 <Filter.Checkbox
