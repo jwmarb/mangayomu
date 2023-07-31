@@ -278,7 +278,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
 
     const ratingValue = data.state.data.data.stat_score_bay;
 
-    const authors = data.state.data.data.authors;
+    const authors = data.state.data.data.authors ?? [];
 
     const imageCover = data.state.data.data.urlCoverOri;
 

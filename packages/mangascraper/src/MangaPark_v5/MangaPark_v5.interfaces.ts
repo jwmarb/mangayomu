@@ -52,7 +52,7 @@ export type MangaParkV5NextDataMeta = {
             data: {
               id: number;
               data: {
-                authors: string[];
+                authors: string[] | null;
                 originalStatus: string;
                 summary: {
                   code: string;
