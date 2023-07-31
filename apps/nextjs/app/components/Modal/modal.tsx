@@ -77,7 +77,7 @@ function Modal(props: ModalProps, forwardedRef: React.Ref<ModalMethods>) {
           ></animated.div>
           <animated.div
             style={{ opacity }}
-            className="z-50 fixed left-[50%] translate-x-[-50%] translate-y-[-50%] top-[50%] w-full max-w-screen-lg"
+            className="z-50 fixed left-[50%] right-[50%] translate-x-[-50%] translate-y-[-50%] top-[50%] w-full max-w-screen-lg"
           >
             <div className={className}>
               {title && (
