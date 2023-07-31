@@ -44,7 +44,7 @@ export default function ListHeader(props: ListHeaderProps) {
               component="span"
               variant="sm-badge"
               color="hint"
-              className="ml-2 w-[1.125rem] h-[1.125rem] rounded-full flex items-center justify-center"
+              className="ml-2 w-[1.125rem] h-[1.125rem] rounded-full flex items-center justify-start"
             >
               ({badge})
             </Text>
