@@ -78,9 +78,19 @@ export default function ListHeader(props: ListHeaderProps) {
         color="hint"
         className={`text-start py-1.5 select-none ${
           ctx ? 'hover:text-black hover:dark:text-white' : ''
-        } flex-grow`}
+        } flex-grow flex flex-row items-center`}
       >
         {children}
+        {badge && (
+          <Text
+            component="span"
+            variant="sm-badge"
+            color="hint"
+            className="ml-2 w-[1.125rem] h-[1.125rem] rounded-full flex items-center justify-start"
+          >
+            ({badge})
+          </Text>
+        )}
       </Text>
       {ctx && (
         <animated.div
