@@ -7,12 +7,19 @@ export interface ListButtonProps
   > {
   icon?: React.ReactElement;
   active?: boolean;
+  textProps?: TextProps<'p'>;
 }
 
-import Text from '@app/components/Text';
+import Text, { TextProps } from '@app/components/Text';
 
 export default function ListButton(props: ListButtonProps) {
-  const { children, active, icon, ...rest } = props;
+  const {
+    children,
+    active,
+    icon,
+    textProps = { color: active ? 'primary' : 'text-primary' },
+    ...rest
+  } = props;
   return (
     <button
       {...(rest as React.DetailedHTMLProps<
@@ -29,7 +36,7 @@ export default function ListButton(props: ListButtonProps) {
             active ? 'text-primary' : 'text-text-primary'
           }`,
         })}
-      <Text color={active ? 'primary' : 'text-primary'}>{children}</Text>
+      <Text {...textProps}>{children}</Text>
     </button>
   );
 }
