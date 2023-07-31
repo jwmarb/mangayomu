@@ -1,8 +1,8 @@
 import { useLocalRealm, useRealm } from '@database/main';
-import { ILocalManga, LocalMangaSchema } from '@database/schemas/LocalManga';
-import { IMangaSchema, MangaSchema } from '@database/schemas/Manga';
-import { useApp, useUser } from '@realm/react';
-import { DEFAULT_LANGUAGE } from '@screens/MangaView/MangaView';
+import { LocalMangaSchema } from '@database/schemas/LocalManga';
+import { MangaSchema } from '@database/schemas/Manga';
+import { ILocalManga, IMangaSchema } from '@mangayomu/schemas';
+import { useUser } from '@realm/react';
 import React from 'react';
 import Realm from 'realm';
 

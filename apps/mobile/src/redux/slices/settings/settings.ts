@@ -1,36 +1,48 @@
 import { BOOK_COVER_RATIO } from '@components/Book';
-import { IMangaSchema } from '@database/schemas/Manga';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  ReaderScreenOrientation,
+  ReadingDirection,
+  ImageScaling,
+  ZoomStartPosition,
+  IMangaSchema,
+} from '@mangayomu/schemas';
 import { moderateScale } from 'react-native-size-matters';
 import React from 'react';
 import useCombinedMangaWithLocal from '@hooks/useCombinedMangaWithLocal';
 
-export enum ReadingDirection {
-  LEFT_TO_RIGHT = 'Left to right',
-  RIGHT_TO_LEFT = 'Right to left',
-  VERTICAL = 'Vertical',
-  WEBTOON = 'Webtoon',
-}
+// export enum ReadingDirection {
+//   LEFT_TO_RIGHT = 'Left to right',
+//   RIGHT_TO_LEFT = 'Right to left',
+//   VERTICAL = 'Vertical',
+//   WEBTOON = 'Webtoon',
+// }
 
-export enum ImageScaling {
-  SMART_FIT = 'Smart fit',
-  FIT_SCREEN = 'Fit screen',
-  FIT_WIDTH = 'Fit width',
-  FIT_HEIGHT = 'Fit height',
-}
+// export enum ImageScaling {
+//   SMART_FIT = 'Smart fit',
+//   FIT_SCREEN = 'Fit screen',
+//   FIT_WIDTH = 'Fit width',
+//   FIT_HEIGHT = 'Fit height',
+// }
 
-export enum ZoomStartPosition {
-  AUTOMATIC = 'Automatic',
-  LEFT = 'Left',
-  RIGHT = 'Right',
-  CENTER = 'Center',
-}
+// export enum ZoomStartPosition {
+//   AUTOMATIC = 'Automatic',
+//   LEFT = 'Left',
+//   RIGHT = 'Right',
+//   CENTER = 'Center',
+// }
 
-export enum ReaderScreenOrientation {
-  FREE = 'Free',
-  PORTRAIT = 'Portrait',
-  LANDSCAPE = 'Landscape',
-}
+// export enum ReaderScreenOrientation {
+//   FREE = 'Free',
+//   PORTRAIT = 'Portrait',
+//   LANDSCAPE = 'Landscape',
+// }
+export {
+  ReaderScreenOrientation,
+  ImageScaling,
+  ZoomStartPosition,
+  ReadingDirection,
+};
 
 export enum ReaderBackgroundColor {
   GRAY = 'Gray',

@@ -1,21 +1,14 @@
-import { ISOLangCode } from '@mangayomu/language-codes';
-import { MangaChapter } from '@mangayomu/mangascraper/src';
+import {
+  IChapterSchema,
+  RequiredChapterSchemaFields,
+} from '@mangayomu/schemas';
 import { Dimensions } from 'react-native';
 import Realm from 'realm';
 
-export interface IChapterSchema {
-  scrollPosition?: number;
-  savedScrollPositionType?: 'landscape' | 'portrait';
-  numberOfPages?: number;
-  indexPage: number;
-  dateRead?: number;
-  language: ISOLangCode;
-  _mangaId: string;
-  _id: string;
-  _realmId: string;
-}
-
-export class ChapterSchema extends Realm.Object<IChapterSchema> {
+export class ChapterSchema extends Realm.Object<
+  IChapterSchema,
+  RequiredChapterSchemaFields
+> {
   scrollPosition?: number;
   savedScrollPositionType!: 'landscape' | 'portrait';
   indexPage!: number;

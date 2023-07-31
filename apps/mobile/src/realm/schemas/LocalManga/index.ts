@@ -1,27 +1,16 @@
 import Realm from 'realm';
-import {
-  Manga,
-  WithAuthors,
-  WithHentai,
-  WithRating,
-  WithStatus,
-} from '@mangayomu/mangascraper/src';
+import { WithRating, WithStatus } from '@mangayomu/mangascraper/src';
 import { ISOLangCode } from '@mangayomu/language-codes';
-import { SORT_CHAPTERS_BY } from '@database/schemas/Manga';
+import {
+  ILocalManga,
+  RequiredLocalMangaSchemaFields,
+  SortChaptersBy,
+} from '@mangayomu/schemas';
 
-export interface ILocalManga
-  extends Omit<Manga, 'link'>,
-    Partial<WithStatus & WithAuthors & WithHentai & WithRating> {
-  _id: string;
-  availableLanguages: ISOLangCode[];
-  sortChaptersBy: keyof typeof SORT_CHAPTERS_BY;
-  reversedSort: boolean;
-  description: string | null;
-  genres: Set<string>;
-  chapters: string[];
-}
-
-export class LocalMangaSchema extends Realm.Object<ILocalManga> {
+export class LocalMangaSchema extends Realm.Object<
+  ILocalManga,
+  RequiredLocalMangaSchemaFields
+> {
   _id!: string;
   title!: string;
   imageCover!: string;
@@ -33,7 +22,7 @@ export class LocalMangaSchema extends Realm.Object<ILocalManga> {
   isHentai?: boolean;
   rating?: WithRating['rating'];
   status?: WithStatus['status'];
-  sortChaptersBy!: keyof typeof SORT_CHAPTERS_BY;
+  sortChaptersBy!: SortChaptersBy;
   reversedSort!: boolean;
   availableLanguages!: ISOLangCode[];
 

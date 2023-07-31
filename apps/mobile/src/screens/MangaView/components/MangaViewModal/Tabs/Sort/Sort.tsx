@@ -1,19 +1,16 @@
-import {
-  KEYS_OF_SORT_CHAPTERS_BY,
-  SortChaptersMethod,
-  useManga,
-} from '@database/schemas/Manga';
+import { KEYS_OF_SORT_CHAPTERS_BY, useManga } from '@database/schemas/Manga';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { SortProps } from './Sort.interfaces';
 import React from 'react';
 import { ListRenderItem } from 'react-native';
 import SortItem from '@components/Filters/SortItem';
+import { SortChaptersBy } from '@mangayomu/schemas';
 
 const Sort: React.FC<SortProps> = (props) => {
   const { update } = useManga(props.mangaLink);
 
   const onChange = React.useCallback(
-    (t: SortChaptersMethod) => {
+    (t: SortChaptersBy) => {
       update((obj) => {
         obj.sortChaptersBy = t;
       });
@@ -25,7 +22,7 @@ const Sort: React.FC<SortProps> = (props) => {
       obj.reversedSort = !obj.reversedSort;
     });
   }, [update]);
-  const renderItem = React.useCallback<ListRenderItem<SortChaptersMethod>>(
+  const renderItem = React.useCallback<ListRenderItem<SortChaptersBy>>(
     ({ item }) => (
       <SortItem
         isSelected={props.sortMethod === item}

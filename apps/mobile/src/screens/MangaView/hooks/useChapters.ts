@@ -1,12 +1,8 @@
 import { useLocalRealm, useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
-import {
-  SORT_CHAPTERS_BY,
-  SORT_CHAPTERS_BY_LEGACY,
-  useManga,
-} from '@database/schemas/Manga';
-import integrateSortedList from '@helpers/integrateSortedList';
+import { useManga } from '@database/schemas/Manga';
+import { SORT_CHAPTERS_BY } from '@mangayomu/schemas';
 import { useFocusEffect } from '@react-navigation/native';
 import { DEFAULT_LANGUAGE } from '@screens/MangaView/MangaView';
 import { sort } from 'fast-sort';

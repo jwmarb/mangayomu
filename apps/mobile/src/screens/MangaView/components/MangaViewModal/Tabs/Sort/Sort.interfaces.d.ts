@@ -1,7 +1,7 @@
-import { SortChaptersMethod } from '@database/schemas/Manga';
+import { SortChaptersBy } from '@mangayomu/schemas';
 
 export interface SortProps {
-  sortMethod: SortChaptersMethod;
+  sortMethod: SortChaptersBy;
   reversed: boolean;
   mangaLink: string;
 }

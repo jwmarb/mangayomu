@@ -26,6 +26,13 @@ import { useUser } from '@realm/react';
 import useCombinedMangaWithLocal, {
   CombinedMangaWithLocal,
 } from '@hooks/useCombinedMangaWithLocal';
+import {
+  CurrentlyReadingChapter,
+  IMangaSchema,
+  RequiredMangaSchemaFields,
+  SORT_CHAPTERS_BY,
+  SortChaptersBy,
+} from '@mangayomu/schemas';
 
 export const MangaRatingSchema: Realm.ObjectSchema = {
   name: 'MangaRating',
@@ -55,24 +62,6 @@ export const MangaReadingChapter: Realm.ObjectSchema = {
   },
 };
 
-export type CurrentlyReadingChapter = {
-  _id: string;
-  index: number;
-  numOfPages: number;
-};
-
-export const SORT_CHAPTERS_BY = {
-  'Chapter number': (a: Omit<MangaChapter, 'link'>) => {
-    if (a.name) {
-      const aName = a.name.match(/(0|[1-9]\d*)(\.\d+)?/g);
-      if (aName != null) return parseFloat(aName[0]);
-    }
-    if (a.index != null) return a.index;
-    throw Error('Chapter cannot be sorted due to undefined name and index');
-  },
-  Timestamp: (a: Omit<MangaChapter, 'link'>) => Date.parse(a.date),
-};
-
 export const SORT_CHAPTERS_BY_LEGACY = {
   'Chapter number': (
     a: Omit<MangaChapter, 'link'>,
@@ -93,25 +82,12 @@ export const SORT_CHAPTERS_BY_LEGACY = {
 
 export const KEYS_OF_SORT_CHAPTERS_BY = Object.keys(
   SORT_CHAPTERS_BY,
-) as readonly SortChaptersMethod[];
+) as readonly SortChaptersBy[];
 
-export type SortChaptersMethod = keyof typeof SORT_CHAPTERS_BY;
-
-export interface IMangaSchema extends Omit<Manga, 'link'> {
-  currentlyReadingChapter?: CurrentlyReadingChapter;
-  dateAddedInLibrary?: number;
-  notifyNewChaptersCount?: number;
-  inLibrary: boolean;
-  selectedLanguage: ISOLangCode | 'Use default language';
-  readerDirection: ReadingDirection | 'Use global setting';
-  readerZoomStartPosition: ZoomStartPosition | 'Use global setting';
-  readerImageScaling: ImageScaling | 'Use global setting';
-  readerLockOrientation: ReaderScreenOrientation | 'Use global setting';
-  _id: string;
-  _realmId: string;
-}
-
-export class MangaSchema extends Realm.Object<IMangaSchema> {
+export class MangaSchema extends Realm.Object<
+  IMangaSchema,
+  RequiredMangaSchemaFields
+> {
   title!: string;
   imageCover!: string;
   source!: string;

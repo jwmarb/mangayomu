@@ -1,9 +1,7 @@
-import { ILocalManga, LocalMangaSchema } from '@database/schemas/LocalManga';
-import { IMangaSchema, MangaSchema } from '@database/schemas/Manga';
+import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import { ISOLangCode } from '@mangayomu/language-codes';
-import { Manga, MangaChapter, MangaMeta } from '@mangayomu/mangascraper/src';
-import { useUser } from '@realm/react';
-import { ReadingDirection } from '@redux/slices/settings';
+import { Manga, MangaMeta } from '@mangayomu/mangascraper/src';
+import { ILocalManga } from '@mangayomu/schemas';
 
 export default function writeManga(
   localRealm: Realm,

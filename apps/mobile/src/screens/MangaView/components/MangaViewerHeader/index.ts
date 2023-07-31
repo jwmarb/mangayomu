@@ -1,8 +1,8 @@
 export { default } from './MangaViewerHeader';
-import { ILocalManga } from '@database/schemas/LocalManga';
-import { IMangaSchema, useManga } from '@database/schemas/Manga';
+import { useManga } from '@database/schemas/Manga';
 import { FetchMangaMetaStatus } from '@database/schemas/Manga/useFetchManga';
 import { Manga } from '@mangayomu/mangascraper/src';
+import { ILocalManga } from '@mangayomu/schemas';
 import React from 'react';
 
 export interface MangaViewerHeaderProps extends React.PropsWithChildren {

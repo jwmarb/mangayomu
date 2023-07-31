@@ -28,6 +28,7 @@
     "@gorhom/portal": "^1.0.14",
     "@mangayomu/algorithms": "^1.0.0",
     "@mangayomu/mangascraper": "^1.0.0",
+    "@mangayomu/schemas": "1.0.0",
     "@mangayomu/theme": "^1.0.0",
     "@react-native-camera-roll/camera-roll": "5.7.2",
     "@react-native-clipboard/clipboard": "^1.11.1",

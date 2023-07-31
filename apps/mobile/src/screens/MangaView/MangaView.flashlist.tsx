@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { IMangaSchema } from '@database/schemas/Manga';
 import { FlashListProps, ListRenderItem } from '@shopify/flash-list';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import RowChapter from '@screens/MangaView/components/RowChapter';
 import { ROW_CHAPTER_HEIGHT } from '@screens/MangaView/components/RowChapter/RowChapter';
 import { DIVIDER_DEPTH } from '@theme/constants';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
+import { IMangaSchema } from '@mangayomu/schemas';
 
 export const keyExtractor = (item: LocalChapterSchema) => item._id;
 
