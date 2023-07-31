@@ -1,0 +1,13 @@
+{
+  "name": "@mangayomu/schemas",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc --build"
+  },
+  "dependencies": {
+    "@mangayomu/language-codes": "1.0.0",
+    "@mangayomu/mangascraper": "1.0.0"
+  }
+}
