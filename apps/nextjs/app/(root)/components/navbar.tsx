@@ -1,40 +1,29 @@
 'use client';
-import DarkMode from '@app/components/DarkMode';
 import IconButton from '@app/components/IconButton';
-import Text from '@app/components/Text';
 import {
   MdAdd,
-  MdMenu,
-  MdPerson,
   MdHistory,
   MdOutlineExplore,
   MdSearch,
-  MdChevronLeft,
   MdOutlineBookmarks,
-  MdSettings,
   MdOutlineLibraryBooks,
+  MdOutlineCreateNewFolder,
 } from 'react-icons/md';
 
 import React from 'react';
 import Drawer, { DrawerMethods } from '@app/(root)/components/drawer';
-import { useUser } from '@app/context/realm';
-import { useSafeArea } from '@app/context/safearea';
 import * as List from '@app/components/List';
 import { useRouter, usePathname } from 'next/navigation';
-import { useDrawer } from '@app/context/drawer';
 import { useAddedSources } from '@app/context/sources';
 import ListSource from '@app/(root)/components/source';
 import TopNavBar from '@app/(root)/components/topnavbar';
 import User from '@app/(root)/components/user';
+import { useMangaLibrary } from '@app/context/library';
 
 export default function Navbar() {
   const drawerRef = React.useRef<DrawerMethods>(null);
-  const user = useUser();
-  const mobile = useSafeArea((store) => store.mobile);
-  const setNavbarHeight = useSafeArea((store) => store.setHeaderHeight);
-  const drawerVisible = useDrawer((store) => store.visible);
+  const mangasInLibrary = useMangaLibrary((s) => s.mangas);
   const sources = useAddedSources((store) => store.sources);
-  const navRef = React.useRef<HTMLElement>(null);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -49,7 +38,10 @@ export default function Navbar() {
   return (
     <>
       <TopNavBar onOpenDrawer={handleOnOpenDrawer} />
-      <Drawer ref={drawerRef} className="w-64 p-4 flex flex-col gap-2">
+      <Drawer
+        ref={drawerRef}
+        className="w-64 p-4 flex flex-col gap-2 overflow-y-auto"
+      >
         <User onDrawerClose={handleOnCloseDrawer} />
         <div className="flex flex-col space-y-2">
           <List.Category>
@@ -126,11 +118,8 @@ export default function Navbar() {
           <List.Category>
             <List.Accordion persist="accordion_library">
               <List.Header
-                icon={
-                  <>
-                    <IconButton icon={<MdAdd />} />
-                  </>
-                }
+                icon={<IconButton icon={<MdOutlineCreateNewFolder />} />}
+                badge={mangasInLibrary.length || undefined}
               >
                 My Library
               </List.Header>
