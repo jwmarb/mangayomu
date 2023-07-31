@@ -200,7 +200,9 @@ export default function MangaViewer(props: MangaViewerProps) {
           <div
             className="w-full h-full absolute -z-10"
             style={{
-              backgroundImage: `url("${_manga.imageCover}")`,
+              backgroundImage: `url("${
+                meta?.imageCover ?? _manga.imageCover
+              }")`,
               backgroundSize: 'cover',
               backgroundPosition: 'top',
               backgroundRepeat: 'no-repeat',
@@ -208,7 +210,7 @@ export default function MangaViewer(props: MangaViewerProps) {
           />
         </div>
         <div className="z-10 flex flex-col gap-2 m-4 max-w-screen-md flex-grow w-full mx-auto px-4">
-          <ImageCover imageCover={_manga.imageCover} />
+          <ImageCover imageCover={meta?.imageCover ?? _manga.imageCover} />
           <Text
             variant="header"
             className="text-center lg:text-variant-header-emphasized md:text-2xl"
