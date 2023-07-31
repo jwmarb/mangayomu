@@ -101,7 +101,7 @@ export default function Navbar() {
                   <>
                     <IconButton
                       icon={<MdAdd />}
-                      onPress={() => router.push('/source-selector')}
+                      onPress={() => router.push('/sources')}
                     />
                   </>
                 }
