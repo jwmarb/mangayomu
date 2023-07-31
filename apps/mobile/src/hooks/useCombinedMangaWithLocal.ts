@@ -138,27 +138,27 @@ export default function useCombinedMangaWithLocal<T extends boolean>(
         }
 
         realm.write(() => {
-          const updatedManga = realm.create<MangaSchema>(
+          realm.create<MangaSchema>(
             MangaSchema,
             overrideProperties,
             Realm.UpdateMode.Modified,
           );
-          const isNotWorthSavingToCloud =
-            !updatedManga.inLibrary &&
-            updatedManga.readerDirection === 'Use global setting' &&
-            updatedManga.readerImageScaling === 'Use global setting' &&
-            updatedManga.readerLockOrientation === 'Use global setting' &&
-            updatedManga.readerZoomStartPosition === 'Use global setting' &&
-            (updatedManga.selectedLanguage === 'Use default language' ||
-              updatedManga.selectedLanguage === DEFAULT_LANGUAGE) &&
-            (updatedManga.currentlyReadingChapter == null ||
-              (updatedManga.currentlyReadingChapter != null &&
-                updatedManga.currentlyReadingChapter._id ===
-                  localManga.chapters[localManga.chapters.length - 1]));
-          if (isNotWorthSavingToCloud) {
-            setManga(undefined); // prevents access to invalidated fields
-            realm.delete(updatedManga);
-          }
+          // const isNotWorthSavingToCloud =
+          //   !updatedManga.inLibrary &&
+          //   updatedManga.readerDirection === 'Use global setting' &&
+          //   updatedManga.readerImageScaling === 'Use global setting' &&
+          //   updatedManga.readerLockOrientation === 'Use global setting' &&
+          //   updatedManga.readerZoomStartPosition === 'Use global setting' &&
+          //   (updatedManga.selectedLanguage === 'Use default language' ||
+          //     updatedManga.selectedLanguage === DEFAULT_LANGUAGE) &&
+          //   (updatedManga.currentlyReadingChapter == null ||
+          //     (updatedManga.currentlyReadingChapter != null &&
+          //       updatedManga.currentlyReadingChapter._id ===
+          //         localManga.chapters[localManga.chapters.length - 1]));
+          // if (isNotWorthSavingToCloud) {
+          //   setManga(undefined); // prevents access to invalidated fields
+          //   realm.delete(updatedManga);
+          // }
         });
       }
     };
