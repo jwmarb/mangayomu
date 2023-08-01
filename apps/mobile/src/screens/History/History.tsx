@@ -27,6 +27,8 @@ import useUserHistory from '@hooks/useUserHistory';
 import { AnimatedFlashList } from '@components/animated';
 import { MANGA_LIST_ITEM_HEIGHT } from '@theme/constants';
 import { LocalMangaSchema } from '@database/schemas/LocalManga';
+import { useFocusEffect } from '@react-navigation/native';
+import useMutableObject from '@hooks/useMutableObject';
 
 type HistorySectionFlashListData =
   | { type: 'SECTION'; date: number }
@@ -82,6 +84,7 @@ const History: React.FC<ConnectedHistoryProps> = ({
   const [isLoading, setTransition] = useTransition();
   const [show, setShow] = useBoolean();
   const [query, setQuery] = React.useState<string>('');
+  const queryRef = useMutableObject(query);
 
   const { onScroll, contentContainerStyle, scrollViewStyle } =
     useCollapsibleTabHeader({
@@ -184,7 +187,7 @@ const History: React.FC<ConnectedHistoryProps> = ({
   }, [incognito]);
   function updateData() {
     if (query.length > 0) {
-      const parsedQuery = query.trim().toLowerCase();
+      const parsedQuery = queryRef.current.trim().toLowerCase();
       const newArray: HistorySectionFlashListData[] = [];
       for (let i = sections.current.length - 1; i >= 0; i--) {
         newArray.push({ type: 'SECTION', date: sections.current[i].date });
@@ -201,47 +204,49 @@ const History: React.FC<ConnectedHistoryProps> = ({
       setData(newArray);
     } else setData(toFlashListData(sections.current));
   }
-  React.useEffect(() => {
-    const callback: Realm.CollectionChangeCallback<
-      UserHistorySchema & Realm.Object<unknown, never>
-    > = (changes) => {
-      sections.current = changes[0]?.history ?? [];
-      setLocalMangas(
-        sections.current.reduce((prev, curr) => {
-          for (const history of curr.data) {
-            if (history.manga.link in prev === false)
-              prev[history.manga.link] = localRealm.objectForPrimaryKey(
-                LocalMangaSchema,
-                history.manga.link,
-              );
-          }
-          return prev;
-        }, {} as ExtraData),
-      );
-      updateData();
-    };
-    const localMangasCallback: Realm.CollectionChangeCallback<
-      LocalMangaSchema
-    > = (collection, changes) => {
-      const newLocalManga: LocalMangaSchema | undefined =
-        collection[changes.newModifications[0]];
-      if (newLocalManga != null) {
-        setLocalMangas((prev) => {
-          if (newLocalManga._id in prev)
-            return { ...prev, [newLocalManga._id]: newLocalManga };
-          return prev;
-        });
-      }
-    };
-    const p = realm.objects(UserHistorySchema);
-    const listener = localRealm.objects(LocalMangaSchema);
-    p.addListener(callback);
-    listener.addListener(localMangasCallback);
-    return () => {
-      p.removeListener(callback);
-      listener.removeListener(localMangasCallback);
-    };
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      const callback: Realm.CollectionChangeCallback<
+        UserHistorySchema & Realm.Object<unknown, never>
+      > = (changes) => {
+        sections.current = changes[0]?.history ?? [];
+        setLocalMangas(
+          sections.current.reduce((prev, curr) => {
+            for (const history of curr.data) {
+              if (history.manga.link in prev === false)
+                prev[history.manga.link] = localRealm.objectForPrimaryKey(
+                  LocalMangaSchema,
+                  history.manga.link,
+                );
+            }
+            return prev;
+          }, {} as ExtraData),
+        );
+        updateData();
+      };
+      const localMangasCallback: Realm.CollectionChangeCallback<
+        LocalMangaSchema
+      > = (collection, changes) => {
+        const newLocalManga: LocalMangaSchema | undefined =
+          collection[changes.newModifications[0]];
+        if (newLocalManga != null) {
+          setLocalMangas((prev) => {
+            if (newLocalManga._id in prev)
+              return { ...prev, [newLocalManga._id]: newLocalManga };
+            return prev;
+          });
+        }
+      };
+      const p = realm.objects(UserHistorySchema);
+      const listener = localRealm.objects(LocalMangaSchema);
+      p.addListener(callback);
+      listener.addListener(localMangasCallback);
+      return () => {
+        p.removeListener(callback);
+        listener.removeListener(localMangasCallback);
+      };
+    }, []),
+  );
 
   if (data.length === 0)
     return (
