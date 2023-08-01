@@ -21,6 +21,7 @@ import MangaStatus from '@screens/MangaView/components/MangaViewerHeader/compone
 import MangaSupportedLanguages from '@screens/MangaView/components/MangaViewerHeader/components/MangaSupportedLanguages';
 import MangaSource from '@screens/MangaView/components/MangaViewerHeader/components/MangaSource';
 import IconButton from '@components/IconButton';
+import useBoolean from '@hooks/useBoolean';
 
 const styles = StyleSheet.create({
   imageBackground: {
@@ -42,13 +43,15 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
     onOpenMenu,
   } = props;
   const theme = useTheme();
+  const [fallback, toggleFallback] = useBoolean();
 
   const isLoading = status === 'loading' || meta == null;
   return (
     <Box>
       <FastImage
-        source={{ uri: meta?.imageCover ?? manga.imageCover }}
+        source={{ uri: fallback ? meta?.imageCover : manga.imageCover }}
         style={styles.imageBackground}
+        onError={() => toggleFallback(true)}
       >
         <LinearGradient
           colors={['rgba(0, 0, 0, 0.25)', theme.palette.background.paper]}
@@ -71,7 +74,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
                 border-radius={moderateScale(12)}
               >
                 <Cover
-                  cover={meta?.imageCover ?? manga.imageCover}
+                  cover={fallback ? meta?.imageCover : manga.imageCover}
                   scale={1.5}
                   normalBookDimensions
                 />
