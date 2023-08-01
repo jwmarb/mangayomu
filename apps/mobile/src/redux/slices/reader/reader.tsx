@@ -1,5 +1,4 @@
-import { ChapterSchema, IChapterSchema } from '@database/schemas/Chapter';
-import { MangaSchema } from '@database/schemas/Manga';
+import { ChapterSchema } from '@database/schemas/Chapter';
 import { PageSchema } from '@database/schemas/Page';
 import { getErrorMessage } from '@helpers/getErrorMessage';
 import { MangaHost } from '@mangayomu/mangascraper/src';
