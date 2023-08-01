@@ -204,49 +204,47 @@ const History: React.FC<ConnectedHistoryProps> = ({
       setData(newArray);
     } else setData(toFlashListData(sections.current));
   }
-  useFocusEffect(
-    React.useCallback(() => {
-      const callback: Realm.CollectionChangeCallback<
-        UserHistorySchema & Realm.Object<unknown, never>
-      > = (changes) => {
-        sections.current = changes[0]?.history ?? [];
-        setLocalMangas(
-          sections.current.reduce((prev, curr) => {
-            for (const history of curr.data) {
-              if (history.manga.link in prev === false)
-                prev[history.manga.link] = localRealm.objectForPrimaryKey(
-                  LocalMangaSchema,
-                  history.manga.link,
-                );
-            }
-            return prev;
-          }, {} as ExtraData),
-        );
-        updateData();
-      };
-      const localMangasCallback: Realm.CollectionChangeCallback<
-        LocalMangaSchema
-      > = (collection, changes) => {
-        const newLocalManga: LocalMangaSchema | undefined =
-          collection[changes.newModifications[0]];
-        if (newLocalManga != null) {
-          setLocalMangas((prev) => {
-            if (newLocalManga._id in prev)
-              return { ...prev, [newLocalManga._id]: newLocalManga };
-            return prev;
-          });
-        }
-      };
-      const p = realm.objects(UserHistorySchema);
-      const listener = localRealm.objects(LocalMangaSchema);
-      p.addListener(callback);
-      listener.addListener(localMangasCallback);
-      return () => {
-        p.removeListener(callback);
-        listener.removeListener(localMangasCallback);
-      };
-    }, []),
-  );
+  React.useEffect(() => {
+    const callback: Realm.CollectionChangeCallback<
+      UserHistorySchema & Realm.Object<unknown, never>
+    > = (changes) => {
+      sections.current = changes[0]?.history ?? [];
+      setLocalMangas(
+        sections.current.reduce((prev, curr) => {
+          for (const history of curr.data) {
+            if (history.manga.link in prev === false)
+              prev[history.manga.link] = localRealm.objectForPrimaryKey(
+                LocalMangaSchema,
+                history.manga.link,
+              );
+          }
+          return prev;
+        }, {} as ExtraData),
+      );
+      updateData();
+    };
+    const localMangasCallback: Realm.CollectionChangeCallback<
+      LocalMangaSchema
+    > = (collection, changes) => {
+      const newLocalManga: LocalMangaSchema | undefined =
+        collection[changes.newModifications[0]];
+      if (newLocalManga != null) {
+        setLocalMangas((prev) => {
+          if (newLocalManga._id in prev)
+            return { ...prev, [newLocalManga._id]: newLocalManga };
+          return prev;
+        });
+      }
+    };
+    const p = realm.objects(UserHistorySchema);
+    const listener = localRealm.objects(LocalMangaSchema);
+    p.addListener(callback);
+    listener.addListener(localMangasCallback);
+    return () => {
+      p.removeListener(callback);
+      listener.removeListener(localMangasCallback);
+    };
+  }, []);
 
   if (data.length === 0)
     return (
@@ -271,6 +269,7 @@ const History: React.FC<ConnectedHistoryProps> = ({
         </Text>
       </Stack>
     );
+
   return (
     <AnimatedFlashList
       extraData={localMangas}

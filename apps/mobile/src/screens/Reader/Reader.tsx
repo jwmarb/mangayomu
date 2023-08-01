@@ -233,7 +233,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
                   maxToRenderPerBatch={10}
                   windowSize={9}
                   updateCellsBatchingPeriod={0}
-                  removeClippedSubviews
                   initialNumToRender={0}
                   extraData={extraData}
                   maintainVisibleContentPosition={
