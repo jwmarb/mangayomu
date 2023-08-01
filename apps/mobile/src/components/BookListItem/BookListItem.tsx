@@ -9,9 +9,10 @@ import displayMessage from '@helpers/displayMessage';
 import { Pressable } from 'react-native';
 import { MangaSchema } from '@database/schemas/Manga';
 import { Manga } from '@mangayomu/mangascraper/src';
+import { LocalMangaSchema } from '@database/schemas/LocalManga';
 
 export interface BookListItemProps extends React.PropsWithChildren {
-  manga: Manga | MangaSchema;
+  manga: Manga | MangaSchema | LocalMangaSchema;
   start?: React.ReactNode;
   end?: React.ReactNode;
   onPress?: () => void;

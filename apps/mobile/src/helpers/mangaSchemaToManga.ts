@@ -1,8 +1,11 @@
+import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import { MangaSchema } from '@database/schemas/Manga';
 import assertIsManga from '@helpers/assertIsManga';
 import { Manga } from '@mangayomu/mangascraper/src';
 
-export default function mangaSchemaToManga(manga: Manga | MangaSchema): Manga {
+export default function mangaSchemaToManga(
+  manga: Manga | MangaSchema | LocalMangaSchema,
+): Manga {
   if (!assertIsManga(manga))
     return {
       imageCover: manga.imageCover,

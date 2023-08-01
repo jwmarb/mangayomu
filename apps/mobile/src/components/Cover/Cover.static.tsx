@@ -12,6 +12,7 @@ import { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { ScaledSheet, moderateScale } from 'react-native-size-matters';
 import { MangaSchema } from '@database/schemas/Manga';
 import mangaSchemaToManga from '@helpers/mangaSchemaToManga';
+import { LocalMangaSchema } from '@database/schemas/LocalManga';
 
 const styles = ScaledSheet.create({
   cover: {
@@ -32,7 +33,7 @@ const mangaHistoryItemStyles = StyleSheet.create({
 });
 
 interface StaticCoverProps {
-  manga: Manga | MangaSchema;
+  manga: Manga | MangaSchema | LocalMangaSchema;
   scale?: number;
   sharp?: boolean;
 }
