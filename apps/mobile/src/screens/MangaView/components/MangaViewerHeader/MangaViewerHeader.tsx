@@ -47,7 +47,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
   return (
     <Box>
       <FastImage
-        source={{ uri: manga.imageCover }}
+        source={{ uri: meta?.imageCover ?? manga.imageCover }}
         style={styles.imageBackground}
       >
         <LinearGradient
@@ -70,7 +70,11 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
                 box-shadow
                 border-radius={moderateScale(12)}
               >
-                <Cover cover={manga} scale={1.5} normalBookDimensions />
+                <Cover
+                  cover={meta?.imageCover ?? manga.imageCover}
+                  scale={1.5}
+                  normalBookDimensions
+                />
               </Box>
               <MangaTitle title={manga.title} />
               <MangaAuthors data={meta?.authors} loading={isLoading} />
