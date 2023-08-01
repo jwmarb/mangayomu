@@ -143,10 +143,7 @@ export function useLibraryData(args: {
             const host = MangaHost.sourcesMap.get(manga.source)!;
             const localManga = getLocalManga(manga._id);
             const meta = await host.getMeta({
-              imageCover: manga.imageCover,
               link: manga._id,
-              source: manga.source,
-              title: manga.title,
             });
             if (meta.chapters.length !== localManga.chapters.length) {
               numberOfUpdates++;
@@ -273,9 +270,6 @@ export const useIsDataStale = () => {
             setCurrentlySyncing(manga._id);
             const meta = await source.getMeta({
               link: manga._id,
-              imageCover: manga.imageCover,
-              title: manga.title,
-              source: manga.source,
             });
             const { chapters, availableLanguages } = writeLocalChapters(
               localRealm,
