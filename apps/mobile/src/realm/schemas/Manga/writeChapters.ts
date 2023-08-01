@@ -24,6 +24,10 @@ export default function writeLocalChapters(
   const availableLanguages: ISOLangCode[] = [];
   const lookup = new Set<string>();
   localRealm.write(() => {
+    const outdatedChapters = localRealm
+      .objects(LocalChapterSchema)
+      .filtered('_mangaId = $0', meta.link);
+    localRealm.delete(outdatedChapters); // new or deleted chapters place indexes out of order and must be recreated accordingly
     for (const x of meta.chapters) {
       chapters.push(x.link);
       if ('language' in x) {
@@ -38,26 +42,18 @@ export default function writeLocalChapters(
         availableLanguages.push('en');
         lookup.add('en');
       }
-      const existingChapter = localRealm.objectForPrimaryKey(
+
+      const copy = x;
+      (copy as unknown as LocalChapterSchema)._mangaId = meta.link;
+      (copy as unknown as LocalChapterSchema)._id = x.link;
+      (copy as unknown as LocalChapterSchema).language =
+        (x as MangaMultilingualChapter).language ?? 'en';
+      delete (copy as Partial<MangaChapter>).link;
+      localRealm.create<LocalChapterSchema>(
         LocalChapterSchema,
-        x.link,
+        copy,
+        Realm.UpdateMode.Modified,
       );
-      if (
-        (existingChapter != null && !deepEqual(existingChapter, x)) ||
-        existingChapter == null
-      ) {
-        const copy = x;
-        (copy as unknown as LocalChapterSchema)._mangaId = meta.link;
-        (copy as unknown as LocalChapterSchema)._id = x.link;
-        (copy as unknown as LocalChapterSchema).language =
-          (x as MangaMultilingualChapter).language ?? 'en';
-        delete (copy as Partial<MangaChapter>).link;
-        localRealm.create<LocalChapterSchema>(
-          LocalChapterSchema,
-          copy,
-          Realm.UpdateMode.Modified,
-        );
-      }
     }
   });
   return { chapters, availableLanguages };
