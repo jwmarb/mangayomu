@@ -1,10 +1,12 @@
 import { LocalMangaSchema } from '@database/schemas/LocalManga';
+import { MangaSchema } from '@database/schemas/Manga';
 import { ISOLangCode } from '@mangayomu/language-codes';
 import { Manga, MangaMeta } from '@mangayomu/mangascraper/src';
 import { ILocalManga } from '@mangayomu/schemas';
 
 export default function writeManga(
   localRealm: Realm,
+  realm: Realm,
   meta: MangaMeta & Manga,
   chapters: string[],
   availableLanguages: ISOLangCode[],
@@ -14,6 +16,13 @@ export default function writeManga(
     LocalMangaSchema,
     meta.link,
   );
+  const cloudManga = realm.objectForPrimaryKey(MangaSchema, meta.link);
+  realm.write(() => {
+    if (cloudManga != null) {
+      cloudManga.imageCover = meta.imageCover;
+      cloudManga.title = meta.title;
+    }
+  });
   localRealm.write(() => {
     if (localManga == null)
       localRealm.create(LocalMangaSchema, {

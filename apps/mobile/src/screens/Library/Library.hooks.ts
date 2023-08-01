@@ -281,7 +281,7 @@ export const useIsDataStale = () => {
               localRealm,
               meta,
             );
-            writeManga(localRealm, meta, chapters, availableLanguages);
+            writeManga(localRealm, realm, meta, chapters, availableLanguages);
           }
           setSyncedCount((prev) => prev + 1);
         });

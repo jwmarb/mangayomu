@@ -126,7 +126,7 @@ export default function useFetchManga(
           localRealm,
           meta,
         );
-        writeManga(localRealm, meta, chapters, availableLanguages);
+        writeManga(localRealm, realm, meta, chapters, availableLanguages);
       } catch (e) {
         console.error(e);
         throw Error(getErrorMessage(e));
