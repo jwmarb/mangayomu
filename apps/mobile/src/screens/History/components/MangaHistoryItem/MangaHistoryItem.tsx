@@ -3,9 +3,12 @@ import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
+import { useLocalRealm } from '@database/main';
+import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import useDialog from '@hooks/useDialog';
 import useRootNavigation from '@hooks/useRootNavigation';
 import useUserHistory from '@hooks/useUserHistory';
+import { Manga } from '@mangayomu/mangascraper';
 import connector, {
   ConnectedMangaHistoryItemProps,
 } from '@screens/History/components/MangaHistoryItem/MangaHistoryItem.redux';
@@ -15,6 +18,7 @@ import React from 'react';
 const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
   const { item, sectionDate } = props;
   const { deleteMangaFromHistory } = useUserHistory();
+  const localRealm = useLocalRealm();
   const { manga, chapter } = item;
   const navigation = useRootNavigation();
   const dialog = useDialog();
@@ -48,7 +52,9 @@ const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
 
   return (
     <BookListItem
-      manga={manga}
+      manga={
+        localRealm.objectForPrimaryKey(LocalMangaSchema, manga.link) ?? manga
+      }
       onPress={handleOnPress}
       end={
         <IconButton

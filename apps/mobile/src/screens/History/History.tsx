@@ -16,7 +16,7 @@ import { moderateScale } from 'react-native-size-matters';
 import Stack from '@components/Stack';
 import useBoolean from '@hooks/useBoolean';
 import Input from '@components/Input';
-import { useRealm } from '@database/main';
+import { useLocalQuery, useLocalRealm, useRealm } from '@database/main';
 import { ListRenderItem } from '@shopify/flash-list';
 import {
   HistorySection,
@@ -26,6 +26,7 @@ import {
 import useUserHistory from '@hooks/useUserHistory';
 import { AnimatedFlashList } from '@components/animated';
 import { MANGA_LIST_ITEM_HEIGHT } from '@theme/constants';
+import { LocalMangaSchema } from '@database/schemas/LocalManga';
 
 type HistorySectionFlashListData =
   | { type: 'SECTION'; date: number }
@@ -64,6 +65,19 @@ const History: React.FC<ConnectedHistoryProps> = ({
   );
   const [data, setData] = React.useState<HistorySectionFlashListData[]>(
     toFlashListData(sections.current),
+  );
+  const localRealm = useLocalRealm();
+  const [localMangas, setLocalMangas] = React.useState<ExtraData>(
+    sections.current.reduce((prev, curr) => {
+      for (const history of curr.data) {
+        if (history.manga.link in prev === false)
+          prev[history.manga.link] = localRealm.objectForPrimaryKey(
+            LocalMangaSchema,
+            history.manga.link,
+          );
+      }
+      return prev;
+    }, {} as ExtraData),
   );
   const [isLoading, setTransition] = useTransition();
   const [show, setShow] = useBoolean();
@@ -192,12 +206,40 @@ const History: React.FC<ConnectedHistoryProps> = ({
       UserHistorySchema & Realm.Object<unknown, never>
     > = (changes) => {
       sections.current = changes[0]?.history ?? [];
+      setLocalMangas(
+        sections.current.reduce((prev, curr) => {
+          for (const history of curr.data) {
+            if (history.manga.link in prev === false)
+              prev[history.manga.link] = localRealm.objectForPrimaryKey(
+                LocalMangaSchema,
+                history.manga.link,
+              );
+          }
+          return prev;
+        }, {} as ExtraData),
+      );
       updateData();
     };
+    const localMangasCallback: Realm.CollectionChangeCallback<
+      LocalMangaSchema
+    > = (collection, changes) => {
+      const newLocalManga: LocalMangaSchema | undefined =
+        collection[changes.newModifications[0]];
+      if (newLocalManga != null) {
+        setLocalMangas((prev) => {
+          if (newLocalManga._id in prev)
+            return { ...prev, [newLocalManga._id]: newLocalManga };
+          return prev;
+        });
+      }
+    };
     const p = realm.objects(UserHistorySchema);
+    const listener = localRealm.objects(LocalMangaSchema);
     p.addListener(callback);
+    listener.addListener(localMangasCallback);
     return () => {
       p.removeListener(callback);
+      listener.removeListener(localMangasCallback);
     };
   }, []);
 
@@ -226,6 +268,7 @@ const History: React.FC<ConnectedHistoryProps> = ({
     );
   return (
     <AnimatedFlashList
+      extraData={localMangas}
       onScroll={onScroll}
       data={data}
       ListHeaderComponent={<Box style={scrollViewStyle} />}
@@ -263,11 +306,21 @@ const overrideItemLayout: (
   }
 };
 
-const renderItem: ListRenderItem<HistorySectionFlashListData> = ({ item }) => {
+type ExtraData = Record<string, LocalMangaSchema | undefined>;
+
+const renderItem: ListRenderItem<HistorySectionFlashListData> = ({
+  item,
+  extraData: _extraData,
+}) => {
+  const extraData = _extraData as ExtraData;
   switch (item.type) {
     case 'ROW':
       return (
-        <MangaHistoryItem item={item.data} sectionDate={item.sectionDate} />
+        <MangaHistoryItem
+          item={item.data}
+          sectionDate={item.sectionDate}
+          localManga={extraData[item.data.manga.link]}
+        />
       );
     case 'SECTION':
       return <SectionHeader date={item.date} />;
