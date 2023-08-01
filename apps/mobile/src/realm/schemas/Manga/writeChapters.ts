@@ -22,14 +22,12 @@ export default function writeLocalChapters(
 ) {
   const chapters: string[] = [];
   const availableLanguages: ISOLangCode[] = [];
-  const lookup = new Set<string>();
   localRealm.write(() => {
-    const outdatedChapters = localRealm
-      .objects(LocalChapterSchema)
-      .filtered('_mangaId = $0', meta.link);
-    localRealm.delete(outdatedChapters); // new or deleted chapters place indexes out of order and must be recreated accordingly
+    const uniqChapters: Set<string> = new Set();
+    const lookup = new Set<string>();
     for (const x of meta.chapters) {
       chapters.push(x.link);
+      uniqChapters.add(x.link);
       if ('language' in x) {
         const multilingualChapter = x as MangaMultilingualChapter;
         if (!lookup.has(multilingualChapter.language)) {
@@ -43,18 +41,37 @@ export default function writeLocalChapters(
         lookup.add('en');
       }
 
-      const copy = x;
-      (copy as unknown as LocalChapterSchema)._mangaId = meta.link;
-      (copy as unknown as LocalChapterSchema)._id = x.link;
-      (copy as unknown as LocalChapterSchema).language =
-        (x as MangaMultilingualChapter).language ?? 'en';
-      delete (copy as Partial<MangaChapter>).link;
-      localRealm.create<LocalChapterSchema>(
+      const existingChapter = localRealm.objectForPrimaryKey(
         LocalChapterSchema,
-        copy,
-        Realm.UpdateMode.Modified,
+        x.link,
       );
+      if (
+        (existingChapter != null && !deepEqual(existingChapter, x)) ||
+        existingChapter == null
+      ) {
+        const copy = x;
+        (copy as unknown as LocalChapterSchema)._mangaId = meta.link;
+        (copy as unknown as LocalChapterSchema)._id = x.link;
+        (copy as unknown as LocalChapterSchema).language =
+          (x as MangaMultilingualChapter).language ?? 'en';
+        delete (copy as Partial<MangaChapter>).link;
+        localRealm.create<LocalChapterSchema>(
+          LocalChapterSchema,
+          copy,
+          Realm.UpdateMode.Modified,
+        );
+      }
+    }
+    const localChapters = localRealm
+      .objects(LocalChapterSchema)
+      .filtered('_mangaId = $0', meta.link);
+    /**
+     * If the host deleted a chapter, it shall also be deleted here. Without deletion, collisions with `index` field occurs
+     */
+    for (const chapter of localChapters) {
+      if (!uniqChapters.has(chapter._id)) localRealm.delete(chapter);
     }
   });
+
   return { chapters, availableLanguages };
 }
