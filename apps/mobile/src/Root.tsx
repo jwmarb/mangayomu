@@ -16,12 +16,19 @@ import UnfinishedMangaList from '@screens/UnfinishedMangaList';
 import GlobalReaderSettings from '@screens/GlobalReaderSettings';
 import Login from '@screens/Login';
 import Register from '@screens/Register';
+import SplashScreen from 'react-native-splash-screen';
+import { InteractionManager } from 'react-native';
 
 const mapStateToProps = (state: AppState) => ({
   showWelcomeScreen: state.__initial__.firstTimeUser,
 });
 
 const Root: React.FC<RootProps> = ({ showWelcomeScreen }) => {
+  React.useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      SplashScreen.hide();
+    });
+  }, []);
   return (
     <RootStack.Navigator
       initialRouteName={showWelcomeScreen ? 'Welcome' : 'Home'}
