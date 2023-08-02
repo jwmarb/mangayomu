@@ -149,6 +149,9 @@ export default function usePageGestures(
           togglePan(true);
       },
     };
+    return () => {
+      delete pageGestures.current[pageKey]; // deallocate unused page
+    };
   }, [pageKey]);
 
   useAnimatedReaction(
