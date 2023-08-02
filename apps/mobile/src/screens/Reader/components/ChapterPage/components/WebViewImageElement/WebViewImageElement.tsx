@@ -5,6 +5,7 @@ import connector, {
 import Box, { AnimatedBox } from '@components/Box';
 import WebView from 'react-native-webview';
 import { ViewStyle } from 'react-native';
+import Progress from '@components/Progress';
 
 const WebViewImageElement: React.ForwardRefRenderFunction<
   WebView,
@@ -14,7 +15,6 @@ const WebViewImageElement: React.ForwardRefRenderFunction<
   return (
     <AnimatedBox style={animatedStyle as ViewStyle} pointerEvents="none">
       <WebView
-        style={{ flex: 1 }}
         scrollEnabled={false}
         scalesPageToFit={false}
         setDisplayZoomControls={false}
@@ -33,7 +33,7 @@ const WebViewImageElement: React.ForwardRefRenderFunction<
          })
        `}
         startInLoadingState
-        androidLayerType="software"
+        renderLoading={renderLoading}
         source={{
           html: `
       <html>
@@ -46,11 +46,16 @@ const WebViewImageElement: React.ForwardRefRenderFunction<
             background-color: ${backgroundColor};
             width: ${style.width}px;
             height: ${style.height}px;
-            background-image: url(${uri});
-            background-size: contain;
+          }
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
           }
         </style>
-        <body></body>
+        <body>
+          <img src="${uri}" id="page">
+        </body>
       </html>
    `,
         }}
@@ -58,5 +63,19 @@ const WebViewImageElement: React.ForwardRefRenderFunction<
     </AnimatedBox>
   );
 };
+
+const renderLoading = () => (
+  <Box
+    position="absolute"
+    left={0}
+    right={0}
+    bottom={0}
+    top={0}
+    align-items="center"
+    justify-content="center"
+  >
+    <Progress />
+  </Box>
+);
 
 export default connector(React.forwardRef(WebViewImageElement));
