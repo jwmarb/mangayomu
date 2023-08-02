@@ -225,12 +225,12 @@ export default function usePageGestures(
             (maxTranslateX.value === Math.abs(translateX.value) &&
               isHorizontal.value &&
               Math.abs(velocityY.value) <= 5000 &&
-              ((translateX.value <= 0 && velocityX.value < -1500) ||
-                (translateX.value >= 0 && velocityX.value > 1500))) ||
+              ((translateX.value <= 0 && velocityX.value < -100) ||
+                (translateX.value >= 0 && velocityX.value > 100))) ||
             (maxTranslateY.value === Math.abs(translateY.value) &&
               isVertical.value &&
-              ((translateY.value <= 0 && velocityY.value < -1500) ||
-                (translateY.value >= 0 && velocityY.value > 1500)))
+              ((translateY.value <= 0 && velocityY.value < -100) ||
+                (translateY.value >= 0 && velocityY.value > 100)))
           ) {
             runOnJS(togglePan)(false);
           }
