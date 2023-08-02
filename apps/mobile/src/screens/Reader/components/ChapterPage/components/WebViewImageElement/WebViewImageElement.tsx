@@ -13,7 +13,11 @@ const WebViewImageElement: React.ForwardRefRenderFunction<
 > = (props, ref) => {
   const { style, onMessage, uri, backgroundColor, animatedStyle } = props;
   return (
-    <AnimatedBox style={animatedStyle as ViewStyle} pointerEvents="none">
+    <AnimatedBox
+      style={animatedStyle as ViewStyle}
+      pointerEvents="none"
+      renderToHardwareTextureAndroid
+    >
       <WebView
         scrollEnabled={false}
         scalesPageToFit={false}
