@@ -228,7 +228,6 @@ export const useIsDataStale = () => {
     realm.objects(MangaSchema).filtered('inLibrary == true'),
   );
   const [syncedCount, setSyncedCount] = React.useState<number>(0);
-  const [currentlySyncing, setCurrentlySyncing] = React.useState<string>('');
   const [syncError, setSyncError] = React.useState<string>('');
   React.useEffect(() => {
     const callback: Realm.CollectionChangeCallback<MangaSchema> = (
@@ -267,15 +266,19 @@ export const useIsDataStale = () => {
             const source = MangaHost.sourcesMap.get(manga.source);
             if (source == null)
               throw new Error(`${source} as a source does not exist`);
-            setCurrentlySyncing(manga._id);
-            const meta = await source.getMeta({
-              link: manga._id,
-            });
-            const { chapters, availableLanguages } = writeLocalChapters(
-              localRealm,
-              meta,
-            );
-            writeManga(localRealm, realm, meta, chapters, availableLanguages);
+            try {
+              console.log(`Fetching data for ${manga._id}`);
+              const meta = await source.getMeta({
+                link: manga._id,
+              });
+              const { chapters, availableLanguages } = writeLocalChapters(
+                localRealm,
+                meta,
+              );
+              writeManga(localRealm, realm, meta, chapters, availableLanguages);
+            } catch (e) {
+              console.error(e);
+            }
           }
           setSyncedCount((prev) => prev + 1);
         });
@@ -284,7 +287,7 @@ export const useIsDataStale = () => {
         } catch (e) {
           setSyncError(getErrorMessage(e));
         } finally {
-          setCurrentlySyncing('');
+          console.log('Done syncing collection');
         }
       })();
     }
@@ -296,7 +299,6 @@ export const useIsDataStale = () => {
       count: syncedCount,
       totalToSync: mangas.length,
       error: syncError,
-      current: realm.objectForPrimaryKey(MangaSchema, currentlySyncing),
     },
   };
 };
