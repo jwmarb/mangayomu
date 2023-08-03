@@ -12,13 +12,16 @@ import { Dimensions, useWindowDimensions } from 'react-native';
 const Item: React.FC<{ item: Manga | MangaSchema }> = React.memo(({ item }) => {
   const manga = React.useMemo(() => {
     if (assertIsManga(item)) return item;
-    return {
-      link: item._id,
-      imageCover: item.imageCover,
-      source: item.source,
-      title: item.title,
-    };
+    return item.isValid()
+      ? {
+          link: item._id,
+          imageCover: item.imageCover,
+          source: item.source,
+          title: item.title,
+        }
+      : null;
   }, [item.source, item.title, item.imageCover]);
+  if (manga == null) return null;
   return (
     <Box my="s" align-items="center" flex-grow>
       <Book manga={manga} />
