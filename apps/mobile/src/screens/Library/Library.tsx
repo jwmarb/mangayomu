@@ -37,32 +37,7 @@ const Library: React.FC<ConnectedLibraryProps> = ({
   const [refreshing, setRefreshing] = useBoolean();
   const [showSearchBar, setShowSearchBar] = React.useState<boolean>(false);
   const [query, setQuery] = React.useState<string>('');
-  const { dataIsStale, syncing } = useIsDataStale();
   const user = useUser();
-
-  if (dataIsStale)
-    return (
-      <Stack space="s" height="100%" p="m" justify-content="center">
-        <Progress />
-        <Stack
-          space="s"
-          flex-direction="row"
-          align-self="center"
-          align-items="center"
-        >
-          <Text align="center" bold variant="header">
-            {syncing.count} / {syncing.totalToSync}
-          </Text>
-          <Text align="center" color="textSecondary">
-            mangas synced
-          </Text>
-        </Stack>
-        <Box align-self="center" flex-direction="row">
-          <Text color="textSecondary">Syncing </Text>
-          <Text>{syncing.current?.title}</Text>
-        </Box>
-      </Stack>
-    );
 
   function handleOnPress() {
     ref.current?.snapToIndex(1);
@@ -274,4 +249,32 @@ const ListEmptyComponent: React.FC<{
   );
 });
 
-export default connector(Library);
+const LibraryWrapper: React.FC<ConnectedLibraryProps> = (props) => {
+  const { dataIsStale, syncing } = useIsDataStale();
+
+  if (dataIsStale)
+    return (
+      <Stack space="s" height="100%" p="m" justify-content="center">
+        <Progress />
+        <Stack
+          space="s"
+          flex-direction="row"
+          align-self="center"
+          align-items="center"
+        >
+          <Text align="center" bold variant="header">
+            {syncing.count} / {syncing.totalToSync}
+          </Text>
+          <Text align="center" color="textSecondary">
+            mangas synced
+          </Text>
+        </Stack>
+        <Text color="textSecondary" align="center">
+          Please wait while your library syncs with your device...
+        </Text>
+      </Stack>
+    );
+  return <Library {...props} />;
+};
+
+export default connector(LibraryWrapper);
