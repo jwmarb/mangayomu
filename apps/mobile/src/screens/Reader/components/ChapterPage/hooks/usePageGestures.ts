@@ -90,7 +90,7 @@ export default function usePageGestures(
       onPinchChange(e) {
         'worklet';
         pinchScale.value = Math.max(
-          pinchScale.value + e.scaleChange - 1,
+          pinchScale.value + (e.scaleChange - 1) * 1.5,
           minScale.value,
         );
       },
@@ -227,7 +227,7 @@ export default function usePageGestures(
           if (
             (maxTranslateX.value === Math.abs(translateX.value) &&
               isHorizontal.value &&
-              Math.abs(velocityY.value) <= 5000 &&
+              Math.abs(velocityY.value) <= 1000 &&
               ((translateX.value <= 0 && velocityX.value < -100) ||
                 (translateX.value >= 0 && velocityX.value > 100))) ||
             (maxTranslateY.value === Math.abs(translateY.value) &&
@@ -274,7 +274,9 @@ export default function usePageGestures(
         (maxTranslateY.value === Math.abs(translateY.value) &&
           isVertical.value)) &&
       !enablePan &&
-      pinchScale.value > minScale.value
+      ((_imageScaling === ImageScaling.FIT_WIDTH &&
+        height.value < pinchScale.value * stylizedHeight) ||
+        pinchScale.value > minScale.value)
     ) {
       const p = setTimeout(() => {
         togglePan(true);
