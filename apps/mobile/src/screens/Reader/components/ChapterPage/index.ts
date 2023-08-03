@@ -18,9 +18,24 @@ export interface ChapterPageProps {
   extendedPageState?: ExtendedReaderPageState;
 }
 
+export type PageAnimatedStateBase = {
+  translateX: number;
+  translateY: number;
+  scale: number;
+  minScale: number;
+};
+
+export type PageAnimatedState = PageAnimatedStateBase & {
+  onImageTypeChange: () => PageAnimatedStateBase;
+  onDimensionsChange: (width: number, height: number) => PageAnimatedStateBase;
+};
+
 export interface ChapterPageContextState {
   velocityX: SharedValue<number>;
   velocityY: SharedValue<number>;
+  animatedPreviousState: React.MutableRefObject<
+    Record<string, PageAnimatedState | undefined>
+  >;
   rootPanGesture: PanGesture;
   rootPinchGesture: PinchGesture;
   readingDirection: ReadingDirection;

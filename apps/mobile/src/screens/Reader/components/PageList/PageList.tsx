@@ -26,7 +26,8 @@ const PageList: React.ForwardRefRenderFunction<
     ...rest
   } = props;
   const handleOnActivated = () => {
-    pageGestures.current[currentPageKey.current].onFlashlistActive();
+    if (currentPageKey.current in pageGestures.current)
+      pageGestures.current[currentPageKey.current].onFlashlistActive();
   };
   // return (
   //   <FlatList
@@ -66,7 +67,7 @@ const PageList: React.ForwardRefRenderFunction<
         <ScrollView
           ref={ref}
           {...props}
-          simultaneousHandlers={panRef}
+          simultaneousHandlers={[panRef, pinchRef]}
           onActivated={
             readingDirection !== ReadingDirection.WEBTOON
               ? handleOnActivated

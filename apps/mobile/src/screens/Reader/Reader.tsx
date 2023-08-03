@@ -31,6 +31,7 @@ import displayMessage from '@helpers/displayMessage';
 import { ChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
 import { ImageMenuMethods } from '@screens/Reader/components/ImageMenu/ImageMenu.interfaces';
 import useViewableItemsChangedHandler from '@screens/Reader/hooks/useViewableItemsChangedHandler';
+import useSharedValuePageState from '@screens/Reader/hooks/useSharedValuePageState';
 
 const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const {
@@ -115,6 +116,11 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     overlayOpacity,
   });
 
+  const animatedPreviousState = useSharedValuePageState(
+    imageScaling,
+    zoomStartPosition,
+  );
+
   const {
     getPageOffset,
     getSafeScrollRange,
@@ -174,6 +180,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     <ChapterErrorContext.Provider value={fetchPagesByChapter}>
       <ChapterPageContext.Provider
         value={{
+          animatedPreviousState,
           mangaTitle: manga.title,
           readingDirection,
           sourceName: manga.source,
