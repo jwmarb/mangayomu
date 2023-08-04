@@ -1,4 +1,5 @@
 import { ISOLangCode } from '@mangayomu/language-codes';
+import { BSON } from 'realm';
 
 export interface IChapterSchema {
   scrollPosition?: number;
@@ -7,8 +8,9 @@ export interface IChapterSchema {
   indexPage: number;
   dateRead?: number;
   language: ISOLangCode;
+  link: string;
   _mangaId: string;
-  _id: string;
+  _id: BSON.ObjectId;
   _realmId: string;
 }
 

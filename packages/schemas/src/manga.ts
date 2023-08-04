@@ -1,7 +1,8 @@
 import { ISOLangCode } from '@mangayomu/language-codes';
 import { Manga } from '@mangayomu/mangascraper';
+import { BSON } from 'realm';
 
-export interface IMangaSchema extends Omit<Manga, 'link'> {
+export interface IMangaSchema extends Manga {
   currentlyReadingChapter?: CurrentlyReadingChapter;
   dateAddedInLibrary?: number;
   notifyNewChaptersCount: number;
@@ -11,7 +12,7 @@ export interface IMangaSchema extends Omit<Manga, 'link'> {
   readerZoomStartPosition: ZoomStartPosition | 'Use global setting';
   readerImageScaling: ImageScaling | 'Use global setting';
   readerLockOrientation: ReaderScreenOrientation | 'Use global setting';
-  _id: string;
+  _id: BSON.ObjectId;
   _realmId: string;
 }
 
