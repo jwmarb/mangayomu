@@ -8,18 +8,19 @@ import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import useDialog from '@hooks/useDialog';
 import useRootNavigation from '@hooks/useRootNavigation';
 import useUserHistory from '@hooks/useUserHistory';
-import { Manga } from '@mangayomu/mangascraper';
-import connector, {
-  ConnectedMangaHistoryItemProps,
-} from '@screens/History/components/MangaHistoryItem/MangaHistoryItem.redux';
+import { MangaHistoryItemProps } from './';
 import { format } from 'date-fns';
 import React from 'react';
+import { LocalChapterSchema } from '@database/schemas/LocalChapter';
+import Box from '@components/Box';
 
-const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
-  const { item, sectionDate } = props;
-  const { deleteMangaFromHistory } = useUserHistory();
+const MangaHistoryItem: React.FC<MangaHistoryItemProps> = (props) => {
   const localRealm = useLocalRealm();
-  const { manga, chapter } = item;
+  const { item } = props;
+  const { manga: _manga, chapter: _chapter, _id } = item;
+  const { deleteMangaFromHistory } = useUserHistory();
+  const manga = localRealm.objectForPrimaryKey(LocalMangaSchema, _manga);
+  const chapter = localRealm.objectForPrimaryKey(LocalChapterSchema, _chapter);
   const navigation = useRootNavigation();
   const dialog = useDialog();
 
@@ -34,7 +35,7 @@ const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
           text: 'Remove',
           type: 'destructive',
           onPress: () => {
-            deleteMangaFromHistory({ sectionDate, item });
+            deleteMangaFromHistory(_id);
           },
         },
       ],
@@ -42,19 +43,23 @@ const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
   }
 
   function handleOnPress() {
-    if (manga != null && chapter != null)
-      navigation.navigate('Reader', {
-        chapter: item.chapter.link,
-        manga: item.manga.link,
-      });
-    else if (manga != null) navigation.navigate('MangaView', manga);
+    navigation.navigate('Reader', {
+      chapter: item.chapter,
+      manga: item.manga,
+    });
   }
+
+  if (manga == null || chapter == null)
+    return (
+      <Box>
+        {manga == null && <Text>{item.manga} is null</Text>}
+        {chapter == null && <Text>{item.chapter} is null</Text>}
+      </Box>
+    );
 
   return (
     <BookListItem
-      manga={
-        localRealm.objectForPrimaryKey(LocalMangaSchema, manga.link) ?? manga
-      }
+      manga={manga}
       onPress={handleOnPress}
       end={
         <IconButton
@@ -76,4 +81,4 @@ const MangaHistoryItem: React.FC<ConnectedMangaHistoryItemProps> = (props) => {
   );
 };
 
-export default connector(React.memo(MangaHistoryItem));
+export default React.memo(MangaHistoryItem);

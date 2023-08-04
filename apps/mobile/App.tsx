@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { AppState, AppStateStatus, StatusBar } from 'react-native';
-
+import 'react-native-get-random-values';
 import { Provider } from 'react-redux';
 import Root from './src/Root';
 import { store, persistor } from '@redux/main';

@@ -8,13 +8,7 @@ import {
 } from '@database/schemas/Manga';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { PageSchema } from '@database/schemas/Page';
-import {
-  UserHistorySchema,
-  HistorySectionSchema,
-  MangaHistorySchema,
-  BaseMangaChapterSchema,
-  BaseMangaSchema,
-} from '@database/schemas/History';
+import { UserHistorySchema } from '@database/schemas/History';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { LocalMangaSchema } from '@database/schemas/LocalManga';
 export * from './providers/UserProvider';
@@ -24,13 +18,9 @@ export const { useObject, useQuery, useRealm, RealmProvider } =
       MangaSchema,
       MangaReadingChapter,
       UserHistorySchema,
-      HistorySectionSchema,
-      MangaHistorySchema,
-      BaseMangaChapterSchema,
-      BaseMangaSchema,
       ChapterSchema,
     ],
-    schemaVersion: 53,
+    schemaVersion: 54,
   });
 
 export const {

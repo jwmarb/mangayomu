@@ -1,5 +1,5 @@
 import { useRealm } from '@database/main';
-import { MangaHistory, UserHistorySchema } from '@database/schemas/History';
+import { UserHistorySchema } from '@database/schemas/History';
 import { MangaSchema } from '@database/schemas/Manga';
 import assertIsManga from '@helpers/assertIsManga';
 import integrateSortedList from '@helpers/integrateSortedList';
@@ -20,111 +20,122 @@ const useUserHistory = (config?: { incognito: boolean }) => {
       throw Error(
         'A config argument must be provided to use addMangaToHistory',
       );
-    if (!config.incognito && currentUser != null) {
-      const document = realm.objectForPrimaryKey(
-        UserHistorySchema,
-        currentUser.id,
+    if (config.incognito) return;
+
+    const mangaId = assertIsManga(payload.manga)
+      ? payload.manga.link
+      : payload.manga._id;
+
+    const date = new Date();
+    const today = Date.parse(
+      new Date(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+      ).toString(),
+    );
+    const tomorrow = Date.parse(
+      new Date(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate() + 1,
+      ).toString(),
+    );
+
+    const found = realm
+      .objects(UserHistorySchema)
+      .filtered(
+        'chapter = $0 AND manga = $1 AND date >= $2 AND date < $3',
+        payload.chapter.link,
+        mangaId,
+        today,
+        tomorrow,
       );
-      if (document != null) {
-        const { history: sections } = document;
-        realm.write(() => {
-          if (
-            sections.length === 0 ||
-            !isToday(sections[sections.length - 1]?.date)
-          ) {
-            sections.push({ data: [], date: Date.now() });
-          }
-          const recentSection = sections[sections.length - 1];
-          const dateNow = Date.now();
-          const appendData = {
-            manga: {
-              link: assertIsManga(payload.manga)
-                ? payload.manga.link
-                : payload.manga._id,
-              imageCover: payload.manga.imageCover,
-              source: payload.manga.source,
-              title: payload.manga.title,
-            },
-            chapter: payload.chapter,
-            date: dateNow,
-          };
-          if (recentSection.data.length === 0) {
-            recentSection.data.push(appendData);
-          } else {
-            const sortedList = integrateSortedList(
-              recentSection.data,
-              (a, b) => a.date - b.date,
-            );
-            const index = recentSection.data.findIndex(
-              (x) => x.manga.link === mangaSchemaToManga(payload.manga).link,
-            ); // Linear search is more than sufficient enough here
-            if (index !== -1) {
-              recentSection.data.splice(index, 1);
-              sortedList.add(appendData);
-            } else recentSection.data.push(appendData);
-          }
+
+    if (found.length === 0)
+      realm.write(() => {
+        realm.create(UserHistorySchema, {
+          _realmId: currentUser.id,
+          manga: mangaId,
+          chapter: payload.chapter.link,
         });
-      } else {
-        realm.write(() => {
-          realm.create<UserHistorySchema>(UserHistorySchema, {
-            _id: currentUser.id,
-            history: [
-              {
-                data: [
-                  {
-                    manga: mangaSchemaToManga(payload.manga),
-                    chapter: payload.chapter,
-                    date: Date.now(),
-                  },
-                ],
-                date: Date.now(),
-              },
-            ],
-          });
-        });
-      }
-    }
+      });
+    // if (!config.incognito && currentUser != null) {
+    //   const document = realm.objectForPrimaryKey(
+    //     UserHistorySchema,
+    //     currentUser.id,
+    //   );
+    //   if (document != null) {
+    //     const { history: sections } = document;
+    //     realm.write(() => {
+    //       if (
+    //         sections.length === 0 ||
+    //         !isToday(sections[sections.length - 1]?.date)
+    //       ) {
+    //         sections.push({ data: [], date: Date.now() });
+    //       }
+    //       const recentSection = sections[sections.length - 1];
+    //       const dateNow = Date.now();
+    //       const appendData = {
+    //         manga: {
+    //           link: assertIsManga(payload.manga)
+    //             ? payload.manga.link
+    //             : payload.manga._id,
+    //           imageCover: payload.manga.imageCover,
+    //           source: payload.manga.source,
+    //           title: payload.manga.title,
+    //         },
+    //         chapter: payload.chapter,
+    //         date: dateNow,
+    //       };
+    //       if (recentSection.data.length === 0) {
+    //         recentSection.data.push(appendData);
+    //       } else {
+    //         const sortedList = integrateSortedList(
+    //           recentSection.data,
+    //           (a, b) => a.date - b.date,
+    //         );
+    //         const index = recentSection.data.findIndex(
+    //           (x) => x.manga.link === mangaSchemaToManga(payload.manga).link,
+    //         ); // Linear search is more than sufficient enough here
+    //         if (index !== -1) {
+    //           recentSection.data.splice(index, 1);
+    //           sortedList.add(appendData);
+    //         } else recentSection.data.push(appendData);
+    //       }
+    //     });
+    //   } else {
+    //     realm.write(() => {
+    //       realm.create<UserHistorySchema>(UserHistorySchema, {
+    //         _id: currentUser.id,
+    //         history: [
+    //           {
+    //             data: [
+    //               {
+    //                 manga: mangaSchemaToManga(payload.manga),
+    //                 chapter: payload.chapter,
+    //                 date: Date.now(),
+    //               },
+    //             ],
+    //             date: Date.now(),
+    //           },
+    //         ],
+    //       });
+    //     });
+    // }
+    // }
   };
 
-  const deleteMangaFromHistory = (payload: {
-    sectionDate: number;
-    item: MangaHistory;
-  }) => {
-    if (currentUser != null) {
-      const document = realm.objectForPrimaryKey(
-        UserHistorySchema,
-        currentUser.id,
-      );
-      if (document != null && document.isValid())
-        realm.write(() => {
-          const { history: sections } = document;
-          let index = 0;
-          for (let i = 0; i < sections.length; i++) {
-            if (sections[i].date === payload.sectionDate) {
-              index = i;
-              break;
-            }
-          }
-          const sortedList = integrateSortedList(sections[index].data, (a, b) =>
-            a.manga.link.localeCompare(b.manga.link),
-          );
-          sortedList.remove(payload.item);
-          if (sections[index].data.length === 0) sections.splice(index, 1);
-        });
-    }
+  const deleteMangaFromHistory = (id: string) => {
+    realm.write(() => {
+      realm.delete(realm.objectForPrimaryKey(UserHistorySchema, id));
+    });
   };
 
   const clearMangaHistory = () => {
-    if (currentUser != null) {
-      const document = realm.objectForPrimaryKey(
-        UserHistorySchema,
-        currentUser.id,
-      );
-      if (document != null && document.isValid())
-        realm.write(() => {
-          document.history = [];
-        });
-    }
+    realm.write(() => {
+      realm.delete(realm.objects(UserHistorySchema));
+    });
   };
   return { addMangaToHistory, deleteMangaFromHistory, clearMangaHistory };
 };

@@ -1,95 +1,37 @@
-import { Manga, MangaChapter } from '@mangayomu/mangascraper/src';
 import Realm from 'realm';
-
-export interface HistorySection {
-  data: MangaHistory[];
-  date: number;
-}
-
-export interface MangaHistory {
-  manga: Manga; // key of the manga
-  chapter: MangaChapter; // key of read/current chapter
-  date: number; // the exact date when this chapter was read
-}
 
 export interface IUserHistorySchema {
   _id: string;
-  history: HistorySection[];
+  _realmId: string;
+  manga: string;
+  chapter: string;
+  date: number;
 }
 
-export class UserHistorySchema extends Realm.Object<IUserHistorySchema> {
+export class UserHistorySchema extends Realm.Object<
+  IUserHistorySchema,
+  keyof IUserHistorySchema
+> {
   _id!: string;
-  history!: HistorySection[];
+  _realmId!: string;
+  manga!: string;
+  chapter!: string;
+  date!: number;
   static schema: Realm.ObjectSchema = {
     name: 'UserHistory',
     properties: {
-      _id: 'string',
-      history: 'HistorySection[]',
+      _id: {
+        type: 'string',
+        default: () => new Realm.BSON.ObjectID().toHexString(),
+      },
+      _realmId: 'string',
+      manga: 'string',
+      chapter: 'string',
+      date: {
+        type: 'int',
+        default: () => Date.now(),
+      },
     },
     primaryKey: '_id',
-  };
-}
-
-export class HistorySectionSchema extends Realm.Object<HistorySection> {
-  data!: MangaHistory[];
-  date!: number;
-  static schema: Realm.ObjectSchema = {
-    embedded: true,
-    name: 'HistorySection',
-    properties: {
-      data: 'MangaHistory[]',
-      date: 'int',
-    },
-  };
-}
-
-export class MangaHistorySchema extends Realm.Object<MangaHistory> {
-  manga!: Manga; // key of the manga
-  chapter!: MangaChapter; // key of read/current chapter
-  date!: number; // the exact date when this chapter was read
-  static schema: Realm.ObjectSchema = {
-    embedded: true,
-    name: 'MangaHistory',
-    properties: {
-      manga: 'BaseManga',
-      chapter: 'BaseMangaChapter',
-      date: 'int',
-    },
-  };
-}
-
-export class BaseMangaSchema extends Realm.Object<Manga> {
-  source!: string;
-  title!: string;
-  imageCover!: string;
-  link!: string;
-  static schema: Realm.ObjectSchema = {
-    embedded: true,
-    name: 'BaseManga',
-    properties: {
-      source: 'string',
-      title: 'string',
-      imageCover: 'string',
-      link: 'string',
-    },
-  };
-}
-
-export class BaseMangaChapterSchema extends Realm.Object<Manga> {
-  link!: string;
-  name!: string;
-  index!: number;
-  date!: string;
-  language?: string;
-  static schema: Realm.ObjectSchema = {
-    embedded: true,
-    name: 'BaseMangaChapter',
-    properties: {
-      link: 'string',
-      name: 'string',
-      index: 'int',
-      date: 'string',
-      language: 'string?',
-    },
   };
 }
