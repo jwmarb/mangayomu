@@ -7,7 +7,7 @@ import { useLocalRealm } from '@database/main';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 type Abortable = ReturnType<ReturnType<typeof useChapterFetcher>>;
 
-export default function useCancellable(pages: Page[]) {
+export default function useCancellable() {
   const localRealm = useLocalRealm();
   const [previous, togglePrevious] = useBoolean();
   const [next, toggleNext] = useBoolean();

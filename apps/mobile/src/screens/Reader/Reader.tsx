@@ -65,7 +65,7 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     chapterWithData.indexPage + 1,
   );
   const currentPageKey = React.useRef<string>('');
-  const [cancellable, isFetchingPrevious] = useCancellable(pages);
+  const [cancellable, isFetchingPrevious] = useCancellable();
   const fetchPagesByChapter = useChapterFetcher({
     availableChapters,
     manga,
