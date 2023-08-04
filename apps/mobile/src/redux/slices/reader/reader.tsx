@@ -127,7 +127,7 @@ export const fetchPagesByChapter = createAsyncThunk(
         .objects(ChapterSchema)
         .filtered('link = $0', payload.chapter._id)[0];
       payload.realm.write(() => {
-        const c = payload.realm.create(
+        payload.realm.create(
           ChapterSchema,
           {
             _id: chapterWithData?._id,
@@ -138,7 +138,6 @@ export const fetchPagesByChapter = createAsyncThunk(
           },
           Realm.UpdateMode.Modified,
         );
-        console.log(`${c._id} (${c.link}) has ${c.numberOfPages} pages`);
       });
       const preload = Promise.all(response.map((x) => Image.prefetch(x)));
       const dimensions = Promise.all(
