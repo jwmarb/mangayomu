@@ -45,14 +45,12 @@ export default function useChapters(
       );
     const mappedChapters = realm
       .objects(ChapterSchema)
-      .filtered(
-        'link IN $0',
-        localChapters.map((x) => x._id),
-      )
+      .filtered(localChapters.map((x) => `link = '${x._id}'`).join(' OR '))
       .reduce((prev, curr) => {
         prev[curr.link] = curr;
         return prev;
       }, {} as Record<string, ChapterSchema>);
+
     return localChapters.reduce((prev, curr) => {
       prev[curr._id] = mappedChapters[curr._id];
       return prev;
@@ -72,7 +70,9 @@ export default function useChapters(
           ),
         );
       };
-      const callback: Realm.CollectionChangeCallback<ChapterSchema> = () => {
+      const callback: Realm.CollectionChangeCallback<ChapterSchema> = (
+        change,
+      ) => {
         const c = localRealm
           .objects(LocalChapterSchema)
           .filtered(
@@ -80,12 +80,8 @@ export default function useChapters(
             manga?.link,
             selectedLanguage,
           );
-        const d = realm
-          .objects(ChapterSchema)
-          .filtered(
-            'link IN $0',
-            c.map((x) => x._id),
-          )
+        const d = change
+          .filtered(c.map((x) => `link = '${x._id}'`).join(' OR '))
           .reduce((prev, curr) => {
             prev[curr.link] = curr;
             return prev;
