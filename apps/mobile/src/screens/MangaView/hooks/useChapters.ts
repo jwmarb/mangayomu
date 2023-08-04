@@ -43,16 +43,21 @@ export default function useChapters(
         manga?.link,
         selectedLanguage,
       );
-    const mappedChapters = realm
-      .objects(ChapterSchema)
-      .filtered(localChapters.map((x) => `link = '${x._id}'`).join(' OR '))
-      .reduce((prev, curr) => {
-        prev[curr.link] = curr;
-        return prev;
-      }, {} as Record<string, ChapterSchema>);
+
+    const mappedChapters = realm.objects(ChapterSchema);
+    const mappedChaptersResults = (
+      localChapters.length > 0
+        ? mappedChapters.filtered(
+            localChapters.map((x) => `link = '${x._id}'`).join(' OR '),
+          )
+        : mappedChapters
+    ).reduce((prev, curr) => {
+      prev[curr.link] = curr;
+      return prev;
+    }, {} as Record<string, ChapterSchema>);
 
     return localChapters.reduce((prev, curr) => {
-      prev[curr._id] = mappedChapters[curr._id];
+      prev[curr._id] = mappedChaptersResults[curr._id];
       return prev;
     }, {} as Record<string, ChapterSchema | undefined>);
   });
@@ -80,12 +85,14 @@ export default function useChapters(
             manga?.link,
             selectedLanguage,
           );
-        const d = change
-          .filtered(c.map((x) => `link = '${x._id}'`).join(' OR '))
-          .reduce((prev, curr) => {
-            prev[curr.link] = curr;
-            return prev;
-          }, {} as Record<string, ChapterSchema>);
+        const d = (
+          c.length > 0
+            ? change.filtered(c.map((x) => `link = '${x._id}'`).join(' OR '))
+            : change
+        ).reduce((prev, curr) => {
+          prev[curr.link] = curr;
+          return prev;
+        }, {} as Record<string, ChapterSchema>);
         setChapterData(
           c.reduce((prev, curr) => {
             prev[curr._id] = d[curr._id];
