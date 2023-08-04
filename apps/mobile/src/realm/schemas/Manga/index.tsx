@@ -94,20 +94,27 @@ export class MangaSchema extends Realm.Object<
   currentlyReadingChapter?: CurrentlyReadingChapter;
   dateAddedInLibrary?: number;
   notifyNewChaptersCount!: number;
-
+  link!: string;
   inLibrary!: boolean;
   selectedLanguage!: ISOLangCode | 'Use default language';
   readerDirection!: ReadingDirection | 'Use global setting';
   readerZoomStartPosition!: ZoomStartPosition | 'Use global setting';
   readerImageScaling!: ImageScaling | 'Use global setting';
   readerLockOrientation!: ReaderScreenOrientation | 'Use global setting';
-  _id!: string;
+  _id!: Realm.BSON.ObjectId;
   _realmId!: string;
 
   static schema: Realm.ObjectSchema = {
     name: 'Manga',
     properties: {
-      _id: 'string',
+      _id: {
+        type: 'objectId',
+        default: () => new Realm.BSON.ObjectID(),
+      },
+      link: {
+        type: 'string',
+        indexed: true,
+      },
       _realmId: 'string',
       title: 'string',
       imageCover: 'string',
@@ -144,12 +151,7 @@ export const useManga = (
 ) => {
   const realm = useRealm();
   const user = useUser();
-  const mangaId =
-    typeof link === 'string'
-      ? link
-      : assertIsManga(link)
-      ? link.link
-      : link._id;
+  const mangaId = typeof link === 'string' ? link : link.link;
 
   const { state, setState, fetchData } = useFetchManga(options, link);
   const combinedManga = useCombinedMangaWithLocal(mangaId);

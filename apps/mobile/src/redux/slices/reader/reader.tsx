@@ -27,6 +27,7 @@ export type ChapterPage = {
   page: string;
   pageNumber: number;
   chapter: string;
+  chapterId: Realm.BSON.ObjectId;
   width: number;
   height: number;
 };
@@ -70,6 +71,7 @@ interface ReaderState {
 
 export interface FetchPagesByChapterPayload {
   chapter: LocalChapterSchema; // this is the chapter to fetch pages from
+  chapterWithData: ChapterSchema;
   manga: CombinedMangaWithLocal;
   availableChapters: Realm.Results<LocalChapterSchema>;
   localRealm: Realm;
@@ -126,7 +128,8 @@ export const fetchPagesByChapter = createAsyncThunk(
         payload.realm.create(
           ChapterSchema,
           {
-            _id: payload.chapter._id,
+            _id: payload.chapterWithData._id,
+            link: payload.chapter._id,
             _realmId: payload.user.id,
             _mangaId: payload.manga._id,
             numberOfPages: response.length,
@@ -333,6 +336,7 @@ const readerSlice = createSlice({
         newPages.push({
           type: 'PAGE',
           chapter: action.meta.arg.chapter._id,
+          chapterId: action.meta.arg.chapterWithData._id,
           height: page.height,
           width: page.width,
           page: page.url,

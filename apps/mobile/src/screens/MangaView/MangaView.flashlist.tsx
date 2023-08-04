@@ -22,7 +22,7 @@ export const renderItem: ListRenderItem<LocalChapterSchema> = (info) => {
   };
   return (
     <RowChapter
-      mangaKey={extra.manga?._id}
+      mangaKey={extra.manga?.link}
       dateRead={extra.data[item._id]?.dateRead}
       name={item.name}
       indexPage={extra.data[item._id]?.indexPage}

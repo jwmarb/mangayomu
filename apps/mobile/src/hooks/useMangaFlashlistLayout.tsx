@@ -3,6 +3,7 @@ import Box from '@components/Box';
 import { MangaSchema } from '@database/schemas/Manga';
 import { useTheme } from '@emotion/react';
 import assertIsManga from '@helpers/assertIsManga';
+import assertIsMangaSchema from '@helpers/assertIsMangaSchema';
 import useMountedEffect from '@hooks/useMountedEffect';
 import { Manga } from '@mangayomu/mangascraper/src';
 import { ListRenderItemInfo } from '@shopify/flash-list';
@@ -11,15 +12,16 @@ import { Dimensions, useWindowDimensions } from 'react-native';
 
 const Item: React.FC<{ item: Manga | MangaSchema }> = React.memo(({ item }) => {
   const manga = React.useMemo(() => {
-    if (assertIsManga(item)) return item;
-    return item.isValid()
-      ? {
-          link: item._id,
-          imageCover: item.imageCover,
-          source: item.source,
-          title: item.title,
-        }
-      : null;
+    if (assertIsMangaSchema(item))
+      return item.isValid()
+        ? {
+            link: item.link,
+            imageCover: item.imageCover,
+            source: item.source,
+            title: item.title,
+          }
+        : null;
+    return item;
   }, [item.source, item.title, item.imageCover]);
   if (manga == null) return null;
   return (
@@ -28,19 +30,20 @@ const Item: React.FC<{ item: Manga | MangaSchema }> = React.memo(({ item }) => {
     </Box>
   );
 });
-function keyExtractor<T extends Manga | MangaSchema>(i: T, index: number) {
-  return assertIsManga(i) ? i.link + index : (i.isValid() ? i._id : '') + index;
+function keyExtractor(i: Manga | MangaSchema, index: number) {
+  return assertIsMangaSchema(i)
+    ? (i.isValid() ? i.link : '') + index
+    : i.link + index;
 }
 function renderItem<T extends Manga | MangaSchema>({
   item,
 }: ListRenderItemInfo<T>) {
-  if (assertIsManga(item)) {
-    return <Item item={item} />;
-  } else if (item.isValid()) {
+  if (assertIsMangaSchema(item)) {
+    if (item.isValid()) return <Item item={item} />;
+    return null;
+  } else {
     return <Item item={item} />;
   }
-
-  return null;
 }
 
 export default function useMangaFlashlistLayout(

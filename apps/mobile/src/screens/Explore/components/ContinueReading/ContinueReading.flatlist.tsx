@@ -12,12 +12,12 @@ export const renderItem: ListRenderItem<MangaSchema> = (info) => {
     string,
     Realm.Results<LocalChapterSchema>
   >;
-  return <UnfinishedManga manga={item} chapters={extraData[item._id]} />;
+  return <UnfinishedManga manga={item} chapters={extraData[item.link]} />;
 };
 
 export const ItemSeparatorComponent = () => <Box mx="s" />;
 
-export const keyExtractor = (item: MangaSchema) => item._id;
+export const keyExtractor = (item: MangaSchema) => item._id.toHexString();
 
 export const overrideItemLayout: (
   layout: {

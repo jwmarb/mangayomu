@@ -99,11 +99,7 @@ export default function useFetchManga(
         );
       if (source == null)
         throw Error(
-          `"${
-            link.source
-          }" is not a valid source. Cannot fetch manga metadata from ${
-            assertIsManga(link) ? link.link : link._id
-          }.`,
+          `"${link.source}" is not a valid source. Cannot fetch manga metadata from ${link.link}.`,
         );
       const _manga = link;
       setState({
@@ -111,16 +107,7 @@ export default function useFetchManga(
         error: '',
       });
       try {
-        const meta = await source.getMeta(
-          assertIsManga(_manga)
-            ? _manga
-            : {
-                link: _manga._id,
-                imageCover: _manga.imageCover,
-                title: _manga.title,
-                source: _manga.source,
-              },
-        );
+        const meta = await source.getMeta(_manga);
 
         const { chapters, availableLanguages } = writeChapters(
           localRealm,

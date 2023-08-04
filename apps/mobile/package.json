@@ -53,6 +53,7 @@
     "react-native-dotenv": "3.4.9",
     "react-native-fast-image": "^8.6.3",
     "react-native-gesture-handler": "^2.12.1",
+    "react-native-get-random-values": "^1.9.0",
     "react-native-haptic-feedback": "^2.0.3",
     "react-native-linear-gradient": "^2.6.2",
     "react-native-mmkv": "^2.10.1",

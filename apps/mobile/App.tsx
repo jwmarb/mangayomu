@@ -53,6 +53,12 @@ function App(): JSX.Element {
                     onError: (_, error) => {
                       console.error(error);
                     },
+                    clientReset: {
+                      mode: Realm.ClientResetMode.Manual,
+                      onManual: () => {
+                        console.log('recovery initiated');
+                      },
+                    },
                   }}
                 >
                   <LocalRealmProvider>

@@ -241,7 +241,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
         />
         <QuickReadButton
           firstChapter={firstChapter}
-          mangaKey={manga?._id}
+          mangaKey={manga?.link}
           currentlyReadingChapter={manga?.currentlyReadingChapter}
           networkStatusOffset={networkStatusOffset}
           textOpacity={textOpacity}

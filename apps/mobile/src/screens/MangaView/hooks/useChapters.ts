@@ -28,26 +28,36 @@ export default function useChapters(
         .objects(LocalChapterSchema)
         .filtered(
           '_mangaId = $0 AND language = $1 SORT(index ASC)',
-          manga?._id,
+          manga?.link,
           selectedLanguage,
         ) ?? [],
   );
 
   const [chapterData, setChapterData] = React.useState<
     Record<string, ChapterSchema | undefined>
-  >(() =>
-    localRealm
+  >(() => {
+    const localChapters = localRealm
       .objects(LocalChapterSchema)
       .filtered(
         '_mangaId = $0 AND language = $1 SORT(index ASC)',
-        manga?._id,
+        manga?.link,
         selectedLanguage,
+      );
+    const mappedChapters = realm
+      .objects(ChapterSchema)
+      .filtered(
+        'link IN $0',
+        localChapters.map((x) => x._id),
       )
       .reduce((prev, curr) => {
-        prev[curr._id] = realm.objectForPrimaryKey(ChapterSchema, curr._id);
+        prev[curr.link] = curr;
         return prev;
-      }, {} as Record<string, ChapterSchema | undefined>),
-  );
+      }, {} as Record<string, ChapterSchema>);
+    return localChapters.reduce((prev, curr) => {
+      prev[curr._id] = mappedChapters[curr._id];
+      return prev;
+    }, {} as Record<string, ChapterSchema | undefined>);
+  });
 
   useFocusEffect(
     React.useCallback(() => {
@@ -57,43 +67,38 @@ export default function useChapters(
         setChapters(
           collection.filtered(
             '_mangaId = $0 AND language = $1 SORT(index ASC)',
-            manga?._id,
+            manga?.link,
             selectedLanguage,
           ),
         );
       };
       const callback: Realm.CollectionChangeCallback<ChapterSchema> = () => {
+        const c = localRealm
+          .objects(LocalChapterSchema)
+          .filtered(
+            '_mangaId = $0 AND language = $1 SORT(index ASC)',
+            manga?.link,
+            selectedLanguage,
+          );
+        const d = realm
+          .objects(ChapterSchema)
+          .filtered(
+            'link IN $0',
+            c.map((x) => x._id),
+          )
+          .reduce((prev, curr) => {
+            prev[curr.link] = curr;
+            return prev;
+          }, {} as Record<string, ChapterSchema>);
         setChapterData(
-          localRealm
-            .objects(LocalChapterSchema)
-            .filtered(
-              '_mangaId = $0 AND language = $1 SORT(index ASC)',
-              manga?._id,
-              selectedLanguage,
-            )
-            .reduce((prev, curr) => {
-              prev[curr._id] = realm.objectForPrimaryKey(
-                ChapterSchema,
-                curr._id,
-              );
-              return prev;
-            }, {} as Record<string, ChapterSchema | undefined>),
+          c.reduce((prev, curr) => {
+            prev[curr._id] = d[curr._id];
+            return prev;
+          }, {} as Record<string, ChapterSchema | undefined>),
         );
       };
-      const localChapters = localRealm
-        .objects(LocalChapterSchema)
-        .filtered(
-          '_mangaId = $0 AND language = $1 SORT(index ASC)',
-          manga?._id,
-          selectedLanguage,
-        );
-      const chapters = realm
-        .objects(ChapterSchema)
-        .filtered(
-          '_mangaId = $0 AND language = $1 SORT(index ASC)',
-          manga?._id,
-          selectedLanguage,
-        );
+      const localChapters = localRealm.objects(LocalChapterSchema);
+      const chapters = realm.objects(ChapterSchema);
       localChapters.addListener(localCallback);
       chapters.addListener(callback);
       return () => {

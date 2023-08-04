@@ -7,10 +7,10 @@ import { MANGA_LIST_ITEM_HEIGHT } from '@theme/constants';
 export const renderItem: ListRenderItem<MangaSchema> = (info) => {
   const { item } = info;
   const extraData = info.extraData as ReturnType<typeof useUnfinishedMangas>[1];
-  return <UnfinishedMangaItem manga={item} chapters={extraData[item._id]} />;
+  return <UnfinishedMangaItem manga={item} chapters={extraData[item.link]} />;
 };
 
-export const keyExtractor = (item: MangaSchema) => item._id;
+export const keyExtractor = (item: MangaSchema) => item.link;
 
 export const overrideItemLayout: FlashListProps<MangaSchema>['overrideItemLayout'] =
   (layout) => {

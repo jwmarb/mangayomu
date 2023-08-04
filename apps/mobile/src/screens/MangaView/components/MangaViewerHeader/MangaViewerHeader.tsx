@@ -84,7 +84,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
               <MangaRating data={meta?.rating} loading={isLoading} />
             </Stack>
             <MangaActionButtons
-              mangaKey={meta?._id}
+              mangaKey={meta?.link}
               currentlyReadingChapterKey={meta?.currentlyReadingChapter?._id}
               firstChapterKey={firstChapterKey}
               loading={isLoading}

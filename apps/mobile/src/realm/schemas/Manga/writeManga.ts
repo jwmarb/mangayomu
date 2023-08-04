@@ -11,12 +11,13 @@ export default function writeManga(
   chapters: string[],
   availableLanguages: ISOLangCode[],
 ) {
-  // const manga = mangaRealm.objectForPrimaryKey(MangaSchema, meta.link);
   const localManga = localRealm.objectForPrimaryKey(
     LocalMangaSchema,
     meta.link,
   );
-  const cloudManga = realm.objectForPrimaryKey(MangaSchema, meta.link);
+  const cloudManga = realm
+    .objects(MangaSchema)
+    .filtered('link = $0', meta.link)[0];
   realm.write(() => {
     if (cloudManga != null) {
       cloudManga.imageCover = meta.imageCover;

@@ -1,5 +1,5 @@
 import { MangaSchema } from '../schemas/Manga';
-import { useRealm } from '@database/main';
+import { useQuery, useRealm } from '@database/main';
 import { useApp, useUser } from '@realm/react';
 import React from 'react';
 import { AppState } from '@redux/main';
@@ -25,34 +25,38 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
   //   }
   // }, []);
 
+  const mangas = useQuery(MangaSchema, (collection) =>
+    collection.filtered('_realmId = $0', currentUser.id),
+  );
+  const userHistory = useQuery(UserHistorySchema, (collection) =>
+    collection.filtered('_realmId = $0', currentUser.id),
+  );
+  const chapters = useQuery(ChapterSchema, (collection) =>
+    collection.filtered('_realmId = $0', currentUser.id),
+  );
+
   React.useEffect(() => {
     const addSubscriptions = async () => {
       for (const userId in app.allUsers) {
         if (app.allUsers[userId].isLoggedIn && userId === currentUser.id) {
           await realm.subscriptions.update((sub) => {
             console.log(`Setting subscription for ${userId}`);
-            sub.add(
-              realm.objects(MangaSchema).filtered(`_realmId == "${userId}"`),
-            );
-            sub.add(
-              realm.objects(UserHistorySchema).filtered(`_id == "${userId}"`),
-            );
-            sub.add(
-              realm.objects(ChapterSchema).filtered(`_realmId == "${userId}"`),
-            );
+            sub.add(mangas);
+            sub.add(userHistory);
+            sub.add(chapters);
           });
         } else {
           await app.allUsers[userId].logOut();
-          console.log(
-            `Logged out ${userId} because they are not the active user`,
-          );
+          // console.log(
+          //   `Logged out ${userId} because they are not the active user`,
+          // );
         }
       }
     };
 
     realm.subscriptions.waitForSynchronization().then(() => addSubscriptions());
     return () => {
-      console.log('Removing all subscriptions');
+      // console.log('Removing all subscriptions');
       realm.subscriptions.update((sub) => {
         sub.removeAll();
       });

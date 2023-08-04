@@ -1,7 +1,7 @@
 import Realm from 'realm';
 
 export interface IUserHistorySchema {
-  _id: string;
+  _id: Realm.BSON.ObjectId;
   _realmId: string;
   manga: string;
   chapter: string;
@@ -12,7 +12,7 @@ export class UserHistorySchema extends Realm.Object<
   IUserHistorySchema,
   keyof IUserHistorySchema
 > {
-  _id!: string;
+  _id!: Realm.BSON.ObjectId;
   _realmId!: string;
   manga!: string;
   chapter!: string;
@@ -21,8 +21,8 @@ export class UserHistorySchema extends Realm.Object<
     name: 'UserHistory',
     properties: {
       _id: {
-        type: 'string',
-        default: () => new Realm.BSON.ObjectID().toHexString(),
+        type: 'objectId',
+        default: () => new Realm.BSON.ObjectID(),
       },
       _realmId: 'string',
       manga: 'string',

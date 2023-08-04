@@ -31,7 +31,7 @@ const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
             manga.currentlyReadingChapter.numOfPages - 1 && nextChapter != null
             ? nextChapter._id
             : manga.currentlyReadingChapter._id,
-        manga: manga._id,
+        manga: manga.link,
       });
   };
   return (

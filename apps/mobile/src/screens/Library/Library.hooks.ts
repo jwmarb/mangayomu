@@ -41,6 +41,14 @@ export function useLibraryData(args: {
   const mangas = useQuery(MangaSchema);
   const mangasInLibrary = mangas.filtered('inLibrary == true');
   const { getLocalManga } = useLocalManga();
+  // React.useEffect(() => {
+  //   user
+  //     .mongoClient('mongodb-atlas')
+  //     .db('mangayomu')
+  //     .collection('Manga')
+  //     .aggregate([{ $match: { _realmId: user.id, inLibrary: true } }])
+  //     .then(console.log);
+  // }, []);
   const isFocused = useIsFocused();
   const realm = useRealm();
   const localRealm = useLocalRealm();
@@ -60,7 +68,7 @@ export function useLibraryData(args: {
     return (manga: MangaSchema) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const source = MangaHost.sourcesMap.get(manga.source)!;
-      const localManga = getLocalManga(manga._id);
+      const localManga = getLocalManga(manga.link);
       if (ignoreGenres.size > 0) {
         for (const genre of ignoreGenres) {
           if (
@@ -141,9 +149,9 @@ export function useLibraryData(args: {
           limit(async () => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const host = MangaHost.sourcesMap.get(manga.source)!;
-            const localManga = getLocalManga(manga._id);
+            const localManga = getLocalManga(manga.link);
             const meta = await host.getMeta({
-              link: manga._id,
+              link: manga.link,
             });
             if (meta.chapters.length !== localManga.chapters.length) {
               numberOfUpdates++;
@@ -171,7 +179,8 @@ export function useLibraryData(args: {
                 realm.create<MangaSchema>(
                   MangaSchema,
                   {
-                    _id: meta.link,
+                    _id: manga._id,
+                    link: meta.link,
                     _realmId: currentUser.id,
                     notifyNewChaptersCount:
                       manga.notifyNewChaptersCount +
@@ -247,7 +256,7 @@ export const useIsDataStale = () => {
     for (let i = 0; i < mangas.length; i++) {
       const obj = localRealm.objectForPrimaryKey(
         LocalMangaSchema,
-        mangas[i]._id,
+        mangas[i].link,
       );
       if (obj == null) return true;
     }
@@ -260,7 +269,7 @@ export const useIsDataStale = () => {
         const syncCollection = mangas.map(async (manga) => {
           const localManga = localRealm.objectForPrimaryKey(
             LocalMangaSchema,
-            manga._id,
+            manga.link,
           );
           if (localManga == null) {
             const source = MangaHost.sourcesMap.get(manga.source);
@@ -269,7 +278,7 @@ export const useIsDataStale = () => {
             try {
               console.log(`Fetching data for ${manga._id}`);
               const meta = await source.getMeta({
-                link: manga._id,
+                link: manga.link,
               });
               const { chapters, availableLanguages } = writeLocalChapters(
                 localRealm,

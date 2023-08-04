@@ -48,7 +48,7 @@ export default function useViewableItemsChangedHandler(args: {
           {
             const chapter = realm.objectForPrimaryKey(
               ChapterSchema,
-              item.chapter,
+              item.chapterId,
             );
 
             manga.update((draft) => {
@@ -64,6 +64,7 @@ export default function useViewableItemsChangedHandler(args: {
               if (chapter != null) chapter.indexPage = item.pageNumber - 1;
             });
             setCurrentPage(item.pageNumber);
+            console.log(`currentChapter = ${item.chapter}`);
             currentPageKey.current = item.page;
             dispatch(setCurrentChapter(item.chapter));
             pageSliderNavRef.current?.snapPointTo(item.pageNumber - 1);

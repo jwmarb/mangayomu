@@ -7,7 +7,6 @@ import React from 'react';
 import Realm from 'realm';
 
 export default function useUnfinishedMangas() {
-  const s = performance.now();
   const localRealm = useLocalRealm();
   const [chapters, setChapters] = React.useState<
     Realm.Collection<LocalChapterSchema>
@@ -58,10 +57,10 @@ export default function useUnfinishedMangas() {
   );
 
   const unfinishedDictionary = currentlyReadingMangas.reduce((prev, curr) => {
-    prev[curr._id] = chapters
+    prev[curr.link] = chapters
       .filtered(
         '_mangaId == $0 && language == $1',
-        curr._id,
+        curr.link,
         curr.selectedLanguage !== 'Use default language'
           ? curr.selectedLanguage
           : DEFAULT_LANGUAGE,
@@ -72,7 +71,7 @@ export default function useUnfinishedMangas() {
   const unfinishedMangas = currentlyReadingMangas.filter(
     (manga) =>
       manga.currentlyReadingChapter?._id !==
-      unfinishedDictionary[manga._id][0]?._id,
+      unfinishedDictionary[manga.link][0]?._id,
   );
 
   return [unfinishedMangas, unfinishedDictionary, isNotSynced] as const;

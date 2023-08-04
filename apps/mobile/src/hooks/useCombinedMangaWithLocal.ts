@@ -7,7 +7,7 @@ import React from 'react';
 import Realm from 'realm';
 
 export type CombinedMangaWithLocal = IMangaSchema &
-  ILocalManga & {
+  Omit<ILocalManga, '_id'> & {
     update: CombinedMangaWithLocalUpdater;
   };
 
@@ -26,17 +26,16 @@ export default function useCombinedMangaWithLocal<T extends boolean>(
     LocalMangaSchema | undefined
   >(localRealm.objectForPrimaryKey(LocalMangaSchema, mangaId));
   const [manga, setManga] = React.useState<MangaSchema | undefined>(() => {
-    let x: MangaSchema | undefined = realm.objectForPrimaryKey(
-      MangaSchema,
-      mangaId,
-    );
+    let x: MangaSchema | undefined = realm
+      .objects(MangaSchema)
+      .filtered('link = $0 AND _realmId = $1', mangaId, user.id)[0];
     if (x == null && localManga != null && shouldInitializeManga) {
       realm.write(() => {
         x = realm.create<MangaSchema>(
           MangaSchema,
           {
-            _id: mangaId,
             _realmId: user.id,
+            link: localManga._id,
             title: localManga.title,
             imageCover: localManga.imageCover,
             source: localManga.source,
@@ -56,7 +55,10 @@ export default function useCombinedMangaWithLocal<T extends boolean>(
         if (key === 'deletions') continue;
         if (mods[key as keyof typeof mods].length > 0) {
           for (const index of mods[key as keyof typeof mods]) {
-            if (collection[index]._id === mangaId) {
+            if (
+              collection[index].link === mangaId &&
+              collection[index]._realmId === user.id
+            ) {
               setManga(collection[index]);
             }
           }
@@ -93,6 +95,7 @@ export default function useCombinedMangaWithLocal<T extends boolean>(
     const obj = {
       ...(localManga.toJSON() as unknown as ILocalManga),
       ...(manga?.toJSON() as unknown as IMangaSchema),
+      link: localManga._id,
     } as CombinedMangaWithLocal;
     obj.update = (fn: (obj: CombinedMangaWithLocal) => void) => {
       const copy = { ...obj };
@@ -126,8 +129,9 @@ export default function useCombinedMangaWithLocal<T extends boolean>(
       }
       if (changedMangaProperties.length > 0) {
         const overrideProperties = {
-          _id: mangaId,
+          _id: manga?._id,
           _realmId: user.id,
+          link: localManga._id,
           title: obj.title,
           imageCover: obj.imageCover,
           source: obj.source,

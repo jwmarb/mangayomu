@@ -1,11 +1,12 @@
 import { useRealm } from '@database/main';
-import { ChapterSchema, IChapterSchema } from '@database/schemas/Chapter';
+import { ChapterSchema } from '@database/schemas/Chapter';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { MangaSchema } from '@database/schemas/Manga';
 import useBoolean from '@hooks/useBoolean';
 import { CombinedMangaWithLocal } from '@hooks/useCombinedMangaWithLocal';
 import useMutableObject from '@hooks/useMutableObject';
 import useUserHistory from '@hooks/useUserHistory';
+import { useUser } from '@realm/react';
 import { Page } from '@redux/slices/reader';
 import usePageLayout from '@screens/Reader/hooks/usePageLayout';
 import { FlashList } from '@shopify/flash-list';
@@ -40,6 +41,7 @@ export default function useSavedChapterInfo(
   const { addMangaToHistory } = useUserHistory({ incognito });
   const savedScrollPosition = useMutableObject(savedChapterInfo.scrollPosition);
   const realm = useRealm();
+  const user = useUser();
   const scrollOffset = React.useRef<number>(0);
   const shouldSaveScrollOffset = React.useRef<boolean>(false);
   const chapterRef = useMutableObject(chapter);
@@ -53,7 +55,7 @@ export default function useSavedChapterInfo(
     addMangaToHistory({
       manga: {
         imageCover: manga.imageCover,
-        link: manga._id,
+        link: manga.link,
         source: manga.source,
         title: manga.title,
       },
@@ -82,7 +84,9 @@ export default function useSavedChapterInfo(
         realm.create(
           ChapterSchema,
           {
-            _id: chapterRef.current._id,
+            _id: savedChapterInfo._id,
+            _realmId: user.id,
+            link: chapterRef.current._id,
             scrollPosition: interpolatedScrollOffset,
           },
           Realm.UpdateMode.Modified,

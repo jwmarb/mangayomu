@@ -20,7 +20,7 @@ export const { useObject, useQuery, useRealm, RealmProvider } =
       UserHistorySchema,
       ChapterSchema,
     ],
-    schemaVersion: 54,
+    schemaVersion: 56,
   });
 
 export const {

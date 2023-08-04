@@ -110,7 +110,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   const handleOnPressTitle = React.useCallback(() => {
     navigation.replace('MangaView', {
       imageCover: manga.imageCover,
-      link: manga._id,
+      link: manga.link,
       source: manga.source,
       title: manga.title,
     });
@@ -157,7 +157,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
 
   return (
     <Portal>
-      <ReaderSettingsMenu ref={ref} mangaKey={manga._id} />
+      <ReaderSettingsMenu ref={ref} mangaKey={manga.link} />
       <ImageMenu ref={imageMenuRef} />
       <Box
         z-index={-1}
@@ -244,7 +244,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
             pageCounterStyle={pageCounterStyle}
           />
         )}
-        <MangaKeyContext.Provider value={manga._id}>
+        <MangaKeyContext.Provider value={manga.link}>
           <OverlayFooter style={bottomOverlayStyle} />
         </MangaKeyContext.Provider>
       </Box>

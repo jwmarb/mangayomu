@@ -45,6 +45,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
+        ignoredPaths: [/reader\.pages\.\d+\.chapterId/],
         ignoredActions: [
           FLUSH,
           REHYDRATE,
@@ -54,6 +55,7 @@ export const store = configureStore({
           REGISTER,
           'reader/fetchPagesByChapter/fulfilled',
           'reader/fetchPagesByChapter/rejected',
+          'reader/setCurrentChapter',
         ],
       },
     }),

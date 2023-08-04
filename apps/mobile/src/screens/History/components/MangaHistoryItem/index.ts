@@ -1,2 +1,8 @@
 export { default } from './MangaHistoryItem';
-export { MANGA_HISTORY_ITEM_HEIGHT } from './MangaHistoryItem';
+import { UserHistorySchema } from '@database/schemas/History';
+import { LocalMangaSchema } from '@database/schemas/LocalManga';
+
+export interface MangaHistoryItemProps {
+  item: UserHistorySchema;
+  localManga?: LocalMangaSchema;
+}

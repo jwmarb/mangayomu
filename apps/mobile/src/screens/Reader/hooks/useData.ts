@@ -18,27 +18,29 @@ import React from 'react';
  */
 export default function useData(mangaKey: string, chapterKey: string) {
   const realm = useRealm();
+  const localRealm = useLocalRealm();
   const user = useUser();
   const manga = useCombinedMangaWithLocal(mangaKey, true);
 
-  const chapter = useLocalObject(LocalChapterSchema, chapterKey);
+  const [chapter, setChapter] = React.useState(
+    localRealm.objectForPrimaryKey(LocalChapterSchema, chapterKey),
+  );
 
   const chapterWithDataInitializer = () => {
-    let existingChapter: ChapterSchema | undefined = realm.objectForPrimaryKey(
-      ChapterSchema,
-      chapterKey,
-    );
+    let existingChapter: ChapterSchema | undefined = realm
+      .objects(ChapterSchema)
+      .filtered('link = $0', chapterKey)[0];
     if (existingChapter == null) {
       realm.write(() => {
         existingChapter = realm.create(
           ChapterSchema,
           {
-            _id: chapterKey,
+            link: chapterKey,
             _realmId: user.id,
-            _mangaId: mangaKey,
+            _mangaId: manga._id,
             indexPage: 0,
           },
-          Realm.UpdateMode.All,
+          Realm.UpdateMode.Modified,
         );
       });
     }
@@ -49,13 +51,17 @@ export default function useData(mangaKey: string, chapterKey: string) {
   );
 
   React.useEffect(() => {
+    console.log(`chapterKey ${chapterKey}`);
     setChapterWithData(chapterWithDataInitializer);
+    setChapter(localRealm.objectForPrimaryKey(LocalChapterSchema, chapterKey));
   }, [chapterKey]);
 
   if (chapter == null)
     throw Error(
       'Chapter does not exist. This error is thrown because data about the chapter is null. The user should fetch the manga first before reading a chapter.',
     );
+
+  console.log(chapterWithData.link);
 
   const readableChapters = useLocalQuery(
     LocalChapterSchema,

@@ -9,7 +9,7 @@ export interface IChapterSchema {
   dateRead?: number;
   language: ISOLangCode;
   link: string;
-  _mangaId: string;
+  _mangaId: BSON.ObjectId;
   _id: BSON.ObjectId;
   _realmId: string;
 }

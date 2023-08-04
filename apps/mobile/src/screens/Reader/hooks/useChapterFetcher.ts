@@ -68,6 +68,7 @@ export default function useChapterFetcher(
           availableChapters: args.availableChapters,
           mockError,
           user,
+          chapterWithData: currentChapter.current,
         }),
       );
     },
@@ -112,7 +113,7 @@ export default function useChapterFetcher(
               args.cancellable(fetchPages, {
                 previous: {
                   index: currentLocalChapter.current.index,
-                  _id: currentChapter.current._id,
+                  _id: currentChapter.current.link,
                 },
                 next: {
                   index:

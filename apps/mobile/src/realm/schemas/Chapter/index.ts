@@ -14,16 +14,18 @@ export class ChapterSchema extends Realm.Object<
   indexPage!: number;
   numberOfPages?: number;
   dateRead?: number;
-  _mangaId!: string;
-  _id!: string;
+  _mangaId!: Realm.BSON.ObjectId;
+  _id!: Realm.BSON.ObjectId;
   _realmId!: string;
+  link!: string;
 
   static schema: Realm.ObjectSchema = {
     name: 'Chapter',
     properties: {
-      _id: 'string',
+      _id: { type: 'objectId', default: () => new Realm.BSON.ObjectID() },
+      link: { type: 'string', indexed: true },
       _realmId: 'string',
-      _mangaId: 'string',
+      _mangaId: { type: 'objectId' },
       numberOfPages: 'int?',
       scrollPosition: 'int?',
       savedScrollPositionType: {
