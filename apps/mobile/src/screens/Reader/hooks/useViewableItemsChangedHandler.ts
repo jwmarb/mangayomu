@@ -64,7 +64,6 @@ export default function useViewableItemsChangedHandler(args: {
               if (chapter != null) chapter.indexPage = item.pageNumber - 1;
             });
             setCurrentPage(item.pageNumber);
-            console.log(`currentChapter = ${item.chapter}`);
             currentPageKey.current = item.page;
             dispatch(setCurrentChapter(item.chapter));
             pageSliderNavRef.current?.snapPointTo(item.pageNumber - 1);
