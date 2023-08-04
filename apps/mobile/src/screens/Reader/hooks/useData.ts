@@ -18,13 +18,10 @@ import React from 'react';
  */
 export default function useData(mangaKey: string, chapterKey: string) {
   const realm = useRealm();
-  const localRealm = useLocalRealm();
   const user = useUser();
   const manga = useCombinedMangaWithLocal(mangaKey, true);
 
-  const [chapter, setChapter] = React.useState(
-    localRealm.objectForPrimaryKey(LocalChapterSchema, chapterKey),
-  );
+  const chapter = useLocalObject(LocalChapterSchema, chapterKey);
 
   const chapterWithDataInitializer = () => {
     let existingChapter: ChapterSchema | undefined = realm
@@ -51,17 +48,13 @@ export default function useData(mangaKey: string, chapterKey: string) {
   );
 
   React.useEffect(() => {
-    console.log(`chapterKey ${chapterKey}`);
     setChapterWithData(chapterWithDataInitializer);
-    setChapter(localRealm.objectForPrimaryKey(LocalChapterSchema, chapterKey));
   }, [chapterKey]);
 
   if (chapter == null)
     throw Error(
       'Chapter does not exist. This error is thrown because data about the chapter is null. The user should fetch the manga first before reading a chapter.',
     );
-
-  console.log(chapterWithData.link);
 
   const readableChapters = useLocalQuery(
     LocalChapterSchema,

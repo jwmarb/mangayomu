@@ -71,7 +71,6 @@ interface ReaderState {
 
 export interface FetchPagesByChapterPayload {
   chapter: LocalChapterSchema; // this is the chapter to fetch pages from
-  chapterWithData: ChapterSchema;
   manga: CombinedMangaWithLocal;
   availableChapters: Realm.Results<LocalChapterSchema>;
   localRealm: Realm;
@@ -124,11 +123,14 @@ export const fetchPagesByChapter = createAsyncThunk(
         name: payload.chapter.name,
       });
       if (payload.mockError) mockError();
+      const chapterWithData = payload.realm
+        .objects(ChapterSchema)
+        .filtered('link = $0', payload.chapter._id)[0];
       payload.realm.write(() => {
-        payload.realm.create(
+        const c = payload.realm.create(
           ChapterSchema,
           {
-            _id: payload.chapterWithData._id,
+            _id: chapterWithData?._id,
             link: payload.chapter._id,
             _realmId: payload.user.id,
             _mangaId: payload.manga._id,
@@ -136,6 +138,7 @@ export const fetchPagesByChapter = createAsyncThunk(
           },
           Realm.UpdateMode.Modified,
         );
+        console.log(`${c._id} (${c.link}) has ${c.numberOfPages} pages`);
       });
       const preload = Promise.all(response.map((x) => Image.prefetch(x)));
       const dimensions = Promise.all(
@@ -331,12 +334,16 @@ const readerSlice = createSlice({
         });
       }
 
+      const chapterWithData = action.meta.arg.realm
+        .objects(ChapterSchema)
+        .filtered('link = $0', action.meta.arg.chapter._id)[0];
+
       for (let i = 0; i < action.payload.data.length; i++) {
         const page = action.payload.data[i];
         newPages.push({
           type: 'PAGE',
           chapter: action.meta.arg.chapter._id,
-          chapterId: action.meta.arg.chapterWithData._id,
+          chapterId: chapterWithData._id,
           height: page.height,
           width: page.width,
           page: page.url,

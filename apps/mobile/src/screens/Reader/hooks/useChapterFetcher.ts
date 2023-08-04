@@ -68,7 +68,6 @@ export default function useChapterFetcher(
           availableChapters: args.availableChapters,
           mockError,
           user,
-          chapterWithData: currentChapter.current,
         }),
       );
     },
