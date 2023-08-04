@@ -28,7 +28,7 @@ export default function useCombinedMangaWithLocal<T extends boolean>(
   const [manga, setManga] = React.useState<MangaSchema | undefined>(() => {
     let x: MangaSchema | undefined = realm
       .objects(MangaSchema)
-      .filtered('link = $0 AND _realmId = $1', mangaId, user.id)[0];
+      .filtered('link = $0', mangaId)[0];
     if (x == null && localManga != null && shouldInitializeManga) {
       realm.write(() => {
         x = realm.create<MangaSchema>(
