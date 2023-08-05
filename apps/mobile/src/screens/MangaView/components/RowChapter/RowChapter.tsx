@@ -3,30 +3,28 @@ import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
 import { moderateScale } from 'react-native-size-matters';
-import { RowChapterProps } from './RowChapter.interfaces';
+import { RowChapterProps } from './';
 import { format, formatDistanceToNow } from 'date-fns';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { useTheme } from '@emotion/react';
 import { Pressable } from 'react-native';
+import { useQuery } from '@database/main';
+import { ChapterSchema } from '@database/schemas/Chapter';
 
 export const ROW_CHAPTER_HEIGHT = moderateScale(60);
 
 const RowChapter: React.FC<RowChapterProps> = (props) => {
-  const {
-    mangaKey,
-    date,
-    isReading,
-    name,
-    indexPage,
-    numberOfPages,
-    dateRead,
-    chapterKey,
-  } = props;
+  const { mangaKey, date, isReading, name, chapterKey } = props;
   const navigation = useRootNavigation();
   const theme = useTheme();
   const parsed = Date.parse(date);
   const isRecent = Date.now() - 6.048e7 < parsed;
   const isWithinWeek = Date.now() - 6.048e8 < parsed;
+  const k = useQuery(
+    ChapterSchema,
+    (collection) => collection.filtered('link = $0', chapterKey),
+    [chapterKey],
+  )[0] as unknown as ChapterSchema | undefined;
   const formattedDate = React.useMemo(
     () =>
       isWithinWeek
@@ -61,14 +59,14 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
         <Box align-self="center">
           <Stack space="s" flex-direction="row">
             <Text
-              color={dateRead || isReading ? 'disabled' : 'textPrimary'}
-              bold={!dateRead}
+              color={k?.dateRead || isReading ? 'disabled' : 'textPrimary'}
+              bold={!k?.dateRead}
             >
               {name}
             </Text>
-            {(dateRead || isReading) && indexPage != null && (
+            {(k?.dateRead || isReading) && k?.indexPage != null && (
               <Text color="primary" variant="book-title">
-                ({indexPage + 1} / {numberOfPages})
+                ({k.indexPage + 1} / {k.numberOfPages})
               </Text>
             )}
           </Stack>

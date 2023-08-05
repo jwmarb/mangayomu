@@ -17,19 +17,16 @@ export const overrideItemLayout: FlashListProps<LocalChapterSchema>['overrideIte
 export const renderItem: ListRenderItem<LocalChapterSchema> = (info) => {
   const { item } = info;
   const extra = info.extraData as {
-    manga: IMangaSchema | undefined;
-    data: Record<string, ChapterSchema | undefined>;
+    mangaLink?: string;
+    currentlyReadingChapterId?: string;
   };
   return (
     <RowChapter
-      mangaKey={extra.manga?.link}
-      dateRead={extra.data[item._id]?.dateRead}
+      mangaKey={extra.mangaLink}
       name={item.name}
-      indexPage={extra.data[item._id]?.indexPage}
-      numberOfPages={extra.data[item._id]?.numberOfPages}
       date={item.date}
       chapterKey={item._id}
-      isReading={extra.manga?.currentlyReadingChapter?._id === item._id}
+      isReading={extra.currentlyReadingChapterId === item._id}
     />
   );
 };

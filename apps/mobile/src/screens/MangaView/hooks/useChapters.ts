@@ -1,9 +1,7 @@
-import { useLocalRealm, useRealm } from '@database/main';
-import { ChapterSchema } from '@database/schemas/Chapter';
+import { useLocalQuery } from '@database/main';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { useManga } from '@database/schemas/Manga';
 import { SORT_CHAPTERS_BY } from '@mangayomu/schemas';
-import { useFocusEffect } from '@react-navigation/native';
 import { DEFAULT_LANGUAGE } from '@screens/MangaView/MangaView';
 import { sort } from 'fast-sort';
 import React from 'react';
@@ -11,104 +9,21 @@ import React from 'react';
 export default function useChapters(
   manga: ReturnType<typeof useManga>['manga'],
 ) {
-  const realm = useRealm();
-  const localRealm = useLocalRealm();
-
   const selectedLanguage =
     manga?.selectedLanguage === 'Use default language' ||
     manga?.selectedLanguage == null
       ? DEFAULT_LANGUAGE
       : manga?.selectedLanguage;
 
-  const [chapters, setChapters] = React.useState<
-    Realm.Results<LocalChapterSchema>
-  >(
-    () =>
-      localRealm
-        .objects(LocalChapterSchema)
-        .filtered(
-          '_mangaId = $0 AND language = $1 SORT(index ASC)',
-          manga?.link,
-          selectedLanguage,
-        ) ?? [],
-  );
-
-  const [chapterData, setChapterData] = React.useState<
-    Record<string, ChapterSchema | undefined>
-  >(() => {
-    const localChapters = localRealm
-      .objects(LocalChapterSchema)
-      .filtered(
+  const chapters = useLocalQuery(
+    LocalChapterSchema,
+    (collection) =>
+      collection.filtered(
         '_mangaId = $0 AND language = $1 SORT(index ASC)',
         manga?.link,
         selectedLanguage,
-      );
-
-    const mappedChapters = realm.objects(ChapterSchema);
-    const mappedChaptersResults = (
-      localChapters.length > 0
-        ? mappedChapters.filtered(
-            localChapters.map((x) => `link = '${x._id}'`).join(' OR '),
-          )
-        : mappedChapters
-    ).reduce((prev, curr) => {
-      prev[curr.link] = curr;
-      return prev;
-    }, {} as Record<string, ChapterSchema>);
-
-    return localChapters.reduce((prev, curr) => {
-      prev[curr._id] = mappedChaptersResults[curr._id];
-      return prev;
-    }, {} as Record<string, ChapterSchema | undefined>);
-  });
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const localCallback: Realm.CollectionChangeCallback<
-        LocalChapterSchema
-      > = (collection) => {
-        setChapters(
-          collection.filtered(
-            '_mangaId = $0 AND language = $1 SORT(index ASC)',
-            manga?.link,
-            selectedLanguage,
-          ),
-        );
-      };
-      const callback: Realm.CollectionChangeCallback<ChapterSchema> = (
-        change,
-      ) => {
-        const c = localRealm
-          .objects(LocalChapterSchema)
-          .filtered(
-            '_mangaId = $0 AND language = $1 SORT(index ASC)',
-            manga?.link,
-            selectedLanguage,
-          );
-        const d = (
-          c.length > 0
-            ? change.filtered(c.map((x) => `link = '${x._id}'`).join(' OR '))
-            : change
-        ).reduce((prev, curr) => {
-          prev[curr.link] = curr;
-          return prev;
-        }, {} as Record<string, ChapterSchema>);
-        setChapterData(
-          c.reduce((prev, curr) => {
-            prev[curr._id] = d[curr._id];
-            return prev;
-          }, {} as Record<string, ChapterSchema | undefined>),
-        );
-      };
-      const localChapters = localRealm.objects(LocalChapterSchema);
-      const chapters = realm.objects(ChapterSchema);
-      localChapters.addListener(localCallback);
-      chapters.addListener(callback);
-      return () => {
-        localChapters.removeListener(localCallback);
-        chapters.removeListener(callback);
-      };
-    }, [selectedLanguage, manga?._id]),
+      ),
+    [manga?.link, selectedLanguage],
   );
 
   const data = React.useMemo(() => {
@@ -130,5 +45,5 @@ export default function useChapters(
   const firstChapter =
     chapters.length > 0 ? chapters[chapters.length - 1] : undefined;
 
-  return { data, firstChapter, chapterData };
+  return { data, firstChapter };
 }
