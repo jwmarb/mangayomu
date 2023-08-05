@@ -21,14 +21,15 @@ import Avatar from '@components/Avatar';
 import Badge from '@components/Badge';
 import NetInfo from '@react-native-community/netinfo';
 import { RefreshControl, TextInput } from 'react-native-gesture-handler';
-import { HotMangaList } from '@screens/Explore/components/HotMangaList';
-import { LatestMangaList } from '@screens/Explore/components/LatestMangaList';
 import GenresList from '@screens/Explore/components/GenresList';
 import { Freeze } from 'react-freeze';
 import Progress from '@components/Progress';
 import useTabNavigation from '@hooks/useTabNavigation';
 import ContinueReading from '@screens/Explore/components/ContinueReading/ContinueReading';
 import { useUser } from '@realm/react';
+import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
+import HotMangaList from '@screens/Explore/components/HotMangaList';
+import LatestMangaList from '@screens/Explore/components/LatestMangaList';
 
 const Explore: React.FC<ConnectedExploreProps> = ({
   source,
@@ -42,8 +43,7 @@ const Explore: React.FC<ConnectedExploreProps> = ({
   const user = useUser();
   const { height } = useWindowDimensions();
   const navigation = useTabNavigation();
-  const sourceSelectorRef =
-    React.useRef<React.ElementRef<typeof MainSourceSelector>>(null);
+  const sourceSelectorRef = React.useRef<BottomSheetMethods>(null);
   const inputRef = React.useRef<TextInput>(null);
   function handleOnPress() {
     sourceSelectorRef.current?.snapToIndex(1);
@@ -69,9 +69,15 @@ const Explore: React.FC<ConnectedExploreProps> = ({
     if (!suspendRendering && !loading) {
       console.log('fetching explorer state');
       refreshExplorerState();
-      const hot = await source.getHotMangas();
-      const latest = await source.getLatestMangas();
-      setExplorerState({ hot, latest });
+      const [hotResult, latestResult] = await Promise.allSettled([
+        source.getHotMangas(),
+        source.getLatestMangas(),
+      ]);
+      if (hotResult.status === 'rejected')
+        return console.error(hotResult.reason);
+      if (latestResult.status === 'rejected')
+        return console.error(latestResult.reason);
+      setExplorerState({ hot: hotResult.value, latest: latestResult.value });
     }
   }
   React.useEffect(() => {

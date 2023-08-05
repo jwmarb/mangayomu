@@ -1,2 +1,2 @@
-import Login from './Login';
-export default Login;
+import { register } from 'react-native-bundle-splitter';
+export default register({ loader: () => import('./Login') });

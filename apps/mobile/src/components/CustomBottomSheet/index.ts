@@ -1,4 +1,8 @@
-export { default as CustomBottomSheet } from './CustomBottomSheet';
+// export { default as CustomBottomSheet } from './CustomBottomSheet';
+import { register } from 'react-native-bundle-splitter';
+export const CustomBottomSheet = register<CustomBottomSheetProps>({
+  loader: () => import('./CustomBottomSheet'),
+});
 import { BottomSheetProps } from '@gorhom/bottom-sheet';
 
 type SelectivePartial<T, K extends keyof T, U = Pick<T, K>> = Omit<T, K> & {

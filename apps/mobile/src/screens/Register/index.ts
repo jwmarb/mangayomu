@@ -1,2 +1,2 @@
-import Register from './Register';
-export default Register;
+import { register } from 'react-native-bundle-splitter';
+export default register({ loader: () => import('./Register') });

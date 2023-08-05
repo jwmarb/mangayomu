@@ -1,1 +1,3 @@
-export { default } from './ContinueReading';
+import { register } from 'react-native-bundle-splitter';
+
+export default register({ loader: () => import('./ContinueReading') });

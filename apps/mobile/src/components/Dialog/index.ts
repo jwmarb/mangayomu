@@ -1,6 +1,6 @@
-import Dialog from './Dialog';
-export default Dialog;
-import { ButtonProps } from '@components/Button';
+import { register } from 'react-native-bundle-splitter';
+export default register({ loader: () => import('./Dialog') });
+import type { ButtonProps } from '@components/Button';
 
 export interface DialogAction {
   text: string;

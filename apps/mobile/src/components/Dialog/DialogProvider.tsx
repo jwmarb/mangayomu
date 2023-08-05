@@ -1,4 +1,4 @@
-import { DialogMethods } from '@components/Dialog/Dialog.interfaces';
+import { DialogMethods } from './';
 import Dialog from './Dialog';
 import React from 'react';
 import { DialogContext } from '@hooks/useDialog';

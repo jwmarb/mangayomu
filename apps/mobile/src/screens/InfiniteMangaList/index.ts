@@ -1,1 +1,2 @@
-export { default } from './InfiniteMangaList';
+import { register } from 'react-native-bundle-splitter';
+export default register({ loader: () => import('./InfiniteMangaList') });
