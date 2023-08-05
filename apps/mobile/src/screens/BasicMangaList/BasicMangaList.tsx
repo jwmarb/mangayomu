@@ -38,13 +38,7 @@ const BasicMangaList: React.FC<ConnectedBasicMangaListProps> = (props) => {
     key,
     overrideItemLayout,
     drawDistance,
-  } = useMangaFlashlistLayout(
-    {
-      width: bookWidth,
-      height: bookHeight,
-    },
-    mangas.length,
-  );
+  } = useMangaFlashlistLayout(mangas.length);
   const flashList = useAnimatedRef<FlashList<any>>();
   const opacity = useSharedValue<number>(0);
   const translateY = useDerivedValue(() =>

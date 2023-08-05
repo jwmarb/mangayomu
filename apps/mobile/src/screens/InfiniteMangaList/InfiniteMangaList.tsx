@@ -194,13 +194,7 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
     key,
     overrideItemLayout,
     drawDistance,
-  } = useMangaFlashlistLayout(
-    {
-      width: bookWidth,
-      height: bookHeight,
-    },
-    mangas.length,
-  );
+  } = useMangaFlashlistLayout(mangas.length);
   async function handleOnSubmitEditing(
     e: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
   ) {
