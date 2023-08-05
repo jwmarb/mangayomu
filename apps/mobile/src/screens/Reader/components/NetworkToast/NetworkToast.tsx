@@ -1,5 +1,4 @@
 import Box, { AnimatedBox } from '@components/Box/Box';
-import Button from '@components/Button/Button';
 import Icon from '@components/Icon/Icon';
 import Stack from '@components/Stack/Stack';
 import Text from '@components/Text/Text';
@@ -9,14 +8,13 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { moderateScale } from 'react-native-size-matters';
-import connector, { ConnectedNetworkToastProps } from './NetworkToast.redux';
-import { fetchedChapters, fetchingChapters } from '@redux/slices/reader';
+import { NetworkToastProps } from './';
+import useAppSelector from '@hooks/useAppSelector';
 
-const NetworkToast: React.FC<ConnectedNetworkToastProps> = ({
-  internetStatus,
-  setNetworkState,
-  style,
-}) => {
+const NetworkToast: React.FC<NetworkToastProps> = ({ style }) => {
+  const internetStatus = useAppSelector(
+    (state) => state.explore.internetStatus,
+  );
   const insets = useSafeAreaInsets();
   return (
     <Portal>
@@ -90,4 +88,4 @@ const NetworkToast: React.FC<ConnectedNetworkToastProps> = ({
   );
 };
 
-export default connector(React.memo(NetworkToast));
+export default React.memo(NetworkToast);

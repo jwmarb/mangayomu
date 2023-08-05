@@ -1,5 +1,5 @@
 import React from 'react';
-import { PageCounterProps } from './PageCounter.interfaces';
+import { PageCounterProps } from './';
 import { useTheme } from '@emotion/react';
 import { moderateScale } from 'react-native-size-matters';
 import { OVERLAY_COLOR, OVERLAY_TEXT_PRIMARY } from '@theme/constants';

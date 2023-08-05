@@ -16,7 +16,6 @@ export default function useViewableItemsChangedHandler(args: {
   manga: CombinedMangaWithLocal;
   chapter: LocalChapterSchema;
   pageSliderNavRef: React.RefObject<PageSliderNavigatorMethods>;
-  pages: Page[];
   fetchPagesByChapter: ReturnType<typeof useChapterFetcher>;
   showOverlay: () => void;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;

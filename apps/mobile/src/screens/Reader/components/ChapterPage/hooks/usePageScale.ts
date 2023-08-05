@@ -1,8 +1,8 @@
 import useScreenDimensions from '@hooks/useScreenDimensions';
-import { ConnectedChapterPageProps } from '@screens/Reader/components/ChapterPage/ChapterPage.redux';
+import { ChapterPageProps } from '@screens/Reader/components/ChapterPage';
 import React from 'react';
 
-export default function usePageScale(props: ConnectedChapterPageProps) {
+export default function usePageScale(props: ChapterPageProps) {
   const { width } = useScreenDimensions();
   const imageWidth = props.page.width;
   const imageHeight = props.page.height;

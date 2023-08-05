@@ -1,3 +1,4 @@
+import useAppSelector from '@hooks/useAppSelector';
 import useMutableObject from '@hooks/useMutableObject';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import {
@@ -5,7 +6,7 @@ import {
   ReadingDirection,
   ZoomStartPosition,
 } from '@redux/slices/settings';
-import { ConnectedChapterPageProps } from '@screens/Reader/components/ChapterPage/ChapterPage.redux';
+import { ChapterPageProps } from '@screens/Reader/components/ChapterPage';
 import { useChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
 import React from 'react';
 import { Dimensions } from 'react-native';
@@ -97,13 +98,16 @@ const initializePinchScale = (
 };
 
 export default function usePageZooming(
-  props: ConnectedChapterPageProps,
+  props: ChapterPageProps,
   stylizedHeight: number,
 ) {
   const {
     page: { width: imageWidth, height: imageHeight, page },
-    pageAspectRatio,
   } = props;
+  const pageAspectRatio = useAppSelector(
+    (state) => state.reader.pageAspectRatio,
+  );
+
   const {
     readingDirection: _readingDirection,
     imageScaling: _imageScaling,

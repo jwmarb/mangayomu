@@ -5,13 +5,12 @@ import Text from '@components/Text';
 import { useLocalRealm } from '@database/main';
 import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
 import useScreenDimensions from '@hooks/useScreenDimensions';
-import { TransitionPageContextState } from '@screens/Reader/components/TransitionPage/TransitionPage.interfaces';
+import { TransitionPageContextState, TransitionPageProps } from './';
 import React from 'react';
 import { GestureDetector } from 'react-native-gesture-handler';
-import connector, {
-  ConnectedTransitionPageProps,
-} from './TransitionPage.redux';
+
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
+import useAppSelector from '@hooks/useAppSelector';
 
 export const TransitionPageContext = React.createContext<
   TransitionPageContextState | undefined
@@ -23,12 +22,11 @@ const useTransitionPageContext = () => {
   return ctx;
 };
 
-const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
-  const { page, loading } = props;
-  const { tapGesture, backgroundColor, currentChapter } =
-    useTransitionPageContext();
-  const { background, textPrimary, textSecondary } =
-    useReaderBackgroundColor(backgroundColor);
+const TransitionPage: React.FC<TransitionPageProps> = (props) => {
+  const { page } = props;
+  const loading = useAppSelector((state) => state.reader.loading);
+  const { tapGesture, currentChapter } = useTransitionPageContext();
+  const { background, textPrimary, textSecondary } = useReaderBackgroundColor();
   const localRealm = useLocalRealm();
   const isPrevious = props.page.next.index === currentChapter.index;
   const isNext = props.page.previous.index === currentChapter.index;
@@ -95,4 +93,4 @@ const TransitionPage: React.FC<ConnectedTransitionPageProps> = (props) => {
   );
 };
 
-export default connector(React.memo(TransitionPage));
+export default React.memo(TransitionPage);

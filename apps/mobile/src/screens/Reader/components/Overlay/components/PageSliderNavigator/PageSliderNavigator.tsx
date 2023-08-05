@@ -1,5 +1,4 @@
 import React from 'react';
-import { PageSliderNavigatorMethods } from './PageSliderNavigator.interfaces';
 import Box, { AnimatedBox } from '@components/Box';
 import Text from '@components/Text/Text';
 import { useTheme } from '@emotion/react';
@@ -23,12 +22,13 @@ import { ReadingDirection } from '@redux/slices/settings';
 import { LayoutChangeEvent } from 'react-native';
 import { PageSliderNavigatorSnapPointsContext } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator.context';
 import PageSliderDecorators from '@screens/Reader/components/Overlay/components/PageSliderNavigator/components/PageSliderDecorators/PageSliderDecorators';
-import connector, {
-  ConnectedPageSliderNavigatorProps,
-} from './PageSliderNavigator.redux';
 import { StyleSheet } from 'react-native';
-import integrateSortedList from '@helpers/integrateSortedList';
-import { NumberComparator } from '@mangayomu/algorithms';
+import {
+  PageSliderNavigatorProps,
+  PageSliderNavigatorMethods,
+} from '@screens/Reader/components/Overlay/components/PageSliderNavigator';
+import useAppSelector from '@hooks/useAppSelector';
+import { shouldHidePageNavigator } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator.helpers';
 
 const styles = StyleSheet.create({
   button: {
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
 
 const PageSliderNavigator: React.ForwardRefRenderFunction<
   PageSliderNavigatorMethods,
-  ConnectedPageSliderNavigatorProps
+  PageSliderNavigatorProps
 > = (props, ref) => {
   const {
     style,
@@ -51,8 +51,8 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
     onSnapToPoint,
     initialChapterPageIndex,
     isFinishedInitialScrollOffset,
-    hide,
   } = props;
+  const hide = useAppSelector((state) => shouldHidePageNavigator(state));
   const theme = useTheme();
   const [maxLeftDistance, setMaxLeftDistance] = React.useState<number>(0);
   const indexRef = React.useRef<number>(0);
@@ -246,4 +246,4 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
   );
 };
 
-export default connector(React.forwardRef(PageSliderNavigator));
+export default React.forwardRef(PageSliderNavigator);

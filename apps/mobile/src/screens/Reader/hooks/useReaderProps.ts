@@ -1,5 +1,6 @@
 import { MangaSchema } from '@database/schemas/Manga';
 import displayMessage from '@helpers/displayMessage';
+import useAppSelector from '@hooks/useAppSelector';
 import { CombinedMangaWithLocal } from '@hooks/useCombinedMangaWithLocal';
 import {
   ImageScaling,
@@ -10,6 +11,7 @@ import {
 } from '@redux/slices/settings';
 import React from 'react';
 import Orientation from 'react-native-orientation-locker';
+import { shallowEqual } from 'react-redux';
 
 type ReaderProps = Omit<
   {
@@ -29,10 +31,16 @@ type ReaderProps = Omit<
  * @param readerProps The props provided by redux
  * @returns Returns manga settings with proper user configuration
  */
-export default function useReaderProps(
-  manga: CombinedMangaWithLocal,
-  readerProps: ReaderProps,
-) {
+export default function useReaderProps(manga: CombinedMangaWithLocal) {
+  const readerProps = useAppSelector(
+    (state): ReaderProps => ({
+      imageScaling: state.settings.reader.imageScaling,
+      lockOrientation: state.settings.reader.lockOrientation,
+      readingDirection: state.settings.reader.readingDirection,
+      zoomStartPosition: state.settings.reader.zoomStartPosition,
+    }),
+    shallowEqual,
+  );
   const readingDirection = React.useMemo(
     () =>
       manga.readerDirection != null

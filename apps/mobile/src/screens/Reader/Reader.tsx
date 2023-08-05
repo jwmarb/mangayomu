@@ -29,25 +29,39 @@ import useCancellable from '@screens/Reader/hooks/useCancellable';
 import PageList from '@screens/Reader/components/PageList';
 import displayMessage from '@helpers/displayMessage';
 import { ChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
-import { ImageMenuMethods } from '@screens/Reader/components/ImageMenu/ImageMenu.interfaces';
+import { ImageMenuMethods } from '@screens/Reader/components/ImageMenu';
 import useViewableItemsChangedHandler from '@screens/Reader/hooks/useViewableItemsChangedHandler';
 import useSharedValuePageState from '@screens/Reader/hooks/useSharedValuePageState';
+import { RootStackProps } from '@navigators/Root/Root.interfaces';
+import useAppSelector from '@hooks/useAppSelector';
 
-const Reader: React.FC<ConnectedReaderProps> = (props) => {
+const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
+  // const {
+  //   chapter: chapterKey,
+  //   incognito,
+  //   pages,
+  //   backgroundColor,
+  //   manga: mangaKey,
+  //   extendedState,
+  //   notifyOnLastChapter,
+  //   autoFetch,
+  // } = props;
   const {
-    chapter: chapterKey,
-    incognito,
-    pages,
-    backgroundColor,
-    manga: mangaKey,
-    globalReadingDirection,
-    globalDeviceOrientation,
-    globalImageScaling,
-    globalZoomStartPosition,
-    extendedState,
-    notifyOnLastChapter,
-    autoFetch,
+    route: {
+      params: { manga: mangaKey },
+    },
   } = props;
+  const chapterKey = useAppSelector(
+    (state) => state.reader.currentChapter ?? props.route.params.chapter,
+  );
+  const notifyOnLastChapter = useAppSelector(
+    (state) => state.settings.reader.notifyOnLastChapter,
+  );
+  const pages = useAppSelector((state) => state.reader.pages);
+  const backgroundColor = useAppSelector(
+    (state) => state.settings.reader.backgroundColor,
+  );
+  const extendedState = useAppSelector((state) => state.reader.extendedState);
   const { width, height } = useScreenDimensions();
   const ref = React.useRef<FlashList<Page>>(null);
   const [manga, chapter, availableChapters, chapterWithData] = useData(
@@ -71,17 +85,10 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     manga,
     chapter,
     chapterWithData,
-    pages,
     currentPage,
-    autoFetch,
     cancellable,
   });
-  const readerProps = useReaderProps(manga, {
-    readingDirection: globalReadingDirection,
-    lockOrientation: globalDeviceOrientation,
-    imageScaling: globalImageScaling,
-    zoomStartPosition: globalZoomStartPosition,
-  });
+  const readerProps = useReaderProps(manga);
   const { readingDirection, imageScaling, zoomStartPosition } = readerProps;
   const panRef = React.useRef<GestureType>();
   const pinchRef = React.useRef<GestureType>();
@@ -104,7 +111,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
   const viewabilityConfigCallbackPairs = useViewableItemsChangedHandler({
     manga,
     chapter,
-    pages,
     fetchPagesByChapter,
     pageSliderNavRef,
     showOverlay,
@@ -128,7 +134,6 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     getItemLayout,
   } = usePageLayout({
     readingDirection,
-    pages,
     chapterKey,
   });
 
@@ -152,14 +157,12 @@ const Reader: React.FC<ConnectedReaderProps> = (props) => {
     chapter,
     savedChapterInfo: chapterWithData,
     scrollRef: ref,
-    pages,
     manga,
-    incognito,
   });
 
   const transitionPageContextValue = React.useMemo(
-    () => ({ backgroundColor, currentChapter: chapter, tapGesture }),
-    [tapGesture, chapter._id, backgroundColor],
+    () => ({ currentChapter: chapter, tapGesture }),
+    [tapGesture, chapter._id],
   );
 
   const composedGestures = React.useMemo(

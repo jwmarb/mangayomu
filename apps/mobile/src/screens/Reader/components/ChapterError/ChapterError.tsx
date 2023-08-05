@@ -6,14 +6,12 @@ import Progress from '@components/Progress';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useRealm } from '@database/main';
-import { ChapterSchema } from '@database/schemas/Chapter';
 import useBoolean from '@hooks/useBoolean';
 import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
 import useScreenDimensions from '@hooks/useScreenDimensions';
-import { ChapterErrorContextState } from '@screens/Reader/components/ChapterError/ChapterError.interfaces';
+import { ChapterErrorContextState, ChapterErrorProps } from './';
 import React from 'react';
 import { moderateScale } from 'react-native-size-matters';
-import connector, { ConnectedChapterErrorProps } from './ChapterError.redux';
 import NetInfo, {
   NetInfoSubscription,
   useNetInfo,
@@ -29,8 +27,8 @@ const useChapterErrorContext = () => {
   return ctx;
 };
 
-const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
-  const { backgroundColor, data } = props;
+const ChapterError: React.FC<ChapterErrorProps> = (props) => {
+  const { data } = props;
   const { error, current } = data;
   const localRealm = useRealm();
   const chapter = localRealm.objectForPrimaryKey(
@@ -38,8 +36,7 @@ const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
     current._id,
   );
   const fetchPages = useChapterErrorContext();
-  const { background, textPrimary, textSecondary } =
-    useReaderBackgroundColor(backgroundColor);
+  const { background, textPrimary, textSecondary } = useReaderBackgroundColor();
   const { width, height } = useScreenDimensions();
   const [loading, toggle] = useBoolean();
   const netInfo = useNetInfo();
@@ -116,4 +113,4 @@ const ChapterError: React.FC<ConnectedChapterErrorProps> = (props) => {
   );
 };
 
-export default connector(React.memo(ChapterError));
+export default React.memo(ChapterError);

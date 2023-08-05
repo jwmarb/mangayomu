@@ -2,13 +2,9 @@ import Box, { AnimatedBox } from '@components/Box';
 import Icon from '@components/Icon';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import { useLocalRealm, useRealm } from '@database/main';
-import { PageSchema } from '@database/schemas/Page';
 import { useTheme } from '@emotion/react';
 import { Portal } from '@gorhom/portal';
 import displayMessage from '@helpers/displayMessage';
-import useAppSelector from '@hooks/useAppSelector';
-import useBoolean from '@hooks/useBoolean';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import React from 'react';
 import {
@@ -16,7 +12,6 @@ import {
   Share,
   Platform,
   Linking,
-  Dimensions,
   Pressable,
   Alert,
 } from 'react-native';
@@ -24,6 +19,7 @@ import {
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {
   Easing,
+  interpolate,
   interpolateColor,
   useAnimatedStyle,
   useDerivedValue,
@@ -32,15 +28,19 @@ import {
 } from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
 import RNFetchBlob from 'rn-fetch-blob';
-import connected, { ConnectedImageMenuProps } from './ImageMenu.redux';
-import { ImageMenuMethods } from '@screens/Reader/components/ImageMenu/ImageMenu.interfaces';
+import { ImageMenuMethods } from './';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import removeURLParams from '@screens/Reader/components/ChapterPage/helpers/removeURLParams';
-const ImageMenu: React.ForwardRefRenderFunction<
-  ImageMenuMethods,
-  ConnectedImageMenuProps
-> = (props, ref) => {
-  const { toggleImageModal, show } = props;
+import useAppSelector from '@hooks/useAppSelector';
+import { toggleImageModal } from '@redux/slices/reader';
+import { useAppDispatch } from '@redux/main';
+
+const ImageMenu: React.ForwardRefRenderFunction<ImageMenuMethods> = (
+  _,
+  ref,
+) => {
+  const show = useAppSelector((state) => state.reader.showImageModal);
+  const dispatch = useAppDispatch();
   const theme = useTheme();
   const { width, height } = useScreenDimensions();
   const url = React.useRef<string>();
@@ -63,7 +63,11 @@ const ImageMenu: React.ForwardRefRenderFunction<
       ),
     [containerHeight],
   );
+  const opacity = useDerivedValue(() =>
+    interpolate(translationY.value, [0, containerHeight], [0, 1]),
+  );
   const style = useAnimatedStyle(() => ({
+    opaity: opacity.value,
     transform: [{ translateY: translationY.value }],
   }));
   const overlayStyle = useAnimatedStyle(() => ({
@@ -88,7 +92,7 @@ const ImageMenu: React.ForwardRefRenderFunction<
   }, [show]);
 
   function handleOnClose() {
-    toggleImageModal(false);
+    dispatch(toggleImageModal(false));
     translationY.value = withTiming(containerHeight, {
       duration: 150,
       easing: Easing.ease,
@@ -250,4 +254,4 @@ const ImageMenu: React.ForwardRefRenderFunction<
   );
 };
 
-export default React.memo(connected(React.forwardRef(ImageMenu)));
+export default React.memo(React.forwardRef(ImageMenu));

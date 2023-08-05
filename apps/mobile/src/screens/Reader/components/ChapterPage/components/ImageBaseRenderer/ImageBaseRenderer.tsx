@@ -1,26 +1,22 @@
 import React from 'react';
-import connector, {
-  ConnectedImageBaseRendererProps,
-} from './ImageBaseRenderer.redux';
+
 import { ReaderImageComponent } from '@redux/slices/settings';
 import WebViewImageElement from '@screens/Reader/components/ChapterPage/components/WebViewImageElement';
 import FastImageElement from '@screens/Reader/components/ChapterPage/components/FastImageElement';
 import ImageElement from '@screens/Reader/components/ChapterPage/components/ImageElement';
 import { FastImageElementProps } from '@screens/Reader/components/ChapterPage/components/FastImageElement/FastImageElement.interfaces';
 import WebView from 'react-native-webview';
+import useAppSelector from '@hooks/useAppSelector';
+import { ImageBaseRendererProps } from '@screens/Reader/components/ChapterPage/components/ImageBaseRenderer';
 
 const ImageBaseRenderer: React.ForwardRefRenderFunction<
   WebView,
-  ConnectedImageBaseRendererProps
+  ImageBaseRendererProps
 > = (props, ref) => {
-  const {
-    error,
-    imageComponentType,
-    fallbackToWebView,
-    onMessage,
-    style,
-    ...rest
-  } = props;
+  const { error, fallbackToWebView, onMessage, style, ...rest } = props;
+  const imageComponentType = useAppSelector(
+    (state) => state.settings.reader.advanced.imageComponent,
+  );
   const baseStyle = React.useMemo(
     () => ({ width: style[1].width, height: style[1].height }),
     [style[1].width, style[1].height],
@@ -61,4 +57,4 @@ const ImageBaseRenderer: React.ForwardRefRenderFunction<
   }
 };
 
-export default connector(React.forwardRef(ImageBaseRenderer));
+export default React.forwardRef(ImageBaseRenderer);

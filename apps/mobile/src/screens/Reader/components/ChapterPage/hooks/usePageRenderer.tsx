@@ -1,9 +1,10 @@
-import Box, { AnimatedBox } from '@components/Box';
+import Box from '@components/Box';
+import useAppSelector from '@hooks/useAppSelector';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import { useAppDispatch } from '@redux/main';
-import { ExtendedReaderPageState, setPageError } from '@redux/slices/reader';
+import { setPageError } from '@redux/slices/reader';
 import { ReadingDirection } from '@redux/slices/settings';
-import { ConnectedChapterPageProps } from '@screens/Reader/components/ChapterPage/ChapterPage.redux';
+import { ChapterPageProps } from '@screens/Reader/components/ChapterPage';
 import ImageBaseRenderer from '@screens/Reader/components/ChapterPage/components/ImageBaseRenderer/ImageBaseRenderer';
 import ImageErrorRenderer from '@screens/Reader/components/ChapterPage/components/ImageErrorRenderer/ImageErrorRenderer';
 import { useChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
@@ -15,7 +16,7 @@ type ParsedWebViewData =
   | { type: 'error' };
 
 export default function usePageRenderer(
-  props: ConnectedChapterPageProps,
+  props: ChapterPageProps,
   style: readonly [
     {
       transform: (
@@ -46,8 +47,10 @@ export default function usePageRenderer(
   const {
     page: { page: pageKey },
     extendedPageState,
-    backgroundColor,
   } = props;
+  const backgroundColor = useAppSelector((state) =>
+    state.settings.reader.backgroundColor.toLowerCase(),
+  );
   const { readingDirection } = useChapterPageContext();
   const { width, height } = useScreenDimensions();
   /**
@@ -94,7 +97,7 @@ export default function usePageRenderer(
       React.memo(() => (
         <Box
           overflow="hidden"
-          background-color={backgroundColor.toLowerCase()}
+          background-color={backgroundColor}
           justify-content="center"
           {...(readingDirection !== ReadingDirection.WEBTOON
             ? { width, height }

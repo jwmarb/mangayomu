@@ -1,5 +1,5 @@
 import React from 'react';
-import { SkipButtonProps } from './SkipButton.interfaces';
+import { SkipButtonProps } from './';
 import Box from '@components/Box';
 import { moderateScale } from 'react-native-size-matters';
 import { OVERLAY_COLOR, OVERLAY_SLIDER_HEIGHT } from '@theme/constants';

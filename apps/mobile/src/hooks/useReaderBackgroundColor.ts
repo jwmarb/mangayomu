@@ -1,4 +1,5 @@
 import { useTheme } from '@emotion/react';
+import useAppSelector from '@hooks/useAppSelector';
 import { ReaderBackgroundColor } from '@redux/slices/settings';
 import React from 'react';
 
@@ -7,9 +8,10 @@ import React from 'react';
  * @param backgroundColor The background color provided by the user
  * @returns Returns variables for UI depending on the user background color
  */
-export default function useReaderBackgroundColor(
-  backgroundColor: ReaderBackgroundColor,
-) {
+export default function useReaderBackgroundColor() {
+  const backgroundColor = useAppSelector(
+    (state) => state.settings.reader.backgroundColor,
+  );
   const theme = useTheme();
   const textPrimary = React.useMemo(() => {
     switch (backgroundColor) {

@@ -1,9 +1,8 @@
 import React from 'react';
-import { OverlayBottomButtonProps } from './OverlayBottomButton.interfaces';
+import { OverlayBottomButtonProps } from './';
 import Box from '@components/Box';
 import Icon from '@components/Icon';
 import { moderateScale } from 'react-native-size-matters';
-import { BorderlessButton } from 'react-native-gesture-handler';
 import { useTheme } from '@emotion/react';
 import { OVERLAY_TEXT_PRIMARY } from '@theme/constants';
 import displayMessage from '@helpers/displayMessage';

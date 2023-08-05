@@ -1,3 +1,4 @@
+import useAppSelector from '@hooks/useAppSelector';
 import useMutableObject from '@hooks/useMutableObject';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import { Page, chapterIndices, offsetMemo } from '@redux/slices/reader';
@@ -7,10 +8,10 @@ import { Dimensions, FlatListProps } from 'react-native';
 
 export default function usePageLayout(args: {
   readingDirection: ReadingDirection;
-  pages: Page[];
   chapterKey: string;
 }) {
-  const { readingDirection, pages, chapterKey } = args;
+  const { readingDirection, chapterKey } = args;
+  const pages = useAppSelector((state) => state.reader.pages);
   const chapterKeyRef = useMutableObject(chapterKey);
   const { width, height } = useScreenDimensions();
   const pagesRef = useMutableObject(pages);

@@ -1,7 +1,6 @@
 import React from 'react';
 import Box from '@components/Box';
 import { GestureDetector } from 'react-native-gesture-handler';
-import connector, { ConnectedChapterPageProps } from './ChapterPage.redux';
 import {
   ImageScaling,
   ReadingDirection,
@@ -15,12 +14,19 @@ import usePageDownloader from '@screens/Reader/components/ChapterPage/hooks/useP
 import { useAnimatedStyle } from 'react-native-reanimated';
 import usePageZooming from '@screens/Reader/components/ChapterPage/hooks/usePageZooming';
 import usePageScale from '@screens/Reader/components/ChapterPage/hooks/usePageScale';
+import { ChapterPageProps } from '@screens/Reader/components/ChapterPage';
+import useAppSelector from '@hooks/useAppSelector';
 
-const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
+const ChapterPage: React.FC<ChapterPageProps> = (props) => {
   const { readingDirection } = useChapterPageContext();
   const { width, height } = useScreenDimensions();
-  const { page: pageKey, chapter, pageNumber } = props.page;
-  const { extendedPageState, backgroundColor } = props;
+  const {
+    page: { page: pageKey, chapter, pageNumber },
+    extendedPageState,
+  } = props;
+  const backgroundColor = useAppSelector((state) =>
+    state.settings.reader.backgroundColor.toLowerCase(),
+  );
   const { stylizedHeight } = usePageScale(props);
 
   const pageZooming = usePageZooming(props, stylizedHeight);
@@ -65,4 +71,4 @@ const ChapterPage: React.FC<ConnectedChapterPageProps> = (props) => {
   );
 };
 
-export default connector(ChapterPage);
+export default ChapterPage;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { OverlayFooterProps } from './OverlayFooter.interfaces';
+import { OverlayFooterProps } from './';
 import { AnimatedBox } from '@components/Box';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { OVERLAY_COLOR } from '@theme/constants';

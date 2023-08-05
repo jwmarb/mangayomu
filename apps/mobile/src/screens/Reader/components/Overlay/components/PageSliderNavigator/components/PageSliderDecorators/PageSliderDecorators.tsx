@@ -1,7 +1,4 @@
 import React from 'react';
-import connector, {
-  ConnectedPageSliderDecoratorsProps,
-} from './PageSliderDecorators.redux';
 import Box, { AnimatedBox } from '@components/Box/Box';
 import SnapPoints from '@screens/Reader/components/Overlay/components/PageSliderNavigator/components/SnapPoints/SnapPoints';
 import {
@@ -13,14 +10,16 @@ import { hexToRgb, rgbaToString } from '@mangayomu/theme';
 import { useTheme } from '@emotion/react';
 import Animated from 'react-native-reanimated';
 import { OVERLAY_SLIDER_CIRCLE_RADIUS } from '@theme/constants';
+import { PageSliderDecoratorsProps } from './';
+import useAppSelector from '@hooks/useAppSelector';
+import { shouldHidePageNavigator } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator.helpers';
 
 const AnimatedBorderlessButton =
   Animated.createAnimatedComponent(BorderlessButton);
 
-const PageSliderDecorators: React.FC<ConnectedPageSliderDecoratorsProps> = (
-  props,
-) => {
-  const { onLayout, gesture, style, snapPointStyle, trailStyle, hide } = props;
+const PageSliderDecorators: React.FC<PageSliderDecoratorsProps> = (props) => {
+  const { onLayout, gesture, style, snapPointStyle, trailStyle } = props;
+  const hide = useAppSelector((state) => shouldHidePageNavigator(state));
   const theme = useTheme();
   return (
     <Box
@@ -70,4 +69,4 @@ const PageSliderDecorators: React.FC<ConnectedPageSliderDecoratorsProps> = (
   );
 };
 
-export default connector(React.memo(PageSliderDecorators));
+export default React.memo(PageSliderDecorators);

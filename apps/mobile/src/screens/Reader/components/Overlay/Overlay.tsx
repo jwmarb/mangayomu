@@ -1,13 +1,11 @@
 import Box from '@components/Box';
 import React from 'react';
-import connector, { ConnectedOverlayProps } from './Overlay.redux';
 import {
   interpolate,
   useAnimatedStyle,
   useDerivedValue,
 } from 'react-native-reanimated';
 import { Portal } from '@gorhom/portal';
-import { useRealm } from '@database/main';
 import displayMessage from '@helpers/displayMessage';
 import { moderateScale } from 'react-native-size-matters';
 import { ParsedUserReaderSettingsContext } from '@screens/Reader/context/ParsedUserReaderSettings';
@@ -22,19 +20,20 @@ import useRootNavigation from '@hooks/useRootNavigation';
 import PageSliderNavigator from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator';
 import { chapterIndices } from '@redux/slices/reader';
 import { ReadingDirection } from '@redux/slices/settings';
-import { PageSliderNavigatorMethods } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator.interfaces';
 import { MangaKeyContext } from '@screens/Reader/context/MangaKey';
+import useAppSelector from '@hooks/useAppSelector';
+import { OverlayProps } from '@screens/Reader/components/Overlay';
+import { useAppDispatch } from '@redux/main';
+import { addIfNewSourceToLibrary } from '@redux/slices/library';
 
 const pageSliderTranslateYOffset = moderateScale(-78);
 
-const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
+const Overlay: React.FC<OverlayProps> = (props) => {
   const {
     opacity,
-    showPageNumber,
     currentPage: page,
     chapter,
     manga,
-    addIfNewSourceToLibrary,
     readerProps,
     scrollRef,
     pageSliderNavRef,
@@ -43,6 +42,10 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
     imageMenuRef,
     savedChapterInfo,
   } = props;
+  const showPageNumber = useAppSelector(
+    (state) => state.settings.reader.showPageNumber,
+  );
+  const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
   const totalPages = savedChapterInfo.numberOfPages;
   const textOpacity = useDerivedValue(() =>
@@ -126,7 +129,7 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
 
   const handleOnBookmark = React.useCallback(() => {
     manga.update((obj) => {
-      addIfNewSourceToLibrary(obj.source);
+      dispatch(addIfNewSourceToLibrary(obj.source));
       obj.inLibrary = !obj.inLibrary;
       displayMessage(
         obj.inLibrary ? 'Added to library' : 'Removed from library',
@@ -252,4 +255,4 @@ const Overlay: React.FC<ConnectedOverlayProps> = (props) => {
   );
 };
 
-export default connector(Overlay);
+export default Overlay;

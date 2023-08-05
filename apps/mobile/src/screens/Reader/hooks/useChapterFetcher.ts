@@ -22,6 +22,7 @@ import useMutableObject from '@hooks/useMutableObject';
 import useCancellable from '@screens/Reader/hooks/useCancellable';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { useUser } from '@realm/react';
+import useAppSelector from '@hooks/useAppSelector';
 
 /**
  * A hook to create a fetcher to fetch a chapter
@@ -33,14 +34,15 @@ export default function useChapterFetcher(
     FetchPagesByChapterPayload,
     'availableChapters' | 'manga' | 'chapter'
   > & {
-    pages: Page[];
-    autoFetch: AppState['settings']['reader']['automaticallyFetchNextChapter'];
     currentPage: number;
     cancellable: ReturnType<typeof useCancellable>[0];
     chapterWithData: ChapterSchema;
     chapter: LocalChapterSchema;
   },
 ) {
+  const autoFetch = useAppSelector(
+    (state) => state.settings.reader.automaticallyFetchNextChapter,
+  );
   const dispatch = useAppDispatch();
   const source = MangaHost.sourcesMap.get(args.manga.source);
   const currentChapter = useMutableObject(args.chapterWithData);
@@ -82,29 +84,29 @@ export default function useChapterFetcher(
 
   React.useEffect(() => {
     let listener: NetInfoSubscription | null = null;
-    switch (args.autoFetch.type) {
+    switch (autoFetch.type) {
       case AutoFetchType.ALWAYS:
       case AutoFetchType.WIFI_ONLY:
         listener = NetInfo.addEventListener((e) => {
           if (
             e.type === NetInfoStateType.wifi ||
-            args.autoFetch.type === AutoFetchType.ALWAYS
+            autoFetch.type === AutoFetchType.ALWAYS
           ) {
             let offsetTillFetch = 0;
-            switch (args.autoFetch.thresholdPosition) {
+            switch (autoFetch.thresholdPosition) {
               case AutoFetchThreshold.AT_END:
                 if (currentChapter.current.numberOfPages)
                   offsetTillFetch = Math.max(
                     0,
                     currentChapter.current.numberOfPages -
-                      args.autoFetch.pageThreshold -
+                      autoFetch.pageThreshold -
                       args.currentPage,
                   );
                 break;
               case AutoFetchThreshold.AT_START:
                 offsetTillFetch = Math.max(
                   0,
-                  args.autoFetch.pageThreshold - args.currentPage,
+                  autoFetch.pageThreshold - args.currentPage,
                 );
                 break;
             }
@@ -131,7 +133,7 @@ export default function useChapterFetcher(
     return () => {
       if (listener != null) listener();
     };
-  }, [args.autoFetch, args.currentPage]);
+  }, [autoFetch, args.currentPage]);
 
   /**
    * Initially fetches current chapter

@@ -3,11 +3,14 @@ import Box, { AnimatedBox } from '@components/Box';
 import { useTheme } from '@emotion/react';
 import { moderateScale } from 'react-native-size-matters';
 import { useSnapPoints } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator.context';
-import connector, { ConnectedSnapPointsProps } from './SnapPoints.redux';
+import { SnapPointsProps } from './';
 import { Freeze } from 'react-freeze';
+import useAppSelector from '@hooks/useAppSelector';
+import { shouldHidePageNavigator } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator.helpers';
 
-const SnapPoints: React.FC<ConnectedSnapPointsProps> = ({ style, freeze }) => {
+const SnapPoints: React.FC<SnapPointsProps> = ({ style }) => {
   const snapPoints = useSnapPoints();
+  const freeze = useAppSelector((state) => shouldHidePageNavigator(state));
   const theme = useTheme();
   if (snapPoints.length === 0) return null;
   return (
@@ -39,4 +42,4 @@ const SnapPoints: React.FC<ConnectedSnapPointsProps> = ({ style, freeze }) => {
   );
 };
 
-export default connector(React.memo(SnapPoints));
+export default React.memo(SnapPoints);

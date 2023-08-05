@@ -3,12 +3,10 @@ import CustomTabs from '@components/CustomTabs';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import GlobalReaderSettings from '@screens/Reader/components/ReaderSettingsMenu/components/GlobalReaderSettings';
 import LocalReaderSettings from '@screens/Reader/components/ReaderSettingsMenu/components/LocalReaderSettings';
-import { ReaderSettingsMenuProps } from '@screens/Reader/components/ReaderSettingsMenu/ReaderSettingsMenu.interfaces';
+import { ReaderSettingsMenuProps } from './';
 import Advanced from './components/Advanced';
 import React from 'react';
-import Divider from '@components/Divider';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { useTheme } from '@emotion/react';
 import { ScaledSheet } from 'react-native-size-matters';
 
 const styles = ScaledSheet.create({

@@ -12,9 +12,9 @@ import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
 import { TouchableWithoutFeedback } from 'react-native';
 import Text from '@components/Text';
-import connector, { ConnectedOverlayHeaderProps } from './OverlayHeader.redux';
+import { OverlayHeaderProps } from './';
 
-const OverlayHeader: React.FC<ConnectedOverlayHeaderProps> = (props) => {
+const OverlayHeader: React.FC<OverlayHeaderProps> = (props) => {
   const {
     mangaTitle,
     style,
@@ -75,4 +75,4 @@ const OverlayHeader: React.FC<ConnectedOverlayHeaderProps> = (props) => {
   );
 };
 
-export default connector(React.memo(OverlayHeader));
+export default React.memo(OverlayHeader);

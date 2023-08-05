@@ -3,13 +3,10 @@ import Text from '@components/Text';
 import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import React from 'react';
-import connector, { ConnectedNoMorePagesProps } from './NoMorePages.redux';
 
-const NoMorePages: React.FC<ConnectedNoMorePagesProps> = ({
-  backgroundColor,
-}) => {
+const NoMorePages: React.FC = () => {
   const { width, height } = useScreenDimensions();
-  const { background, textPrimary } = useReaderBackgroundColor(backgroundColor);
+  const { background, textPrimary } = useReaderBackgroundColor();
   return (
     <Box
       background-color={background}
@@ -27,4 +24,4 @@ const NoMorePages: React.FC<ConnectedNoMorePagesProps> = ({
   );
 };
 
-export default connector(React.memo(NoMorePages));
+export default React.memo(NoMorePages);

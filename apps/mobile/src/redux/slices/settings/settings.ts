@@ -10,6 +10,7 @@ import {
 import { moderateScale } from 'react-native-size-matters';
 import React from 'react';
 import useCombinedMangaWithLocal from '@hooks/useCombinedMangaWithLocal';
+import useAppSelector from '@hooks/useAppSelector';
 
 // export enum ReadingDirection {
 //   LEFT_TO_RIGHT = 'Left to right',

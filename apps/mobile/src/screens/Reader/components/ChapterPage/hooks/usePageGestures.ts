@@ -5,14 +5,13 @@ import useScreenDimensions from '@hooks/useScreenDimensions';
 import { useAppDispatch } from '@redux/main';
 import { toggleImageModal } from '@redux/slices/reader';
 import { ImageScaling, ReadingDirection } from '@redux/slices/settings';
-import { ConnectedChapterPageProps } from '@screens/Reader/components/ChapterPage/ChapterPage.redux';
+import { ChapterPageProps } from '@screens/Reader/components/ChapterPage';
 import { useChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
 import usePageZooming from '@screens/Reader/components/ChapterPage/hooks/usePageZooming';
 import React from 'react';
 import { Gesture } from 'react-native-gesture-handler';
 import {
   Easing,
-  SharedValue,
   runOnJS,
   useAnimatedReaction,
   useSharedValue,
@@ -20,19 +19,9 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 
-interface UsePageGesturesArgs {
-  pageKey: string;
-  pinchScale: SharedValue<number>;
-  translateX: SharedValue<number>;
-  translateY: SharedValue<number>;
-  stylizedHeight: number;
-  readingDirection: ReadingDirection;
-  minScale: SharedValue<number>;
-}
-
 export default function usePageGestures(
   pageZoomingProps: ReturnType<typeof usePageZooming>,
-  props: ConnectedChapterPageProps,
+  props: ChapterPageProps,
   stylizedHeight: number,
 ) {
   const { pinchScale, translateX, translateY, minScale } = pageZoomingProps;

@@ -25,8 +25,6 @@ export default function useSavedChapterInfo(
     chapter: LocalChapterSchema;
     manga: CombinedMangaWithLocal;
     scrollRef: React.RefObject<FlashList<Page>>;
-    incognito: boolean;
-    pages: Page[];
   },
 ) {
   const {
@@ -34,11 +32,11 @@ export default function useSavedChapterInfo(
     horizontal,
     chapter,
     scrollRef,
-    pages,
-    incognito,
     manga,
     savedChapterInfo,
   } = args;
+  const incognito = useAppSelector((state) => state.settings.history.incognito);
+  const pages = useAppSelector((state) => state.reader.pages);
   const { addMangaToHistory } = useUserHistory({ incognito });
   const savedScrollPosition = useMutableObject(savedChapterInfo.scrollPosition);
   const savedChapterInfoRef = useMutableObject(savedChapterInfo);

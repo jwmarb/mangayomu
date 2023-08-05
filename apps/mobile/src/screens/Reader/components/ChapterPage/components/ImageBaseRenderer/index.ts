@@ -1,5 +1,4 @@
 export { default } from './ImageBaseRenderer';
-import React from 'react';
 import { FastImageElementProps } from '@screens/Reader/components/ChapterPage/components/FastImageElement/FastImageElement.interfaces';
 import { ImageElementProps } from '@screens/Reader/components/ChapterPage/components/ImageElement/ImageElement.interfaces';
 import { WebViewImageElementProps } from '@screens/Reader/components/ChapterPage/components/WebViewImageElement/WebViewImageElement.interfaces';
