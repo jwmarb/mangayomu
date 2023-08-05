@@ -12,13 +12,11 @@ import {
 } from './UnfinishedMangaList.flatlist';
 import { MANGA_LIST_ITEM_HEIGHT } from '@theme/constants';
 import { useWindowDimensions } from 'react-native';
-import Divider from '@components/Divider/Divider';
-import Stack from '@components/Stack/Stack';
 
 const UnfinishedMangaList: React.FC<
   RootStackProps<'UnfinishedMangaList'>
 > = () => {
-  const [unfinishedMangas, p] = useUnfinishedMangas();
+  const [unfinishedMangas] = useUnfinishedMangas();
   const { width, height } = useWindowDimensions();
   const estimatedListSize = React.useMemo(
     () => ({
@@ -36,7 +34,6 @@ const UnfinishedMangaList: React.FC<
     });
   return (
     <AnimatedFlashList
-      extraData={p}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       estimatedItemSize={MANGA_LIST_ITEM_HEIGHT}

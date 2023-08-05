@@ -1,5 +1,5 @@
 import React from 'react';
-import { UnfinishedMangaItemProps } from './UnfinishedMangaItem.interfaces';
+import { UnfinishedMangaItemProps } from './';
 import Text from '@components/Text/Text';
 import BookListItem from '@components/BookListItem/BookListItem';
 import useUnfinishedManga from '@hooks/useUnfinishedManga';
@@ -8,9 +8,9 @@ import Icon from '@components/Icon/Icon';
 import useRootNavigation from '@hooks/useRootNavigation';
 
 const UnfinishedMangaItem: React.FC<UnfinishedMangaItemProps> = (props) => {
-  const { manga, chapters } = props;
+  const { manga } = props;
   const navigation = useRootNavigation();
-  const { nextChapter, currentChapter } = useUnfinishedManga(manga, chapters);
+  const { nextChapter, currentChapter } = useUnfinishedManga(manga);
   const handleOnPress = () => {
     if (manga.currentlyReadingChapter != null)
       navigation.navigate('Reader', {

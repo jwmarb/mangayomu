@@ -6,8 +6,7 @@ import { MANGA_LIST_ITEM_HEIGHT } from '@theme/constants';
 
 export const renderItem: ListRenderItem<MangaSchema> = (info) => {
   const { item } = info;
-  const extraData = info.extraData as ReturnType<typeof useUnfinishedMangas>[1];
-  return <UnfinishedMangaItem manga={item} chapters={extraData[item.link]} />;
+  return <UnfinishedMangaItem manga={item} />;
 };
 
 export const keyExtractor = (item: MangaSchema) => item.link;

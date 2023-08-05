@@ -5,5 +5,4 @@ import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 
 export interface UnfinishedMangaProps {
   manga: MangaSchema;
-  chapters: Realm.Results<LocalChapterSchema>;
 }

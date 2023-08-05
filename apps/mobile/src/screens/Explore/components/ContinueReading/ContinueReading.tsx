@@ -17,7 +17,7 @@ import useRootNavigation from '@hooks/useRootNavigation';
 const ContinueReading: React.FC = () => {
   const theme = useTheme();
   const { width } = useWindowDimensions();
-  const [unfinishedMangas, p, isNotSynced] = useUnfinishedMangas();
+  const [unfinishedMangas, isNotSynced] = useUnfinishedMangas();
   const navigation = useRootNavigation();
   function handleOnViewAll() {
     navigation.navigate('UnfinishedMangaList');
@@ -50,7 +50,6 @@ const ContinueReading: React.FC = () => {
         }}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
-        extraData={p}
         estimatedItemSize={UNFINISHED_MANGA_WIDTH}
         overrideItemLayout={(layout) => {
           layout.size = UNFINISHED_MANGA_WIDTH + theme.style.spacing.s * 2;

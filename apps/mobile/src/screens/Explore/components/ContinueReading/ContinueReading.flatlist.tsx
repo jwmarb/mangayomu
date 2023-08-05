@@ -8,11 +8,8 @@ import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 
 export const renderItem: ListRenderItem<MangaSchema> = (info) => {
   const { item } = info;
-  const extraData = info.extraData as Record<
-    string,
-    Realm.Results<LocalChapterSchema>
-  >;
-  return <UnfinishedManga manga={item} chapters={extraData[item.link]} />;
+
+  return <UnfinishedManga manga={item} />;
 };
 
 export const ItemSeparatorComponent = () => <Box mx="s" />;

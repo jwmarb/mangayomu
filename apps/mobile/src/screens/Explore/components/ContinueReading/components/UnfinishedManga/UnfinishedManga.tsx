@@ -14,11 +14,10 @@ import useUnfinishedManga from '@hooks/useUnfinishedManga';
 import { Pressable } from 'react-native';
 
 const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
-  const { manga, chapters } = props;
+  const { manga } = props;
   const theme = useTheme();
   const navigation = useRootNavigation();
-
-  const { currentChapter, nextChapter } = useUnfinishedManga(manga, chapters);
+  const { currentChapter, nextChapter } = useUnfinishedManga(manga);
 
   function handleOnLongPress() {
     displayMessage(manga.title);

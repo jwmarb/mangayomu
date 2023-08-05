@@ -6,7 +6,9 @@ import {
 } from '@database/main';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { MangaSchema } from '@database/schemas/Manga';
+import { useFocusEffect } from '@react-navigation/native';
 import { DEFAULT_LANGUAGE } from '@screens/MangaView/MangaView';
+import React from 'react';
 import Realm from 'realm';
 
 export default function useUnfinishedMangas() {
@@ -25,23 +27,17 @@ export default function useUnfinishedMangas() {
       ) == null,
   );
 
-  const unfinishedDictionary = currentlyReadingMangas.reduce((prev, curr) => {
-    prev[curr.link] = chapters
-      .filtered(
-        '_mangaId == $0 && language == $1',
-        curr.link,
-        curr.selectedLanguage !== 'Use default language'
-          ? curr.selectedLanguage
-          : DEFAULT_LANGUAGE,
-      )
-      .sorted('index');
-    return prev;
-  }, {} as Record<string, Realm.Results<LocalChapterSchema>>);
   const unfinishedMangas = currentlyReadingMangas.filter(
     (manga) =>
       manga.currentlyReadingChapter?._id !==
-      unfinishedDictionary[manga.link][0]?._id,
+      chapters.filtered(
+        '_mangaId == $0 AND language == $1 AND index = 0',
+        manga.link,
+        manga.selectedLanguage !== 'Use default language'
+          ? manga.selectedLanguage
+          : DEFAULT_LANGUAGE,
+      )[0]?._id,
   );
 
-  return [unfinishedMangas, unfinishedDictionary, isNotSynced] as const;
+  return [unfinishedMangas, isNotSynced] as const;
 }
