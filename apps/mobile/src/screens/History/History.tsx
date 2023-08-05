@@ -30,7 +30,6 @@ import { MANGA_LIST_ITEM_HEIGHT } from '@theme/constants';
 import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import { isSameDay } from 'date-fns';
 import useMutableObject from '@hooks/useMutableObject';
-import { useWindowDimensions } from 'react-native';
 
 type HistorySectionFlashListData =
   | { type: 'SECTION'; date: number }
@@ -46,35 +45,35 @@ function toFlashListData(
 ) {
   const parsedQuery = query?.trim().toLowerCase();
   const newArray: HistorySectionFlashListData[] = [];
-  // let start = 0;
-  // let end = 0;
-  for (let i = 0; i < sections.length; i++) {
-    // console.log(sections[i].date);
-    if (
-      sections[i + 1] == null ||
-      !isSameDay(sections[i].date, sections[i + 1].date)
-    )
-      newArray.push({ type: 'SECTION', date: sections[i].date });
-
+  function addRow(idx: number) {
     if (
       !parsedQuery ||
       (parsedQuery &&
         localRealm
-          .objectForPrimaryKey(LocalMangaSchema, sections[i].manga)
+          .objectForPrimaryKey(LocalMangaSchema, sections[idx].manga)
           ?.title.trim()
           .toLowerCase()
           .includes(parsedQuery))
     )
-      newArray.push({ type: 'ROW', item: sections[i] });
+      newArray.push({ type: 'ROW', item: sections[idx] });
+  }
 
-    // if (sections[i].data.length > 0)
-    //   for (const data of sections[i].data) {
-    //     newArray.push({
-    //       type: 'ROW',
-    //       data,
-    //       sectionDate: sections[i].date,
-    //     });
-    //   }
+  let i = 0;
+  for (let k = i + 1; k < sections.length; k++) {
+    if (!isSameDay(sections[k].date, sections[i].date)) {
+      newArray.push({ type: 'SECTION', date: sections[i].date });
+      for (let j = i; j < k; j++) {
+        addRow(j);
+      }
+
+      i = k;
+    } else if (isSameDay(sections[k].date, sections[sections.length - 1].date))
+      break;
+  }
+  newArray.push({ type: 'SECTION', date: sections[i].date });
+  while (i < sections.length) {
+    addRow(i);
+    i++;
   }
 
   return newArray.filter((x, i, self) => {
@@ -305,7 +304,7 @@ const renderItem: ListRenderItem<HistorySectionFlashListData> = ({
 const keyExtractor = (item: HistorySectionFlashListData) => {
   switch (item.type) {
     case 'ROW':
-      return item.item._id;
+      return item.item._id.toHexString();
     case 'SECTION':
       return 'section:' + item.date;
   }
