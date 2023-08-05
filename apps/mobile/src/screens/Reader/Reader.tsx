@@ -19,7 +19,7 @@ import { TransitionPageContext } from '@screens/Reader/components/TransitionPage
 import { ChapterErrorContext } from '@screens/Reader/components/ChapterError/ChapterError';
 import usePageLayout from '@screens/Reader/hooks/usePageLayout';
 import useSavedChapterInfo from '@screens/Reader/hooks/useSavedChapterInfo';
-import { PageSliderNavigatorMethods } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator.interfaces';
+import { PageSliderNavigatorMethods } from '@screens/Reader/components/Overlay/components/PageSliderNavigator';
 import useMutableObject from '@hooks/useMutableObject';
 import NetworkToast from '@screens/Reader/components/NetworkToast';
 import useOverlayGesture from '@screens/Reader/hooks/useOverlayGesture';
