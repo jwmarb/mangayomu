@@ -6,6 +6,7 @@ import {
 } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
+import useAppSelector from '@hooks/useAppSelector';
 import useCombinedMangaWithLocal from '@hooks/useCombinedMangaWithLocal';
 import { useUser } from '@realm/react';
 import React from 'react';
@@ -20,13 +21,18 @@ export default function useData(mangaKey: string, chapterKey: string) {
   const realm = useRealm();
   const user = useUser();
   const manga = useCombinedMangaWithLocal(mangaKey, true);
+  const localRealm = useLocalRealm();
+  const chapterId = useAppSelector((store) => store.reader.currentChapterId);
 
-  const chapter = useLocalObject(LocalChapterSchema, chapterKey);
+  const [chapter, setChapter] = React.useState(() =>
+    localRealm.objectForPrimaryKey(LocalChapterSchema, chapterKey),
+  );
 
   const chapterWithDataInitializer = () => {
-    let existingChapter: ChapterSchema | undefined = realm
-      .objects(ChapterSchema)
-      .filtered('link = $0', chapterKey)[0];
+    let existingChapter: ChapterSchema | undefined =
+      chapterId == null
+        ? realm.objects(ChapterSchema).filtered('link = $0', chapterKey)[0]
+        : realm.objectForPrimaryKey(ChapterSchema, chapterId);
     if (existingChapter == null) {
       realm.write(() => {
         existingChapter = realm.create(
@@ -49,6 +55,7 @@ export default function useData(mangaKey: string, chapterKey: string) {
 
   React.useEffect(() => {
     setChapterWithData(chapterWithDataInitializer);
+    setChapter(localRealm.objectForPrimaryKey(LocalChapterSchema, chapterKey));
   }, [chapterKey]);
 
   if (chapter == null)

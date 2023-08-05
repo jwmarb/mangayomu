@@ -2,6 +2,7 @@ import { useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { MangaSchema } from '@database/schemas/Manga';
+import useAppSelector from '@hooks/useAppSelector';
 import useBoolean from '@hooks/useBoolean';
 import { CombinedMangaWithLocal } from '@hooks/useCombinedMangaWithLocal';
 import useMutableObject from '@hooks/useMutableObject';
@@ -40,6 +41,7 @@ export default function useSavedChapterInfo(
   } = args;
   const { addMangaToHistory } = useUserHistory({ incognito });
   const savedScrollPosition = useMutableObject(savedChapterInfo.scrollPosition);
+  const savedChapterInfoRef = useMutableObject(savedChapterInfo);
   const realm = useRealm();
   const user = useUser();
   const scrollOffset = React.useRef<number>(0);
@@ -80,18 +82,23 @@ export default function useSavedChapterInfo(
         Math.max(min, scrollOffset.current),
         max,
       );
-      realm.write(() => {
-        realm.create(
-          ChapterSchema,
-          {
-            _id: savedChapterInfo._id,
-            _realmId: user.id,
-            link: chapterRef.current._id,
-            scrollPosition: interpolatedScrollOffset,
-          },
-          Realm.UpdateMode.Modified,
+      if (savedChapterInfoRef.current?.link === chapterRef.current._id)
+        realm.write(() => {
+          realm.create(
+            ChapterSchema,
+            {
+              _id: savedChapterInfoRef.current._id,
+              _realmId: user.id,
+              link: chapterRef.current._id,
+              scrollPosition: interpolatedScrollOffset,
+            },
+            Realm.UpdateMode.Modified,
+          );
+        });
+      else
+        console.warn(
+          `Tried to save to ${chapterRef.current._id} but got a different corresponding id: ${savedChapterInfoRef.current?.link}`,
         );
-      });
     }
   };
 

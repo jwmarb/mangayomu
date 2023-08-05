@@ -65,7 +65,9 @@ export default function useViewableItemsChangedHandler(args: {
             });
             setCurrentPage(item.pageNumber);
             currentPageKey.current = item.page;
-            dispatch(setCurrentChapter(item.chapter));
+            dispatch(
+              setCurrentChapter({ link: item.chapter, id: item.chapterId }),
+            );
             pageSliderNavRef.current?.snapPointTo(item.pageNumber - 1);
           }
           break;
