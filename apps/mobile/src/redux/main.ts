@@ -45,7 +45,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredPaths: [/reader\.pages\.\d+\.chapterId/],
+        ignoredPaths: [/reader\..*/],
         ignoredActions: [
           FLUSH,
           REHYDRATE,
