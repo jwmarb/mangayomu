@@ -1,5 +1,5 @@
 import Badge, { BadgeLocation } from '@components/Badge';
-import connector, { ConnectedBookProps } from '@components/Book/Book.redux';
+import { BookProps } from './';
 import Box from '@components/Box/Box';
 import Cover from '@components/Cover';
 import { coverStyles } from '@components/Cover/Cover';
@@ -16,6 +16,7 @@ import React from 'react';
 import { Pressable } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
+import useAppSelector from '@hooks/useAppSelector';
 
 const styles = ScaledSheet.create({
   linearGradient: {
@@ -24,18 +25,21 @@ const styles = ScaledSheet.create({
   },
 });
 
-const Book: React.FC<ConnectedBookProps> = (props) => {
-  const {
-    manga,
-    width,
-    height,
-    align,
-    fontSize,
-    bold,
-    letterSpacing,
-    bookStyle,
-    paddingHorizontal,
-  } = props;
+const Book: React.FC<BookProps> = (props) => {
+  const { manga } = props;
+  const width = useAppSelector((state) => state.settings.book.width);
+  const height = useAppSelector((state) => state.settings.book.height);
+  const fontSize = useAppSelector((state) => state.settings.book.title.size);
+  const letterSpacing = useAppSelector(
+    (state) => state.settings.book.title.letterSpacing,
+  );
+  const bold = useAppSelector((state) => state.settings.book.title.bold);
+  const align = useAppSelector((state) => state.settings.book.title.alignment);
+  const bookStyle = useAppSelector((state) => state.settings.book.style);
+  const paddingHorizontal = useAppSelector(
+    (state) => state.settings.book.paddingHorizontal,
+  );
+
   const navigation = useRootNavigation();
   const dbManga =
     '_id' in manga
@@ -141,4 +145,4 @@ const Book: React.FC<ConnectedBookProps> = (props) => {
   );
 };
 
-export default connector(React.memo(Book));
+export default React.memo(Book);
