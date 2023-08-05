@@ -1,15 +1,7 @@
-import {
-  useRealm,
-  useLocalRealm,
-  useQuery,
-  useLocalQuery,
-} from '@database/main';
+import { useLocalRealm, useQuery, useLocalQuery } from '@database/main';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { MangaSchema } from '@database/schemas/Manga';
-import { useFocusEffect } from '@react-navigation/native';
 import { DEFAULT_LANGUAGE } from '@screens/MangaView/MangaView';
-import React from 'react';
-import Realm from 'realm';
 
 export default function useUnfinishedMangas() {
   const localRealm = useLocalRealm();
