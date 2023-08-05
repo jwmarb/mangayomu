@@ -4,11 +4,13 @@ import { MangaSchema } from '@database/schemas/Manga';
 import { useTheme } from '@emotion/react';
 import assertIsManga from '@helpers/assertIsManga';
 import assertIsMangaSchema from '@helpers/assertIsMangaSchema';
+import useAppSelector from '@hooks/useAppSelector';
 import useMountedEffect from '@hooks/useMountedEffect';
 import { Manga } from '@mangayomu/mangascraper/src';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import React from 'react';
 import { Dimensions, useWindowDimensions } from 'react-native';
+import { shallowEqual } from 'react-redux';
 
 const Item: React.FC<{ item: Manga | MangaSchema }> = React.memo(({ item }) => {
   const manga = React.useMemo(() => {
@@ -46,11 +48,9 @@ function renderItem<T extends Manga | MangaSchema>({
   }
 }
 
-export default function useMangaFlashlistLayout(
-  bookDimensions: { width: number; height: number },
-  dataLength: number,
-) {
+export default function useMangaFlashlistLayout(dataLength: number) {
   const { width, height } = useWindowDimensions();
+  const bookDimensions = useAppSelector((state) => state.settings.book);
   const theme = useTheme();
   const padding = 2 * theme.style.spacing.s;
   const estimatedItemSize = bookDimensions.height + padding;
