@@ -4,7 +4,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import Home from '@screens/Home';
 import MangaView from '@screens/MangaView';
 import React from 'react';
-import Welcome from '@screens/Welcome/Welcome';
+import Welcome from '@screens/Welcome';
 import BasicMangaList from '@screens/BasicMangaList';
 import SourceView from '@screens/SourceView';
 import InfiniteMangaList from '@screens/InfiniteMangaList';
@@ -17,17 +17,17 @@ import GlobalReaderSettings from '@screens/GlobalReaderSettings';
 import Login from '@screens/Login';
 import Register from '@screens/Register';
 import SplashScreen from 'react-native-splash-screen';
-import { InteractionManager } from 'react-native';
+import { getTimeSinceStartup } from 'react-native-startup-time';
+import useAppSelector from '@hooks/useAppSelector';
+import { Alert } from 'react-native';
 
-const mapStateToProps = (state: AppState) => ({
-  showWelcomeScreen: state.__initial__.firstTimeUser,
-});
-
-const Root: React.FC<RootProps> = ({ showWelcomeScreen }) => {
+const Root: React.FC = () => {
+  const showWelcomeScreen = useAppSelector(
+    (state) => state.__initial__.firstTimeUser,
+  );
   React.useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      SplashScreen.hide();
-    });
+    SplashScreen.hide();
+    getTimeSinceStartup().then((ms) => Alert.alert(`Startup took ${ms} ms`));
   }, []);
   return (
     <RootStack.Navigator
@@ -75,8 +75,4 @@ const Root: React.FC<RootProps> = ({ showWelcomeScreen }) => {
   );
 };
 
-const connector = connect(mapStateToProps);
-
-type RootProps = ConnectedProps<typeof connector>;
-
-export default connector(Root);
+export default Root;
