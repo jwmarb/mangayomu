@@ -4,7 +4,6 @@ import IconButton from '@components/IconButton';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import useCollapsibleTabHeader from '@hooks/useCollapsibleTabHeader';
 import useMangaFlashlistLayout from '@hooks/useMangaFlashlistLayout';
-import { FlashList } from '@shopify/flash-list';
 import React from 'react';
 import LibraryFilterMenu from '@screens/Library/components/LibraryFilterMenu';
 import { Freeze } from 'react-freeze';
@@ -12,7 +11,6 @@ import Text from '@components/Text';
 import { moderateScale } from 'react-native-size-matters';
 import { useWindowDimensions } from 'react-native';
 import Stack from '@components/Stack';
-import connector, { ConnectedLibraryProps } from './Library.redux';
 import Checkbox from '@components/Checkbox';
 import Badge from '@components/Badge';
 import Input from '@components/Input';
@@ -23,16 +21,12 @@ import { useIsDataStale, useLibraryData } from '@screens/Library/Library.hooks';
 import { AnimatedFlashList } from '@components/animated';
 import Progress from '@components/Progress';
 import { useUser } from '@realm/react';
+import useAppSelector from '@hooks/useAppSelector';
 
-const Library: React.FC<ConnectedLibraryProps> = ({
-  sortBy,
-  reversed,
-  filters,
-  noSourcesSelectedInFilter,
-  numberOfAppliedFilters,
-  bookHeight,
-  bookWidth,
-}) => {
+const Library: React.FC = () => {
+  const numberOfAppliedFilters = useAppSelector(
+    (state) => state.library.numberOfFiltersApplied,
+  );
   const ref = React.useRef<BottomSheetMethods>(null);
   const [refreshing, setRefreshing] = useBoolean();
   const [showSearchBar, setShowSearchBar] = React.useState<boolean>(false);
@@ -43,14 +37,10 @@ const Library: React.FC<ConnectedLibraryProps> = ({
     ref.current?.snapToIndex(1);
   }
 
-  const { data, mangasInLibrary, updateQuerifiedData } = useLibraryData({
-    sortBy,
-    reversed,
-    filters,
-    query,
+  const { data, mangasInLibrary, updateQuerifiedData } = useLibraryData(
     refreshing,
     setRefreshing,
-  });
+  );
 
   function handleOnShowSearchBar() {
     setShowSearchBar(true);
@@ -68,13 +58,7 @@ const Library: React.FC<ConnectedLibraryProps> = ({
     key,
     overrideItemLayout,
     drawDistance,
-  } = useMangaFlashlistLayout(
-    {
-      width: bookWidth,
-      height: bookHeight,
-    },
-    data.length,
-  );
+  } = useMangaFlashlistLayout(data.length);
 
   const { scrollViewStyle, contentContainerStyle, onScroll } =
     useCollapsibleTabHeader({
@@ -158,10 +142,7 @@ const Library: React.FC<ConnectedLibraryProps> = ({
         overrideItemLayout={overrideItemLayout}
         drawDistance={drawDistance}
         ListEmptyComponent={
-          <ListEmptyComponent
-            libraryIsEmpty={mangasInLibrary.length === 0}
-            noSourcesSelected={noSourcesSelectedInFilter}
-          />
+          <ListEmptyComponent libraryIsEmpty={mangasInLibrary.length === 0} />
         }
       />
       <Freeze freeze={mangasInLibrary.length === 0}>
@@ -173,9 +154,11 @@ const Library: React.FC<ConnectedLibraryProps> = ({
 
 const ListEmptyComponent: React.FC<{
   libraryIsEmpty: boolean;
-  noSourcesSelected: boolean;
-}> = React.memo(({ libraryIsEmpty, noSourcesSelected }) => {
+}> = React.memo(({ libraryIsEmpty }) => {
   const { height } = useWindowDimensions();
+  const noSourcesSelected = useAppSelector(
+    (state) => state.library.numberOfSelectedSourcesInFilter === 0,
+  );
 
   if (libraryIsEmpty)
     return (
@@ -249,7 +232,7 @@ const ListEmptyComponent: React.FC<{
   );
 });
 
-const LibraryWrapper: React.FC<ConnectedLibraryProps> = (props) => {
+const LibraryWrapper: React.FC = () => {
   const { dataIsStale, syncing } = useIsDataStale();
 
   if (dataIsStale)
@@ -274,7 +257,7 @@ const LibraryWrapper: React.FC<ConnectedLibraryProps> = (props) => {
         </Text>
       </Stack>
     );
-  return <Library {...props} />;
+  return <Library />;
 };
 
-export default connector(LibraryWrapper);
+export default LibraryWrapper;

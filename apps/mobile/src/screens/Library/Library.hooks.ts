@@ -13,6 +13,7 @@ import writeManga from '@database/schemas/Manga/writeManga';
 import displayMessage from '@helpers/displayMessage';
 import { getErrorMessage } from '@helpers/getErrorMessage';
 import integrateSortedList from '@helpers/integrateSortedList';
+import useAppSelector from '@hooks/useAppSelector';
 import useMountedEffect from '@hooks/useMountedEffect';
 import { MangaMultilingualChapter } from '@mangayomu/mangascraper';
 import { MangaHost } from '@mangayomu/mangascraper/src';
@@ -25,18 +26,13 @@ import pLimit from 'p-limit';
 const limit = pLimit(1);
 import React, { useTransition } from 'react';
 
-export function useLibraryData(args: {
-  filters: {
-    Sources: Record<string, boolean>;
-    Genres: Record<string, FilterState>;
-  };
-  reversed: boolean;
-  sortBy: LibrarySortOption;
-  query: string;
-  refreshing: boolean;
-  setRefreshing: (val: boolean) => void;
-}) {
-  const { filters, reversed, sortBy, query, refreshing, setRefreshing } = args;
+export function useLibraryData(
+  refreshing: boolean,
+  setRefreshing: (val: boolean) => void,
+) {
+  const filters = useAppSelector((state) => state.library.filters);
+  const sortBy = useAppSelector((state) => state.library.sortBy);
+  const reversed = useAppSelector((state) => state.library.reversed);
   const [isLoading, setTransition] = useTransition();
   const mangas = useQuery(MangaSchema);
   const mangasInLibrary = mangas.filtered('inLibrary == true');
