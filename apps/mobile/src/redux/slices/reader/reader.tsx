@@ -232,6 +232,7 @@ const readerSlice = createSlice({
       state.showImageModal = false;
       state.currentChapter = null;
       state.extendedState = {};
+      state.currentChapterId = null;
       fetchedChapters.clear();
       fetchingChapters.clear();
       offsetMemo.clear();
