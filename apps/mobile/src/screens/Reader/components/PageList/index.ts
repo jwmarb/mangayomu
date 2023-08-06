@@ -4,7 +4,7 @@ import { ReadingDirection } from '@redux/slices/settings';
 import { PageGestures } from '@screens/Reader/hooks/useOverlayGesture';
 import { FlashListProps } from '@shopify/flash-list';
 import { FlatListProps } from 'react-native';
-import { GestureType } from 'react-native-gesture-handler';
+import { GestureType, SimultaneousGesture } from 'react-native-gesture-handler';
 
 export interface PageListProps
   extends Omit<FlatListProps<Page>, keyof FlashListProps<Page>>,
@@ -14,4 +14,5 @@ export interface PageListProps
   pinchRef: React.MutableRefObject<GestureType | undefined>;
   pageGestures: PageGestures;
   currentPageKey: React.MutableRefObject<string>;
+  nativeFlatListGesture: SimultaneousGesture;
 }

@@ -116,8 +116,25 @@ export default function useOverlayGesture(args: {
           if (readingDirection !== ReadingDirection.WEBTOON)
             runOnJS(passToUI)('onPinchChange', e);
         })
+
         .withRef(pinchRef),
     [readingDirection !== ReadingDirection.WEBTOON],
+  );
+
+  const handleOnActivated = () => {
+    if (pageKey.current in pageGestures.current)
+      pageGestures.current[pageKey.current].onFlashlistActive();
+  };
+
+  const nativeFlatListGesture = React.useMemo(
+    () =>
+      Gesture.Native()
+        .onBegin(() => {
+          if (readingDirection !== ReadingDirection.WEBTOON)
+            runOnJS(handleOnActivated)();
+        })
+        .simultaneousWithExternalGesture(panGesture),
+    [pinchGesture, readingDirection !== ReadingDirection.WEBTOON],
   );
   return {
     tapGesture,
@@ -129,6 +146,7 @@ export default function useOverlayGesture(args: {
     velocityY,
     pinchGesture,
     pageGestures,
+    nativeFlatListGesture,
     doubleTapGesture,
   };
 }

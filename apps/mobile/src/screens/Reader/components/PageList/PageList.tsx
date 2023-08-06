@@ -1,8 +1,8 @@
 import React from 'react';
 import { ReadingDirection } from '@redux/slices/settings';
 import { PageListProps } from './';
-import { FlatListProps, ScrollViewProps } from 'react-native';
-import { FlatList, ScrollView } from 'react-native-gesture-handler';
+import { FlatListProps, ScrollView, ScrollViewProps } from 'react-native';
+import { FlatList, GestureDetector } from 'react-native-gesture-handler';
 import {
   FlashList,
   ListRenderItemInfo as FlashListRenderItemInfo,
@@ -21,14 +21,12 @@ const PageList: React.ForwardRefRenderFunction<
     estimatedFirstItemOffset,
     panRef,
     pinchRef,
+    nativeFlatListGesture,
     pageGestures,
     currentPageKey,
     ...rest
   } = props;
-  const handleOnActivated = () => {
-    if (currentPageKey.current in pageGestures.current)
-      pageGestures.current[currentPageKey.current].onFlashlistActive();
-  };
+
   // return (
   //   <FlatList
   //     // scrollEnabled={false}
@@ -64,19 +62,11 @@ const PageList: React.ForwardRefRenderFunction<
   const renderScrollComponent = React.useMemo(
     () =>
       React.forwardRef<ScrollView>((props, ref) => (
-        <ScrollView
-          ref={ref}
-          {...props}
-          simultaneousHandlers={[panRef, pinchRef]}
-          onActivated={
-            readingDirection !== ReadingDirection.WEBTOON
-              ? handleOnActivated
-              : undefined
-          }
-          overScrollMode="never"
-        />
+        <GestureDetector gesture={nativeFlatListGesture}>
+          <ScrollView ref={ref} {...props} overScrollMode="never" />
+        </GestureDetector>
       )),
-    [readingDirection !== ReadingDirection.WEBTOON],
+    [nativeFlatListGesture],
   ) as unknown as React.FC<ScrollViewProps>;
 
   // switch (readingDirection) {

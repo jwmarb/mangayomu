@@ -32,6 +32,7 @@ export default function usePageGestures(
 
   const { readingDirection } = useChapterPageContext();
   const [enablePan, togglePan] = useBoolean(pinchScale.value > minScale.value);
+  const enablePanRef = useMutableObject(enablePan);
 
   const mutablePageKey = useMutableObject(pageKey);
   const height = useAnimatedMutableObject(screenHeight);
@@ -132,10 +133,10 @@ export default function usePageGestures(
             isHorizontal.value) ||
             (maxTranslateY.value === Math.abs(translateY.value) &&
               isVertical.value)) &&
-          !enablePan &&
+          !enablePanRef.current &&
           pinchScale.value > minScale.value
         )
-          togglePan(true);
+          runOnJS(togglePan)(true);
       },
     };
     return () => {

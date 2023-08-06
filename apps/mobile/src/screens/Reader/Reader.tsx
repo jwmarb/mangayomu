@@ -101,6 +101,7 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
     pageGestures,
     doubleTapGesture,
     velocityY,
+    nativeFlatListGesture,
   } = useOverlayGesture({
     panRef,
     pageKey: currentPageKey,
@@ -165,15 +166,17 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
   );
 
   const composedGestures = React.useMemo(
+    () => Gesture.Simultaneous(panGesture, pinchGesture),
+    [panGesture, tapGesture, pinchGesture, doubleTapGesture],
+  );
+
+  const nativeGestures = React.useMemo(
     () =>
       Gesture.Simultaneous(
-        panGesture,
-        Gesture.Race(
-          pinchGesture,
-          Gesture.Exclusive(doubleTapGesture, tapGesture),
-        ),
+        nativeFlatListGesture,
+        Gesture.Exclusive(doubleTapGesture, tapGesture),
       ),
-    [panGesture, tapGesture, pinchGesture, doubleTapGesture],
+    [nativeFlatListGesture, doubleTapGesture, tapGesture],
   );
 
   const extraData = React.useMemo(
@@ -235,6 +238,7 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
               >
                 <PageList
                   key={width}
+                  nativeFlatListGesture={nativeGestures}
                   currentPageKey={currentPageKey}
                   pinchRef={pinchRef}
                   pageGestures={pageGestures}
