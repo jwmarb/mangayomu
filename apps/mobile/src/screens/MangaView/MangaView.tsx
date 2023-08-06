@@ -39,16 +39,21 @@ import {
   keyExtractor,
   overrideItemLayout,
 } from './MangaView.flashlist';
+import useAppSelector from '@hooks/useAppSelector';
+import { addIfNewSourceToLibrary } from '@redux/slices/library';
+import { useAppDispatch } from '@redux/main';
+import { RootStackProps } from '@navigators/Root/Root.interfaces';
 
 export const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 
-const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
+const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
   const {
     route: { params },
-    addIfNewSourceToLibrary,
-    internetStatus,
   } = props;
-  const theme = useTheme();
+  const internetStatus = useAppSelector(
+    (state) => state.explore.internetStatus,
+  );
+  const dispatch = useAppDispatch();
   const ref = React.useRef<BottomSheet>(null);
   const { manga, status, error, refresh, update } = useManga(params, {
     preferLocal: false,
@@ -57,7 +62,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
   const [refreshing, onRefresh] = useRefresh(refresh);
   const handleOnBookmark = React.useCallback(() => {
     update((mangaObj) => {
-      addIfNewSourceToLibrary(mangaObj.source);
+      dispatch(addIfNewSourceToLibrary(mangaObj.source));
       mangaObj.inLibrary = !mangaObj.inLibrary;
       displayMessage(
         mangaObj.inLibrary ? 'Added to library' : 'Removed from library',
@@ -65,8 +70,25 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
       if (mangaObj.inLibrary) mangaObj.dateAddedInLibrary = Date.now();
       else mangaObj.dateAddedInLibrary = undefined;
     });
-  }, [update]);
+  }, [update, dispatch]);
+
+  const textOpacity = useSharedValue(0);
+  const networkStatusOffset = useSharedValue(moderateScale(32));
+
+  function handleOnOpenMenu() {
+    ref.current?.snapToIndex(1);
+  }
+
+  const extraData = React.useMemo(
+    () => ({
+      mangaLink: manga?.link,
+      currentlyReadingChapterId: manga?.currentlyReadingChapter?._id,
+    }),
+    [manga?.link, manga?.currentlyReadingChapter?._id],
+  );
+
   const scrollPosition = useSharedValue(0);
+  const theme = useTheme();
   const buttonInterpolateColor =
     theme.mode === 'dark'
       ? theme.palette.text.secondary
@@ -79,9 +101,6 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
       [theme.palette.mangaViewerBackButtonColor, buttonInterpolateColor],
     ),
   }));
-
-  const textOpacity = useSharedValue(0);
-  const networkStatusOffset = useSharedValue(moderateScale(32));
 
   const handleOnScroll = (e: NativeScrollEvent) => {
     scrollPosition.value = e.contentOffset.y;
@@ -99,7 +118,7 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
     }
   };
 
-  const { onScroll, contentContainerStyle, scrollViewStyle } =
+  const { onScroll, scrollViewStyle, contentContainerStyle } =
     useCollapsibleHeader({
       headerTitle: '',
       onScroll: handleOnScroll,
@@ -144,18 +163,6 @@ const MangaView: React.FC<ConnectedMangaViewProps> = (props) => {
       ),
       dependencies: [theme, manga?.inLibrary, manga == null],
     });
-
-  function handleOnOpenMenu() {
-    ref.current?.snapToIndex(1);
-  }
-
-  const extraData = React.useMemo(
-    () => ({
-      mangaLink: manga?.link,
-      currentlyReadingChapterId: manga?.currentlyReadingChapter?._id,
-    }),
-    [manga?.link, manga?.currentlyReadingChapter?._id],
-  );
 
   if (manga == null && internetStatus === 'offline')
     return (
