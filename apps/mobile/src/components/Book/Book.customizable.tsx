@@ -13,6 +13,7 @@ import Animated, {
   useDerivedValue,
 } from 'react-native-reanimated';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
+import useAppSelector from '@hooks/useAppSelector';
 
 const styles = ScaledSheet.create({
   linearGradient: {
@@ -32,12 +33,13 @@ const CustomizableBook: React.FC<CustomizableBookProps> = (props) => {
     source: mangaSource,
     title,
     imageCover,
-    bold,
     fontSize,
     letterSpacing,
-    align,
-    bookStyle,
   } = props;
+  const bold = useAppSelector((state) => state.settings.book.title.bold);
+  const align = useAppSelector((state) => state.settings.book.title.alignment);
+  const bookStyle = useAppSelector((state) => state.settings.book.style);
+
   const source = useMangaSource(mangaSource);
   const theme = useTheme();
 

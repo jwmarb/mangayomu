@@ -1,14 +1,19 @@
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import { TitleAlignment } from '@redux/slices/settings';
+import {
+  TitleAlignment,
+  setTitleAlignment as _setTitleAlignment,
+} from '@redux/slices/settings';
 import React from 'react';
-import { AlignmentProps } from './Alignment.interfaces';
 import Box from '@components/Box';
 import { ScrollView } from 'react-native-gesture-handler';
 import TitleAlignmentPreview from '@screens/Appearance/components/Alignment/components/TitleAlignmentPreview/TitleAlignmentPreview';
+import useAppSelector from '@hooks/useAppSelector';
 
-const Alignment: React.FC<AlignmentProps> = (props) => {
-  const { setTitleAlignment, alignment } = props;
+const Alignment: React.FC = () => {
+  const alignment = useAppSelector(
+    (state) => state.settings.book.title.alignment,
+  );
   return (
     <Box pb="s">
       <Box px="l" py="s">
@@ -24,19 +29,16 @@ const Alignment: React.FC<AlignmentProps> = (props) => {
             alignItems="flex-start"
             titleAlignment={TitleAlignment.START}
             isSelected={alignment === TitleAlignment.START}
-            setTitleAlignment={setTitleAlignment}
           />
           <TitleAlignmentPreview
             alignItems="center"
             titleAlignment={TitleAlignment.CENTER}
             isSelected={alignment === TitleAlignment.CENTER}
-            setTitleAlignment={setTitleAlignment}
           />
           <TitleAlignmentPreview
             alignItems="flex-end"
             titleAlignment={TitleAlignment.END}
             isSelected={alignment === TitleAlignment.END}
-            setTitleAlignment={setTitleAlignment}
           />
         </Stack>
       </ScrollView>

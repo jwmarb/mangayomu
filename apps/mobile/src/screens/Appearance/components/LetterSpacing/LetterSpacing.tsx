@@ -5,15 +5,19 @@ import Stack from '@components/Stack';
 import Text from '@components/Text';
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { LetterSpacingProps } from './LetterSpacing.interfaces';
+import type { LetterSpacingProps } from './';
+import useAppSelector from '@hooks/useAppSelector';
 
 const LetterSpacing: React.FC<LetterSpacingProps> = (props) => {
   const {
     onChangeLetterSpacing,
     onToggleAutoLetterSpacing,
-    autoLetterSpacing,
+    // autoLetterSpacing,
     letterSpacing,
   } = props;
+  const autoLetterSpacing = useAppSelector(
+    (state) => state.settings.book.title.autoLetterSpacing,
+  );
   return (
     <Box px="l" py="s">
       <Stack space="s" flex-direction="row" align-items="center">

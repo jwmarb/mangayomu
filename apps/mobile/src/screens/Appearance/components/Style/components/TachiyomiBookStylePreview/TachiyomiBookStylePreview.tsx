@@ -1,5 +1,5 @@
 import React from 'react';
-import { PreviewBookStyleProps } from '@screens/Appearance/components/Style/Style.interfaces';
+import { PreviewBookStyleProps } from '@screens/Appearance/components/Style';
 import {
   BOOK_COVER_HEIGHT,
   BOOK_DIMENSIONS,

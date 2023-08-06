@@ -1,19 +1,24 @@
 import { CustomizableBook } from '@components/Book';
 import Box from '@components/Box';
-import Button from '@components/Button';
 import Divider from '@components/Divider';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
-import { BookStyle } from '@redux/slices/settings';
+import {
+  BookStyle,
+  toggleAutoBookHeight,
+  setBookStyle as _setBookStyle,
+  toggleAutoLetterSpacing,
+  setBookLetterSpacing,
+  setBookDimensions,
+  setTitleFontSize,
+} from '@redux/slices/settings';
 import React from 'react';
-import { ScrollView } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
-import connector, { ConnectedAppearanceProps } from './Appearance.redux';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { CustomBottomSheet } from '@components/CustomBottomSheet';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
@@ -26,17 +31,13 @@ import Alignment from '@screens/Appearance/components/Alignment';
 import BoldFont from '@screens/Appearance/components/BoldFont';
 import FontSize from '@screens/Appearance/components/FontSize';
 import LetterSpacing from '@screens/Appearance/components/LetterSpacing';
-import AppearanceMode from '@screens/Appearance/components/AppearanceMode/AppearanceMode';
 import { BOOK_DIMENSIONS_RATIO } from '@theme/constants';
 import InterfaceTheme from '@screens/Appearance/components/InterfaceTheme/InterfaceTheme';
-import IconButton from '@components/IconButton/IconButton';
-import Icon from '@components/Icon/Icon';
-import { Portal } from '@gorhom/portal';
 import useBoolean from '@hooks/useBoolean';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Input from '@components/Input/Input';
 import LiveMangaPreview from '@screens/Appearance/components/LiveMangaPreview/LiveMangaPreview';
 import { Freeze } from 'react-freeze';
+import useAppSelector from '@hooks/useAppSelector';
+import { useAppDispatch } from '@redux/main';
 
 type CustomManga = Omit<Manga, 'link'>;
 
@@ -84,21 +85,15 @@ const libraryExampleData: CustomManga[] = [
   },
 ];
 
-const Appearance: React.FC<ConnectedAppearanceProps> = ({
-  title,
-  toggleAutoBookHeight,
-  autoHeight,
-  toggleBoldTitleFont,
-  toggleAutoLetterSpacing,
-  setBookLetterSpacing,
-  setTitleAlignment,
-  setBookDimensions,
-  width: bookWidth,
-  height: bookHeight,
-  setTitleFontSize,
-  setBookStyle: _setBookStyle,
-  style,
-}) => {
+const Appearance: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const {
+    title,
+    autoHeight,
+    width: bookWidth,
+    height: bookHeight,
+    style,
+  } = useAppSelector((state) => state.settings.book);
   const { onScroll, contentContainerStyle, scrollViewStyle } =
     useCollapsibleHeader({ headerTitle: 'Appearance' });
   const bottomSheet = React.useRef<BottomSheetMethods>(null);
@@ -129,9 +124,9 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
     [style],
   );
   const handleOnToggleAutoHeight = React.useCallback(() => {
-    toggleAutoBookHeight();
+    dispatch(toggleAutoBookHeight());
     autoAdjustHeight(width.value);
-  }, [toggleAutoBookHeight, autoAdjustHeight]);
+  }, [dispatch, autoAdjustHeight]);
 
   const setBookStyle = React.useCallback(
     (newValue: BookStyle) => {
@@ -145,9 +140,9 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
             height.value = width.value / BOOK_DIMENSIONS_RATIO;
             break;
         }
-      _setBookStyle(newValue);
+      dispatch(_setBookStyle(newValue));
     },
-    [_setBookStyle, autoHeight],
+    [dispatch, autoHeight],
   );
 
   const handleOnChangeWidth = React.useCallback(
@@ -166,12 +161,8 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
     fontSize.value = v;
   }, []);
 
-  const handleOnBoldToggle = React.useCallback(() => {
-    toggleBoldTitleFont();
-  }, [toggleBoldTitleFont]);
-
   const handleOnToggleLetterSpacing = React.useCallback(() => {
-    toggleAutoLetterSpacing();
+    dispatch(toggleAutoLetterSpacing());
     letterSpacing.value = -fontSize.value / moderateScale(30);
   }, [toggleAutoLetterSpacing]);
 
@@ -193,9 +184,9 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
 
   React.useEffect(() => {
     return () => {
-      setBookLetterSpacing(letterSpacing.value);
-      setBookDimensions({ width: width.value, height: height.value });
-      setTitleFontSize(fontSize.value);
+      dispatch(setBookLetterSpacing(letterSpacing.value));
+      dispatch(setBookDimensions({ width: width.value, height: height.value }));
+      dispatch(setTitleFontSize(fontSize.value));
     };
   }, []);
 
@@ -219,9 +210,6 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
               imageURL={imageURL}
             >
               <CustomizableBook
-                bookStyle={style}
-                align={title.alignment}
-                bold={title.bold}
                 letterSpacing={letterSpacing}
                 fontSize={fontSize}
                 width={width}
@@ -254,7 +242,7 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
               />
             </Box> */}
             <Stack space="m">
-              <Style style={style} setBookStyle={setBookStyle} />
+              <Style setBookStyle={setBookStyle} />
               <Stack mx="m" space="m">
                 <CoverImage
                   onChangeHeight={handleOnChangeHeight}
@@ -279,18 +267,10 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
                   background-color="paper"
                   py="m"
                 >
-                  <Alignment
-                    setTitleAlignment={setTitleAlignment}
-                    alignment={title.alignment}
-                  />
+                  <Alignment />
                   <Divider />
-                  <BoldFont
-                    isBold={title.bold}
-                    onToggleBold={handleOnBoldToggle}
-                  />
-
+                  <BoldFont />
                   <Divider />
-
                   <FontSize
                     fontSize={fontSize}
                     onChangeFontSize={handleOnChangeFontSize}
@@ -298,7 +278,6 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
                   <Divider />
                   <LetterSpacing
                     letterSpacing={letterSpacing}
-                    autoLetterSpacing={title.autoLetterSpacing}
                     onChangeLetterSpacing={handleOnChangeLetterSpacing}
                     onToggleAutoLetterSpacing={handleOnToggleLetterSpacing}
                   />
@@ -329,9 +308,6 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
                     align-self="center"
                   >
                     <CustomizableBook
-                      bookStyle={style}
-                      align={title.alignment}
-                      bold={title.bold}
                       letterSpacing={letterSpacing}
                       fontSize={fontSize}
                       width={width}
@@ -351,4 +327,4 @@ const Appearance: React.FC<ConnectedAppearanceProps> = ({
   );
 };
 
-export default connector(Appearance);
+export default Appearance;

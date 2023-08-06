@@ -3,7 +3,9 @@ import { coverStyles } from '@components/Cover/Cover';
 import Stack from '@components/Stack';
 import Text from '@components/Text/Text';
 import { useTheme } from '@emotion/react';
-import { TitleAlignmentPreviewProps } from '@screens/Appearance/components/Alignment/Alignment.interfaces';
+import { useAppDispatch } from '@redux/main';
+import { setTitleAlignment } from '@redux/slices/settings';
+import { TitleAlignmentPreviewProps } from '@screens/Appearance/components/Alignment';
 import { LinePlaceholder } from '@screens/Appearance/components/Style/Style';
 import PreviewSelectorWrapper from '@screens/Appearance/components/Style/components/PreviewSelectorWrapper/PreviewSelectorWrapper';
 import { BOOK_DIMENSIONS } from '@theme/constants';
@@ -11,15 +13,11 @@ import React from 'react';
 import { Pressable } from 'react-native';
 
 const TitleAlignmentPreview: React.FC<TitleAlignmentPreviewProps> = (props) => {
-  const {
-    isSelected,
-    setTitleAlignment,
-    alignItems = 'flex-start',
-    titleAlignment,
-  } = props;
+  const { isSelected, alignItems = 'flex-start', titleAlignment } = props;
   const theme = useTheme();
+  const dispatch = useAppDispatch();
   function handleOnPress() {
-    setTitleAlignment(titleAlignment);
+    dispatch(setTitleAlignment(titleAlignment));
   }
   return (
     <PreviewSelectorWrapper isSelected={isSelected} background="paper">
