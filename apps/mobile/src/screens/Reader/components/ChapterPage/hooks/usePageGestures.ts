@@ -1,10 +1,11 @@
 import useAnimatedMutableObject from '@hooks/useAnimatedMutableObject';
+import useAppSelector from '@hooks/useAppSelector';
 import useBoolean from '@hooks/useBoolean';
 import useMutableObject from '@hooks/useMutableObject';
 import useScreenDimensions from '@hooks/useScreenDimensions';
-import { useAppDispatch } from '@redux/main';
+import { store, useAppDispatch } from '@redux/main';
 import { toggleImageModal } from '@redux/slices/reader';
-import { ImageScaling, ReadingDirection } from '@redux/slices/settings';
+import { ReadingDirection } from '@redux/slices/settings';
 import { ChapterPageProps } from '@screens/Reader/components/ChapterPage';
 import { useChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
 import usePageZooming from '@screens/Reader/components/ChapterPage/hooks/usePageZooming';
@@ -30,13 +31,20 @@ export default function usePageGestures(
   } = props;
   const { height: screenHeight, width: screenWidth } = useScreenDimensions();
 
-  const { readingDirection } = useChapterPageContext();
+  const { readingDirection, nativeFlatListGesture } = useChapterPageContext();
+  const currentPage = useAppSelector((state) => state.reader.currentPage);
   const [enablePan, togglePan] = useBoolean(pinchScale.value > minScale.value);
+  // const enablePan = useAppSelector(
+  //   (state) =>
+  //     state.reader.extendedState[pageKey]?.panEnabled ??
+  //     pinchScale.value > minScale.value,
+  // );
+  // const togglePan = (value: boolean) =>
+  //   dispatch(setPagePanEnabled({ pageKey, value }));
   const enablePanRef = useMutableObject(enablePan);
+  const maxTranslateX = useSharedValue(Math.abs(translateX.value));
+  const maxTranslateY = useSharedValue(Math.abs(translateY.value));
 
-  const mutablePageKey = useMutableObject(pageKey);
-  const height = useAnimatedMutableObject(screenHeight);
-  const width = useAnimatedMutableObject(screenWidth);
   const isHorizontal = useAnimatedMutableObject(
     readingDirection === ReadingDirection.LEFT_TO_RIGHT ||
       readingDirection === ReadingDirection.RIGHT_TO_LEFT,
@@ -44,18 +52,37 @@ export default function usePageGestures(
   const isVertical = useAnimatedMutableObject(
     readingDirection === ReadingDirection.VERTICAL,
   );
+
+  const isAtEdgeHorizontal = useSharedValue(
+    isHorizontal.value && Math.abs(translateX.value) === maxTranslateX.value,
+  );
+  const isAtEdgeVertical = useSharedValue(
+    isVertical.value && Math.abs(translateY.value) === maxTranslateY.value,
+  );
+
+  /**
+   * Re-enables page key when page is initially zoomed
+   * Resets pan state for pageKey after component has been recycled
+   */
+  React.useEffect(() => {
+    if (pinchScale.value > minScale.value) {
+      console.log(
+        `pan has been enabled since pageKey changeds and ${pageKey} is zoomed`,
+      );
+      togglePan(true);
+    }
+  }, [currentPage]);
+
+  const mutablePageKey = useMutableObject(pageKey);
+  const height = useAnimatedMutableObject(screenHeight);
+  const width = useAnimatedMutableObject(screenWidth);
+
   const {
     imageMenuRef,
-    velocityX,
-    rootPanGesture,
     pageGestures,
     rootPinchGesture,
-    velocityY,
     imageScaling: _imageScaling,
   } = useChapterPageContext();
-
-  const maxTranslateX = useSharedValue(Math.abs(translateX.value));
-  const maxTranslateY = useSharedValue(Math.abs(translateY.value));
 
   const dispatch = useAppDispatch();
   const toggle = React.useCallback(
@@ -127,16 +154,14 @@ export default function usePageGestures(
           );
         }
       },
-      onFlashlistActive() {
+      onFlashlistEnd() {
         if (
-          ((maxTranslateX.value === Math.abs(translateX.value) &&
-            isHorizontal.value) ||
-            (maxTranslateY.value === Math.abs(translateY.value) &&
-              isVertical.value)) &&
-          !enablePanRef.current &&
+          mutablePageKey.current === store.getState().reader.currentPage &&
+          !enablePan &&
           pinchScale.value > minScale.value
-        )
-          runOnJS(togglePan)(true);
+        ) {
+          togglePan(true);
+        }
       },
     };
     return () => {
@@ -188,6 +213,13 @@ export default function usePageGestures(
             -maxTranslateY.value,
           );
 
+          isAtEdgeHorizontal.value =
+            isHorizontal.value &&
+            Math.abs(translateX.value) === maxTranslateX.value;
+          isAtEdgeVertical.value =
+            isVertical.value &&
+            Math.abs(translateY.value) === maxTranslateY.value;
+
           if (maxTranslateX.value === 0 && maxTranslateY.value === 0) {
             translateX.value = withTiming(0, {
               duration: 150,
@@ -198,7 +230,13 @@ export default function usePageGestures(
               easing: Easing.ease,
             });
             runOnJS(togglePan)(false);
-          }
+          } else if (isAtEdgeHorizontal.value || isAtEdgeVertical.value) {
+            runOnJS(togglePan)(false);
+          } else if (
+            !enablePan &&
+            !(isHorizontal.value || isAtEdgeVertical.value)
+          )
+            runOnJS(togglePan)(true);
         })
         .onEnd((e) => {
           translateX.value = withDecay({
@@ -213,79 +251,29 @@ export default function usePageGestures(
             clamp: [-maxTranslateY.value, maxTranslateY.value],
           });
         })
-        .onTouchesUp(() => {
-          if (
-            (maxTranslateX.value === Math.abs(translateX.value) &&
-              isHorizontal.value &&
-              Math.abs(velocityY.value) <= 1000 &&
-              ((translateX.value <= 0 && velocityX.value < -100) ||
-                (translateX.value >= 0 && velocityX.value > 100))) ||
-            (maxTranslateY.value === Math.abs(translateY.value) &&
-              isVertical.value &&
-              ((translateY.value <= 0 && velocityY.value < -100) ||
-                (translateY.value >= 0 && velocityY.value > 100)))
-          ) {
-            runOnJS(togglePan)(false);
-          }
-        })
-        .simultaneousWithExternalGesture(rootPanGesture, rootPinchGesture)
-        .enabled(enablePan),
-    [enablePan],
-  );
-  useAnimatedReaction(
-    () => velocityX.value,
-    (res) => {
-      if (
-        maxTranslateX.value === Math.abs(translateX.value) &&
-        isHorizontal.value &&
-        ((translateX.value < 0 && res > 0) || (translateX.value > 0 && res < 0))
-      )
-        runOnJS(togglePan)(true);
-    },
+        .simultaneousWithExternalGesture(
+          ...(!enablePan
+            ? [rootPinchGesture, nativeFlatListGesture]
+            : [rootPinchGesture]),
+        ),
+    [enablePan, rootPinchGesture, nativeFlatListGesture],
   );
 
-  useAnimatedReaction(
-    () => velocityY.value,
-    (res) => {
-      if (
-        maxTranslateY.value === Math.abs(translateY.value) &&
-        isVertical.value &&
-        ((translateY.value < 0 && res > 0) || (translateY.value > 0 && res < 0))
-      ) {
-        runOnJS(togglePan)(true);
-      }
-    },
-  );
-
+  /**
+   * Re-enables panning shortly after user reached max translation value
+   */
   React.useEffect(() => {
     if (
-      ((maxTranslateX.value === Math.abs(translateX.value) &&
-        isHorizontal.value) ||
-        (maxTranslateY.value === Math.abs(translateY.value) &&
-          isVertical.value)) &&
+      (isAtEdgeHorizontal.value || isAtEdgeVertical.value) &&
       !enablePan &&
-      ((_imageScaling === ImageScaling.FIT_WIDTH &&
-        height.value < pinchScale.value * stylizedHeight) ||
-        pinchScale.value > minScale.value)
+      pinchScale.value > minScale.value
     ) {
-      const p = setTimeout(() => {
-        togglePan(true);
-      }, 1000);
+      const p = setTimeout(() => togglePan(true), 600);
       return () => {
         clearTimeout(p);
       };
     }
   }, [enablePan]);
-
-  // React.useEffect(() => {
-  //   if (
-  //     !enablePan &&
-  //     maxTranslateX.value !== 0 &&
-  //     maxTranslateX.value === Math.abs(translateX.value)
-  //   ) {
-  //     // togglePan(true);
-  //   }
-  // }, [enablePan]);
 
   const gestures = React.useMemo(
     () => Gesture.Exclusive(panGesture, holdGesture),

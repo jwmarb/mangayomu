@@ -77,7 +77,6 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
   const [currentPage, setCurrentPage] = React.useState<number>(
     chapterWithData.indexPage + 1,
   );
-  const currentPageKey = React.useRef<string>('');
   const [cancellable, isFetchingPrevious] = useCancellable();
   const fetchPagesByChapter = useChapterFetcher({
     availableChapters,
@@ -95,16 +94,12 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
     tapGesture,
     showOverlay,
     overlayOpacity,
-    panGesture,
-    velocityX,
     pinchGesture,
     pageGestures,
     doubleTapGesture,
-    velocityY,
     nativeFlatListGesture,
   } = useOverlayGesture({
     panRef,
-    pageKey: currentPageKey,
     pinchRef,
     readingDirection,
   });
@@ -116,7 +111,6 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
     showOverlay,
     setCurrentPage,
     cancellable,
-    currentPageKey,
   });
   const { topOverlayStyle, toastStyle } = useNetworkToast({
     overlayOpacity,
@@ -165,14 +159,9 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
     [tapGesture, chapter._id],
   );
 
-  const composedGestures = React.useMemo(
-    () => Gesture.Simultaneous(panGesture, pinchGesture),
-    [panGesture, tapGesture, pinchGesture, doubleTapGesture],
-  );
-
   const nativeGestures = React.useMemo(
     () =>
-      Gesture.Simultaneous(
+      Gesture.Race(
         nativeFlatListGesture,
         Gesture.Exclusive(doubleTapGesture, tapGesture),
       ),
@@ -193,13 +182,11 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
           readingDirection,
           sourceName: manga.source,
           imageMenuRef,
-          velocityX,
-          rootPanGesture: panGesture,
           pageGestures,
           rootPinchGesture: pinchGesture,
-          velocityY,
           imageScaling,
           zoomStartPosition,
+          nativeFlatListGesture,
         }}
       >
         <TransitionPageContext.Provider value={transitionPageContextValue}>
@@ -217,7 +204,7 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
             opacity={overlayOpacity}
           />
           <NetworkToast style={toastStyle} />
-          <GestureDetector gesture={composedGestures}>
+          <GestureDetector gesture={pinchGesture}>
             {pages.length === 0 ? (
               <Box
                 flex-grow

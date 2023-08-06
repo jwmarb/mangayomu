@@ -66,6 +66,7 @@ interface ReaderState {
   extendedState: Record<string, ExtendedReaderPageState | undefined>;
   currentChapter: string | null;
   currentChapterId: Realm.BSON.ObjectId | null;
+  currentPage: string | null;
   showImageModal: boolean;
   pageAspectRatio: number;
 }
@@ -88,6 +89,7 @@ const initialReaderState: ReaderState = {
   showImageModal: false,
   currentChapter: null,
   currentChapterId: null,
+  currentPage: null,
   pageAspectRatio: 0.7, // It's common for manga pages to be within 0.69 to 0.71 for aspect ratio ( width / height )
 };
 
@@ -233,9 +235,13 @@ const readerSlice = createSlice({
       state.currentChapter = null;
       state.extendedState = {};
       state.currentChapterId = null;
+      state.currentPage = null;
       fetchedChapters.clear();
       fetchingChapters.clear();
       offsetMemo.clear();
+    },
+    setCurrentPage: (state, action: PayloadAction<string>) => {
+      state.currentPage = action.payload;
     },
     setCurrentChapter: (
       state,
@@ -503,6 +509,7 @@ export const {
   // setIsMounted,
   // setPageInDisplay,
   setLocalPageURI,
+  setCurrentPage,
   toggleImageModal,
 } = readerSlice.actions;
 

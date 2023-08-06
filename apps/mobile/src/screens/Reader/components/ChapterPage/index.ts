@@ -10,7 +10,11 @@ import {
 } from '@redux/slices/settings';
 import { ImageMenuMethods } from '@screens/Reader/components/ImageMenu';
 import { PageGestures } from '@screens/Reader/hooks/useOverlayGesture';
-import { PanGesture, PinchGesture } from 'react-native-gesture-handler';
+import {
+  NativeGesture,
+  PanGesture,
+  PinchGesture,
+} from 'react-native-gesture-handler';
 import { SharedValue } from 'react-native-reanimated';
 
 export interface ChapterPageProps {
@@ -31,12 +35,9 @@ export type PageAnimatedState = PageAnimatedStateBase & {
 };
 
 export interface ChapterPageContextState {
-  velocityX: SharedValue<number>;
-  velocityY: SharedValue<number>;
   animatedPreviousState: React.MutableRefObject<
     Record<string, PageAnimatedState | undefined>
   >;
-  rootPanGesture: PanGesture;
   rootPinchGesture: PinchGesture;
   readingDirection: ReadingDirection;
   sourceName: string;
@@ -45,4 +46,5 @@ export interface ChapterPageContextState {
   pageGestures: PageGestures;
   imageScaling: ImageScaling;
   zoomStartPosition: ZoomStartPosition;
+  nativeFlatListGesture: NativeGesture;
 }

@@ -1,4 +1,6 @@
+import useAppSelector from '@hooks/useAppSelector';
 import useImmersiveMode from '@hooks/useImmersiveMode';
+import useMutableObject from '@hooks/useMutableObject';
 import { ReadingDirection } from '@redux/slices/settings';
 import React from 'react';
 import {
@@ -27,7 +29,7 @@ export type PageGestureEventHandlers = {
   onDoubleTap: (
     e: GestureStateChangeEvent<TapGestureHandlerEventPayload>,
   ) => void;
-  onFlashlistActive: () => void;
+  onFlashlistEnd: () => void;
 };
 
 export type PageGestures = React.MutableRefObject<
@@ -39,13 +41,12 @@ export type PageGestures = React.MutableRefObject<
 export default function useOverlayGesture(args: {
   panRef: React.MutableRefObject<GestureType | undefined>;
   pinchRef: React.MutableRefObject<GestureType | undefined>;
-  pageKey: React.MutableRefObject<string>;
   readingDirection: ReadingDirection;
 }) {
-  const { panRef, pageKey, pinchRef, readingDirection } = args;
+  const { panRef, pinchRef, readingDirection } = args;
   const overlayOpacity = useSharedValue(0);
-  const velocityX = useSharedValue(0);
-  const velocityY = useSharedValue(0);
+  const currentPageKey = useAppSelector((state) => state.reader.currentPage);
+  const pageKey = useMutableObject(currentPageKey);
 
   const [showStatusAndNavBar, hideStatusAndNavBar] = useImmersiveMode();
   const pageGestures = React.useRef<Record<string, PageGestureEventHandlers>>(
@@ -91,22 +92,14 @@ export default function useOverlayGesture(args: {
         .maxDelay(150),
     [readingDirection !== ReadingDirection.WEBTOON],
   );
-  const panGesture = React.useMemo(
-    () =>
-      Gesture.Pan()
-        .onUpdate((e) => {
-          velocityX.value = e.velocityX;
-          velocityY.value = e.velocityY;
-        })
-        .withRef(panRef),
-    [],
-  );
+
   function passToUI<T extends keyof PageGestureEventHandlers>(
     key: T,
     e: Parameters<PageGestureEventHandlers[T]>[0],
   ) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    runOnUI((pageGestures.current[pageKey.current] as any)[key])(e);
+    if (pageKey.current != null)
+      runOnUI((pageGestures.current[pageKey.current] as any)[key])(e);
   }
 
   const pinchGesture = React.useMemo(
@@ -121,19 +114,31 @@ export default function useOverlayGesture(args: {
     [readingDirection !== ReadingDirection.WEBTOON],
   );
 
-  const handleOnActivated = () => {
-    if (pageKey.current in pageGestures.current)
-      pageGestures.current[pageKey.current].onFlashlistActive();
+  const handleOnEnd = () => {
+    if (pageKey.current != null && pageKey.current in pageGestures.current)
+      pageGestures.current[pageKey.current].onFlashlistEnd();
   };
 
   const nativeFlatListGesture = React.useMemo(
     () =>
       Gesture.Native()
-        .onBegin(() => {
+        // .onBegin(() => {
+        //   if (readingDirection !== ReadingDirection.WEBTOON)
+        //     runOnJS(handleOnFinalize)();
+        // })
+        // .onStart(() => {
+        //   console.log('START');
+        // })
+        .onEnd(() => {
+          // console.log('FINALIZE');
           if (readingDirection !== ReadingDirection.WEBTOON)
-            runOnJS(handleOnActivated)();
-        })
-        .simultaneousWithExternalGesture(panGesture),
+            runOnJS(handleOnEnd)();
+        }),
+    // .onEnd(() => {
+    //   console.log('END');
+    // })
+    // .onTouchesCancelled(() => {
+    //   console.log('TOUCHES CANCELLED');
     [pinchGesture, readingDirection !== ReadingDirection.WEBTOON],
   );
   return {
@@ -141,9 +146,6 @@ export default function useOverlayGesture(args: {
     hideOverlay,
     showOverlay,
     overlayOpacity,
-    panGesture,
-    velocityX,
-    velocityY,
     pinchGesture,
     pageGestures,
     nativeFlatListGesture,

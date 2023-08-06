@@ -1,9 +1,8 @@
 import { useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
-import { MangaSchema } from '@database/schemas/Manga';
 import { useAppDispatch } from '@redux/main';
-import { Page, setCurrentChapter } from '@redux/slices/reader';
-import { PageSliderNavigatorMethods } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/PageSliderNavigator.interfaces';
+import { Page, setCurrentChapter, setCurrentPage } from '@redux/slices/reader';
+import { PageSliderNavigatorMethods } from '@screens/Reader/components/Overlay/components/PageSliderNavigator/';
 import useCancellable from './useCancellable';
 import React from 'react';
 import { ViewToken, ViewabilityConfigCallbackPairs } from 'react-native';
@@ -20,16 +19,14 @@ export default function useViewableItemsChangedHandler(args: {
   showOverlay: () => void;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   cancellable: ReturnType<typeof useCancellable>[0];
-  currentPageKey: React.MutableRefObject<string>;
 }) {
   const {
     manga,
     pageSliderNavRef,
     fetchPagesByChapter,
     cancellable,
-    setCurrentPage,
+    setCurrentPage: setCurrentPageNumber,
     showOverlay,
-    currentPageKey,
   } = args;
   const dispatch = useAppDispatch();
 
@@ -62,11 +59,11 @@ export default function useViewableItemsChangedHandler(args: {
             realm.write(() => {
               if (chapter != null) chapter.indexPage = item.pageNumber - 1;
             });
-            setCurrentPage(item.pageNumber);
-            currentPageKey.current = item.page;
+            setCurrentPageNumber(item.pageNumber);
             dispatch(
               setCurrentChapter({ link: item.chapter, id: item.chapterId }),
             );
+            dispatch(setCurrentPage(item.page));
             pageSliderNavRef.current?.snapPointTo(item.pageNumber - 1);
           }
           break;
