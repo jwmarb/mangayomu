@@ -30,45 +30,42 @@ import { useUser } from '@realm/react';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import HotMangaList from '@screens/Explore/components/HotMangaList';
 import LatestMangaList from '@screens/Explore/components/LatestMangaList';
-
-const Explore: React.FC<ConnectedExploreProps> = ({
-  source,
-  setExplorerState,
+import { ExploreMethods, ExploreProps } from '@screens/Explore';
+import {
   explorerNetworkStateListenerHandler,
   refreshExplorerState,
-  loading,
-  suspendRendering,
-  internetStatus,
-}) => {
-  const user = useUser();
+  setExplorerState,
+} from '@redux/slices/explore';
+import { useAppDispatch } from '@redux/main';
+import getMangaHost from '@helpers/getMangaHost';
+import useAppSelector from '@hooks/useAppSelector';
+
+const Explore: React.ForwardRefRenderFunction<ExploreMethods, ExploreProps> = (
+  { onScroll, scrollViewStyle, contentContainerStyle, source, loading },
+  ref,
+) => {
+  const dispatch = useAppDispatch();
+  const internetStatus = useAppSelector(
+    (state) => state.explore.internetStatus,
+  );
   const { height } = useWindowDimensions();
   const navigation = useTabNavigation();
   const sourceSelectorRef = React.useRef<BottomSheetMethods>(null);
   const inputRef = React.useRef<TextInput>(null);
-  function handleOnPress() {
-    sourceSelectorRef.current?.snapToIndex(1);
-  }
-  const { onScroll, scrollViewStyle, contentContainerStyle } =
-    useCollapsibleTabHeader({
-      dependencies: [source.getSourcesLength(), user?.profile.pictureUrl],
-      loading,
-      headerLeft: (
-        <Badge type="number" count={source.getSourcesLength()} color="primary">
-          <IconButton
-            icon={<Icon type="font" name="bookshelf" />}
-            onPress={handleOnPress}
-          />
-        </Badge>
-      ),
-      headerRight: (
-        <IconButton icon={<Avatar />} onPress={() => console.log('Account')} />
-      ),
-    });
+  const suspendRendering = useAppSelector(
+    (state) => state.host.suspendRendering,
+  );
+
+  React.useImperativeHandle(ref, () => ({
+    openMainSourceSelector: () => {
+      sourceSelectorRef.current?.snapToIndex(1);
+    },
+  }));
 
   async function fetchMangas() {
     if (!suspendRendering && !loading) {
       console.log('fetching explorer state');
-      refreshExplorerState();
+      dispatch(refreshExplorerState());
       const [hotResult, latestResult] = await Promise.allSettled([
         source.getHotMangas(),
         source.getLatestMangas(),
@@ -77,12 +74,14 @@ const Explore: React.FC<ConnectedExploreProps> = ({
         return console.error(hotResult.reason);
       if (latestResult.status === 'rejected')
         return console.error(latestResult.reason);
-      setExplorerState({ hot: hotResult.value, latest: latestResult.value });
+      dispatch(
+        setExplorerState({ hot: hotResult.value, latest: latestResult.value }),
+      );
     }
   }
   React.useEffect(() => {
-    const netListener = NetInfo.addEventListener(
-      explorerNetworkStateListenerHandler,
+    const netListener = NetInfo.addEventListener((e) =>
+      dispatch(explorerNetworkStateListenerHandler(e)),
     );
     return () => {
       netListener(); // unsubscribe from listening to network events
@@ -164,4 +163,4 @@ export const EmptyMangaListComponent = (
   </Box>
 );
 
-export default connector(Explore);
+export default React.forwardRef(Explore);

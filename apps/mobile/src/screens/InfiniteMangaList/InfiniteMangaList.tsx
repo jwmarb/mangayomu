@@ -1,22 +1,12 @@
-import connector, {
-  ConnectedInfinteMangaListProps,
-} from './InfiniteMangaList.redux';
 import React from 'react';
-import { FlashList } from '@shopify/flash-list';
 import useMangaFlashlistLayout from '@hooks/useMangaFlashlistLayout';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import Box from '@components/Box';
-import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
 import Text from '@components/Text';
 import Stack from '@components/Stack';
 import Animated, { FadeOut } from 'react-native-reanimated';
-import Input from '@components/Input';
-import {
-  InteractionManager,
-  NativeSyntheticEvent,
-  TextInputSubmitEditingEventData,
-} from 'react-native';
+import { InteractionManager } from 'react-native';
 import { MangaHostWithFilters } from '@mangayomu/mangascraper/src/scraper/scraper.filters';
 import AdvancedSearchFilters from '@screens/InfiniteMangaList/components/AdvancedSearchFilters';
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
@@ -28,7 +18,7 @@ import {
 } from '@mangayomu/schema-creator';
 import { FilterState } from '@redux/slices/mainSourceSelector';
 import { InclusiveExclusiveFilter } from '@mangayomu/schema-creator';
-import { Manga } from '@mangayomu/mangascraper/src';
+import { Manga, MangaHost } from '@mangayomu/mangascraper/src';
 import { StatusAPI } from '@redux/slices/explore';
 import { getErrorMessage } from '@helpers/getErrorMessage';
 import useMountedEffect from '@hooks/useMountedEffect';
@@ -36,8 +26,9 @@ import Button from '@components/Button';
 import { moderateScale } from 'react-native-size-matters';
 import { LoadingBook } from '@components/Book';
 import { AnimatedFlashList } from '@components/animated';
-
-const reducer = (s: boolean) => !s;
+import { RootStackProps } from '@navigators/Root/Root.interfaces';
+import useAppSelector from '@hooks/useAppSelector';
+import { InfiniteMangaListMethods } from '@screens/InfiniteMangaList';
 
 export type StatefulFilter =
   | StatefulInclusiveExclusive
@@ -54,20 +45,29 @@ export type StatefulSort = {
 };
 export type StatefulOption = { type: 'option'; selected: string };
 
-const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
-  const {
-    genre,
-    source,
-    state,
-    initialQuery,
-    isOffline,
-    bookHeight,
-    bookWidth,
-  } = props;
+const InfiniteMangaList: React.ForwardRefRenderFunction<
+  InfiniteMangaListMethods,
+  RootStackProps<'InfiniteMangaList'> &
+    ReturnType<typeof useCollapsibleHeader> & { query: string }
+> = (props, ref) => {
+  const { query, onScroll, scrollViewStyle, contentContainerStyle } = props;
+  const source = React.useRef(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    MangaHost.sourcesMap.get(props.route.params.source)!,
+  ).current;
+  const state = useAppSelector(
+    (state) =>
+      state.browse.states[props.route.params.source] as
+        | undefined
+        | (typeof state.browse.states)[''],
+  );
+  const genre = props.route.params.genre;
+  const isOffline = useAppSelector(
+    (state) => state.explore.internetStatus === 'offline',
+  );
   const numberOfItemsPerPage = React.useRef<number | null>(
     state?.mangas.length ?? null,
   );
-  const [query, setQuery] = React.useState<string>(initialQuery);
   const [mangas, setMangas] = React.useState<Manga[]>(state?.mangas ?? []);
 
   const [status, setStatus] = React.useState<StatusAPI>(
@@ -75,10 +75,12 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
   );
   const [error, setError] = React.useState<string>('');
   const hasNext = React.useRef<boolean>(true);
-  const ref = React.useRef<BottomSheet>(null);
-  function handleOnOpen() {
-    ref.current?.snapToIndex(1);
-  }
+  const bottomSheet = React.useRef<BottomSheet>(null);
+  React.useImperativeHandle(ref, () => ({
+    open: () => {
+      bottomSheet.current?.snapToIndex(1);
+    },
+  }));
   const filters = React.useMemo(() => {
     if (source instanceof MangaHostWithFilters === false) return null;
     const filters = (
@@ -185,7 +187,6 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
       : {},
   );
 
-  const [showSearchBar, toggle] = React.useReducer(reducer, !!initialQuery);
   const {
     estimatedItemSize,
     keyExtractor,
@@ -195,59 +196,11 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
     overrideItemLayout,
     drawDistance,
   } = useMangaFlashlistLayout(mangas.length);
-  async function handleOnSubmitEditing(
-    e: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
-  ) {
-    setQuery(e.nativeEvent.text);
-  }
 
   useMountedEffect(() => {
     resetSearchState();
     fetchMangas();
   }, [query]);
-  const { onScroll, scrollViewStyle, contentContainerStyle } =
-    useCollapsibleHeader({
-      headerTitle: source.name,
-      showBackButton: !showSearchBar,
-      header: showSearchBar ? (
-        <Box {...(filters == null ? { mx: 'm' } : { ml: 'm' })} flex-grow>
-          <Input
-            expanded
-            defaultValue={initialQuery}
-            placeholder="Search for a title..."
-            onSubmitEditing={handleOnSubmitEditing}
-            iconButton={
-              <IconButton
-                icon={<Icon type="font" name="arrow-left" />}
-                onPress={toggle}
-              />
-            }
-          />
-        </Box>
-      ) : undefined,
-      headerRightProps: showSearchBar ? { 'flex-shrink': true } : undefined,
-      showHeaderRight: showSearchBar ? filters != null : true,
-      headerRight: (
-        <>
-          {!showSearchBar && (
-            <IconButton
-              icon={<Icon type="font" name="magnify" />}
-              onPress={toggle}
-            />
-          )}
-          {filters != null && (
-            <IconButton
-              icon={<Icon type="font" name="filter" />}
-              onPress={handleOnOpen}
-            />
-          )}
-          {!showSearchBar && (
-            <IconButton icon={<Icon type="font" name="web" />} />
-          )}
-        </>
-      ),
-      dependencies: [showSearchBar],
-    });
 
   const handleOnChangeOption = React.useCallback(
     (key: string, val: string) => {
@@ -403,11 +356,12 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
       }
     }
   }
+
   async function handleOnApplyFilters() {
     if (filters != null && filterOptions != null) {
       beginParsingFilter();
       resetSearchState();
-      ref.current?.close();
+      bottomSheet.current?.close();
       await fetchMangas(true);
     }
   }
@@ -524,7 +478,7 @@ const InfiniteMangaList: React.FC<ConnectedInfinteMangaListProps> = (props) => {
           onApplyFilters={handleOnApplyFilters}
           onToggleInclusiveExclusive={handleOnToggleInclusiveExclusive}
           onChangeOption={handleOnChangeOption}
-          ref={ref}
+          ref={bottomSheet}
           onResetFilters={handleOnResetFilters}
           keys={filters.restKeys}
           dummyStates={filters.state}
@@ -542,4 +496,4 @@ const MangaLoadingList = new Array(12)
   .fill('')
   .map((x, i) => <LoadingBook key={i} />);
 
-export default connector(InfiniteMangaList);
+export default React.forwardRef(InfiniteMangaList);

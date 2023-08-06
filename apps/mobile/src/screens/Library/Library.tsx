@@ -22,33 +22,21 @@ import { AnimatedFlashList } from '@components/animated';
 import Progress from '@components/Progress';
 import { useUser } from '@realm/react';
 import useAppSelector from '@hooks/useAppSelector';
+import { LibraryMethods, useLibrarySetRefreshing } from '@screens/Library';
 
-const Library: React.FC = () => {
-  const numberOfAppliedFilters = useAppSelector(
-    (state) => state.library.numberOfFiltersApplied,
-  );
-  const ref = React.useRef<BottomSheetMethods>(null);
-  const [refreshing, setRefreshing] = useBoolean();
-  const [showSearchBar, setShowSearchBar] = React.useState<boolean>(false);
-  const [query, setQuery] = React.useState<string>('');
+const _Library: React.ForwardRefRenderFunction<
+  LibraryMethods,
+  ReturnType<typeof useCollapsibleTabHeader>
+> = ({ onScroll, contentContainerStyle, scrollViewStyle }, ref) => {
+  const bottomSheet = React.useRef<BottomSheetMethods>(null);
   const user = useUser();
-
-  function handleOnPress() {
-    ref.current?.snapToIndex(1);
-  }
-
-  const { data, mangasInLibrary, updateQuerifiedData } = useLibraryData(
-    refreshing,
-    setRefreshing,
-  );
-
-  function handleOnShowSearchBar() {
-    setShowSearchBar(true);
-  }
-
-  function handleOnBack() {
-    setShowSearchBar(false);
-  }
+  const { data, mangasInLibrary, updateQuerifiedData } = useLibraryData();
+  React.useImperativeHandle(ref, () => ({
+    openFilters() {
+      bottomSheet.current?.snapToIndex(1);
+    },
+    updateQuerifiedData,
+  }));
   const {
     renderItem,
     keyExtractor,
@@ -59,59 +47,7 @@ const Library: React.FC = () => {
     overrideItemLayout,
     drawDistance,
   } = useMangaFlashlistLayout(data.length);
-
-  const { scrollViewStyle, contentContainerStyle, onScroll } =
-    useCollapsibleTabHeader({
-      headerTitle: 'Library',
-      headerLeft:
-        mangasInLibrary.length > 0 && !showSearchBar ? (
-          <Badge type="dot" show={query.length > 0} color="primary">
-            <IconButton
-              icon={<Icon type="font" name="magnify" />}
-              onPress={handleOnShowSearchBar}
-            />
-          </Badge>
-        ) : (
-          <Input
-            defaultValue={query}
-            onChangeText={(e) => {
-              setQuery(e);
-              updateQuerifiedData(e);
-            }}
-            placeholder="Search for a title..."
-            expanded
-            iconButton={
-              <IconButton
-                icon={<Icon type="font" name="arrow-left" />}
-                onPress={handleOnBack}
-              />
-            }
-          />
-        ),
-      showHeaderLeft: mangasInLibrary.length > 0,
-      headerLeftProps:
-        mangasInLibrary.length > 0 && !showSearchBar
-          ? { 'flex-shrink': true }
-          : { 'flex-grow': true },
-      showHeaderRight: mangasInLibrary.length > 0,
-      showHeaderCenter: !showSearchBar,
-      headerRight: (
-        <Badge type="number" count={numberOfAppliedFilters} color="primary">
-          <IconButton
-            icon={<Icon type="font" name="filter-menu" />}
-            onPress={handleOnPress}
-          />
-        </Badge>
-      ),
-      loading: refreshing,
-      headerRightProps: { 'flex-shrink': true },
-      dependencies: [
-        mangasInLibrary.length > 0,
-        numberOfAppliedFilters,
-        showSearchBar,
-        query.length > 0,
-      ],
-    });
+  const setRefreshing = useLibrarySetRefreshing();
 
   return (
     <>
@@ -146,7 +82,7 @@ const Library: React.FC = () => {
         }
       />
       <Freeze freeze={mangasInLibrary.length === 0}>
-        <LibraryFilterMenu ref={ref} filtered={mangasInLibrary} />
+        <LibraryFilterMenu ref={bottomSheet} filtered={mangasInLibrary} />
       </Freeze>
     </>
   );
@@ -232,7 +168,12 @@ const ListEmptyComponent: React.FC<{
   );
 });
 
-const LibraryWrapper: React.FC = () => {
+const Library = React.forwardRef(_Library);
+
+const LibraryWrapper: React.ForwardRefRenderFunction<
+  LibraryMethods,
+  ReturnType<typeof useCollapsibleTabHeader>
+> = (props, ref) => {
   const { dataIsStale, syncing } = useIsDataStale();
 
   if (dataIsStale)
@@ -257,7 +198,7 @@ const LibraryWrapper: React.FC = () => {
         </Text>
       </Stack>
     );
-  return <Library />;
+  return <Library ref={ref} {...props} />;
 };
 
-export default LibraryWrapper;
+export default React.forwardRef(LibraryWrapper);

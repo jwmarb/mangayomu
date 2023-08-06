@@ -21,21 +21,25 @@ import { useIsFocused } from '@react-navigation/native';
 import { useUser } from '@realm/react';
 import { LibrarySortOption, SORT_LIBRARY_BY } from '@redux/slices/library';
 import { FilterState } from '@redux/slices/mainSourceSelector';
+import {
+  useLibraryRefreshing,
+  useLibrarySetRefreshing,
+} from '@screens/Library';
 import { inPlaceSort } from 'fast-sort';
 import pLimit from 'p-limit';
 const limit = pLimit(1);
 import React, { useTransition } from 'react';
 
-export function useLibraryData(
-  refreshing: boolean,
-  setRefreshing: (val: boolean) => void,
-) {
+export function useLibraryData() {
+  const refreshing = useLibraryRefreshing();
+  const setRefreshing = useLibrarySetRefreshing();
   const filters = useAppSelector((state) => state.library.filters);
   const sortBy = useAppSelector((state) => state.library.sortBy);
   const reversed = useAppSelector((state) => state.library.reversed);
   const [isLoading, setTransition] = useTransition();
-  const mangas = useQuery(MangaSchema);
-  const mangasInLibrary = mangas.filtered('inLibrary == true');
+  const mangasInLibrary = useQuery(MangaSchema, (collection) =>
+    collection.filtered('inLibrary == true'),
+  );
   const { getLocalManga } = useLocalManga();
   // React.useEffect(() => {
   //   user

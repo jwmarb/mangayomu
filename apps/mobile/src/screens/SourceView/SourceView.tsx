@@ -10,13 +10,26 @@ import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import React from 'react';
 import { Linking, Pressable, ScrollView } from 'react-native';
 import { moderateScale } from 'react-native-size-matters';
-import connector, { ConnectedSourceViewProps } from './SourceView.redux';
+import { RootStackProps } from '@navigators/Root/Root.interfaces';
+import { MangaHost } from '@mangayomu/mangascraper/src';
+import { toggleConfig } from '@redux/slices/host';
+import { useAppDispatch } from '@redux/main';
+import useAppSelector from '@hooks/useAppSelector';
 
-const SourceView: React.FC<ConnectedSourceViewProps> = (props) => {
-  const { source, config, toggleConfig } = props;
+const SourceView: React.FC<
+  RootStackProps<'SourceView'> & ReturnType<typeof useCollapsibleHeader>
+> = (props) => {
+  // const { source, config, toggleConfig } = props;
+  const source = React.useRef(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    MangaHost.sourcesMap.get(props.route.params.source)!,
+  ).current;
+  const config = useAppSelector(
+    (state) => state.host.hostsConfig[props.route.params.source],
+  );
+  const dispatch = useAppDispatch();
   const url = React.useRef<string>(`https://${source.getLink()}`).current;
-  const { onScroll, scrollViewStyle, contentContainerStyle } =
-    useCollapsibleHeader({ headerTitle: 'Source Info' });
+  const { onScroll, scrollViewStyle, contentContainerStyle } = props;
   async function handleOnViewWebsite() {
     if (await Linking.canOpenURL(url)) Linking.openURL(url);
   }
@@ -26,15 +39,17 @@ const SourceView: React.FC<ConnectedSourceViewProps> = (props) => {
   const theme = useTheme();
 
   function handleOnToggleHot() {
-    toggleConfig({ source: source.name, key: 'useHottestUpdates' });
+    dispatch(toggleConfig({ source: source.name, key: 'useHottestUpdates' }));
   }
 
   function handleOnToggleLatest() {
-    toggleConfig({ source: source.name, key: 'useLatestUpdates' });
+    dispatch(toggleConfig({ source: source.name, key: 'useLatestUpdates' }));
   }
 
   function handleOnToggleWithSearch() {
-    toggleConfig({ source: source.name, key: 'useWithUniversalSearch' });
+    dispatch(
+      toggleConfig({ source: source.name, key: 'useWithUniversalSearch' }),
+    );
   }
 
   return (
@@ -144,4 +159,4 @@ const SourceView: React.FC<ConnectedSourceViewProps> = (props) => {
   );
 };
 
-export default connector(SourceView);
+export default SourceView;

@@ -14,8 +14,8 @@ import { MANGA_LIST_ITEM_HEIGHT } from '@theme/constants';
 import { useWindowDimensions } from 'react-native';
 
 const UnfinishedMangaList: React.FC<
-  RootStackProps<'UnfinishedMangaList'>
-> = () => {
+  ReturnType<typeof useCollapsibleHeader>
+> = ({ onScroll, contentContainerStyle, scrollViewStyle }) => {
   const [unfinishedMangas] = useUnfinishedMangas();
   const { width, height } = useWindowDimensions();
   const estimatedListSize = React.useMemo(
@@ -28,10 +28,7 @@ const UnfinishedMangaList: React.FC<
     }),
     [width, height, unfinishedMangas.length],
   );
-  const { onScroll, contentContainerStyle, scrollViewStyle } =
-    useCollapsibleHeader({
-      headerTitle: '',
-    });
+
   return (
     <AnimatedFlashList
       renderItem={renderItem}

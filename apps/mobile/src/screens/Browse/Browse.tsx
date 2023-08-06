@@ -14,45 +14,62 @@ import {
   TextInputSubmitEditingEventData,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import connector, { ConnectedBrowseProps } from './Browse.redux';
 import Item from './components/Item';
 import SectionHeader from './components/SectionHeader';
 
 import MangaSearchResult from '@screens/Browse/components/MangaSearchResult';
 import { AnimatedSectionList } from '@components/animated';
+import {
+  exitUniversalSearch,
+  initializeUniversalSearch,
+  setQuery,
+  universalSearchResultHandler,
+} from '@redux/slices/browse';
+import { useAppDispatch } from '@redux/main';
+import useAppSelector from '@hooks/useAppSelector';
+import { shallowEqual } from 'react-redux';
+import { BrowseMethods } from '@screens/Browse';
 
-const Browse: React.FC<ConnectedBrowseProps> = (props) => {
-  const {
-    sources,
-    pinnedSources,
-    hostsWithUniversalSearch,
-    initializeUniversalSearch,
-    inputSubmitted,
-    exitUniversalSearch,
-    loading,
-    universalSearchResultHandler,
-    setQuery,
-    initialQuery,
-    query,
-  } = props;
-  const [showSearchBar, setShowSearchBar] = React.useState(
-    initialQuery != null,
-  );
-  function toggle() {
-    setShowSearchBar((s) => !s);
+const Browse: React.ForwardRefRenderFunction<
+  BrowseMethods,
+  ReturnType<typeof useCollapsibleTabHeader> & {
+    setShowSearchBar: (val?: boolean) => void;
+    initialQuery?: string;
   }
-  React.useEffect(() => {
-    if (!showSearchBar) exitUniversalSearch();
-  }, [showSearchBar]);
+> = (
+  {
+    onScroll,
+    scrollViewStyle,
+    contentContainerStyle,
+    initialQuery,
+    setShowSearchBar,
+  },
+  ref,
+) => {
+  const dispatch = useAppDispatch();
+  const hostsWithUniversalSearch = useAppSelector(
+    (state) =>
+      state.host.name.filter(
+        (x) => state.host.hostsConfig[x].useWithUniversalSearch === true,
+      ),
+    shallowEqual,
+  );
+  const pinnedSources = useAppSelector(
+    (state) => Object.keys(state.host.pinned),
+    shallowEqual,
+  );
+  const sources = useAppSelector((state) => state.host.name);
+  const inputSubmitted = useAppSelector((state) => state.browse.inputSubmitted);
+
   React.useEffect(() => {
     if (initialQuery) {
       setShowSearchBar(true);
-      setQuery(initialQuery);
+      dispatch(setQuery(initialQuery));
       setTimeout(async () => await searchMangas(initialQuery), 500);
     }
   }, [initialQuery]);
   async function searchMangas(query: string) {
-    initializeUniversalSearch(hostsWithUniversalSearch);
+    dispatch(initializeUniversalSearch(hostsWithUniversalSearch));
     const results = await Promise.allSettled(
       hostsWithUniversalSearch.map(async (x) => {
         try {
@@ -66,49 +83,18 @@ const Browse: React.FC<ConnectedBrowseProps> = (props) => {
         }
       }),
     );
-    universalSearchResultHandler(results);
+    dispatch(universalSearchResultHandler(results));
   }
   async function handleOnSubmitEditing(
     e: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
   ) {
     await searchMangas(e.nativeEvent.text);
   }
-  const { onScroll, scrollViewStyle, contentContainerStyle } =
-    useCollapsibleTabHeader({
-      headerTitle: 'Browse',
-      loading,
-      showHeaderRight: !showSearchBar,
-      headerCenter: showSearchBar ? (
-        <Box mx="m">
-          <Stack space="s" flex-direction="row">
-            <Input
-              defaultValue={query}
-              onChangeText={setQuery}
-              expanded
-              onSubmitEditing={handleOnSubmitEditing}
-              placeholder="Universal search..."
-              iconButton={
-                <IconButton
-                  icon={<Icon type="font" name="arrow-left" />}
-                  onPress={toggle}
-                />
-              }
-            />
-          </Stack>
-        </Box>
-      ) : undefined,
-      headerRight: (
-        <IconButton
-          icon={<Icon type="font" name="magnify" />}
-          onPress={toggle}
-        />
-      ),
-      headerLeftProps: {
-        width: '33%',
-      },
-      showHeaderLeft: !showSearchBar,
-      dependencies: [showSearchBar, query],
-    });
+
+  React.useImperativeHandle(ref, () => ({
+    handleOnSubmitEditing,
+  }));
+
   const data = React.useMemo(() => {
     return [
       {
@@ -168,4 +154,4 @@ const renderSectionHeader = (info: {
     <SectionHeader title={info.section.title} />
   ) : null;
 
-export default connector(Browse);
+export default React.forwardRef(Browse);

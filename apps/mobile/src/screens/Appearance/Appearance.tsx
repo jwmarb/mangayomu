@@ -35,57 +35,15 @@ import { BOOK_DIMENSIONS_RATIO } from '@theme/constants';
 import InterfaceTheme from '@screens/Appearance/components/InterfaceTheme/InterfaceTheme';
 import useBoolean from '@hooks/useBoolean';
 import LiveMangaPreview from '@screens/Appearance/components/LiveMangaPreview/LiveMangaPreview';
-import { Freeze } from 'react-freeze';
 import useAppSelector from '@hooks/useAppSelector';
 import { useAppDispatch } from '@redux/main';
+import LibraryPreview from '@screens/Appearance/components/LibraryPreview';
 
-type CustomManga = Omit<Manga, 'link'>;
-
-const libraryExampleData: CustomManga[] = [
-  {
-    title: 'One Piece',
-    imageCover: 'https://temp.compsci88.com/cover/One-Piece.jpg',
-    source: 'MangaSee',
-  },
-  {
-    imageCover: 'https://temp.compsci88.com/cover/Boruto.jpg',
-    source: 'MangaSee',
-    title: 'Boruto - Naruto Next Generations',
-  },
-  {
-    imageCover: 'https://temp.compsci88.com/cover/Bleach.jpg',
-    source: 'MangaSee',
-    title: 'Bleach',
-  },
-  {
-    imageCover: 'https://temp.compsci88.com/cover/Shingeki-No-Kyojin.jpg',
-    source: 'MangaSee',
-    title: 'Shingeki no Kyojin',
-  },
-  {
-    imageCover: 'https://temp.compsci88.com/cover/Naruto.jpg',
-    source: 'MangaSee',
-    title: 'Naruto',
-  },
-  {
-    imageCover: 'https://temp.compsci88.com/cover/Solo-Leveling.jpg',
-    source: 'MangaSee',
-    title: 'Solo Leveling',
-  },
-  {
-    imageCover: 'https://temp.compsci88.com/cover/Jujutsu-Kaisen.jpg',
-    source: 'MangaSee',
-    title: 'Jujutsu Kaisen',
-  },
-  {
-    imageCover:
-      'https://temp.compsci88.com/cover/The-Beginning-After-The-End.jpg',
-    source: 'MangaSee',
-    title: 'The Beginning After the End',
-  },
-];
-
-const Appearance: React.FC = () => {
+const Appearance: React.FC<ReturnType<typeof useCollapsibleHeader>> = ({
+  onScroll,
+  contentContainerStyle,
+  scrollViewStyle,
+}) => {
   const dispatch = useAppDispatch();
   const {
     title,
@@ -94,8 +52,6 @@ const Appearance: React.FC = () => {
     height: bookHeight,
     style,
   } = useAppSelector((state) => state.settings.book);
-  const { onScroll, contentContainerStyle, scrollViewStyle } =
-    useCollapsibleHeader({ headerTitle: 'Appearance' });
   const bottomSheet = React.useRef<BottomSheetMethods>(null);
   const { width: screenWidth } = useWindowDimensions();
   const [bookTitle, setBookTitle] = React.useState<string>('One Piece');
@@ -287,42 +243,16 @@ const Appearance: React.FC = () => {
           </Box>
         </Stack>
       </Animated.ScrollView>
-      <CustomBottomSheet
-        onClose={() => toggleLibraryPreview(false)}
+      <LibraryPreview
         ref={bottomSheet}
-        header={
-          <Text variant="header" align="center" bold>
-            Library Preview
-          </Text>
-        }
-      >
-        <BottomSheetScrollView>
-          <Freeze freeze={!enableLibraryPreview}>
-            <Box flex-direction="row" flex-wrap="wrap">
-              {libraryExampleData.map((item, i) => (
-                <Animated.View style={cellComponentStyle} key={i}>
-                  <Box
-                    m="s"
-                    align-items="center"
-                    justify-content="center"
-                    align-self="center"
-                  >
-                    <CustomizableBook
-                      letterSpacing={letterSpacing}
-                      fontSize={fontSize}
-                      width={width}
-                      height={height}
-                      title={item.title}
-                      source={item.source}
-                      imageCover={item.imageCover}
-                    />
-                  </Box>
-                </Animated.View>
-              ))}
-            </Box>
-          </Freeze>
-        </BottomSheetScrollView>
-      </CustomBottomSheet>
+        fontSize={fontSize}
+        width={width}
+        height={height}
+        letterSpacing={letterSpacing}
+        cellComponentStyle={cellComponentStyle}
+        enableLibraryPreview={enableLibraryPreview}
+        onClose={() => toggleLibraryPreview(false)}
+      />
     </>
   );
 };

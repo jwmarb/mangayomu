@@ -3,9 +3,9 @@ import Global from '@screens/Reader/components/ReaderSettingsMenu/components/Glo
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import Animated from 'react-native-reanimated';
 
-const GlobalReaderSettings: React.FC = () => {
-  const { onScroll, scrollViewStyle, contentContainerStyle } =
-    useCollapsibleHeader({ headerTitle: 'Reader' });
+const GlobalReaderSettings: React.FC<
+  ReturnType<typeof useCollapsibleHeader>
+> = ({ onScroll, contentContainerStyle, scrollViewStyle }) => {
   return (
     <Animated.ScrollView
       contentContainerStyle={[contentContainerStyle, scrollViewStyle]}

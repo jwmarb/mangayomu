@@ -1,35 +1,26 @@
-import React, { useTransition } from 'react';
+import React from 'react';
 import SectionHeader, {
   MANGA_HISTORY_SECTION_HEADER_HEIGHT,
 } from './components/SectionHeader';
 import MangaHistoryItem from '@screens/History/components/MangaHistoryItem';
-import connector, { ConnectedHistoryProps } from './History.redux';
 import useCollapsibleTabHeader from '@hooks/useCollapsibleTabHeader';
-import IconButton from '@components/IconButton';
 import Icon from '@components/Icon';
 import useMountedEffect from '@hooks/useMountedEffect';
 import displayMessage from '@helpers/displayMessage';
-import useDialog from '@hooks/useDialog';
 import Box from '@components/Box';
 import Text from '@components/Text';
 import { moderateScale } from 'react-native-size-matters';
 import Stack from '@components/Stack';
-import useBoolean from '@hooks/useBoolean';
-import Input from '@components/Input';
-import {
-  useLocalQuery,
-  useLocalRealm,
-  useQuery,
-  useRealm,
-} from '@database/main';
+import { useLocalRealm, useQuery, useRealm } from '@database/main';
 import { ListRenderItem } from '@shopify/flash-list';
 import { UserHistorySchema } from '@database/schemas/History';
-import useUserHistory from '@hooks/useUserHistory';
 import { AnimatedFlashList } from '@components/animated';
 import { MANGA_LIST_ITEM_HEIGHT } from '@theme/constants';
 import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import { isSameDay } from 'date-fns';
 import useMutableObject from '@hooks/useMutableObject';
+import useAppSelector from '@hooks/useAppSelector';
+import { HistoryMethods } from '@screens/History';
 
 type HistorySectionFlashListData =
   | { type: 'SECTION'; date: number }
@@ -82,12 +73,11 @@ function toFlashListData(
   });
 }
 
-const History: React.FC<ConnectedHistoryProps> = ({
-  incognito,
-  toggleIncognitoMode,
-}) => {
-  const { clearMangaHistory } = useUserHistory({ incognito });
-  const dialog = useDialog();
+const History: React.ForwardRefRenderFunction<
+  HistoryMethods,
+  { query: string } & ReturnType<typeof useCollapsibleTabHeader>
+> = ({ query, onScroll, scrollViewStyle, contentContainerStyle }, ref) => {
+  const incognito = useAppSelector((state) => state.settings.history.incognito);
   const localRealm = useLocalRealm();
   const realm = useRealm();
   const userHistory = useQuery(UserHistorySchema, (collection) =>
@@ -96,88 +86,16 @@ const History: React.FC<ConnectedHistoryProps> = ({
   const [data, setData] = React.useState<HistorySectionFlashListData[]>(() =>
     toFlashListData(userHistory, localRealm),
   );
-  const [isLoading, setTransition] = useTransition();
-  const [show, setShow] = useBoolean();
-  const [query, setQuery] = React.useState<string>('');
   const queryRef = useMutableObject(query);
+  const [_, setTransition] = React.useTransition();
 
-  const { onScroll, contentContainerStyle, scrollViewStyle } =
-    useCollapsibleTabHeader({
-      headerTitle: 'History',
-      headerLeft: (
-        <IconButton
-          icon={<Icon type="font" name="magnify" />}
-          onPress={() => setShow(true)}
-          onLongPress={() => {
-            displayMessage('History search');
-          }}
-        />
-      ),
-      showHeaderLeft: !show,
-      showHeaderRight: !show,
-      headerCenter: show ? (
-        <Box px="m">
-          <Input
-            expanded
-            onChangeText={(e) => {
-              setQuery(e);
-              setTransition(() => {
-                setData(toFlashListData(userHistory, localRealm, e));
-              });
-            }}
-            defaultValue={query}
-            placeholder="Search for a title..."
-            iconButton={
-              <IconButton
-                icon={<Icon type="font" name="arrow-left" />}
-                onPress={() => setShow(false)}
-              />
-            }
-          />
-        </Box>
-      ) : undefined,
-      headerRight: (
-        <>
-          <IconButton
-            icon={<Icon type="font" name="trash-can-outline" />}
-            onPress={() => {
-              dialog.open({
-                title: 'Clear manga history?',
-                message:
-                  'This will clear your entire manga history. This action cannot be undone.',
-                actions: [
-                  { text: 'Cancel' },
-                  {
-                    text: 'Yes, clear it',
-                    type: 'destructive',
-                    onPress: () => {
-                      clearMangaHistory();
-                      displayMessage('History cleared.');
-                    },
-                  },
-                ],
-              });
-            }}
-          />
-          <IconButton
-            onPress={() => {
-              toggleIncognitoMode();
-            }}
-            icon={
-              <Icon
-                type="font"
-                name={incognito ? 'incognito-circle' : 'incognito-circle-off'}
-              />
-            }
-            color={incognito ? undefined : 'disabled'}
-            onLongPress={() => {
-              displayMessage('Toggle Incognito');
-            }}
-          />
-        </>
-      ),
-      dependencies: [incognito, show],
-    });
+  React.useImperativeHandle(ref, () => ({
+    onQuery(e) {
+      setTransition(() => {
+        setData(toFlashListData(userHistory, localRealm, e));
+      });
+    },
+  }));
 
   useMountedEffect(() => {
     if (incognito) displayMessage('Incognito mode on');
@@ -287,8 +205,6 @@ const overrideItemLayout: (
   }
 };
 
-type ExtraData = Record<string, LocalMangaSchema | undefined>;
-
 const renderItem: ListRenderItem<HistorySectionFlashListData> = ({
   item,
   extraData: _extraData,
@@ -310,4 +226,4 @@ const keyExtractor = (item: HistorySectionFlashListData) => {
   }
 };
 
-export default connector(History);
+export default React.forwardRef(History);

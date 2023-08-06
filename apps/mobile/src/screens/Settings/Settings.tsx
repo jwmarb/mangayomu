@@ -7,9 +7,11 @@ import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 
-const Settings: React.FC = () => {
-  const { onScroll, contentContainerStyle, scrollViewStyle } =
-    useCollapsibleHeader({ headerTitle: 'Settings' });
+const Settings: React.FC<ReturnType<typeof useCollapsibleHeader>> = ({
+  onScroll,
+  contentContainerStyle,
+  scrollViewStyle,
+}) => {
   const navigation = useRootNavigation();
   const handleOnAppearance = React.useCallback(() => {
     navigation.navigate('Appearance');
