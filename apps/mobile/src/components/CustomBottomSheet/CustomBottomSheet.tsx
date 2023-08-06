@@ -16,9 +16,6 @@ import Animated, {
 import { Portal } from '@gorhom/portal';
 import { AnimatedBox } from '@components/Box';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Freeze } from 'react-freeze';
-import Progress from '@components/Progress/Progress';
-import Box from '@components/Box/Box';
 
 const CustomHandle: React.FC<BottomSheetHandleProps> = ({ animatedIndex }) => {
   const theme = useTheme();
@@ -130,16 +127,8 @@ const CustomBottomSheet: React.ForwardRefRenderFunction<
             {header}
           </AnimatedBox>
         )}
-        <Freeze
-          freeze={!isOpened}
-          placeholder={
-            <Box p="m">
-              <Progress />
-            </Box>
-          }
-        >
-          {children}
-        </Freeze>
+
+        {children}
       </BottomSheet>
     </Portal>
   );
