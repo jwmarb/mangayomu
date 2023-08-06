@@ -1,6 +1,4 @@
 import { RootStack } from '@navigators/Root';
-import { AppState } from '@redux/main';
-import { connect, ConnectedProps } from 'react-redux';
 import Home from '@screens/Home';
 import MangaView from '@screens/MangaView';
 import React from 'react';
@@ -11,15 +9,15 @@ import InfiniteMangaList from '@screens/InfiniteMangaList';
 import Settings from '@screens/Settings';
 import Appearance from '@screens/Appearance';
 import Reader from '@screens/Reader';
-import MainSourceSelector from '@screens/MainSourceSelector/MainSourceSelector';
+import MainSourceSelector from '@screens/MainSourceSelector';
 import UnfinishedMangaList from '@screens/UnfinishedMangaList';
 import GlobalReaderSettings from '@screens/GlobalReaderSettings';
 import Login from '@screens/Login';
 import Register from '@screens/Register';
 import SplashScreen from 'react-native-splash-screen';
-import { getTimeSinceStartup } from 'react-native-startup-time';
 import useAppSelector from '@hooks/useAppSelector';
-import { Alert } from 'react-native';
+// import { getTimeSinceStartup } from 'react-native-startup-time';
+// import { Alert } from 'react-native';
 
 const Root: React.FC = () => {
   const showWelcomeScreen = useAppSelector(
@@ -27,7 +25,7 @@ const Root: React.FC = () => {
   );
   React.useEffect(() => {
     SplashScreen.hide();
-    getTimeSinceStartup().then((ms) => Alert.alert(`Startup took ${ms} ms`));
+    // getTimeSinceStartup().then((ms) => Alert.alert(`Startup took ${ms} ms`));
   }, []);
   return (
     <RootStack.Navigator
