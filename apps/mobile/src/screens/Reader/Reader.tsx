@@ -9,7 +9,6 @@ import {
   GestureDetector,
   GestureType,
 } from 'react-native-gesture-handler';
-import connector, { ConnectedReaderProps } from './Reader.redux';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import useReaderProps from '@screens/Reader/hooks/useReaderProps';
 import useData from '@screens/Reader/hooks/useData';
@@ -275,4 +274,4 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
   );
 };
 
-export default connector(Reader);
+export default Reader;
