@@ -176,7 +176,10 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
     [panGesture, tapGesture, pinchGesture, doubleTapGesture],
   );
 
-  const extraData = { extendedState, readingDirection, chapter };
+  const extraData = React.useMemo(
+    () => ({ extendedState, readingDirection, chapter }),
+    [extendedState, readingDirection, chapter],
+  );
 
   return (
     <ChapterErrorContext.Provider value={fetchPagesByChapter}>
