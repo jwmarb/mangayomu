@@ -5,6 +5,7 @@ import { inPlaceSort } from 'fast-sort';
 import React from 'react';
 import { getErrorMessage } from './getErrorMessage';
 import { MangaHost, Manga } from '@mangayomu/mangascraper/src';
+import { EqualityFn } from 'react-redux';
 
 export interface SourceError {
   error: string;
@@ -14,6 +15,16 @@ export interface SourceError {
 export type MangaConcurrencyResult = {
   errors: SourceError[];
   mangas: Manga[];
+};
+
+export const equalityMangaHostFn: EqualityFn<
+  ReturnType<typeof getMangaHost>
+> = (a, b) => {
+  const p = new Set(a.getHosts());
+  for (const source of b.getHosts()) {
+    if (!p.has(source)) return false;
+  }
+  return true;
 };
 
 /**
@@ -27,6 +38,9 @@ export default function getMangaHost(state: AppState) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const hosts = state.host.name.map((host) => p.get(host)!);
   return {
+    getHosts() {
+      return state.host.name;
+    },
     getSourcesLength() {
       return hosts.length;
     },
