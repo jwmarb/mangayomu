@@ -239,12 +239,7 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
                 <PageList
                   key={width}
                   nativeFlatListGesture={nativeGestures}
-                  currentPageKey={currentPageKey}
-                  pinchRef={pinchRef}
-                  pageGestures={pageGestures}
-                  panRef={panRef}
                   ref={ref}
-                  readingDirection={readingDirection}
                   getItemLayout={getItemLayout}
                   maxToRenderPerBatch={10}
                   windowSize={9}

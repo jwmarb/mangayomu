@@ -15,15 +15,10 @@ const PageList: React.ForwardRefRenderFunction<
 > = (props: PageListProps, ref) => {
   const {
     renderItem: preDeterminedRenderItem,
-    readingDirection,
     extraData,
     initialScrollIndex,
     estimatedFirstItemOffset,
-    panRef,
-    pinchRef,
     nativeFlatListGesture,
-    pageGestures,
-    currentPageKey,
     ...rest
   } = props;
 

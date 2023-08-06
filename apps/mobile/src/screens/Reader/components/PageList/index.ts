@@ -9,10 +9,5 @@ import { GestureType, SimultaneousGesture } from 'react-native-gesture-handler';
 export interface PageListProps
   extends Omit<FlatListProps<Page>, keyof FlashListProps<Page>>,
     FlashListProps<Page> {
-  readingDirection: ReadingDirection;
-  panRef: React.MutableRefObject<GestureType | undefined>;
-  pinchRef: React.MutableRefObject<GestureType | undefined>;
-  pageGestures: PageGestures;
-  currentPageKey: React.MutableRefObject<string>;
   nativeFlatListGesture: SimultaneousGesture;
 }
