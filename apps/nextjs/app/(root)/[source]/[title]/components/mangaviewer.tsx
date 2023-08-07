@@ -40,6 +40,7 @@ import {
   SORT_CHAPTERS_BY,
   SortChaptersBy,
 } from '@mangayomu/schemas';
+import getMangaMeta from '@app/helpers/getMangaMeta';
 
 interface MangaViewerProps {
   // meta: MangaMeta<MangaChapter> &
@@ -75,12 +76,7 @@ export default function MangaViewer(props: MangaViewerProps) {
   >(null);
   React.useEffect(() => {
     async function init() {
-      const res = await fetch('/api/v1/manga', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(_manga),
-      });
-      const { data: p } = await res.json();
+      const p = await getMangaMeta(_manga);
       setMeta(p);
     }
     init();
