@@ -11,7 +11,7 @@ export type UpdateOptions = {
 };
 
 export default function useObject<
-  TSchema extends { _id: string; _realmId: string },
+  TSchema extends { _id: string | Realm.BSON.ObjectId; _realmId: string },
   RealmObject = Partial<TSchema> & {
     initializing: boolean;
     update: (fn: (draft: TSchema) => void, options?: UpdateOptions) => void;
@@ -19,7 +19,7 @@ export default function useObject<
   },
 >(
   MongoDBCollection: Parameters<typeof useMongoClient<TSchema>>[0],
-  id?: string,
+  id?: string | Realm.BSON.ObjectId,
 ): RealmObject {
   const collection = useMongoClient(MongoDBCollection);
   const user = useUser();

@@ -6,14 +6,17 @@ import {
 } from '@app/realm/collection';
 import React from 'react';
 
-type TCollection<T extends { _id: string }> =
+type TCollection<T extends { _id: string | Realm.BSON.ObjectId }> =
   Realm.Services.MongoDB.MongoDBCollection<T>;
 
-interface MongoDBCollection<T extends { _id: string }> extends TCollection<T> {
+interface MongoDBCollection<T extends { _id: string | Realm.BSON.ObjectId }>
+  extends TCollection<T> {
   initFields: () => Partial<T>;
 }
 
-export default function useMongoClient<TSchema extends { _id: string }>(
+export default function useMongoClient<
+  TSchema extends { _id: string | Realm.BSON.ObjectId },
+>(
   MongoDBCollection: new (user: RealmUser) => {
     collection: TCollection<TSchema>;
   },
