@@ -129,8 +129,5 @@ export default function ImageResolver({ children }: React.PropsWithChildren) {
     } else initialized.current = true;
   }, [clear, listeners, mangas, count, batchify, unbatch]);
 
-  React.useEffect(() => {
-    console.log(`There's currently ${batches.size} mangas resolving...`);
-  }, [batches.size]);
   return <>{children}</>;
 }
