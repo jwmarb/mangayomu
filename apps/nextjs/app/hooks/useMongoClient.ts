@@ -17,8 +17,10 @@ interface MongoDBCollection<T extends { _id: string | Realm.BSON.ObjectId }>
 export default function useMongoClient<
   TSchema extends { _id: string | Realm.BSON.ObjectId },
 >(
-  MongoDBCollection: new (user: RealmUser) => {
+  MongoDBCollection: (new (user: RealmUser) => {
     collection: TCollection<TSchema>;
+  }) & {
+    type: '_realmObjectSchema';
   },
 ): MongoDBCollection<TSchema> {
   const user = useUser();

@@ -1,10 +1,11 @@
 import Collection from '@app/realm/collection';
 import { IMangaSchema } from '@mangayomu/schemas';
+import RealmWeb from 'realm-web';
 
 export default class MangaSchema extends Collection<IMangaSchema>({
   name: 'Manga',
   defaults: {
-    _id: () => new Realm.BSON.ObjectID(),
+    _id: () => new RealmWeb.BSON.ObjectID() as unknown as Realm.BSON.ObjectId,
     selectedLanguage: 'Use default language',
     readerDirection: 'Use global setting',
     readerImageScaling: 'Use global setting',

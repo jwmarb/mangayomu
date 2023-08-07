@@ -19,8 +19,20 @@ export default function useObject<
   },
 >(
   MongoDBCollection: Parameters<typeof useMongoClient<TSchema>>[0],
-  id?: string | Realm.BSON.ObjectId,
+  id?: string | Partial<TSchema>,
 ): RealmObject {
+  const isSameDocument = React.useCallback(
+    (x?: TSchema | null) => {
+      if (id == null || x == null) return false;
+      if (typeof id === 'string') return x._id === id;
+      for (const key in id) {
+        if (id[key] !== x[key]) return false;
+      }
+
+      return true;
+    },
+    [id],
+  );
   const collection = useMongoClient(MongoDBCollection);
   const user = useUser();
   const [doc, setDoc] = React.useState<TSchema | null>(null);
@@ -37,7 +49,7 @@ export default function useObject<
         switch (change.operationType) {
           case 'insert':
           case 'update':
-            if (change.documentKey._id === id)
+            if (isSameDocument(change.fullDocument))
               setDoc(change.fullDocument || null);
             break;
         }
@@ -45,17 +57,23 @@ export default function useObject<
     }
     async function init() {
       if (id) {
-        const document = await collection.findOne({
-          _id: id,
-          _realmId: user.id,
-        });
+        let document: TSchema | null;
+
+        if (typeof id === 'string') {
+          document = await collection.findOne({
+            _id: id,
+            _realmId: user.id,
+          });
+        } else {
+          document = await collection.findOne(id);
+        }
         setDoc(document);
         toggleLoading(false);
       }
     }
     init();
     listener();
-  }, [collection, id, toggleLoading, user.id]);
+  }, [collection, id, toggleLoading, user.id, isSameDocument]);
 
   const obj = React.useMemo(() => {
     const object = { ...doc } as unknown as TSchema & {
@@ -72,9 +90,9 @@ export default function useObject<
         doc != null
           ? { ...doc }
           : ({
-              ...collection.initFields(),
               _id: id,
               _realmId: user.id,
+              ...collection.initFields(),
             } as TSchema);
       fn(draft);
       for (const key in draft) {
@@ -98,9 +116,9 @@ export default function useObject<
 
   React.useEffect(() => {
     async function uploadChanges() {
-      if (draft != null) {
+      if (draft != null && id != null) {
         await collection.updateOne(
-          { _id: id, _realmId: user.id },
+          typeof id === 'string' ? { _id: id, _realmId: user.id } : id,
           { $set: draft },
           { upsert: shouldUpsert.current },
         );

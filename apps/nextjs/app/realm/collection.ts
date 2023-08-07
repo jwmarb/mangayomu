@@ -16,6 +16,7 @@ export default function Collection<
   return class Collection {
     static schema: RealmObjectSchema<TObject> = schema;
     readonly collection: Realm.Services.MongoDB.MongoDBCollection<TObject>;
+    static readonly type = '_realmObjectSchema';
     public constructor(user: RealmUser) {
       this.collection = user
         .mongoClient('mongodb-atlas')
