@@ -42,12 +42,13 @@ import {
 } from '@mangayomu/schemas';
 import getMangaMeta from '@app/helpers/getMangaMeta';
 import { useUser } from '@app/context/realm';
+import cache from '@app/helpers/cache';
 
 interface MangaViewerProps {
-  meta: MangaMeta<MangaChapter> &
-    Manga &
-    Partial<WithAuthors> &
-    Partial<WithStatus>;
+  // meta: MangaMeta<MangaChapter> &
+  //   Manga &
+  //   Partial<WithAuthors> &
+  //   Partial<WithStatus>;
   source: string;
   manga: Manga;
 
@@ -64,7 +65,7 @@ const SortLanguages = (a: ISOLangCode, b: ISOLangCode) => {
 };
 
 export default function MangaViewer(props: MangaViewerProps) {
-  const { source, manga: _manga, meta } = props;
+  const { source, manga: _manga } = props;
   const user = useUser();
   const manga = useObject(
     MangaSchema,
@@ -73,6 +74,21 @@ export default function MangaViewer(props: MangaViewerProps) {
       [_manga.link, user.id],
     ),
   );
+
+  const [meta, setMeta] = React.useState<
+    | (MangaMeta<MangaChapter> &
+        Manga &
+        Partial<WithAuthors> &
+        Partial<WithStatus>)
+    | null
+  >(null);
+  React.useEffect(() => {
+    async function init() {
+      const p = await cache(_manga.link, () => getMangaMeta(_manga));
+      setMeta(p);
+    }
+    init();
+  }, [_manga]);
 
   const supportedLanguages: [ISOLangCode, string][] | null =
     React.useMemo(() => {

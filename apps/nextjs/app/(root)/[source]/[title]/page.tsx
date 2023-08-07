@@ -85,11 +85,9 @@ export default async function Page(props: PageProps) {
       </Screen>
     );
 
-  const meta = await getMangaMeta(manga, env().VERCEL_URL + '/api/v1/manga');
-
   return (
     <Screen>
-      <MangaViewer manga={manga} source={host.name} meta={meta} />
+      <MangaViewer manga={manga} source={host.name} />
     </Screen>
   );
 }
