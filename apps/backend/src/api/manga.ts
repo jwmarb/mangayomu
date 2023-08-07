@@ -44,7 +44,7 @@ const post: Route = async (req, res) => {
         },
       ).exec(),
       UserManga.updateMany(
-        { _id: manga.link },
+        { link: manga.link },
         {
           $set: {
             title: data.title,
@@ -100,7 +100,6 @@ const patch: Route = async (req, res) => {
         value.map((link) =>
           limit(async () => {
             const data = await host.getMeta({ link });
-            console.log(`Added ${link} to source mangas`);
             const _id = `${slugify(source)}/${slugify(data.title)}`;
 
             bulkWriteOperationSourceManga.push({
@@ -122,7 +121,7 @@ const patch: Route = async (req, res) => {
             });
             bulkWriteOperationUserManga.push({
               updateMany: {
-                filter: { _id: link },
+                filter: { link: link },
                 update: [
                   {
                     $set: {
@@ -154,8 +153,9 @@ const patch: Route = async (req, res) => {
               mangaResults.push({
                 imageCover: mangas.value.imageCover,
                 title: mangas.value.title,
-                _id: mangas.value.link,
-              });
+                link: mangas.value.link,
+                source: mangas.value.source,
+              } as Manga);
               break;
           }
         }
