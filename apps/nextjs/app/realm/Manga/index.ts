@@ -1,6 +1,6 @@
 import Collection from '@app/realm/collection';
 import { IMangaSchema } from '@mangayomu/schemas';
-import RealmWeb from 'realm-web';
+import * as RealmWeb from 'realm-web';
 
 export default class MangaSchema extends Collection<IMangaSchema>({
   name: 'Manga',
