@@ -57,7 +57,7 @@ export const MangaReadingChapter: Realm.ObjectSchema = {
   embedded: true,
   properties: {
     _id: 'string',
-    index: 'double',
+    index: 'int',
     numOfPages: 'int',
   },
 };
