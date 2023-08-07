@@ -1,4 +1,4 @@
-import { ReadingDirection } from '@app/realm/Manga';
+import { ReadingDirection } from '@mangayomu/schemas';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 

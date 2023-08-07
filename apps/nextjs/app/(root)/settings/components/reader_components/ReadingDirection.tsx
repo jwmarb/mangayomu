@@ -1,13 +1,7 @@
 import Highlight from '@app/(root)/settings/components/highlight';
 import Text from '@app/components/Text';
-import {
-  MdArrowDownward,
-  MdArrowRightAlt,
-  MdArrowUpward,
-  MdMoreHoriz,
-  MdMoreVert,
-} from 'react-icons/md';
-import { ReadingDirection as Direction } from '@app/realm/Manga';
+import { MdArrowRightAlt } from 'react-icons/md';
+import { ReadingDirection as Direction } from '@mangayomu/schemas';
 import { useReaderSettings } from '@app/context/readersettings';
 import { shallow } from 'zustand/shallow';
 import React from 'react';
