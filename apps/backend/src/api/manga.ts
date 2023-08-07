@@ -10,13 +10,13 @@ import { launchPuppeteer } from '@mangayomu/puppeteer';
 import {
   ISourceManga,
   Manga as UserManga,
-  IMangaSchema,
   SourceManga,
   getErrorMessage,
   mongodb,
   slugify,
 } from '@main';
 import pLimit from 'promise-limit';
+import { IMangaSchema } from '@mangayomu/schemas';
 
 const post: Route = async (req, res) => {
   const manga = req.body<Manga>();
