@@ -24,13 +24,7 @@ import SupportedLanguages from './supportedlanguages';
 import Authors from './authors';
 import MangaSource from './mangasource';
 import useObject from '@app/hooks/useObject';
-import MangaSchema, {
-  IMangaSchema,
-  SORT_CHAPTERS_BY,
-  SortChaptersByType,
-} from '@app/realm/Manga';
-import useMongoClient from '@app/hooks/useMongoClient';
-import { useUser } from '@app/context/realm';
+
 import { ModalMethods } from '@app/components/Modal';
 import FilterModal from './filtermodal';
 import { inPlaceSort } from 'fast-sort';
@@ -40,6 +34,12 @@ import getMangaHost from '@app/helpers/getMangaHost';
 import * as DOMPurify from 'dompurify';
 import ImageCover from './imagecover';
 import usePaperBackground from '@app/hooks/usePaperBackground';
+import MangaSchema from '@app/realm/Manga';
+import {
+  IMangaSchema,
+  SORT_CHAPTERS_BY,
+  SortChaptersBy,
+} from '@mangayomu/schemas';
 
 interface MangaViewerProps {
   // meta: MangaMeta<MangaChapter> &
@@ -109,8 +109,7 @@ export default function MangaViewer(props: MangaViewerProps) {
     [meta],
   );
   const modal = React.useRef<ModalMethods>(null);
-  const [sortBy, setSortBy] =
-    React.useState<SortChaptersByType>('Chapter number');
+  const [sortBy, setSortBy] = React.useState<SortChaptersBy>('Chapter number');
   const [reversed, setReversed] = useBoolean();
 
   const currentlyReadingChapter = React.useMemo(() => {
@@ -164,7 +163,7 @@ export default function MangaViewer(props: MangaViewerProps) {
     );
   };
 
-  const handleOnSortBy = (val: SortChaptersByType, r: boolean) => {
+  const handleOnSortBy = (val: SortChaptersBy, r: boolean) => {
     setSortBy(val);
     setReversed(r);
   };
