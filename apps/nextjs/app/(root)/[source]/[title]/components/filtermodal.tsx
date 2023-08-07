@@ -1,19 +1,16 @@
 import Modal, { ModalMethods } from '@app/components/Modal';
 import Tabs from '@app/components/Tabs';
-import Text from '@app/components/Text';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import React from 'react';
-import { MdArrowUpward, MdCheck } from 'react-icons/md';
 import Filter from '@app/components/Filter';
-import useBoolean from '@app/hooks/useBoolean';
-import { IMangaSchema, SortChaptersByType } from '@app/realm/Manga';
+import { IMangaSchema, SortChaptersBy } from '@mangayomu/schemas';
 
 interface FilterModalProps extends React.PropsWithChildren {
   supportedLanguages?: [ISOLangCode, string][] | null;
   onSelectLanguage: (val: IMangaSchema['selectedLanguage']) => void;
   selectedLanguage: IMangaSchema['selectedLanguage'];
-  onSort: (val: SortChaptersByType, reversed: boolean) => void;
-  sortBy: SortChaptersByType;
+  onSort: (val: SortChaptersBy, reversed: boolean) => void;
+  sortBy: SortChaptersBy;
   reversed: boolean;
 }
 
