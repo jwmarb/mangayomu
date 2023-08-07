@@ -17,6 +17,7 @@
     "@mangayomu/language-codes": "1.0.0",
     "@mangayomu/mangascraper": "1.0.0",
     "@mangayomu/request-handler": "1.0.0",
+    "@mangayomu/schemas": "1.0.0",
     "@mangayomu/vercel-env": "1.0.0",
     "@radix-ui/react-scroll-area": "^1.0.4",
     "@react-spring/web": "^9.7.3",
