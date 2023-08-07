@@ -9,6 +9,8 @@ import { TbError404 } from 'react-icons/tb';
 import { Metadata } from 'next';
 import MangaViewer from './components/mangaviewer';
 import GoBackButton from './components/gobackbutton';
+import getMangaMeta from '@app/helpers/getMangaMeta';
+import env from '@mangayomu/vercel-env';
 interface PageProps {
   params: {
     source: string;
@@ -39,12 +41,12 @@ export async function generateMetadata({
     },
   };
 }
-function getSourceFromSlug(sourceSlug: string) {
+const getSourceFromSlug = React.cache((sourceSlug: string) => {
   const idx = MangaHost.sources.findIndex(
     (source) => getSlug(source) === sourceSlug,
   );
   return MangaHost.sourcesMap.get(MangaHost.sources[idx]);
-}
+});
 
 export default async function Page(props: PageProps) {
   const {
@@ -83,26 +85,30 @@ export default async function Page(props: PageProps) {
       </Screen>
     );
 
+  const meta = await getMangaMeta(manga, env().VERCEL_URL + '/api/v1/manga');
+
   return (
     <Screen>
-      <MangaViewer manga={manga} source={host.name} />
+      <MangaViewer manga={manga} source={host.name} meta={meta} />
     </Screen>
   );
 }
 
-async function getSourceManga(pathName: string): Promise<Manga | null> {
-  const cached = await redis.get(pathName);
-  if (cached == null) {
-    const { connect, close } = getMongooseConnection();
-    await connect();
-    const value = await SourceManga.findById(pathName);
-    if (value == null) return null;
-    await Promise.all([
-      redis.setex(pathName, 300, JSON.stringify(value.toJSON())),
-      close,
-    ]);
-    return value.toObject();
-  }
+const getSourceManga = React.cache(
+  async (pathName: string): Promise<Manga | null> => {
+    const cached = await redis.get(pathName);
+    if (cached == null) {
+      const { connect, close } = getMongooseConnection();
+      await connect();
+      const value = await SourceManga.findById(pathName);
+      if (value == null) return null;
+      await Promise.all([
+        redis.setex(pathName, 300, JSON.stringify(value.toJSON())),
+        close,
+      ]);
+      return value.toObject();
+    }
 
-  return JSON.parse(cached);
-}
+    return JSON.parse(cached);
+  },
+);

@@ -44,10 +44,10 @@ import getMangaMeta from '@app/helpers/getMangaMeta';
 import { useUser } from '@app/context/realm';
 
 interface MangaViewerProps {
-  // meta: MangaMeta<MangaChapter> &
-  //   Manga &
-  //   Partial<WithAuthors> &
-  //   Partial<WithStatus>;
+  meta: MangaMeta<MangaChapter> &
+    Manga &
+    Partial<WithAuthors> &
+    Partial<WithStatus>;
   source: string;
   manga: Manga;
 
@@ -64,9 +64,8 @@ const SortLanguages = (a: ISOLangCode, b: ISOLangCode) => {
 };
 
 export default function MangaViewer(props: MangaViewerProps) {
-  const { source, manga: _manga } = props;
+  const { source, manga: _manga, meta } = props;
   const user = useUser();
-  const host = getMangaHost(source);
   const manga = useObject(
     MangaSchema,
     React.useMemo(
@@ -74,20 +73,6 @@ export default function MangaViewer(props: MangaViewerProps) {
       [_manga.link, user.id],
     ),
   );
-  const [meta, setMeta] = React.useState<
-    | (MangaMeta<MangaChapter> &
-        Manga &
-        Partial<WithAuthors> &
-        Partial<WithStatus>)
-    | null
-  >(null);
-  React.useEffect(() => {
-    async function init() {
-      const p = await getMangaMeta(_manga);
-      setMeta(p);
-    }
-    init();
-  }, [host, _manga]);
 
   const supportedLanguages: [ISOLangCode, string][] | null =
     React.useMemo(() => {
