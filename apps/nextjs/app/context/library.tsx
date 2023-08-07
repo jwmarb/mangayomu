@@ -2,13 +2,14 @@
 import { useUser } from '@app/context/realm';
 import getErrorMessage from '@app/helpers/getErrorMessage';
 import useMongoClient from '@app/hooks/useMongoClient';
-import MangaSchema, { IMangaSchema } from '@app/realm/Manga';
+import MangaSchema from '@app/realm/Manga';
 import React from 'react';
 import { create } from 'zustand';
 import { shallow } from 'zustand/shallow';
 import { integrateSortedList } from '@mangayomu/algorithms';
 import { immer } from 'zustand/middleware/immer';
 import { persist } from 'zustand/middleware';
+import { IMangaSchema } from '@mangayomu/schemas';
 
 export const SORT_LIBRARY_BY = {
   'Age in library': (a: IMangaSchema) => a.dateAddedInLibrary,
@@ -22,7 +23,7 @@ export const SORT_LIBRARY_BY_KEYS = Object.keys(
 ) as SortLibraryBy[];
 
 const idComparator = (a: IMangaSchema, b: IMangaSchema) =>
-  a._id.localeCompare(b._id);
+  a._id.toHexString().localeCompare(b._id.toHexString());
 
 export type SortLibraryBy = keyof typeof SORT_LIBRARY_BY;
 
@@ -47,10 +48,10 @@ interface MangaLibraryStore {
   query: string;
   mangas: IMangaSchema[];
   setMangas: (s: IMangaSchema[]) => void;
-  deleteManga: (id: string) => void;
+  deleteManga: (id: Realm.BSON.ObjectId) => void;
   addManga: (manga: IMangaSchema) => void;
   updateManga: <TOptions extends { upsert?: boolean }>(
-    _id: string,
+    _id: Realm.BSON.ObjectId,
     fields: TOptions['upsert'] extends true
       ? IMangaSchema
       : Partial<IMangaSchema>,
@@ -133,7 +134,7 @@ export const useMangaLibrary = create(
     updateManga: function <
       TOptions extends { upsert?: boolean } = { upsert: false },
     >(
-      _id: string,
+      _id: Realm.BSON.ObjectId,
       fields: TOptions['upsert'] extends true
         ? IMangaSchema
         : Partial<IMangaSchema>,
