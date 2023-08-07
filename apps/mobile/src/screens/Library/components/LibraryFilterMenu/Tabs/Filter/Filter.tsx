@@ -1,10 +1,6 @@
 import Box from '@components/Box';
-import CheckboxItem from '@components/Filters/CheckboxItem';
-
 import { FilterState } from '@redux/slices/mainSourceSelector';
-import FilterItem from '@components/Filters/FilterItem';
 import React from 'react';
-import connector, { ConnectedLibraryFilterProps } from './Filter.redux';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import Button from '@components/Button';
 import { MangaHost } from '@mangayomu/mangascraper/src';
@@ -17,7 +13,14 @@ import {
 } from '@theme/constants';
 import createAccordionHeader from '@helpers/createAccordionHeader';
 import createAccordionItem from '@helpers/createAccordionItem';
-import { Dimensions, StyleSheet } from 'react-native';
+import { FilterProps } from '@screens/Library/components/LibraryFilterMenu/Tabs/Filter';
+import useAppSelector from '@hooks/useAppSelector';
+import { useAppDispatch } from '@redux/main';
+import {
+  resetFilters,
+  toggleGenre,
+  toggleSourceVisibility,
+} from '@redux/slices/library';
 interface LibraryAcccordionContextState {
   toggle: (key: string) => void;
   toggleGenre: (i: string) => void;
@@ -45,14 +48,10 @@ type LibraryAccordionData =
   | { type: 'ACCORDION_GENRE_ITEM'; item: string }
   | { type: 'ACCORDION_SOURCE_ITEM'; item: string };
 
-const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
-  const {
-    filterStates,
-    toggleGenre,
-    toggleSourceVisibility,
-    resetFilters,
-    filteredMangas,
-  } = props;
+const Filter: React.FC<FilterProps> = (props) => {
+  const filteredMangas = props.filtered;
+  const filterStates = useAppSelector((state) => state.library.filters);
+  const dispatch = useAppDispatch();
   const [state, setState] = React.useState({
     Sources: true,
     Genres: false,
@@ -75,7 +74,7 @@ const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
     [filteredMangas.length],
   );
   const onResetFilter = React.useCallback(() => {
-    resetFilters([...hostsInLibrary]);
+    dispatch(resetFilters([...hostsInLibrary]));
   }, [hostsInLibrary]);
   const genresSet = React.useMemo(() => {
     const genres = new Set<string>();
@@ -141,7 +140,11 @@ const Filter: React.FC<ConnectedLibraryFilterProps> = (props) => {
     <BottomSheetScrollView>
       <Box mb="xl">
         <LibraryAccordionContext.Provider
-          value={{ toggle, toggleGenre, toggleSourceVisibility }}
+          value={{
+            toggle,
+            toggleGenre: (x) => dispatch(toggleGenre(x)),
+            toggleSourceVisibility: (x) => dispatch(toggleSourceVisibility(x)),
+          }}
         >
           <FlashList
             ListHeaderComponent={
@@ -221,4 +224,4 @@ const renderItem: ListRenderItem<LibraryAccordionData> = ({
 const keyExtractor = (_: LibraryAccordionData, i: number) => String(i);
 const getItemType = (item: LibraryAccordionData) => item.type;
 
-export default connector(Filter);
+export default Filter;
