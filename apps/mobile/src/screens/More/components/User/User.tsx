@@ -64,46 +64,17 @@ const User: React.FC = () => {
   }
 
   async function handleOnForceSync() {
-    // if (realm.syncSession)
-    try {
-      // await realm.syncSession.downloadAllServerChanges();
-      const mangas = (await user
-        .mongoClient('mongodb-atlas')
-        .db('mangayomu')
-        .collection<IMangaSchema>('Manga')
-        .aggregate([
-          { $match: { _realmId: user.id, inLibrary: true } },
-        ])) as IMangaSchema[];
-      let count = 0;
-      // console.log(mangas);
-      for (let i = 0; i < mangas.length; i++) {
-        mangas[i]._id = new Realm.BSON.ObjectID(mangas[i]._id);
-        count++;
-        if (realm.objectForPrimaryKey(MangaSchema, mangas[i]._id) == null)
-          limit(async () => {
-            await wait();
-            console.log(`Attempting to save ${mangas[i].link}`);
-            realm.write(() => {
-              const k = realm.create(
-                MangaSchema,
-                mangas[i],
-                Realm.UpdateMode.Modified,
-              );
-              console.log(count, k._id);
-            });
-          });
-        else
-          console.log(count, `${mangas[i].link} is saved locally. Skipping...`);
+    if (realm.syncSession)
+      try {
+        await realm.syncSession.downloadAllServerChanges();
+      } catch (e) {
+        dialog.open({ title: 'Failed to sync', message: getErrorMessage(e) });
+      } finally {
+        dialog.open({
+          title: 'Sync complete',
+          message: 'Downloaded all server changes success',
+        });
       }
-      console.log(mangas.length);
-    } catch (e) {
-      dialog.open({ title: 'Failed to sync', message: getErrorMessage(e) });
-    } finally {
-      dialog.open({
-        title: 'Sync complete',
-        message: 'Downloaded all server changes success',
-      });
-    }
   }
 
   return (
