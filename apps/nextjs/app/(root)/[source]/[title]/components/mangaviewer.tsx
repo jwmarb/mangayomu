@@ -41,6 +41,7 @@ import {
   SortChaptersBy,
 } from '@mangayomu/schemas';
 import getMangaMeta from '@app/helpers/getMangaMeta';
+import { useUser } from '@app/context/realm';
 
 interface MangaViewerProps {
   // meta: MangaMeta<MangaChapter> &
@@ -64,9 +65,15 @@ const SortLanguages = (a: ISOLangCode, b: ISOLangCode) => {
 
 export default function MangaViewer(props: MangaViewerProps) {
   const { source, manga: _manga } = props;
-
+  const user = useUser();
   const host = getMangaHost(source);
-  const manga = useObject(MangaSchema, _manga.link);
+  const manga = useObject(
+    MangaSchema,
+    React.useMemo(
+      () => ({ link: _manga.link, _realmId: user.id }),
+      [_manga.link, user.id],
+    ),
+  );
   const [meta, setMeta] = React.useState<
     | (MangaMeta<MangaChapter> &
         Manga &
