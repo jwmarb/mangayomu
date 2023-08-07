@@ -112,7 +112,7 @@ export default function Library() {
   return (
     <LibraryRefreshingContext.Provider value={refreshing}>
       <LibrarySetRefreshingContext.Provider value={setRefreshing}>
-        <LazyLibrary {...props} />
+        <LazyLibrary ref={ref} {...props} />
       </LibrarySetRefreshingContext.Provider>
     </LibraryRefreshingContext.Provider>
   );
