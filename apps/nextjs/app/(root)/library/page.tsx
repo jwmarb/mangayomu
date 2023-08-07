@@ -74,10 +74,10 @@ export default function Page() {
           (filtered.length > 0 ? (
             sorted.map((x) => (
               <Book
-                key={x._id}
+                key={x._id.toHexString()}
                 manga={{
                   title: x.title,
-                  link: x._id,
+                  link: x.link,
                   imageCover: x.imageCover,
                   source: x.source,
                 }}
