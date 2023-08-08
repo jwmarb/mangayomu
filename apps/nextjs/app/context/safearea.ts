@@ -1,3 +1,4 @@
+'use client';
 import { create } from 'zustand';
 export type Breakpoint = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | null;
 interface SafeAreaStore {
