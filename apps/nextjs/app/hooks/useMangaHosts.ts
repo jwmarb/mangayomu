@@ -3,7 +3,7 @@ import getErrorMessage from '../helpers/getErrorMessage';
 import { MangaHost, Manga } from '@mangayomu/mangascraper';
 import { useAddedSources } from '@app/context/sources';
 import { inPlaceSort } from 'fast-sort';
-import { shallow } from 'zustand/shallow';
+import { createWithEqualityFn } from 'zustand/traditional';
 
 export interface SourceError {
   error: string;
@@ -24,8 +24,7 @@ export default function useMangaHosts() {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const hosts = useAddedSources(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    (store) => store.sources.map((x) => p.get(x)!),
-    shallow,
+    (store) => store.sources,
   );
 
   const configs = useAddedSources((store) => store.sourcesConfig);
@@ -34,8 +33,8 @@ export default function useMangaHosts() {
       async getHotMangas(): Promise<MangaConcurrencyResult> {
         const response = await fetch(
           `/api/v1/trending_updates?${hosts
-            .filter((x) => configs[x.name].useHottestUpdates)
-            .map((x) => `source=${x.name}`)
+            .filter((x) => configs[x].useHottestUpdates)
+            .map((x) => `source=${x}`)
             .join('&')}`,
         );
         const { data }: { data: MangaConcurrencyResult } =
@@ -45,8 +44,8 @@ export default function useMangaHosts() {
       async getLatestMangas(): Promise<MangaConcurrencyResult> {
         const response = await fetch(
           `/api/v1/recent_updates?${hosts
-            .filter((x) => configs[x.name].useLatestUpdates)
-            .map((x) => `source=${x.name}`)
+            .filter((x) => configs[x].useLatestUpdates)
+            .map((x) => `source=${x}`)
             .join('&')}`,
         );
         const { data }: { data: MangaConcurrencyResult } =
@@ -55,13 +54,14 @@ export default function useMangaHosts() {
       },
       async getMangaDirectory(): Promise<MangaConcurrencyResult> {
         const mangaCollection = await Promise.allSettled(
-          hosts.map((x) => x.listMangas()),
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          hosts.map((x) => MangaHost.sourcesMap.get(x)!.listMangas()),
         );
         const [errors, categorizedMangas] = mangaCollection.reduce(
           (prev, curr, index) => {
             if (curr.status === 'rejected')
               prev[0].push({
-                source: hosts[index].name,
+                source: hosts[index],
                 error: getErrorMessage(curr.reason),
               });
             else prev[1].push({ mangas: curr.value });

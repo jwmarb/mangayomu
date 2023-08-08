@@ -19,14 +19,12 @@ export default function Explore() {
   const hosts = useMangaHosts();
   const router = useRouter();
   const params = useSearchParams();
-  const [appendAllMangas, loadingAll] = useExploreStore(
-    (store) => [store.appendAllMangas, store.loadingAll],
-    shallow,
-  );
+  const appendAllMangas = useExploreStore((store) => store.appendAllMangas);
+
+  const loadingAll = useExploreStore((store) => store.loadingAll);
 
   React.useEffect(() => {
     cache('explore', async () => {
-      console.log('cache expired');
       loadingAll();
       const [recent, trending] = await Promise.all([
         hosts.getHotMangas(),
