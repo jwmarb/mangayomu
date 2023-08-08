@@ -274,9 +274,9 @@ export default function usePageGestures(
    * Re-enables panning shortly after user reached max translation value
    */
   React.useEffect(() => {
-    console.log(
-      `\n---\npage #: ${pageNumber}\nenablePan: ${enablePan}\npinchScale: ${pinchScale.value}\nminScale: ${minScale.value}\n---\n`,
-    );
+    // console.log(
+    //   `\n---\npage #: ${pageNumber}\nenablePan: ${enablePan}\npinchScale: ${pinchScale.value}\nminScale: ${minScale.value}\n---\n`,
+    // );
     if (
       (isAtEdgeHorizontal.value || isAtEdgeVertical.value) &&
       !enablePan &&
