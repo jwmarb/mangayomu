@@ -20,7 +20,7 @@ export type MangaParkV5SearchManga = {
         data: {
           name: string;
           urlPath: string;
-          imageCoverUrl: string;
+          urlCoverOri: string;
         };
       }[];
     };
@@ -35,7 +35,7 @@ export type MangaParkV5HotMangas = {
           data: {
             name: string;
             urlPath: string;
-            imageCoverUrl: string;
+            urlCoverOri: string;
           };
         };
       }[];

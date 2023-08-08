@@ -52,7 +52,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       'POST',
       {
         query:
-          'query get_content_browse_latest($select: ComicLatestSelect) {\n  get_content_browse_latest(select: $select) {\n    items {\n      comic {\n        data {\n          name\n          urlPath\n          imageCoverUrl\n        }\n      }\n    }\n  }\n}\n',
+          'query get_content_browse_latest($select: ComicLatestSelect) {\n  get_content_browse_latest(select: $select) {\n    items {\n      comic {\n        data {\n          name\n          urlPath\n          urlCoverOri\n        }\n      }\n    }\n  }\n}\n',
         variables: {
           select: {
             where: 'release',
@@ -65,7 +65,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
 
     return data.get_content_browse_latest.items.map(
       ({ comic: { data } }): Manga => ({
-        imageCover: data.imageCoverUrl,
+        imageCover: data.urlCoverOri,
         link: 'https://' + super.getLink() + getV3URL(data.urlPath),
         source: this.name,
         title: data.name,
@@ -78,7 +78,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       'POST',
       {
         query:
-          'query get_content_browse_latest($select: ComicLatestSelect) {\n  get_content_browse_latest(select: $select) {\n    items {\n      comic {\n        data {\n          name\n          urlPath\n          imageCoverUrl\n        }\n      }\n    }\n  }\n}\n',
+          'query get_content_browse_latest($select: ComicLatestSelect) {\n  get_content_browse_latest(select: $select) {\n    items {\n      comic {\n        data {\n          name\n          urlPath\n          urlCoverOri\n        }\n      }\n    }\n  }\n}\n',
         variables: {
           select: {
             where: 'popular',
@@ -91,7 +91,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
 
     return data.get_content_browse_latest.items.map(
       ({ comic: { data } }, index): Manga => ({
-        imageCover: data.imageCoverUrl,
+        imageCover: data.urlCoverOri,
         link: 'https://' + super.getLink() + getV3URL(data.urlPath),
         source: this.name,
         title: data.name,
@@ -136,7 +136,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       );
       return items.map(
         ({ data }): Manga => ({
-          imageCover: data.imageCoverUrl,
+          imageCover: data.urlCoverOri,
           link: 'https://' + super.getLink() + getV3URL(data.urlPath),
           source: this.name,
           title: data.name,
@@ -170,7 +170,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
     );
     return items.map(
       ({ data }): Manga => ({
-        imageCover: data.imageCoverUrl,
+        imageCover: data.urlCoverOri,
         link: 'https://' + super.getLink() + getV3URL(data.urlPath),
         source: this.name,
         title: data.name,
