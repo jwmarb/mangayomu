@@ -19,8 +19,6 @@
       "**/@react-native-community/*",
       "**/@react-native-*",
       "**/next",
-      "**/puppeteer-core",
-      "**/puppeteer",
       "**/@spartiuz/chromium-min"
     ]
   },
@@ -48,7 +46,6 @@
   },
   "resolutions": {
     "@types/react": "18.2.14",
-    "@types/react-dom": "18.2.6",
-    "@types/puppeteer": "^7.0.4"
+    "@types/react-dom": "18.2.6"
   }
 }

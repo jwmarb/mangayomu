@@ -8,10 +8,6 @@ const nextConfig = {
       },
     ],
   },
-  webpack: (config, options) => {
-    config.externals.push('@mangayomu/puppeteer');
-    return config;
-  },
 };
 
 module.exports = nextConfig;

@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@mangayomu/mangascraper": "1.0.0",
-    "@mangayomu/puppeteer": "1.0.0",
     "@mangayomu/request-handler": "1.0.0",
     "@mangayomu/schemas": "1.0.0",
     "@mangayomu/vercel-env": "1.0.0",
@@ -22,7 +21,6 @@
     "ioredis": "^5.3.2",
     "mongoose": "^7.3.2",
     "promise-limit": "^2.7.0",
-    "puppeteer-core": "^20.9.0",
     "realm-web": "^2.0.0"
   },
   "devDependencies": {
@@ -30,7 +28,6 @@
     "@babel/core": "^7.22.6",
     "@babel/preset-env": "^7.22.6",
     "@babel/preset-typescript": "^7.22.5",
-    "@types/puppeteer": "^7.0.4",
     "concurrently": "^8.2.0",
     "watch": "^1.0.2"
   },

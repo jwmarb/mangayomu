@@ -11,17 +11,24 @@ interface DarkModeStore {
 }
 
 export const useDarkMode = create<DarkModeStore>((set) => ({
-  isDarkMode: (() => {
-    const theme = window.localStorage.getItem('theme');
-    const dark =
-      theme === 'dark' ||
-      (theme == null &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches);
-    // document.documentElement.classList.add(dark ? 'dark' : 'light');
-    return dark;
-  })(),
-  theme: window.localStorage.getItem('theme') as 'light' | 'dark' | null,
+  isDarkMode:
+    typeof window !== 'undefined'
+      ? (() => {
+          const theme = window.localStorage.getItem('theme');
+          const dark =
+            theme === 'dark' ||
+            (theme == null &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches);
+          // document.documentElement.classList.add(dark ? 'dark' : 'light');
+          return dark;
+        })()
+      : false,
+  theme:
+    typeof window !== 'undefined'
+      ? (window.localStorage.getItem('theme') as 'light' | 'dark' | null)
+      : null,
   toggleDarkMode: (val) => {
+    if (typeof localStorage === 'undefined') return;
     if (val == null)
       set((prev) => {
         if (prev.isDarkMode) {
@@ -44,6 +51,8 @@ export const useDarkMode = create<DarkModeStore>((set) => ({
     }
   },
   toSystemDefault: () => {
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined')
+      return;
     localStorage.removeItem('theme');
     const defaultIsDarkMode = window.matchMedia(
       '(prefers-color-scheme: dark)',

@@ -28,8 +28,11 @@ function getBreakpoint(width: number) {
 }
 
 export const useSafeArea = create<SafeAreaStore>((set) => ({
-  mobile: window.innerWidth < 1024,
-  breakpoint: getBreakpoint(window.innerWidth),
+  mobile: typeof window !== 'undefined' ? window.innerWidth < 1024 : false,
+  breakpoint:
+    typeof window !== 'undefined'
+      ? getBreakpoint(window.innerWidth)
+      : new Set(),
   drawerWidth: 0,
   headerHeight: 0,
   setDrawerWidth: (w) => set({ drawerWidth: w }),

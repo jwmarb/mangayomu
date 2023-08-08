@@ -125,7 +125,7 @@ export default function ImageResolver({ children }: React.PropsWithChildren) {
         } finally {
           unbatch(batch);
         }
-      }, 500);
+      }, 10);
       return () => {
         clearTimeout(timeout);
       };
