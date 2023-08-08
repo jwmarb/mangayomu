@@ -27,20 +27,27 @@ export default function usePageGestures(
 ) {
   const { pinchScale, translateX, translateY, minScale } = pageZoomingProps;
   const {
-    page: { page: pageKey },
+    page: { page: pageKey, pageNumber },
   } = props;
   const { height: screenHeight, width: screenWidth } = useScreenDimensions();
 
+  function compareScaleUI() {
+    'worklet';
+    return (
+      (minScale.value > 1 && pinchScale.value >= 1) ||
+      pinchScale.value > minScale.value
+    );
+  }
+  function compareScaleJS() {
+    return (
+      (minScale.value > 1 && pinchScale.value >= 1) ||
+      pinchScale.value > minScale.value
+    );
+  }
+
   const { readingDirection, nativeFlatListGesture } = useChapterPageContext();
   const currentPage = useAppSelector((state) => state.reader.currentPage);
-  const [enablePan, togglePan] = useBoolean(pinchScale.value > minScale.value);
-  // const enablePan = useAppSelector(
-  //   (state) =>
-  //     state.reader.extendedState[pageKey]?.panEnabled ??
-  //     pinchScale.value > minScale.value,
-  // );
-  // const togglePan = (value: boolean) =>
-  //   dispatch(setPagePanEnabled({ pageKey, value }));
+  const [enablePan, togglePan] = useBoolean(compareScaleJS());
   const readingDirectionRef = useMutableObject(readingDirection);
   const maxTranslateX = useSharedValue(Math.abs(translateX.value));
   const maxTranslateY = useSharedValue(Math.abs(translateY.value));
@@ -65,7 +72,7 @@ export default function usePageGestures(
    * Resets pan state for pageKey after component has been recycled
    */
   React.useEffect(() => {
-    if (pinchScale.value > minScale.value) {
+    if (compareScaleJS()) {
       console.log(
         `pan has been enabled since pageKey changeds and ${pageKey} is zoomed`,
       );
@@ -103,10 +110,6 @@ export default function usePageGestures(
   );
 
   React.useEffect(() => {
-    console.log(enablePan ? 'pan enabled' : 'disabled');
-  }, [enablePan]);
-
-  React.useEffect(() => {
     pageGestures.current[pageKey] = {
       onPinchChange(e) {
         'worklet';
@@ -117,7 +120,7 @@ export default function usePageGestures(
       },
       onDoubleTap(e) {
         'worklet';
-        if (pinchScale.value > minScale.value) {
+        if (compareScaleUI()) {
           pinchScale.value = withTiming(minScale.value, {
             duration: 200,
             easing: Easing.ease,
@@ -162,7 +165,7 @@ export default function usePageGestures(
         if (
           mutablePageKey.current === store.getState().reader.currentPage &&
           !enablePan &&
-          pinchScale.value > minScale.value
+          compareScaleJS()
         ) {
           togglePan(true);
         }
@@ -271,10 +274,13 @@ export default function usePageGestures(
    * Re-enables panning shortly after user reached max translation value
    */
   React.useEffect(() => {
+    console.log(
+      `\n---\npage #: ${pageNumber}\nenablePan: ${enablePan}\npinchScale: ${pinchScale.value}\nminScale: ${minScale.value}\n---\n`,
+    );
     if (
       (isAtEdgeHorizontal.value || isAtEdgeVertical.value) &&
       !enablePan &&
-      pinchScale.value > minScale.value
+      compareScaleJS()
     ) {
       const p = setTimeout(() => togglePan(true), 600);
       return () => {

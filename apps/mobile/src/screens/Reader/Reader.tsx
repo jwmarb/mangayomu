@@ -159,13 +159,13 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
     [tapGesture, chapter._id],
   );
 
-  const nativeGestures = React.useMemo(
+  const combinedGestures = React.useMemo(
     () =>
-      Gesture.Race(
-        nativeFlatListGesture,
+      Gesture.Exclusive(
+        pinchGesture,
         Gesture.Exclusive(doubleTapGesture, tapGesture),
       ),
-    [nativeFlatListGesture, doubleTapGesture, tapGesture],
+    [pinchGesture, tapGesture],
   );
 
   const extraData = React.useMemo(
@@ -204,7 +204,7 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
             opacity={overlayOpacity}
           />
           <NetworkToast style={toastStyle} />
-          <GestureDetector gesture={pinchGesture}>
+          <GestureDetector gesture={combinedGestures}>
             {pages.length === 0 ? (
               <Box
                 flex-grow
@@ -225,7 +225,7 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
               >
                 <PageList
                   key={width}
-                  nativeFlatListGesture={nativeGestures}
+                  nativeFlatListGesture={nativeFlatListGesture}
                   ref={ref}
                   getItemLayout={getItemLayout}
                   maxToRenderPerBatch={10}
