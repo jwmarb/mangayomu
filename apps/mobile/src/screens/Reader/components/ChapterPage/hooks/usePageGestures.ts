@@ -41,7 +41,7 @@ export default function usePageGestures(
   // );
   // const togglePan = (value: boolean) =>
   //   dispatch(setPagePanEnabled({ pageKey, value }));
-  const enablePanRef = useMutableObject(enablePan);
+  const readingDirectionRef = useMutableObject(readingDirection);
   const maxTranslateX = useSharedValue(Math.abs(translateX.value));
   const maxTranslateY = useSharedValue(Math.abs(translateY.value));
 
@@ -101,6 +101,10 @@ export default function usePageGestures(
       }),
     [toggle],
   );
+
+  React.useEffect(() => {
+    console.log(enablePan ? 'pan enabled' : 'disabled');
+  }, [enablePan]);
 
   React.useEffect(() => {
     pageGestures.current[pageKey] = {
@@ -198,58 +202,62 @@ export default function usePageGestures(
       Gesture.Pan()
         .enableTrackpadTwoFingerGesture(true)
         .onChange((e) => {
-          translateX.value = Math.max(
-            Math.min(
-              maxTranslateX.value,
-              e.changeX / pinchScale.value + translateX.value,
-            ),
-            -maxTranslateX.value,
-          );
-          translateY.value = Math.max(
-            Math.min(
-              maxTranslateY.value,
-              translateY.value + e.changeY / pinchScale.value,
-            ),
-            -maxTranslateY.value,
-          );
+          if (readingDirectionRef.current !== ReadingDirection.WEBTOON) {
+            translateX.value = Math.max(
+              Math.min(
+                maxTranslateX.value,
+                e.changeX / pinchScale.value + translateX.value,
+              ),
+              -maxTranslateX.value,
+            );
+            translateY.value = Math.max(
+              Math.min(
+                maxTranslateY.value,
+                translateY.value + e.changeY / pinchScale.value,
+              ),
+              -maxTranslateY.value,
+            );
 
-          isAtEdgeHorizontal.value =
-            isHorizontal.value &&
-            Math.abs(translateX.value) === maxTranslateX.value;
-          isAtEdgeVertical.value =
-            isVertical.value &&
-            Math.abs(translateY.value) === maxTranslateY.value;
+            isAtEdgeHorizontal.value =
+              isHorizontal.value &&
+              Math.abs(translateX.value) === maxTranslateX.value;
+            isAtEdgeVertical.value =
+              isVertical.value &&
+              Math.abs(translateY.value) === maxTranslateY.value;
 
-          if (maxTranslateX.value === 0 && maxTranslateY.value === 0) {
-            translateX.value = withTiming(0, {
-              duration: 150,
-              easing: Easing.ease,
-            });
-            translateY.value = withTiming(0, {
-              duration: 150,
-              easing: Easing.ease,
-            });
-            runOnJS(togglePan)(false);
-          } else if (isAtEdgeHorizontal.value || isAtEdgeVertical.value) {
-            runOnJS(togglePan)(false);
-          } else if (
-            !enablePan &&
-            !(isHorizontal.value || isAtEdgeVertical.value)
-          )
-            runOnJS(togglePan)(true);
+            if (maxTranslateX.value === 0 && maxTranslateY.value === 0) {
+              translateX.value = withTiming(0, {
+                duration: 150,
+                easing: Easing.ease,
+              });
+              translateY.value = withTiming(0, {
+                duration: 150,
+                easing: Easing.ease,
+              });
+              runOnJS(togglePan)(false);
+            } else if (isAtEdgeHorizontal.value || isAtEdgeVertical.value) {
+              runOnJS(togglePan)(false);
+            } else if (
+              !enablePan &&
+              !(isHorizontal.value || isAtEdgeVertical.value)
+            )
+              runOnJS(togglePan)(true);
+          }
         })
         .onEnd((e) => {
-          translateX.value = withDecay({
-            velocity: e.velocityX,
-            velocityFactor: 0.3,
+          if (readingDirectionRef.current !== ReadingDirection.WEBTOON) {
+            translateX.value = withDecay({
+              velocity: e.velocityX,
+              velocityFactor: 0.3,
 
-            clamp: [-maxTranslateX.value, maxTranslateX.value],
-          });
-          translateY.value = withDecay({
-            velocity: e.velocityY,
-            velocityFactor: 0.3,
-            clamp: [-maxTranslateY.value, maxTranslateY.value],
-          });
+              clamp: [-maxTranslateX.value, maxTranslateX.value],
+            });
+            translateY.value = withDecay({
+              velocity: e.velocityY,
+              velocityFactor: 0.3,
+              clamp: [-maxTranslateY.value, maxTranslateY.value],
+            });
+          }
         })
         .simultaneousWithExternalGesture(
           ...(!enablePan
