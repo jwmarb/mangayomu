@@ -16,8 +16,9 @@ interface HeaderProps
 
 export default function Header(props: HeaderProps) {
   const { children, deps = [], ...rest } = props;
+  const childrenCount = React.Children.count(children);
   const className = useClassName(
-    'fixed right-0 px-4 bg-paper bg-default pt-2',
+    childrenCount > 0 ? 'fixed right-0 px-4 bg-paper bg-default pt-2' : '',
     props,
   );
   const setHeaderHeight = useSetHeaderHeight();
@@ -27,7 +28,8 @@ export default function Header(props: HeaderProps) {
   );
   const headerRef = React.useRef<HTMLDivElement>(null);
   React.useLayoutEffect(() => {
-    if (headerRef.current?.offsetHeight)
+    if (childrenCount === 0) setHeaderHeight(0);
+    else if (headerRef.current?.offsetHeight)
       setHeaderHeight(headerRef.current.offsetHeight);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
