@@ -19,8 +19,9 @@ export default function Explore() {
     (store) => [store.appendAllMangas, store.loadingAll],
     shallow,
   );
-  async function initializer() {
-    await cache(
+
+  React.useEffect(() => {
+    cache(
       'explore',
       async () => {
         loadingAll();
@@ -32,9 +33,6 @@ export default function Explore() {
       },
       10,
     );
-  }
-  React.useEffect(() => {
-    initializer();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
