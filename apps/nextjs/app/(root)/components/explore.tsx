@@ -11,6 +11,7 @@ import { BsFire } from 'react-icons/bs';
 import MangaListCategory from '@app/(root)/components/mangalistcategory';
 import { useExploreStore } from '@app/context/explore';
 import { shallow } from 'zustand/shallow';
+import cache from '@app/helpers/cache';
 
 export default function Explore() {
   const hosts = useMangaHosts();
@@ -19,12 +20,18 @@ export default function Explore() {
     shallow,
   );
   async function initializer() {
-    loadingAll();
-    const [trending, recent] = await Promise.all([
-      hosts.getHotMangas(),
-      hosts.getLatestMangas(),
-    ]);
-    appendAllMangas({ recent, trending });
+    await cache(
+      'explore',
+      async () => {
+        loadingAll();
+        const [recent, trending] = await Promise.all([
+          hosts.getHotMangas(),
+          hosts.getLatestMangas(),
+        ]);
+        appendAllMangas({ recent, trending });
+      },
+      10,
+    );
   }
   React.useEffect(() => {
     initializer();

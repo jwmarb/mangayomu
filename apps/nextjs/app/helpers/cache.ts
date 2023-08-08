@@ -1,5 +1,5 @@
-type Expiry = { _age: number };
-const hashmap = new Map<string, Expiry>();
+const hashmap = new Map<string, unknown>();
+const expiry = new Map<string, number>();
 const CACHE_TTL = 60;
 
 /**
@@ -12,14 +12,18 @@ export default async function cache<T>(
   key: string,
   onCacheMiss: () => Promise<T>,
   ttl: number = CACHE_TTL,
-): Promise<T & Expiry> {
-  const cached = (hashmap as Map<string, T & Expiry>).get(key);
+): Promise<T> {
+  const cached = (hashmap as Map<string, T>).get(key);
+  const cachedAge = expiry.get(key);
   if (
     cached == null ||
-    (cached != null && Date.now() - cached._age >= ttl * 1000)
+    cachedAge == null ||
+    (cached != null &&
+      cachedAge != null &&
+      Date.now() - cachedAge >= ttl * 1000)
   ) {
-    const p = (await onCacheMiss()) as unknown as T & Expiry;
-    p._age = Date.now();
+    const p = (await onCacheMiss()) as unknown as T;
+    expiry.set(key, Date.now());
     hashmap.set(key, p);
     return p;
   }
