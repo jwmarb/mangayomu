@@ -26,6 +26,7 @@
     "date-fns": "^2.30.0",
     "dompurify": "^3.0.4",
     "fast-sort": "^3.4.0",
+    "flatlist-react": "^1.5.14",
     "googleapis": "^118.0.0",
     "http-status-codes": "^2.2.0",
     "immer": "^10.0.2",

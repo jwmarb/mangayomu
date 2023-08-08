@@ -17,49 +17,40 @@ export default function MangaListCategory(props: MangaListCategoryProps) {
   const isLoading = useExploreStore(
     (store) => store.state[category] === 'loading',
   );
+
+  const mangas = useUniqueFiltered(category, query);
+
+  if (isLoading)
+    return (
+      <div className="flex justify-center flex-shrink flex-row flex-wrap">
+        {new Array(limitless ? 30 : 9).fill(null).map((_, i) => (
+          <Book.Skeleton key={i} />
+        ))}
+      </div>
+    );
+
+  if (limitless) {
+    return <Book.List list={mangas} />;
+  }
+
+  return <Book.List list={mangas.slice(0, 9)} />;
+}
+
+function useUniqueFiltered(category: 'trending' | 'recent', query: string) {
   const mangas = useExploreStore(
     (store) => store.mangas[category] ?? defaultArr,
   );
 
-  const uniqMangas = React.useDeferredValue(unique(mangas, query));
+  return React.useMemo(() => {
+    const p = new Set<string>();
+    const parsed = query.toLowerCase().trim();
+    return mangas.filter((manga) => {
+      if (!p.has(manga.link)) {
+        p.add(manga.link);
+        return manga.title.trim().toLowerCase().includes(parsed);
+      }
 
-  if (limitless) {
-    if (isLoading)
-      return (
-        <div className="flex justify-center flex-shrink flex-row flex-wrap">
-          {new Array(30).fill('').map((_, i) => (
-            <Book.Skeleton key={i} />
-          ))}
-        </div>
-      );
-
-    return (
-      <div className="flex justify-center flex-shrink flex-row flex-wrap">
-        {uniqMangas.map((x) => (
-          <Book key={x.link} manga={x} />
-        ))}
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex justify-center flex-shrink flex-row flex-wrap">
-      {isLoading
-        ? new Array(9).fill('').map((_, i) => <Book.Skeleton key={i} />)
-        : uniqMangas.slice(0, 9).map((x) => <Book key={x.link} manga={x} />)}
-    </div>
-  );
-}
-
-function unique(mangas: Manga[], query: string) {
-  const p = new Set();
-  const parsed = query.trim().toLowerCase();
-  return mangas.filter((manga) => {
-    if (!p.has(manga.link)) {
-      p.add(manga.link);
-      if (manga.title.trim().toLowerCase().includes(parsed)) return true;
       return false;
-    }
-    return false;
-  });
+    });
+  }, [mangas, query]);
 }
