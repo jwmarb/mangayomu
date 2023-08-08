@@ -3,6 +3,10 @@ import { Manga } from '@mangayomu/mangascraper';
 import FlatList, { FlatListProps } from 'flatlist-react';
 import Book from './Book';
 import React from 'react';
+import Button from '@app/components/Button';
+import ReactDOM from 'react-dom';
+import { MdArrowUpward } from 'react-icons/md';
+import { animated, useSpring } from '@react-spring/web';
 
 type SelectivePartial<T, TProperties extends keyof T> = {
   [K in keyof T as K extends TProperties ? K : never]?: T[K];
@@ -14,8 +18,10 @@ type BookListProps = SelectivePartial<FlatListProps<Manga>, 'renderItem'>;
 
 function defaultRenderItem(item: Manga) {
   return (
-    <div className="flex-shrink items-center justify-center">
-      <Book key={item.link} manga={item} />
+    <div className="flex-grow flex items-center justify-center">
+      <div className="flex-shrink flex items-center justify-center">
+        <Book key={item.link} manga={item} />
+      </div>
     </div>
   );
 }
@@ -23,6 +29,7 @@ function defaultRenderItem(item: Manga) {
 export default function BookList(props: BookListProps) {
   const {
     searchBy = 'title',
+    renderOnScroll = true,
     searchCaseInsensitive = true,
     displayGrid = true,
     minColumnWidth: _,
@@ -49,6 +56,8 @@ export default function BookList(props: BookListProps) {
   if (listArr.length > 36)
     return (
       <FlatList
+        scrollToTop
+        renderOnScroll={renderOnScroll}
         renderItem={renderItem}
         minColumnWidth={minColumnWidth}
         displayGrid={displayGrid}
@@ -63,8 +72,8 @@ export default function BookList(props: BookListProps) {
 
   return (
     <div className="flex justify-center flex-shrink flex-row flex-wrap">
-      {listArr.map((x) => (
-        <Book key={x.link} manga={x} />
+      {listArr.map((x, i) => (
+        <Book key={x.link + i} manga={x} />
       ))}
     </div>
   );
