@@ -33,8 +33,7 @@ export default function Explore() {
       },
       10,
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [appendAllMangas, hosts, loadingAll]);
 
   return (
     <Screen.Content className="flex flex-col gap-4">
