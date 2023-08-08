@@ -186,7 +186,7 @@ export declare interface Manga {
   /**
    * The image cover of the manga in the form of a URL link
    */
-  imageCover: string;
+  imageCover: string | null;
 
   /**
    * The link that redirects to the manga page
