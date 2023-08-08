@@ -4,27 +4,14 @@ import MangaLibraryInitializer from '@app/context/library';
 import { ClientRealmProvider } from '@app/context/realm';
 import env from '@mangayomu/vercel-env';
 
+type ProvidersProps = React.PropsWithChildren;
+
 /**
  * Wraps all context to be consumed for client components
- * @returns
  */
-
-interface ProvidersProps extends React.PropsWithChildren {
-  idToken?: string;
-  idTokenInvalid?: boolean;
-}
-
-export function Providers({
-  children,
-  idToken,
-  idTokenInvalid,
-}: ProvidersProps) {
+export function Providers({ children }: ProvidersProps) {
   return (
-    <ClientRealmProvider
-      appId={env().REACT_APP_REALM_ID}
-      idToken={idToken}
-      idTokenInvalid={idTokenInvalid}
-    >
+    <ClientRealmProvider appId={env().REACT_APP_REALM_ID}>
       <DarkModeInitializer>
         <MangaLibraryInitializer>
           <ImageResolver>{children}</ImageResolver>

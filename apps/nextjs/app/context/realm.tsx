@@ -42,16 +42,9 @@ export const useUserSetter = () => {
 };
 interface RealmProviderProps extends React.PropsWithChildren {
   appId: string;
-  idToken?: string;
-  idTokenInvalid?: boolean;
 }
 
-export function ClientRealmProvider({
-  children,
-  appId,
-  idToken,
-  idTokenInvalid,
-}: RealmProviderProps) {
+export function ClientRealmProvider({ children, appId }: RealmProviderProps) {
   const [app, setApp] = React.useState<ReturnType<
     typeof Realm.App.getApp
   > | null>(null);
@@ -66,41 +59,14 @@ export function ClientRealmProvider({
 
     (async () => {
       if (_app.currentUser == null) {
-        /** If they have the id_token still with them, log them in using that instead */
-        const credentials =
-          idToken != null
-            ? Realm.Credentials.jwt(idToken)
-            : Realm.Credentials.anonymous();
+        const credentials = Realm.Credentials.anonymous();
         const user = await _app.logIn(credentials);
         setUser(user);
       } else {
-        if (idToken == null && idTokenInvalid) {
-          /** If the user has no idToken and they're still logged into realm, log them out */
-          if (_app.currentUser.isLoggedIn) await _app.currentUser.logOut();
-
-          /** Then assign an anonymous user and redirect them to login, reminding them that their session expired */
-          const anonymousCredentials = Realm.Credentials.anonymous();
-          await _app.logIn(anonymousCredentials); // assigns null to _app.currentUser
-          router.push('/login?auth_error=session_expired');
-        }
         setUser(_app.currentUser);
       }
     })();
-
-    // if (idToken != null) {
-    //   const jwtCredentials = Realm.Credentials.jwt(idToken);
-
-    //   _app
-    //     .logIn(jwtCredentials)
-    //     .then(setUser)
-    //     .finally(() => {
-    //       console.log('Successfully logged in with jwt');
-    //     });
-    // } else if (_app.currentUser == null) {
-    //   const anonymousCredentials = Realm.Credentials.anonymous();
-    //   _app.logIn(anonymousCredentials).then(setUser);
-    // } else setUser(_app.currentUser);
-  }, [appId, idToken, idTokenInvalid, router]);
+  }, [appId, router]);
 
   if (app == null || user == null) return null;
   return (
