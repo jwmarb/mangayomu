@@ -15,7 +15,7 @@ import { MdFilterAlt } from 'react-icons/md';
 import { shallow } from 'zustand/shallow';
 import Filter from './components/filter';
 import NoMangasInLibrary from '@app/(root)/library/components/nomangasinlibrary';
-import { inPlaceSort } from 'fast-sort';
+import { sort } from 'fast-sort';
 
 export default function Page() {
   const [includedSrc, sortBy, reversed] = useMangaLibraryFilters(
@@ -39,7 +39,7 @@ export default function Page() {
   }, [mangas, query, includedSrcUniq]);
   const sorted = React.useMemo(
     () =>
-      inPlaceSort(filtered).by(
+      sort(filtered).by(
         reversed
           ? [{ asc: SORT_LIBRARY_BY[sortBy] }]
           : [{ desc: SORT_LIBRARY_BY[sortBy] }],
@@ -66,33 +66,29 @@ export default function Page() {
           </div>
         </div>
       </Screen.Header>
-      <Screen.Content className="flex flex-row flex-wrap justify-center">
+      <Screen.Content
+        className={
+          syncStatus === 'done' && filtered.length > 0
+            ? undefined
+            : 'flex flex-row flex-wrap justify-center'
+        }
+      >
         {syncStatus === 'initializing' &&
           new Array(30).fill('').map((x, i) => <Book.Skeleton key={i} />)}
         {syncStatus === 'done' && mangas.length === 0 && <NoMangasInLibrary />}
-        {syncStatus === 'done' &&
-          (filtered.length > 0 ? (
-            sorted.map((x) => (
-              <Book
-                key={x._id.toHexString()}
-                manga={{
-                  title: x.title,
-                  link: x.link,
-                  imageCover: x.imageCover,
-                  source: x.source,
-                }}
-              />
-            ))
-          ) : (
-            <div className="flex flex-col justify-start w-full">
-              <Text variant="header-emphasized">No results found</Text>
-              <Text color="text-secondary">
-                {query.length > 0
-                  ? `There are no mangas that match "${query}"`
-                  : 'No mangas match the filter'}
-              </Text>
-            </div>
-          ))}
+        {syncStatus === 'done' && filtered.length === 0 && (
+          <div className="flex flex-col justify-start w-full">
+            <Text variant="header-emphasized">No results found</Text>
+            <Text color="text-secondary">
+              {query.length > 0
+                ? `There are no mangas that match "${query}"`
+                : 'No mangas match the filter'}
+            </Text>
+          </div>
+        )}
+        {syncStatus === 'done' && filtered.length > 0 && (
+          <Book.List list={sorted} />
+        )}
       </Screen.Content>
     </Screen>
   );
