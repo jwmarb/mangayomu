@@ -27,16 +27,17 @@ export default function Page() {
     [includedSrc],
   );
   const query = useMangaLibrary((s) => s.query);
-  const mangas = useMangaLibrary((s) => s.mangas, shallow);
+  const mangas = useMangaLibrary((s) => s.mangas);
   const syncStatus = useMangaLibrary((s) => s.syncStatus);
+  const deferredQuery = React.useDeferredValue(query);
   const filtered = React.useMemo(() => {
-    const parsedQuery = query.trim().toLowerCase();
+    const parsedQuery = deferredQuery.trim().toLowerCase();
     return mangas.filter(
       (prev) =>
         prev.title.toLowerCase().trim().includes(parsedQuery) &&
         includedSrcUniq.has(prev.source),
     );
-  }, [mangas, query, includedSrcUniq]);
+  }, [mangas, deferredQuery, includedSrcUniq]);
   const sorted = React.useMemo(
     () =>
       sort(filtered).by(
