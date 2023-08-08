@@ -7,7 +7,7 @@ import collectMangaMetas from '@app/helpers/collectMangaMetas';
 import { enableMapSet } from 'immer';
 enableMapSet();
 
-export type ImageResolverListener = (result: Manga) => void;
+export type ImageResolverListener = (result: string) => void;
 
 interface ImageResolverStore {
   mangas: Record<string, string[]>;
@@ -22,6 +22,8 @@ interface ImageResolverStore {
   batchify(): Set<string>;
   unbatch(batch: Set<string>): void;
 }
+
+const IMAGE_PLACEHOLDER = '/No-Image-Placeholder.png';
 
 export const useImageResolver = create(
   immer<ImageResolverStore>((set, get) => ({
@@ -102,23 +104,24 @@ export default function ImageResolver({ children }: React.PropsWithChildren) {
   const initialized = React.useRef<boolean>(false);
 
   React.useEffect(() => {
-    async function exec() {
-      const p = await collectMangaMetas(mangas);
-      return p;
-    }
-
     if (initialized.current && count > 0) {
       const timeout = setTimeout(async () => {
         const batch = batchify();
         try {
-          const p = await exec();
+          const p = await collectMangaMetas(mangas);
           for (const manga of p) {
             listeners[manga.link].forEach((listener) => {
-              listener(manga);
+              listener(manga.imageCover || IMAGE_PLACEHOLDER);
             });
           }
         } catch (e) {
-          console.error(e);
+          for (const source in mangas) {
+            for (const link of source) {
+              listeners[link].forEach((listener) => {
+                listener(IMAGE_PLACEHOLDER);
+              });
+            }
+          }
         } finally {
           unbatch(batch);
         }

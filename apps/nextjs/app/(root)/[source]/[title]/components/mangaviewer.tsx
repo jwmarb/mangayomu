@@ -66,6 +66,9 @@ const SortLanguages = (a: ISOLangCode, b: ISOLangCode) => {
 
 export default function MangaViewer(props: MangaViewerProps) {
   const { source, manga: _manga } = props;
+  const [imageCover, setImageCover] = React.useState<string>(
+    _manga.imageCover || '/No-Image-Placeholder.png',
+  );
   const user = useUser();
   const manga = useObject(
     MangaSchema,
@@ -85,6 +88,7 @@ export default function MangaViewer(props: MangaViewerProps) {
   React.useEffect(() => {
     async function init() {
       const p = await cache(_manga.link, () => getMangaMeta(_manga));
+      setImageCover(p.imageCover || '/No-Image-Placeholder.png');
       setMeta(p);
     }
     init();
@@ -203,9 +207,7 @@ export default function MangaViewer(props: MangaViewerProps) {
           <div
             className="w-full h-full absolute -z-10"
             style={{
-              backgroundImage: `url("${
-                meta?.imageCover ?? _manga.imageCover
-              }")`,
+              backgroundImage: `url("${imageCover}")`,
               backgroundSize: 'cover',
               backgroundPosition: 'top',
               backgroundRepeat: 'no-repeat',
@@ -213,7 +215,11 @@ export default function MangaViewer(props: MangaViewerProps) {
           />
         </div>
         <div className="z-10 flex flex-col gap-2 m-4 max-w-screen-md flex-grow w-full mx-auto px-4">
-          <ImageCover imageCover={meta?.imageCover ?? _manga.imageCover} />
+          <ImageCover
+            setImageCover={setImageCover}
+            imageCover={imageCover}
+            manga={_manga}
+          />
           <Text
             variant="header"
             className="text-center lg:text-variant-header-emphasized md:text-2xl"

@@ -16,7 +16,7 @@ function Book(props: BookProps) {
   } = props;
   const host = getMangaHost(source);
   const resolveImage = useImageResolver((state) => state.queue);
-  const [imageCover, setImageCover] = React.useState<string>(
+  const [imageCover, setImageCover] = React.useState<string | null>(
     props.manga.imageCover,
   );
   const [{ opacity }, api] = useSpring(() => ({
@@ -37,9 +37,7 @@ function Book(props: BookProps) {
 
   React.useEffect(() => {
     if (error) {
-      const { unqueue } = resolveImage(props.manga, (r) =>
-        setImageCover(r.imageCover),
-      );
+      const { unqueue } = resolveImage(props.manga, (r) => setImageCover(r));
       return () => {
         unqueue();
       };
@@ -54,7 +52,7 @@ function Book(props: BookProps) {
               onLoad={() => api.start({ opacity: 0 })}
               onError={handleOnError}
               loading="lazy"
-              src={imageCover}
+              src={imageCover || '/No-Image-Placeholder.png'}
               alt="cover image"
               className="rounded-lg object-cover w-full h-full"
             />
