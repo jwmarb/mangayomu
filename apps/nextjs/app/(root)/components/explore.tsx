@@ -13,6 +13,7 @@ import { useExploreStore } from '@app/context/explore';
 import { shallow } from 'zustand/shallow';
 import cache from '@app/helpers/cache';
 import { useRouter, useSearchParams } from 'next/navigation';
+import ViewAllUpdates from '@app/(root)/components/viewallupdates';
 
 export default function Explore() {
   const hosts = useMangaHosts();
@@ -35,42 +36,48 @@ export default function Explore() {
     });
   }, [appendAllMangas, hosts, loadingAll]);
 
-  const handleOnViewAll = () => {
+  const handleOnViewAllTrending = () => {
     router.push('?view_all=trending');
   };
 
-  switch (params.get('view_all')) {
+  const handleOnViewAllRecent = () => {
+    router.push('?view_all=recent');
+  };
+
+  const view_all = params.get('view_all');
+
+  switch (view_all) {
+    case 'recent':
     case 'trending':
-      return (
-        <Screen.Content>
-          <Text>Hello World</Text>
-        </Screen.Content>
-      );
+      return <ViewAllUpdates type={view_all} />;
     default:
       return (
-        <Screen.Content className="flex flex-col gap-4">
-          <TextField
-            className="flex-grow w-full"
-            placeholder="Titles, authors, topics"
-            adornment={<MdSearch />}
-          />
-          <div className="flex flex-row justify-between items-center gap-2">
-            <div className="flex flex-row items-center gap-2">
-              <Text variant="header">Trending updates</Text>
-              <BsFire className="text-variant-body text-secondary w-6 h-6" />
+        <>
+          <Screen.Header />
+          <Screen.Content className="flex flex-col gap-4">
+            <TextField
+              className="flex-grow w-full"
+              placeholder="Titles, authors, topics"
+              adornment={<MdSearch />}
+            />
+            <div className="flex flex-row justify-between items-center gap-2">
+              <div className="flex flex-row items-center gap-2">
+                <Text variant="header">Trending updates</Text>
+                <BsFire className="text-variant-body text-secondary w-6 h-6" />
+              </div>
+              <Button onPress={handleOnViewAllTrending}>View all</Button>
             </div>
-            <Button onPress={handleOnViewAll}>View all</Button>
-          </div>
-          <MangaListCategory category="trending" />
-          <div className="flex flex-row justify-between items-center gap-2">
-            <div className="flex flex-row items-center gap-2">
-              <Text variant="header">Recent updates</Text>
-              <BiTimer className="text-variant-body text-primary w-6 h-6" />
+            <MangaListCategory category="trending" />
+            <div className="flex flex-row justify-between items-center gap-2">
+              <div className="flex flex-row items-center gap-2">
+                <Text variant="header">Recent updates</Text>
+                <BiTimer className="text-variant-body text-primary w-6 h-6" />
+              </div>
+              <Button onPress={handleOnViewAllRecent}>View all</Button>
             </div>
-            <Button>View all</Button>
-          </div>
-          <MangaListCategory category="recent" />
-        </Screen.Content>
+            <MangaListCategory category="recent" />
+          </Screen.Content>
+        </>
       );
   }
 }

@@ -1,41 +1,64 @@
+'use client';
 import Book from '@app/components/Book';
 import { ExploreCategory, useExploreStore } from '@app/context/explore';
 import { Manga } from '@mangayomu/mangascraper';
 import React from 'react';
-import { shallow } from 'zustand/shallow';
 
 interface MangaListCategoryProps {
   category: ExploreCategory;
+  limitless?: boolean;
+  query?: string;
 }
 
+const defaultArr: Manga[] = [];
+
 export default function MangaListCategory(props: MangaListCategoryProps) {
-  const { category } = props;
-  const state = useExploreStore(
-    (store) => ({
-      state: store.state[category],
-      mangas: store.mangas[category],
-      errors: store.errors[category],
-    }),
-    shallow,
+  const { category, limitless = false, query = '' } = props;
+  const isLoading = useExploreStore(
+    (store) => store.state[category] === 'loading',
   );
+  const mangas = useExploreStore(
+    (store) => store.mangas[category] ?? defaultArr,
+  );
+
+  const uniqMangas = React.useDeferredValue(unique(mangas, query));
+
+  if (limitless) {
+    if (isLoading)
+      return (
+        <div className="flex justify-center flex-shrink flex-row flex-wrap">
+          {new Array(30).fill('').map((_, i) => (
+            <Book.Skeleton key={i} />
+          ))}
+        </div>
+      );
+
+    return (
+      <div className="flex justify-center flex-shrink flex-row flex-wrap">
+        {uniqMangas.map((x) => (
+          <Book key={x.link} manga={x} />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center flex-shrink flex-row flex-wrap">
-      {state.state === 'loading'
+      {isLoading
         ? new Array(9).fill('').map((_, i) => <Book.Skeleton key={i} />)
-        : unique(state.mangas)
-            .slice(0, 9)
-            .map((x, i) => <Book key={x.link + i} manga={x} />)}
+        : uniqMangas.slice(0, 9).map((x) => <Book key={x.link} manga={x} />)}
     </div>
   );
 }
 
-function unique(mangas: Manga[]) {
+function unique(mangas: Manga[], query: string) {
   const p = new Set();
+  const parsed = query.trim().toLowerCase();
   return mangas.filter((manga) => {
     if (!p.has(manga.link)) {
       p.add(manga.link);
-      return true;
+      if (manga.title.trim().toLowerCase().includes(parsed)) return true;
+      return false;
     }
     return false;
   });
