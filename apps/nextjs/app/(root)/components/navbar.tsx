@@ -73,6 +73,7 @@ export default function Navbar() {
                 <List.Button
                   active={pathname === '/history'}
                   icon={<MdHistory />}
+                  onClick={() => router.push('/history')}
                 >
                   History
                 </List.Button>
