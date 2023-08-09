@@ -3,19 +3,24 @@ import {
   MangaChapter,
   MangaHost,
   MangaMeta,
+  MangaMultilingualChapter,
 } from '@mangayomu/mangascraper';
 import { Handler, ResponseError, Route } from '@mangayomu/request-handler';
 import { StatusCodes } from 'http-status-codes';
 import {
-  ISourceManga,
   Manga as UserManga,
   SourceManga,
   getErrorMessage,
   mongodb,
   slugify,
+  SourceChapter,
 } from '@main';
 import pLimit from 'promise-limit';
-import { IMangaSchema } from '@mangayomu/schemas';
+import {
+  IMangaSchema,
+  ISourceChapterSchema,
+  ISourceMangaSchema,
+} from '@mangayomu/schemas';
 
 const post: Route = async (req, res) => {
   const manga = req.body<Manga>();
@@ -31,7 +36,24 @@ const post: Route = async (req, res) => {
       );
   try {
     const data = await host.getMeta(manga);
+    const bulkWriteOperationSourceChapter: Parameters<
+      typeof SourceManga.bulkWrite<ISourceChapterSchema>
+    >[0] = [];
+    for (let i = 0; i < data.chapters.length; i++) {
+      bulkWriteOperationSourceChapter.push({
+        updateOne: {
+          filter: { _id: data.chapters[i].link },
+          update: {
+            _mangaId: data.link,
+            language:
+              (data.chapters[i] as MangaMultilingualChapter).language ?? 'en',
+          },
+          upsert: true,
+        },
+      });
+    }
     await Promise.all([
+      SourceChapter.bulkWrite(bulkWriteOperationSourceChapter),
       SourceManga.updateOne(
         { _id: slugify(manga.source) + '/' + slugify(manga.title) },
         {
@@ -64,10 +86,13 @@ const patch: Route = async (req, res) => {
   const { mangas: body } = req.body<{ mangas: Record<string, string[]> }>();
   const mangas = Object.entries(body);
   const bulkWriteOperationSourceManga: Parameters<
-    typeof SourceManga.bulkWrite<ISourceManga>
+    typeof SourceManga.bulkWrite<ISourceMangaSchema>
   >[0] = [];
   const bulkWriteOperationUserManga: Parameters<
     typeof SourceManga.bulkWrite<IMangaSchema>
+  >[0] = [];
+  const bulkWriteOperationSourceChapter: Parameters<
+    typeof SourceManga.bulkWrite<ISourceChapterSchema>
   >[0] = [];
   const result = await Promise.allSettled(
     mangas.map(async ([source, value]) => {
@@ -79,6 +104,21 @@ const patch: Route = async (req, res) => {
           limit(async () => {
             const data = await host.getMeta({ link });
             const _id = `${slugify(source)}/${slugify(data.title)}`;
+
+            for (let i = 0; i < data.chapters.length; i++) {
+              bulkWriteOperationSourceChapter.push({
+                updateOne: {
+                  filter: { _id: data.chapters[i].link },
+                  update: {
+                    _mangaId: data.link,
+                    language:
+                      (data.chapters[i] as MangaMultilingualChapter).language ??
+                      'en',
+                  },
+                  upsert: true,
+                },
+              });
+            }
 
             bulkWriteOperationSourceManga.push({
               updateOne: {
@@ -144,6 +184,7 @@ const patch: Route = async (req, res) => {
     }
   }
   await Promise.all([
+    SourceChapter.bulkWrite(bulkWriteOperationSourceChapter),
     SourceManga.bulkWrite(bulkWriteOperationSourceManga),
     UserManga.bulkWrite(bulkWriteOperationUserManga),
   ]);
