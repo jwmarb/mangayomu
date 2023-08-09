@@ -10,6 +10,7 @@ The environment variables used here are in the table below.
 
 | `.env.local`          | _Description_                                                                                    |     |
 | --------------------- | ------------------------------------------------------------------------------------------------ | --- |
+| PROXY_URL             | Fallback proxy server whenever `@mangayomu/mangascraper` fails to fetch due to CORS              | 🔴  |
 | REACT_APP_REALM_ID    | The app id of your MongoDB realm                                                                 | ❗  |
 | REDIS_URL             | The URL to your [redis](https://redis.io/) instance                                              | ❗  |
 | MONGODB_URI           | The URI of your [MongoDB](https://cloud.mongodb.com/) instance                                   | ❗  |
@@ -19,11 +20,12 @@ The environment variables used here are in the table below.
 | JWT_SECRET            |                                                                                                  | ❗  |
 | JWT_EXP_DAYS          |                                                                                                  | ❗  |
 
-| Legend | Meaning                                              |
-| ------ | ---------------------------------------------------- |
-| ❗     | Required for both **production** and **development** |
-| ⚠️     | Required only for **development**                    |
-| ✅     | Optional (**development** only)                      |
+| Legend | Meaning                                                   |
+| ------ | --------------------------------------------------------- |
+| ❗     | Required for both **production** and **development**      |
+| 🔴     | Required for **production**, optional for **development** |
+| ⚠️     | Required only for **development**                         |
+| ✅     | Optional (**development** only)                           |
 
 If the environment variable is undefined despite being set in `.env.local`, you may have to add the variables manually via through [vercel-cli](https://vercel.com/) or through this command:
 
