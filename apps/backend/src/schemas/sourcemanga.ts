@@ -1,11 +1,7 @@
-import { Manga } from '@mangayomu/mangascraper';
+import { ISourceMangaSchema } from '@mangayomu/schemas';
 import mongoose from 'mongoose';
 
-export interface SourceManga extends Manga {
-  _id: string; // slug
-}
-
-const sourceMangaSchema = new mongoose.Schema<SourceManga>({
+const sourceMangaSchema = new mongoose.Schema<ISourceMangaSchema>({
   link: { type: String, required: true, unique: true },
   imageCover: { type: String },
   source: { type: String, required: true },
@@ -13,7 +9,11 @@ const sourceMangaSchema = new mongoose.Schema<SourceManga>({
   _id: { type: String, required: true, unique: true },
 });
 
-type SourceMangaModel = mongoose.Model<SourceManga>;
+type SourceMangaModel = mongoose.Model<ISourceMangaSchema>;
 
 export default ((mongoose.models as any).SourceManga as SourceMangaModel) ||
-  mongoose.model<SourceManga>('SourceManga', sourceMangaSchema, 'SourceManga');
+  mongoose.model<ISourceMangaSchema>(
+    'SourceManga',
+    sourceMangaSchema,
+    'SourceManga',
+  );
