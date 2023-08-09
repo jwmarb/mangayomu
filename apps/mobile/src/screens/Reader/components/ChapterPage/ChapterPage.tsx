@@ -16,6 +16,7 @@ import usePageZooming from '@screens/Reader/components/ChapterPage/hooks/usePage
 import usePageScale from '@screens/Reader/components/ChapterPage/hooks/usePageScale';
 import { ChapterPageProps } from '@screens/Reader/components/ChapterPage';
 import useAppSelector from '@hooks/useAppSelector';
+import useBoolean from '@hooks/useBoolean';
 
 const ChapterPage: React.FC<ChapterPageProps> = (props) => {
   const { readingDirection } = useChapterPageContext();
@@ -30,9 +31,16 @@ const ChapterPage: React.FC<ChapterPageProps> = (props) => {
   const { stylizedHeight } = usePageScale(props);
 
   const pageZooming = usePageZooming(props, stylizedHeight);
-  const { pinchScale, translateX, translateY } = pageZooming;
+  const { pinchScale, translateX, translateY, enablePan, togglePan } =
+    pageZooming;
 
-  const gestures = usePageGestures(pageZooming, props, stylizedHeight);
+  const gestures = usePageGestures(
+    pageZooming,
+    props,
+    stylizedHeight,
+    enablePan,
+    togglePan,
+  );
 
   const gestureStyle = useAnimatedStyle(() => ({
     transform: [

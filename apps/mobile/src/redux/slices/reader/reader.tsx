@@ -69,6 +69,7 @@ interface ReaderState {
   currentPage: string | null;
   showImageModal: boolean;
   pageAspectRatio: number;
+  isFlashListActive: boolean;
 }
 
 export interface FetchPagesByChapterPayload {
@@ -91,6 +92,7 @@ const initialReaderState: ReaderState = {
   currentChapterId: null,
   currentPage: null,
   pageAspectRatio: 0.7, // It's common for manga pages to be within 0.69 to 0.71 for aspect ratio ( width / height )
+  isFlashListActive: false,
 };
 
 function getImageSizeAsync(
@@ -236,9 +238,13 @@ const readerSlice = createSlice({
       state.extendedState = {};
       state.currentChapterId = null;
       state.currentPage = null;
+      state.isFlashListActive = false;
       fetchedChapters.clear();
       fetchingChapters.clear();
       offsetMemo.clear();
+    },
+    toggleIsFlashListActive: (state, action: PayloadAction<boolean>) => {
+      state.isFlashListActive = action.payload;
     },
     setCurrentPage: (state, action: PayloadAction<string>) => {
       state.currentPage = action.payload;
@@ -502,6 +508,7 @@ const readerSlice = createSlice({
 export const {
   resetReaderState,
   setCurrentChapter,
+  toggleIsFlashListActive,
   // startFetchingChapter,
   // setIsOnChapterError,
   // setShowTransitionPage,

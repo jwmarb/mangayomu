@@ -1,4 +1,5 @@
 import useAppSelector from '@hooks/useAppSelector';
+import useBoolean from '@hooks/useBoolean';
 import useMutableObject from '@hooks/useMutableObject';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import {
@@ -114,11 +115,14 @@ export default function usePageZooming(
     zoomStartPosition: _zoomStartPosition,
     animatedPreviousState,
   } = useChapterPageContext();
+  const [enablePan, togglePan] = useBoolean();
   const readingDirection = useMutableObject(_readingDirection);
   const zoomStartPosition = useMutableObject(_zoomStartPosition);
   const imageScaling = useMutableObject(_imageScaling);
   const { width, height } = useScreenDimensions();
-  const initializingAnimationStates = React.useRef<boolean>(true);
+  const prevPage = React.useRef(page);
+  const prevImageWidth = React.useRef(imageWidth);
+  const prevImageHeight = React.useRef(imageHeight);
   const minScale = useSharedValue<number>(
     initializePinchScale(
       width,
@@ -148,8 +152,13 @@ export default function usePageZooming(
     ),
   );
 
-  React.useEffect(() => {
+  if (prevPage.current !== page) {
+    const prevPageCopy = prevPage.current;
+    prevPage.current = page;
+    prevImageWidth.current = imageWidth;
+    prevImageHeight.current = imageHeight;
     const prevState = animatedPreviousState.current[page];
+    const prevStateOfPrevPage = animatedPreviousState.current[prevPageCopy];
     const initializedMinScale = initializePinchScale(
       width,
       height,
@@ -173,11 +182,19 @@ export default function usePageZooming(
       stylizedHeight,
     );
     if (prevState != null) {
+      // console.log(`${page} : prevState.minScale = ${prevState.minScale}`);
+      togglePan(
+        (prevState.minScale > 1 && prevState.scale >= prevState.minScale) ||
+          prevState.minScale < prevState.scale,
+      );
       minScale.value = prevState.minScale;
       pinchScale.value = prevState.scale;
       translateX.value = prevState.translateX;
       translateY.value = prevState.translateY;
     } else {
+      // console.log(`${page} : initializedMinScale = ${initializedMinScale}`);
+      togglePan(initializedMinScale > 1);
+
       animatedPreviousState.current[page] = {
         minScale: initializedMinScale,
         scale: initializedMinScale,
@@ -245,39 +262,28 @@ export default function usePageZooming(
       translateX.value = initializedTranslateX;
       translateY.value = initializedTranslateY;
     }
-    initializingAnimationStates.current = false;
-    return () => {
-      initializingAnimationStates.current = true;
-      if (
-        animatedPreviousState.current[page]?.scale === initializedMinScale &&
-        animatedPreviousState.current[page]?.translateX ===
-          initializedTranslateX &&
-        animatedPreviousState.current[page]?.translateY ===
-          initializedTranslateY
-      )
-        delete animatedPreviousState.current[page];
-    };
-  }, [page]);
+
+    if (
+      animatedPreviousState.current[prevPageCopy]?.scale ===
+        prevStateOfPrevPage?.minScale &&
+      animatedPreviousState.current[prevPageCopy]?.translateX ===
+        prevStateOfPrevPage?.translateX &&
+      animatedPreviousState.current[prevPageCopy]?.translateY ===
+        prevStateOfPrevPage?.translateY
+    ) {
+      // console.log(`${prevPageCopy} : DELETED`);
+      delete animatedPreviousState.current[prevPageCopy];
+    }
+  }
 
   function setAnimatedState(
     key: 'translateX' | 'translateY' | 'scale' | 'minScale',
     value: number,
   ) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    // console.log(animatedPreviousState.current[currentPage.current]);
-    if (
-      !initializingAnimationStates.current &&
-      page in animatedPreviousState.current
-    )
+    if (page in animatedPreviousState.current)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       animatedPreviousState.current[page]![key] = value;
   }
-
-  useAnimatedReaction(
-    () => pinchScale.value,
-    (result) => {
-      runOnJS(setAnimatedState)('scale', result);
-    },
-  );
 
   useAnimatedReaction(
     () => minScale.value,
@@ -359,5 +365,5 @@ export default function usePageZooming(
     };
   }, []);
 
-  return { translateX, translateY, pinchScale, minScale };
+  return { translateX, translateY, pinchScale, minScale, enablePan, togglePan };
 }

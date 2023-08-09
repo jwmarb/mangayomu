@@ -1,6 +1,7 @@
 import useAnimatedMutableObject from '@hooks/useAnimatedMutableObject';
 import useAppSelector from '@hooks/useAppSelector';
 import useBoolean from '@hooks/useBoolean';
+import useMountedEffect from '@hooks/useMountedEffect';
 import useMutableObject from '@hooks/useMutableObject';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import { store, useAppDispatch } from '@redux/main';
@@ -24,12 +25,18 @@ export default function usePageGestures(
   pageZoomingProps: ReturnType<typeof usePageZooming>,
   props: ChapterPageProps,
   stylizedHeight: number,
+  enablePan: boolean,
+  togglePan: (val?: boolean) => void,
 ) {
   const { pinchScale, translateX, translateY, minScale } = pageZoomingProps;
   const {
-    page: { page: pageKey, pageNumber },
+    page: { page: pageKey },
   } = props;
   const { height: screenHeight, width: screenWidth } = useScreenDimensions();
+
+  const isFlashListActive = useAppSelector(
+    (state) => state.reader.isFlashListActive,
+  );
 
   function compareScaleUI() {
     'worklet';
@@ -46,8 +53,6 @@ export default function usePageGestures(
   }
 
   const { readingDirection, nativeFlatListGesture } = useChapterPageContext();
-  const currentPage = useAppSelector((state) => state.reader.currentPage);
-  const [enablePan, togglePan] = useBoolean(compareScaleJS());
   const readingDirectionRef = useMutableObject(readingDirection);
   const maxTranslateX = useSharedValue(Math.abs(translateX.value));
   const maxTranslateY = useSharedValue(Math.abs(translateY.value));
@@ -66,19 +71,6 @@ export default function usePageGestures(
   const isAtEdgeVertical = useSharedValue(
     isVertical.value && Math.abs(translateY.value) === maxTranslateY.value,
   );
-
-  /**
-   * Re-enables page key when page is initially zoomed
-   * Resets pan state for pageKey after component has been recycled
-   */
-  React.useEffect(() => {
-    if (compareScaleJS()) {
-      console.log(
-        `pan has been enabled since pageKey changeds and ${pageKey} is zoomed`,
-      );
-      togglePan(true);
-    }
-  }, [currentPage]);
 
   const mutablePageKey = useMutableObject(pageKey);
   const height = useAnimatedMutableObject(screenHeight);
@@ -162,11 +154,7 @@ export default function usePageGestures(
         }
       },
       onFlashlistEnd() {
-        if (
-          mutablePageKey.current === store.getState().reader.currentPage &&
-          !enablePan &&
-          compareScaleJS()
-        ) {
+        if (!enablePan && compareScaleJS()) {
           togglePan(true);
         }
       },
@@ -203,6 +191,7 @@ export default function usePageGestures(
   const panGesture = React.useMemo(
     () =>
       Gesture.Pan()
+        .enabled(!isFlashListActive)
         .enableTrackpadTwoFingerGesture(true)
         .onChange((e) => {
           if (readingDirectionRef.current !== ReadingDirection.WEBTOON) {
@@ -239,12 +228,12 @@ export default function usePageGestures(
               });
               runOnJS(togglePan)(false);
             } else if (isAtEdgeHorizontal.value || isAtEdgeVertical.value) {
+              // console.log('isAtEdgeHorizontal triggered');
               runOnJS(togglePan)(false);
-            } else if (
-              !enablePan &&
-              !(isHorizontal.value || isAtEdgeVertical.value)
-            )
+            } else if (!enablePan) {
+              console.log('pan enabled here');
               runOnJS(togglePan)(true);
+            }
           }
         })
         .onEnd((e) => {
@@ -267,16 +256,13 @@ export default function usePageGestures(
             ? [rootPinchGesture, nativeFlatListGesture]
             : [rootPinchGesture]),
         ),
-    [enablePan, rootPinchGesture, nativeFlatListGesture],
+    [enablePan, rootPinchGesture, nativeFlatListGesture, isFlashListActive],
   );
 
   /**
    * Re-enables panning shortly after user reached max translation value
    */
   React.useEffect(() => {
-    // console.log(
-    //   `\n---\npage #: ${pageNumber}\nenablePan: ${enablePan}\npinchScale: ${pinchScale.value}\nminScale: ${minScale.value}\n---\n`,
-    // );
     if (
       (isAtEdgeHorizontal.value || isAtEdgeVertical.value) &&
       !enablePan &&
@@ -288,6 +274,12 @@ export default function usePageGestures(
       };
     }
   }, [enablePan]);
+
+  // React.useEffect(() => {
+  //   console.log(
+  //     `\n---\npage #: ${pageNumber}\nenablePan: ${enablePan}\npinchScale: ${pinchScale.value}\nminScale: ${minScale.value}\n---\n`,
+  //   );
+  // }, [enablePan]);
 
   const gestures = React.useMemo(
     () => Gesture.Exclusive(panGesture, holdGesture),

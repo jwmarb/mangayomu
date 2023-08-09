@@ -1,6 +1,8 @@
 import useAppSelector from '@hooks/useAppSelector';
 import useImmersiveMode from '@hooks/useImmersiveMode';
 import useMutableObject from '@hooks/useMutableObject';
+import { useAppDispatch } from '@redux/main';
+import { toggleIsFlashListActive } from '@redux/slices/reader';
 import { ReadingDirection } from '@redux/slices/settings';
 import React from 'react';
 import {
@@ -46,6 +48,11 @@ export default function useOverlayGesture(args: {
   const { panRef, pinchRef, readingDirection } = args;
   const overlayOpacity = useSharedValue(0);
   const currentPageKey = useAppSelector((state) => state.reader.currentPage);
+  const dispatch = useAppDispatch();
+  const toggleFlashList = React.useCallback(
+    (val: boolean) => dispatch(toggleIsFlashListActive(val)),
+    [dispatch],
+  );
   const pageKey = useMutableObject(currentPageKey);
 
   const [showStatusAndNavBar, hideStatusAndNavBar] = useImmersiveMode();
@@ -98,7 +105,7 @@ export default function useOverlayGesture(args: {
     e: Parameters<PageGestureEventHandlers[T]>[0],
   ) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (pageKey.current != null)
+    if (pageKey.current != null && pageKey.current in pageGestures.current)
       runOnUI((pageGestures.current[pageKey.current] as any)[key])(e);
   }
 
@@ -122,23 +129,15 @@ export default function useOverlayGesture(args: {
   const nativeFlatListGesture = React.useMemo(
     () =>
       Gesture.Native()
-        // .onBegin(() => {
-        //   if (readingDirection !== ReadingDirection.WEBTOON)
-        //     runOnJS(handleOnFinalize)();
-        // })
-        // .onStart(() => {
-        //   console.log('START');
-        // })
+        .onStart(() => {
+          runOnJS(toggleFlashList)(true);
+        })
         .onEnd(() => {
-          // console.log('FINALIZE');
+          runOnJS(toggleFlashList)(false);
+          console.log('END');
           if (readingDirection !== ReadingDirection.WEBTOON)
             runOnJS(handleOnEnd)();
         }),
-    // .onEnd(() => {
-    //   console.log('END');
-    // })
-    // .onTouchesCancelled(() => {
-    //   console.log('TOUCHES CANCELLED');
     [pinchGesture, readingDirection !== ReadingDirection.WEBTOON],
   );
   return {
