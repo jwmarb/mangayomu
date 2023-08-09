@@ -23,6 +23,7 @@ interface EnvironmentVariables {
   JWT_SECRET: string;
   JWT_EXP_DAYS: string;
   BROWSERLESS_API_TOKEN: string;
+  PROXY_URL?: string;
 }
 
 function generateUrl(environment: 'production' | 'development', host?: string) {
