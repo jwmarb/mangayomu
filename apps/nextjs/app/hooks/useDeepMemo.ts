@@ -34,6 +34,7 @@ export default function useDeepMemo<T>(
         break;
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const state = React.useMemo(factory, [oldProp.current]);
   oldDeps.current = deps;
   return state;
