@@ -14,6 +14,20 @@ const fetch = require('node-fetch');
 
 abstract class MangaHost {
   /**
+   * Proxy route URL to fallback to
+   * The proxy must be a server that accepts the following body structure:
+   * @example
+   * ```ts
+   * type ProxyBody = {
+   *  url: string;
+   *  method: "GET" | "POST"; // must at least support these methods
+   *  body: any;
+   * }
+   * ```
+   */
+  public proxy: string | undefined;
+
+  /**
    * List of manga hosts
    */
   public static sources: string[] = [];
@@ -110,18 +124,28 @@ abstract class MangaHost {
     }
     const url =
       typeof path === 'string' ? `https://${this.link}${path}` : path.link;
-    const response = await fetch(url, {
-      method,
-      headers: {
-        'User-Agent': new UserAgent().toString(),
-        ...(body != null
-          ? {
-              'Content-Type': 'application/json',
-            }
-          : {}),
-      },
-      body: JSON.stringify(body),
-    });
+    const response = await (this.proxy
+      ? fetch(this.proxy, {
+          method: 'POST',
+          body: JSON.stringify({
+            url,
+            method,
+            body,
+          }),
+          headers: { 'Content-Type': 'application/json' },
+        })
+      : fetch(url, {
+          method,
+          headers: {
+            'User-Agent': new UserAgent().toString(),
+            ...(body != null
+              ? {
+                  'Content-Type': 'application/json',
+                }
+              : {}),
+          },
+          body: JSON.stringify(body),
+        }));
     const data = await response[body ? 'json' : 'text']();
     return body ? data : (cheerio.load(data, { decodeEntities: false }) as T);
   }

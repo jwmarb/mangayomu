@@ -10,6 +10,8 @@ const REQUIRED_VARS = [
   'BROWSERLESS_API_TOKEN',
 ];
 
+const OPTIONAL_VARS = ['PROXY_URL'];
+
 interface EnvironmentVariables {
   REACT_APP_REALM_ID: string;
   REDIS_URL: string;
@@ -41,6 +43,7 @@ function generateUrl(environment: 'production' | 'development', host?: string) {
 
 function generateVariables() {
   const requiredVars = new Set(REQUIRED_VARS);
+  const optionalVars = new Set(OPTIONAL_VARS);
   const VERCEL_ENV = process.env.VERCEL_ENV as 'production' | 'development';
   const VERCEL_URL = generateUrl(VERCEL_ENV, process.env.VERCEL_URL);
   const UNSAFE_ALLOW_ENVIRONMENT_VARS = process.env
@@ -50,7 +53,11 @@ function generateVariables() {
     VERCEL_URL,
   } as unknown as EnvironmentVariables;
   for (const [key, value] of Object.entries(process.env)) {
-    if (requiredVars.has(key) && key !== 'VERCEL_ENV' && key !== 'VERCEL_URL')
+    if (
+      (requiredVars.has(key) || optionalVars.has(key)) &&
+      key !== 'VERCEL_ENV' &&
+      key !== 'VERCEL_URL'
+    )
       cached[key as keyof EnvironmentVariables] = value as never;
   }
   if (
