@@ -30,6 +30,20 @@ export default function Explore() {
         hosts.getHotMangas(),
         hosts.getLatestMangas(),
       ]);
+      const duplicates = new Set<string>();
+      fetch('/api/v1/updates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(
+          recent.mangas.concat(trending.mangas).filter((x) => {
+            if (!duplicates.has(x.link)) {
+              duplicates.add(x.link);
+              return true;
+            }
+            return false;
+          }),
+        ),
+      });
       appendAllMangas({ recent, trending });
     });
   }, [appendAllMangas, hosts, loadingAll]);

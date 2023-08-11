@@ -99,10 +99,10 @@ const patch: Route = async (req, res) => {
     typeof SourceManga.bulkWrite<ISourceMangaSchema>
   >[0] = [];
   const bulkWriteOperationUserManga: Parameters<
-    typeof SourceManga.bulkWrite<IMangaSchema>
+    typeof UserManga.bulkWrite<IMangaSchema>
   >[0] = [];
   const bulkWriteOperationSourceChapter: Parameters<
-    typeof SourceManga.bulkWrite<ISourceChapterSchema>
+    typeof SourceChapter.bulkWrite<ISourceChapterSchema>
   >[0] = [];
   for (const manga of mangas) {
     const { link, source, title, chapters, imageCover } = manga;
