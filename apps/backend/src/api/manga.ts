@@ -1,7 +1,6 @@
 import {
   Manga,
   MangaChapter,
-  MangaHost,
   MangaMeta,
   MangaMultilingualChapter,
 } from '@mangayomu/mangascraper';
@@ -10,20 +9,18 @@ import { StatusCodes } from 'http-status-codes';
 import {
   Manga as UserManga,
   SourceManga,
-  getErrorMessage,
   mongodb,
   slugify,
   SourceChapter,
-  redis,
   state,
+  getSourceChapterId,
+  getSourceMangaId,
 } from '@main';
-import pLimit from 'promise-limit';
 import {
   IMangaSchema,
   ISourceChapterSchema,
   ISourceMangaSchema,
 } from '@mangayomu/schemas';
-import env from '@mangayomu/vercel-env';
 
 const post: Route = async (req, res) => {
   const data = req.body<MangaMeta<MangaChapter> & Manga>();
@@ -80,8 +77,24 @@ const post: Route = async (req, res) => {
 };
 
 const patch: Route = async (req, res) => {
-  const { mangas: body } = req.body<{ mangas: Record<string, string[]> }>();
-  const mangas = Object.entries(body);
+  const mangas = req.body<(MangaMeta<MangaChapter> & Manga)[]>();
+  const sourceMangas = await SourceManga.find({
+    link: {
+      $in: mangas.map((x) => x.link),
+    },
+    title: {
+      $in: mangas.map((x) => x.title),
+    },
+    source: {
+      $in: mangas.map((x) => x.source),
+    },
+  }).exec();
+  if (sourceMangas.length !== mangas.length)
+    return res
+      .status(StatusCodes.UNPROCESSABLE_ENTITY)
+      .json(
+        ResponseError.from(StatusCodes.UNPROCESSABLE_ENTITY, 'Illegal body'),
+      );
   const bulkWriteOperationSourceManga: Parameters<
     typeof SourceManga.bulkWrite<ISourceMangaSchema>
   >[0] = [];
@@ -91,106 +104,70 @@ const patch: Route = async (req, res) => {
   const bulkWriteOperationSourceChapter: Parameters<
     typeof SourceManga.bulkWrite<ISourceChapterSchema>
   >[0] = [];
-  const result = await Promise.allSettled(
-    mangas.map(async ([source, value]) => {
-      const limit = pLimit<MangaMeta<MangaChapter> & Manga>(100);
-      const host = MangaHost.sourcesMap.get(source);
-      if (host == null) throw new Error(`${source} does not exist as a source`);
-      return await Promise.allSettled(
-        value.map((link, i) =>
-          limit(async () => {
-            host.proxy = env().PROXY_URL;
-            const data = await host.getMeta({ link });
-            const _id = `${slugify(source)}/${slugify(data.title)}`;
+  for (const manga of mangas) {
+    const { link, source, title, chapters, imageCover } = manga;
+    const _id = getSourceMangaId(manga);
 
-            for (let i = 0; i < data.chapters.length; i++) {
-              bulkWriteOperationSourceChapter.push({
-                updateOne: {
-                  filter: { _id: data.chapters[i].link },
-                  update: {
-                    _mangaId: data.link,
-                    language:
-                      (data.chapters[i] as MangaMultilingualChapter).language ??
-                      'en',
-                  },
-                  upsert: true,
-                },
-              });
-            }
-
-            bulkWriteOperationSourceManga.push({
-              updateOne: {
-                upsert: true,
-                filter: { _id },
-                update: [
-                  {
-                    $set: {
-                      _id,
-                      title: data.title,
-                      imageCover: data.imageCover,
-                      link,
-                      source: data.source,
-                    },
-                  },
-                ],
-              },
-            });
-            bulkWriteOperationUserManga.push({
-              updateMany: {
-                filter: { link: link },
-                update: [
-                  {
-                    $set: {
-                      title: data.title,
-                      imageCover: data.imageCover,
-                      source: data.source,
-                    },
-                  },
-                ],
-              },
-            });
-            return data;
-          }),
-        ),
-      );
-    }),
-  );
-  const errors: string[] = [];
-  const mangaResults = [];
-  for (const source of result) {
-    switch (source.status) {
-      case 'fulfilled':
-        for (const mangas of source.value) {
-          switch (mangas.status) {
-            case 'rejected':
-              errors.push(getErrorMessage(mangas.reason));
-              break;
-            case 'fulfilled':
-              mangaResults.push({
-                imageCover: mangas.value.imageCover,
-                title: mangas.value.title,
-                link: mangas.value.link,
-                source: mangas.value.source,
-              } as Manga);
-              break;
-          }
-        }
-        break;
-      case 'rejected':
-        errors.push(source.reason);
-        break;
+    for (let i = 0; i < chapters.length; i++) {
+      const chapter = chapters[i];
+      bulkWriteOperationSourceChapter.push({
+        updateOne: {
+          filter: { _id: getSourceChapterId(manga, chapter) },
+          update: {
+            _mangaId: link,
+            language:
+              (chapters[i] as MangaMultilingualChapter).language ?? 'en',
+          },
+          upsert: true,
+        },
+      });
     }
+
+    bulkWriteOperationSourceManga.push({
+      updateOne: {
+        upsert: true,
+        filter: { _id },
+        update: [
+          {
+            $set: {
+              _id,
+              title,
+              imageCover,
+              link,
+              source,
+            },
+          },
+        ],
+      },
+    });
+    bulkWriteOperationUserManga.push({
+      updateMany: {
+        filter: { link: link },
+        update: [
+          {
+            $set: {
+              title: title,
+              imageCover: imageCover,
+              source: source,
+            },
+          },
+        ],
+      },
+    });
   }
+
   await Promise.all([
     SourceChapter.bulkWrite(bulkWriteOperationSourceChapter),
     SourceManga.bulkWrite(bulkWriteOperationSourceManga),
     UserManga.bulkWrite(bulkWriteOperationUserManga),
   ]);
-  res.json(mangaResults);
+  res.json('success');
 };
 
 export default Handler.builder()
-  .middleware(state)
+  .middleware((req, res, next) =>
+    req.method === 'POST' ? state(req, res, next) : next(),
+  )
   .middleware(mongodb())
   .route('POST', post)
   .route('PATCH', patch)
