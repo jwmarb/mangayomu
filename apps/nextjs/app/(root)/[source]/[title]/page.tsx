@@ -10,6 +10,7 @@ import { Metadata } from 'next';
 import MangaViewer from './components/mangaviewer';
 import GoBackButton from './components/gobackbutton';
 import env from '@mangayomu/vercel-env';
+import { IMAGE_PLACEHOLDER } from '@app/context/imageresolver';
 interface PageProps {
   params: {
     source: string;
@@ -22,24 +23,22 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const pathName = source + '/' + title;
   const manga = await getSourceManga(pathName);
-  const host = getSourceFromSlug(source);
 
-  if (host == null || manga == null)
+  if (manga == null)
     return {
       title: '404 Not Found',
     };
 
-  host.proxy = env().PROXY_URL;
-  const meta = await host.getMeta(manga);
+  const description = `Read ${manga.title} for free on MangaYomu`;
 
   return {
-    title: meta.title,
-    description: meta.description,
+    title: manga.title + ' - MangaYomu',
+    description,
     openGraph: {
-      description: meta.description,
-      title: meta.title,
-      images: [meta.imageCover],
-      type: 'book',
+      description,
+      title: manga.title + ' - MangaYomu',
+      images: [manga.imageCover ?? IMAGE_PLACEHOLDER],
+      type: 'article',
     },
   };
 }
@@ -87,9 +86,12 @@ export default async function Page(props: PageProps) {
       </Screen>
     );
 
+  const state = crypto.randomUUID();
+  await redis.setex(state, 30, 0);
+
   return (
     <Screen>
-      <MangaViewer manga={manga} source={host.name} />
+      <MangaViewer manga={manga} source={host.name} state={state} />
     </Screen>
   );
 }

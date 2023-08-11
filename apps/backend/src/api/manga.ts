@@ -14,6 +14,8 @@ import {
   mongodb,
   slugify,
   SourceChapter,
+  redis,
+  state,
 } from '@main';
 import pLimit from 'promise-limit';
 import {
@@ -24,64 +26,57 @@ import {
 import env from '@mangayomu/vercel-env';
 
 const post: Route = async (req, res) => {
-  const manga = req.body<Manga>();
-  const host = MangaHost.sourcesMap.get(manga.source);
-  if (host == null)
+  const data = req.body<MangaMeta<MangaChapter> & Manga>();
+  const doc = await SourceManga.findById(
+    slugify(data.source) + '/' + slugify(data.title),
+  ).exec();
+
+  if (doc == null)
     return res
       .status(StatusCodes.UNPROCESSABLE_ENTITY)
       .json(
-        ResponseError.from(
-          StatusCodes.UNPROCESSABLE_ENTITY,
-          `${host} does not exist as a source`,
-        ),
+        ResponseError.from(StatusCodes.UNPROCESSABLE_ENTITY, 'Illegal request'),
       );
-  try {
-    host.proxy = env().PROXY_URL;
-    const data = await host.getMeta(manga);
-    const bulkWriteOperationSourceChapter: Parameters<
-      typeof SourceManga.bulkWrite<ISourceChapterSchema>
-    >[0] = [];
-    for (let i = 0; i < data.chapters.length; i++) {
-      bulkWriteOperationSourceChapter.push({
-        updateOne: {
-          filter: { _id: data.chapters[i].link },
-          update: {
-            _mangaId: data.link,
-            language:
-              (data.chapters[i] as MangaMultilingualChapter).language ?? 'en',
-          },
-          upsert: true,
+
+  const bulkWriteOperationSourceChapter: Parameters<
+    typeof SourceManga.bulkWrite<ISourceChapterSchema>
+  >[0] = [];
+  for (let i = 0; i < data.chapters.length; i++) {
+    bulkWriteOperationSourceChapter.push({
+      updateOne: {
+        filter: { _id: data.chapters[i].link },
+        update: {
+          _mangaId: data.link,
+          language:
+            (data.chapters[i] as MangaMultilingualChapter).language ?? 'en',
         },
-      });
-    }
-    await Promise.all([
-      SourceChapter.bulkWrite(bulkWriteOperationSourceChapter),
-      SourceManga.updateOne(
-        { _id: slugify(manga.source) + '/' + slugify(manga.title) },
-        {
-          $set: {
-            title: data.title,
-            imageCover: data.imageCover,
-            link: manga.link,
-          },
-        },
-      ).exec(),
-      UserManga.updateMany(
-        { link: manga.link },
-        {
-          $set: {
-            title: data.title,
-            imageCover: data.imageCover,
-          },
-        },
-      ).exec(),
-    ]);
-    res.json(data);
-  } catch (e) {
-    throw Error(
-      `Failed using fetch implementation. Got error: ${getErrorMessage(e)}`,
-    );
+        upsert: true,
+      },
+    });
   }
+  await Promise.all([
+    SourceChapter.bulkWrite(bulkWriteOperationSourceChapter),
+    SourceManga.updateOne(
+      { _id: slugify(data.source) + '/' + slugify(data.title) },
+      {
+        $set: {
+          title: data.title,
+          imageCover: data.imageCover,
+          link: data.link,
+        },
+      },
+    ).exec(),
+    UserManga.updateMany(
+      { link: data.link },
+      {
+        $set: {
+          title: data.title,
+          imageCover: data.imageCover,
+        },
+      },
+    ).exec(),
+  ]);
+  res.json('success');
 };
 
 const patch: Route = async (req, res) => {
@@ -195,6 +190,7 @@ const patch: Route = async (req, res) => {
 };
 
 export default Handler.builder()
+  .middleware(state)
   .middleware(mongodb())
   .route('POST', post)
   .route('PATCH', patch)

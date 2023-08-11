@@ -43,6 +43,7 @@ import {
 import getMangaMeta from '@app/helpers/getMangaMeta';
 import { useUser } from '@app/context/realm';
 import cache from '@app/helpers/cache';
+import useMangaHost from '@app/hooks/useMangaHost';
 
 interface MangaViewerProps {
   // meta: MangaMeta<MangaChapter> &
@@ -51,6 +52,7 @@ interface MangaViewerProps {
   //   Partial<WithStatus>;
   source: string;
   manga: Manga;
+  state: string;
 
   // sanitizedDescription: string;
   // supportedLanguages: [ISOLangCode, string][];
@@ -65,10 +67,11 @@ const SortLanguages = (a: ISOLangCode, b: ISOLangCode) => {
 };
 
 export default function MangaViewer(props: MangaViewerProps) {
-  const { source, manga: _manga } = props;
+  const { source, manga: _manga, state } = props;
   const [imageCover, setImageCover] = React.useState<string>(
     _manga.imageCover || '/No-Image-Placeholder.png',
   );
+  const host = useMangaHost(_manga.source);
   const user = useUser();
   const manga = useObject(
     MangaSchema,
@@ -87,12 +90,17 @@ export default function MangaViewer(props: MangaViewerProps) {
   >(null);
   React.useEffect(() => {
     async function init() {
-      const p = await cache(_manga.link, () => getMangaMeta(_manga));
+      const p = await cache(_manga.link, () => host.getMeta(_manga));
       setImageCover(p.imageCover || '/No-Image-Placeholder.png');
       setMeta(p);
+      await fetch('/api/v1/manga' + '?state=' + state, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(p),
+      });
     }
     init();
-  }, [_manga]);
+  }, [_manga, host, state]);
 
   const supportedLanguages: [ISOLangCode, string][] | null =
     React.useMemo(() => {
