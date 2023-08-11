@@ -7,6 +7,7 @@ const sourceMangaSchema = new mongoose.Schema<ISourceMangaSchema>({
   source: { type: String, required: true },
   title: { type: String, required: true },
   _id: { type: String, required: true, unique: true },
+  description: { type: String, required: false },
 });
 
 type SourceMangaModel = mongoose.Model<ISourceMangaSchema>;

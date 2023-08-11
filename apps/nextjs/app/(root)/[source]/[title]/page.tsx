@@ -11,6 +11,7 @@ import MangaViewer from './components/mangaviewer';
 import GoBackButton from './components/gobackbutton';
 import env from '@mangayomu/vercel-env';
 import { IMAGE_PLACEHOLDER } from '@app/context/imageresolver';
+import { ISourceMangaSchema } from '@mangayomu/schemas';
 interface PageProps {
   params: {
     source: string;
@@ -29,12 +30,15 @@ export async function generateMetadata({
       title: '404 Not Found',
     };
 
-  const description = `Read ${manga.title} for free on MangaYomu`;
+  const description =
+    manga.description ?? `Read ${manga.title} for free on MangaYomu`;
 
   return {
     title: manga.title + ' - MangaYomu',
+    applicationName: 'MangaYomu',
     description,
     openGraph: {
+      siteName: 'MangaYomu',
       description,
       title: manga.title + ' - MangaYomu',
       images: [manga.imageCover ?? IMAGE_PLACEHOLDER],
@@ -97,7 +101,7 @@ export default async function Page(props: PageProps) {
 }
 
 const getSourceManga = React.cache(
-  async (pathName: string): Promise<Manga | null> => {
+  async (pathName: string): Promise<ISourceMangaSchema | null> => {
     const cached = await redis.get(pathName);
     if (cached == null) {
       const { connect, close } = getMongooseConnection();

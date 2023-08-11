@@ -24,9 +24,7 @@ import {
 
 const post: Route = async (req, res) => {
   const data = req.body<MangaMeta<MangaChapter> & Manga>();
-  const doc = await SourceManga.findById(
-    slugify(data.source) + '/' + slugify(data.title),
-  ).exec();
+  const doc = await SourceManga.findById(getSourceMangaId(data)).exec();
 
   if (doc == null)
     return res
@@ -60,6 +58,7 @@ const post: Route = async (req, res) => {
           title: data.title,
           imageCover: data.imageCover,
           link: data.link,
+          description: data.description,
         },
       },
     ).exec(),
@@ -105,7 +104,7 @@ const patch: Route = async (req, res) => {
     typeof SourceChapter.bulkWrite<ISourceChapterSchema>
   >[0] = [];
   for (const manga of mangas) {
-    const { link, source, title, chapters, imageCover } = manga;
+    const { link, source, title, chapters, imageCover, description } = manga;
     const _id = getSourceMangaId(manga);
 
     for (let i = 0; i < chapters.length; i++) {
@@ -135,6 +134,7 @@ const patch: Route = async (req, res) => {
               imageCover,
               link,
               source,
+              description,
             },
           },
         ],
