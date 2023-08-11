@@ -40,7 +40,6 @@ import {
   SORT_CHAPTERS_BY,
   SortChaptersBy,
 } from '@mangayomu/schemas';
-import getMangaMeta from '@app/helpers/getMangaMeta';
 import { useUser } from '@app/context/realm';
 import cache from '@app/helpers/cache';
 import useMangaHost from '@app/hooks/useMangaHost';
