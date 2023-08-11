@@ -61,6 +61,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
         },
         operationName: 'get_content_browse_latest',
       },
+      { proxyEnabled: false },
     );
 
     return data.get_content_browse_latest.items.map(
@@ -87,6 +88,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
         },
         operationName: 'get_content_browse_latest',
       },
+      { proxyEnabled: false },
     );
 
     return data.get_content_browse_latest.items.map(
@@ -133,6 +135,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
             },
           },
         },
+        { proxyEnabled: false },
       );
       return items.map(
         ({ data }): Manga => ({
@@ -167,6 +170,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
           },
         },
       },
+      { proxyEnabled: false },
     );
     return items.map(
       ({ data }): Manga => ({
@@ -178,7 +182,9 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
     );
   }
   public async getMeta(manga: GetMeta): Promise<MangaParkV5MangaMeta & Manga> {
-    const $ = await super.route(manga);
+    const $ = await super.route(manga, 'GET', undefined, {
+      proxyEnabled: false,
+    });
     const _$ = await super.route({ link: getV5URL(manga.link) });
     const html = _$('script#__NEXT_DATA__').html();
     if (html == null) throw Error('Unknown page');

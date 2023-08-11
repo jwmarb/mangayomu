@@ -4,6 +4,13 @@ import { MangaSortType } from './scraper.filters';
 
 export type GetMeta = Pick<Manga, 'link'> | { html: string; link: string };
 
+export type RouteFetchOptions = {
+  /**
+   * Whether or not to fetch the provided route/link with a proxy (if provided). This option affects users on the web and not in native applciations. If using a proxy interferes with the functionality, set this to `false`.
+   */
+  proxyEnabled?: boolean;
+};
+
 /**
  * A manga that has official translations
  */

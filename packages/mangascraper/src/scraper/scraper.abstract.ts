@@ -4,6 +4,7 @@ import {
   MangaChapter,
   MangaHostInfo,
   MangaMeta,
+  RouteFetchOptions,
 } from './scraper.interfaces';
 import url from 'url';
 import * as cheerio from 'cheerio';
@@ -118,13 +119,14 @@ abstract class MangaHost {
     path: string | GetMeta,
     method: 'GET' | 'POST' = 'GET',
     body?: Record<string, unknown>,
+    options: RouteFetchOptions = { proxyEnabled: true },
   ): Promise<T> {
     if (typeof path === 'object' && 'html' in path) {
       return cheerio.load(path.html, { decodeEntities: false }) as T;
     }
     const url =
       typeof path === 'string' ? `https://${this.link}${path}` : path.link;
-    const response = await (this.proxy
+    const response = await (this.proxy && options.proxyEnabled
       ? fetch(this.proxy, {
           method: 'POST',
           body: JSON.stringify({
