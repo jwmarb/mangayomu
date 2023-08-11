@@ -1,48 +1,57 @@
 import { parse } from 'date-fns';
 
 export function extractDataFromVariable(html: string | null) {
-  return <T>(variableName: string): T => {
-    if (html == null) throw Error('HTML is null');
-    const match = html.match(new RegExp(`${variableName} = .*;`, 'g'));
-    if (match == null)
-      throw Error(`${variableName} does not exist. Received html: ${html}`);
-    const json = match[0].substring(
-      variableName.length + 3,
-      match[0].length - 1,
-    );
-    return JSON.parse(json);
+  return <T>(variableName: string): Promise<T> => {
+    return new Promise((res, rej) => {
+      if (html == null) return rej('HTML is null');
+      const match = html.match(new RegExp(`${variableName} = .*;`, 'g'));
+      if (match == null)
+        return rej(`${variableName} does not exist. Received html: ${html}`);
+      const json = match[0].substring(
+        variableName.length + 3,
+        match[0].length - 1,
+      );
+      res(JSON.parse(json));
+    });
   };
 }
 
-export function extractDataFromApplicationLDJson<T>(html: string | null): T {
-  if (html == null) throw Error('HTML is null');
-  const target = /"mainEntity":{((\s|.)*?)}/g;
-  const obj = html.match(target);
+export function extractDataFromApplicationLDJson<T>(
+  html: string | null,
+): Promise<T> {
+  return new Promise((res, rej) => {
+    if (html == null) return rej('HTML is null');
+    const target = /"mainEntity":{((\s|.)*?)}/g;
+    const obj = html.match(target);
 
-  if (obj == null) throw Error(`Invalid regular expression. Got ${html}`);
-  const parsed = JSON.parse(
-    `{${obj[0].replace(/ ".*" /g, (s) => {
-      return s.replace(/"/g, '\\"');
-    })}}`,
-  );
-
-  return parsed;
+    if (obj == null) return rej(`Invalid regular expression. Got ${html}`);
+    const parsed = JSON.parse(
+      `{${obj[0].replace(/ ".*" /g, (s) => {
+        return s.replace(/"/g, '\\"');
+      })}}`,
+    );
+    res(parsed);
+  });
 }
 
 export function extractFunctionFromVariable(html: string | null) {
-  return <T extends (...args: any) => any>(fnName: string): T => {
-    if (html == null) throw Error('HTML is null');
-    const b = html.match(
-      new RegExp(`${fnName}( = |=)function\\((.)*?\\){(\\s|.)*?}(;|,)`),
-    );
+  return <T extends (...args: any) => any>(fnName: string): Promise<T> => {
+    return new Promise((res, rej) => {
+      if (html == null) return rej('HTML is null');
+      const b = html.match(
+        new RegExp(`${fnName}( = |=)function\\((.)*?\\){(\\s|.)*?}(;|,)`),
+      );
 
-    if (b == null) throw Error('Invalid regexp');
+      if (b == null) return rej('Invalid regexp');
 
-    return new Function(
-      `var ${b[0]
-        .replace(fnName, 'extractedFunction')
-        .replace('},', '};')} return extractedFunction`,
-    )();
+      res(
+        new Function(
+          `var ${b[0]
+            .replace(fnName, 'extractedFunction')
+            .replace('},', '};')} return extractedFunction`,
+        )(),
+      );
+    });
   };
 }
 

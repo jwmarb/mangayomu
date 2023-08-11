@@ -1,12 +1,7 @@
-import {
-  SourceError,
-  SourceManga,
-  redis,
-  slugify,
-  getErrorMessage,
-  ISourceManga,
-} from '../';
+import { ISourceMangaSchema } from '@mangayomu/schemas';
+import { SourceError, SourceManga, redis, slugify, getErrorMessage } from '../';
 import { Manga, MangaHost } from '@mangayomu/mangascraper';
+import env from '@mangayomu/vercel-env';
 
 export default async function getListMangas(
   sources: string[],
@@ -29,18 +24,10 @@ export default async function getListMangas(
       const host = MangaHost.sourcesMap.get(source);
       if (host == null) throw new Error(`Invalid host "${source}"`);
       if (cached) return JSON.parse(cached) as Manga[];
-
-      try {
-        const data = await host[mangaFetchFn]();
-        setExpPipeline.setex(source + '/' + key, 60, JSON.stringify(data));
-        return data;
-      } catch (e) {
-        throw new Error(
-          `Failed getting updates with fetch implementation. Got error: ${getErrorMessage(
-            e,
-          )}`,
-        );
-      }
+      host.proxy = env().PROXY_URL;
+      const data: Manga[] = await host[mangaFetchFn]();
+      setExpPipeline.setex(source + '/' + key, 60, JSON.stringify(data));
+      return data;
     }),
   );
 
@@ -63,7 +50,7 @@ export default async function getListMangas(
   );
   const mangas: Manga[] = [];
   const sourceMangas: Parameters<
-    typeof SourceManga.bulkWrite<ISourceManga>
+    typeof SourceManga.bulkWrite<ISourceMangaSchema>
   >[0] = [];
   const hasMissedCache = cachedValues.some((val) => val == null);
   const uniq = new Set<string>();

@@ -36,7 +36,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     const $ = await super.route('/');
     const html = $('body').html();
     const { variable, fn } = processScript(html);
-    const LatestJSON = variable<LatestJSON[]>('vm.LatestJSON');
+    const LatestJSON = await variable<LatestJSON[]>('vm.LatestJSON');
 
     return Promise.resolve<Manga[]>(
       LatestJSON.map((x, i) => ({
@@ -51,8 +51,8 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   public async listHotMangas(): Promise<Manga[]> {
     const $ = await super.route('/');
     const html = $('body').html();
-    const { variable, fn } = processScript(html);
-    const HotUpdateJSON = variable<HotUpdateJSON[]>('vm.HotUpdateJSON');
+    const { variable } = processScript(html);
+    const HotUpdateJSON = await variable<HotUpdateJSON[]>('vm.HotUpdateJSON');
     return Promise.resolve<Manga[]>(
       HotUpdateJSON.map((x, i) => ({
         link: `https://${super.getLink()}/manga/${x.IndexName}`,
@@ -68,7 +68,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       const $ = await super.route('/search');
       const html = $('body').html();
       const { variable } = processScript(html);
-      const Directory = variable<Directory[]>('vm.Directory');
+      const Directory = await variable<Directory[]>('vm.Directory');
       const result = Directory.map((x, i) => ({
         title: x.s,
         link: `https://${super.getLink()}/manga/${x.i}`,
@@ -101,10 +101,10 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     const html = $.html();
 
     const { mainEntity: data } =
-      extractDataFromApplicationLDJson<MainEntityJSON>(html);
+      await extractDataFromApplicationLDJson<MainEntityJSON>(html);
     const { variable, fn } = processScript(html);
-    const Chapters = variable<MangaSeeChapterJSON[]>('vm.Chapters');
-    const ChapterDisplay = fn<(e: string) => string>('vm.ChapterDisplay');
+    const Chapters = await variable<MangaSeeChapterJSON[]>('vm.Chapters');
+    const ChapterDisplay = await fn<(e: string) => string>('vm.ChapterDisplay');
 
     /**
      * Taken directly from https://mangasee123.com
@@ -170,9 +170,9 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     const $ = await super.route(chapter);
     const html = $.html();
     const { variable } = processScript(html);
-    const CurChapter = variable<CurChapter>('vm.CurChapter');
-    const IndexName = variable<string>('vm.IndexName');
-    const CurPathName = variable<string>('vm.CurPathName');
+    const CurChapter = await variable<CurChapter>('vm.CurChapter');
+    const IndexName = await variable<string>('vm.IndexName');
+    const CurPathName = await variable<string>('vm.CurPathName');
     const numOfPages = parseInt(CurChapter.Page);
     const PageImage = function (PageString: number) {
       const s = '000' + PageString;

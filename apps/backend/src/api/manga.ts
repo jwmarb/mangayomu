@@ -21,6 +21,7 @@ import {
   ISourceChapterSchema,
   ISourceMangaSchema,
 } from '@mangayomu/schemas';
+import env from '@mangayomu/vercel-env';
 
 const post: Route = async (req, res) => {
   const manga = req.body<Manga>();
@@ -35,6 +36,7 @@ const post: Route = async (req, res) => {
         ),
       );
   try {
+    host.proxy = env().PROXY_URL;
     const data = await host.getMeta(manga);
     const bulkWriteOperationSourceChapter: Parameters<
       typeof SourceManga.bulkWrite<ISourceChapterSchema>
@@ -100,8 +102,9 @@ const patch: Route = async (req, res) => {
       const host = MangaHost.sourcesMap.get(source);
       if (host == null) throw new Error(`${source} does not exist as a source`);
       return await Promise.allSettled(
-        value.map((link) =>
+        value.map((link, i) =>
           limit(async () => {
+            host.proxy = env().PROXY_URL;
             const data = await host.getMeta({ link });
             const _id = `${slugify(source)}/${slugify(data.title)}`;
 

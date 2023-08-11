@@ -9,7 +9,6 @@ import { TbError404 } from 'react-icons/tb';
 import { Metadata } from 'next';
 import MangaViewer from './components/mangaviewer';
 import GoBackButton from './components/gobackbutton';
-import getMangaMeta from '@app/helpers/getMangaMeta';
 import env from '@mangayomu/vercel-env';
 interface PageProps {
   params: {
@@ -29,7 +28,10 @@ export async function generateMetadata({
     return {
       title: '404 Not Found',
     };
+
+  host.proxy = env().PROXY_URL;
   const meta = await host.getMeta(manga);
+
   return {
     title: meta.title,
     description: meta.description,
