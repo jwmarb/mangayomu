@@ -1,10 +1,12 @@
 'use client';
 import React from 'react';
-import type { Manga } from '@mangayomu/mangascraper';
+import type { Manga, MangaChapter, MangaMeta } from '@mangayomu/mangascraper';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import collectMangaMetas from '@app/helpers/collectMangaMetas';
 import { enableMapSet } from 'immer';
+import getMangaHost from '@app/helpers/getMangaHost';
+import { useMangaProxy } from '@app/context/proxy';
 enableMapSet();
 
 export type ImageResolverListener = (result: string) => void;
@@ -23,7 +25,7 @@ interface ImageResolverStore {
   unbatch(batch: Set<string>): void;
 }
 
-const IMAGE_PLACEHOLDER = '/No-Image-Placeholder.png';
+export const IMAGE_PLACEHOLDER = '/No-Image-Placeholder.png';
 
 export const useImageResolver = create(
   immer<ImageResolverStore>((set, get) => ({
@@ -99,6 +101,7 @@ export const useImageResolver = create(
 );
 
 export default function ImageResolver({ children }: React.PropsWithChildren) {
+  const proxy = useMangaProxy();
   const { mangas, clear, listeners, count, batchify, unbatch, batches } =
     useImageResolver();
   const initialized = React.useRef<boolean>(false);
@@ -107,12 +110,21 @@ export default function ImageResolver({ children }: React.PropsWithChildren) {
     if (initialized.current && count > 0) {
       const timeout = setTimeout(async () => {
         const batch = batchify();
+        const manga: (Manga & MangaMeta<MangaChapter>)[] = [];
         try {
-          const p = await collectMangaMetas(mangas);
-          for (const manga of p) {
-            listeners[manga.link].forEach((listener) => {
-              listener(manga.imageCover || IMAGE_PLACEHOLDER);
-            });
+          for (const source in mangas) {
+            const host = getMangaHost(source);
+            host.proxy = proxy;
+            for (const link of mangas[source]) {
+              try {
+                const d = await host.getMeta({
+                  link,
+                });
+                manga.push(d);
+              } catch (e) {
+                console.error(`Failed to fetch ${link}`);
+              }
+            }
           }
         } catch (e) {
           for (const source in mangas) {
@@ -124,13 +136,25 @@ export default function ImageResolver({ children }: React.PropsWithChildren) {
           }
         } finally {
           unbatch(batch);
+          for (const i of manga) {
+            listeners[i.link].forEach((listener) => {
+              listener(i.imageCover || IMAGE_PLACEHOLDER);
+            });
+          }
+          await fetch('/api/v1/manga', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(manga),
+          })
+            .then((r) => r.json())
+            .then(console.log);
         }
       }, 1);
       return () => {
         clearTimeout(timeout);
       };
     } else initialized.current = true;
-  }, [clear, listeners, mangas, count, batchify, unbatch]);
+  }, [clear, listeners, mangas, count, batchify, unbatch, proxy]);
 
   return <>{children}</>;
 }
