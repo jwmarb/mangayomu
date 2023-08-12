@@ -126,7 +126,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       
       return "-chapter-" + Chapter + Odd + Index;
     }; return v`)();
-    const IndexName = variable<string>('vm.IndexName');
+    const IndexName = await variable<string>('vm.IndexName');
     const description = $('span.mlabel').siblings('div.Content').text();
     const yearReleased = $('a[href*="/search/?year="]').text();
     const [scanStatus, publishStatus] = $('a[href*="/search/?status="]')
@@ -166,7 +166,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     };
   }
 
-  async getPages(chapter: MangaChapter) {
+  async getPages(chapter: Pick<MangaChapter, 'link'>) {
     const $ = await super.route(chapter);
     const html = $.html();
     const { variable } = processScript(html);
