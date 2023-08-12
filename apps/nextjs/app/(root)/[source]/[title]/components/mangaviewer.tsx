@@ -43,6 +43,7 @@ import {
 import { useUser } from '@app/context/realm';
 import cache from '@app/helpers/cache';
 import useMangaHost from '@app/hooks/useMangaHost';
+import { MangaHostContext } from '@app/(root)/[source]/[title]/context/host';
 
 interface MangaViewerProps {
   // meta: MangaMeta<MangaChapter> &
@@ -253,7 +254,9 @@ export default function MangaViewer(props: MangaViewerProps) {
           />
         </div>
         <div className="h-0.5 w-full bg-border max-w-screen-md mx-auto" />
-        <DisplayRowChapters chapters={sortedChapters} />
+        <MangaHostContext.Provider value={host}>
+          <DisplayRowChapters chapters={sortedChapters} />
+        </MangaHostContext.Provider>
       </Screen.Content>
       <FilterModal
         ref={modal}
