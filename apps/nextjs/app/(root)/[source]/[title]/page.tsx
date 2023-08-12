@@ -1,17 +1,15 @@
 import Screen from '@app/components/Screen';
 import Text from '@app/components/Text';
 import React from 'react';
-import { redis, SourceManga, getMongooseConnection } from '@mangayomu/backend';
-import { Manga, MangaHost } from '@mangayomu/mangascraper';
+import { redis } from '@mangayomu/backend';
 import Link from 'next/link';
-import getSlug from '@app/helpers/getSlug';
 import { TbError404 } from 'react-icons/tb';
 import { Metadata } from 'next';
 import MangaViewer from './components/mangaviewer';
 import GoBackButton from './components/gobackbutton';
-import env from '@mangayomu/vercel-env';
 import { IMAGE_PLACEHOLDER } from '@app/context/imageresolver';
-import { ISourceMangaSchema } from '@mangayomu/schemas';
+import getSourceFromSlug from '@app/helpers/getSourceFromSlug';
+import getSourceManga from '@app/helpers/getSourceManga';
 interface PageProps {
   params: {
     source: string;
@@ -46,12 +44,6 @@ export async function generateMetadata({
     },
   };
 }
-const getSourceFromSlug = React.cache((sourceSlug: string) => {
-  const idx = MangaHost.sources.findIndex(
-    (source) => getSlug(source) === sourceSlug,
-  );
-  return MangaHost.sourcesMap.get(MangaHost.sources[idx]);
-});
 
 export default async function Page(props: PageProps) {
   const {
@@ -99,22 +91,3 @@ export default async function Page(props: PageProps) {
     </Screen>
   );
 }
-
-const getSourceManga = React.cache(
-  async (pathName: string): Promise<ISourceMangaSchema | null> => {
-    const cached = await redis.get(pathName);
-    if (cached == null) {
-      const { connect, close } = getMongooseConnection();
-      await connect();
-      const value = await SourceManga.findById(pathName);
-      if (value == null) return null;
-      await Promise.all([
-        redis.setex(pathName, 300, JSON.stringify(value.toJSON())),
-        close,
-      ]);
-      return value.toObject();
-    }
-
-    return JSON.parse(cached);
-  },
-);
