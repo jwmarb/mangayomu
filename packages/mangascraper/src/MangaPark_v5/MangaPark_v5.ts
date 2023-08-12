@@ -243,14 +243,12 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       { title: string; dateUpdated: string }
     > = multilingualChapterTitles.reduce((prev, curr, i) => {
       const chapterNum = curr.substring(curr.lastIndexOf(' ') + 1);
-      return {
-        ...prev,
-        [chapterNum]: {
-          title: curr,
-          dateUpdated: multilingualChapterDates[i],
-        },
+      prev[chapterNum] = {
+        title: curr,
+        dateUpdated: multilingualChapterDates[i],
       };
-    }, {});
+      return prev;
+    }, {} as Record<string, { title: string; dateUpdated: string }>);
 
     const multilingualChapterObjects: MangaMultilingualChapter[] =
       multilingualEpisodeItemElements
@@ -305,7 +303,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
           data.state.data.data.originalStatus.substring(1)
         } (Status)`,
       },
-      chapters: [...englishChapterObjects, ...multilingualChapterObjects],
+      chapters: englishChapterObjects.concat(multilingualChapterObjects),
       imageCover,
     };
   }
