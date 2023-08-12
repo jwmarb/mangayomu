@@ -30,7 +30,9 @@ import { MangaParkV5Filter, MANGAPARKV5_INFO } from './MangaPark_v5.constants';
 
 class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
   private static API_ROUTE = 'https://mangapark.net/apo/';
-  public async getPages(chapter: MangaChapter): Promise<string[]> {
+  public async getPages(
+    chapter: Pick<MangaChapter, 'link'>,
+  ): Promise<string[]> {
     const _$ = await super.route(chapter);
     const $ = await super.route(
       _$('a.btn.btn-outline-info.btn-block').attr('href')!,
