@@ -85,7 +85,8 @@ export default function useOverlayGesture(args: {
           if (overlayOpacity.value > 0) hideOverlay();
           else showOverlay();
         })
-        .cancelsTouchesInView(false),
+        .cancelsTouchesInView(false)
+        .maxDistance(0),
     [],
   );
   const doubleTapGesture = React.useMemo(
