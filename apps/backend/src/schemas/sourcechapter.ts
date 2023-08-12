@@ -5,6 +5,8 @@ const sourceChapterSchema = new mongoose.Schema<ISourceChapterSchema>({
   _id: { type: String, required: true, unique: true },
   _mangaId: { type: String, required: true },
   language: { type: String, required: true },
+  link: { type: String, required: true },
+  name: { type: String, required: true },
 });
 
 type SourceChapterModel = mongoose.Model<ISourceChapterSchema>;
