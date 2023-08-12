@@ -239,7 +239,7 @@ abstract class MangaHost {
    * @param chapter The manga chapter
    * @returns Returns a list of URLs of each page, usually in the form of .png from a CDN server
    */
-  public abstract getPages<T extends MangaChapter>(
+  public abstract getPages<T extends Pick<MangaChapter, 'link'>>(
     chapter: T,
   ): Promise<string[]>;
 }
