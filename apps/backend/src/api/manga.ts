@@ -1,6 +1,7 @@
 import {
   Manga,
   MangaChapter,
+  MangaHost,
   MangaMeta,
   MangaMultilingualChapter,
 } from '@mangayomu/mangascraper';
@@ -105,6 +106,8 @@ const patch: Route = async (req, res) => {
   >[0] = [];
   for (const manga of mangas) {
     const { link, source, title, chapters, imageCover, description } = manga;
+    const host = MangaHost.sourcesMap.get(source);
+    if (host == null) throw new Error(`Invalid source ${source}`);
     const _id = getSourceMangaId(manga);
 
     for (let i = 0; i < chapters.length; i++) {
@@ -115,7 +118,10 @@ const patch: Route = async (req, res) => {
           update: {
             _mangaId: link,
             language:
-              (chapters[i] as MangaMultilingualChapter).language ?? 'en',
+              (chapters[i] as MangaMultilingualChapter).language ??
+              host.defaultLanguage,
+            link: chapters[i].link,
+            name: chapters[i].name,
           },
           upsert: true,
         },

@@ -57,6 +57,11 @@ export declare interface MangaHostInfo {
   host: string;
 
   /**
+   * The default language of the manga host. If uncertain (meaning that mangas do not have a preferred language like MangaPark), set this to the site's language
+   */
+  language: ISOLangCode;
+
+  /**
    * All the available genres the manga host provides
    */
   genres: string[];

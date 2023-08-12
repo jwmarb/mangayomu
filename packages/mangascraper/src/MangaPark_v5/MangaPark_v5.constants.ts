@@ -341,6 +341,7 @@ export type MangaParkV5Filter = typeof filters.schema;
 
 export const MANGAPARKV5_INFO: MangaHostFiltersInfo<MangaParkV5Filter> = {
   filters,
+  language: 'en',
   isAdult: true,
   genres: MANGAPARKV5_GENRES as any,
   hasHotMangas: true,

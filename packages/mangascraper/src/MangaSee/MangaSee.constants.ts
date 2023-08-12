@@ -104,6 +104,7 @@ const filters = createSchema(
 export type MangaSeeFilter = typeof filters.schema;
 
 export const MANGASEE_INFO: MangaHostFiltersInfo<typeof filters.schema> = {
+  language: 'en',
   host: MANGASEE_URL,
   isAdult: false,
   genres: MANGASEE_GENRES as any,

@@ -10,6 +10,7 @@ import url from 'url';
 import * as cheerio from 'cheerio';
 import { toPascalCase } from './scraper.helpers';
 import UserAgent from 'user-agents';
+import { ISOLangCode } from '@mangayomu/language-codes';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fetch = require('node-fetch');
 
@@ -78,11 +79,14 @@ abstract class MangaHost {
 
   public readonly version: string;
 
+  public readonly defaultLanguage: ISOLangCode;
+
   private readonly _isAdult: boolean;
 
   private readonly _hasMangaDirectory: boolean;
 
   public constructor(info: MangaHostInfo) {
+    this.defaultLanguage = info.language;
     this.link = url.parse(info.host).hostname ?? '';
     this.genres = info.genres;
     this.genresDictionary = info.genres.reduce((prev, curr) => {
