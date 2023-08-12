@@ -26,8 +26,9 @@ import {
 const post: Route = async (req, res) => {
   const data = req.body<MangaMeta<MangaChapter> & Manga>();
   const doc = await SourceManga.findById(getSourceMangaId(data)).exec();
+  const host = MangaHost.sourcesMap.get(data.source);
 
-  if (doc == null)
+  if (doc == null || host == null)
     return res
       .status(StatusCodes.UNPROCESSABLE_ENTITY)
       .json(
@@ -40,11 +41,14 @@ const post: Route = async (req, res) => {
   for (let i = 0; i < data.chapters.length; i++) {
     bulkWriteOperationSourceChapter.push({
       updateOne: {
-        filter: { _id: data.chapters[i].link },
+        filter: { _id: getSourceChapterId(data, data.chapters[i]) },
         update: {
           _mangaId: data.link,
           language:
-            (data.chapters[i] as MangaMultilingualChapter).language ?? 'en',
+            (data.chapters[i] as MangaMultilingualChapter).language ??
+            host.defaultLanguage,
+          link: data.chapters[i].link,
+          name: data.chapters[i].name,
         },
         upsert: true,
       },
