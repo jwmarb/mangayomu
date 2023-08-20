@@ -231,7 +231,6 @@ export default function usePageGestures(
               // console.log('isAtEdgeHorizontal triggered');
               runOnJS(togglePan)(false);
             } else if (!enablePan) {
-              console.log('pan enabled here');
               runOnJS(togglePan)(true);
             }
           }

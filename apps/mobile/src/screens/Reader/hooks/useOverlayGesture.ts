@@ -126,7 +126,6 @@ export default function useOverlayGesture(readingDirection: ReadingDirection) {
         })
         .onEnd(() => {
           runOnJS(toggleFlashList)(false);
-          console.log('END');
           if (readingDirection !== ReadingDirection.WEBTOON)
             runOnJS(handleOnEnd)();
         }),
