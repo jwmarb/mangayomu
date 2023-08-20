@@ -33,7 +33,9 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
   public async getPages(
     chapter: Pick<MangaChapter, 'link'>,
   ): Promise<string[]> {
-    const _$ = await super.route(chapter);
+    const _$ = await super.route(chapter, 'GET', undefined, {
+      proxyEnabled: false,
+    });
     const $ = await super.route(
       _$('a.btn.btn-outline-info.btn-block').attr('href')!,
     );
