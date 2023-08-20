@@ -13,6 +13,7 @@ import React from 'react';
 import { Dimensions } from 'react-native';
 import {
   runOnJS,
+  runOnUI,
   useAnimatedReaction,
   useSharedValue,
 } from 'react-native-reanimated';
@@ -159,6 +160,30 @@ export default function usePageZooming(
   );
   const translateY = useSharedValue(initialTranslateY);
 
+  function setPinchScale(val: number) {
+    'worklet';
+    pinchScale.value = val;
+  }
+
+  function setMinScale(val: number) {
+    'worklet';
+    minScale.value = val;
+  }
+
+  function setScales(val: number) {
+    'worklet';
+    minScale.value = val;
+    pinchScale.value = val;
+  }
+  function setTranslateX(val: number) {
+    'worklet';
+    translateX.value = val;
+  }
+  function setTranslateY(val: number) {
+    'worklet';
+    translateY.value = val;
+  }
+
   if (prevPage.current !== page) {
     const prevPageCopy = prevPage.current;
     prevPage.current = page;
@@ -170,10 +195,10 @@ export default function usePageZooming(
         (prevState.minScale > 1 && prevState.scale >= prevState.minScale) ||
           prevState.minScale < prevState.scale,
       );
-      minScale.value = prevState.minScale;
-      pinchScale.value = prevState.scale;
-      translateX.value = prevState.translateX;
-      translateY.value = prevState.translateY;
+      runOnUI(setMinScale)(prevState.minScale);
+      runOnUI(setPinchScale)(prevState.scale);
+      runOnUI(setTranslateX)(prevState.translateX);
+      runOnUI(setTranslateY)(prevState.translateY);
     } else {
       const initializedMinScale = initializePinchScale(
         width,
@@ -271,15 +296,9 @@ export default function usePageZooming(
           };
         },
       };
-      minScale.value = initializedMinScale;
-      pinchScale.value = initializedMinScale;
-      console.log(`${page} : pinchScale.value = ${pinchScale.value}`);
-      console.log(
-        `${page} : dims = ${JSON.stringify({ imageWidth, imageHeight })}`,
-      );
-
-      translateX.value = initializedTranslateX;
-      translateY.value = initializedTranslateY;
+      runOnUI(setScales)(initializedMinScale);
+      runOnUI(setTranslateX)(initializedTranslateX);
+      runOnUI(setTranslateY)(initializedTranslateY);
     }
 
     if (
@@ -296,10 +315,17 @@ export default function usePageZooming(
     key: 'translateX' | 'translateY' | 'scale' | 'minScale',
     value: number,
   ) {
-    if (page in animatedPreviousState.current)
+    if (prevPage.current in animatedPreviousState.current)
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      animatedPreviousState.current[page]![key] = value;
+      animatedPreviousState.current[prevPage.current]![key] = value;
   }
+
+  useAnimatedReaction(
+    () => pinchScale.value,
+    (result) => {
+      runOnJS(setAnimatedState)('scale', result);
+    },
+  );
 
   useAnimatedReaction(
     () => minScale.value,
