@@ -22,7 +22,7 @@ export default function MangaViewerHeader(props: MangaViewerHeaderProps) {
     <Screen.Header className="z-20 pb-2 flex flex-row gap-2 items-center justify-between">
       <div className="flex flex-row gap-2 items-center">
         <IconButton onPress={onBack} icon={<MdArrowBack />} />
-        <Text className="font-medium">{title}</Text>
+        <Text className="font-medium line-clamp-2">{title}</Text>
       </div>
       <div>
         <Link href={originalUrl}>
