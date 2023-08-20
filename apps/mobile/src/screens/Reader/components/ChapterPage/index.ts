@@ -25,6 +25,8 @@ export interface ChapterPageProps {
 export type PageAnimatedStateBase = {
   translateX: number;
   translateY: number;
+  initialTranslateX: number;
+  initialTranslateY: number;
   scale: number;
   minScale: number;
 };

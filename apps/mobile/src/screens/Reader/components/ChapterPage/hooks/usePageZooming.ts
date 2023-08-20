@@ -121,68 +121,51 @@ export default function usePageZooming(
   const imageScaling = useMutableObject(_imageScaling);
   const { width, height } = useScreenDimensions();
   const prevPage = React.useRef(page);
-  const prevImageWidth = React.useRef(imageWidth);
-  const prevImageHeight = React.useRef(imageHeight);
-  const minScale = useSharedValue<number>(
-    initializePinchScale(
-      width,
-      height,
-      readingDirection.current,
-      imageScaling.current,
-      imageWidth,
-      imageHeight,
-      pageAspectRatio,
-    ),
+  const initialMinScale = React.useMemo(
+    () =>
+      initializePinchScale(
+        width,
+        height,
+        readingDirection.current,
+        imageScaling.current,
+        imageWidth,
+        imageHeight,
+        pageAspectRatio,
+      ),
+    [],
   );
-  const pinchScale = useSharedValue(minScale.value);
-  const translateX = useSharedValue(
-    minScale.value > 1
-      ? initializeZoomStartPositionX(
-          pinchScale.value,
-          readingDirection.current,
-          zoomStartPosition.current,
-        )
-      : 0,
+  const minScale = useSharedValue<number>(initialMinScale);
+  const pinchScale = useSharedValue(initialMinScale);
+  const initialTranslateX = React.useMemo(
+    () =>
+      minScale.value > 1
+        ? initializeZoomStartPositionX(
+            pinchScale.value,
+            readingDirection.current,
+            zoomStartPosition.current,
+          )
+        : 0,
+    [],
   );
-  const translateY = useSharedValue(
-    initializeZoomStartPositionY(
-      pinchScale.value,
-      readingDirection.current,
-      stylizedHeight,
-    ),
+  const translateX = useSharedValue(initialTranslateX);
+  const initialTranslateY = React.useMemo(
+    () =>
+      initializeZoomStartPositionY(
+        pinchScale.value,
+        readingDirection.current,
+        stylizedHeight,
+      ),
+    [],
   );
+  const translateY = useSharedValue(initialTranslateY);
 
   if (prevPage.current !== page) {
     const prevPageCopy = prevPage.current;
     prevPage.current = page;
-    prevImageWidth.current = imageWidth;
-    prevImageHeight.current = imageHeight;
     const prevState = animatedPreviousState.current[page];
     const prevStateOfPrevPage = animatedPreviousState.current[prevPageCopy];
-    const initializedMinScale = initializePinchScale(
-      width,
-      height,
-      readingDirection.current,
-      imageScaling.current,
-      imageWidth,
-      imageHeight,
-      pageAspectRatio,
-    );
-    const initializedTranslateX =
-      initializedMinScale > 1
-        ? initializeZoomStartPositionX(
-            initializedMinScale,
-            readingDirection.current,
-            zoomStartPosition.current,
-          )
-        : 0;
-    const initializedTranslateY = initializeZoomStartPositionY(
-      initializedMinScale,
-      readingDirection.current,
-      stylizedHeight,
-    );
+
     if (prevState != null) {
-      // console.log(`${page} : prevState.minScale = ${prevState.minScale}`);
       togglePan(
         (prevState.minScale > 1 && prevState.scale >= prevState.minScale) ||
           prevState.minScale < prevState.scale,
@@ -192,7 +175,28 @@ export default function usePageZooming(
       translateX.value = prevState.translateX;
       translateY.value = prevState.translateY;
     } else {
-      // console.log(`${page} : initializedMinScale = ${initializedMinScale}`);
+      const initializedMinScale = initializePinchScale(
+        width,
+        height,
+        readingDirection.current,
+        imageScaling.current,
+        imageWidth,
+        imageHeight,
+        pageAspectRatio,
+      );
+      const initializedTranslateX =
+        initializedMinScale > 1
+          ? initializeZoomStartPositionX(
+              initializedMinScale,
+              readingDirection.current,
+              zoomStartPosition.current,
+            )
+          : 0;
+      const initializedTranslateY = initializeZoomStartPositionY(
+        initializedMinScale,
+        readingDirection.current,
+        stylizedHeight,
+      );
       togglePan(initializedMinScale > 1);
 
       animatedPreviousState.current[page] = {
@@ -200,6 +204,8 @@ export default function usePageZooming(
         scale: initializedMinScale,
         translateX: initializedTranslateX,
         translateY: initializedTranslateY,
+        initialTranslateX: initializedTranslateX,
+        initialTranslateY: initializedTranslateY,
         onImageTypeChange: () => {
           const val = initializePinchScale(
             width,
@@ -210,22 +216,26 @@ export default function usePageZooming(
             imageHeight,
             pageAspectRatio,
           );
+          const initialTranslateX =
+            val > 1
+              ? initializeZoomStartPositionX(
+                  val,
+                  readingDirection.current,
+                  zoomStartPosition.current,
+                )
+              : 0;
+          const initialTranslateY = initializeZoomStartPositionY(
+            val,
+            readingDirection.current,
+            stylizedHeight,
+          );
           return {
             minScale: val,
             scale: val,
-            translateX:
-              val > 1
-                ? initializeZoomStartPositionX(
-                    val,
-                    readingDirection.current,
-                    zoomStartPosition.current,
-                  )
-                : 0,
-            translateY: initializeZoomStartPositionY(
-              val,
-              readingDirection.current,
-              stylizedHeight,
-            ),
+            translateX: initialTranslateX,
+            initialTranslateX,
+            translateY: initialTranslateY,
+            initialTranslateY,
           };
         },
         onDimensionsChange: (width, height) => {
@@ -238,40 +248,46 @@ export default function usePageZooming(
             imageHeight,
             pageAspectRatio,
           );
+          const initialTranslateX =
+            val > 1
+              ? initializeZoomStartPositionX(
+                  val,
+                  readingDirection.current,
+                  zoomStartPosition.current,
+                )
+              : 0;
+          const initialTranslateY = initializeZoomStartPositionY(
+            val,
+            readingDirection.current,
+            stylizedHeight,
+          );
           return {
             minScale: val,
             scale: val,
-            translateX:
-              val > 1
-                ? initializeZoomStartPositionX(
-                    val,
-                    readingDirection.current,
-                    zoomStartPosition.current,
-                  )
-                : 0,
-            translateY: initializeZoomStartPositionY(
-              val,
-              readingDirection.current,
-              stylizedHeight,
-            ),
+            translateX: initialTranslateX,
+            initialTranslateX,
+            translateY: initialTranslateY,
+            initialTranslateY,
           };
         },
       };
       minScale.value = initializedMinScale;
       pinchScale.value = initializedMinScale;
+      console.log(`${page} : pinchScale.value = ${pinchScale.value}`);
+      console.log(
+        `${page} : dims = ${JSON.stringify({ imageWidth, imageHeight })}`,
+      );
+
       translateX.value = initializedTranslateX;
       translateY.value = initializedTranslateY;
     }
 
     if (
-      animatedPreviousState.current[prevPageCopy]?.scale ===
-        prevStateOfPrevPage?.minScale &&
-      animatedPreviousState.current[prevPageCopy]?.translateX ===
-        prevStateOfPrevPage?.translateX &&
-      animatedPreviousState.current[prevPageCopy]?.translateY ===
-        prevStateOfPrevPage?.translateY
+      prevStateOfPrevPage?.scale === prevStateOfPrevPage?.minScale &&
+      prevStateOfPrevPage?.translateX ===
+        prevStateOfPrevPage?.initialTranslateX &&
+      prevStateOfPrevPage?.translateY === prevStateOfPrevPage?.initialTranslateY
     ) {
-      // console.log(`${prevPageCopy} : DELETED`);
       delete animatedPreviousState.current[prevPageCopy];
     }
   }
