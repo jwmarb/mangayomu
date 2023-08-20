@@ -7,7 +7,6 @@ import { ReadingDirection } from '@redux/slices/settings';
 import React from 'react';
 import {
   Gesture,
-  GestureType,
   GestureUpdateEvent,
   PinchGestureHandlerEventPayload,
   PinchGestureChangeEventPayload,
@@ -40,12 +39,7 @@ export type PageGestures = React.MutableRefObject<
 /**
  * A hook that provides a gesture to interact with the reader overlay
  */
-export default function useOverlayGesture(args: {
-  panRef: React.MutableRefObject<GestureType | undefined>;
-  pinchRef: React.MutableRefObject<GestureType | undefined>;
-  readingDirection: ReadingDirection;
-}) {
-  const { panRef, pinchRef, readingDirection } = args;
+export default function useOverlayGesture(readingDirection: ReadingDirection) {
   const overlayOpacity = useSharedValue(0);
   const currentPageKey = useAppSelector((state) => state.reader.currentPage);
   const dispatch = useAppDispatch();
@@ -112,13 +106,10 @@ export default function useOverlayGesture(args: {
 
   const pinchGesture = React.useMemo(
     () =>
-      Gesture.Pinch()
-        .onChange((e) => {
-          if (readingDirection !== ReadingDirection.WEBTOON)
-            runOnJS(passToUI)('onPinchChange', e);
-        })
-
-        .withRef(pinchRef),
+      Gesture.Pinch().onChange((e) => {
+        if (readingDirection !== ReadingDirection.WEBTOON)
+          runOnJS(passToUI)('onPinchChange', e);
+      }),
     [readingDirection !== ReadingDirection.WEBTOON],
   );
 

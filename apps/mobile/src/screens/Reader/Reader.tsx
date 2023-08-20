@@ -88,8 +88,6 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
   });
   const readerProps = useReaderProps(manga);
   const { readingDirection, imageScaling, zoomStartPosition } = readerProps;
-  const panRef = React.useRef<GestureType>();
-  const pinchRef = React.useRef<GestureType>();
   const {
     tapGesture,
     showOverlay,
@@ -98,11 +96,7 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
     pageGestures,
     doubleTapGesture,
     nativeFlatListGesture,
-  } = useOverlayGesture({
-    panRef,
-    pinchRef,
-    readingDirection,
-  });
+  } = useOverlayGesture(readingDirection);
   const viewabilityConfigCallbackPairs = useViewableItemsChangedHandler({
     manga,
     chapter,
