@@ -24,15 +24,17 @@ export default function Explore() {
   const loadingAll = useExploreStore((store) => store.loadingAll);
 
   React.useEffect(() => {
+    const controller = new AbortController();
     cache('explore', async () => {
       loadingAll();
       const [recent, trending] = await Promise.all([
-        hosts.getHotMangas(),
-        hosts.getLatestMangas(),
+        hosts.getHotMangas(controller.signal),
+        hosts.getLatestMangas(controller.signal),
       ]);
       const duplicates = new Set<string>();
       fetch('/api/v1/updates', {
         method: 'POST',
+        signal: controller.signal,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(
           recent.mangas.concat(trending.mangas).filter((x) => {
@@ -46,6 +48,9 @@ export default function Explore() {
       });
       appendAllMangas({ recent, trending });
     });
+    return () => {
+      controller.abort();
+    };
   }, [appendAllMangas, hosts, loadingAll]);
 
   const handleOnViewAllTrending = () => {

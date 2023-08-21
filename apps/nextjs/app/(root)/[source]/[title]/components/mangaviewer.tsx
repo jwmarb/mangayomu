@@ -89,17 +89,25 @@ export default function MangaViewer(props: MangaViewerProps) {
     | null
   >(null);
   React.useEffect(() => {
+    const controller = new AbortController();
     async function init() {
-      const p = await cache(_manga.link, () => host.getMeta(_manga));
+      const p = await cache(_manga.link, () => {
+        host.signal = controller.signal;
+        return host.getMeta(_manga);
+      });
       setImageCover(p.imageCover || '/No-Image-Placeholder.png');
       setMeta(p);
       await fetch('/api/v1/manga' + '?state=' + state, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(p),
+        signal: controller.signal,
       });
     }
     init();
+    return () => {
+      controller.abort();
+    };
   }, [_manga, host, state]);
 
   const supportedLanguages: [ISOLangCode, string][] | null =

@@ -35,13 +35,16 @@ export default function useMangaHosts() {
       getMangaHost(host).proxy = proxy;
     }
     return {
-      async getHotMangas(): Promise<MangaConcurrencyResult> {
+      async getHotMangas(signal: AbortSignal): Promise<MangaConcurrencyResult> {
         const mangaCollection = await Promise.allSettled(
-          hosts.map((x) =>
-            configs[x].useHottestUpdates
-              ? getMangaHost(x).listHotMangas()
-              : ([] as Manga[]),
-          ),
+          hosts.map((x) => {
+            if (configs[x].useHottestUpdates) {
+              const host = getMangaHost(x);
+              host.signal = signal;
+              return host.listHotMangas();
+            }
+            return [];
+          }),
         );
         const [errors, unsortedMangas] = mangaCollection.reduce(
           (prev, curr, index) => {
@@ -71,13 +74,18 @@ export default function useMangaHosts() {
           mangas,
         };
       },
-      async getLatestMangas(): Promise<MangaConcurrencyResult> {
+      async getLatestMangas(
+        signal: AbortSignal,
+      ): Promise<MangaConcurrencyResult> {
         const mangaCollection = await Promise.allSettled(
-          hosts.map((x) =>
-            configs[x].useLatestUpdates
-              ? getMangaHost(x).listRecentlyUpdatedManga()
-              : ([] as Manga[]),
-          ),
+          hosts.map((x) => {
+            if (configs[x].useLatestUpdates) {
+              const host = getMangaHost(x);
+              host.signal = signal;
+              return host.listRecentlyUpdatedManga();
+            }
+            return [];
+          }),
         );
         const [errors, unsortedMangas] = mangaCollection.reduce(
           (prev, curr, index) => {
