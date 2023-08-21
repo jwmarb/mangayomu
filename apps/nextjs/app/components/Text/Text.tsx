@@ -62,6 +62,8 @@ const TextColors: Record<
   'text-secondary': 'text-text-secondary',
   'primary-contrast': 'text-primary-contrast',
   'secondary-contrast': 'text-secondary-contrast',
+  'overlay-primary': 'text-overlay-primary',
+  'overlay-secondary': 'text-overlay-secondary',
   primary: 'text-primary',
   secondary: 'text-secondary',
   'error-contrast': 'text-error-contrast',

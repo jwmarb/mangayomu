@@ -20,7 +20,6 @@ const staticBackgroundColors = [bgpaper, bgdefault].reduce(extract, {});
 const error = 'rgba(var(--color-error) / <alpha-value>)';
 const disabledBackground =
   'rgba(var(--background-color-disabled) / <alpha-value>)';
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./app/**/*.{jsx,tsx}', './app/components/**/*.{jsx,tsx}'],
@@ -33,6 +32,8 @@ module.exports = {
         'primary-contrast': 'var(--color-primary-contrast)',
         'secondary-contrast': 'var(--color-secondary-contrast)',
         'error-contrast': 'var(--color-error-contrast)',
+        'overlay-primary': 'rgba(255, 255, 255, 1)',
+        'overlay-secondary': 'rgba(255, 255, 255, 0.7)',
         secondary,
         error: 'rgba(var(--color-error) / <alpha-value>)',
         'text-primary': 'var(--color-text-primary)',
@@ -44,6 +45,7 @@ module.exports = {
       },
       backgroundColor: {
         ...staticBackgroundColors,
+        'reader-overlay': 'rgba(128, 128, 128, 0.5)',
         default: bgdefault,
         'text-primary': 'var(--color-text-primary)',
         'text-secondary': 'var(--color-text-secondary)',
