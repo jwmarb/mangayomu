@@ -1,33 +1,79 @@
 'use client';
-import ChapterPage from '@app/(reader)/[source]/[title]/[chapter]/components/chapterpage';
-import Text from '@app/components/Text';
+const Overlay = React.lazy(() => import('./overlay'));
+import Renderer from '@app/(reader)/[source]/[title]/[chapter]/components/renderer';
+import { ChapterContext } from '@app/(reader)/[source]/[title]/[chapter]/context/ChapterContext';
+import { IndexContext } from '@app/(reader)/[source]/[title]/[chapter]/context/IndexContext';
+import { MangaContext } from '@app/(reader)/[source]/[title]/[chapter]/context/MangaContext';
 import { useReaderSettings } from '@app/context/readersettings';
 import useBoolean from '@app/hooks/useBoolean';
 import useMangaHost from '@app/hooks/useMangaHost';
-import { ISourceChapterSchema, ReadingDirection } from '@mangayomu/schemas';
+import {
+  ISourceChapterSchema,
+  ISourceMangaSchema,
+  ReadingDirection,
+} from '@mangayomu/schemas';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 
 interface ReaderProps {
   source: string;
   chapter: ISourceChapterSchema;
+  manga: ISourceMangaSchema;
 }
 
-export default function Reader({ source, chapter }: ReaderProps) {
-  const backgroundColor = useReaderSettings((state) => state.backgroundColor);
+export default function Reader({
+  source,
+  chapter: initialChapter,
+  manga,
+}: ReaderProps) {
   const readingDirection = useReaderSettings((state) => state.readingDirection);
+  const params = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
   const host = useMangaHost(source);
   const [pages, setPages] = React.useState<string[]>([]);
+  const [chapter, setChapter] =
+    React.useState<ISourceChapterSchema>(initialChapter);
+  const [index, _setIndex] = React.useState<number>(() => {
+    const x = params.get('page');
+    if (x == null) return 0;
+    return Math.max(0, parseInt(x) - 1);
+  });
   const pagesLenRef = React.useRef(pages.length);
   pagesLenRef.current = pages.length;
-  const [index, setIndex] = React.useState<number>(0);
+
+  const indexRef = React.useRef(index);
+  indexRef.current = index;
+  const setIndex: typeof _setIndex = React.useCallback(
+    (x) => {
+      if (typeof x === 'function') {
+        const r = x(indexRef.current);
+        indexRef.current = r;
+        router.replace(pathname + '?' + `page=${r + 1}`);
+        _setIndex(r);
+      } else {
+        indexRef.current = x;
+        router.replace(pathname + '?' + `page=${x + 1}`);
+        _setIndex(x);
+      }
+    },
+    [pathname, router],
+  );
   const [loading, toggleLoading] = useBoolean(true);
   React.useEffect(() => {
-    // console.log(chapter);
     host
       .getPages(chapter)
-      .then(setPages)
+      .then((pages) => {
+        setPages(pages);
+        for (let i = 0; i < pages.length; i++) {
+          const img = new Image();
+          img.src = pages[i];
+        }
+        if (index >= pages.length) setIndex(pages.length - 1);
+      })
       .finally(() => toggleLoading(false));
-  }, [chapter, host, toggleLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const next = React.useCallback(() => {
     setIndex((prev) => Math.min(prev + 1, pagesLenRef.current - 1));
   }, [setIndex]);
@@ -38,10 +84,12 @@ export default function Reader({ source, chapter }: ReaderProps) {
     const listener = (e: KeyboardEvent) => {
       switch (e.key) {
         case 'ArrowRight':
-          next();
+          if (readingDirection === ReadingDirection.RIGHT_TO_LEFT) previous();
+          else next();
           break;
         case 'ArrowLeft':
-          previous();
+          if (readingDirection === ReadingDirection.RIGHT_TO_LEFT) next();
+          else previous();
           break;
       }
     };
@@ -49,43 +97,17 @@ export default function Reader({ source, chapter }: ReaderProps) {
     return () => {
       window.removeEventListener('keydown', listener);
     };
-  }, []);
-  switch (readingDirection) {
-    case ReadingDirection.LEFT_TO_RIGHT:
-    case ReadingDirection.RIGHT_TO_LEFT:
-      return (
-        <div
-          className={`${backgroundColor} min-w-[100vw] min-h-[100vh] flex items-center justify-center relative`}
-        >
-          <ChapterPage page={pages[index]} />
-          <button
-            className="outline-none absolute left-0 top-0 bottom-0 w-[50%] h-full"
-            onClick={
-              readingDirection === ReadingDirection.LEFT_TO_RIGHT
-                ? previous
-                : next
-            }
-          />
-          <button
-            className="outline-none absolute right-0 top-0 bottom-0 w-[50%] h-full"
-            onClick={
-              readingDirection === ReadingDirection.LEFT_TO_RIGHT
-                ? next
-                : previous
-            }
-          />
-        </div>
-      );
-    case ReadingDirection.VERTICAL:
-    case ReadingDirection.WEBTOON:
-      return (
-        <div
-          className={`${backgroundColor} min-w-[100vw] min-h-[100vh] flex items-center justify-center`}
-        >
-          {pages.map((x, i) => (
-            <ChapterPage key={x} page={x} />
-          ))}
-        </div>
-      );
-  }
+  }, [next, previous, readingDirection]);
+  return (
+    <MangaContext.Provider value={manga}>
+      <ChapterContext.Provider value={chapter}>
+        <IndexContext.Provider value={index}>
+          <React.Suspense>
+            <Overlay />
+          </React.Suspense>
+          <Renderer pages={pages} onNextPage={next} onPreviousPage={previous} />
+        </IndexContext.Provider>
+      </ChapterContext.Provider>
+    </MangaContext.Provider>
+  );
 }

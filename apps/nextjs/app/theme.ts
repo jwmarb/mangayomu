@@ -1,6 +1,12 @@
 export type BackgroundColor = 'default' | 'paper' | 'disabled';
 export type ButtonColor = 'primary' | 'secondary';
-export type TextColor = 'text-primary' | 'text-secondary' | 'error' | 'hint';
+export type TextColor =
+  | 'text-primary'
+  | 'text-secondary'
+  | 'error'
+  | 'hint'
+  | 'overlay-primary'
+  | 'overlay-secondary';
 export type ButtonContrastColors =
   | `${ButtonColor}-contrast`
   | 'error-contrast'

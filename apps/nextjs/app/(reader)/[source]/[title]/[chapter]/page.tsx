@@ -16,9 +16,16 @@ export default async function Page(props: PageProps) {
   // const mangaPathName = props.params.source + '/' + props.params.title;
   // const manga = await getSourceManga(mangaPathName);
   const host = getSourceFromSlug(props.params.source);
-  const chapter = await getSourceChapter(
-    props.params.source + '/' + props.params.title + '/' + props.params.chapter,
-  );
+  const [chapter, manga] = await Promise.all([
+    getSourceChapter(
+      props.params.source +
+        '/' +
+        props.params.title +
+        '/' +
+        props.params.chapter,
+    ),
+    getSourceManga(props.params.source + '/' + props.params.title),
+  ]);
 
   if (host == null)
     return (
@@ -26,12 +33,12 @@ export default async function Page(props: PageProps) {
         <Text>{props.params.source} does not exist</Text>
       </div>
     );
-  if (chapter == null)
+  if (chapter == null || manga == null)
     return (
       <div>
         <Text>Does not exist</Text>
       </div>
     );
 
-  return <Reader source={host.name} chapter={chapter} />;
+  return <Reader source={host.name} chapter={chapter} manga={manga} />;
 }

@@ -6,7 +6,7 @@ interface ChapterPageProps {
 
 function ChapterPage(props: ChapterPageProps) {
   const { page } = props;
-  return <img src={page} className="max-h-[100vh]" />;
+  return <img src={page} className="object-contain" />;
 }
 
 export default React.memo(ChapterPage);
