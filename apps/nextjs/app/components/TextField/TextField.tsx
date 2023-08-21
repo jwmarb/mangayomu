@@ -2,7 +2,6 @@
 import React from 'react';
 import type { TextFieldProps } from './';
 import useClassName from '@app/hooks/useClassName';
-import { AriaTextFieldProps, useTextField } from 'react-aria';
 import useBoolean from '@app/hooks/useBoolean';
 import { MdClose } from 'react-icons/md';
 import IconButton from '@app/components/IconButton';
@@ -12,6 +11,7 @@ function TextField(props: TextFieldProps, ref: any) {
   const { error = false, adornment, onChange, ...rest } = props;
   const [show, toggle] = useBoolean();
   const inputRef = React.useRef<HTMLInputElement | null>(null);
+  React.useImperativeHandle(ref, () => inputRef.current);
   const className = useClassName(
     `bg-disabled/[0.5] py-2  ${
       error
@@ -45,10 +45,7 @@ function TextField(props: TextFieldProps, ref: any) {
         onChange={(e) => {
           handleOnChange(e.currentTarget.value);
         }}
-        ref={(r) => {
-          if (ref) ref.current = r;
-          inputRef.current = r;
-        }}
+        ref={inputRef}
         aria-invalid={error}
         className={className}
       />
