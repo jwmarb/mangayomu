@@ -48,6 +48,8 @@ abstract class MangaHost {
    */
   private readonly latestMangas: boolean;
 
+  public signal: AbortSignal | undefined;
+
   /**
    * The name of the manga host
    */
@@ -130,6 +132,7 @@ abstract class MangaHost {
     }
     const url =
       typeof path === 'string' ? `https://${this.link}${path}` : path.link;
+    const signal = this.signal;
     const response = await (this.proxy && options.proxyEnabled
       ? fetch(this.proxy, {
           method: 'POST',
@@ -139,6 +142,7 @@ abstract class MangaHost {
             body,
           }),
           headers: { 'Content-Type': 'application/json' },
+          signal,
         })
       : fetch(url, {
           method,
@@ -151,7 +155,9 @@ abstract class MangaHost {
               : {}),
           },
           body: JSON.stringify(body),
+          signal,
         }));
+    if (signal?.aborted) throw new Error('Signal aborted');
     const data = await response[body ? 'json' : 'text']();
     return body ? data : (cheerio.load(data, { decodeEntities: false }) as T);
   }
