@@ -6,10 +6,12 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { useReader } from '@app/(reader)/[source]/[title]/[chapter]/context/reader';
 import TopOverlay from '@app/(reader)/[source]/[title]/[chapter]/components/topoverlay';
+import BottomOverlay from '@app/(reader)/[source]/[title]/[chapter]/components/bottomoverlay';
 
 export default function Overlay() {
   const [overlayEl, setOverlayEl] = React.useState<HTMLElement | null>(null);
   const topOverlayRef = React.useRef<HTMLDivElement>(null);
+  const bottomOverlayRef = React.useRef<HTMLDivElement>(null);
   const isActive = useReader((store) => store.overlayActive);
   const [{ opacity }, api] = useSpring(() => ({
     opacity: 0,
@@ -39,6 +41,16 @@ export default function Overlay() {
           top: opacity.to(
             [0, 1],
             [-(topOverlayRef.current?.offsetHeight ?? 0), 0],
+          ),
+        }}
+      />
+      <BottomOverlay
+        ref={bottomOverlayRef}
+        style={{
+          opacity,
+          bottom: opacity.to(
+            [0, 1],
+            [-(bottomOverlayRef.current?.offsetHeight ?? 0), 0],
           ),
         }}
       />
