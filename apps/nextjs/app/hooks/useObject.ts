@@ -1,5 +1,6 @@
 import { useUser } from '@app/context/realm';
 import useBoolean from '@app/hooks/useBoolean';
+import useDeepMemo from '@app/hooks/useDeepMemo';
 import useMongoClient from '@app/hooks/useMongoClient';
 import React from 'react';
 
@@ -19,8 +20,9 @@ export default function useObject<
   },
 >(
   MongoDBCollection: Parameters<typeof useMongoClient<TSchema>>[0],
-  id?: string | Partial<TSchema>,
+  _id?: string | Partial<TSchema>,
 ): RealmObject {
+  const id = useDeepMemo(() => _id, [_id]);
   const isSameDocument = React.useCallback(
     (x?: TSchema | null) => {
       if (id == null || x == null) return false;
