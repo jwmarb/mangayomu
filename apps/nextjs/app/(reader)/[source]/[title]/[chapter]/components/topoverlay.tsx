@@ -1,3 +1,4 @@
+import Settings from '@app/(reader)/[source]/[title]/[chapter]/components/settings';
 import { useChapter } from '@app/(reader)/[source]/[title]/[chapter]/context/ChapterContext';
 import { useManga } from '@app/(reader)/[source]/[title]/[chapter]/context/MangaContext';
 import IconButton from '@app/components/IconButton';
@@ -23,10 +24,7 @@ function TopOverlay(
   const { style } = props;
   const chapter = useChapter();
   const manga = useManga();
-  const userManga = useObject(
-    MangaSchema,
-    React.useMemo(() => ({ link: manga.link }), [manga.link]),
-  );
+  const userManga = useObject(MangaSchema, { link: manga.link });
   const router = useRouter();
   function handleOnPressBookmark() {
     userManga.update((draft) => {
@@ -54,7 +52,7 @@ function TopOverlay(
             icon={userManga.inLibrary ? <MdBookmark /> : <MdBookmarkBorder />}
             onPress={handleOnPressBookmark}
           />
-          <IconButton icon={<MdSettings />} />
+          <Settings />
         </div>
       </div>
       <div>

@@ -6,9 +6,9 @@ export default function Layout(props: React.PropsWithChildren) {
     <html lang="en">
       <body>
         <Providers>
-          <div id="__modal__" />
-          <div id="overlay" />
           {props.children}
+          <div id="overlay" />
+          <div id="__modal__" />
         </Providers>
       </body>
     </html>

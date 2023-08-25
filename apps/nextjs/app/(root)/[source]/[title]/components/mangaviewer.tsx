@@ -73,13 +73,10 @@ export default function MangaViewer(props: MangaViewerProps) {
   );
   const host = useMangaHost(_manga.source);
   const user = useUser();
-  const manga = useObject(
-    MangaSchema,
-    React.useMemo(
-      () => ({ link: _manga.link, _realmId: user.id }),
-      [_manga.link, user.id],
-    ),
-  );
+  const manga = useObject(MangaSchema, {
+    link: _manga.link,
+    _realmId: user.id,
+  });
 
   const [meta, setMeta] = React.useState<
     | (MangaMeta<MangaChapter> &
