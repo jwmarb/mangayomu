@@ -1,6 +1,7 @@
 import { BottomSheetMethods } from '@app/components/BottomSheet';
 const BottomSheet = React.lazy(() => import('@app/components/BottomSheet'));
 import IconButton from '@app/components/IconButton';
+import Tabs from '@app/components/Tabs';
 import Text from '@app/components/Text';
 import React from 'react';
 import { MdSettings } from 'react-icons/md';
@@ -15,12 +16,18 @@ export default function Settings() {
       <IconButton icon={<MdSettings />} onPress={handleOnSettings} />
       <React.Suspense>
         <BottomSheet ref={ref}>
-          <Text>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Odit
-            numquam dolores aliquid placeat ad cum minima ipsam, non nemo fuga
-            rem fugiat voluptatum adipisci ea omnis rerum molestias fugit
-            soluta!
-          </Text>
+          <Tabs>
+            <div className="flex">
+              <Tabs.Tab>Reader</Tabs.Tab>
+              <Tabs.Tab>Advanced</Tabs.Tab>
+            </div>
+            <Tabs.Panel>
+              <Text>Tab1</Text>
+            </Tabs.Panel>
+            <Tabs.Panel>
+              <Text>Tab2</Text>
+            </Tabs.Panel>
+          </Tabs>
         </BottomSheet>
       </React.Suspense>
     </>
