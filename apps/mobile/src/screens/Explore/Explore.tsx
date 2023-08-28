@@ -1,13 +1,8 @@
 import Box from '@components/Box';
 import Icon from '@components/Icon';
-import IconButton from '@components/IconButton';
 import Input from '@components/Input';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import useCollapsibleTabHeader from '@hooks/useCollapsibleTabHeader';
-import connector, {
-  ConnectedExploreProps,
-} from '@screens/Explore/Explore.redux';
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import {
@@ -17,8 +12,6 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import MainSourceSelector from '@screens/Welcome/components/MainSourceSelector';
-import Avatar from '@components/Avatar';
-import Badge from '@components/Badge';
 import NetInfo from '@react-native-community/netinfo';
 import { RefreshControl, TextInput } from 'react-native-gesture-handler';
 import GenresList from '@screens/Explore/components/GenresList';
@@ -26,7 +19,6 @@ import { Freeze } from 'react-freeze';
 import Progress from '@components/Progress';
 import useTabNavigation from '@hooks/useTabNavigation';
 import ContinueReading from '@screens/Explore/components/ContinueReading/ContinueReading';
-import { useUser } from '@realm/react';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import HotMangaList from '@screens/Explore/components/HotMangaList';
 import LatestMangaList from '@screens/Explore/components/LatestMangaList';
