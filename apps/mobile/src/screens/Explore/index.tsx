@@ -4,12 +4,10 @@
 // import Progress from '@components/Progress';
 import Avatar from '@components/Avatar';
 import Badge from '@components/Badge';
-import Box from '@components/Box';
 import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
 import LazyFallback from '@components/LazyFallback';
-import Progress from '@components/Progress';
-import getMangaHost, { equalityMangaHostFn } from '@helpers/getMangaHost';
+import useMangaHost from '@hooks/useMangaHost';
 import useAppSelector from '@hooks/useAppSelector';
 import useCollapsibleTabHeader from '@hooks/useCollapsibleTabHeader';
 import { useUser } from '@realm/react';
@@ -22,16 +20,12 @@ export type ExploreMethods = {
 
 export interface ExploreProps
   extends ReturnType<typeof useCollapsibleTabHeader> {
-  source: ReturnType<typeof getMangaHost>;
   loading: boolean;
 }
 
 export default function ExploreBase() {
   const user = useUser();
-  const source = useAppSelector<ReturnType<typeof getMangaHost>>(
-    (state) => getMangaHost(state),
-    equalityMangaHostFn,
-  );
+  const source = useMangaHost();
   const loading = useAppSelector(
     (state) =>
       (state.explore.status.hot === 'loading' ||
@@ -57,7 +51,7 @@ export default function ExploreBase() {
   });
   return (
     <React.Suspense fallback={LazyFallback}>
-      <LazyExplore ref={ref} {...props} source={source} loading={loading} />
+      <LazyExplore ref={ref} {...props} loading={loading} />
     </React.Suspense>
   );
 }

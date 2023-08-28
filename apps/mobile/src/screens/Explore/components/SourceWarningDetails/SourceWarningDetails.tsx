@@ -4,7 +4,7 @@ import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
-import { SourceError } from '@helpers/getMangaHost';
+import { SourceError } from '@hooks/useMangaHost';
 import { MangaHost } from '@mangayomu/mangascraper/src';
 import React from 'react';
 import { ListRenderItem } from 'react-native';
@@ -56,8 +56,8 @@ const SourceWarningDetails: React.ForwardRefRenderFunction<
 
 const styles = ScaledSheet.create({
   icon: {
-    width: '32@ms',
-    height: '32@ms',
+    width: '32@ms' as unknown as number,
+    height: '32@ms' as unknown as number,
   },
 });
 

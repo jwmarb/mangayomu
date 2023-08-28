@@ -1,4 +1,4 @@
-import { MangaConcurrencyResult, SourceError } from '@helpers/getMangaHost';
+import { MangaConcurrencyResult, SourceError } from '@hooks/useMangaHost';
 import { Manga } from '@mangayomu/mangascraper/src';
 import { NetInfoState } from '@react-native-community/netinfo/lib/typescript/src/internal/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';

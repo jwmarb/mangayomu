@@ -4,15 +4,15 @@ import Tag from '@components/Tag';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import integrateSortedList from '@helpers/integrateSortedList';
+import useMangaHost from '@hooks/useMangaHost';
 import { StringComparator } from '@mangayomu/algorithms';
 import React from 'react';
 import { ListRenderItem } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { moderateScale } from 'react-native-size-matters';
-import connector, { ConnectedGenresListProps } from './GenresList.redux';
 const ItemSeparatorComponent = React.memo(() => <Box m={moderateScale(4)} />);
-const GenresList: React.FC<ConnectedGenresListProps> = (props) => {
-  const { source } = props;
+const GenresList: React.FC = () => {
+  const source = useMangaHost();
   const genres = React.useMemo(() => {
     const collection = source.getRawGenres();
     const uniq = new Set<string>();
@@ -71,4 +71,4 @@ const Item: React.FC<{ item: string }> = React.memo(({ item }) => {
 });
 const keyExtractor = (i: string) => i;
 
-export default connector(GenresList);
+export default GenresList;
