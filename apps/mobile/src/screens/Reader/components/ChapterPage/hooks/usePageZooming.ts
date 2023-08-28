@@ -1,3 +1,4 @@
+import delay from '@helpers/delay';
 import useAppSelector from '@hooks/useAppSelector';
 import useBoolean from '@hooks/useBoolean';
 import useMutableObject from '@hooks/useMutableObject';
@@ -195,10 +196,12 @@ export default function usePageZooming(
         (prevState.minScale > 1 && prevState.scale >= prevState.minScale) ||
           prevState.minScale < prevState.scale,
       );
-      runOnUI(setMinScale)(prevState.minScale);
-      runOnUI(setPinchScale)(prevState.scale);
-      runOnUI(setTranslateX)(prevState.translateX);
-      runOnUI(setTranslateY)(prevState.translateY);
+      delay(() => {
+        runOnUI(setMinScale)(prevState.minScale);
+        runOnUI(setPinchScale)(prevState.scale);
+        runOnUI(setTranslateX)(prevState.translateX);
+        runOnUI(setTranslateY)(prevState.translateY);
+      }, 1);
     } else {
       const initializedMinScale = initializePinchScale(
         width,
@@ -296,9 +299,11 @@ export default function usePageZooming(
           };
         },
       };
-      runOnUI(setScales)(initializedMinScale);
-      runOnUI(setTranslateX)(initializedTranslateX);
-      runOnUI(setTranslateY)(initializedTranslateY);
+      delay(() => {
+        runOnUI(setScales)(initializedMinScale);
+        runOnUI(setTranslateX)(initializedTranslateX);
+        runOnUI(setTranslateY)(initializedTranslateY);
+      }, 1);
     }
 
     if (
