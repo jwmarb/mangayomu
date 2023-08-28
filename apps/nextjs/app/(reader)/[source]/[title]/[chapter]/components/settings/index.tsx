@@ -1,3 +1,4 @@
+import ForSeries from '@app/(reader)/[source]/[title]/[chapter]/components/settings/forseries';
 import { BottomSheetMethods } from '@app/components/BottomSheet';
 const BottomSheet = React.lazy(() => import('@app/components/BottomSheet'));
 import IconButton from '@app/components/IconButton';
@@ -22,7 +23,7 @@ export default function Settings() {
               <Tabs.Tab>Advanced</Tabs.Tab>
             </div>
             <Tabs.Panel>
-              <Text>Tab1</Text>
+              <ForSeries />
             </Tabs.Panel>
             <Tabs.Panel>
               <Text>Tab2</Text>
