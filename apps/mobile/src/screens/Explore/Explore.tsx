@@ -37,13 +37,14 @@ import {
   setExplorerState,
 } from '@redux/slices/explore';
 import { useAppDispatch } from '@redux/main';
-import getMangaHost from '@helpers/getMangaHost';
+import useMangaHost from '@hooks/useMangaHost';
 import useAppSelector from '@hooks/useAppSelector';
 
 const Explore: React.ForwardRefRenderFunction<ExploreMethods, ExploreProps> = (
-  { onScroll, scrollViewStyle, contentContainerStyle, source, loading },
+  { onScroll, scrollViewStyle, contentContainerStyle, loading },
   ref,
 ) => {
+  const source = useMangaHost();
   const dispatch = useAppDispatch();
   const internetStatus = useAppSelector(
     (state) => state.explore.internetStatus,
