@@ -10,6 +10,9 @@ import { integrateSortedList } from '@mangayomu/algorithms';
 import { immer } from 'zustand/middleware/immer';
 import { persist } from 'zustand/middleware';
 import { IMangaSchema } from '@mangayomu/schemas';
+import SourceMangaSchema from '@app/realm/SourceManga';
+import getMangaHost from '@app/helpers/getMangaHost';
+import { getSourceMangaId } from '@mangayomu/backend';
 
 export const SORT_LIBRARY_BY = {
   'Age in library': (a: IMangaSchema) => a.dateAddedInLibrary,
@@ -181,6 +184,7 @@ export default function MangaLibraryInitializer(
   const setSources = useMangaLibraryFilters((s) => s.setIncludeSources);
   const user = useUser();
   const library = useMongoClient(MangaSchema);
+  const sourceMangas = useMongoClient(SourceMangaSchema);
   React.useEffect(() => {
     async function init() {
       resetSyncState();
@@ -189,6 +193,37 @@ export default function MangaLibraryInitializer(
           { $match: { _realmId: user.id, inLibrary: true } },
           { $sort: { _id: 1 } },
         ]);
+        const matching: Pick<IMangaSchema, 'link'>[] =
+          await sourceMangas.aggregate([
+            {
+              $match: {
+                link: { $in: data.map((x) => x.link) },
+              },
+            },
+            {
+              $project: {
+                link: 1,
+              },
+            },
+          ]);
+        const p = new Set(matching.map((x) => x.link));
+        const missing = data.filter((manga) => !p.has(manga.link));
+        const append = await Promise.all(
+          missing.map((x) => getMangaHost(x.source).getMeta(x)),
+        );
+        sourceMangas.insertMany(
+          append.map((x) => ({
+            _id: getSourceMangaId(x),
+            description: x.description,
+            imageCover: x.imageCover,
+            link: x.link,
+            source: x.source,
+            title: x.title,
+          })),
+        );
+
+        console.log(`Missing ${missing.length} mangas from SourceManga`);
+
         setMangas(data);
         setSources(data, true);
         // const info = data.reduce((prev, curr) => {
@@ -243,6 +278,7 @@ export default function MangaLibraryInitializer(
     updateManga,
     user.id,
     setSources,
+    sourceMangas,
   ]);
   return <>{props.children}</>;
 }
