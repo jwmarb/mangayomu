@@ -53,7 +53,6 @@ export default function usePageGestures(
   }
 
   const { readingDirection, nativeFlatListGesture } = useChapterPageContext();
-  const readingDirectionRef = useMutableObject(readingDirection);
   const maxTranslateX = useSharedValue(Math.abs(translateX.value));
   const maxTranslateY = useSharedValue(Math.abs(translateY.value));
 
@@ -194,7 +193,7 @@ export default function usePageGestures(
         .enabled(!isFlashListActive)
         .enableTrackpadTwoFingerGesture(true)
         .onChange((e) => {
-          if (readingDirectionRef.current !== ReadingDirection.WEBTOON) {
+          if (readingDirection !== ReadingDirection.WEBTOON) {
             translateX.value = Math.max(
               Math.min(
                 maxTranslateX.value,
@@ -236,7 +235,7 @@ export default function usePageGestures(
           }
         })
         .onEnd((e) => {
-          if (readingDirectionRef.current !== ReadingDirection.WEBTOON) {
+          if (readingDirection !== ReadingDirection.WEBTOON) {
             translateX.value = withDecay({
               velocity: e.velocityX,
               velocityFactor: 0.3,
@@ -255,7 +254,13 @@ export default function usePageGestures(
             ? [rootPinchGesture, nativeFlatListGesture]
             : [rootPinchGesture]),
         ),
-    [enablePan, rootPinchGesture, nativeFlatListGesture, isFlashListActive],
+    [
+      enablePan,
+      rootPinchGesture,
+      nativeFlatListGesture,
+      isFlashListActive,
+      readingDirection,
+    ],
   );
 
   /**
