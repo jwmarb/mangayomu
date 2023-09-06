@@ -1,8 +1,10 @@
 import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import { MangaSchema } from '@database/schemas/Manga';
+import getSourceMangaId from '@helpers/getSourceMangaId';
 import { ISOLangCode } from '@mangayomu/language-codes';
 import { Manga, MangaMeta } from '@mangayomu/mangascraper/src';
-import { ILocalManga } from '@mangayomu/schemas';
+import { ILocalManga, ISourceMangaSchema } from '@mangayomu/schemas';
+import { useUser } from '@realm/react';
 
 export default function writeManga(
   localRealm: Realm,
@@ -10,11 +12,28 @@ export default function writeManga(
   meta: MangaMeta & Manga,
   chapters: string[],
   availableLanguages: ISOLangCode[],
+  user: ReturnType<typeof useUser>,
 ) {
   const localManga = localRealm.objectForPrimaryKey(
     LocalMangaSchema,
     meta.link,
   );
+  user
+    .mongoClient('mongodb-atlas')
+    .db('mangayomu')
+    .collection<ISourceMangaSchema>('SourceManga')
+    .updateOne(
+      { link: meta.link },
+      {
+        _id: getSourceMangaId(meta),
+        description: meta.description,
+        imageCover: meta.imageCover,
+        link: meta.link,
+        source: meta.source,
+        title: meta.title,
+      },
+      { upsert: true },
+    );
   const cloudManga = realm
     .objects(MangaSchema)
     .filtered('link = $0', meta.link)[0];

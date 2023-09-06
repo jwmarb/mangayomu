@@ -230,6 +230,7 @@ export function useLibraryData() {
 }
 
 export const useIsDataStale = () => {
+  const user = useUser();
   const localRealm = useLocalRealm();
   const realm = useRealm();
   const localMangas = useLocalQuery(LocalMangaSchema);
@@ -284,7 +285,14 @@ export const useIsDataStale = () => {
                 localRealm,
                 meta,
               );
-              writeManga(localRealm, realm, meta, chapters, availableLanguages);
+              writeManga(
+                localRealm,
+                realm,
+                meta,
+                chapters,
+                availableLanguages,
+                user,
+              );
             } catch (e) {
               console.error(e);
             }
