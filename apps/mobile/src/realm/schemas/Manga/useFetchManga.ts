@@ -112,6 +112,7 @@ export default function useFetchManga(
         const { chapters, availableLanguages } = writeChapters(
           localRealm,
           meta,
+          user,
         );
         writeManga(localRealm, realm, meta, chapters, availableLanguages, user);
       } catch (e) {
