@@ -284,6 +284,7 @@ export const useIsDataStale = () => {
               const { chapters, availableLanguages } = writeLocalChapters(
                 localRealm,
                 meta,
+                user,
               );
               writeManga(
                 localRealm,
