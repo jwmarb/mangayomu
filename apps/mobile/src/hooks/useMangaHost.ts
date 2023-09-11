@@ -181,6 +181,6 @@ export default function getMangaHost() {
         };
       },
     }),
-    [sources],
+    [sources, configs],
   );
 }
