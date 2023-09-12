@@ -1,5 +1,5 @@
-import { ISourceMangaSchema } from '@mangayomu/schemas';
-import { SourceError, SourceManga, redis, slugify, getErrorMessage } from '../';
+import { ISourceMangaSchema, getSourceMangaId } from '@mangayomu/schemas';
+import { SourceError, SourceManga, redis, getErrorMessage } from '../';
 import { Manga, MangaHost } from '@mangayomu/mangascraper';
 import env from '@mangayomu/vercel-env';
 
@@ -59,7 +59,7 @@ export default async function getListMangas(
       if (i < collection.mangas.length) {
         mangas.push(collection.mangas[i]);
         if (hasMissedCache) {
-          const _id = getId(collection.mangas[i]);
+          const _id = getSourceMangaId(collection.mangas[i]);
           if (!uniq.has(_id)) {
             uniq.add(_id);
             sourceMangas.push({
@@ -86,8 +86,4 @@ export default async function getListMangas(
     ]);
 
   return { runtime: performance.now() - s, errors, mangas };
-}
-
-function getId(manga: Manga) {
-  return `${slugify(manga.source)}/${slugify(manga.title)}`;
 }

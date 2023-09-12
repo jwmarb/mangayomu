@@ -9,10 +9,9 @@ import { shallow } from 'zustand/shallow';
 import { integrateSortedList } from '@mangayomu/algorithms';
 import { immer } from 'zustand/middleware/immer';
 import { persist } from 'zustand/middleware';
-import { IMangaSchema } from '@mangayomu/schemas';
+import { IMangaSchema, getSourceMangaId } from '@mangayomu/schemas';
 import SourceMangaSchema from '@app/realm/SourceManga';
 import getMangaHost from '@app/helpers/getMangaHost';
-import { getSourceMangaId } from '@mangayomu/backend';
 
 export const SORT_LIBRARY_BY = {
   'Age in library': (a: IMangaSchema) => a.dateAddedInLibrary,

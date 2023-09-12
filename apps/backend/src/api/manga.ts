@@ -11,16 +11,16 @@ import {
   Manga as UserManga,
   SourceManga,
   mongodb,
-  slugify,
   SourceChapter,
   state,
-  getSourceChapterId,
-  getSourceMangaId,
 } from '@main';
 import {
   IMangaSchema,
   ISourceChapterSchema,
   ISourceMangaSchema,
+  getSourceChapterId,
+  getSourceMangaId,
+  slugify,
 } from '@mangayomu/schemas';
 
 const post: Route = async (req, res) => {

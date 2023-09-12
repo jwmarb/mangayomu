@@ -1,8 +1,12 @@
 import { Handler, Route } from '@mangayomu/request-handler';
-import { getSourceMangaId, mongodb } from '@main';
+import { mongodb } from '@main';
 import { Manga as UserManga, SourceManga } from '@main';
 import { Manga } from '@mangayomu/mangascraper';
-import { IMangaSchema, ISourceMangaSchema } from '@mangayomu/schemas';
+import {
+  IMangaSchema,
+  ISourceMangaSchema,
+  getSourceMangaId,
+} from '@mangayomu/schemas';
 
 const post: Route = async (req, res) => {
   const mangas = req.body<Manga[]>();
