@@ -1,3 +1,4 @@
+'use client';
 import { ModalMethods } from '@app/components/Modal';
 import Radio from '@app/components/Radio';
 import { RadioMethods } from '@app/components/Radio/radio';
