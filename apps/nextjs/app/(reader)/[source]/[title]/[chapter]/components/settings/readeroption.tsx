@@ -1,4 +1,6 @@
 import { ModalMethods } from '@app/components/Modal';
+import Radio from '@app/components/Radio';
+import { RadioMethods } from '@app/components/Radio/radio';
 import Text from '@app/components/Text';
 import React from 'react';
 import { useButton } from 'react-aria';
@@ -6,6 +8,7 @@ const Modal = React.lazy(() => import('@app/components/Modal'));
 interface ReaderOptionProps<T extends string> {
   icon: React.ReactElement<{ className: string }>;
   options: Record<string, T>;
+  onChange: (newVal: T) => void;
   title: string;
   value: T;
   top?: boolean;
@@ -14,7 +17,7 @@ interface ReaderOptionProps<T extends string> {
 }
 
 export default function Option<T extends string>(props: ReaderOptionProps<T>) {
-  const { title, value, icon, top, bottom, first, options } = props;
+  const { title, value, icon, top, bottom, first, options, onChange } = props;
   const modalRef = React.useRef<ModalMethods>(null);
   const btnRef = React.useRef<HTMLButtonElement>(null);
   function handleOnPress() {
@@ -44,14 +47,31 @@ export default function Option<T extends string>(props: ReaderOptionProps<T>) {
         </div>
       </button>
       <React.Suspense>
-        <Modal ref={modalRef} className="flex flex-col gap-2" title={title}>
-          {Object.values(options).map((x) => (
-            <div className="flex flex-row gap-4" key={x}>
-              <Text component="label">{x}</Text>
-            </div>
-          ))}
-        </Modal>
+        <Radio.Group selected={value} onChange={onChange}>
+          <Modal ref={modalRef} className="flex flex-col" title={title}>
+            {Object.values(options).map((x) => (
+              <OptionValue value={x} key={x} />
+            ))}
+          </Modal>
+        </Radio.Group>
       </React.Suspense>
     </>
+  );
+}
+
+type OptionValueProps<T extends string> = {
+  value: T;
+};
+
+function OptionValue<T extends string>(props: OptionValueProps<T>) {
+  const { value } = props;
+  const ref = React.useRef<RadioMethods>(null);
+  return (
+    <button
+      onClick={ref.current?.toggle}
+      className="p-3 active:bg-pressed hover:bg-hover transition duration-150"
+    >
+      <Radio ref={ref} value={value} label={value} />
+    </button>
   );
 }
