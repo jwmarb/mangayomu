@@ -184,6 +184,26 @@ export default function MangaLibraryInitializer(
   const user = useUser();
   const library = useMongoClient(MangaSchema);
   const sourceMangas = useMongoClient(SourceMangaSchema);
+  const addSourceMangas = React.useCallback(
+    async (missing: IMangaSchema[]) => {
+      if (missing.length > 0) {
+        const append = await Promise.all(
+          missing.map((x) => getMangaHost(x.source).getMeta(x)),
+        );
+        await sourceMangas.insertMany(
+          append.map((x) => ({
+            _id: getSourceMangaId(x),
+            description: x.description,
+            imageCover: x.imageCover,
+            link: x.link,
+            source: x.source,
+            title: x.title,
+          })),
+        );
+      }
+    },
+    [sourceMangas],
+  );
   React.useEffect(() => {
     async function init() {
       resetSyncState();
@@ -207,21 +227,8 @@ export default function MangaLibraryInitializer(
           ]);
         const p = new Set(matching.map((x) => x.link));
         const missing = data.filter((manga) => !p.has(manga.link));
-        const append = await Promise.all(
-          missing.map((x) => getMangaHost(x.source).getMeta(x)),
-        );
-        sourceMangas.insertMany(
-          append.map((x) => ({
-            _id: getSourceMangaId(x),
-            description: x.description,
-            imageCover: x.imageCover,
-            link: x.link,
-            source: x.source,
-            title: x.title,
-          })),
-        );
 
-        console.log(`Missing ${missing.length} mangas from SourceManga`);
+        addSourceMangas(missing);
 
         setMangas(data);
         setSources(data, true);
@@ -278,6 +285,7 @@ export default function MangaLibraryInitializer(
     user.id,
     setSources,
     sourceMangas,
+    addSourceMangas,
   ]);
   return <>{props.children}</>;
 }
