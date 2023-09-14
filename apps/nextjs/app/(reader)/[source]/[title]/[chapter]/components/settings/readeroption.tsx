@@ -68,11 +68,11 @@ function OptionValue<T extends string>(props: OptionValueProps<T>) {
   const { value } = props;
   const ref = React.useRef<RadioMethods>(null);
   return (
-    <button
+    <span
       onClick={ref.current?.toggle}
       className="p-3 active:bg-pressed hover:bg-hover transition duration-150"
     >
       <Radio ref={ref} value={value} label={value} />
-    </button>
+    </span>
   );
 }
