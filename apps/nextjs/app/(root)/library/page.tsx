@@ -77,16 +77,18 @@ export default function Page() {
         {syncStatus === 'initializing' &&
           new Array(30).fill('').map((x, i) => <Book.Skeleton key={i} />)}
         {syncStatus === 'done' && mangas.length === 0 && <NoMangasInLibrary />}
-        {syncStatus === 'done' && filtered.length === 0 && (
-          <div className="flex flex-col justify-start w-full">
-            <Text variant="header-emphasized">No results found</Text>
-            <Text color="text-secondary">
-              {query.length > 0
-                ? `There are no mangas that match "${query}"`
-                : 'No mangas match the filter'}
-            </Text>
-          </div>
-        )}
+        {syncStatus === 'done' &&
+          filtered.length === 0 &&
+          mangas.length > 0 && (
+            <div className="flex flex-col justify-start w-full">
+              <Text variant="header-emphasized">No results found</Text>
+              <Text color="text-secondary">
+                {query.length > 0
+                  ? `There are no mangas that match "${query}"`
+                  : 'No mangas match the filter'}
+              </Text>
+            </div>
+          )}
         {syncStatus === 'done' && filtered.length > 0 && (
           <Book.List list={sorted} />
         )}
