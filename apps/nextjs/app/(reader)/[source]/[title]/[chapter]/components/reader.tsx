@@ -4,7 +4,9 @@ import Renderer from '@app/(reader)/[source]/[title]/[chapter]/components/render
 import { ChapterContext } from '@app/(reader)/[source]/[title]/[chapter]/context/ChapterContext';
 import { IndexContext } from '@app/(reader)/[source]/[title]/[chapter]/context/IndexContext';
 import { MangaContext } from '@app/(reader)/[source]/[title]/[chapter]/context/MangaContext';
+import Text from '@app/components/Text';
 import { useReaderSettings } from '@app/context/readersettings';
+import getErrorMessage from '@app/helpers/getErrorMessage';
 import useBoolean from '@app/hooks/useBoolean';
 import useMangaHost from '@app/hooks/useMangaHost';
 import {
@@ -34,6 +36,7 @@ export default function Reader({
   const [pages, setPages] = React.useState<string[]>([]);
   const [chapter, setChapter] =
     React.useState<ISourceChapterSchema>(initialChapter);
+  const [error, setError] = React.useState<string>('');
   const [index, _setIndex] = React.useState<number>(() => {
     const x = params.get('page');
     if (x == null) return 0;
@@ -71,6 +74,7 @@ export default function Reader({
         }
         if (index >= pages.length) setIndex(pages.length - 1);
       })
+      .catch((e) => setError(getErrorMessage(e)))
       .finally(() => toggleLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -98,6 +102,7 @@ export default function Reader({
       window.removeEventListener('keydown', listener);
     };
   }, [next, previous, readingDirection]);
+  if (error) return <Text variant="header">{error}</Text>;
   return (
     <MangaContext.Provider value={manga}>
       <ChapterContext.Provider value={chapter}>
