@@ -7,6 +7,7 @@ import getSlug from '@app/helpers/getSlug';
 import useMongoClient from '@app/hooks/useMongoClient';
 import useQuery from '@app/hooks/useQuery';
 import HistorySchema from '@app/realm/History';
+import SourceChapterSchema from '@app/realm/SourceChapter';
 import SourceMangaSchema from '@app/realm/SourceManga';
 import { ISourceMangaSchema, IUserHistorySchema } from '@mangayomu/schemas';
 import { format } from 'date-fns';
@@ -39,6 +40,8 @@ export default function Page() {
       date: -1,
     },
   });
+  const sourceMangas = useMongoClient(SourceMangaSchema);
+  const sourceChapters = useMongoClient(SourceChapterSchema);
   // const collection = useMongoClient(SourceMangaSchema);
   // React.useEffect(() => {
   //   if (p.length > 0) {
@@ -66,8 +69,8 @@ export default function Page() {
   // }, [p]);
   return (
     <Screen>
-      <Screen.Header>
-        <Text>History</Text>
+      <Screen.Header className="pb-2">
+        <Text variant="header">History</Text>
       </Screen.Header>
       <Screen.Content>
         {p.map((x) => (
