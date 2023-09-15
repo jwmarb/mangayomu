@@ -34,7 +34,10 @@ import React from 'react';
 //   }
 // }
 
+const ITEMS_PER_PAGE = 10;
+
 export default function Page() {
+  const [pageIndex, setPageIndex] = React.useState<number>(1);
   const p = useQuery(HistorySchema, {
     sort: {
       date: -1,
@@ -67,18 +70,35 @@ export default function Page() {
   //       .then(console.log);
   //   }
   // }, [p]);
+  function incrementPage() {
+    setPageIndex((x) =>
+      Math.min(x + 1, Math.floor(p.length / ITEMS_PER_PAGE) - 1),
+    );
+  }
+  function decrementPage() {
+    setPageIndex((x) => Math.max(x - 1, 0));
+  }
   return (
     <Screen>
       <Screen.Header className="pb-2">
         <Text variant="header">History</Text>
       </Screen.Header>
-      <Screen.Content>
-        {p.map((x) => (
-          <div key={x._id.toHexString()} className="grid grid-cols-2">
-            <Text>{x.chapter}</Text>
-            <Text>{format(x.date, 'MMM d, h:mm a')}</Text>
-          </div>
-        ))}
+      <Screen.Content className="flex flex-col gap-2">
+        <div className="flex flex-row justify-evenly items-center">
+          <Button onPress={decrementPage}>Previous</Button>
+          <Button onPress={incrementPage}>Next</Button>
+        </div>
+        {p
+          .slice(
+            pageIndex * ITEMS_PER_PAGE,
+            Math.min((pageIndex + 1) * ITEMS_PER_PAGE, p.length),
+          )
+          .map((x) => (
+            <div key={x._id.toHexString()} className="grid grid-cols-2">
+              <Text>{x.chapter}</Text>
+              <Text>{format(x.date, 'MMM d, h:mm a')}</Text>
+            </div>
+          ))}
       </Screen.Content>
     </Screen>
   );
