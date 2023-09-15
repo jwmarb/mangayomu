@@ -1,7 +1,7 @@
 import Screen from '@app/components/Screen';
 import Text from '@app/components/Text';
 import React from 'react';
-import { redis } from '@mangayomu/backend';
+import { getMongooseConnection, redis } from '@mangayomu/backend';
 import Link from 'next/link';
 import { TbError404 } from 'react-icons/tb';
 import { Metadata } from 'next';
@@ -21,7 +21,9 @@ export async function generateMetadata({
   params: { source, title },
 }: PageProps): Promise<Metadata> {
   const pathName = source + '/' + title;
+  const { close } = getMongooseConnection();
   const manga = await getSourceManga(pathName);
+  await close();
 
   if (manga == null)
     return {
@@ -81,9 +83,9 @@ export default async function Page(props: PageProps) {
         </Screen.Content>
       </Screen>
     );
-
+  const { close } = getMongooseConnection();
   const state = crypto.randomUUID();
-  await redis.setex(state, 30, 0);
+  await Promise.all([redis.setex(state, 30, 0), close]);
 
   return (
     <Screen>
