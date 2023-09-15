@@ -6,21 +6,24 @@ import {
 } from '@mangayomu/backend';
 import { ISourceChapterSchema } from '@mangayomu/schemas';
 const getSourceChapter = React.cache(
-  async (pathName: string): Promise<ISourceChapterSchema | null> => {
-    const cached = await redis.get(pathName);
-    if (cached == null) {
-      const { connect, close } = getMongooseConnection();
-      await connect();
-      const value = await SourceChapter.findById(pathName);
-      if (value == null) return null;
-      await Promise.all([
-        redis.setex(pathName, 300, JSON.stringify(value.toJSON())),
-        close,
-      ]);
-      return value.toObject();
-    }
-
-    return JSON.parse(cached);
+  (pathName: string): Promise<ISourceChapterSchema | null> => {
+    return new Promise((res, rej) => {
+      redis.get(pathName).then((cached) => {
+        if (cached == null) {
+          const { connect, close } = getMongooseConnection();
+          connect().then(() => {
+            SourceChapter.findById(pathName).then((value) => {
+              if (value == null) rej();
+              else
+                Promise.all([
+                  redis.setex(pathName, 300, JSON.stringify(value.toJSON())),
+                  close,
+                ]).then(() => res(value.toObject()));
+            });
+          });
+        } else res(JSON.parse(cached));
+      });
+    });
   },
 );
 
