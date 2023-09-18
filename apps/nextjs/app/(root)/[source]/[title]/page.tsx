@@ -24,7 +24,6 @@ export async function generateMetadata({
   const { close } = getMongooseConnection();
   const manga = await getSourceManga(pathName);
   await close();
-
   if (manga == null)
     return {
       title: '404 Not Found',
@@ -52,6 +51,7 @@ export default async function Page(props: PageProps) {
     params: { source, title },
   } = props;
   const pathName = source + '/' + title;
+  const { close } = getMongooseConnection();
   const host = getSourceFromSlug(source);
   if (host == null)
     return (
@@ -62,6 +62,7 @@ export default async function Page(props: PageProps) {
       </Screen>
     );
   const manga = await getSourceManga(pathName);
+  await close();
 
   if (manga == null)
     return (
@@ -83,9 +84,8 @@ export default async function Page(props: PageProps) {
         </Screen.Content>
       </Screen>
     );
-  const { close } = getMongooseConnection();
   const state = crypto.randomUUID();
-  await Promise.all([redis.setex(state, 30, 0), close]);
+  await redis.setex(state, 30, 0);
 
   return (
     <Screen>
