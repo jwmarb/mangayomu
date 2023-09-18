@@ -1,4 +1,5 @@
 'use client';
+import Book from '@app/components/Book';
 import Button from '@app/components/Button';
 import Screen from '@app/components/Screen';
 import Text from '@app/components/Text';
@@ -10,6 +11,8 @@ import getMangaHost from '@app/helpers/getMangaHost';
 import getMangaHostFromLink from '@app/helpers/getMangaHostFromLink';
 import getSlug from '@app/helpers/getSlug';
 import getSourceManga from '@app/helpers/getSourceManga';
+import isMultilingualChapter from '@app/helpers/isMultilingualChapter';
+import useBoolean from '@app/hooks/useBoolean';
 import useMongoClient from '@app/hooks/useMongoClient';
 import useQuery from '@app/hooks/useQuery';
 import HistorySchema from '@app/realm/History';
@@ -29,6 +32,7 @@ import {
   getSourceMangaId,
 } from '@mangayomu/schemas';
 import { format } from 'date-fns';
+import Link from 'next/link';
 
 import React from 'react';
 
@@ -52,8 +56,6 @@ import React from 'react';
 //   }
 // }
 
-const ITEMS_PER_PAGE = 10;
-
 type HistoryLookup =
   | {
       type: 'manga';
@@ -66,7 +68,7 @@ type HistoryLookup =
 
 export default function Page() {
   const [lookup, setLookup] = React.useState<Record<string, HistoryLookup>>({});
-  const [pageIndex, setPageIndex] = React.useState<number>(1);
+  const [loading, setLoading] = useBoolean(true);
   const userHistory = useQuery(HistorySchema, {
     sort: {
       date: -1,
@@ -76,14 +78,8 @@ export default function Page() {
   const sourceChapters = useMongoClient(SourceChapterSchema);
   const user = useUser();
   const proxy = useMangaProxy();
-  const userHistoryEntries = React.useMemo(
-    () =>
-      userHistory.slice(
-        pageIndex * ITEMS_PER_PAGE,
-        Math.min((pageIndex + 1) * ITEMS_PER_PAGE, userHistory.length),
-      ),
-    [pageIndex, userHistory],
-  );
+  const isMounted = React.useRef<boolean>(false);
+
   React.useEffect(() => {
     const copy = { ...lookup };
     const controller = new AbortController();
@@ -128,105 +124,119 @@ export default function Page() {
       for (const x of sourceChaptersResult) {
         copy[x.link] = { type: 'chapter', chapter: x };
       }
-      setLookup(copy);
-      // try {
-      //   for (const missingSourceManga of missingSourceMangas) {
-      //     const host = getMangaHostFromLink(missingSourceManga.manga);
-      //     if (host == null) {
-      //       console.error(`Invalid host for ${missingSourceManga.manga}`);
-      //       return;
-      //     }
-      //     host.proxy = proxy;
-      //     host.signal = controller.signal;
-      //     const meta = await cache(
-      //       missingSourceManga.manga,
-      //       async () => {
-      //         const result = await host.getMeta({
-      //           link: missingSourceManga.manga,
-      //         });
-      //         user.functions.addSourceChapters(
-      //           result.chapters,
-      //           host.defaultLanguage,
-      //           {
-      //             link: missingSourceManga.manga,
-      //             imageCover: result.imageCover,
-      //             source: result.source,
-      //             title: result.title,
-      //           } as Manga,
-      //         );
-      //         return result;
-      //       },
-      //       3600,
-      //     );
-      //     lookup[missingSourceManga.manga] = {
-      //       type: 'manga',
-      //       manga: {
-      //         _id: getSourceMangaId(meta),
-      //         description: meta.description,
-      //         imageCover: meta.imageCover,
-      //         link: meta.link,
-      //         source: meta.source,
-      //         title: meta.title,
-      //       },
-      //     };
-      //   }
-      // } catch (e) {
-      //   alert(JSON.stringify(e));
-      // } finally {
-      //   for (const missingSourceChapter of missingSourceChapters) {
-      //     const host = getMangaHostFromLink(missingSourceChapter.manga);
-      //     if (host == null) {
-      //       console.error(`Invalid host for ${missingSourceChapter.manga}`);
-      //       break;
-      //     }
-      //     host.proxy = proxy;
-      //     host.signal = controller.signal;
-      //     const meta = await cache(
-      //       missingSourceChapter.manga,
-      //       async () => {
-      //         const result = await host.getMeta({
-      //           link: missingSourceChapter.manga,
-      //         });
-      //         user.functions.addSourceChapters(
-      //           result.chapters,
-      //           host.defaultLanguage,
-      //           {
-      //             link: missingSourceChapter.manga,
-      //             imageCover: result.imageCover,
-      //             source: result.source,
-      //             title: result.title,
-      //           } as Manga,
-      //         );
-      //         return result;
-      //       },
+      try {
+        await Promise.all(
+          missingSourceMangas.map(async (missingSourceManga) => {
+            const host = getMangaHostFromLink(missingSourceManga.manga);
+            if (host == null) {
+              console.error(`Invalid host for ${missingSourceManga.manga}`);
+              return;
+            }
+            host.proxy = proxy;
+            host.signal = controller.signal;
+            const meta = await cache(
+              missingSourceManga.manga,
+              async () => {
+                const result = await host.getMeta({
+                  link: missingSourceManga.manga,
+                });
+                user.functions.addSourceChapters(
+                  result.chapters,
+                  host.defaultLanguage,
+                  {
+                    link: missingSourceManga.manga,
+                    imageCover: result.imageCover,
+                    source: result.source,
+                    title: result.title,
+                  } as Manga,
+                );
+                return result;
+              },
+              3600,
+            );
+            copy[missingSourceManga.manga] = {
+              type: 'manga',
+              manga: {
+                _id: getSourceMangaId(meta),
+                description: meta.description,
+                imageCover: meta.imageCover,
+                link: meta.link,
+                source: meta.source,
+                title: meta.title,
+              },
+            };
+          }),
+        );
+      } catch (e) {
+        alert(JSON.stringify(e));
+      } finally {
+        try {
+          await Promise.all(
+            missingSourceChapters.map(async (missingSourceChapter) => {
+              const host = getMangaHostFromLink(missingSourceChapter.manga);
+              if (host == null) {
+                console.error(`Invalid host for ${missingSourceChapter.manga}`);
+                return;
+              }
+              host.proxy = proxy;
+              host.signal = controller.signal;
+              const meta = await cache(
+                missingSourceChapter.manga,
+                async () => {
+                  const result = await host.getMeta({
+                    link: missingSourceChapter.manga,
+                  });
 
-      //       3600,
-      //     );
-      //     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      //     const chapter = meta.chapters.find(
-      //       (x) => x.link === missingSourceChapter.chapter,
-      //     )!;
-      //     lookup[missingSourceChapter.chapter] = {
-      //       type: 'chapter',
-      //       chapter: {
-      //         _id: getSourceChapterId(meta, chapter),
-      //         _mangaId: meta.link,
-      //         language:
-      //           (chapter as MangaMultilingualChapter).language ??
-      //           host.defaultLanguage,
-      //         link: missingSourceChapter.chapter,
-      //         name: chapter.name,
-      //       },
-      //     };
-      //   }
-      // }
+                  user.functions.addSourceChapters(
+                    result.chapters,
+                    host.defaultLanguage,
+                    {
+                      link: missingSourceChapter.manga,
+                      imageCover: result.imageCover,
+                      source: result.source,
+                      title: result.title,
+                    } as Manga,
+                  );
+                  return result;
+                },
+
+                3600,
+              );
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              const chapter = meta.chapters.find(
+                (x) => x.link === missingSourceChapter.chapter,
+              );
+
+              if (chapter != null)
+                copy[missingSourceChapter.chapter] = {
+                  type: 'chapter',
+                  chapter: {
+                    _id: getSourceChapterId(meta, chapter),
+                    _mangaId: meta.link,
+                    language:
+                      (chapter as MangaMultilingualChapter).language ??
+                      host.defaultLanguage,
+                    link: missingSourceChapter.chapter,
+                    name: chapter.name,
+                  },
+                };
+              else console.log(`${missingSourceChapter.chapter} deleted`);
+            }),
+          );
+        } finally {
+          setLookup(copy);
+          setLoading(Object.keys(copy).length === 0 && userHistory.length > 0);
+        }
+      }
     }
-    init();
-    return () => {
-      controller.abort();
-    };
+    if (isMounted.current) {
+      init();
+      return () => {
+        controller.abort();
+      };
+    } else isMounted.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [proxy, sourceChapters, sourceMangas, user.functions]);
+  }, [proxy, sourceChapters, sourceMangas, user.functions, userHistory]);
 
   // const collection = useMongoClient(SourceMangaSchema);
   // React.useEffect(() => {
@@ -253,37 +263,61 @@ export default function Page() {
   //       .then(console.log);
   //   }
   // }, [p]);
-  function incrementPage() {
-    setPageIndex((x) =>
-      Math.min(x + 1, Math.floor(userHistory.length / ITEMS_PER_PAGE) - 1),
-    );
-  }
-  function decrementPage() {
-    setPageIndex((x) => Math.max(x - 1, 0));
-  }
+
   return (
     <Screen>
       <Screen.Header className="pb-2">
         <Text variant="header">History</Text>
       </Screen.Header>
-      <Screen.Content className="flex flex-col gap-2">
-        <div className="flex flex-row justify-evenly items-center">
-          <Button onPress={decrementPage}>Previous</Button>
-          <Button
-            onPress={() => {
-              console.log(lookup);
-            }}
-          >
-            test
-          </Button>
-          <Button onPress={incrementPage}>Next</Button>
-        </div>
-        {userHistoryEntries.map((x) => (
-          <div key={x._id.toHexString()} className="grid grid-cols-2">
-            <Text>{x.chapter}</Text>
-            <Text>{format(x.date, 'MMM d, h:mm a')}</Text>
-          </div>
-        ))}
+      <Screen.Content overrideClassName="max-w-screen-xl mx-auto flex flex-col">
+        {loading ? (
+          <Text>Loading...</Text>
+        ) : (
+          userHistory.map((x) => {
+            if (x.manga in lookup === false)
+              return <Text key={x._id.toHexString()}>{x.manga} missing</Text>;
+            if (x.chapter in lookup === false)
+              return <Text key={x._id.toHexString()}>{x.chapter} missing</Text>;
+            const { chapter } = lookup[x.chapter] as {
+              type: 'chapter';
+              chapter: ISourceChapterSchema;
+            };
+            const { manga } = lookup[x.manga] as {
+              type: 'manga';
+              manga: ISourceMangaSchema;
+            };
+            const host = getMangaHost(manga.source);
+            return (
+              <Link
+                href={`/${getSlug(manga.source)}/${getSlug(manga.title)}/${
+                  getSlug(chapter.name) +
+                  '-' +
+                  (isMultilingualChapter(chapter)
+                    ? chapter.language
+                    : host.defaultLanguage)
+                }`}
+                key={x._id.toHexString()}
+                className="flex flex-row items-center gap-2 px-4 cursor-pointer hover:bg-hover active:bg-pressed transition duration-150"
+              >
+                <div>
+                  <Book.Cover manga={manga} standalone compact />
+                </div>
+                <div className="flex flex-col">
+                  <Text className="font-bold" variant="book-title">
+                    {manga.title}
+                  </Text>
+                  <div className="flex flex-row gap-2">
+                    <Text color="text-secondary">{chapter.name}</Text>
+                    <Text color="text-secondary">•</Text>
+                    <Text className="font-bold" color="text-secondary">
+                      {format(x.date, 'h:mm a')}
+                    </Text>
+                  </div>
+                </div>
+              </Link>
+            );
+          })
+        )}
       </Screen.Content>
     </Screen>
   );
