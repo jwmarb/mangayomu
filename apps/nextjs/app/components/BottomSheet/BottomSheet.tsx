@@ -23,7 +23,11 @@ function BottomSheet(
       );
 
       if (val / window.innerHeight > 0.75) close();
-      else
+      else if (val / window.innerHeight < 0.5) {
+        apiDrag.start({
+          top: 0,
+        });
+      } else
         apiDrag.start({
           top: val,
         });
