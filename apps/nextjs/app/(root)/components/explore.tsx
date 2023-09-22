@@ -14,10 +14,12 @@ import { shallow } from 'zustand/shallow';
 import cache from '@app/helpers/cache';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ViewAllUpdates from '@app/(root)/components/viewallupdates';
+import { useUser } from '@app/context/realm';
 
 export default function Explore() {
   const hosts = useMangaHosts();
   const router = useRouter();
+  const user = useUser();
   const params = useSearchParams();
   const appendAllMangas = useExploreStore((store) => store.appendAllMangas);
 
@@ -32,21 +34,19 @@ export default function Explore() {
         hosts.getLatestMangas(controller.signal),
       ]);
       const duplicates = new Set<string>();
-      fetch('/api/v1/updates', {
-        method: 'POST',
-        signal: controller.signal,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(
-          recent.mangas.concat(trending.mangas).filter((x) => {
-            if (!duplicates.has(x.link)) {
-              duplicates.add(x.link);
-              return true;
-            }
-            return false;
-          }),
-        ),
-      });
+      const queuedUpdates = recent.mangas
+        .concat(trending.mangas)
+        .filter((x) => {
+          if (!duplicates.has(x.link)) {
+            duplicates.add(x.link);
+            return true;
+          }
+          return false;
+        });
+
       appendAllMangas({ recent, trending });
+
+      if (queuedUpdates.length > 0) user.functions.updateMangas(queuedUpdates);
     });
     return () => {
       controller.abort();

@@ -94,18 +94,13 @@ export default function MangaViewer(props: MangaViewerProps) {
       });
       setImageCover(p.imageCover || '/No-Image-Placeholder.png');
       setMeta(p);
-      await fetch('/api/v1/manga' + '?state=' + state, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(p),
-        signal: controller.signal,
-      });
+      await user.functions.addSourceManga(p, host.defaultLanguage);
     }
     init();
     return () => {
       controller.abort();
     };
-  }, [_manga, host, state]);
+  }, [_manga, host, state, user.functions]);
 
   const supportedLanguages: [ISOLangCode, string][] | null =
     React.useMemo(() => {
