@@ -10,7 +10,7 @@ import useClassName from '@app/hooks/useClassName';
 import { ModalMethods, ModalProps } from './';
 
 function Modal(props: ModalProps, forwardedRef: React.Ref<ModalMethods>) {
-  const { children, title } = props;
+  const { children, title, open: isOpen, onClose } = props;
   const [visible, toggleVisible] = useBoolean();
 
   const className = useClassName(
@@ -27,20 +27,19 @@ function Modal(props: ModalProps, forwardedRef: React.Ref<ModalMethods>) {
   }));
   const { buttonProps } = useButton(
     {
-      onPress: () => {
-        api.start({ opacity: 0 });
-      },
+      onPress: () => close(),
       elementType: 'div',
     },
     ref,
   );
 
-  const close = () => {
+  const close = React.useCallback(() => {
+    onClose && onClose();
     api.start({ opacity: 0 });
-  };
-  const open = () => {
+  }, [api, onClose]);
+  const open = React.useCallback(() => {
     api.start({ opacity: 1 });
-  };
+  }, [api]);
 
   React.useImperativeHandle(forwardedRef, () => ({
     close,
@@ -58,6 +57,10 @@ function Modal(props: ModalProps, forwardedRef: React.Ref<ModalMethods>) {
   React.useLayoutEffect(() => {
     setModalEl(document.getElementById('__modal__'));
   }, []);
+  React.useEffect(() => {
+    if (isOpen) open();
+    else close();
+  }, [isOpen, open, close]);
 
   if (modalEl == null) return null;
 

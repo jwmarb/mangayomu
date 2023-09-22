@@ -6,11 +6,16 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { Freeze } from 'react-freeze';
 
+export interface BottomSheetProps {
+  open?: boolean;
+  onClose?: () => void;
+}
+
 function BottomSheet(
-  props: React.PropsWithChildren,
+  props: React.PropsWithChildren<BottomSheetProps>,
   ref: React.ForwardedRef<BottomSheetMethods>,
 ) {
-  const { children } = props;
+  const { children, open: isOpen, onClose } = props;
   const [modalEl, setModalEl] = React.useState<HTMLElement | null>(null);
   const drag = useGesture({
     onDragEnd: (s) => {
@@ -57,14 +62,15 @@ function BottomSheet(
     //   console.log(r.value.top);
     // },
   }));
-  function open() {
+  const open = React.useCallback(() => {
     api.start({ opacity: 1 });
     apiDrag.start({ top: window.innerHeight / 2 });
-  }
-  function close() {
+  }, [api, apiDrag]);
+  const close = React.useCallback(() => {
+    onClose && onClose();
     api.start({ opacity: 0 });
     apiDrag.start({ top: window.innerHeight });
-  }
+  }, [api, apiDrag, onClose]);
   React.useImperativeHandle(ref, () => ({
     open,
     close,
@@ -72,6 +78,10 @@ function BottomSheet(
   React.useLayoutEffect(() => {
     setModalEl(document.getElementById('__modal__'));
   }, []);
+  React.useEffect(() => {
+    if (isOpen) open();
+    else close();
+  }, [close, isOpen, open]);
 
   if (modalEl == null) return null;
 
