@@ -212,39 +212,20 @@ export default function MangaLibraryInitializer(
           { $match: { _realmId: user.id, inLibrary: true } },
           { $sort: { _id: 1 } },
         ]);
-        const matching: Pick<IMangaSchema, 'link'>[] =
-          await sourceMangas.aggregate([
-            {
-              $match: {
-                link: { $in: data.map((x) => x.link) },
-              },
+        const matching: IMangaSchema[] = await sourceMangas.aggregate([
+          {
+            $match: {
+              _id: { $in: data.map((x) => getSourceMangaId(x)) },
             },
-            {
-              $project: {
-                link: 1,
-              },
-            },
-          ]);
-        const p = new Set(matching.map((x) => x.link));
-        const missing = data.filter((manga) => !p.has(manga.link));
+          },
+        ]);
+        const p = new Set(matching.map((x) => getSourceMangaId(x)));
+        const missing = data.filter((manga) => !p.has(getSourceMangaId(manga)));
 
         addSourceMangas(missing);
 
         setMangas(data);
         setSources(data, true);
-        // const info = data.reduce((prev, curr) => {
-        //   if (prev[curr.source] == null) prev[curr.source] = [];
-        //   prev[curr.source].push(curr._id);
-        //   return prev;
-        // }, {} as Record<string, string[]>);
-
-        // const res = await fetch('/api/v1/manga', {
-        //   method: 'PATCH',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ mangas: info }),
-        // });
-        // const c = await res.json();
-        // console.log(c);
       } catch (e) {
         setError(e);
       }
