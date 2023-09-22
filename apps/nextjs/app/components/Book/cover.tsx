@@ -38,6 +38,10 @@ export default function Cover(props: CoverProps) {
   const handleOnError = () => {
     toggleError(true);
   };
+  const handleOnLoad = () => {
+    api.start({ opacity: 0 });
+    toggle(false);
+  };
 
   React.useEffect(() => {
     if (error) {
@@ -59,7 +63,7 @@ export default function Cover(props: CoverProps) {
         >
           <div className={`${height} relative w-full -z-50`}>
             <img
-              onLoad={() => api.start({ opacity: 0 })}
+              onLoad={handleOnLoad}
               onError={handleOnError}
               loading="lazy"
               src={imageCover || '/No-Image-Placeholder.png'}
@@ -79,7 +83,7 @@ export default function Cover(props: CoverProps) {
   return (
     <div className={`${height} relative w-full`}>
       <img
-        onLoad={() => api.start({ opacity: 0 })}
+        onLoad={handleOnLoad}
         onError={handleOnError}
         loading="lazy"
         src={imageCover || '/No-Image-Placeholder.png'}
