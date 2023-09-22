@@ -18,7 +18,7 @@ type BookListProps = SelectivePartial<FlatListProps<Manga>, 'renderItem'>;
 
 function defaultRenderItem(item: Manga) {
   return (
-    <div className="flex-grow flex items-center justify-center">
+    <div key={item.link} className="flex-grow flex items-center justify-center">
       <div className="flex-shrink flex items-center justify-center">
         <Book key={item.link} manga={item} />
       </div>
