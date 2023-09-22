@@ -7,6 +7,7 @@ import collectMangaMetas from '@app/helpers/collectMangaMetas';
 import { enableMapSet } from 'immer';
 import getMangaHost from '@app/helpers/getMangaHost';
 import { useMangaProxy } from '@app/context/proxy';
+import { useUser } from '@app/context/realm';
 enableMapSet();
 
 export type ImageResolverListener = (result: string) => void;
@@ -104,6 +105,7 @@ export default function ImageResolver({ children }: React.PropsWithChildren) {
   const proxy = useMangaProxy();
   const { mangas, clear, listeners, count, batchify, unbatch, batches } =
     useImageResolver();
+  const user = useUser();
   const initialized = React.useRef<boolean>(false);
 
   React.useEffect(() => {
@@ -141,13 +143,15 @@ export default function ImageResolver({ children }: React.PropsWithChildren) {
               listener(i.imageCover || IMAGE_PLACEHOLDER);
             });
           }
-          await fetch('/api/v1/manga', {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(manga),
-          })
-            .then((r) => r.json())
-            .then(console.log);
+          user.functions
+            .addSourceMangas(
+              manga,
+              manga.reduce((prev, curr) => {
+                prev[curr.source] = getMangaHost(curr.source).defaultLanguage;
+                return prev;
+              }, {} as Record<string, string>),
+            )
+            .then((x) => console.log({ ...x, fn_call: 'addSourceMangas' }));
         }
       }, 1);
       return () => {
