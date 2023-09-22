@@ -21,9 +21,7 @@ export async function generateMetadata({
   params: { source, title },
 }: PageProps): Promise<Metadata> {
   const pathName = source + '/' + title;
-  const { close } = getMongooseConnection();
   const manga = await getSourceManga(pathName);
-  await close();
   if (manga == null)
     return {
       title: '404 Not Found',
@@ -51,7 +49,6 @@ export default async function Page(props: PageProps) {
     params: { source, title },
   } = props;
   const pathName = source + '/' + title;
-  const { close } = getMongooseConnection();
   const host = getSourceFromSlug(source);
   if (host == null)
     return (
@@ -62,7 +59,6 @@ export default async function Page(props: PageProps) {
       </Screen>
     );
   const manga = await getSourceManga(pathName);
-  await close();
 
   if (manga == null)
     return (

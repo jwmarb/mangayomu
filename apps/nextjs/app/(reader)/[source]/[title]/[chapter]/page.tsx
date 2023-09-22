@@ -17,7 +17,7 @@ export default async function Page(props: PageProps) {
   // const mangaPathName = props.params.source + '/' + props.params.title;
   // const manga = await getSourceManga(mangaPathName);
   const host = getSourceFromSlug(props.params.source);
-  const { connect, close } = getMongooseConnection();
+  const { connect } = getMongooseConnection();
   await connect();
   const [chapter, manga] = await Promise.all([
     getSourceChapter(
@@ -29,7 +29,6 @@ export default async function Page(props: PageProps) {
     ),
     getSourceManga(props.params.source + '/' + props.params.title),
   ]);
-  await close();
 
   if (host == null)
     return (
