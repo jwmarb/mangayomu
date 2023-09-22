@@ -1,3 +1,4 @@
+import SafeAreaProvider from '@app/components/SafeAreaProvider';
 import { DarkModeInitializer } from '@app/context/darkmode';
 import ImageResolver from '@app/context/imageresolver';
 import MangaLibraryInitializer from '@app/context/library';
@@ -16,7 +17,9 @@ export function Providers({ children }: ProvidersProps) {
       <MangaProxyProvider proxy={env().PROXY_URL}>
         <DarkModeInitializer>
           <MangaLibraryInitializer>
-            <ImageResolver>{children}</ImageResolver>
+            <SafeAreaProvider>
+              <ImageResolver>{children}</ImageResolver>
+            </SafeAreaProvider>
           </MangaLibraryInitializer>
         </DarkModeInitializer>
       </MangaProxyProvider>

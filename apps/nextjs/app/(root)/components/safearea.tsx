@@ -1,25 +1,13 @@
 'use client';
 import { useSafeArea } from '@app/context/safearea';
-import { shallow } from 'zustand/shallow';
 import React from 'react';
 import { useDrawer } from '@app/context/drawer';
 
 export default function SafeArea({ children }: React.PropsWithChildren) {
-  const { mobile, drawerWidth, setMobile, headerHeight, setBreakpoint } =
-    useSafeArea();
+  const mobile = useSafeArea((s) => s.mobile);
+  const drawerWidth = useSafeArea((s) => s.drawerWidth);
+  const headerHeight = useSafeArea((s) => s.headerHeight);
   const drawerActive = useDrawer((store) => store.visible);
-
-  React.useEffect(() => {
-    const listener = () => {
-      setMobile(window.innerWidth < 1024);
-      setBreakpoint(window.innerWidth);
-    };
-    window.addEventListener('resize', listener);
-
-    return () => {
-      window.removeEventListener('resize', listener);
-    };
-  }, [setMobile, setBreakpoint]);
 
   return (
     <main
