@@ -19,6 +19,7 @@ import ListSource from '@app/(root)/components/source';
 import TopNavBar from '@app/(root)/components/topnavbar';
 import User from '@app/(root)/components/user';
 import { useMangaLibrary } from '@app/context/library';
+import Link from 'next/link';
 
 export default function Navbar() {
   const drawerRef = React.useRef<DrawerMethods>(null);
@@ -48,35 +49,39 @@ export default function Navbar() {
             <List.Accordion persist="accordion_list_home">
               <List.Header>Home</List.Header>
               <List.Accordion.Content>
-                <List.Button
-                  onClick={() => router.push('/')}
-                  active={pathname === '/'}
-                  icon={<MdOutlineExplore />}
-                >
-                  Explore
-                </List.Button>
-                <List.Button
-                  active={pathname === '/library'}
-                  onClick={() => router.push('/library')}
-                  icon={<MdOutlineBookmarks />}
-                >
-                  Library
-                </List.Button>
+                <Link href="/">
+                  <List.Button
+                    active={pathname === '/'}
+                    icon={<MdOutlineExplore />}
+                  >
+                    Explore
+                  </List.Button>
+                </Link>
+                <Link href="/library">
+                  <List.Button
+                    active={pathname === '/library'}
+                    icon={<MdOutlineBookmarks />}
+                  >
+                    Library
+                  </List.Button>
+                </Link>
 
-                <List.Button
-                  active={pathname === '/browse'}
-                  onClick={() => router.push('/browse')}
-                  icon={<MdSearch />}
-                >
-                  Browse
-                </List.Button>
-                <List.Button
-                  active={pathname === '/history'}
-                  icon={<MdHistory />}
-                  onClick={() => router.push('/history')}
-                >
-                  History
-                </List.Button>
+                <Link href="/browse">
+                  <List.Button
+                    active={pathname === '/browse'}
+                    icon={<MdSearch />}
+                  >
+                    Browse
+                  </List.Button>
+                </Link>
+                <Link href="/history">
+                  <List.Button
+                    active={pathname === '/history'}
+                    icon={<MdHistory />}
+                  >
+                    History
+                  </List.Button>
+                </Link>
               </List.Accordion.Content>
             </List.Accordion>
           </List.Category>
@@ -84,13 +89,14 @@ export default function Navbar() {
             <List.Accordion persist="accordion_list_misc">
               <List.Header>Miscellaneous</List.Header>
               <List.Accordion.Content>
-                <List.Button
-                  active={pathname === '/sources'}
-                  onClick={() => router.push('/sources')}
-                  icon={<MdOutlineLibraryBooks />}
-                >
-                  Sources
-                </List.Button>
+                <Link href="/sources">
+                  <List.Button
+                    active={pathname === '/sources'}
+                    icon={<MdOutlineLibraryBooks />}
+                  >
+                    Sources
+                  </List.Button>
+                </Link>
               </List.Accordion.Content>
             </List.Accordion>
           </List.Category>
@@ -99,12 +105,9 @@ export default function Navbar() {
               <List.Header
                 badge={sources.length || undefined}
                 icon={
-                  <>
-                    <IconButton
-                      icon={<MdAdd />}
-                      onPress={() => router.push('/sources')}
-                    />
-                  </>
+                  <Link href="/sources">
+                    <IconButton icon={<MdAdd />} />
+                  </Link>
                 }
               >
                 My Sources
