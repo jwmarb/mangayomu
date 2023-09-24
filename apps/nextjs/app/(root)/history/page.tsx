@@ -1,16 +1,15 @@
 'use client';
+import addMissingMangas from '@app/(root)/history/helpers/addMissingMangas';
+import addMissingChapters from '@app/(root)/history/helpers/addMissingChapters';
+import findMissingMangas from '@app/(root)/history/helpers/findMissingMangas';
+import resolveMissingMangas from '@app/(root)/history/helpers/resolveMissingMangas';
 import Book from '@app/components/Book';
-import Button from '@app/components/Button';
 import Screen from '@app/components/Screen';
 import Text from '@app/components/Text';
 import { useMangaProxy } from '@app/context/proxy';
 import { useUser } from '@app/context/realm';
-import cache from '@app/helpers/cache';
-import collectMangaMetas from '@app/helpers/collectMangaMetas';
 import getMangaHost from '@app/helpers/getMangaHost';
-import getMangaHostFromLink from '@app/helpers/getMangaHostFromLink';
 import getSlug from '@app/helpers/getSlug';
-import getSourceManga from '@app/helpers/getSourceManga';
 import isMultilingualChapter from '@app/helpers/isMultilingualChapter';
 import useBoolean from '@app/hooks/useBoolean';
 import useMongoClient from '@app/hooks/useMongoClient';
@@ -19,15 +18,8 @@ import HistorySchema from '@app/realm/History';
 import SourceChapterSchema from '@app/realm/SourceChapter';
 import SourceMangaSchema from '@app/realm/SourceManga';
 import {
-  Manga,
-  MangaHost,
-  MangaMeta,
-  MangaMultilingualChapter,
-} from '@mangayomu/mangascraper';
-import {
   ISourceChapterSchema,
   ISourceMangaSchema,
-  IUserHistorySchema,
   getSourceChapterId,
   getSourceMangaId,
 } from '@mangayomu/schemas';
@@ -35,6 +27,8 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 
 import React from 'react';
+import { Manga, MangaChapter, MangaMeta } from '@mangayomu/mangascraper';
+import uploadResolved from '@app/(root)/history/helpers/uploadResolved';
 
 // function toFlashListData(
 //   sections: IUserHistorySchema[],
@@ -56,18 +50,26 @@ import React from 'react';
 //   }
 // }
 
-type HistoryLookup =
+export type RemovedChapter = {
+  chapter: string;
+  manga: Manga & MangaMeta<MangaChapter>;
+};
+
+export type HistoryLookup =
   | {
       type: 'manga';
       manga: ISourceMangaSchema;
     }
   | {
       type: 'chapter';
-      chapter: ISourceChapterSchema;
+      chapter: Omit<ISourceChapterSchema, '_nextId' | '_prevId'>;
     };
 
 export default function Page() {
   const [lookup, setLookup] = React.useState<Record<string, HistoryLookup>>({});
+  const [removed, setRemoved] = React.useState<Record<string, RemovedChapter>>(
+    {},
+  );
   const [loading, setLoading] = useBoolean(true);
   const userHistory = useQuery(HistorySchema, {
     sort: {
@@ -82,41 +84,13 @@ export default function Page() {
 
   React.useEffect(() => {
     const copy = { ...lookup };
+    const removedCopy = { ...removed };
     const controller = new AbortController();
     async function init() {
-      const [sourceMangasResult, sourceChaptersResult]: [
-        ISourceMangaSchema[],
-        ISourceChapterSchema[],
-      ] = await Promise.all([
-        sourceMangas.aggregate([
-          {
-            $match: {
-              link: {
-                $in: Array.from(new Set(userHistory.map((x) => x.manga))),
-              },
-            },
-          },
-        ]),
-        sourceChapters.aggregate([
-          {
-            $match: {
-              link: {
-                $in: Array.from(new Set(userHistory.map((x) => x.chapter))),
-              },
-            },
-          },
-        ]),
-      ]);
-      const sourceMangaLookup = new Set(sourceMangasResult.map((x) => x.link));
-      const sourceChapterLookup = new Set(
-        sourceChaptersResult.map((x) => x.link),
-      );
-      const missingSourceMangas = Array.from(
-        new Set(userHistory.filter((x) => !sourceMangaLookup.has(x.manga))),
-      );
-      const missingSourceChapters = Array.from(
-        new Set(userHistory.filter((x) => !sourceChapterLookup.has(x.chapter))),
-      );
+      const {
+        found: [sourceMangasResult, sourceChaptersResult],
+        missing: [missingSourceChapters, missingSourceMangas],
+      } = await findMissingMangas(userHistory, sourceMangas, sourceChapters);
 
       for (const x of sourceMangasResult) {
         copy[x.link] = { type: 'manga', manga: x };
@@ -124,109 +98,38 @@ export default function Page() {
       for (const x of sourceChaptersResult) {
         copy[x.link] = { type: 'chapter', chapter: x };
       }
+
       try {
-        await Promise.all(
-          missingSourceMangas.map(async (missingSourceManga) => {
-            const host = getMangaHostFromLink(missingSourceManga.manga);
-            if (host == null) {
-              console.error(`Invalid host for ${missingSourceManga.manga}`);
-              return;
-            }
-            host.proxy = proxy;
-            host.signal = controller.signal;
-            const meta = await cache(
-              missingSourceManga.manga,
-              async () => {
-                const result = await host.getMeta({
-                  link: missingSourceManga.manga,
-                });
-                user.functions.addSourceChapters(
-                  result.chapters,
-                  host.defaultLanguage,
-                  {
-                    link: missingSourceManga.manga,
-                    imageCover: result.imageCover,
-                    source: result.source,
-                    title: result.title,
-                  } as Manga,
-                );
-                return result;
-              },
-              3600,
-            );
-            copy[missingSourceManga.manga] = {
-              type: 'manga',
-              manga: {
-                _id: getSourceMangaId(meta),
-                description: meta.description,
-                imageCover: meta.imageCover,
-                link: meta.link,
-                source: meta.source,
-                title: meta.title,
-              },
-            };
-          }),
+        const [resolvedMissingMangasArr, resolvedMissingMangasLookup] =
+          await resolveMissingMangas(
+            missingSourceChapters.concat(missingSourceMangas),
+            proxy,
+          );
+
+        addMissingChapters(
+          copy,
+          removedCopy,
+          missingSourceChapters,
+          resolvedMissingMangasLookup,
+        );
+        addMissingMangas(
+          copy,
+          missingSourceMangas,
+          resolvedMissingMangasLookup,
+        );
+        await uploadResolved(
+          missingSourceChapters,
+          resolvedMissingMangasArr,
+          sourceMangas,
+          sourceChapters,
+          resolvedMissingMangasLookup,
         );
       } catch (e) {
-        alert(JSON.stringify(e));
+        console.error(e);
       } finally {
-        try {
-          await Promise.all(
-            missingSourceChapters.map(async (missingSourceChapter) => {
-              const host = getMangaHostFromLink(missingSourceChapter.manga);
-              if (host == null) {
-                console.error(`Invalid host for ${missingSourceChapter.manga}`);
-                return;
-              }
-              host.proxy = proxy;
-              host.signal = controller.signal;
-              const meta = await cache(
-                missingSourceChapter.manga,
-                async () => {
-                  const result = await host.getMeta({
-                    link: missingSourceChapter.manga,
-                  });
-
-                  user.functions.addSourceChapters(
-                    result.chapters,
-                    host.defaultLanguage,
-                    {
-                      link: missingSourceChapter.manga,
-                      imageCover: result.imageCover,
-                      source: result.source,
-                      title: result.title,
-                    } as Manga,
-                  );
-                  return result;
-                },
-
-                3600,
-              );
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              const chapter = meta.chapters.find(
-                (x) => x.link === missingSourceChapter.chapter,
-              );
-
-              if (chapter != null)
-                copy[missingSourceChapter.chapter] = {
-                  type: 'chapter',
-                  chapter: {
-                    _id: getSourceChapterId(meta, chapter),
-                    _mangaId: meta.link,
-                    language:
-                      (chapter as MangaMultilingualChapter).language ??
-                      host.defaultLanguage,
-                    link: missingSourceChapter.chapter,
-                    name: chapter.name,
-                  },
-                };
-              else console.log(`${missingSourceChapter.chapter} deleted`);
-            }),
-          );
-        } finally {
-          setLookup(copy);
-          setLoading(Object.keys(copy).length === 0 && userHistory.length > 0);
-        }
+        setRemoved(removedCopy);
+        setLookup(copy);
+        setLoading(Object.keys(copy).length === 0 && userHistory.length > 0);
       }
     }
     if (isMounted.current) {
@@ -237,32 +140,6 @@ export default function Page() {
     } else isMounted.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proxy, sourceChapters, sourceMangas, user.functions, userHistory]);
-
-  // const collection = useMongoClient(SourceMangaSchema);
-  // React.useEffect(() => {
-  //   if (p.length > 0) {
-  //     collection
-  //       .aggregate([
-  //         {
-  //           $match: {
-  //             link: {
-  //               $in: p.map((x) => x.manga),
-  //             },
-  //           },
-  //         },
-  //       ])
-  //       .then((x: ISourceMangaSchema[]) =>
-  //         collectMangaMetas(
-  //           x.reduce((prev, curr) => {
-  //             if (prev[curr.source] == null) prev[curr.source] = [];
-  //             prev[curr.source].push(curr.link);
-  //             return prev;
-  //           }, {} as Record<string, string[]>),
-  //         ),
-  //       )
-  //       .then(console.log);
-  //   }
-  // }, [p]);
 
   return (
     <Screen>
