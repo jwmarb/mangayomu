@@ -88,6 +88,9 @@ export default function Reader({
   React.useEffect(() => {
     const listener = (e: KeyboardEvent) => {
       switch (e.key) {
+        case 'ArrowUp':
+          if (readingDirection === ReadingDirection.VERTICAL) previous();
+          break;
         case 'ArrowRight':
           if (readingDirection === ReadingDirection.RIGHT_TO_LEFT) previous();
           else next();
@@ -95,6 +98,9 @@ export default function Reader({
         case 'ArrowLeft':
           if (readingDirection === ReadingDirection.RIGHT_TO_LEFT) next();
           else previous();
+          break;
+        case 'ArrowDown':
+          if (readingDirection === ReadingDirection.VERTICAL) next();
           break;
       }
     };
