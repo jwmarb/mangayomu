@@ -15,7 +15,10 @@ export default function useObject<
   TSchema extends { _id: string | Realm.BSON.ObjectId; _realmId: string },
   RealmObject = Partial<TSchema> & {
     initializing: boolean;
-    update: (fn: (draft: TSchema) => void, options?: UpdateOptions) => void;
+    update: (
+      fn: (draft: Omit<TSchema, '_id'>) => void,
+      options?: UpdateOptions,
+    ) => void;
     create: (obj: TSchema) => void;
   },
 >(
@@ -37,7 +40,7 @@ export default function useObject<
   );
   const collection = useMongoClient(MongoDBCollection);
   const user = useUser();
-  const [doc, setDoc] = React.useState<TSchema | null>(null);
+  const [doc, setDoc] = React.useState<Omit<TSchema, '_id'> | null>(null);
   const [draft, setDraft] = React.useState<TSchema | null>(null);
   const [insert, setInsert] = React.useState<TSchema | null>(null);
   const [loading, toggleLoading] = useBoolean(true);
@@ -80,7 +83,7 @@ export default function useObject<
   const obj = React.useMemo(() => {
     const object = { ...doc } as unknown as TSchema & {
       initializing: boolean;
-      update: (fn: (draft: TSchema) => void) => void;
+      update: (fn: (draft: Omit<TSchema, '_id'>) => void) => void;
       insert: (obj: TSchema) => void;
     };
     object.initializing = loading;
@@ -88,19 +91,24 @@ export default function useObject<
       const { upsert } = options;
       let isModified = true;
       const newObj = {} as TSchema;
-      const draft =
+      const draft = (
         doc != null
           ? { ...doc }
-          : ({
-              _id: id,
+          : {
               _realmId: user.id,
               ...collection.initFields(),
-            } as TSchema);
+            }
+      ) as Omit<TSchema, '_id'> & { _id?: unknown };
+
+      delete draft['_id'];
       fn(draft);
       for (const key in draft) {
-        if (draft[key as keyof TSchema] != object[key as keyof TSchema]) {
+        if (
+          draft[key as keyof Omit<TSchema, '_id'>] !=
+          object[key as keyof Omit<TSchema, '_id'>]
+        ) {
           isModified = true;
-          newObj[key] = draft[key];
+          (newObj as any)[key] = (draft as any)[key];
         }
       }
 
@@ -114,7 +122,7 @@ export default function useObject<
       setInsert({ ...collection.initFields(), ...obj });
     };
     return object as RealmObject;
-  }, [collection, doc, id, user.id, loading]);
+  }, [collection, doc, user.id, loading]);
 
   React.useEffect(() => {
     async function uploadChanges() {
