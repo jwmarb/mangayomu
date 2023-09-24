@@ -1,5 +1,6 @@
 import ForSeries from '@app/(reader)/[source]/[title]/[chapter]/components/settings/forseries';
-import { BottomSheetMethods } from '@app/components/BottomSheet';
+import GlobalSettings from './globalsettings';
+import Miscellaneous from './miscellaneous';
 const BottomSheet = React.lazy(() => import('@app/components/BottomSheet'));
 import IconButton from '@app/components/IconButton';
 const Modal = React.lazy(() => import('@app/components/Modal'));
@@ -28,13 +29,16 @@ export default function Settings() {
         <Tabs>
           <div className="flex">
             <Tabs.Tab>Reader</Tabs.Tab>
-            <Tabs.Tab>Advanced</Tabs.Tab>
+            <Tabs.Tab>Reader (misc.)</Tabs.Tab>
           </div>
           <Tabs.Panel>
-            <ForSeries />
+            <div className="min-h-screen bg-default">
+              <ForSeries />
+              <GlobalSettings />
+            </div>
           </Tabs.Panel>
           <Tabs.Panel>
-            <Text>Tab2</Text>
+            <Miscellaneous />
           </Tabs.Panel>
         </Tabs>
       </Container>
