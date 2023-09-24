@@ -143,22 +143,29 @@ export default function ImageResolver({ children }: React.PropsWithChildren) {
               listener(i.imageCover || IMAGE_PLACEHOLDER);
             });
           }
-          user.functions
-            .addSourceMangas(
-              manga,
-              manga.reduce((prev, curr) => {
-                prev[curr.source] = getMangaHost(curr.source).defaultLanguage;
-                return prev;
-              }, {} as Record<string, string>),
-            )
-            .then((x) => console.log({ ...x, fn_call: 'addSourceMangas' }));
+          user.functions.addSourceMangas(
+            manga,
+            manga.reduce((prev, curr) => {
+              prev[curr.source] = getMangaHost(curr.source).defaultLanguage;
+              return prev;
+            }, {} as Record<string, string>),
+          );
         }
       }, 1);
       return () => {
         clearTimeout(timeout);
       };
     } else initialized.current = true;
-  }, [clear, listeners, mangas, count, batchify, unbatch, proxy]);
+  }, [
+    clear,
+    listeners,
+    mangas,
+    count,
+    batchify,
+    unbatch,
+    proxy,
+    user.functions,
+  ]);
 
   return <>{children}</>;
 }
