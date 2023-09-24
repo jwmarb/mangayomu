@@ -17,30 +17,33 @@ function BottomSheet(
 ) {
   const { children, open: isOpen, onClose } = props;
   const [modalEl, setModalEl] = React.useState<HTMLElement | null>(null);
-  const drag = useGesture({
-    onDragEnd: (s) => {
-      const [_, y] = s.delta;
-      const [__, velocity_y] = s.velocity;
-      const sign = s.direction[1] > 0 ? 1 : -1;
-      const val = Math.min(
-        window.innerHeight,
-        Math.max(0, top.get() + y + velocity_y * 50 * sign),
-      );
+  const drag = useGesture(
+    {
+      onDragEnd: (s) => {
+        const [_, y] = s.delta;
+        const [__, velocity_y] = s.velocity;
+        const sign = s.direction[1] > 0 ? 1 : -1;
+        const val = Math.min(
+          window.innerHeight,
+          Math.max(0, top.get() + y + velocity_y * 50 * sign),
+        );
 
-      if (val / window.innerHeight > 0.75) close();
-      else if (val / window.innerHeight < 0.5) {
-        top.start(0);
-      } else top.start(val);
+        if (val / window.innerHeight > 0.75) close();
+        else if (val / window.innerHeight < 0.5) {
+          top.start(0);
+        } else top.start(val);
+      },
+      onDrag: (s) => {
+        const [_, y] = s.delta;
+        const val = Math.min(window.innerHeight, Math.max(0, top.get() + y));
+        top.start({
+          to: val,
+          immediate: true,
+        });
+      },
     },
-    onDrag: (s) => {
-      const [_, y] = s.delta;
-      const val = Math.min(window.innerHeight, Math.max(0, top.get() + y));
-      top.start({
-        to: val,
-        immediate: true,
-      });
-    },
-  });
+    { drag: { preventDefault: true } },
+  );
   const [visible, toggleVisible] = useBoolean();
   const opacity = useSpringValue(0, {
     config: {
