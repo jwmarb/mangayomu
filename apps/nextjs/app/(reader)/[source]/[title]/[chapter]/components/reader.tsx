@@ -4,6 +4,7 @@ import Renderer from '@app/(reader)/[source]/[title]/[chapter]/components/render
 import { ChapterContext } from '@app/(reader)/[source]/[title]/[chapter]/context/ChapterContext';
 import { IndexContext } from '@app/(reader)/[source]/[title]/[chapter]/context/IndexContext';
 import { MangaContext } from '@app/(reader)/[source]/[title]/[chapter]/context/MangaContext';
+import useReaderSetting from '@app/(reader)/[source]/[title]/[chapter]/hooks/useReaderSetting';
 import Text from '@app/components/Text';
 import { useReaderSettings } from '@app/context/readersettings';
 import getErrorMessage from '@app/helpers/getErrorMessage';
@@ -28,7 +29,7 @@ export default function Reader({
   chapter: initialChapter,
   manga,
 }: ReaderProps) {
-  const readingDirection = useReaderSettings((state) => state.readingDirection);
+  const readingDirection = useReaderSetting('readerDirection', manga);
   const params = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
