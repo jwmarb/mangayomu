@@ -8,7 +8,7 @@ import getSourceMangaId from './getSourceMangaId';
 import slugify from './slugify';
 import languages from '@mangayomu/language-codes';
 
-function isMultilingual(x: unknown): x is MangaMultilingualChapter {
+export function isMultilingual(x: unknown): x is MangaMultilingualChapter {
   return (
     x != null &&
     typeof x === 'object' &&
