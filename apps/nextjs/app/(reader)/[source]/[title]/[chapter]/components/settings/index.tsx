@@ -12,9 +12,9 @@ import { MdSettings } from 'react-icons/md';
 
 export default function Settings() {
   const [open, toggleOpen] = useBoolean();
-  const handleOnClose = React.useCallback(() => {
+  const handleOnClose = () => {
     toggleOpen(false);
-  }, [toggleOpen]);
+  };
   const handleOnOpen = () => {
     toggleOpen(true);
   };
