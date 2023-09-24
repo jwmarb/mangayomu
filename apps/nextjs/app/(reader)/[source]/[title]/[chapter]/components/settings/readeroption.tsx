@@ -18,20 +18,32 @@ interface ReaderOptionProps<T extends string> {
 }
 
 export default function Option<T extends string>(props: ReaderOptionProps<T>) {
-  const { title, value, icon, top, bottom, first, options, onChange } = props;
+  const {
+    title,
+    value,
+    icon,
+    top,
+    bottom,
+    first,
+    options,
+    onChange: _onChange,
+  } = props;
   const modalRef = React.useRef<ModalMethods>(null);
-  const btnRef = React.useRef<HTMLButtonElement>(null);
   function handleOnPress() {
     modalRef.current?.open();
   }
-  const { buttonProps } = useButton(
-    { elementType: 'button', onPress: handleOnPress },
-    btnRef,
+  const onChange = React.useCallback(
+    (newVal: T) => {
+      _onChange(newVal);
+      modalRef.current?.close();
+    },
+    [_onChange],
   );
+
   return (
     <>
       <button
-        {...buttonProps}
+        onClick={handleOnPress}
         className={
           (bottom ? 'border-b-2 border-default rounded-b-lg ' : '') +
           (top ? 'border-t-2 border-default ' : '') +
@@ -67,9 +79,10 @@ type OptionValueProps<T extends string> = {
 function OptionValue<T extends string>(props: OptionValueProps<T>) {
   const { value } = props;
   const ref = React.useRef<RadioMethods>(null);
+
   return (
     <span
-      onClick={ref.current?.toggle}
+      onClick={() => ref.current?.toggle()}
       className="p-3 active:bg-pressed hover:bg-hover transition duration-150"
     >
       <Radio ref={ref} value={value} label={value} />
