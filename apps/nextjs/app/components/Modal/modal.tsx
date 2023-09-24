@@ -1,7 +1,12 @@
 'use client';
 import Text from '@app/components/Text';
 import useBoolean from '@app/hooks/useBoolean';
-import { animated, easings, useSpring } from '@react-spring/web';
+import {
+  animated,
+  easings,
+  useSpring,
+  useSpringValue,
+} from '@react-spring/web';
 import React from 'react';
 import { useButton } from 'react-aria';
 import { createPortal } from 'react-dom';
@@ -18,13 +23,12 @@ function Modal(props: ModalProps, forwardedRef: React.Ref<ModalMethods>) {
     props,
   );
   const ref = React.useRef<HTMLDivElement>(null);
-  const [{ opacity }, api] = useSpring(() => ({
-    opacity: 0,
+  const opacity = useSpringValue(0, {
     config: { duration: 100, easing: easings.linear },
     onChange: (result) => {
-      toggleVisible(result.value.opacity > 0);
+      toggleVisible((result as unknown as number) > 0);
     },
-  }));
+  });
   const { buttonProps } = useButton(
     {
       onPress: () => close(),
@@ -33,13 +37,13 @@ function Modal(props: ModalProps, forwardedRef: React.Ref<ModalMethods>) {
     ref,
   );
 
-  const close = React.useCallback(() => {
+  const close = () => {
     onClose && onClose();
-    api.start({ opacity: 0 });
-  }, [api, onClose]);
-  const open = React.useCallback(() => {
-    api.start({ opacity: 1 });
-  }, [api]);
+    opacity.start(0);
+  };
+  const open = () => {
+    opacity.start(1);
+  };
 
   React.useImperativeHandle(forwardedRef, () => ({
     close,
@@ -60,7 +64,8 @@ function Modal(props: ModalProps, forwardedRef: React.Ref<ModalMethods>) {
   React.useEffect(() => {
     if (isOpen) open();
     else close();
-  }, [isOpen, open, close]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   if (modalEl == null) return null;
 
@@ -69,10 +74,8 @@ function Modal(props: ModalProps, forwardedRef: React.Ref<ModalMethods>) {
       {createPortal(
         <Freeze freeze={!visible}>
           <animated.div
-            style={{
-              opacity,
-            }}
             {...(buttonProps as React.ComponentProps<typeof animated.div>)}
+            style={{ opacity }}
             ref={ref}
             className={
               'bg-black/[.3] z-50 fixed top-0 left-0 right-0 bottom-0 w-full h-full cursor-default'

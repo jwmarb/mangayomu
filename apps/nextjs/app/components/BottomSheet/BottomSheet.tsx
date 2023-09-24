@@ -1,6 +1,6 @@
 import { BottomSheetMethods } from '@app/components/BottomSheet';
 import useBoolean from '@app/hooks/useBoolean';
-import { animated, useSpring } from '@react-spring/web';
+import { animated, useSpring, useSpringValue } from '@react-spring/web';
 import { useGesture } from '@use-gesture/react';
 import React from 'react';
 import { createPortal } from 'react-dom';
@@ -29,48 +29,37 @@ function BottomSheet(
 
       if (val / window.innerHeight > 0.75) close();
       else if (val / window.innerHeight < 0.5) {
-        apiDrag.start({
-          top: 0,
-        });
-      } else
-        apiDrag.start({
-          top: val,
-        });
+        top.start(0);
+      } else top.start(val);
     },
     onDrag: (s) => {
       const [_, y] = s.delta;
       const val = Math.min(window.innerHeight, Math.max(0, top.get() + y));
-      apiDrag.start({
-        top: val,
+      top.start({
+        to: val,
         immediate: true,
       });
     },
   });
   const [visible, toggleVisible] = useBoolean();
-  const [{ opacity }, api] = useSpring(() => ({
-    opacity: 0,
+  const opacity = useSpringValue(0, {
     config: {
       duration: 150,
     },
     onChange(result) {
-      toggleVisible(result.value.opacity > 0);
+      toggleVisible((result as unknown as number) > 0);
     },
-  }));
-  const [{ top }, apiDrag] = useSpring(() => ({
-    top: window.innerHeight,
-    // onChange: (r) => {
-    //   console.log(r.value.top);
-    // },
-  }));
-  const open = React.useCallback(() => {
-    api.start({ opacity: 1 });
-    apiDrag.start({ top: window.innerHeight / 2 });
-  }, [api, apiDrag]);
-  const close = React.useCallback(() => {
+  });
+  const top = useSpringValue(window.innerHeight);
+  const open = () => {
+    opacity.start(1);
+    top.start(window.innerHeight / 2);
+  };
+  const close = () => {
     onClose && onClose();
-    api.start({ opacity: 0 });
-    apiDrag.start({ top: window.innerHeight });
-  }, [api, apiDrag, onClose]);
+    opacity.start(0);
+    top.start(window.innerHeight);
+  };
   React.useImperativeHandle(ref, () => ({
     open,
     close,
@@ -81,7 +70,8 @@ function BottomSheet(
   React.useEffect(() => {
     if (isOpen) open();
     else close();
-  }, [close, isOpen, open]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   if (modalEl == null) return null;
 
