@@ -7,24 +7,24 @@ import {
   ReadingDirection,
   ZoomStartPosition,
 } from '@mangayomu/schemas';
-import { Divider } from '@app/components/Divider';
-import { useReaderSettings } from '@app/context/readersettings';
+import useMangaSetting from '@app/(reader)/[source]/[title]/[chapter]/hooks/useMangaSetting';
 
 export default function ForSeries() {
   const manga = useManga();
-  const {
-    imageScaling,
-    readingDirection,
-    zoomStartPosition,
-    setZoomStartPosition,
-    setReadingDirection,
-    setImageScaling,
-  } = useReaderSettings();
+  const [imageScaling, setImageScaling, UserImageScaling] = useMangaSetting(
+    'readerImageScaling',
+    ImageScaling,
+  );
+  const [readingDirection, setReadingDirection, UserReadingDirection] =
+    useMangaSetting('readerDirection', ReadingDirection);
+  const [zoomStartPosition, setZoomStartPosition, UserZoomStartPosition] =
+    useMangaSetting('readerZoomStartPosition', ZoomStartPosition);
+
   return (
-    <div className="p-4 bg-default h-full flex flex-col gap-2">
+    <div className="py-2 px-4 bg-default h-full flex flex-col gap-2">
       <div>
         <Text variant="header">For this series</Text>
-        <Text color="text-secondary" className="italic">
+        <Text color="text-secondary" className="italic line-clamp-1">
           {manga.title}
         </Text>
       </div>
@@ -34,7 +34,7 @@ export default function ForSeries() {
           onChange={setImageScaling}
           top
           icon={<MdImage />}
-          options={ImageScaling}
+          options={UserImageScaling}
           value={imageScaling}
           title="Image scaling"
         />
@@ -42,7 +42,7 @@ export default function ForSeries() {
           icon={<MdMenuBook />}
           onChange={setReadingDirection}
           top
-          options={ReadingDirection}
+          options={UserReadingDirection}
           value={readingDirection}
           title="Reading direction"
         />
@@ -50,7 +50,7 @@ export default function ForSeries() {
           onChange={setZoomStartPosition}
           top
           icon={<MdSearch />}
-          options={ZoomStartPosition}
+          options={UserZoomStartPosition}
           value={zoomStartPosition}
           title="Zoom start position"
           bottom
