@@ -12,13 +12,26 @@ interface CoverProps {
   compact?: boolean;
 }
 
+const COMPACT_HEIGHT = 'h-[5.5rem]';
+const COMPACT_WIDTH = 'w-[4.45238rem]';
+const NORMAL_WIDTH = 'w-[7rem] sm:w-[7.5rem] md:w-[8.5rem]';
+const NORMAL_HEIGHT = 'md:h-[10.5rem] sm:h-[9.26471rem] h-[8.64706rem]';
+
+export function SkeletonCover(props: Omit<CoverProps, 'manga'>) {
+  const width = props.compact ? COMPACT_WIDTH : NORMAL_WIDTH;
+  const height = props.compact ? COMPACT_HEIGHT : NORMAL_HEIGHT;
+  return (
+    <div
+      className={`${width} ${height} skeleton rounded-lg ${
+        props.compact ? 'p-1' : 'p-2'
+      }`}
+    />
+  );
+}
+
 export default function Cover(props: CoverProps) {
-  const width = props.compact
-    ? 'w-[4.45238rem]'
-    : 'w-[7rem] sm:w-[7.5rem] md:w-[8.5rem]';
-  const height = props.compact
-    ? 'h-[5.5rem]'
-    : 'md:h-[10.5rem] sm:h-[9.26471rem] h-[8.64706rem]';
+  const width = props.compact ? COMPACT_WIDTH : NORMAL_WIDTH;
+  const height = props.compact ? COMPACT_HEIGHT : NORMAL_HEIGHT;
   const resolveImage = useImageResolver((state) => state.queue);
   const [imageCover, setImageCover] = React.useState<string | null>(
     props.manga.imageCover,
@@ -51,6 +64,7 @@ export default function Cover(props: CoverProps) {
       };
     }
   }, [error, props.manga, resolveImage]);
+
   if (props.standalone)
     return (
       <button
