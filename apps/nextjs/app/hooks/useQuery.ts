@@ -43,6 +43,10 @@ export type QueryOptions<T> = {
   sort?: MongoDBSort<T>;
 };
 
+export type MiscellaneousOptions<T> = {
+  onData?: (dbResult: T[]) => void;
+};
+
 function compare<T>(a: T, b: T, order: 1 | -1) {
   if (typeof a === 'number' && typeof b === 'number')
     return order === 1 ? a - b : b - a;
@@ -58,6 +62,7 @@ export default function useQuery<
 >(
   MongoDBCollection: Parameters<typeof useMongoClient<T>>[0],
   options: QueryOptions<T> = {},
+  miscellaneousOptions: MiscellaneousOptions<T> = {},
 ) {
   const memoizedFilter = useDeepMemo(() => options.filter, [options.filter]);
   const memoizedSort = useDeepMemo(() => options.sort, [options.sort]);
@@ -86,6 +91,7 @@ export default function useQuery<
         memoizedSort ? { sort: memoizedSort } : undefined,
       );
       setData(result);
+      miscellaneousOptions.onData && miscellaneousOptions.onData(result);
     }
     async function listener() {
       for await (const change of collection.watch({
