@@ -2,6 +2,7 @@
 import React from 'react';
 import * as Realm from 'realm-web';
 import { useRouter } from 'next/navigation';
+import { EmbeddedResponseStatus } from '@mangayomu/request-handler';
 
 const AppContext = React.createContext<ReturnType<
   typeof Realm.App.getApp
@@ -42,9 +43,19 @@ export const useUserSetter = () => {
 };
 interface RealmProviderProps extends React.PropsWithChildren {
   appId: string;
+  authToken?: string;
 }
 
-export function ClientRealmProvider({ children, appId }: RealmProviderProps) {
+type SessionResponse = {
+  response: EmbeddedResponseStatus;
+  data: unknown;
+};
+
+export function ClientRealmProvider({
+  children,
+  appId,
+  authToken,
+}: RealmProviderProps) {
   const [app, setApp] = React.useState<ReturnType<
     typeof Realm.App.getApp
   > | null>(null);
@@ -58,12 +69,27 @@ export function ClientRealmProvider({ children, appId }: RealmProviderProps) {
     setApp(_app);
 
     (async () => {
-      if (_app.currentUser == null) {
+      if (_app.currentUser == null || authToken == null) {
         const credentials = Realm.Credentials.anonymous();
         const user = await _app.logIn(credentials);
         setUser(user);
       } else {
-        setUser(_app.currentUser);
+        const response = await fetch('/api/v1/session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id_token: authToken }),
+        });
+        const isAuth: SessionResponse = await response.json();
+        switch (isAuth.response.status_code) {
+          case 200:
+            setUser(_app.currentUser);
+            break;
+          default:
+            router.push('/login');
+            break;
+        }
       }
     })();
   }, [appId, router]);
