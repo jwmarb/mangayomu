@@ -51,7 +51,7 @@ export default function Explore() {
     return () => {
       controller.abort();
     };
-  }, [appendAllMangas, hosts, loadingAll]);
+  }, [appendAllMangas, hosts, loadingAll, user.functions]);
 
   const handleOnViewAllTrending = () => {
     router.push('?view_all=trending');
