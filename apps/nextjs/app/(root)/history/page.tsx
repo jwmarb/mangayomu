@@ -20,15 +20,19 @@ import SourceMangaSchema from '@app/realm/SourceManga';
 import {
   ISourceChapterSchema,
   ISourceMangaSchema,
+  IUserHistorySchema,
   getSourceChapterId,
   getSourceMangaId,
 } from '@mangayomu/schemas';
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import Link from 'next/link';
 
 import React from 'react';
 import { Manga, MangaChapter, MangaMeta } from '@mangayomu/mangascraper';
 import uploadResolved from '@app/(root)/history/helpers/uploadResolved';
+import Section from './components/section';
+import HistoryEntry from './components/historyentry';
+import NotFoundEntry from '@app/(root)/history/components/notfoundentry';
 
 // function toFlashListData(
 //   sections: IUserHistorySchema[],
@@ -65,6 +69,10 @@ export type HistoryLookup =
       chapter: Omit<ISourceChapterSchema, '_nextId' | '_prevId'>;
     };
 
+export type HistorySection = { type: 'section'; date: number };
+export type HistoryItem = { type: 'item'; item: IUserHistorySchema };
+type Data = HistorySection | HistoryItem;
+
 export default function Page() {
   const [lookup, setLookup] = React.useState<Record<string, HistoryLookup>>({});
   const [removed, setRemoved] = React.useState<Record<string, RemovedChapter>>(
@@ -76,6 +84,34 @@ export default function Page() {
       date: -1,
     },
   });
+  const data = React.useMemo(
+    () =>
+      userHistory.length > 0
+        ? userHistory
+            .reduce(
+              (prev, x) => {
+                if (isSameDay(x.date, prev[prev.length - 1].date)) {
+                  prev[prev.length - 1].data.push(x);
+                } else {
+                  prev.push({ date: x.date, data: [x] });
+                }
+                return prev;
+              },
+              [{ data: [], date: userHistory[0].date }] as {
+                data: IUserHistorySchema[];
+                date: number;
+              }[],
+            )
+            .reduce((prev, x) => {
+              prev.push({ type: 'section', date: x.date });
+              for (let i = 0; i < x.data.length; i++) {
+                prev.push({ type: 'item', item: x.data[i] });
+              }
+              return prev;
+            }, [] as Data[])
+        : [],
+    [userHistory],
+  );
   const sourceMangas = useMongoClient(SourceMangaSchema);
   const sourceChapters = useMongoClient(SourceChapterSchema);
   const user = useUser();
@@ -85,7 +121,6 @@ export default function Page() {
   React.useEffect(() => {
     const copy = { ...lookup };
     const removedCopy = { ...removed };
-    const controller = new AbortController();
     async function init() {
       const {
         found: [sourceMangasResult, sourceChaptersResult],
@@ -134,9 +169,6 @@ export default function Page() {
     }
     if (isMounted.current) {
       init();
-      return () => {
-        controller.abort();
-      };
     } else isMounted.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proxy, sourceChapters, sourceMangas, user.functions, userHistory]);
@@ -146,53 +178,51 @@ export default function Page() {
       <Screen.Header className="pb-2">
         <Text variant="header">History</Text>
       </Screen.Header>
-      <Screen.Content overrideClassName="max-w-screen-xl mx-auto flex flex-col">
+      <Screen.Content overrideClassName="max-w-screen-xl mx-auto flex flex-col pb-52">
         {loading ? (
           <Text>Loading...</Text>
         ) : (
-          userHistory.map((x) => {
-            if (x.manga in lookup === false)
-              return <Text key={x._id.toHexString()}>{x.manga} missing</Text>;
-            if (x.chapter in lookup === false)
-              return <Text key={x._id.toHexString()}>{x.chapter} missing</Text>;
-            const { chapter } = lookup[x.chapter] as {
-              type: 'chapter';
-              chapter: ISourceChapterSchema;
-            };
-            const { manga } = lookup[x.manga] as {
-              type: 'manga';
-              manga: ISourceMangaSchema;
-            };
-            const host = getMangaHost(manga.source);
-            return (
-              <Link
-                href={`/${getSlug(manga.source)}/${getSlug(manga.title)}/${
-                  getSlug(chapter.name) +
-                  '-' +
-                  (isMultilingualChapter(chapter)
-                    ? chapter.language
-                    : host.defaultLanguage)
-                }`}
-                key={x._id.toHexString()}
-                className="flex flex-row items-center gap-2 px-4 cursor-pointer hover:bg-hover active:bg-pressed transition duration-150"
-              >
-                <div>
-                  <Book.Cover manga={manga} standalone compact />
-                </div>
-                <div className="flex flex-col">
-                  <Text className="font-bold" variant="book-title">
-                    {manga.title}
-                  </Text>
-                  <div className="flex flex-row gap-2">
-                    <Text color="text-secondary">{chapter.name}</Text>
-                    <Text color="text-secondary">•</Text>
-                    <Text className="font-bold" color="text-secondary">
-                      {format(x.date, 'h:mm a')}
+          data.map((x) => {
+            switch (x.type) {
+              case 'section':
+                return <Section key={x.date} date={x.date} />;
+              case 'item': {
+                if (x.item.chapter in removed)
+                  return (
+                    <NotFoundEntry
+                      key={x.item._id.toHexString()}
+                      removed={removed[x.item.chapter]}
+                    />
+                  );
+                if (x.item.manga in lookup === false)
+                  return (
+                    <Text key={x.item._id.toHexString()}>
+                      {x.item.manga} missing
                     </Text>
-                  </div>
-                </div>
-              </Link>
-            );
+                  );
+                if (x.item.chapter in lookup === false)
+                  return (
+                    <Text key={x.item._id.toHexString()}>
+                      {x.item.chapter} missing
+                    </Text>
+                  );
+                const { chapter } = lookup[x.item.chapter] as {
+                  type: 'chapter';
+                  chapter: ISourceChapterSchema;
+                };
+                const { manga } = lookup[x.item.manga] as {
+                  type: 'manga';
+                  manga: ISourceMangaSchema;
+                };
+                return (
+                  <HistoryEntry
+                    entry={x.item}
+                    manga={manga}
+                    chapter={chapter}
+                  />
+                );
+              }
+            }
           })
         )}
       </Screen.Content>
