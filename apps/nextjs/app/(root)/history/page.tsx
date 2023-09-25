@@ -34,6 +34,7 @@ import Section from './components/section';
 import HistoryEntry from './components/historyentry';
 import NotFoundEntry from '@app/(root)/history/components/notfoundentry';
 import HistoryLoading from './components/historyloading';
+import EmptyHistory from '@app/(root)/history/components/emptyhistory';
 // function toFlashListData(
 //   sections: IUserHistorySchema[],
 //   query?: string,
@@ -193,10 +194,19 @@ export default function Page() {
       <Screen.Header className="pb-2">
         <Text variant="header">History</Text>
       </Screen.Header>
-      <Screen.Content overrideClassName="max-w-screen-xl mx-auto flex flex-col pb-52">
-        {loading ? (
-          <HistoryLoading />
-        ) : (
+      <Screen.Content
+        {...(!loading && data.length === 0
+          ? {
+              className: 'flex flex-col justify-center items-center',
+            }
+          : {
+              overrideClassName: 'max-w-screen-xl mx-auto flex flex-col pb-52',
+            })}
+      >
+        {loading && <HistoryLoading />}
+        {!loading && data.length === 0 && <EmptyHistory />}
+        {!loading &&
+          data.length > 0 &&
           data.map((x) => {
             switch (x.type) {
               case 'section':
@@ -238,8 +248,7 @@ export default function Page() {
                 );
               }
             }
-          })
-        )}
+          })}
       </Screen.Content>
     </Screen>
   );
