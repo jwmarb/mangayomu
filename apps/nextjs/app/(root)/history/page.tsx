@@ -33,7 +33,7 @@ import uploadResolved from '@app/(root)/history/helpers/uploadResolved';
 import Section from './components/section';
 import HistoryEntry from './components/historyentry';
 import NotFoundEntry from '@app/(root)/history/components/notfoundentry';
-
+import HistoryLoading from './components/historyloading';
 // function toFlashListData(
 //   sections: IUserHistorySchema[],
 //   query?: string,
@@ -79,11 +79,16 @@ export default function Page() {
     {},
   );
   const [loading, setLoading] = useBoolean(true);
-  const userHistory = useQuery(HistorySchema, {
-    sort: {
-      date: -1,
+  const [userHistoryLoading, toggleUserHistoryLoading] = useBoolean(true);
+  const userHistory = useQuery(
+    HistorySchema,
+    {
+      sort: {
+        date: -1,
+      },
     },
-  });
+    { onData: () => toggleUserHistoryLoading(false) },
+  );
   const data = React.useMemo(
     () =>
       userHistory.length > 0
@@ -164,14 +169,24 @@ export default function Page() {
       } finally {
         setRemoved(removedCopy);
         setLookup(copy);
-        setLoading(Object.keys(copy).length === 0 && userHistory.length > 0);
+        setLoading(
+          (Object.keys(copy).length === 0 && userHistory.length > 0) ||
+            userHistoryLoading,
+        );
       }
     }
     if (isMounted.current) {
       init();
     } else isMounted.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [proxy, sourceChapters, sourceMangas, user.functions, userHistory]);
+  }, [
+    proxy,
+    sourceChapters,
+    sourceMangas,
+    user.functions,
+    userHistory,
+    userHistoryLoading,
+  ]);
 
   return (
     <Screen>
@@ -180,7 +195,7 @@ export default function Page() {
       </Screen.Header>
       <Screen.Content overrideClassName="max-w-screen-xl mx-auto flex flex-col pb-52">
         {loading ? (
-          <Text>Loading...</Text>
+          <HistoryLoading />
         ) : (
           data.map((x) => {
             switch (x.type) {
