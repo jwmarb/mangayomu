@@ -29,6 +29,15 @@ const idComparator = (a: IMangaSchema, b: IMangaSchema) =>
 
 export type SortLibraryBy = keyof typeof SORT_LIBRARY_BY;
 
+type AggregationResult = [
+  | {
+      _id: null;
+      mangas: IMangaSchema[];
+      missing: IMangaSchema[];
+    }
+  | undefined,
+];
+
 interface MangaLibraryFilter {
   includeSources: string[];
   defaultSources: string[];
@@ -208,19 +217,71 @@ export default function MangaLibraryInitializer(
     async function init() {
       resetSyncState();
       try {
-        const data: IMangaSchema[] = await library.aggregate([
-          { $match: { _realmId: user.id, inLibrary: true } },
-          { $sort: { _id: 1 } },
-        ]);
-        const matching: IMangaSchema[] = await sourceMangas.aggregate([
+        const result: AggregationResult = await library.aggregate([
           {
             $match: {
-              _id: { $in: data.map((x) => getSourceMangaId(x)) },
+              _realmId: user.id,
+              inLibrary: true,
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              mangas: {
+                $push: '$$ROOT',
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: 'SourceManga',
+              let: {
+                mangas: '$mangas.link',
+              },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $in: ['$link', '$$mangas'],
+                    },
+                  },
+                },
+                {
+                  $group: {
+                    _id: null,
+                    found: {
+                      $push: {
+                        link: '$link',
+                      },
+                    },
+                  },
+                },
+              ],
+              as: 'sourceMangas',
+            },
+          },
+          {
+            $unwind: '$sourceMangas',
+          },
+          {
+            $project: {
+              mangas: 1,
+              missing: {
+                $filter: {
+                  input: '$mangas',
+                  cond: {
+                    $not: {
+                      $in: ['$$manga.link', '$sourceMangas.found.link'],
+                    },
+                  },
+                  as: 'manga',
+                },
+              },
             },
           },
         ]);
-        const p = new Set(matching.map((x) => getSourceMangaId(x)));
-        const missing = data.filter((manga) => !p.has(getSourceMangaId(manga)));
+        const data = result[0]?.mangas ?? [];
+        const missing = result[0]?.missing ?? [];
 
         addSourceMangas(missing);
 
