@@ -251,7 +251,11 @@ export function parseTimestamp(txt: string) {
 export function getV3URL(urlPath: string): string {
   const dashIndex = urlPath.indexOf('-');
   const newUrlPath = urlPath.replace('/title/', '/comic/');
-  return newUrlPath.substring(0, dashIndex);
+  return (
+    newUrlPath.substring(0, dashIndex) +
+    '/' +
+    newUrlPath.substring(dashIndex + 1)
+  );
 }
 
 /**
@@ -262,5 +266,9 @@ export function getV3URL(urlPath: string): string {
 export function getV5URL(urlPath: string): string {
   const lastSlashIndex = urlPath.lastIndexOf('/');
   const newUrlPath = urlPath.replace('/comic/', '/title/');
-  return newUrlPath.substring(0, lastSlashIndex);
+  return (
+    newUrlPath.substring(0, lastSlashIndex) +
+    '_' +
+    newUrlPath.substring(lastSlashIndex + 1)
+  );
 }
