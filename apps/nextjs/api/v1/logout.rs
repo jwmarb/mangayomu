@@ -73,7 +73,7 @@ async fn post(
         .body(
             ResponseError {
                 response: StatusCode::UNPROCESSABLE_ENTITY.into(),
-                error: "id_token must be provided to logout".to_string(),
+                error: "Token already expired".to_string(),
             }
             .into(),
         )
