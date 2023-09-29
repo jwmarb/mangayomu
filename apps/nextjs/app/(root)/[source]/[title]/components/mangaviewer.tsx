@@ -86,30 +86,13 @@ export default function MangaViewer(props: MangaViewerProps) {
     | null
   >(null);
   React.useEffect(() => {
-    let loading = true;
-    const controller = new AbortController();
     async function init() {
-      try {
-        const p = await cache(_manga.link, () => {
-          host.signal = controller.signal;
-          return host.getMeta(_manga);
-        });
-        setImageCover(p.imageCover || '/No-Image-Placeholder.png');
-        setMeta(p);
-        await user.functions.addSourceManga(p, host.defaultLanguage);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        loading = false;
-      }
+      const p = await cache(_manga.link, () => host.getMeta(_manga));
+      setImageCover(p.imageCover || '/No-Image-Placeholder.png');
+      setMeta(p);
+      await user.functions.addSourceManga(p, host.defaultLanguage);
     }
     init();
-    return () => {
-      if (loading)
-        controller.abort(
-          'user navigated outside of mangaviewer that is still fetching',
-        );
-    };
   }, [_manga, host, state, user.functions]);
 
   const supportedLanguages: [ISOLangCode, string][] | null =
