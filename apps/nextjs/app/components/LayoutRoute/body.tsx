@@ -1,10 +1,7 @@
 'use client';
+import { useParams } from 'next/navigation';
 
-import Navbar from '@app/(root)/components/navbar';
-import SafeArea from '@app/(root)/components/safearea';
-import { useParams, usePathname } from 'next/navigation';
-
-export default function RouteWrapper(
+export default function RouteBody(
   props: React.PropsWithChildren<{ paper?: boolean }>,
 ) {
   const { children, paper } = props;

@@ -1,13 +1,10 @@
 'use client';
-
 import Navbar from '@app/(root)/components/navbar';
 import SafeArea from '@app/(root)/components/safearea';
-import { useParams, usePathname } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
-export default function ContextWrapper(
-  props: React.PropsWithChildren<{ paper?: boolean }>,
-) {
-  const { children, paper } = props;
+export default function RouteLayout(props: React.PropsWithChildren) {
+  const { children } = props;
   const params = useParams();
 
   if ('chapter' in params)
