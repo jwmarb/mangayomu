@@ -133,33 +133,36 @@ abstract class MangaHost {
     const url =
       typeof path === 'string' ? `https://${this.link}${path}` : path.link;
     const signal = this.signal;
-    const response = await (this.proxy && options.proxyEnabled
-      ? fetch(this.proxy, {
-          method: 'POST',
-          body: JSON.stringify({
-            url,
+    try {
+      const response = await (this.proxy && options.proxyEnabled
+        ? fetch(this.proxy, {
+            method: 'POST',
+            body: JSON.stringify({
+              url,
+              method,
+              body,
+            }),
+            headers: { 'Content-Type': 'application/json' },
+            signal,
+          })
+        : fetch(url, {
             method,
-            body,
-          }),
-          headers: { 'Content-Type': 'application/json' },
-          signal,
-        })
-      : fetch(url, {
-          method,
-          headers: {
-            'User-Agent': new UserAgent().toString(),
-            ...(body != null
-              ? {
-                  'Content-Type': 'application/json',
-                }
-              : {}),
-          },
-          body: JSON.stringify(body),
-          signal,
-        }));
-    if (signal?.aborted) throw new Error('Signal aborted');
-    const data = await response[body ? 'json' : 'text']();
-    return body ? data : (cheerio.load(data, { decodeEntities: false }) as T);
+            headers: {
+              'User-Agent': new UserAgent().toString(),
+              ...(body != null
+                ? {
+                    'Content-Type': 'application/json',
+                  }
+                : {}),
+            },
+            body: JSON.stringify(body),
+            signal,
+          }));
+      const data = await response[body ? 'json' : 'text']();
+      return body ? data : (cheerio.load(data, { decodeEntities: false }) as T);
+    } catch (e) {
+      throw new Error('Cancelled fetching of manga meta');
+    }
   }
 
   public hasMangaDirectory() {
