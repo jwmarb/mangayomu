@@ -1,4 +1,4 @@
-import { useManga } from '@app/(reader)/[source]/[title]/[chapter]/context/MangaContext';
+import { useManga } from '@app/(root)/[source]/[title]/[chapter]/context/MangaContext';
 import { useUser } from '@app/context/realm';
 import useObject from '@app/hooks/useObject';
 import MangaSchema from '@app/realm/Manga';

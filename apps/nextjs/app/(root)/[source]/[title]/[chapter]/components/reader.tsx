@@ -1,10 +1,10 @@
 'use client';
 const Overlay = React.lazy(() => import('./overlay'));
-import Renderer from '@app/(reader)/[source]/[title]/[chapter]/components/renderer';
-import { ChapterContext } from '@app/(reader)/[source]/[title]/[chapter]/context/ChapterContext';
-import { IndexContext } from '@app/(reader)/[source]/[title]/[chapter]/context/IndexContext';
-import { MangaContext } from '@app/(reader)/[source]/[title]/[chapter]/context/MangaContext';
-import useReaderSetting from '@app/(reader)/[source]/[title]/[chapter]/hooks/useReaderSetting';
+import Renderer from '@app/(root)/[source]/[title]/[chapter]/components/renderer';
+import { ChapterContext } from '@app/(root)/[source]/[title]/[chapter]/context/ChapterContext';
+import { IndexContext } from '@app/(root)/[source]/[title]/[chapter]/context/IndexContext';
+import { MangaContext } from '@app/(root)/[source]/[title]/[chapter]/context/MangaContext';
+import useReaderSetting from '@app/(root)/[source]/[title]/[chapter]/hooks/useReaderSetting';
 import Text from '@app/components/Text';
 import { useReaderSettings } from '@app/context/readersettings';
 import getErrorMessage from '@app/helpers/getErrorMessage';
@@ -65,6 +65,8 @@ export default function Reader({
   );
   const [loading, toggleLoading] = useBoolean(true);
   React.useEffect(() => {
+    console.log(`fetching ${chapter}`);
+    toggleLoading(true);
     host
       .getPages(chapter)
       .then((pages) => {
@@ -75,7 +77,7 @@ export default function Reader({
         }
         if (index >= pages.length) setIndex(pages.length - 1);
       })
-      .catch((e) => setError(getErrorMessage(e)))
+      // .catch((e) => setError(getErrorMessage(e)))
       .finally(() => toggleLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

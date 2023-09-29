@@ -3,7 +3,7 @@ import { ReadingDirection } from '@mangayomu/schemas';
 import ChapterPage from './chapterpage';
 import React from 'react';
 import { useIndex } from '../context/IndexContext';
-import { useReader } from '@app/(reader)/[source]/[title]/[chapter]/context/reader';
+import { useReader } from '@app/(root)/[source]/[title]/[chapter]/context/reader';
 
 interface RendererProps {
   pages: string[];

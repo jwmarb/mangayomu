@@ -97,9 +97,9 @@ export default function MangaViewer(props: MangaViewerProps) {
       await user.functions.addSourceManga(p, host.defaultLanguage);
     }
     init();
-    return () => {
-      controller.abort();
-    };
+    // return () => {
+    //   controller.abort();
+    // };
   }, [_manga, host, state, user.functions]);
 
   const supportedLanguages: [ISOLangCode, string][] | null =

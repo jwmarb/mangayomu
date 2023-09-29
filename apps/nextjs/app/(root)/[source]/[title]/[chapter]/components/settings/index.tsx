@@ -1,4 +1,4 @@
-import ForSeries from '@app/(reader)/[source]/[title]/[chapter]/components/settings/forseries';
+import ForSeries from '@app/(root)/[source]/[title]/[chapter]/components/settings/forseries';
 import GlobalSettings from './globalsettings';
 import Miscellaneous from './miscellaneous';
 const BottomSheet = React.lazy(() => import('@app/components/BottomSheet'));

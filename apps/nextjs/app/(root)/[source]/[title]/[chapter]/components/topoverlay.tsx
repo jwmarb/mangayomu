@@ -1,6 +1,6 @@
-import Settings from '@app/(reader)/[source]/[title]/[chapter]/components/settings';
-import { useChapter } from '@app/(reader)/[source]/[title]/[chapter]/context/ChapterContext';
-import { useManga } from '@app/(reader)/[source]/[title]/[chapter]/context/MangaContext';
+import Settings from '@app/(root)/[source]/[title]/[chapter]/components/settings';
+import { useChapter } from '@app/(root)/[source]/[title]/[chapter]/context/ChapterContext';
+import { useManga } from '@app/(root)/[source]/[title]/[chapter]/context/MangaContext';
 import IconButton from '@app/components/IconButton';
 import Text from '@app/components/Text';
 import useObject from '@app/hooks/useObject';

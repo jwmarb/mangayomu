@@ -4,9 +4,9 @@ import { animated, easings, useSpring } from '@react-spring/web';
 import { useIndex } from '../context/IndexContext';
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { useReader } from '@app/(reader)/[source]/[title]/[chapter]/context/reader';
-import TopOverlay from '@app/(reader)/[source]/[title]/[chapter]/components/topoverlay';
-import BottomOverlay from '@app/(reader)/[source]/[title]/[chapter]/components/bottomoverlay';
+import { useReader } from '@app/(root)/[source]/[title]/[chapter]/context/reader';
+import TopOverlay from '@app/(root)/[source]/[title]/[chapter]/components/topoverlay';
+import BottomOverlay from '@app/(root)/[source]/[title]/[chapter]/components/bottomoverlay';
 
 export default function Overlay() {
   const [overlayEl, setOverlayEl] = React.useState<HTMLElement | null>(null);

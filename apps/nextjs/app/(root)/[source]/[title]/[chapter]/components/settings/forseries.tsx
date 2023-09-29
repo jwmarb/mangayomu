@@ -1,4 +1,4 @@
-import { useManga } from '@app/(reader)/[source]/[title]/[chapter]/context/MangaContext';
+import { useManga } from '@app/(root)/[source]/[title]/[chapter]/context/MangaContext';
 import Text from '@app/components/Text';
 import ReaderOption from './readeroption';
 import { MdImage, MdMenuBook, MdSearch } from 'react-icons/md';
@@ -7,7 +7,7 @@ import {
   ReadingDirection,
   ZoomStartPosition,
 } from '@mangayomu/schemas';
-import useMangaSetting from '@app/(reader)/[source]/[title]/[chapter]/hooks/useMangaSetting';
+import useMangaSetting from '@app/(root)/[source]/[title]/[chapter]/hooks/useMangaSetting';
 
 export default function ForSeries() {
   const manga = useManga();
