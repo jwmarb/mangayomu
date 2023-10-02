@@ -31,6 +31,7 @@ import {
 import { useAppDispatch } from '@redux/main';
 import useMangaHost from '@hooks/useMangaHost';
 import useAppSelector from '@hooks/useAppSelector';
+import { useUser } from '@realm/react';
 
 const Explore: React.ForwardRefRenderFunction<ExploreMethods, ExploreProps> = (
   { onScroll, scrollViewStyle, contentContainerStyle, loading },
@@ -42,6 +43,7 @@ const Explore: React.ForwardRefRenderFunction<ExploreMethods, ExploreProps> = (
     (state) => state.explore.internetStatus,
   );
   const { height } = useWindowDimensions();
+  const user = useUser();
   const navigation = useTabNavigation();
   const sourceSelectorRef = React.useRef<BottomSheetMethods>(null);
   const inputRef = React.useRef<TextInput>(null);
@@ -67,6 +69,11 @@ const Explore: React.ForwardRefRenderFunction<ExploreMethods, ExploreProps> = (
         return console.error(hotResult.reason);
       if (latestResult.status === 'rejected')
         return console.error(latestResult.reason);
+
+      user.functions.updateMangas(
+        hotResult.value.mangas.concat(latestResult.value.mangas),
+      );
+
       dispatch(
         setExplorerState({ hot: hotResult.value, latest: latestResult.value }),
       );

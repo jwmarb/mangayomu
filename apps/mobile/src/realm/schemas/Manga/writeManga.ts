@@ -1,7 +1,7 @@
 import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import { MangaSchema } from '@database/schemas/Manga';
 import { ISOLangCode } from '@mangayomu/language-codes';
-import { Manga, MangaMeta } from '@mangayomu/mangascraper/src';
+import { Manga, MangaHost, MangaMeta } from '@mangayomu/mangascraper/src';
 import {
   ILocalManga,
   ISourceMangaSchema,
@@ -20,6 +20,11 @@ export default function writeManga(
   const localManga = localRealm.objectForPrimaryKey(
     LocalMangaSchema,
     meta.link,
+  );
+  user.functions.addSourceManga(
+    meta,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    MangaHost.sourcesMap.get(meta.source)!.defaultLanguage,
   );
   user
     .mongoClient('mongodb-atlas')

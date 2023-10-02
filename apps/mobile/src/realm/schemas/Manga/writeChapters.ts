@@ -69,19 +69,6 @@ export default function writeLocalChapters(
       .objects(LocalChapterSchema)
       .filtered('_mangaId = $0', meta.link);
 
-    user.functions
-      .addSourceChapters(
-        meta.chapters,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        MangaHost.sourcesMap.get(meta.source)!.defaultLanguage,
-        {
-          imageCover: meta.imageCover,
-          link: meta.link,
-          source: meta.source,
-          title: meta.title,
-        } as Manga,
-      )
-      .then(console.log);
     /**
      * If the host deleted a chapter, it shall also be deleted here. Without deletion, collisions with `index` field occurs
      */
