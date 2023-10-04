@@ -3,7 +3,7 @@ import Box from '@components/Box';
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import { ScaledSheet } from 'react-native-size-matters';
-import { DotBadgeProps } from './Badge.interfaces';
+import { DotBadgeProps } from './';
 
 const DotBadge: React.FC<DotBadgeProps> = (props) => {
   const { show = false, children, color = 'textPrimary', placement } = props;
