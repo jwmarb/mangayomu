@@ -10,6 +10,12 @@ import { css, ReactNativeStyle } from '@emotion/native';
 import { Theme } from '@emotion/react';
 import { ButtonColors, Colors, Spacing } from '@mangayomu/theme';
 
+/**
+ * A helper function that creates an optional css property for emotion components.
+ * @param propertyName The name of the CSS property
+ * @param input The value based on the CSS property
+ * @returns A css-emotion object
+ */
 export function set<T>(
   propertyName: string,
   input?: T,
@@ -20,6 +26,13 @@ export function set<T>(
     `;
 }
 
+/**
+ * Creates a css property with the theme's spacing applied to the value, if provided.
+ * @param theme The application theme
+ * @param propertyName The name of the CSS property that accepts px units, such as `padding` and `margin`
+ * @param input The value of the CSS property
+ * @returns A css-emotion object
+ */
 export function setu(
   theme: Theme,
   propertyName: string,
