@@ -8,6 +8,12 @@ import {
 } from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
 
+/**
+ * A hook that provides the style prop for layout animations of a badge
+ * @param show Whether to show the badge
+ * @param placement The placement of the badge
+ * @returns A style prop that uses animated values based on the parameters passed
+ */
 export function useBadgeLayoutAnimation(
   show: boolean,
   placement?: BadgeLocation,

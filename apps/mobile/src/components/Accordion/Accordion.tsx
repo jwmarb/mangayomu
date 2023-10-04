@@ -15,18 +15,39 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { StackProps } from '@components/Stack/Stack.interfaces';
+import { StackProps } from '@components/Stack';
 
 export interface AccordionProps extends React.PropsWithChildren {
+  /**
+   * The accordion's title that will be shown to the user
+   */
   title: string;
+  /**
+   * Props that will be passed to the `Text` component
+   */
   textProps?: TextProps;
+  /**
+   * Props that will be passed to the container
+   */
   containerProps?: StackProps;
+  /**
+   * The default state of the Accordion, whether it should initially be collapsed or expanded
+   */
   defaultState?: 'expanded' | 'collapsed';
 }
 
 export interface AccordionMethods {
+  /**
+   * Expands the accordion
+   */
   expand: () => void;
+  /**
+   * Collapses the accordion
+   */
   collapse: () => void;
+  /**
+   * Toggles between the expanded or collapsed state
+   */
   toggle: () => void;
 }
 

@@ -5,6 +5,9 @@ import FastImage from 'react-native-fast-image';
 import { moderateScale } from 'react-native-size-matters';
 
 export interface AvatarProps {
+  /**
+   * The size of the avatar, which uses px units. For responsive layout, consider passing `moderatesScale(size)`
+   */
   size?: number;
 }
 
