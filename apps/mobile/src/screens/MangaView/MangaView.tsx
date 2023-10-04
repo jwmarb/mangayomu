@@ -149,8 +149,7 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
             animated
             icon={<Icon type="font" name="web" style={buttonStyle} />}
             onPress={async () => {
-              const canOpenURL = await Linking.canOpenURL(params.link);
-              if (canOpenURL) Linking.openURL(params.link);
+              await Linking.openURL(params.link);
             }}
             onLongPress={async () => {
               await Share.share({
