@@ -5,11 +5,11 @@ import { Providers } from '@app/context';
 export default function Layout(props: React.PropsWithChildren) {
   return (
     <html lang="en">
-      <Providers>
-        <Route.body>
+      <Route.body>
+        <Providers>
           <Route.layout>{props.children}</Route.layout>
-        </Route.body>
-      </Providers>
+        </Providers>
+      </Route.body>
     </html>
   );
 }

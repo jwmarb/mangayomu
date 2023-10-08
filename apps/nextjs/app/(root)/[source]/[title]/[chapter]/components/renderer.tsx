@@ -15,6 +15,10 @@ export default function Renderer(props: RendererProps) {
   const { pages, onNextPage, onPreviousPage } = props;
   const toggleOverlay = useReader((state) => state.toggleOverlay);
   const index = useIndex();
+  const backgroundColor = useReaderSettings((s) => s.backgroundColor);
+  React.useLayoutEffect(() => {
+    document.body.className = backgroundColor;
+  }, [backgroundColor]);
   const readingDirection = useReaderSettings((state) => state.readingDirection);
   return (
     <div className="flex items-center justify-center relative flex-row">

@@ -7,10 +7,8 @@ export default function RouteBody(
 ) {
   const { children, paper } = props;
   const params = useParams();
-  const backgroundColor = useReaderSettings((state) => state.backgroundColor);
 
-  if ('chapter' in params)
-    return <body className={backgroundColor}>{children}</body>;
+  if ('chapter' in params) return <body>{children}</body>;
 
   return (
     <body className={`${paper ? 'bg-paper' : 'bg-default'} flex`}>
