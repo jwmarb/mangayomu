@@ -4,6 +4,7 @@ import Renderer from '@app/(root)/[source]/[title]/[chapter]/components/renderer
 import { ChapterContext } from '@app/(root)/[source]/[title]/[chapter]/context/ChapterContext';
 import { IndexContext } from '@app/(root)/[source]/[title]/[chapter]/context/IndexContext';
 import { MangaContext } from '@app/(root)/[source]/[title]/[chapter]/context/MangaContext';
+import { PagesContext } from '@app/(root)/[source]/[title]/[chapter]/context/PagesContext';
 import useReaderSetting from '@app/(root)/[source]/[title]/[chapter]/hooks/useReaderSetting';
 import Text from '@app/components/Text';
 import { useReaderSettings } from '@app/context/readersettings';
@@ -116,10 +117,16 @@ export default function Reader({
     <MangaContext.Provider value={manga}>
       <ChapterContext.Provider value={chapter}>
         <IndexContext.Provider value={index}>
-          <React.Suspense>
-            <Overlay />
-          </React.Suspense>
-          <Renderer pages={pages} onNextPage={next} onPreviousPage={previous} />
+          <PagesContext.Provider value={pages.length}>
+            <React.Suspense>
+              <Overlay />
+            </React.Suspense>
+            <Renderer
+              pages={pages}
+              onNextPage={next}
+              onPreviousPage={previous}
+            />
+          </PagesContext.Provider>
         </IndexContext.Provider>
       </ChapterContext.Provider>
     </MangaContext.Provider>

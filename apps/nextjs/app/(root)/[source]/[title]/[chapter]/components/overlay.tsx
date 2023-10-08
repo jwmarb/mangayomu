@@ -7,6 +7,9 @@ import { createPortal } from 'react-dom';
 import { useReader } from '@app/(root)/[source]/[title]/[chapter]/context/reader';
 import TopOverlay from '@app/(root)/[source]/[title]/[chapter]/components/topoverlay';
 import BottomOverlay from '@app/(root)/[source]/[title]/[chapter]/components/bottomoverlay';
+import Text from '@app/components/Text';
+import { usePagesContext } from '@app/(root)/[source]/[title]/[chapter]/context/PagesContext';
+import PageCounter from '@app/(root)/[source]/[title]/[chapter]/components/pagecounter';
 
 export default function Overlay() {
   const [overlayEl, setOverlayEl] = React.useState<HTMLElement | null>(null);
@@ -17,7 +20,6 @@ export default function Overlay() {
     opacity: 0,
     config: { duration: 150, easing: easings.linear },
   }));
-  const index = useIndex();
 
   React.useLayoutEffect(() => {
     setOverlayEl(document.getElementById('overlay'));
@@ -41,6 +43,14 @@ export default function Overlay() {
           top: opacity.to(
             [0, 1],
             [-(topOverlayRef.current?.offsetHeight ?? 0), 0],
+          ),
+        }}
+      />
+      <PageCounter
+        style={{
+          bottom: opacity.to(
+            [0, 1],
+            [16, 16 + (bottomOverlayRef.current?.offsetHeight ?? 0)],
           ),
         }}
       />
