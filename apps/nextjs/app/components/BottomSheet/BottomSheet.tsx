@@ -82,7 +82,7 @@ function BottomSheet(
     <Freeze freeze={!visible}>
       <animated.div
         style={{ opacity }}
-        className={`z-50 fixed bottom-0 left-0 right-0 top-0 w-full h-full bg-black/[.3] ${
+        className={`z-50 fixed bottom-0 left-0 right-0 top-0 w-full h-full bg-overlay ${
           !visible ? 'pointer-events-none' : 'pointer-events-auto'
         }`}
       >

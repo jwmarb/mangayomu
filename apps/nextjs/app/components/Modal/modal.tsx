@@ -78,7 +78,7 @@ function Modal(props: ModalProps, forwardedRef: React.Ref<ModalMethods>) {
             style={{ opacity }}
             ref={ref}
             className={
-              'bg-black/[.3] z-50 fixed top-0 left-0 right-0 bottom-0 w-full h-full cursor-default'
+              'bg-overlay z-50 fixed top-0 left-0 right-0 bottom-0 w-full h-full cursor-default'
             }
           ></animated.div>
           <animated.div

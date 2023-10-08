@@ -20,6 +20,9 @@
   .secondary-dark {
     color: rgb(220, 168, 188);
   }
+  .bg-overlay {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
   :root {
     --color-primary-light: 46 192 255;
     --color-primary-dark: 152 185 220;

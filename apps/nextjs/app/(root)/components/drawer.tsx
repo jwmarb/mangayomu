@@ -161,7 +161,7 @@ const Drawer: React.ForwardRefRenderFunction<
             [1, 0],
           ),
         }}
-        className={`h-full w-screen bg-black/[.3] fixed transition duration-250 touch-none ${
+        className={`h-full w-screen bg-overlay fixed transition duration-250 touch-none ${
           !active ? 'pointer-events-none' : ''
         }`}
       />
