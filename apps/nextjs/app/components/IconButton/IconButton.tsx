@@ -3,6 +3,7 @@ import useClassName from '@app/hooks/useClassName';
 import React from 'react';
 import { useButton } from 'react-aria';
 import type { IconButtonProps } from './';
+import { TextColors } from '@app/components/Text/Text';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function IconButton(
@@ -27,7 +28,11 @@ function IconButton(
       className={className}
     >
       {React.cloneElement(icon, {
-        className: 'w-5 h-5 text-text-secondary',
+        className: `w-5 h-5 ${
+          props.color == null
+            ? TextColors['text-secondary']
+            : TextColors[props.color]
+        }`,
       })}
     </button>
   );
