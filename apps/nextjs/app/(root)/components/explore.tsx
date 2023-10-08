@@ -26,6 +26,7 @@ export default function Explore() {
   const loadingAll = useExploreStore((store) => store.loadingAll);
 
   React.useEffect(() => {
+    let loading = true;
     const controller = new AbortController();
     cache('explore', async () => {
       loadingAll();
@@ -45,11 +46,12 @@ export default function Explore() {
         });
 
       appendAllMangas({ recent, trending });
+      loading = false;
 
       if (queuedUpdates.length > 0) user.functions.updateMangas(queuedUpdates);
     });
     return () => {
-      controller.abort();
+      if (loading) controller.abort();
     };
   }, [appendAllMangas, hosts, loadingAll, user.functions]);
 
