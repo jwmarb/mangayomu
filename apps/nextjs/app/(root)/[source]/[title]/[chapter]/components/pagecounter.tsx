@@ -11,7 +11,7 @@ export default function PageCounter(props: PageCounterProps) {
   return (
     <animated.div
       style={props.style}
-      className="absolute left-0 right-0 flex flex-grow items-center justify-center pointer-events-none"
+      className="fixed left-0 right-0 flex flex-grow items-center justify-center pointer-events-none"
     >
       <Text
         color="overlay-primary"
