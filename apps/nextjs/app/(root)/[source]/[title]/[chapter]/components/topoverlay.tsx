@@ -46,9 +46,14 @@ function TopOverlay(
       className="flex flex-col gap-2 fixed left-0 right-0 top-0 bg-reader-overlay w-full z-10 py-2 px-3"
     >
       <div className="flex flex-row gap-2 justify-between items-center">
-        <IconButton icon={<MdArrowBack />} onPress={handleOnPressBack} />
+        <IconButton
+          color="overlay-primary"
+          icon={<MdArrowBack />}
+          onPress={handleOnPressBack}
+        />
         <div className="flex flex-row gap-2 items-center">
           <IconButton
+            color="overlay-primary"
             icon={userManga.inLibrary ? <MdBookmark /> : <MdBookmarkBorder />}
             onPress={handleOnPressBookmark}
           />

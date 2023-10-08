@@ -24,7 +24,11 @@ export default function Settings() {
   }, [open]);
   return (
     <>
-      <IconButton icon={<MdSettings />} onPress={handleOnOpen} />
+      <IconButton
+        color="overlay-primary"
+        icon={<MdSettings />}
+        onPress={handleOnOpen}
+      />
       <Container open={open} onClose={handleOnClose}>
         <Tabs>
           <div className="flex">
