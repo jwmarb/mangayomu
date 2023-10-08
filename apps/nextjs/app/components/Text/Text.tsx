@@ -53,7 +53,7 @@ const TextVariants: Record<TextVariant, string> = {
   'sm-badge': 'text-variant-sm-badge',
   'book-title': 'text-variant-book-title',
 };
-const TextColors: Record<
+export const TextColors: Record<
   TextColor | ButtonContrastColors | ButtonColor,
   string
 > = {
