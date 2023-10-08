@@ -2,7 +2,13 @@ import { useManga } from '@app/(root)/[source]/[title]/[chapter]/context/MangaCo
 import { ReaderSettings, useReaderSettings } from '@app/context/readersettings';
 import useObject from '@app/hooks/useObject';
 import MangaSchema from '@app/realm/Manga';
-import { IMangaSchema, ISourceMangaSchema } from '@mangayomu/schemas';
+import {
+  IMangaSchema,
+  ISourceMangaSchema,
+  ImageScaling,
+  ReadingDirection,
+  ZoomStartPosition,
+} from '@mangayomu/schemas';
 
 type ReaderSetting = Pick<
   IMangaSchema,
@@ -21,7 +27,13 @@ export default function useReaderSetting<T extends keyof ReaderSetting>(
 ) {
   const userManga = useObject(MangaSchema, { link: manga.link });
   const globalSetting = useReaderSettings((s) => s[mapped[setting]]);
-  return userManga[setting] !== 'Use global setting'
+  return (userManga[setting] !== 'Use global setting'
     ? userManga[setting]
-    : globalSetting;
+    : globalSetting) as unknown as T extends 'readerDirection'
+    ? ReadingDirection
+    : T extends 'readerImageScaling'
+    ? ImageScaling
+    : T extends 'readerZoomStartPosition'
+    ? ZoomStartPosition
+    : never;
 }
