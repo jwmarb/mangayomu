@@ -268,7 +268,7 @@ export function getV5URL(urlPath: string): string {
   const newUrlPath = urlPath.replace('/comic/', '/title/');
   return (
     newUrlPath.substring(0, lastSlashIndex) +
-    '_' +
+    '/' +
     newUrlPath.substring(lastSlashIndex + 1)
   );
 }
