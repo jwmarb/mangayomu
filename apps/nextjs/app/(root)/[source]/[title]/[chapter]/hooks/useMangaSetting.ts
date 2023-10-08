@@ -29,8 +29,7 @@ export default function useMangaSetting<
         { upsert: true },
       );
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [setting],
+    [setting, userManga],
   );
   return [
     userManga[setting] as IMangaSchema[T],
