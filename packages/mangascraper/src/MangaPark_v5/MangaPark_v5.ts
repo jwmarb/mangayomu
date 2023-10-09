@@ -144,7 +144,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       );
       return items.map(
         ({ data }): Manga => ({
-          imageCover: data.urlCoverOri,
+          imageCover: data.imageCoverUrl,
           link: 'https://' + super.getLink() + getV3URL(data.urlPath),
           source: this.name,
           title: data.name,
@@ -179,7 +179,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
     );
     return items.map(
       ({ data }): Manga => ({
-        imageCover: data.urlCoverOri,
+        imageCover: data.imageCoverUrl,
         link: 'https://' + super.getLink() + getV3URL(data.urlPath),
         source: this.name,
         title: data.name,

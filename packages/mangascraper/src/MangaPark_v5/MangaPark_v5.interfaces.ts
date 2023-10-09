@@ -20,7 +20,7 @@ export type MangaParkV5SearchManga = {
         data: {
           name: string;
           urlPath: string;
-          urlCoverOri: string;
+          imageCoverUrl: string;
         };
       }[];
     };
