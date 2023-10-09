@@ -18,6 +18,7 @@ import { MangaHostWithFilters } from '../scraper/scraper.filters';
 import { Manga, MangaChapter } from '../scraper/scraper.interfaces';
 import { binary, StringComparator } from '@mangayomu/algorithms';
 import { titleIncludes } from '../filter';
+import { sortChapters } from '../scraper/scraper.helpers';
 
 class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   private memoizedDir: MangaSeeManga[] | null = null;
@@ -134,6 +135,17 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       .get();
     const type = $('a[href*="/search/?type="]').text();
     const imageCover = $('img.img-fluid.bottom-5').attr('src')!;
+    const chapters = Chapters.map((chapter, index) => ({
+      date: parseMangaSeeDate(chapter.Date),
+      name: `${chapter.Type != '' ? chapter.Type : 'Chapter'} ${ChapterDisplay(
+        chapter.Chapter,
+      )}`,
+      link: `https://${super.getLink()}/read-online/${IndexName}${ChapterURLEncode(
+        chapter.Chapter,
+      )}`,
+      index,
+    })) as MangaChapter[];
+    sortChapters(chapters);
 
     return {
       source: this.name,
@@ -152,16 +164,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         modified: parseMangaSeeDate(data.dateModified),
         published: parseMangaSeeDate(data.datePublished),
       },
-      chapters: Chapters.map((chapter, index) => ({
-        date: parseMangaSeeDate(chapter.Date),
-        name: `${
-          chapter.Type != '' ? chapter.Type : 'Chapter'
-        } ${ChapterDisplay(chapter.Chapter)}`,
-        link: `https://${super.getLink()}/read-online/${IndexName}${ChapterURLEncode(
-          chapter.Chapter,
-        )}`,
-        index,
-      })),
+      chapters,
       imageCover,
     };
   }

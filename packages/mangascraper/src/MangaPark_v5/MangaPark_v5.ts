@@ -27,6 +27,7 @@ import {
 } from '../scraper/scraper.interfaces';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import { MangaParkV5Filter, MANGAPARKV5_INFO } from './MangaPark_v5.constants';
+import { sortChapters } from '../scraper/scraper.helpers';
 
 class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
   private static API_ROUTE = 'https://mangapark.net/apo/';
@@ -290,6 +291,10 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
 
     const imageCover = data.state.data.data.urlCoverOri;
 
+    const chapters = englishChapterObjects.concat(multilingualChapterObjects);
+
+    sortChapters(chapters);
+
     return {
       title: data.state.data.data.name,
       source: this.name,
@@ -307,7 +312,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
           data.state.data.data.originalStatus.substring(1)
         } (Status)`,
       },
-      chapters: englishChapterObjects.concat(multilingualChapterObjects),
+      chapters,
       imageCover,
     };
   }
