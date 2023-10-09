@@ -14,11 +14,6 @@ import { useApp, useUser } from '@realm/react';
 import React from 'react';
 import Realm from 'realm';
 import { moderateScale } from 'react-native-size-matters';
-import { IMangaSchema } from '@mangayomu/schemas';
-import { MangaSchema } from '@database/schemas/Manga';
-import pLimit from 'p-limit';
-
-const limit = pLimit(1);
 
 const User: React.FC = () => {
   const realm = useRealm();
