@@ -250,7 +250,8 @@ export function parseTimestamp(txt: string) {
  */
 export function getV3URL(urlPath: string): string {
   const newUrlPath = urlPath.replace('/title/', '/comic/');
-  return newUrlPath;
+  const i = newUrlPath.indexOf('-');
+  return i === -1 ? newUrlPath : newUrlPath.substring(0, i);
 }
 
 /**
