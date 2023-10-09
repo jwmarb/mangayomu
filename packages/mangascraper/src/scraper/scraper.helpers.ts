@@ -22,4 +22,7 @@ export function sortChapters(x: MangaChapter[]) {
     }
     return a.index - b.index;
   });
+  for (let i = 0; i < x.length; i++) {
+    x[i].index = i;
+  }
 }
