@@ -52,7 +52,7 @@ export default function writeLocalChapters(
         (existingChapter != null && !deepEqual(existingChapter, x)) ||
         existingChapter == null
       ) {
-        const copy = x;
+        const copy = { ...x };
         (copy as unknown as LocalChapterSchema)._mangaId = meta.link;
         (copy as unknown as LocalChapterSchema)._id = x.link;
         (copy as unknown as LocalChapterSchema).language =
