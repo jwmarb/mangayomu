@@ -26,22 +26,7 @@ export default function writeManga(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     MangaHost.sourcesMap.get(meta.source)!.defaultLanguage,
   );
-  user
-    .mongoClient('mongodb-atlas')
-    .db('mangayomu')
-    .collection<ISourceMangaSchema>('SourceManga')
-    .updateOne(
-      { link: meta.link },
-      {
-        _id: getSourceMangaId(meta),
-        description: meta.description,
-        imageCover: meta.imageCover,
-        link: meta.link,
-        source: meta.source,
-        title: meta.title,
-      },
-      { upsert: true },
-    );
+
   const cloudManga = realm
     .objects(MangaSchema)
     .filtered('link = $0', meta.link)[0];
