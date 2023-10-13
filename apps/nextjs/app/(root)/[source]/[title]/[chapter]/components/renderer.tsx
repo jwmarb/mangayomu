@@ -39,7 +39,7 @@ export default function Renderer(props: RendererProps) {
     default:
       return (
         <div className="flex min-w-[100vw] min-h-[100vh] items-center justify-center relative flex-row">
-          <ChapterPage key={pages[index]} page={pages[index]} />
+          <ChapterPage page={pages[index]} />
           <button
             className="outline-none absolute left-0 top-0 bottom-0 w-[25%] h-full"
             onClick={
