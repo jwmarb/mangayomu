@@ -9,9 +9,16 @@ import { shallow } from 'zustand/shallow';
 import { integrateSortedList } from '@mangayomu/algorithms';
 import { immer } from 'zustand/middleware/immer';
 import { persist } from 'zustand/middleware';
-import { IMangaSchema, getSourceMangaId } from '@mangayomu/schemas';
+import {
+  IMangaSchema,
+  ISourceMangaSchema,
+  getSourceMangaId,
+} from '@mangayomu/schemas';
 import SourceMangaSchema from '@app/realm/SourceManga';
 import getMangaHost from '@app/helpers/getMangaHost';
+import { useMangaProxy } from '@app/context/proxy';
+import { Manga, MangaChapter, MangaMeta } from '@mangayomu/mangascraper';
+import { ISOLangCode } from '@mangayomu/language-codes';
 
 export const SORT_LIBRARY_BY = {
   'Age in library': (a: IMangaSchema) => a.dateAddedInLibrary,
@@ -184,25 +191,38 @@ export default function MangaLibraryInitializer(
   const user = useUser();
   const library = useMongoClient(MangaSchema);
   const sourceMangas = useMongoClient(SourceMangaSchema);
+  const proxy = useMangaProxy();
   const addSourceMangas = React.useCallback(
     async (missing: IMangaSchema[]) => {
       if (missing.length > 0) {
-        const append = await Promise.all(
-          missing.map((x) => getMangaHost(x.source).getMeta(x)),
+        const append = await Promise.allSettled(
+          missing.map((x) => {
+            const host = getMangaHost(x.source);
+            host.proxy = proxy;
+            return host.getMeta(x);
+          }),
         );
-        await sourceMangas.insertMany(
-          append.map((x) => ({
-            _id: getSourceMangaId(x),
-            description: x.description,
-            imageCover: x.imageCover,
-            link: x.link,
-            source: x.source,
-            title: x.title,
-          })),
-        );
+        const p: (MangaMeta<MangaChapter> & Manga)[] = [];
+        const defaultLanguages: Record<string, ISOLangCode> = {};
+        for (const result of append) {
+          switch (result.status) {
+            case 'fulfilled': {
+              const x = result.value;
+              p.push(x);
+              defaultLanguages[x.source] = getMangaHost(
+                x.source,
+              ).defaultLanguage;
+              break;
+            }
+            case 'rejected': {
+              console.error('Failed to fetch');
+            }
+          }
+        }
+        await user.functions.addSourceMangas(p, defaultLanguages);
       }
     },
-    [sourceMangas],
+    [proxy, user.functions],
   );
   React.useEffect(() => {
     async function init() {
@@ -212,14 +232,24 @@ export default function MangaLibraryInitializer(
           { $match: { _realmId: user.id, inLibrary: true } },
           { $sort: { _id: 1 } },
         ]);
-        const matching: IMangaSchema[] = await sourceMangas.aggregate([
-          {
-            $match: {
-              _id: { $in: data.map((x) => getSourceMangaId(x)) },
+        const matching: ({ _id: null; ids: string[] } | undefined)[] =
+          await sourceMangas.aggregate([
+            {
+              $match: {
+                _id: { $in: data.map((x) => getSourceMangaId(x)) },
+              },
             },
-          },
-        ]);
-        const p = new Set(matching.map((x) => getSourceMangaId(x)));
+            {
+              $group: {
+                _id: null,
+                ids: {
+                  $push: '$_id',
+                },
+              },
+            },
+          ]);
+        const ids = matching[0] != null ? matching[0].ids : [];
+        const p = new Set(ids);
         const missing = data.filter((manga) => !p.has(getSourceMangaId(manga)));
 
         addSourceMangas(missing);

@@ -34,16 +34,7 @@ export default function Explore() {
         hosts.getHotMangas(controller.signal),
         hosts.getLatestMangas(controller.signal),
       ]);
-      const duplicates = new Set<string>();
-      const queuedUpdates = recent.mangas
-        .concat(trending.mangas)
-        .filter((x) => {
-          if (!duplicates.has(x.link)) {
-            duplicates.add(x.link);
-            return true;
-          }
-          return false;
-        });
+      const queuedUpdates = recent.mangas.concat(trending.mangas);
 
       appendAllMangas({ recent, trending });
       loading = false;
