@@ -2,18 +2,27 @@ import React from 'react';
 import { useUser } from '@app/context/realm';
 import Text from '@app/components/Text';
 import Image from 'next/image';
-import { MdChevronRight, MdPerson } from 'react-icons/md';
+import { MdChevronRight, MdLogout, MdPerson } from 'react-icons/md';
 import IconButton from '@app/components/IconButton';
+import { useRouter } from 'next/navigation';
+import Button from '@app/components/Button';
 
 export default function Account() {
   const user = useUser();
+  const router = useRouter();
+  const handleOnNavigateAccountSettings = () => {
+    router.push('/account');
+  };
   return (
     <>
       <div className="mx-4">
         <Text variant="header">Account</Text>
         <Text color="text-secondary">Manage your MangaYomu account</Text>
       </div>
-      <button className="mx-4 flex border-default border-2 transition duration-250 bg-paper rounded-xl p-4 gap-2 items-center justify-between hover:bg-hover active:bg-pressed">
+      <button
+        className="mx-4 flex border-default border-2 transition duration-250 bg-paper rounded-xl p-4 gap-2 items-center justify-between hover:bg-hover active:bg-pressed flex-grow"
+        onClick={handleOnNavigateAccountSettings}
+      >
         <div className="flex gap-3 items-center">
           {user.profile.pictureUrl ? (
             <Image src={user.profile.pictureUrl} alt="profile pic" />
@@ -29,7 +38,10 @@ export default function Account() {
             </Text>
           </div>
         </div>
-        <IconButton icon={<MdChevronRight />} />
+        <IconButton
+          icon={<MdChevronRight />}
+          onPress={handleOnNavigateAccountSettings}
+        />
       </button>
     </>
   );
