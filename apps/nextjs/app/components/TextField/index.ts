@@ -14,4 +14,5 @@ export interface TextFieldProps
   error?: boolean;
   onChange?: (e: string) => void;
   adornment?: React.ReactElement;
+  disabled?: boolean;
 }
