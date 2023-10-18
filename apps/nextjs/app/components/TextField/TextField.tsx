@@ -8,31 +8,33 @@ import IconButton from '@app/components/IconButton';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function TextField(props: TextFieldProps, ref: any) {
-  const { error = false, adornment, onChange, ...rest } = props;
+  const { error = false, adornment, onChange, disabled, ...rest } = props;
   const [show, toggle] = useBoolean();
   const inputRef = React.useRef<HTMLInputElement | null>(null);
   React.useImperativeHandle(ref, () => inputRef.current);
   const className = useClassName(
-    `bg-disabled/[0.5] py-2  ${
+    `bg-disabled/[0.5] py-2 ${
       error
         ? 'outline outline-error focus:ring-2 focus:ring-offset-2 focus:ring-error/[0.5]'
         : 'focus:outline-primary focus:outline'
-    } ${
-      adornment
-        ? `pl-10 ${show ? 'pr-10' : 'pr-3'}`
-        : show
-        ? 'pr-10 pl-3'
-        : 'px-3'
-    } text-text-primary rounded-xl outline-2`,
+    } ${adornment ? `pl-10 ${show ? 'pr-10' : 'pr-3'}` : 'pr-10 pl-3'} ${
+      disabled ? 'text-disabled pointer-events-none' : 'text-text-primary'
+    } rounded-xl outline-2`,
     props,
   );
+
+  React.useEffect(() => {
+    toggle(
+      rest.defaultValue != null && rest.defaultValue.toString().length > 0,
+    );
+  }, [rest.defaultValue, toggle]);
 
   function handleOnChange(e: string) {
     if (onChange != null) onChange(e);
     toggle(e.length > 0);
   }
   return (
-    <div className="relative">
+    <div className={`relative ${disabled ? 'cursor-not-allowed' : ''}`}>
       {adornment && (
         <div className="absolute left-0 top-0 bottom-0 text-text-secondary items-center justify-center flex ml-3">
           {React.cloneElement(adornment, {
@@ -49,19 +51,22 @@ function TextField(props: TextFieldProps, ref: any) {
         aria-invalid={error}
         className={className}
       />
-      {show && (
-        <div className="absolute right-0 top-0 bottom-0 text-text-secondary items-center justify-center flex">
-          <IconButton
-            icon={<MdClose />}
-            onPress={() => {
-              if (inputRef.current) {
-                inputRef.current.value = '';
-                handleOnChange('');
-              }
-            }}
-          />
-        </div>
-      )}
+      <div
+        className={
+          'absolute right-0 top-0 bottom-0 text-text-secondary items-center justify-center flex' +
+          (!show || disabled ? ' opacity-0 pointer-events-none' : '')
+        }
+      >
+        <IconButton
+          icon={<MdClose />}
+          onPress={() => {
+            if (inputRef.current) {
+              inputRef.current.value = '';
+              handleOnChange('');
+            }
+          }}
+        />
+      </div>
     </div>
   );
 }
