@@ -8,4 +8,5 @@ export interface IconButtonProps
     OverrideClassName {
   color?: ButtonColor | TextColor;
   icon: React.ReactElement;
+  size?: 'small' | 'medium';
 }
