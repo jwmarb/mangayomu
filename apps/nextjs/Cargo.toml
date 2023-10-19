@@ -49,6 +49,10 @@ path = "api/v1/logout.rs"
 name = "session"
 path = "api/v1/session.rs"
 
+[[bin]]
+name = "account"
+path = "api/v1/account.rs"
+
 # [[bin]]
 # name = "_id_"
 # path = "api/user/[id].rs"
