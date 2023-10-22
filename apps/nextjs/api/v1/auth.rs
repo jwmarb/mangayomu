@@ -67,7 +67,11 @@ async fn post(
             response: StatusCode::INTERNAL_SERVER_ERROR.into(),
             error: x.to_string(),
         })?;
-        if verify_password(password, &user.password)? {
+        let hashed_user_password = match &user.password {
+            Some(val) => val,
+            None => "",
+        };
+        if verify_password(password, &hashed_user_password)? {
             /* Create JWT and send it to the user via json */
             let token = create_jwt(env, &user, remember_me)?;
             let vercel_url = env.vercel_url.as_str();
@@ -107,7 +111,11 @@ async fn post(
             response: StatusCode::INTERNAL_SERVER_ERROR.into(),
             error: x.to_string(),
         })? {
-            if verify_password(password, &user.password)? {
+            let hashed_user_password = match &user.password {
+                Some(val) => val,
+                None => "",
+            };
+            if verify_password(password, &hashed_user_password)? {
                 /* Create JWT and send it to the user via json */
                 let token = create_jwt(env, &user, remember_me)?;
                 let vercel_url = env.vercel_url.as_str();
@@ -134,7 +142,7 @@ async fn post(
     })
 }
 
-fn verify_password(password: &str, hashed_password: &String) -> Result<bool, ResponseError> {
+fn verify_password(password: &str, hashed_password: &str) -> Result<bool, ResponseError> {
     let parsed_hash = PasswordHash::new(hashed_password).map_err(|x| ResponseError {
         response: StatusCode::UNPROCESSABLE_ENTITY.into(),
         error: x.to_string(),

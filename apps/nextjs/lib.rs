@@ -63,8 +63,8 @@ pub struct StateVerifier {
 pub struct User {
     pub _id: String,
     pub username: String,
-    pub email: String,
-    pub password: String,
+    pub email: Option<String>,
+    pub password: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

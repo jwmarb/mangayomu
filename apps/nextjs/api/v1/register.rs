@@ -163,7 +163,7 @@ async fn post(
             response: StatusCode::INTERNAL_SERVER_ERROR.into(),
             error: x.to_string(),
         })? {
-            if user.email == email {
+            if user.email.unwrap() == email {
                 errors.insert(
                     "email".to_string(),
                     vec![APIValidationError {
@@ -212,9 +212,9 @@ async fn post(
         /* Create user document */
         let new_user = User {
             _id: ObjectId::new().to_string(),
-            email: email.to_owned(),
+            email: Some(email.to_owned()),
             username: username.to_owned(),
-            password: password_hash.to_owned(),
+            password: Some(password_hash.to_owned()),
         };
         let insert_result = user_collection
             .insert_one(&new_user, None)
