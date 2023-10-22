@@ -1,6 +1,7 @@
 'use client';
 import DeleteAccount from '@app/(root)/account/components/deleteaccount';
 import IconButton from '@app/components/IconButton';
+import Progress from '@app/components/Progress';
 import Screen from '@app/components/Screen';
 import Text from '@app/components/Text';
 import TextField from '@app/components/TextField';
@@ -13,6 +14,8 @@ import { useRouter } from 'next/navigation';
 import React from 'react';
 import { MdArrowBack, MdEdit } from 'react-icons/md';
 
+let existingData: IUserSchema | null = null;
+
 export default function Page() {
   const router = useRouter();
   const [edit, toggle] = useBoolean();
@@ -20,13 +23,17 @@ export default function Page() {
     router.back();
   };
   const user = useUser();
-  const [data, setData] = React.useState<IUserSchema | null>(null);
+  const [data, setData] = React.useState<IUserSchema | null>(existingData);
   const userCollection = useMongoClient(UserSchema);
   React.useEffect(() => {
-    userCollection
-      .findOne({ _id: user.id }, { projection: { password: 0 } })
-      .then(setData);
-  }, [data]);
+    if (data == null)
+      userCollection
+        .findOne({ _id: user.id }, { projection: { password: 0 } })
+        .then((s) => {
+          existingData = s;
+          setData(s);
+        });
+  }, [data, user.id, userCollection]);
   return (
     <Screen>
       <Screen.Header className="z-20 pb-2 flex flex-row gap-2 items-center">
@@ -54,12 +61,20 @@ export default function Page() {
                 className={edit ? 'opacity-0 pointer-events-none' : ''}
               />
             </div>
-            {data != null && (
+            {data != null ? (
               <div className="flex flex-row">
                 <TextField
                   defaultValue={data?.email}
                   disabled={!edit}
                   className={edit ? '' : 'cursor-disabled'}
+                />
+              </div>
+            ) : (
+              <div className="flex flex-row">
+                <TextField
+                  disabled
+                  className="cursor-wait"
+                  adornment={<Progress size={2} />}
                 />
               </div>
             )}
