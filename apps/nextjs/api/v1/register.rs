@@ -21,7 +21,7 @@ use serde_json::json;
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::RwLock;
 use validator::{Validate, ValidationErrors};
-use vercel_runtime::{run, Body, Error, Request, RequestExt, Response};
+use vercel_runtime::{run, Body, Error, Request, RequestPayloadExt, Response};
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {

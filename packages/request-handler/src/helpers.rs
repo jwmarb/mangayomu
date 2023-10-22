@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use serde_querystring::{from_str, ParseMode};
-use vercel_runtime::{Request, RequestExt, StatusCode};
+use vercel_runtime::{Request, RequestPayloadExt, StatusCode};
 
 use crate::ResponseError;
 

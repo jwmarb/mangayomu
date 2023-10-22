@@ -6,7 +6,7 @@ use reqwest::Url;
 use serde::Deserialize;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use vercel_runtime::{run, Body, Error, Request, RequestExt, Response};
+use vercel_runtime::{run, Body, Error, Request, RequestPayloadExt, Response};
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
