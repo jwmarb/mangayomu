@@ -1,5 +1,6 @@
 'use client';
 import DeleteAccount from '@app/(root)/account/components/deleteaccount';
+import SaveChanges from '@app/(root)/account/components/savechanges';
 import IconButton from '@app/components/IconButton';
 import Progress from '@app/components/Progress';
 import Screen from '@app/components/Screen';
@@ -8,7 +9,6 @@ import TextField from '@app/components/TextField';
 import { useUser } from '@app/context/realm';
 import useBoolean from '@app/hooks/useBoolean';
 import useMongoClient from '@app/hooks/useMongoClient';
-import useObject from '@app/hooks/useObject';
 import UserSchema, { IUserSchema } from '@app/realm/User';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -19,21 +19,50 @@ let existingData: IUserSchema | null = null;
 export default function Page() {
   const router = useRouter();
   const [edit, toggle] = useBoolean();
+  const emailRef = React.useRef<HTMLInputElement>(null);
   const handleOnBack = () => {
     router.back();
   };
   const user = useUser();
   const [data, setData] = React.useState<IUserSchema | null>(existingData);
+  const [email, setEmail] = React.useState<string | undefined>(
+    existingData?.email,
+  );
+  const [changes, toggleChanges] = useBoolean();
+  const [loading, toggleLoading] = useBoolean();
   const userCollection = useMongoClient(UserSchema);
   React.useEffect(() => {
     if (data == null)
       userCollection
         .findOne({ _id: user.id }, { projection: { password: 0 } })
         .then((s) => {
+          setEmail(s?.email);
           existingData = s;
           setData(s);
         });
   }, [data, user.id, userCollection]);
+  const handleOnChangeEmail = (s: string) => {
+    setEmail(s);
+  };
+  const handleOnReset = () => {
+    if (emailRef.current != null) emailRef.current.value = data?.email ?? '';
+    setEmail(data?.email);
+  };
+  const handleOnSave = () => {
+    toggleLoading(true);
+    setTimeout(() => {
+      if (email != null)
+        setData((s) => {
+          if (s != null) return { ...s, email };
+          return s;
+        });
+      toggleLoading(false);
+      toggleChanges(false);
+    }, 1000);
+  };
+  React.useEffect(() => {
+    if (data != null) toggleChanges(email !== data.email);
+  }, [email, data, toggleChanges]);
   return (
     <Screen>
       <Screen.Header className="z-20 pb-2 flex flex-row gap-2 items-center">
@@ -64,6 +93,8 @@ export default function Page() {
             {data != null ? (
               <div className="flex flex-row">
                 <TextField
+                  ref={emailRef}
+                  onChange={handleOnChangeEmail}
                   defaultValue={data?.email}
                   disabled={!edit}
                   className={edit ? '' : 'cursor-disabled'}
@@ -81,6 +112,12 @@ export default function Page() {
           </div>
         </div>
         <DeleteAccount />
+        <SaveChanges
+          loading={loading}
+          onReset={handleOnReset}
+          onSave={handleOnSave}
+          show={changes}
+        />
       </Screen.Content>
     </Screen>
   );
