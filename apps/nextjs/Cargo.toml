@@ -23,6 +23,7 @@ mongodb = { version = "2.6.0", features = ["tokio-runtime"] }
 futures = "0.3"
 jsonwebtoken = "8.3.0"
 chrono = "0.4"
+url = "2.4.1"
 
 # You can specify a library for shared logic here (optional)
 [lib]
@@ -50,8 +51,8 @@ name = "session"
 path = "api/v1/session.rs"
 
 [[bin]]
-name = "account"
-path = "api/v1/account.rs"
+name = "_account_"
+path = "api/v1/users/[account].rs"
 
 # [[bin]]
 # name = "_id_"
