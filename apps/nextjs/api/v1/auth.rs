@@ -118,15 +118,13 @@ async fn post(
             if verify_password(password, &hashed_user_password)? {
                 /* Create JWT and send it to the user via json */
                 let token = create_jwt(env, &user, remember_me)?;
-                let vercel_url = env.vercel_url.as_str();
 
                 return Ok(Response::builder()
                     .header(
                         "Set-Cookie",
                         format!(
-                            "id_token={}; path=/; HttpOnly; Secure; Domain={}; SameSite=Strict",
+                            "id_token={}; path=/; HttpOnly; Secure; SameSite=Strict",
                             token,
-                            Url::parse(vercel_url).unwrap().host_str().unwrap()
                         ),
                     )
                     .status(StatusCode::OK)

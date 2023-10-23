@@ -2,7 +2,6 @@ use http::{Method, StatusCode};
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use mangayomu_rust::{env_initializer, DecodedJWT, Env};
 use request_handler::{Handler, JsonDataResponse, MiddlewareData, ResponseError};
-use reqwest::Url;
 use serde::Deserialize;
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -66,13 +65,7 @@ async fn post(
             .status(StatusCode::UNAUTHORIZED)
             .header(
                 "Set-Cookie",
-                format!(
-                    "id_token=deleted; path=/; HttpOnly; Secure; Domain={}; SameSite=Strict; expires=Thu, 01 Jan 1970 00:00:00 GMT",
-                    Url::parse(env.vercel_url.as_str())
-                        .unwrap()
-                        .host_str()
-                        .unwrap()
-                ),
+                "id_token=deleted; path=/; HttpOnly; Secure; SameSite=Strict; expires=Thu, 01 Jan 1970 00:00:00 GMT",
             )
             .body(
                 JsonDataResponse {
