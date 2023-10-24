@@ -29,6 +29,7 @@ import { AnimatedFlashList } from '@components/animated';
 import { RootStackProps } from '@navigators/Root/Root.interfaces';
 import useAppSelector from '@hooks/useAppSelector';
 import { InfiniteMangaListMethods } from '@screens/InfiniteMangaList';
+import { useUser } from '@realm/react';
 
 export type StatefulFilter =
   | StatefulInclusiveExclusive
@@ -69,7 +70,7 @@ const InfiniteMangaList: React.ForwardRefRenderFunction<
     state?.mangas.length ?? null,
   );
   const [mangas, setMangas] = React.useState<Manga[]>(state?.mangas ?? []);
-
+  const user = useUser();
   const [status, setStatus] = React.useState<StatusAPI>(
     state == null ? 'loading' : 'done',
   );
@@ -395,6 +396,7 @@ const InfiniteMangaList: React.ForwardRefRenderFunction<
           hasNext.current = false;
       }
 
+      user.functions.updateMangas(data);
       setMangas((prev) => prev.concat(data));
       numberOfItemsPerPage.current =
         numberOfItemsPerPage.current ?? data.length;
