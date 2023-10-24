@@ -15,6 +15,7 @@ const mapStateToProps = (state: AppState, props: CoverProps) => ({
   bookHeight: state.settings.book.height,
   coverStyle: state.settings.book.style,
   children: props.children,
+  manga: props.manga,
 });
 
 const connector = connect(mapStateToProps);

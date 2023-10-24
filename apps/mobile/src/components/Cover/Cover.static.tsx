@@ -13,6 +13,13 @@ import { ScaledSheet, moderateScale } from 'react-native-size-matters';
 import { MangaSchema } from '@database/schemas/Manga';
 import mangaSchemaToManga from '@helpers/mangaSchemaToManga';
 import { LocalMangaSchema } from '@database/schemas/LocalManga';
+import useBoolean from '@hooks/useBoolean';
+import {
+  ImageResolverListener,
+  queue,
+  unqueue,
+} from '@redux/slices/imageresolver';
+import { useAppDispatch } from '@redux/main';
 
 const styles = ScaledSheet.create({
   cover: {
@@ -40,6 +47,18 @@ interface StaticCoverProps {
 
 const StaticCover: React.FC<StaticCoverProps> = (props) => {
   const { manga, scale = 1, sharp = false } = props;
+  const dispatch = useAppDispatch();
+  const [imgSrc, setImgSrc] = React.useState<string | null>(manga.imageCover);
+  const [error, toggleError] = useBoolean();
+  const prevImgSrc = React.useRef<string | undefined | null>(manga.imageCover);
+  if (prevImgSrc.current !== manga.imageCover) {
+    prevImgSrc.current = manga.imageCover;
+    setImgSrc(manga.imageCover);
+  }
+  const resolveImage = (manga: Manga, listener?: ImageResolverListener) => {
+    dispatch(queue({ manga, listener }));
+    return () => dispatch(unqueue({ manga, listener }));
+  };
   const styles = React.useMemo(
     () => ({
       cover: {
@@ -56,6 +75,7 @@ const StaticCover: React.FC<StaticCoverProps> = (props) => {
     [scale, sharp],
   );
   const loadingOpacity = useSharedValue(0);
+  const opacity = useSharedValue(0);
   const navigation = useRootNavigation();
   const theme = useTheme();
   function handleOnPressCover() {
@@ -65,18 +85,52 @@ const StaticCover: React.FC<StaticCoverProps> = (props) => {
 
   function handleOnLoadStart() {
     loadingOpacity.value = 1;
+    opacity.value = 0;
   }
 
-  function handleOnLoadEnd() {
+  function handleOnLoad() {
     loadingOpacity.value = 0;
+    opacity.value = 0;
   }
+  function handleOnError() {
+    toggleError(true);
+  }
+
+  React.useEffect(() => {
+    if (error && imgSrc != null) {
+      const unqueue = resolveImage(
+        'link' in manga
+          ? manga
+          : {
+              link: manga._id,
+              imageCover: manga.imageCover,
+              source: manga.source,
+              title: manga.title,
+            },
+        (r) => {
+          setImgSrc(r);
+          if (r == null) {
+            loadingOpacity.value = 0;
+            opacity.value = 1;
+          }
+        },
+      );
+      return () => {
+        unqueue();
+      };
+    }
+  }, [error]);
 
   const loadingStyle = useAnimatedStyle(() => ({
     opacity: loadingOpacity.value,
   }));
 
   const styledError = React.useMemo(
-    () => [mangaHistoryItemStyles.error, styles.cover],
+    () => [
+      mangaHistoryItemStyles.error,
+      styles.cover,
+      { opacity: opacity.value },
+    ],
     [styles.cover, mangaHistoryItemStyles.error],
   );
   const fastImageStyle = React.useMemo(
@@ -87,8 +141,9 @@ const StaticCover: React.FC<StaticCoverProps> = (props) => {
     <Pressable onPress={handleOnPressCover}>
       <FastImage
         onLoadStart={handleOnLoadStart}
-        onLoadEnd={handleOnLoadEnd}
-        source={{ uri: manga.imageCover }}
+        onLoad={handleOnLoad}
+        onError={handleOnError}
+        source={{ uri: imgSrc }}
         style={fastImageStyle}
         resizeMode={FastImage.resizeMode.cover}
       />

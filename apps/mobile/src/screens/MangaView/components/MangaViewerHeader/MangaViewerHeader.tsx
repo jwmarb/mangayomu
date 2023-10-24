@@ -75,6 +75,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
               >
                 <Cover
                   cover={fallback ? meta?.imageCover : manga.imageCover}
+                  manga={manga}
                   scale={1.5}
                   normalBookDimensions
                 />

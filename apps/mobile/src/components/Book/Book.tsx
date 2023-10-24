@@ -91,7 +91,7 @@ const Book: React.FC<BookProps> = (props) => {
               color="primary"
             >
               <Badge type="image" uri={source.icon} show>
-                <Cover cover={manga}>
+                <Cover cover={manga} manga={manga}>
                   <LinearGradient
                     colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
                     start={{ x: 0, y: 0 }}
@@ -133,7 +133,7 @@ const Book: React.FC<BookProps> = (props) => {
             color="primary"
           >
             <Badge type="image" uri={source.icon} show>
-              <Cover cover={manga} />
+              <Cover cover={manga} manga={manga} />
             </Badge>
           </Badge>
           <Text style={textStyle} numberOfLines={2} bold={bold} align={align}>

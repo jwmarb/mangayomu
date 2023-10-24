@@ -8,7 +8,8 @@ import React from 'react';
 import { SharedValue } from 'react-native-reanimated';
 
 export interface CoverProps extends React.PropsWithChildren {
-  cover?: Manga | string;
+  cover?: Manga | string | null;
+  manga: Manga;
   scale?: number;
   normalBookDimensions?: boolean;
 }

@@ -2,6 +2,14 @@ import { AnimatedBox } from '@components/Box';
 import connector, { ConnectedCoverProps } from '@components/Cover/Cover.redux';
 import Progress from '@components/Progress';
 import { useTheme } from '@emotion/react';
+import useBoolean from '@hooks/useBoolean';
+import { Manga } from '@mangayomu/mangascraper/src';
+import { useAppDispatch } from '@redux/main';
+import {
+  ImageResolverListener,
+  queue,
+  unqueue,
+} from '@redux/slices/imageresolver';
 import { BookStyle } from '@redux/slices/settings';
 import React from 'react';
 import { Image } from 'react-native';
@@ -36,6 +44,7 @@ export const coverStyles = ScaledSheet.create({
 const Cover: React.FC<ConnectedCoverProps> = (props) => {
   const {
     cover,
+    manga,
     scale = 1,
     coverHeight,
     width,
@@ -43,6 +52,19 @@ const Cover: React.FC<ConnectedCoverProps> = (props) => {
     coverStyle,
     children,
   } = props;
+  const dispatch = useAppDispatch();
+  const src = typeof cover === 'string' ? cover : cover?.imageCover;
+  const [imgSrc, setImgSrc] = React.useState<string | undefined | null>(src);
+  const prevImgSrc = React.useRef<string | undefined | null>(src);
+  if (prevImgSrc.current !== src) {
+    prevImgSrc.current = src;
+    setImgSrc(src);
+  }
+  const [error, toggleError] = useBoolean();
+  const resolveImage = (manga: Manga, listener?: ImageResolverListener) => {
+    dispatch(queue({ manga, listener }));
+    return () => dispatch(unqueue({ manga, listener }));
+  };
   const opacity = useSharedValue(0);
   const loadingOpacity = useSharedValue(0);
   const theme = useTheme();
@@ -69,15 +91,30 @@ const Cover: React.FC<ConnectedCoverProps> = (props) => {
     [imageStyle, coverStyles.imageOverlay],
   );
 
+  React.useEffect(() => {
+    if (error && imgSrc != null) {
+      const dequeue = resolveImage(manga, (r) => {
+        setImgSrc(r);
+        if (r == null) {
+          loadingOpacity.value = 0;
+          opacity.value = 1;
+        }
+      });
+      return () => {
+        dequeue();
+      };
+    }
+  }, [error]);
+
   function handleOnError() {
-    opacity.value = 1;
+    toggleError(true);
   }
 
   function handleOnLoadStart() {
     loadingOpacity.value = 1;
   }
 
-  function handleOnLoadEnd() {
+  function handleOnLoad() {
     loadingOpacity.value = 0;
   }
 
@@ -112,9 +149,10 @@ const Cover: React.FC<ConnectedCoverProps> = (props) => {
         />
       </Animated.View>
       <FastImage
-        source={{ uri: typeof cover === 'string' ? cover : cover?.imageCover }}
+        source={{ uri: imgSrc }}
         onLoadStart={handleOnLoadStart}
-        onLoadEnd={handleOnLoadEnd}
+        onLoadEnd={handleOnLoad}
+        onLoad={handleOnLoad}
         style={imageStyle}
         onError={handleOnError}
       >

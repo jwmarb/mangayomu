@@ -23,6 +23,7 @@ import { REACT_APP_REALM_ID } from '@env';
 import { RealmEffect } from '@database/providers/RealmProvider';
 import { AppearanceProvider } from '@theme/provider';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ImageResolver } from '@redux/slices/imageresolver';
 enableFreeze(true);
 
 function App(): JSX.Element {
@@ -64,7 +65,9 @@ function App(): JSX.Element {
                   <LocalRealmProvider>
                     <RealmEffect>
                       <AppearanceProvider>
-                        <Root />
+                        <ImageResolver>
+                          <Root />
+                        </ImageResolver>
                       </AppearanceProvider>
                     </RealmEffect>
                   </LocalRealmProvider>

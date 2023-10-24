@@ -138,6 +138,22 @@ export function useLibraryData() {
   }
 
   React.useEffect(() => {
+    const callback: Realm.CollectionChangeCallback<MangaSchema> = (changes) => {
+      setSortedData(
+        inPlaceSort(changes.filter(applyFilters)).by(
+          reversed
+            ? { desc: SORT_LIBRARY_BY[sortBy] }
+            : { asc: SORT_LIBRARY_BY[sortBy] },
+        ),
+      );
+    };
+    mangasInLibrary.addListener(callback);
+    return () => {
+      mangasInLibrary.removeListener(callback);
+    };
+  }, []);
+
+  React.useEffect(() => {
     (async () => {
       if (refreshing) {
         displayMessage('Fetching updates...');

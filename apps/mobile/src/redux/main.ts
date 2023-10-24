@@ -20,6 +20,7 @@ import { BrowseReducer } from '@redux/slices/browse';
 import { SettingsReducer } from '@redux/slices/settings';
 import { ReaderReducer } from '@redux/slices/reader';
 import { useDispatch } from 'react-redux';
+import { ImageResolverReducer } from '@redux/slices/imageresolver';
 
 const reducers = combineReducers({
   __initial__: __initialReducer__,
@@ -30,12 +31,13 @@ const reducers = combineReducers({
   browse: BrowseReducer,
   settings: SettingsReducer,
   reader: ReaderReducer,
+  imageResolver: ImageResolverReducer,
 });
 
 const persistConfig: PersistConfig<AppState> = {
   key: 'root',
   storage: reduxStorage,
-  blacklist: ['explore', 'browse', 'reader'],
+  blacklist: ['explore', 'browse', 'reader', 'imageResolver'],
 };
 
 const persisted = persistReducer(persistConfig, reducers);
@@ -45,7 +47,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredPaths: [/reader\..*/],
+        ignoredPaths: [/reader\..*/, /imageResolver\.listeners/],
         ignoredActions: [
           FLUSH,
           REHYDRATE,
@@ -56,6 +58,9 @@ export const store = configureStore({
           'reader/fetchPagesByChapter/fulfilled',
           'reader/fetchPagesByChapter/rejected',
           'reader/setCurrentChapter',
+          'imageResolver/queue',
+          'imageResolver/dequeue',
+          'payload.listener',
         ],
       },
     }),
