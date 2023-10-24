@@ -2,6 +2,7 @@
 module.exports = {
   presets: ['@rnx-kit/babel-preset-metro-react-native'],
   plugins: [
+    ['react-native-worklets-core/plugin'],
     'module:react-native-dotenv',
     [
       'module-resolver',
