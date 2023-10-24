@@ -31,6 +31,7 @@ export default function InfiniteMangaList(
   const collapsible = useCollapsibleHeader({
     headerTitle: source.name,
     showBackButton: !showSearchBar,
+    showHeaderLeft: !showSearchBar,
     header: showSearchBar ? (
       <Box {...(!hasFilters ? { mx: 'm' } : { ml: 'm' })} flex-grow>
         <Input
