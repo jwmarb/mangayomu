@@ -32,7 +32,7 @@ export default function useMangaSetting<
     [setting, userManga],
   );
   return [
-    userManga[setting] as IMangaSchema[T],
+    (userManga[setting] as IMangaSchema[T]) ?? 'Use global setting',
     setSetting,
     {
       ...options,
