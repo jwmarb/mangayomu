@@ -7,17 +7,7 @@ export type LibrarySortOption = keyof typeof SORT_LIBRARY_BY;
 export const SORT_LIBRARY_BY = {
   'Age in library': (a: MangaSchema) => a.dateAddedInLibrary,
   'Number of updates': (a: MangaSchema) => a.notifyNewChaptersCount,
-  'Number of available chapters (multilingual)': (a: MangaSchema) =>
-    a.chapters.length,
-  'Number of available languages': (a: MangaSchema) =>
-    a.availableLanguages.length,
-  'Number of authors': (a: MangaSchema) => a.authors?.length ?? 1, // 1 author minimum
-  Rating: (a: MangaSchema) =>
-    a.rating != null
-      ? typeof a.rating.value === 'string'
-        ? 0
-        : a.rating.value
-      : 0,
+
   Source: (a: MangaSchema) => a.source,
   Title: (a: MangaSchema) => a.title,
 };

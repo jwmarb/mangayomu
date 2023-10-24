@@ -19,7 +19,7 @@ import { MangaMultilingualChapter } from '@mangayomu/mangascraper';
 import { MangaHost } from '@mangayomu/mangascraper/src';
 import { useIsFocused } from '@react-navigation/native';
 import { useUser } from '@realm/react';
-import { LibrarySortOption, SORT_LIBRARY_BY } from '@redux/slices/library';
+import { SORT_LIBRARY_BY } from '@redux/slices/library';
 import { FilterState } from '@redux/slices/mainSourceSelector';
 import {
   useLibraryRefreshing,
@@ -112,10 +112,7 @@ export function useLibraryData() {
    * Sorts NEARLY/ALMOST sorted mangas
    */
   useMountedEffect(() => {
-    if (
-      sortBy === 'Number of available chapters (multilingual)' ||
-      sortBy === 'Number of updates'
-    ) {
+    if (sortBy === 'Number of updates') {
       const copy = mangasInLibrary.filter(applyFilters);
       integrateSortedList(
         copy,
@@ -195,10 +192,7 @@ export function useLibraryData() {
                   Realm.UpdateMode.Modified,
                 );
               });
-              if (
-                sortBy === 'Number of updates' ||
-                sortBy === 'Number of available chapters (multilingual)'
-              )
+              if (sortBy === 'Number of updates')
                 setData((prev) => {
                   integrateSortedList(
                     prev,
