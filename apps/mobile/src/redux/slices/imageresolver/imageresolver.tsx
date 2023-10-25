@@ -1,7 +1,6 @@
 import { useLocalRealm } from '@database/main';
 import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import useAppSelector from '@hooks/useAppSelector';
-import { StringComparator, integrateSortedList } from '@mangayomu/algorithms';
 import {
   Manga,
   MangaChapter,
