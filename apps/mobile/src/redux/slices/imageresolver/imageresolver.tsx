@@ -1,5 +1,6 @@
 import { useLocalRealm } from '@database/main';
 import { LocalMangaSchema } from '@database/schemas/LocalManga';
+import { getErrorMessage } from '@helpers/getErrorMessage';
 import useAppSelector from '@hooks/useAppSelector';
 import {
   Manga,
@@ -18,7 +19,7 @@ interface ImageResolverState {
   count: number;
 }
 
-let batches: Set<string> = new Set();
+const batches: Set<string> = new Set();
 const listeners: Map<string, ImageResolverListener[]> = new Map();
 const mangas: Map<string, string[]> = new Map();
 
@@ -89,18 +90,21 @@ const imageResolverSlice = createSlice({
           listeners.delete(action.payload.manga.link);
       }
     },
-    _batchify(state, action: PayloadAction<Set<string>>) {
-      mangas.clear();
-      listeners.clear();
+    _batchify(state) {
       state.count = 0;
-      batches = action.payload;
     },
   },
 });
 
-function unbatch(batch: Set<string>) {
-  for (const link of batch) {
-    batches.delete(link);
+/**
+ * Unbatches mangas, indicating that the mangas have been resolved
+ * @param batch Contains mangas that are to be resolved
+ */
+function unbatch(batch: Map<string, string[]>) {
+  for (const links of batch.values()) {
+    for (const link of links) {
+      batches.delete(link);
+    }
   }
 }
 
@@ -115,15 +119,24 @@ export const ImageResolver: React.FC<React.PropsWithChildren> = ({
   const dispatch = useAppDispatch();
   const initialized = React.useRef<boolean>(false);
   const user = useUser();
+  /**
+   * Creates a batch containing mangas that should be resolved. Mangas that are currently being resolved are not added in this batch.
+   * @returns Returns a map with the mangas that should be resolved
+   */
   function batchify() {
-    const batch: Set<string> = new Set();
-    for (const source of mangas.values()) {
-      for (const link of source) {
-        batch.add(link);
-        batches.add(link);
+    const batch: Map<string, string[]> = new Map();
+    for (const [source, mangaLinks] of mangas.entries()) {
+      for (const link of mangaLinks) {
+        if (!batches.has(link)) {
+          const src = batch.get(source);
+          if (src == null) batch.set(source, [link]);
+          else src.push(link);
+          batches.add(link);
+        }
       }
     }
-    dispatch(imageResolverSlice.actions._batchify(batches));
+    dispatch(imageResolverSlice.actions._batchify());
+
     return batch;
   }
 
@@ -132,63 +145,54 @@ export const ImageResolver: React.FC<React.PropsWithChildren> = ({
       const timeout = setTimeout(async () => {
         const batch = batchify();
         const manga: (Manga & MangaMeta<MangaChapter>)[] = [];
-        try {
-          for (const source of mangas.keys()) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const host = MangaHost.sourcesMap.get(source)!;
-            console.log(`Resolving ${mangas.size} manga(s) ...`);
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            for (const link of mangas.get(source)!) {
-              try {
-                const d = await host.getMeta({
-                  link,
-                });
-                manga.push(d);
-              } catch (e) {
-                console.error(`Failed to fetch ${link}`);
+        const defaultLanguages: Record<string, string> = {};
+        if (batch.size > 0) {
+          try {
+            for (const [source, links] of batch.entries()) {
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              const host = MangaHost.sourcesMap.get(source)!;
+              defaultLanguages[source] = host.defaultLanguage;
+              for (const link of links) {
+                const meta = await host.getMeta({ link });
+                manga.push(meta);
               }
             }
-          }
-        } catch (e) {
-          for (const source in mangas) {
-            for (const link of source) {
-              listeners.get(link)?.forEach((listener) => {
-                listener(null);
-              });
+          } catch (e) {
+            for (const links of batch.values()) {
+              for (const link of links) {
+                const listenersArr = listeners.get(link);
+                if (listenersArr != null)
+                  for (const listener of listenersArr) {
+                    listener(null);
+                  }
+              }
             }
-          }
-        } finally {
-          unbatch(batch);
-          localRealm.write(() => {
-            for (const i of manga) {
-              const realmObj = localRealm.objectForPrimaryKey(
-                LocalMangaSchema,
-                i.link,
-              );
-              if (realmObj != null) realmObj.imageCover = i.imageCover;
+          } finally {
+            unbatch(batch);
+            localRealm.write(() => {
+              for (const i of manga) {
+                const realmObj = localRealm.objectForPrimaryKey(
+                  LocalMangaSchema,
+                  i.link,
+                );
+                if (realmObj != null) realmObj.imageCover = i.imageCover;
 
-              listeners.get(i.link)?.forEach((listener) => {
-                listener(i.imageCover || null);
-              });
-            }
-          });
-          user.functions.addSourceMangas(
-            manga,
-            manga.reduce((prev, curr) => {
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              prev[curr.source] = MangaHost.sourcesMap.get(
-                curr.source,
-              )!.defaultLanguage;
-              return prev;
-            }, {} as Record<string, string>),
-          );
+                const listenersArr = listeners.get(i.link);
+                if (listenersArr != null)
+                  for (const listener of listenersArr) {
+                    listener(i.imageCover);
+                  }
+              }
+            });
+            user.functions.addSourceMangas(manga, defaultLanguages);
+          }
         }
       }, 1);
       return () => {
         clearTimeout(timeout);
       };
     } else initialized.current = true;
-  }, [listeners, mangas, count, batchify, user.functions]);
+  }, [count, user.functions]);
 
   return <>{children}</>;
 };
