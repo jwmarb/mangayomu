@@ -92,13 +92,19 @@ const Cover: React.FC<ConnectedCoverProps> = (props) => {
   );
 
   React.useEffect(() => {
+    if (imgSrc == null) {
+      loadingOpacity.value = 0;
+      opacity.value = 1;
+    } else {
+      loadingOpacity.value = 1;
+      opacity.value = 0;
+    }
+  }, [imgSrc]);
+
+  React.useEffect(() => {
     if (error && imgSrc != null) {
       const dequeue = resolveImage(manga, (r) => {
         setImgSrc(r);
-        if (r == null) {
-          loadingOpacity.value = 0;
-          opacity.value = 1;
-        }
       });
       return () => {
         dequeue();
@@ -107,7 +113,12 @@ const Cover: React.FC<ConnectedCoverProps> = (props) => {
   }, [error]);
 
   function handleOnError() {
-    toggleError(true);
+    if (!error) toggleError(true);
+    else {
+      // This is run if refetched image fails to load (error will have already been set to true)
+      loadingOpacity.value = 0;
+      opacity.value = 1;
+    }
   }
 
   function handleOnLoadStart() {
@@ -148,16 +159,18 @@ const Cover: React.FC<ConnectedCoverProps> = (props) => {
           style={imageStyle}
         />
       </Animated.View>
-      <FastImage
-        source={{ uri: imgSrc }}
-        onLoadStart={handleOnLoadStart}
-        onLoadEnd={handleOnLoad}
-        onLoad={handleOnLoad}
-        style={imageStyle}
-        onError={handleOnError}
-      >
-        {children}
-      </FastImage>
+      {imgSrc != null && (
+        <FastImage
+          source={{ uri: imgSrc }}
+          onLoadStart={handleOnLoadStart}
+          onLoadEnd={handleOnLoad}
+          onLoad={handleOnLoad}
+          style={imageStyle}
+          onError={handleOnError}
+        >
+          {children}
+        </FastImage>
+      )}
     </>
   );
 };

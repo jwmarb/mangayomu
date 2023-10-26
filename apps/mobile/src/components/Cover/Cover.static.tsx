@@ -93,7 +93,12 @@ const StaticCover: React.FC<StaticCoverProps> = (props) => {
     opacity.value = 0;
   }
   function handleOnError() {
-    toggleError(true);
+    if (!error) toggleError(true);
+    else {
+      // This is run if refetched image fails to load (error will have already been set to true)
+      loadingOpacity.value = 1;
+      opacity.value = 1;
+    }
   }
 
   React.useEffect(() => {
@@ -109,10 +114,6 @@ const StaticCover: React.FC<StaticCoverProps> = (props) => {
             },
         (r) => {
           setImgSrc(r);
-          if (r == null) {
-            loadingOpacity.value = 0;
-            opacity.value = 1;
-          }
         },
       );
       return () => {
@@ -139,14 +140,16 @@ const StaticCover: React.FC<StaticCoverProps> = (props) => {
   );
   return (
     <Pressable onPress={handleOnPressCover}>
-      <FastImage
-        onLoadStart={handleOnLoadStart}
-        onLoad={handleOnLoad}
-        onError={handleOnError}
-        source={{ uri: imgSrc }}
-        style={fastImageStyle}
-        resizeMode={FastImage.resizeMode.cover}
-      />
+      {imgSrc != null && (
+        <FastImage
+          onLoadStart={handleOnLoadStart}
+          onLoad={handleOnLoad}
+          onError={handleOnError}
+          source={{ uri: imgSrc }}
+          style={fastImageStyle}
+          resizeMode={FastImage.resizeMode.cover}
+        />
+      )}
       <Image
         source={require('@assets/No-Image-Placeholder.png')}
         style={styledError}
