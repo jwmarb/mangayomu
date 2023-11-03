@@ -24,12 +24,23 @@ export default function useMangaSetting<
     (val: IMangaSchema[T]) => {
       userManga.update(
         (draft) => {
+          draft.imageCover = manga.imageCover;
+          draft.title = manga.title;
+          draft.link = manga.link;
+          draft.source = manga.source;
           draft[setting] = val;
         },
         { upsert: true },
       );
     },
-    [setting, userManga],
+    [
+      manga.imageCover,
+      manga.link,
+      manga.source,
+      manga.title,
+      setting,
+      userManga,
+    ],
   );
   return [
     (userManga[setting] as IMangaSchema[T]) ?? 'Use global setting',

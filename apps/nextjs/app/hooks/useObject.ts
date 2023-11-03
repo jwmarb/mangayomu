@@ -70,7 +70,7 @@ export default function useObject<
             _realmId: user.id,
           });
         } else {
-          document = await collection.findOne(id);
+          document = await collection.findOne({ ...id, _realmId: user.id });
         }
         setDoc(document);
         toggleLoading(false);
@@ -128,7 +128,9 @@ export default function useObject<
     async function uploadChanges() {
       if (draft != null && id != null) {
         await collection.updateOne(
-          typeof id === 'string' ? { _id: id, _realmId: user.id } : id,
+          typeof id === 'string'
+            ? { _id: id, _realmId: user.id }
+            : { ...id, _realmId: user.id },
           { $set: draft },
           { upsert: shouldUpsert.current },
         );
