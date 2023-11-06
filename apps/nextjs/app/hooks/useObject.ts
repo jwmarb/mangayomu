@@ -11,8 +11,14 @@ export type UpdateOptions = {
   upsert?: boolean;
 };
 
+export type Document = { _id: string | Realm.BSON.ObjectId; _realmId: string };
+export type ObjectSubscription = {
+  subscriptions: Set<(newDocument: unknown) => void>;
+  document: Document | null;
+};
+
 export default function useObject<
-  TSchema extends { _id: string | Realm.BSON.ObjectId; _realmId: string },
+  TSchema extends Document,
   RealmObject = Partial<TSchema> & {
     initializing: boolean;
     update: (
@@ -40,7 +46,9 @@ export default function useObject<
   );
   const collection = useMongoClient(MongoDBCollection);
   const user = useUser();
-  const [doc, setDoc] = React.useState<Omit<TSchema, '_id'> | null>(null);
+  const [doc, setDoc] = React.useState<Omit<TSchema, '_id'> | null | undefined>(
+    null,
+  );
   const [draft, setDraft] = React.useState<TSchema | null>(null);
   const [insert, setInsert] = React.useState<TSchema | null>(null);
   const [loading, toggleLoading] = useBoolean(true);
