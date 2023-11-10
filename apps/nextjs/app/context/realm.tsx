@@ -3,6 +3,8 @@ import React from 'react';
 import * as Realm from 'realm-web';
 import { useRouter } from 'next/navigation';
 import { EmbeddedResponseStatus } from '@mangayomu/request-handler';
+import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
 
 const AppContext = React.createContext<ReturnType<
   typeof Realm.App.getApp
@@ -45,6 +47,21 @@ interface RealmProviderProps extends React.PropsWithChildren {
   appId: string;
   authToken?: string;
 }
+
+interface ObjectSubscriptions {
+  subscriptions: Record<string, unknown>;
+  setDoc: (_id: string, doc: unknown) => void;
+}
+
+const objectSubscriptions = create(
+  immer<ObjectSubscriptions>((set) => ({
+    subscriptions: {},
+    setDoc: (_id: string, doc: unknown) =>
+      set((state) => {
+        state.subscriptions[_id] = doc;
+      }),
+  })),
+);
 
 type SessionResponse = {
   response: EmbeddedResponseStatus;
