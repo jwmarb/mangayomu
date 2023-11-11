@@ -34,6 +34,7 @@ function toFlashListData(
   localRealm: Realm,
   query?: string,
 ) {
+  if (sections.length === 0) return [];
   const parsedQuery = query?.trim().toLowerCase();
   const newArray: HistorySectionFlashListData[] = [];
   function addRow(idx: number) {
