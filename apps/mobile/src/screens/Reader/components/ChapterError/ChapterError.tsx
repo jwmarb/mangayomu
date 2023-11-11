@@ -5,7 +5,7 @@ import Icon from '@components/Icon';
 import Progress from '@components/Progress';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import { useRealm } from '@database/main';
+import { useLocalRealm } from '@database/main';
 import useBoolean from '@hooks/useBoolean';
 import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
 import useScreenDimensions from '@hooks/useScreenDimensions';
@@ -30,7 +30,7 @@ const useChapterErrorContext = () => {
 const ChapterError: React.FC<ChapterErrorProps> = (props) => {
   const { data } = props;
   const { error, current } = data;
-  const localRealm = useRealm();
+  const localRealm = useLocalRealm();
   const chapter = localRealm.objectForPrimaryKey(
     LocalChapterSchema,
     current._id,
