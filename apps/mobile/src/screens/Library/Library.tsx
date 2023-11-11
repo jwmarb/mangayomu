@@ -17,12 +17,13 @@ import Input from '@components/Input';
 import { RefreshControl } from 'react-native-gesture-handler';
 import useBoolean from '@hooks/useBoolean';
 
-import { useIsDataStale, useLibraryData } from '@screens/Library/Library.hooks';
+import { useLibraryData } from '@screens/Library/Library.hooks';
 import { AnimatedFlashList } from '@components/animated';
 import Progress from '@components/Progress';
 import { useUser } from '@realm/react';
 import useAppSelector from '@hooks/useAppSelector';
 import { LibraryMethods, useLibrarySetRefreshing } from '@screens/Library';
+import { useIsLibrarySynced } from '../../context/SyncData';
 
 const _Library: React.ForwardRefRenderFunction<
   LibraryMethods,
@@ -174,9 +175,9 @@ const LibraryWrapper: React.ForwardRefRenderFunction<
   LibraryMethods,
   ReturnType<typeof useCollapsibleTabHeader>
 > = (props, ref) => {
-  const { dataIsStale, syncing } = useIsDataStale();
+  const { isSynced, syncing, total, error } = useIsLibrarySynced();
 
-  if (dataIsStale)
+  if (!isSynced && !error)
     return (
       <Stack space="s" height="100%" p="m" justify-content="center">
         <Progress />
@@ -187,7 +188,7 @@ const LibraryWrapper: React.ForwardRefRenderFunction<
           align-items="center"
         >
           <Text align="center" bold variant="header">
-            {syncing.count} / {syncing.totalToSync}
+            {syncing} / {total}
           </Text>
           <Text align="center" color="textSecondary">
             mangas synced
@@ -195,6 +196,17 @@ const LibraryWrapper: React.ForwardRefRenderFunction<
         </Stack>
         <Text color="textSecondary" align="center">
           Please wait while your library syncs with your device...
+        </Text>
+      </Stack>
+    );
+  if (!isSynced && error)
+    return (
+      <Stack space="s" height="100%" p="m" justify-content="center">
+        <Text align="center" bold variant="header">
+          Syncing failed
+        </Text>
+        <Text align="center" color="textSecondary">
+          {error}
         </Text>
       </Stack>
     );

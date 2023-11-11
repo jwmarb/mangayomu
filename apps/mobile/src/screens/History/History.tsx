@@ -21,6 +21,8 @@ import { isSameDay } from 'date-fns';
 import useMutableObject from '@hooks/useMutableObject';
 import useAppSelector from '@hooks/useAppSelector';
 import { HistoryMethods } from '@screens/History';
+import { useIsHistorySynced } from '../../context/SyncData';
+import Progress from '@components/Progress';
 
 type HistorySectionFlashListData =
   | { type: 'SECTION'; date: number }
@@ -84,6 +86,7 @@ const History: React.ForwardRefRenderFunction<
   const userHistory = useQuery(UserHistorySchema, (collection) =>
     collection.sorted('date', true),
   );
+  const { isSynced, syncing } = useIsHistorySynced();
   const [data, setData] = React.useState<HistorySectionFlashListData[]>(() =>
     toFlashListData(userHistory, localRealm),
   );
@@ -126,6 +129,29 @@ const History: React.ForwardRefRenderFunction<
       p.removeListener(callback);
     };
   }, []);
+
+  if (!isSynced)
+    return (
+      <Stack space="s" height="100%" p="m" justify-content="center">
+        <Progress />
+        <Stack
+          space="s"
+          flex-direction="row"
+          align-self="center"
+          align-items="center"
+        >
+          <Text align="center" bold variant="header">
+            {syncing}
+          </Text>
+          <Text align="center" color="textSecondary">
+            history entries synced
+          </Text>
+        </Stack>
+        <Text color="textSecondary" align="center">
+          Please wait while your manga history syncs with your device...
+        </Text>
+      </Stack>
+    );
 
   if (userHistory.length === 0)
     return (

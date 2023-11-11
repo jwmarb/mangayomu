@@ -24,6 +24,7 @@ import { RealmEffect } from '@database/providers/RealmProvider';
 import { AppearanceProvider } from '@theme/provider';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ImageResolver } from '@redux/slices/imageresolver';
+import SyncData from './src/context/SyncData';
 enableFreeze(true);
 
 function App(): JSX.Element {
@@ -66,7 +67,9 @@ function App(): JSX.Element {
                     <RealmEffect>
                       <AppearanceProvider>
                         <ImageResolver>
-                          <Root />
+                          <SyncData>
+                            <Root />
+                          </SyncData>
                         </ImageResolver>
                       </AppearanceProvider>
                     </RealmEffect>

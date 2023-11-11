@@ -54,7 +54,10 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
       }
     };
 
-    realm.subscriptions.waitForSynchronization().then(() => addSubscriptions());
+    realm.subscriptions
+      .waitForSynchronization()
+      .then(() => addSubscriptions())
+      .then(() => realm.syncSession?.downloadAllServerChanges());
     return () => {
       // console.log('Removing all subscriptions');
       realm.subscriptions.update((sub) => {
