@@ -78,17 +78,12 @@ export default function useSavedChapterInfo(
       );
       if (savedChapterInfoRef.current?.link === chapterRef.current._id)
         realm.write(() => {
-          console.log(interpolatedScrollOffset);
-          realm.create(
+          const cloudChapter = realm.objectForPrimaryKey(
             ChapterSchema,
-            {
-              _id: savedChapterInfoRef.current._id,
-              _realmId: user.id,
-              link: chapterRef.current._id,
-              scrollPosition: interpolatedScrollOffset,
-            },
-            Realm.UpdateMode.Modified,
+            savedChapterInfoRef.current._id,
           );
+          if (cloudChapter != null)
+            cloudChapter.scrollPosition = interpolatedScrollOffset;
         });
       else
         console.warn(
