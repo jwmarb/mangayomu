@@ -2,12 +2,9 @@ import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import { MangaSchema } from '@database/schemas/Manga';
 import { ISOLangCode } from '@mangayomu/language-codes';
 import { Manga, MangaHost, MangaMeta } from '@mangayomu/mangascraper/src';
-import {
-  ILocalManga,
-  ISourceMangaSchema,
-  getSourceMangaId,
-} from '@mangayomu/schemas';
+import { ILocalManga } from '@mangayomu/schemas';
 import { useUser } from '@realm/react';
+import Realm from 'realm';
 
 export default function writeManga(
   localRealm: Realm,

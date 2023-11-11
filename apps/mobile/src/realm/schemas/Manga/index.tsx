@@ -1,15 +1,8 @@
-import {
-  Manga,
-  MangaChapter,
-  WithAuthors,
-  WithHentai,
-  WithRating,
-  WithStatus,
-} from '@mangayomu/mangascraper/src';
+import { Manga, MangaChapter } from '@mangayomu/mangascraper/src';
 import Realm from 'realm';
 import React from 'react';
 import { getErrorMessage } from '@helpers/getErrorMessage';
-import { useLocalRealm, useRealm } from '../../main';
+import { useRealm } from '../../main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import {
@@ -18,10 +11,7 @@ import {
   ReadingDirection,
   ZoomStartPosition,
 } from '@redux/slices/settings';
-import assertIsManga from '@helpers/assertIsManga';
-import useMangaListener from '@database/schemas/Manga/useMangaListener';
 import useFetchManga from '@database/schemas/Manga/useFetchManga';
-import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import { useUser } from '@realm/react';
 import useCombinedMangaWithLocal, {
   CombinedMangaWithLocal,
@@ -121,7 +111,7 @@ export class MangaSchema extends Realm.Object<
       source: 'string',
       currentlyReadingChapter: 'MangaReadingChapter?',
       dateAddedInLibrary: 'int?',
-      notifyNewChaptersCount: { type: 'int?', default: 0 },
+      notifyNewChaptersCount: { type: 'int', optional: true, default: 0 },
 
       inLibrary: { type: 'bool', default: false },
       selectedLanguage: { type: 'string', default: 'Use default language' },

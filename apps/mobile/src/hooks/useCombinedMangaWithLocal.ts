@@ -22,9 +22,9 @@ export default function useCombinedMangaWithLocal<T extends boolean>(
   const realm = useRealm();
   const user = useUser();
   const localRealm = useLocalRealm();
-  const [localManga, setLocalManga] = React.useState<
-    LocalMangaSchema | undefined
-  >(localRealm.objectForPrimaryKey(LocalMangaSchema, mangaId));
+  const [localManga, setLocalManga] = React.useState<LocalMangaSchema | null>(
+    localRealm.objectForPrimaryKey(LocalMangaSchema, mangaId),
+  );
   const [manga, setManga] = React.useState<MangaSchema | undefined>(() => {
     let x: MangaSchema | undefined = realm
       .objects(MangaSchema)
@@ -114,13 +114,13 @@ export default function useCombinedMangaWithLocal<T extends boolean>(
       if (changedLocalMangaProperties.length > 0) {
         const overrideLocalProperties = {
           _id: mangaId,
-        } as Partial<ILocalManga>;
+        } as Partial<LocalMangaSchema>;
         for (const x of changedLocalMangaProperties) {
           (overrideLocalProperties as any)[x] = copy[x];
         }
 
         localRealm.write(() => {
-          localRealm.create(
+          localRealm.create<LocalMangaSchema>(
             LocalMangaSchema,
             overrideLocalProperties,
             Realm.UpdateMode.Modified,
@@ -135,7 +135,7 @@ export default function useCombinedMangaWithLocal<T extends boolean>(
           title: obj.title,
           imageCover: obj.imageCover,
           source: obj.source,
-        } as Partial<IMangaSchema>;
+        } as Partial<MangaSchema>;
 
         for (const x of changedMangaProperties) {
           (overrideProperties as any)[x] = copy[x];

@@ -7,9 +7,9 @@ import {
   MangaMeta,
   MangaMultilingualChapter,
   Manga,
-  MangaHost,
 } from '@mangayomu/mangascraper/src';
 import { useUser } from '@realm/react';
+import Realm from 'realm';
 
 function deepEqual(
   a: Omit<MangaChapter, 'link'>,

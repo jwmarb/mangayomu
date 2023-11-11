@@ -10,6 +10,7 @@ import removeURLParams from '@screens/Reader/components/ChapterPage/helpers/remo
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { useUser } from '@realm/react';
 import { CombinedMangaWithLocal } from '@hooks/useCombinedMangaWithLocal';
+import Realm from 'realm';
 
 export type Page = ChapterPage | NoMorePages | TransitionPage | ChapterError;
 export type ChapterError = {

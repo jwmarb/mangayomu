@@ -1,17 +1,8 @@
-import {
-  useLocalQuery,
-  useLocalRealm,
-  useQuery,
-  useRealm,
-} from '@database/main';
+import { useLocalRealm, useQuery, useRealm } from '@database/main';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
-import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import useLocalManga from '@database/schemas/LocalManga/useLocalManga';
 import { MangaSchema } from '@database/schemas/Manga';
-import writeLocalChapters from '@database/schemas/Manga/writeChapters';
-import writeManga from '@database/schemas/Manga/writeManga';
 import displayMessage from '@helpers/displayMessage';
-import { getErrorMessage } from '@helpers/getErrorMessage';
 import integrateSortedList from '@helpers/integrateSortedList';
 import useAppSelector from '@hooks/useAppSelector';
 import useMountedEffect from '@hooks/useMountedEffect';
@@ -29,6 +20,7 @@ import { inPlaceSort } from 'fast-sort';
 import pLimit from 'p-limit';
 const limit = pLimit(1);
 import React, { useTransition } from 'react';
+import Realm from 'realm';
 
 export function useLibraryData() {
   const refreshing = useLibraryRefreshing();

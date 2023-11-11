@@ -77,27 +77,9 @@ const Login: React.FC<RootStackProps<'Login'>> = ({ navigation }) => {
       await user.linkCredentials(credentials);
     } catch {
       await app.logIn(credentials);
-      promptRestart();
+      RNRestart.restart();
     }
   }
-
-  const promptRestart = () =>
-    dialog.open({
-      title: 'App restart required',
-      message: 'A restart is required to sync data with this user',
-      actions: [
-        {
-          text: 'Not now',
-        },
-        {
-          text: 'Restart',
-          onPress: () => {
-            RNRestart.restart();
-          },
-          variant: 'contained',
-        },
-      ],
-    });
 
   const handleOnLogin = handleSubmit(async (value) => {
     toggleInvalid(false);

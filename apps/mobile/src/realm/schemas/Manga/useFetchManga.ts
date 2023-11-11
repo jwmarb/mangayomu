@@ -2,7 +2,6 @@ import { useLocalRealm, useRealm } from '@database/main';
 import { MangaSchema, UseMangaOptions } from '@database/schemas/Manga';
 import writeChapters from '@database/schemas/Manga/writeChapters';
 import writeManga from '@database/schemas/Manga/writeManga';
-import assertIsManga from '@helpers/assertIsManga';
 import displayMessage from '@helpers/displayMessage';
 import { getErrorMessage } from '@helpers/getErrorMessage';
 import useMangaSource from '@hooks/useMangaSource';

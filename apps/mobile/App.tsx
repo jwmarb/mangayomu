@@ -6,6 +6,7 @@
  */
 
 import React from 'react';
+import Realm from 'realm';
 import { AppState, AppStateStatus, StatusBar } from 'react-native';
 import 'react-native-get-random-values';
 import { Provider } from 'react-redux';
@@ -18,13 +19,13 @@ import {
   RealmProvider,
   RealmUserProvider,
 } from '@database/main';
-import { UserProvider, AppProvider } from '@realm/react';
 import { REACT_APP_REALM_ID } from '@env';
 import { RealmEffect } from '@database/providers/RealmProvider';
 import { AppearanceProvider } from '@theme/provider';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ImageResolver } from '@redux/slices/imageresolver';
 import SyncData from './src/context/SyncData';
+import { AppProvider, UserProvider } from '@realm/react';
 enableFreeze(true);
 
 function App(): JSX.Element {
@@ -56,10 +57,7 @@ function App(): JSX.Element {
                       console.error(error);
                     },
                     clientReset: {
-                      mode: Realm.ClientResetMode.Manual,
-                      onManual: () => {
-                        console.log('recovery initiated');
-                      },
+                      mode: Realm.ClientResetMode.RecoverUnsyncedChanges,
                     },
                   }}
                 >

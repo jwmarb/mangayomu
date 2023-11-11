@@ -12,6 +12,7 @@ import Text from '@components/Text';
 import { moderateScale } from 'react-native-size-matters';
 import Stack from '@components/Stack';
 import { useLocalRealm, useQuery, useRealm } from '@database/main';
+import Realm from 'realm';
 import { ListRenderItem } from '@shopify/flash-list';
 import { UserHistorySchema } from '@database/schemas/History';
 import { AnimatedFlashList } from '@components/animated';
@@ -105,7 +106,7 @@ const History: React.ForwardRefRenderFunction<
     if (incognito) displayMessage('Incognito mode on');
     else displayMessage('Incognito mode off');
   }, [incognito]);
-  function updateData(newData: Realm.Collection<UserHistorySchema>) {
+  function updateData(newData: Realm.OrderedCollection<UserHistorySchema>) {
     setData(toFlashListData(newData, localRealm, queryRef.current));
     // if (query.length > 0) {
     //   const parsedQuery = queryRef.current.trim().toLowerCase();
@@ -118,7 +119,8 @@ const History: React.ForwardRefRenderFunction<
   }
   React.useEffect(() => {
     const callback: Realm.CollectionChangeCallback<
-      UserHistorySchema & Realm.Object<unknown, never>
+      UserHistorySchema,
+      [number, UserHistorySchema]
     > = (changes) => {
       updateData(changes.sorted('date', true));
     };

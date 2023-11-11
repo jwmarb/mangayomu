@@ -26,12 +26,8 @@ const Settings: React.FC = () => {
         border-radius="@theme"
         overflow="hidden"
       >
-        {user.identities.some((x) => x.providerType === 'custom-token') && (
-          <>
-            <CloudSwitch />
-            <Divider />
-          </>
-        )}
+        <CloudSwitch />
+        <Divider />
         <PressableListItem
           label="Settings"
           iconLeft={<Icon type="font" name="cog" />}

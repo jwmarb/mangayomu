@@ -3,8 +3,7 @@ import { ListRenderItem } from '@shopify/flash-list';
 import UnfinishedManga from './components/UnfinishedManga';
 import { UNFINISHED_MANGA_WIDTH } from '@theme/constants';
 import Box from '@components/Box';
-import { ChapterSchema } from '@database/schemas/Chapter';
-import { LocalChapterSchema } from '@database/schemas/LocalChapter';
+import Realm from 'realm';
 
 export const renderItem: ListRenderItem<MangaSchema> = (info) => {
   const { item } = info;
@@ -21,7 +20,7 @@ export const overrideItemLayout: (
     span?: number | undefined;
     size?: number | undefined;
   },
-  item: MangaSchema & Realm.Object<unknown, never>,
+  item: Realm.Object<MangaSchema>,
   index: number,
   maxColumns: number,
   extraData?: any,

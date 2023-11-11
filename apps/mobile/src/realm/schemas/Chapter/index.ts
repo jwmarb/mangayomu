@@ -27,7 +27,7 @@ export class ChapterSchema extends Realm.Object<
       _realmId: 'string',
       _mangaId: { type: 'objectId' },
       numberOfPages: 'int?',
-      scrollPosition: 'int?',
+      scrollPosition: 'double?',
       savedScrollPositionType: {
         type: 'string',
         default: () => {

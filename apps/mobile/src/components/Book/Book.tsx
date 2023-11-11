@@ -43,7 +43,7 @@ const Book: React.FC<BookProps> = (props) => {
   const navigation = useRootNavigation();
   const dbManga =
     '_id' in manga
-      ? (manga as unknown as MangaSchema & Realm.Object<MangaSchema, never>)
+      ? (manga as unknown as MangaSchema & Realm.Object<MangaSchema>)
       : null;
   const source = useMangaSource(manga);
 

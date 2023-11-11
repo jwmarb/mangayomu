@@ -3,6 +3,7 @@ import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import { MangaSchema } from '@database/schemas/Manga';
 import { useUser } from '@realm/react';
 import React from 'react';
+import Realm from 'realm';
 
 export default function useMangaListener(mangaId: string) {
   const realm = useRealm();
@@ -11,7 +12,7 @@ export default function useMangaListener(mangaId: string) {
   const [manga, setManga] = React.useState<MangaSchema | undefined>(
     realm.objects(MangaSchema).filtered('link = $0', mangaId)[0],
   );
-  const [meta, setMeta] = React.useState<LocalMangaSchema | undefined>(
+  const [meta, setMeta] = React.useState<LocalMangaSchema | null>(
     localRealm.objectForPrimaryKey(LocalMangaSchema, mangaId),
   );
   React.useEffect(() => {

@@ -10,6 +10,7 @@ import useAppSelector from '@hooks/useAppSelector';
 import useCombinedMangaWithLocal from '@hooks/useCombinedMangaWithLocal';
 import { useUser } from '@realm/react';
 import React from 'react';
+import Realm from 'realm';
 
 /**
  * A hook that gets the objects of given keys
@@ -29,7 +30,7 @@ export default function useData(mangaKey: string, chapterKey: string) {
   );
 
   const chapterWithDataInitializer = () => {
-    let existingChapter: ChapterSchema | undefined =
+    let existingChapter: ChapterSchema | null =
       chapterId == null
         ? realm.objects(ChapterSchema).filtered('link = $0', chapterKey)[0]
         : realm.objectForPrimaryKey(ChapterSchema, chapterId);

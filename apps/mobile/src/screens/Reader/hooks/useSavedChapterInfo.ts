@@ -1,7 +1,6 @@
 import { useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
-import { MangaSchema } from '@database/schemas/Manga';
 import useAppSelector from '@hooks/useAppSelector';
 import useBoolean from '@hooks/useBoolean';
 import { CombinedMangaWithLocal } from '@hooks/useCombinedMangaWithLocal';
@@ -12,11 +11,8 @@ import { Page } from '@redux/slices/reader';
 import usePageLayout from '@screens/Reader/hooks/usePageLayout';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
-import {
-  Dimensions,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-} from 'react-native';
+import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import Realm from 'realm';
 
 export default function useSavedChapterInfo(
   args: Pick<ReturnType<typeof usePageLayout>, 'getSafeScrollRange'> & {
@@ -82,6 +78,7 @@ export default function useSavedChapterInfo(
       );
       if (savedChapterInfoRef.current?.link === chapterRef.current._id)
         realm.write(() => {
+          console.log(interpolatedScrollOffset);
           realm.create(
             ChapterSchema,
             {
