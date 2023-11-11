@@ -13,16 +13,19 @@ import { format } from 'date-fns';
 import React from 'react';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import Box from '@components/Box';
+import useBoolean from '@hooks/useBoolean';
 
-const MangaHistoryItem: React.FC<MangaHistoryItemProps> = (props) => {
+const MangaHistoryItem: React.FC<
+  MangaHistoryItemProps & { valid: boolean; toggle: (val: boolean) => void }
+> = (props) => {
   const localRealm = useLocalRealm();
-  const { item } = props;
+  const { item, toggle, valid } = props;
   const { manga: _manga, chapter: _chapter, _id } = item;
-  const { deleteMangaFromHistory } = useUserHistory();
   const manga = localRealm.objectForPrimaryKey(LocalMangaSchema, _manga);
   const chapter = localRealm.objectForPrimaryKey(LocalChapterSchema, _chapter);
   const navigation = useRootNavigation();
   const dialog = useDialog();
+  const { deleteMangaFromHistory } = useUserHistory();
 
   function handleOnDeleteFromHistory() {
     dialog.open({
@@ -35,12 +38,15 @@ const MangaHistoryItem: React.FC<MangaHistoryItemProps> = (props) => {
           text: 'Remove',
           type: 'destructive',
           onPress: () => {
-            deleteMangaFromHistory(_id);
+            toggle(false);
           },
         },
       ],
     });
   }
+  React.useEffect(() => {
+    if (!valid) deleteMangaFromHistory(_id);
+  }, [valid]);
 
   function handleOnPress() {
     navigation.navigate('Reader', {
@@ -81,4 +87,12 @@ const MangaHistoryItem: React.FC<MangaHistoryItemProps> = (props) => {
   );
 };
 
-export default React.memo(MangaHistoryItem);
+const Wrapper: React.FC<MangaHistoryItemProps> = (props) => {
+  const [valid, toggle] = useBoolean(props.item.isValid());
+
+  if (valid)
+    return <MangaHistoryItem valid={valid} toggle={toggle} {...props} />;
+  return null;
+};
+
+export default React.memo(Wrapper);
