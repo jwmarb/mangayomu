@@ -30,7 +30,7 @@
     "@mangayomu/mangascraper": "^1.0.0",
     "@mangayomu/schemas": "1.0.0",
     "@mangayomu/theme": "^1.0.0",
-    "@react-native-camera-roll/camera-roll": "^6.0.0",
+    "@react-native-camera-roll/camera-roll": "6.0.2",
     "@react-native-clipboard/clipboard": "^1.12.1",
     "@react-native-community/blur": "^4.3.2",
     "@react-native-community/netinfo": "9.4.1",
