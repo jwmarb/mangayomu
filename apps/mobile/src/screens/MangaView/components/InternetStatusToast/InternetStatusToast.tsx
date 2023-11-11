@@ -10,7 +10,7 @@ import { moderateScale } from 'react-native-size-matters';
 import useAppSelector from '@hooks/useAppSelector';
 
 const InternetStatusToast: React.FC<InternetStatusToastProps> = (props) => {
-  const { manga, networkStatusOffset } = props;
+  const { manga, networkStatusOffset, initialFetchHasError } = props;
   const internetStatus = useAppSelector(
     (state) => state.explore.internetStatus,
   );
@@ -23,11 +23,11 @@ const InternetStatusToast: React.FC<InternetStatusToastProps> = (props) => {
     );
   };
   React.useEffect(() => {
-    if (internetStatus === 'online')
+    if (internetStatus === 'online' && !initialFetchHasError)
       networkStatusOffset.value = moderateScale(32);
-  }, [internetStatus]);
+  }, [internetStatus, initialFetchHasError]);
 
-  if (manga != null && internetStatus === 'offline')
+  if ((manga != null && internetStatus === 'offline') || initialFetchHasError)
     return (
       <AnimatedBox
         exiting={FadeOutDown}

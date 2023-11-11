@@ -30,7 +30,7 @@ import Text from '@components/Text';
 import { moderateScale } from 'react-native-size-matters';
 import Stack from '@components/Stack';
 import { AnimatedFlashList } from '@components/animated';
-import InternetStatusToast from '@screens/MangaView/components/InternetStatusToast/InternetStatusToast';
+import InternetStatusToast from '@screens/MangaView/components/InternetStatusToast';
 import QuickReadButton from '@screens/MangaView/components/QuickReadButton/QuickReadButton';
 import useChapters from '@screens/MangaView/hooks/useChapters';
 import useRefresh from '@screens/MangaView/hooks/useRefresh';
@@ -245,6 +245,7 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
         pointerEvents="box-none"
       >
         <InternetStatusToast
+          initialFetchHasError={status === 'error'}
           manga={manga}
           networkStatusOffset={networkStatusOffset}
         />
