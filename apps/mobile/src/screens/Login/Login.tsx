@@ -157,6 +157,7 @@ const Login: React.FC<RootStackProps<'Login'>> = ({ navigation }) => {
             {...register('password')}
             label="Password"
             textContentType="password"
+            onSubmitEditing={handleOnLogin}
           />
           {isInvalid && (
             <Text align="center" color="error">

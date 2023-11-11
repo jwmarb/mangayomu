@@ -16,6 +16,8 @@ import { z } from 'zod';
 import { BACKEND_URL } from 'env';
 import axios, { AxiosError } from 'axios';
 import displayMessage from '@helpers/displayMessage';
+import useBoolean from '@hooks/useBoolean';
+import Progress from '@components/Progress';
 
 const styles = StyleSheet.create({
   content: {
@@ -62,12 +64,14 @@ const Register: React.FC<RootStackProps<'Register'>> = ({ navigation }) => {
   const { register, handleSubmit, setError } = useForm<UserAPIRequestFormBody>(
     userAPIRequestBodySchema,
   );
+  const [loading, toggle] = useBoolean();
 
   const onBack = () => {
     navigation.navigate('Login');
   };
 
   const onSubmit = handleSubmit(async (val) => {
+    toggle(true);
     try {
       await axios.post(BACKEND_URL + '/api/v1/register', val);
       displayMessage('Account created. Please log in');
@@ -83,6 +87,8 @@ const Register: React.FC<RootStackProps<'Register'>> = ({ navigation }) => {
             return prev;
           }, {} as Record<string, string>),
         );
+    } finally {
+      toggle(false);
     }
   });
 
@@ -124,6 +130,8 @@ const Register: React.FC<RootStackProps<'Register'>> = ({ navigation }) => {
                 onPress={onSubmit}
                 variant="contained"
                 label="Create Account"
+                disabled={loading}
+                icon={loading ? <Progress size="small" /> : undefined}
               />
               <Pressable onPress={onBack}>
                 <Text color="primary" align="right">
