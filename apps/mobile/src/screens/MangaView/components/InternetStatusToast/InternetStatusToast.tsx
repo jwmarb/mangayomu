@@ -1,23 +1,19 @@
 import React from 'react';
-import { InternetStatusToastProps } from './InternetStatusToast.interfaces';
-import {
-  FadeInDown,
-  FadeOutDown,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
-import connector, {
-  ConnectedInternetStatusProps,
-} from './InternetStatus.redux';
+import { InternetStatusToastProps } from './';
+import { FadeInDown, FadeOutDown, withTiming } from 'react-native-reanimated';
 import { AnimatedBox } from '@components/Box';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@emotion/react';
 import Text from '@components/Text';
 import { LayoutChangeEvent } from 'react-native';
 import { moderateScale } from 'react-native-size-matters';
+import useAppSelector from '@hooks/useAppSelector';
 
-const InternetStatusToast: React.FC<ConnectedInternetStatusProps> = (props) => {
-  const { manga, internetStatus, networkStatusOffset } = props;
+const InternetStatusToast: React.FC<InternetStatusToastProps> = (props) => {
+  const { manga, networkStatusOffset } = props;
+  const internetStatus = useAppSelector(
+    (state) => state.explore.internetStatus,
+  );
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const handleOnNetworkErrorLayout = (layout: LayoutChangeEvent) => {
@@ -54,4 +50,4 @@ const InternetStatusToast: React.FC<ConnectedInternetStatusProps> = (props) => {
   return null;
 };
 
-export default connector(React.memo(InternetStatusToast));
+export default React.memo(InternetStatusToast);
