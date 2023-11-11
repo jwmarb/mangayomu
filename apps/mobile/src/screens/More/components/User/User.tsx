@@ -14,6 +14,7 @@ import { useApp, useUser } from '@realm/react';
 import React from 'react';
 import Realm from 'realm';
 import { moderateScale } from 'react-native-size-matters';
+import RNRestart from 'react-native-restart';
 
 const User: React.FC = () => {
   const realm = useRealm();
@@ -39,7 +40,18 @@ const User: React.FC = () => {
             try {
               await realm.syncSession?.uploadAllLocalChanges();
               await app.logIn(Realm.Credentials.anonymous());
-              displayMessage('You have logged out');
+              dialog.open({
+                title: 'Restart required',
+                message: 'App restart is required',
+                actions: [
+                  {
+                    text: 'Ok',
+                    onPress: () => {
+                      RNRestart.restart();
+                    },
+                  },
+                ],
+              });
             } catch (e) {
               console.error(e);
               displayMessage('There was an error signing out');

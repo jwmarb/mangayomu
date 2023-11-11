@@ -12,7 +12,7 @@ import useBoolean from '@hooks/useBoolean';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import useForm from '@hooks/useForm';
 import { RootStackProps } from '@navigators/Root/Root.interfaces';
-import { useApp, useUser } from '@realm/react';
+import { useApp, useRealm, useUser } from '@realm/react';
 import axios from 'axios';
 import { BACKEND_URL } from 'env';
 import { GOOGLE_OAUTH2_ID } from '@env';
@@ -28,6 +28,8 @@ import {
   statusCodes,
   NativeModuleError,
 } from '@react-native-google-signin/google-signin';
+import RNRestart from 'react-native-restart';
+import useDialog from '@hooks/useDialog';
 
 GoogleSignin.configure({
   webClientId: GOOGLE_OAUTH2_ID,
@@ -58,6 +60,7 @@ const Login: React.FC<RootStackProps<'Login'>> = ({ navigation }) => {
   const [loading, toggleLoading] = useBoolean();
   const user = useUser();
   const app = useApp();
+  const dialog = useDialog();
 
   const { register, handleSubmit, setError } = useForm<FormInput>(formSchema);
 
@@ -74,8 +77,27 @@ const Login: React.FC<RootStackProps<'Login'>> = ({ navigation }) => {
       await user.linkCredentials(credentials);
     } catch {
       await app.logIn(credentials);
+      promptRestart();
     }
   }
+
+  const promptRestart = () =>
+    dialog.open({
+      title: 'App restart required',
+      message: 'A restart is required to sync data with this user',
+      actions: [
+        {
+          text: 'Not now',
+        },
+        {
+          text: 'Restart',
+          onPress: () => {
+            RNRestart.restart();
+          },
+          variant: 'contained',
+        },
+      ],
+    });
 
   const handleOnLogin = handleSubmit(async (value) => {
     toggleInvalid(false);
