@@ -110,7 +110,11 @@ export default function useChapterFetcher(
                 );
                 break;
             }
-            if (offsetTillFetch === 0 && currentLocalChapter.current.index > 0)
+            if (
+              offsetTillFetch === 0 &&
+              currentLocalChapter.current.index > 0 &&
+              args.availableChapters[currentLocalChapter.current.index] != null
+            ) {
               args.cancellable(fetchPages, {
                 previous: {
                   index: currentLocalChapter.current.index,
@@ -126,6 +130,7 @@ export default function useChapterFetcher(
                   ]._id,
                 },
               });
+            }
           }
         });
         break;
