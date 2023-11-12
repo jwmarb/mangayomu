@@ -141,7 +141,7 @@ const StaticCover: React.FC<StaticCoverProps> = (props) => {
   return (
     <Pressable onPress={handleOnPressCover}>
       {imgSrc != null && (
-        <FastImage
+        <Image
           onLoadStart={handleOnLoadStart}
           onLoad={handleOnLoad}
           onError={handleOnError}
