@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
-  "private": true,
+  "private": false,
   "description": "A scraper for mangas",
   "dependencies": {
     "@mangayomu/algorithms": "^1.0.0",
