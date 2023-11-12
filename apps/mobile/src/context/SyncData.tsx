@@ -14,6 +14,9 @@ import getMangaHostFromLink from '@helpers/getMangaHostFromLink';
 import { MangaHost } from '@mangayomu/mangascraper/src';
 import { useUser } from '@realm/react';
 import React from 'react';
+import { InteractionManager } from 'react-native';
+import pLimit from 'p-limit';
+const limit = pLimit(1);
 
 const IsLibrarySyncedContext = React.createContext<boolean | undefined>(
   undefined,
@@ -101,78 +104,23 @@ const SyncData: React.FC<React.PropsWithChildren> = ({ children }) => {
         'Library data is stale. Syncing local mangas with cloud mangas...',
       );
       const controller = new AbortController();
-      (async () => {
-        const syncCollection = mangas.map(async (manga) => {
-          const localManga = localRealm.objectForPrimaryKey(
-            LocalMangaSchema,
-            manga.link,
-          );
-          if (localManga == null) {
-            const source = MangaHost.sourcesMap.get(manga.source);
-            if (source == null)
-              throw new Error(`${source} as a source does not exist`);
-            source.signal = controller.signal;
-            try {
-              console.log(`Fetching data for ${manga._id}`);
-              const meta = await source.getMeta({
-                link: manga.link,
-              });
-              const { chapters, availableLanguages } = writeLocalChapters(
-                localRealm,
-                meta,
-                user,
-              );
-              writeManga(
-                localRealm,
-                realm,
-                meta,
-                chapters,
-                availableLanguages,
-                user,
-              );
-            } catch (e) {
-              console.error(e);
-            }
-          }
-          setSyncedMangaCount((prev) => prev + 1);
-        });
-        try {
-          await Promise.all(syncCollection);
-        } catch (e) {
-          console.error(e);
-          setSyncError(getErrorMessage(e));
-        } finally {
-          console.log('Done syncing collection');
-        }
-        return () => {
-          controller.abort();
-        };
-      })();
-    }
-  }, [mangaDataIsStale]);
-
-  React.useEffect(() => {
-    (async () => {
-      if (mangaHistoryDataIsStale) {
-        const controller = new AbortController();
-        console.log(
-          'User history is stale. Syncing local mangas with user history...',
-        );
-        const syncing = new Set<string>();
-        const syncCollection = await Promise.allSettled(
-          history.map(async (entry) => {
-            if (
-              !syncing.has(entry.manga) &&
-              localRealm.objectForPrimaryKey(LocalMangaSchema, entry.manga) ==
-                null
-            ) {
-              console.log(`Fetching for user history: ${entry.manga}`);
-              syncing.add(entry.manga);
-              const source = getMangaHostFromLink(entry.manga);
+      InteractionManager.runAfterInteractions(() =>
+        limit(async () => {
+          const syncCollection = mangas.map(async (manga) => {
+            const localManga = localRealm.objectForPrimaryKey(
+              LocalMangaSchema,
+              manga.link,
+            );
+            if (localManga == null) {
+              const source = MangaHost.sourcesMap.get(manga.source);
               if (source == null)
-                throw new Error(`Invalid source from manga ${entry.manga}`);
+                throw new Error(`${source} as a source does not exist`);
+              source.signal = controller.signal;
               try {
-                const meta = await source.getMeta({ link: entry.manga });
+                console.log(`Fetching data for ${manga._id}`);
+                const meta = await source.getMeta({
+                  link: manga.link,
+                });
                 const { chapters, availableLanguages } = writeLocalChapters(
                   localRealm,
                   meta,
@@ -186,30 +134,89 @@ const SyncData: React.FC<React.PropsWithChildren> = ({ children }) => {
                   availableLanguages,
                   user,
                 );
-                setSyncedHistoryCount((prev) => prev + 1);
-                return {
-                  success: true,
-                };
               } catch (e) {
-                return {
-                  success: false,
-                  entry,
-                };
+                console.error(e);
               }
             }
-          }),
-        );
-        realm.write(() => {
-          for (const settledResult of syncCollection) {
-            if (settledResult.status === 'rejected')
-              realm.delete(settledResult.reason.entry);
+            setSyncedMangaCount((prev) => prev + 1);
+          });
+          try {
+            await Promise.all(syncCollection);
+          } catch (e) {
+            console.error(e);
+            setSyncError(getErrorMessage(e));
+          } finally {
+            console.log('Done syncing collection');
           }
-        });
-        return () => {
-          controller.abort();
-        };
-      }
-    })();
+        }),
+      );
+      return () => {
+        controller.abort();
+      };
+    }
+  }, [mangaDataIsStale]);
+
+  React.useEffect(() => {
+    if (mangaHistoryDataIsStale) {
+      const controller = new AbortController();
+      console.log(
+        'User history is stale. Syncing local mangas with user history...',
+      );
+      InteractionManager.runAfterInteractions(() =>
+        limit(async () => {
+          const syncing = new Set<string>();
+          const syncCollection = await Promise.allSettled(
+            history.map(async (entry) => {
+              if (
+                !syncing.has(entry.manga) &&
+                localRealm.objectForPrimaryKey(LocalMangaSchema, entry.manga) ==
+                  null
+              ) {
+                console.log(`Fetching for user history: ${entry.manga}`);
+                syncing.add(entry.manga);
+                const source = getMangaHostFromLink(entry.manga);
+                if (source == null)
+                  throw new Error(`Invalid source from manga ${entry.manga}`);
+                try {
+                  const meta = await source.getMeta({ link: entry.manga });
+                  const { chapters, availableLanguages } = writeLocalChapters(
+                    localRealm,
+                    meta,
+                    user,
+                  );
+                  writeManga(
+                    localRealm,
+                    realm,
+                    meta,
+                    chapters,
+                    availableLanguages,
+                    user,
+                  );
+                  setSyncedHistoryCount((prev) => prev + 1);
+                  return {
+                    success: true,
+                  };
+                } catch (e) {
+                  return {
+                    success: false,
+                    entry,
+                  };
+                }
+              }
+            }),
+          );
+          realm.write(() => {
+            for (const settledResult of syncCollection) {
+              if (settledResult.status === 'rejected')
+                realm.delete(settledResult.reason.entry);
+            }
+          });
+        }),
+      );
+      return () => {
+        controller.abort();
+      };
+    }
   }, [mangaHistoryDataIsStale]);
 
   return (
