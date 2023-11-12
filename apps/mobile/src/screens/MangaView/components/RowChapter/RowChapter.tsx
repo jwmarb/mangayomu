@@ -8,8 +8,9 @@ import { format, formatDistanceToNow } from 'date-fns';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { useTheme } from '@emotion/react';
 import { Pressable } from 'react-native';
-import { useQuery } from '@database/main';
+import { useQuery, useRealm } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
+import { IChapterSchema } from '@mangayomu/schemas';
 
 export const ROW_CHAPTER_HEIGHT = moderateScale(60);
 
@@ -18,6 +19,7 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
   const navigation = useRootNavigation();
   const theme = useTheme();
   const parsed = Date.parse(date);
+  const realm = useRealm();
   const isRecent = Date.now() - 6.048e7 < parsed;
   const isWithinWeek = Date.now() - 6.048e8 < parsed;
   const k = useQuery(
@@ -39,8 +41,27 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
         manga: mangaKey,
       });
   }
+  // function handleOnLongPress() {
+  //   console.log(k);
+  // }
+
+  // React.useEffect(() => {
+  //   if (k?._id != null) {
+  //     const o = realm.objectForPrimaryKey(ChapterSchema, k._id);
+  //     const callback: Realm.ObjectChangeCallback<IChapterSchema> = (
+  //       changes,
+  //     ) => {
+  //       console.log(changes);
+  //     };
+  //     o?.addListener(callback);
+  //     return () => {
+  //       o?.removeListener(callback);
+  //     };
+  //   }
+  // }, []);
   return (
     <Pressable
+      // onLongPress={handleOnLongPress}
       onPress={handleOnPress}
       android_ripple={{
         color: theme.palette.action.ripple,
