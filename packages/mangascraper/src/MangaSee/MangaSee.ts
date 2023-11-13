@@ -16,13 +16,37 @@ import {
 } from './MangaSee.utils';
 import { MangaHostWithFilters } from '../scraper/scraper.filters';
 import { Manga, MangaChapter } from '../scraper/scraper.interfaces';
-import { binary, StringComparator } from '@mangayomu/algorithms';
-import { titleIncludes } from '../filter';
+import {
+  binary,
+  integrateSortedList,
+  StringComparator,
+} from '@mangayomu/algorithms';
 import { sortChapters } from '../scraper/scraper.helpers';
 
 class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
-  private memoizedDir: MangaSeeManga[] | null = null;
+  private memoizedDir: Directory[] | null = null;
   private imageURLBase: string | null = null;
+  private mapDirectory(x: Directory): MangaSeeManga {
+    return {
+      title: x.s,
+      link: `https://${super.getLink()}/manga/${x.i}`,
+      imageCover: this.getImageCover(null, x.i),
+      status: {
+        scan: x.ss,
+        publish: x.ps,
+      },
+      isHentai: x.h,
+      type: x.t,
+      genres: x.g,
+      yearReleased: x.y,
+      source: this.name,
+      officialTranslation: x.o === 'yes' ? true : false,
+      altTitles: x.al,
+      lt: parseInt(x.lt),
+      v: parseInt(x.v),
+      vm: parseInt(x.vm),
+    };
+  }
   private getImageCover(html: string | null, indexName: string) {
     if (this.imageURLBase == null) {
       if (html == null) throw Error('HTML cannot be null to get image cover');
@@ -64,34 +88,46 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     );
   }
 
-  public async listMangas(): Promise<MangaSeeManga[]> {
+  public async getDirectory(): Promise<Directory[]> {
     if (this.memoizedDir == null) {
       const $ = await super.route('/search');
       const html = $('body').html();
       const { variable } = processScript(html);
       const Directory = await variable<Directory[]>('vm.Directory');
-      const result = Directory.map((x, i) => ({
-        title: x.s,
-        link: `https://${super.getLink()}/manga/${x.i}`,
-        imageCover: this.getImageCover(html, x.i),
-        status: {
-          scan: x.ss,
-          publish: x.ps,
-        },
-        isHentai: x.h,
-        type: x.t,
-        genres: x.g,
-        yearReleased: x.y,
-        source: this.name,
-        officialTranslation: x.o === 'yes' ? true : false,
-        altTitles: x.al,
-        lt: parseInt(x.lt),
-        v: parseInt(x.v),
-        vm: parseInt(x.vm),
-      }));
-      return result;
+      this.memoizedDir = Directory;
+      if (this.imageURLBase == null) {
+        if (html == null) throw Error('HTML cannot be null to get image cover');
+        const linkURL = html.match(/https:\/\/.*\/{{Result.i}}.jpg/g);
+        if (linkURL == null) throw Error('Image URL base is null');
+        this.imageURLBase = linkURL[0];
+      }
+      return Directory;
     }
     return this.memoizedDir;
+  }
+
+  public async listMangas(): Promise<MangaSeeManga[]> {
+    const Directory = await this.getDirectory();
+    const result = Directory.map((x) => ({
+      title: x.s,
+      link: `https://${super.getLink()}/manga/${x.i}`,
+      imageCover: this.getImageCover(null, x.i),
+      status: {
+        scan: x.ss,
+        publish: x.ps,
+      },
+      isHentai: x.h,
+      type: x.t,
+      genres: x.g,
+      yearReleased: x.y,
+      source: this.name,
+      officialTranslation: x.o === 'yes' ? true : false,
+      altTitles: x.al,
+      lt: parseInt(x.lt),
+      v: parseInt(x.v),
+      vm: parseInt(x.vm),
+    }));
+    return result;
   }
 
   public async getMeta(
@@ -207,17 +243,17 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     query: string,
     filters?: MangaSeeFilter,
   ): Promise<MangaSeeManga[]> {
-    const directory = await this.listMangas();
-    const withTitle = titleIncludes(query);
+    const directory = await this.getDirectory();
+    const sanitizedTitle = query.trim().toLowerCase();
 
     if (filters) {
-      const withIncludingGenre = (manga: MangaSeeManga) => {
+      const withIncludingGenre = (manga: Directory) => {
         if (filters.Genres == null || filters.Genres.include.length === 0)
           return true;
         for (let i = 0; i < filters.Genres.include.length; i++) {
           if (
             binary.search(
-              manga.genres,
+              manga.g,
               filters.Genres.include[i],
               StringComparator,
             ) !== -1
@@ -226,12 +262,12 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         }
         return false;
       };
-      const withExcludingGenre = (manga: MangaSeeManga) => {
+      const withExcludingGenre = (manga: Directory) => {
         if (filters.Genres == null) return true;
         for (let i = 0; i < filters.Genres.exclude.length; i++) {
           if (
             binary.search(
-              manga.genres,
+              manga.g,
               filters.Genres.exclude[i],
               StringComparator,
             ) !== -1
@@ -241,39 +277,29 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         return true;
       };
 
-      const withScanStatus = (manga: MangaSeeManga) => {
+      const withScanStatus = (manga: Directory) => {
         if (
           filters['Scan Status'] == null ||
           filters['Scan Status'].value === 'Any'
         )
           return true;
-        return filters['Scan Status'].value === manga.status.scan;
+        return filters['Scan Status'].value === manga.ss;
       };
 
-      const withPublishStatus = (manga: MangaSeeManga) => {
+      const withPublishStatus = (manga: Directory) => {
         if (
           filters['Publish Status'] == null ||
           filters['Publish Status'].value === 'Any'
         )
           return true;
-        return filters['Publish Status'].value === manga.status.publish;
+        return filters['Publish Status'].value === manga.ps;
       };
 
-      const withOfficialTranslation = (manga: MangaSeeManga) => {
+      const withOfficialTranslation = (manga: Directory) => {
         if (filters['Official Translation'] == null) return true;
         if (filters['Official Translation'].value == 'Any') return true;
-        return manga.officialTranslation;
+        return manga.o === 'yes';
       };
-
-      const filtered = directory.filter(
-        (manga) =>
-          withOfficialTranslation(manga) &&
-          withPublishStatus(manga) &&
-          withScanStatus(manga) &&
-          withIncludingGenre(manga) &&
-          withExcludingGenre(manga) &&
-          withTitle(manga),
-      );
 
       const createSort = (
         compareFn: (a: MangaSeeManga, b: MangaSeeManga) => number,
@@ -310,9 +336,33 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
         }
       };
 
-      return filtered.sort(getSort());
+      const sortBy = getSort();
+      const filtered: MangaSeeManga[] = [];
+
+      let add: (item: Directory) => void;
+      if (sortBy == null)
+        add = (i: Directory) => filtered.push(this.mapDirectory(i));
+      else
+        add = (i: Directory) =>
+          integrateSortedList(filtered, sortBy).add(this.mapDirectory(i));
+      for (let i = 0; i < directory.length; i++) {
+        if (
+          withOfficialTranslation(directory[i]) &&
+          withPublishStatus(directory[i]) &&
+          withScanStatus(directory[i]) &&
+          withIncludingGenre(directory[i]) &&
+          withExcludingGenre(directory[i]) &&
+          directory[i].s.trim().toLowerCase().includes(sanitizedTitle)
+        )
+          add(directory[i]);
+      }
+      return filtered;
     }
-    const filtered = directory.filter(withTitle);
+    const filtered: MangaSeeManga[] = [];
+    for (let i = 0; i < directory.length; i++) {
+      if (directory[i].s.trim().toLowerCase().includes(sanitizedTitle))
+        filtered.push(this.mapDirectory(directory[i]));
+    }
     return filtered;
   }
 }
