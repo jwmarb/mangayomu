@@ -43,6 +43,7 @@ import useAppSelector from '@hooks/useAppSelector';
 import { addIfNewSourceToLibrary } from '@redux/slices/library';
 import { useAppDispatch } from '@redux/main';
 import { RootStackProps } from '@navigators/Root/Root.interfaces';
+import { ErrorContext } from '@screens/MangaView/context/ErrorContext';
 
 export const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 
@@ -196,13 +197,20 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
     );
 
   return (
-    <>
+    <ErrorContext.Provider value={error}>
       <AnimatedFlashList
         extraData={extraData}
         data={data}
         refreshing={refreshing}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        ListEmptyComponent={
+          manga == null && error ? (
+            <Box align-items="center" justify-content="center" flex-grow p="s">
+              <Text color="error">Could not fetch any chapters</Text>
+            </Box>
+          ) : null
         }
         ListHeaderComponent={
           <MangaViewerHeader
@@ -213,7 +221,6 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
             status={status}
             manga={params}
             meta={manga}
-            error={error}
             refresh={refresh}
             scrollViewStyle={scrollViewStyle}
           />
@@ -245,7 +252,7 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
         pointerEvents="box-none"
       >
         <InternetStatusToast
-          initialFetchHasError={status === 'error'}
+          fetchError={error}
           manga={manga}
           networkStatusOffset={networkStatusOffset}
         />
@@ -257,7 +264,7 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
           textOpacity={textOpacity}
         />
       </Box>
-    </>
+    </ErrorContext.Provider>
   );
 };
 

@@ -4,17 +4,18 @@ import Text from '@components/Text';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import React from 'react';
 import { MangaSupportedLanguagesProps } from './';
+import { useMangaViewError } from '@screens/MangaView/context/ErrorContext';
 
 const MangaSupportedLanguages: React.FC<MangaSupportedLanguagesProps> = (
   props,
 ) => {
-  const { data } = props;
-
+  const { data, hostDefaultLanguage } = props;
+  const error = useMangaViewError();
   return (
     <Stack space="s" flex-direction="row" justify-content="space-between">
       <Text color="textSecondary">Supported languages</Text>
       <Box maxWidth="50%" flex-grow>
-        {data == null ? (
+        {data == null && !error ? (
           <Text.Skeleton
             numberOfLines={3}
             lineStyles={[
@@ -25,9 +26,14 @@ const MangaSupportedLanguages: React.FC<MangaSupportedLanguagesProps> = (
           />
         ) : (
           <Text bold align="right">
-            {data
-              .map((x: unknown) => languages[x as ISOLangCode].name)
-              .join(', ')}
+            {data != null &&
+              data
+                .map((x: unknown) => languages[x as ISOLangCode].name)
+                .join(', ')}
+            {data == null &&
+              error &&
+              hostDefaultLanguage != null &&
+              languages[hostDefaultLanguage].name}
           </Text>
         )}
       </Box>

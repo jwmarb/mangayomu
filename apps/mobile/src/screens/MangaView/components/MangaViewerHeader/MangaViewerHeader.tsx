@@ -22,6 +22,8 @@ import MangaSupportedLanguages from '@screens/MangaView/components/MangaViewerHe
 import MangaSource from '@screens/MangaView/components/MangaViewerHeader/components/MangaSource';
 import IconButton from '@components/IconButton';
 import useBoolean from '@hooks/useBoolean';
+import { useMangaViewError } from '@screens/MangaView/context/ErrorContext';
+import { MangaHost } from '@mangayomu/mangascraper/src';
 
 const styles = StyleSheet.create({
   imageBackground: {
@@ -42,10 +44,11 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
     onBookmark,
     onOpenMenu,
   } = props;
+  const error = useMangaViewError();
   const theme = useTheme();
   const [fallback, toggleFallback] = useBoolean();
 
-  const isLoading = status === 'loading' || meta == null;
+  const isLoading = !error && (status === 'loading' || meta == null);
   return (
     <Box>
       <FastImage
@@ -112,41 +115,48 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
         </Text>
         <MangaStatus data={meta?.status} loading={isLoading} />
         <MangaSource mangaSource={manga.source} />
-        <MangaSupportedLanguages data={meta?.availableLanguages} />
+        <MangaSupportedLanguages
+          data={meta?.availableLanguages}
+          hostDefaultLanguage={
+            MangaHost.sourcesMap.get(manga.source)?.defaultLanguage
+          }
+        />
 
-        <Stack
-          space="s"
-          flex-direction="row"
-          justify-content="space-between"
-          align-items="center"
-        >
-          {meta ? (
-            <Text variant="header" bold>
-              {numberOfSelectedLanguageChapters} Chapters
-            </Text>
-          ) : (
-            <Stack
-              flex-direction="row"
-              align-self="center"
-              align-items="center"
-              justify-content="center"
-            >
-              <Skeleton>
-                <Text variant="header" bold>
-                  100
-                </Text>
-              </Skeleton>
+        {!error && (
+          <Stack
+            space="s"
+            flex-direction="row"
+            justify-content="space-between"
+            align-items="center"
+          >
+            {meta ? (
               <Text variant="header" bold>
-                {' '}
-                Chapters
+                {numberOfSelectedLanguageChapters} Chapters
               </Text>
-            </Stack>
-          )}
-          <IconButton
-            icon={<Icon type="font" name="filter-menu" />}
-            onPress={onOpenMenu}
-          />
-        </Stack>
+            ) : (
+              <Stack
+                flex-direction="row"
+                align-self="center"
+                align-items="center"
+                justify-content="center"
+              >
+                <Skeleton>
+                  <Text variant="header" bold>
+                    100
+                  </Text>
+                </Skeleton>
+                <Text variant="header" bold>
+                  {' '}
+                  Chapters
+                </Text>
+              </Stack>
+            )}
+            <IconButton
+              icon={<Icon type="font" name="filter-menu" />}
+              onPress={onOpenMenu}
+            />
+          </Stack>
+        )}
       </Stack>
       <Box border-color="disabled" border-width={{ b: '@theme' }} />
     </Box>

@@ -5,9 +5,11 @@ import useMangaSource from '@hooks/useMangaSource';
 import React from 'react';
 import { MangaGenresProps } from './';
 import useRootNavigation from '@hooks/useRootNavigation';
+import { useMangaViewError } from '@screens/MangaView/context/ErrorContext';
 
 const MangaGenres: React.FC<MangaGenresProps> = (props) => {
   const { data, source } = props;
+  const error = useMangaViewError();
   const host = useMangaSource(source);
   const navigation = useRootNavigation();
   React.useEffect(() => {
@@ -30,6 +32,7 @@ const MangaGenres: React.FC<MangaGenresProps> = (props) => {
     },
     [navigation],
   );
+  if (data == null && error) return null;
   return (
     <Stack flex-direction="row" flex-wrap="wrap" space="s" align-items="center">
       {data != null ? (

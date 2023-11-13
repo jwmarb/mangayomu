@@ -8,9 +8,11 @@ import { useTheme } from '@emotion/react';
 import Box from '@components/Box/Box';
 import MangaDescriptionHTMLRenderer from '@screens/MangaView/components/MangaViewerHeader/components/MangaDescription/renderers';
 import useBoolean from '@hooks/useBoolean';
+import { useMangaViewError } from '@screens/MangaView/context/ErrorContext';
 
 const MangaDescription: React.FC<MangaDescriptionProps> = (props) => {
   const { data, loading } = props;
+  const error = useMangaViewError();
   const theme = useTheme();
   const [isExpanded, toggleIsExpanded] = useBoolean();
   const [showExpand, setShowExpanded] = useBoolean();
@@ -27,7 +29,7 @@ const MangaDescription: React.FC<MangaDescriptionProps> = (props) => {
         align-items="center"
       >
         <Text variant="header" bold>
-          Synopsis
+          {loading && !error ? 'Synopsis' : 'Error'}
         </Text>
         {showExpand && (
           <Button
@@ -60,7 +62,7 @@ const MangaDescription: React.FC<MangaDescriptionProps> = (props) => {
         </Box>
       ) : (
         <Text color="textSecondary" italic>
-          No description available.
+          {error || 'No description available.'}
         </Text>
       )}
     </Stack>

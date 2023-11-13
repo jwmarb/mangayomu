@@ -182,7 +182,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
     const comicId = parseInt(
       manga.link.substring(manga.link.lastIndexOf('/') + 1),
     );
-    const [unparsedEnglishChapters, unparsedMultilingualChapters] =
+    const [unparsedEnglishChapters, unparsedMultilingualChapters, _$] =
       await Promise.all([
         super.route<MangaParkV5GetComicRangeList>(
           { link: MangaParkV5.API_ROUTE },
@@ -213,6 +213,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
             },
           },
         ),
+        super.route({ link: getV5URL(manga.link) }),
       ]);
     const multilingualChapters =
       await super.route<MangaParkV5GetContentChapterList>(
@@ -231,10 +232,6 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
           },
         },
       );
-    // const $ = await super.route(manga, 'GET', undefined, {
-    //   proxyEnabled: false,
-    // });
-    const _$ = await super.route({ link: getV5URL(manga.link) });
     const html = _$('script#__NEXT_DATA__').html();
     if (html == null) throw Error('Unknown page');
     const parsedData: MangaParkV5NextDataMeta = JSON.parse(html);

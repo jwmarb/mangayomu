@@ -10,6 +10,7 @@ import React from 'react';
 import { moderateScale } from 'react-native-size-matters';
 import { MangaActionButtonsProps } from './';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
+import { useMangaViewError } from '@screens/MangaView/context/ErrorContext';
 
 const buttonLoading = {
   disabled: true,
@@ -27,14 +28,17 @@ const MangaActionButtons: React.FC<MangaActionButtonsProps> = (props) => {
     firstChapterKey,
   } = props;
 
+  const error = useMangaViewError();
   const navigation = useRootNavigation();
   const localRealm = useLocalRealm();
   const isValid =
-    currentlyReadingChapterKey != null &&
-    localRealm.objectForPrimaryKey(
-      LocalChapterSchema,
-      currentlyReadingChapterKey,
-    ) != null;
+    !error &&
+    (mangaKey != null ||
+      (currentlyReadingChapterKey != null &&
+        localRealm.objectForPrimaryKey(
+          LocalChapterSchema,
+          currentlyReadingChapterKey,
+        ) != null));
   function handleOnRead() {
     if (mangaKey != null && firstChapterKey != null && isValid)
       navigation.navigate('Reader', {

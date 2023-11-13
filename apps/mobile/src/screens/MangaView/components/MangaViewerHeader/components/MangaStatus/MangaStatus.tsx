@@ -4,6 +4,7 @@ import { useTheme } from '@emotion/react';
 import React from 'react';
 import { MangaStatusProps } from './';
 import { moderateScale } from 'react-native-size-matters';
+import { useMangaViewError } from '@screens/MangaView/context/ErrorContext';
 
 const ongoingSet = new Set(['ongoing', 'publishing']);
 
@@ -16,6 +17,7 @@ const completedSet = new Set(['finished', 'complete', 'completed']);
 const MangaStatus: React.FC<MangaStatusProps> = (props) => {
   const { data, loading } = props;
   const theme = useTheme();
+  const error = useMangaViewError();
 
   function getColor(status: string) {
     const parsed = status.substring(0, status.lastIndexOf(' ')).toLowerCase();
@@ -43,7 +45,7 @@ const MangaStatus: React.FC<MangaStatusProps> = (props) => {
         ) : loading ? (
           <Text.Skeleton lineStyles={[{ width: moderateScale(72) }]} />
         ) : (
-          <Text color="disabled">Unknown</Text>
+          <Text color="disabled">---</Text>
         )}
       </Stack>
       <Stack
@@ -53,12 +55,16 @@ const MangaStatus: React.FC<MangaStatusProps> = (props) => {
         align-items="center"
       >
         <Text color="textSecondary">Publish Status</Text>
-        {data && data.publish ? (
-          <Text color={getColor(data.publish)}>
-            {data.publish.substring(0, data.publish.lastIndexOf(' '))}
-          </Text>
+        {!error ? (
+          data && data.publish ? (
+            <Text color={getColor(data.publish)}>
+              {data.publish.substring(0, data.publish.lastIndexOf(' '))}
+            </Text>
+          ) : (
+            <Text.Skeleton lineStyles={[{ width: moderateScale(72) }]} />
+          )
         ) : (
-          <Text.Skeleton lineStyles={[{ width: moderateScale(72) }]} />
+          <Text color="disabled">---</Text>
         )}
       </Stack>
     </>

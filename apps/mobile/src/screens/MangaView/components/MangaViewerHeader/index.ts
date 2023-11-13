@@ -9,7 +9,6 @@ export interface MangaViewerHeaderProps extends React.PropsWithChildren {
   meta?: ReturnType<typeof useManga>['manga'];
   manga: Manga;
   status: FetchMangaMetaStatus;
-  error: string;
   refresh: () => void;
   scrollViewStyle: {
     readonly paddingTop: number;

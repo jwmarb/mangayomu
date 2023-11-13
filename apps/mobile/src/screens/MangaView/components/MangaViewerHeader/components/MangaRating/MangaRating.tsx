@@ -5,9 +5,11 @@ import Text from '@components/Text';
 import React from 'react';
 import { MangaRatingProps } from './';
 import { moderateScale } from 'react-native-size-matters';
+import { useMangaViewError } from '@screens/MangaView/context/ErrorContext';
 
 const MangaRating: React.FC<MangaRatingProps> = (props) => {
   const { data, loading } = props;
+  const error = useMangaViewError();
 
   if (data == null && loading)
     return (
@@ -25,7 +27,7 @@ const MangaRating: React.FC<MangaRatingProps> = (props) => {
       </Box>
     );
 
-  if (data == null) return null;
+  if (data == null || error) return null;
 
   const { value, voteCount } = data;
 

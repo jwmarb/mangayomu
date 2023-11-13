@@ -6,6 +6,6 @@ import { SharedValue } from 'react-native-reanimated';
 export interface InternetStatusToastProps extends React.PropsWithChildren {
   manga?: ReturnType<typeof useManga>['manga'];
   networkStatusOffset: SharedValue<number>;
-  initialFetchHasError: boolean;
+  fetchError: string;
 }
 export default InternetStatusToast;
