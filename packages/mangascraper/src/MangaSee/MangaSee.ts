@@ -22,7 +22,7 @@ import {
   StringComparator,
 } from '@mangayomu/algorithms';
 import { sortChapters } from '../scraper/scraper.helpers';
-import { useWorklets } from '../utils/worklets';
+import { WorkletFn, useWorklets } from '../utils/worklets';
 
 const mapLatestHottestManga = (
   x: (HotUpdateJSON | LatestJSON)[],
@@ -48,10 +48,6 @@ const mapLatestHottestManga = (
   //   source: this.name,
   // }))
 };
-
-type WorkletFn<T extends (...args: any) => any> = (
-  ...params: Parameters<T>
-) => Promise<ReturnType<T>>;
 
 class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   private memoizedDir: Directory[] | null = null;
