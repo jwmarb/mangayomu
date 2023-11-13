@@ -26,15 +26,23 @@ const MangaActionButtons: React.FC<MangaActionButtonsProps> = (props) => {
     currentlyReadingChapterKey,
     firstChapterKey,
   } = props;
+
   const navigation = useRootNavigation();
   const localRealm = useLocalRealm();
+  const isValid =
+    currentlyReadingChapterKey != null &&
+    localRealm.objectForPrimaryKey(
+      LocalChapterSchema,
+      currentlyReadingChapterKey,
+    ) != null;
   function handleOnRead() {
-    if (mangaKey != null && firstChapterKey != null)
+    if (mangaKey != null && firstChapterKey != null && isValid)
       navigation.navigate('Reader', {
         chapter: currentlyReadingChapterKey ?? firstChapterKey,
         manga: mangaKey,
       });
   }
+
   return (
     <Stack
       space="s"
@@ -44,18 +52,19 @@ const MangaActionButtons: React.FC<MangaActionButtonsProps> = (props) => {
       mb="l"
       justify-content="center"
     >
-      <Box maxWidth={moderateScale(480)} flex-grow>
+      <Box maxWidth={moderateScale(240)} flex-grow>
         <Button
           onPress={handleOnRead}
           {...(loading
             ? buttonLoading
             : {
+                disabled: !isValid,
                 label:
                   currentlyReadingChapterKey != null
                     ? localRealm.objectForPrimaryKey(
                         LocalChapterSchema,
                         currentlyReadingChapterKey,
-                      )?.name
+                      )?.name ?? currentlyReadingChapterKey
                     : 'Read',
                 variant: 'contained',
                 icon: <Icon type="font" name="book" />,
