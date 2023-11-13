@@ -21,7 +21,6 @@ function deepEqual(
 export default function writeLocalChapters(
   localRealm: Realm,
   meta: MangaMeta & Manga,
-  user: ReturnType<typeof useUser>,
 ) {
   const chapters: string[] = [];
   const availableLanguages: ISOLangCode[] = [];
@@ -31,7 +30,7 @@ export default function writeLocalChapters(
     for (const x of meta.chapters) {
       chapters.push(x.link);
       uniqChapters.add(x.link);
-      if ('language' in x) {
+      if ((x as MangaMultilingualChapter)['language'] != null) {
         const multilingualChapter = x as MangaMultilingualChapter;
         if (!lookup.has(multilingualChapter.language)) {
           integrateSortedList(availableLanguages, SortLanguages).add(
