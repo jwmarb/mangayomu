@@ -1,9 +1,13 @@
 import { inPlaceSort } from 'fast-sort';
 import React from 'react';
-import { getErrorMessage } from '@helpers/getErrorMessage';
+import {
+  getErrorMessage,
+  getErrorMessageWorklet,
+} from '@helpers/getErrorMessage';
 import { MangaHost, Manga } from '@mangayomu/mangascraper/src';
 import { EqualityFn } from 'react-redux';
 import useAppSelector from '@hooks/useAppSelector';
+import { Worklets } from 'react-native-worklets-core';
 
 export interface SourceError {
   error: string;
@@ -24,6 +28,44 @@ export const equalityMangaHostFn: EqualityFn<
   }
   return true;
 };
+
+const computeSettledPromised = (
+  mangaHosts: MangaHost[],
+  mangaCollection: PromiseSettledResult<Manga[]>[],
+) => {
+  'worklet';
+  const errors: SourceError[] = [];
+  const unsortedMangas: { mangas: Manga[] }[] = [];
+
+  for (const key in mangaCollection) {
+    const settledResult = mangaCollection[key];
+    switch (settledResult.status) {
+      case 'fulfilled':
+        unsortedMangas.push({ mangas: settledResult.value });
+        break;
+      case 'rejected':
+        errors.push({
+          source: mangaHosts[key].name,
+          error: getErrorMessageWorklet(settledResult.reason),
+        });
+        break;
+    }
+  }
+  const largestIndex = unsortedMangas.reduce(
+    (prev, curr) => Math.max(0, prev, curr.mangas.length - 1),
+    0,
+  );
+  const mangas: Manga[] = [];
+  for (let i = 0; i <= largestIndex; i++) {
+    for (const collection of unsortedMangas) {
+      if (i < collection.mangas.length) mangas.push(collection.mangas[i]);
+    }
+  }
+  return JSON.stringify({ errors, mangas });
+};
+const executeParallelTask = Worklets.createRunInContextFn(
+  computeSettledPromised,
+);
 
 /**
  * Get the MangaHost from redux or not. Comes with safety from edge cases.
@@ -84,33 +126,8 @@ export default function getMangaHost() {
               : ([] as Manga[]),
           ),
         );
-        const [errors, unsortedMangas] = mangaCollection.reduce(
-          (prev, curr, index) => {
-            if (curr.status === 'rejected')
-              prev[0].push({
-                source: hosts[index].name,
-                error: getErrorMessage(curr.reason),
-              });
-            else prev[1].push({ mangas: curr.value });
-            return prev;
-          },
-          [[], []] as [SourceError[], { mangas: Manga[] }[]],
-        );
-
-        const largestIndex = unsortedMangas.reduce(
-          (prev, curr) => Math.max(0, prev, curr.mangas.length - 1),
-          0,
-        );
-        const mangas: Manga[] = [];
-        for (let i = 0; i <= largestIndex; i++) {
-          for (const collection of unsortedMangas) {
-            if (i < collection.mangas.length) mangas.push(collection.mangas[i]);
-          }
-        }
-        return {
-          errors,
-          mangas,
-        };
+        const result = await executeParallelTask(hosts, mangaCollection);
+        return JSON.parse(result);
       },
       async getLatestMangas(): Promise<MangaConcurrencyResult> {
         const mangaCollection = await Promise.allSettled(
@@ -120,65 +137,15 @@ export default function getMangaHost() {
               : ([] as Manga[]),
           ),
         );
-        const [errors, unsortedMangas] = mangaCollection.reduce(
-          (prev, curr, index) => {
-            if (curr.status === 'rejected')
-              prev[0].push({
-                source: hosts[index].name,
-                error: getErrorMessage(curr.reason),
-              });
-            else prev[1].push({ mangas: curr.value });
-            return prev;
-          },
-          [[], []] as [SourceError[], { mangas: Manga[] }[]],
-        );
-
-        const largestIndex = unsortedMangas.reduce(
-          (prev, curr) => Math.max(0, prev, curr.mangas.length - 1),
-          0,
-        );
-        const mangas: Manga[] = [];
-        for (let i = 0; i <= largestIndex; i++) {
-          for (const collection of unsortedMangas) {
-            if (i < collection.mangas.length) mangas.push(collection.mangas[i]);
-          }
-        }
-
-        return {
-          errors,
-          mangas,
-        };
+        const result = await executeParallelTask(hosts, mangaCollection);
+        return JSON.parse(result);
       },
       async getMangaDirectory(): Promise<MangaConcurrencyResult> {
         const mangaCollection = await Promise.allSettled(
           hosts.map((x) => x.listMangas()),
         );
-        const [errors, categorizedMangas] = mangaCollection.reduce(
-          (prev, curr, index) => {
-            if (curr.status === 'rejected')
-              prev[0].push({
-                source: hosts[index].name,
-                error: getErrorMessage(curr.reason),
-              });
-            else prev[1].push({ mangas: curr.value });
-            return prev;
-          },
-          [[], []] as [SourceError[], { mangas: Manga[] }[]],
-        );
-        const largestIndex = categorizedMangas.reduce(
-          (prev, curr) => Math.max(0, prev, curr.mangas.length - 1),
-          0,
-        );
-        const mangas: Manga[] = [];
-        for (let i = 0; i <= largestIndex; i++) {
-          for (const collection of categorizedMangas) {
-            if (i < collection.mangas.length) mangas.push(collection.mangas[i]);
-          }
-        }
-        return {
-          errors,
-          mangas,
-        };
+        const result = await executeParallelTask(hosts, mangaCollection);
+        return JSON.parse(result);
       },
     }),
     [sources, configs],
