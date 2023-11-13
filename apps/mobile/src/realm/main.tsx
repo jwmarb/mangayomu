@@ -36,6 +36,6 @@ export const {
     MangaRatingSchema,
     MangaStatusSchema,
   ],
-  schemaVersion: 18,
+  schemaVersion: 19,
   path: Realm.defaultPath.replace('default.realm', 'local.realm'),
 });
