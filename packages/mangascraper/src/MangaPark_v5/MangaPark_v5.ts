@@ -1,17 +1,20 @@
 import {
-  digitsOnly,
-  extractChapterTitle,
-  GENRES,
   getV3URL,
   getV5URL,
+  mapMultilingualQueryResponse,
+  mapMultilingualQueryResponseFallback,
+  mapQueryResponse,
+  mapQueryResponseFallback,
   OFFICIAL_WORK_STATUS,
   ORDER_BY,
   ORIGINAL_WORK_LANGUAGE,
-  parseTimestamp,
   TYPE,
   VIEW_CHAPTERS,
 } from './MangaPark_v5.helpers';
 import {
+  MangaParkV5GetComicChapters,
+  MangaParkV5GetComicRangeList,
+  MangaParkV5GetContentChapterList,
   MangaParkV5HotMangas,
   MangaParkV5MangaMeta,
   MangaParkV5NextDataMeta,
@@ -19,27 +22,16 @@ import {
   MangaParkV5SearchManga,
 } from './MangaPark_v5.interfaces';
 import { MangaHostWithFilters } from '../scraper/scraper.filters';
-import {
-  GetMeta,
-  Manga,
-  MangaChapter,
-  MangaMultilingualChapter,
-} from '../scraper/scraper.interfaces';
-import languages, { ISOLangCode } from '@mangayomu/language-codes';
+import { GetMeta, Manga, MangaChapter } from '../scraper/scraper.interfaces';
 import { MangaParkV5Filter, MANGAPARKV5_INFO } from './MangaPark_v5.constants';
-import { sortChapters } from '../scraper/scraper.helpers';
+import { createWorklet } from '../utils/worklets';
 
 class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
   private static API_ROUTE = 'https://mangapark.net/apo/';
   public async getPages(
     chapter: Pick<MangaChapter, 'link'>,
   ): Promise<string[]> {
-    const _$ = await super.route(chapter, 'GET', undefined, {
-      proxyEnabled: false,
-    });
-    const $ = await super.route(
-      _$('a.btn.btn-outline-info.btn-block').attr('href')!,
-    );
+    const $ = await super.route(chapter);
     const html = $('script#__NEXT_DATA__').html();
     if (html == null) throw Error('HTML is null');
     const meta: MangaParkV5NextDataReader = JSON.parse(html);
@@ -97,7 +89,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
     );
 
     return data.get_content_browse_latest.items.map(
-      ({ comic: { data } }, index): Manga => ({
+      ({ comic: { data } }): Manga => ({
         imageCover: data.urlCoverOri,
         link: 'https://' + super.getLink() + getV3URL(data.urlPath),
         source: this.name,
@@ -187,101 +179,85 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
     );
   }
   public async getMeta(manga: GetMeta): Promise<MangaParkV5MangaMeta & Manga> {
-    const $ = await super.route(manga, 'GET', undefined, {
-      proxyEnabled: false,
-    });
+    const comicId = parseInt(
+      manga.link.substring(manga.link.lastIndexOf('/') + 1),
+    );
+    const [unparsedEnglishChapters, unparsedMultilingualChapters] =
+      await Promise.all([
+        super.route<MangaParkV5GetComicRangeList>(
+          { link: MangaParkV5.API_ROUTE },
+          'POST',
+          {
+            operationName: 'get_content_comicChapterRangeList',
+            query:
+              'query get_content_comicChapterRangeList(\n  $select: Content_ComicChapterRangeList_Select\n) {\n  get_content_comicChapterRangeList(select: $select) {\n    reqRange {\n      x\n      y\n    }\n    missing\n    pager {\n      x\n      y\n    }\n    items {\n      serial\n      chapterNodes {\n        id\n        data {\n          serial\n          dname\n          title\n          urlPath\n          datePublic\n          lang\n          srcTitle\n        }\n\n      }\n    }\n  }\n}',
+            variables: {
+              select: {
+                comicId,
+                range: { x: Number.MAX_SAFE_INTEGER, y: 0 },
+                isAsc: false,
+              },
+            },
+          },
+        ),
+        super.route<MangaParkV5GetComicChapters>(
+          { link: MangaParkV5.API_ROUTE },
+          'POST',
+          {
+            operationName: 'get_content_comic_chapters',
+            query:
+              'query get_content_comic_chapters(\n  $comicId: Int!\n  $isPref: Boolean\n  $incLangs: [String]\n  $excLangs: [String]\n) {\n  get_content_comic_chapters(\n    comicId: $comicId\n    isPref: $isPref\n    incLangs: $incLangs\n    excLangs: $excLangs\n  ) {\n    serial\n    chapters {\n      lang\n      cids\n    }\n  }\n}',
+            variables: {
+              comicId,
+              isPref: false,
+            },
+          },
+        ),
+      ]);
+    const multilingualChapters =
+      await super.route<MangaParkV5GetContentChapterList>(
+        { link: MangaParkV5.API_ROUTE },
+        'POST',
+        {
+          operationName: 'get_content_chapter_list',
+          query:
+            'query get_content_chapter_list($comicId: Int!, $chapterIds: [Int]) {\n  get_content_chapter_list(comicId: $comicId, chapterIds: $chapterIds) {\n    id\n    data {\n      datePublic\n      lang\n      serial\n      dname\n      title\n      urlPath\n    }\n  }\n}',
+          variables: {
+            comicId,
+            chapterIds:
+              unparsedMultilingualChapters.data.get_content_comic_chapters.flatMap(
+                (x) => x.chapters.flatMap((x) => x.cids),
+              ),
+          },
+        },
+      );
+    // const $ = await super.route(manga, 'GET', undefined, {
+    //   proxyEnabled: false,
+    // });
     const _$ = await super.route({ link: getV5URL(manga.link) });
     const html = _$('script#__NEXT_DATA__').html();
     if (html == null) throw Error('Unknown page');
     const parsedData: MangaParkV5NextDataMeta = JSON.parse(html);
     const [data] = parsedData.props.pageProps.dehydratedState.queries;
 
-    const englishChapters = $('div.d-flex.mt-5:contains("English Chapters")')
-      .next()
-      .find('div.episode-item');
+    const [getEnglish, getMultilingual] = await Promise.all([
+      createWorklet(mapQueryResponse, mapQueryResponseFallback),
+      createWorklet(
+        mapMultilingualQueryResponse,
+        mapMultilingualQueryResponseFallback,
+      ),
+    ]);
 
-    const englishChapterAnchorElements = englishChapters
-      .find('div.d-flex.align-items-center > a.ms-3.visited[href^="/comic/"]')
-      .map((_, el) => ({
-        name: extractChapterTitle($(el).text()),
-        link: 'https://' + super.getLink() + $(el).attr('href'),
-      }))
-      .get();
+    multilingualChapters.data.get_content_chapter_list.sort((a, b) => {
+      if (a.data.lang === b.data.lang) return b.data.serial - a.data.serial;
+      return a.data.lang.localeCompare(b.data.lang);
+    });
 
-    const englishChapterDates = englishChapters
-      .find('i.text-nowrap')
-      .map((_, el) => {
-        const txt = $(el).text();
-        return parseTimestamp(txt);
-      });
-
-    const englishChapterObjects: MangaMultilingualChapter[] =
-      englishChapterAnchorElements.map(
-        ({ link, name }, i) =>
-          ({
-            link,
-            name,
-            index: i,
-            date: englishChapterDates[i],
-            language: 'en',
-          } as MangaMultilingualChapter),
-      );
-
-    const multilingualEpisodeItemElements = $(
-      'div.align-items-center.d-flex.mt-5.justify-content-between:contains("Multilingual Chapters")',
-    )
-      .next()
-      .find('div.scrollable-panel > div#chap-index > div.episode-item');
-
-    const multilingualChapterTitles = multilingualEpisodeItemElements
-      .find('div.align-items-center.d-flex:not(.flex-nowrap) > a')
-      .map((_, el) => extractChapterTitle($(el).text()))
-      .get();
-
-    const multilingualChapterDates = multilingualEpisodeItemElements
-      .find('div.flex-nowrap > i.text-nowrap')
-      .map((_, el) => parseTimestamp($(el).text()))
-      .get();
-
-    const referenceMultilingualChapter: Record<
-      string,
-      { title: string; dateUpdated: string }
-    > = multilingualChapterTitles.reduce((prev, curr, i) => {
-      const chapterNum = curr.substring(curr.lastIndexOf(' ') + 1);
-      prev[chapterNum] = {
-        title: curr,
-        dateUpdated: multilingualChapterDates[i],
-      };
-      return prev;
-    }, {} as Record<string, { title: string; dateUpdated: string }>);
-
-    const multilingualChapterObjects: MangaMultilingualChapter[] =
-      multilingualEpisodeItemElements
-        .find('div.d-flex.flex-fill[style="height: 24px;"] > div > div > a')
-        .map((i, el) => {
-          const href: string = $(el).attr('href')!;
-          const { title, dateUpdated } =
-            referenceMultilingualChapter[
-              digitsOnly(
-                href.substring(
-                  href.lastIndexOf('/') + 1,
-                  href.lastIndexOf('-'),
-                ),
-              )
-            ];
-          const isoCode = href.substring(
-            href.lastIndexOf('-') + 1,
-            href.lastIndexOf('-') + 3,
-          );
-          return {
-            index: i,
-            name: `${title} (${languages[isoCode as ISOLangCode].name})`,
-            language: isoCode,
-            date: dateUpdated,
-            link: 'https://' + super.getLink() + href,
-          } as MangaMultilingualChapter;
-        })
-        .get();
+    const [englishChapterObjects, multilingualChapterObjects] =
+      await Promise.all([
+        getEnglish(unparsedEnglishChapters, this.getLink()),
+        getMultilingual(multilingualChapters, this.getLink()),
+      ]);
 
     const genres = data.state.data.data.genres;
 
@@ -292,8 +268,6 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
     const imageCover = data.state.data.data.urlCoverOri;
 
     const chapters = englishChapterObjects.concat(multilingualChapterObjects);
-
-    sortChapters(chapters);
 
     return {
       title: data.state.data.data.name,

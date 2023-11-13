@@ -1,4 +1,10 @@
+import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import { sub } from 'date-fns';
+import { MangaMultilingualChapter } from '../scraper/scraper.interfaces';
+import {
+  MangaParkV5GetContentChapterList,
+  MangaParkV5GetComicRangeList,
+} from './MangaPark_v5.interfaces';
 
 export const GENRES = {
   Artbook: 'artbook',
@@ -263,3 +269,149 @@ export function getV5URL(urlPath: string): string {
   const newUrlPath = urlPath.replace('/comic/', '/title/');
   return newUrlPath;
 }
+
+export function compressURL(urlPath: string): string {
+  /**
+   * Compress the URL!
+   *
+   * From: https://mangapark.net/title/119777-kaguya-sama-wa-kokurasetai-tensai-tachi-no-renai-zunousen/7683399-en-ch.281.1
+   * To: https://mangapark.net/title/119777/7683399
+   */
+
+  const end = urlPath.substring(urlPath.lastIndexOf('/'));
+  const compressed =
+    urlPath.substring(0, urlPath.indexOf('-')) +
+    end.substring(0, end.indexOf('-'));
+
+  return compressed;
+}
+
+export function compressURLWorklet(urlPath: string): string {
+  'worklet';
+  /**
+   * Compress the URL!
+   *
+   * From: https://mangapark.net/title/119777-kaguya-sama-wa-kokurasetai-tensai-tachi-no-renai-zunousen/7683399-en-ch.281.1
+   * To: https://mangapark.net/title/119777/7683399
+   */
+
+  const end = urlPath.substring(urlPath.lastIndexOf('/'));
+  const compressed =
+    urlPath.substring(0, urlPath.indexOf('-')) +
+    end.substring(0, end.indexOf('-'));
+
+  return compressed;
+}
+
+export const mapMultilingualQueryResponseFallback = (
+  response: MangaParkV5GetContentChapterList,
+  hostLink: string,
+): MangaMultilingualChapter[] => {
+  'worklet';
+  const mapped: MangaMultilingualChapter[] = [];
+
+  let i = response.data.get_content_chapter_list.length - 1;
+  let j = response.data.get_content_chapter_list.length - 2;
+  while (i >= 0 && j >= 0) {
+    const short = response.data.get_content_chapter_list;
+    while (j >= 0 && short[j].data.lang === short[i].data.lang) {
+      j--;
+    }
+    while (i > j) {
+      const language = short[i].data.lang.substring(0, 2) as ISOLangCode;
+      mapped.push({
+        index: i - j - 1,
+        date: new Date(short[i].data.datePublic).toString(),
+        language: short[i].data.lang.substring(0, 2) as ISOLangCode,
+        link: `https://${hostLink}${compressURLWorklet(short[i].data.urlPath)}`,
+        name: `Chapter ${short[i].data.serial} (${languages[language].nativeName})`,
+        subname: short[i].data.title,
+      });
+      i--;
+    }
+    j--;
+  }
+  return mapped;
+};
+
+export const mapMultilingualQueryResponse = (
+  response: MangaParkV5GetContentChapterList,
+  hostLink: string,
+): string => {
+  'worklet';
+  const mapped: MangaMultilingualChapter[] = [];
+
+  let i = response.data.get_content_chapter_list.length - 1;
+  let j = response.data.get_content_chapter_list.length - 2;
+  while (i >= 0 && j >= 0) {
+    const short = response.data.get_content_chapter_list;
+    while (j >= 0 && short[j].data.lang === short[i].data.lang) {
+      j--;
+    }
+    while (i > j) {
+      const language = short[i].data.lang.substring(0, 2) as ISOLangCode;
+      mapped.push({
+        index: i - j - 1,
+        date: new Date(short[i].data.datePublic).toString(),
+        language: short[i].data.lang.substring(0, 2) as ISOLangCode,
+        link: `https://${hostLink}${compressURLWorklet(short[i].data.urlPath)}`,
+        name: `Chapter ${short[i].data.serial} (${languages[language].nativeName})`,
+        subname: short[i].data.title,
+      });
+      i--;
+    }
+    j--;
+  }
+  return JSON.stringify(mapped);
+};
+
+export const mapQueryResponse = (
+  response: MangaParkV5GetComicRangeList,
+  hostLink: string,
+) => {
+  'worklet';
+  const mapped: MangaMultilingualChapter[] = [];
+
+  for (
+    let i = response.data.get_content_comicChapterRangeList.items.length - 1;
+    i >= 0;
+    i--
+  ) {
+    const x = response.data.get_content_comicChapterRangeList.items[i];
+    mapped.push({
+      index: i,
+      date: new Date(x.chapterNodes[0].data.datePublic).toString(),
+      language: x.chapterNodes[0].data.lang.substring(0, 2) as ISOLangCode,
+      link: `https://${hostLink}${compressURLWorklet(
+        x.chapterNodes[0].data.urlPath,
+      )}`,
+      name: `Chapter ${x.serial}`,
+      subname: x.chapterNodes[0].data.title,
+    });
+  }
+  return JSON.stringify(mapped);
+};
+
+export const mapQueryResponseFallback = (
+  response: MangaParkV5GetComicRangeList,
+  hostLink: string,
+) => {
+  const mapped: MangaMultilingualChapter[] = [];
+
+  for (
+    let i = response.data.get_content_comicChapterRangeList.items.length - 1;
+    i >= 0;
+    i--
+  ) {
+    const x = response.data.get_content_comicChapterRangeList.items[i];
+    mapped.push({
+      index: i,
+      date: new Date(x.chapterNodes[0].data.datePublic).toString(),
+      language: x.chapterNodes[0].data.lang.substring(0, 2) as ISOLangCode,
+      link: `https://${hostLink}${compressURL(x.chapterNodes[0].data.urlPath)}`,
+      name: `Chapter ${x.serial}`,
+      subname: x.chapterNodes[0].data.title,
+    });
+  }
+  return mapped;
+};
