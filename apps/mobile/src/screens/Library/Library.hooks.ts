@@ -6,7 +6,7 @@ import displayMessage from '@helpers/displayMessage';
 import integrateSortedList from '@helpers/integrateSortedList';
 import useAppSelector from '@hooks/useAppSelector';
 import useMountedEffect from '@hooks/useMountedEffect';
-import { MangaMultilingualChapter } from '@mangayomu/mangascraper';
+import { MangaMultilingualChapter } from '@mangayomu/mangascraper/src';
 import { MangaHost } from '@mangayomu/mangascraper/src';
 import { useIsFocused } from '@react-navigation/native';
 import { useUser } from '@realm/react';
