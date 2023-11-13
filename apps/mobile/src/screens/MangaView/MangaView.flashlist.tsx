@@ -24,6 +24,7 @@ export const renderItem: ListRenderItem<LocalChapterSchema> = (info) => {
     <RowChapter
       mangaKey={extra.mangaLink}
       name={item.name}
+      subname={item.subname}
       date={item.date}
       chapterKey={item._id}
       isReading={extra.currentlyReadingChapterId === item._id}
