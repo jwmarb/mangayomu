@@ -256,7 +256,7 @@ export declare interface MangaChapter {
   link: string;
 
   /**
-   * The name of the chapter
+   * The name of the chapter (e.g. Chapter 43 or #194)
    */
   name: string;
 
@@ -269,6 +269,11 @@ export declare interface MangaChapter {
    * The date the chapter was released
    */
   date: string;
+
+  /**
+   * After the name of a chapter is given, there may be a subtitle associated with it
+   */
+  subname?: string;
 }
 
 export type WithFilters =

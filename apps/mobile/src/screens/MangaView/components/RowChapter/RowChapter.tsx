@@ -8,18 +8,16 @@ import { format, formatDistanceToNow } from 'date-fns';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { useTheme } from '@emotion/react';
 import { Pressable } from 'react-native';
-import { useQuery, useRealm } from '@database/main';
+import { useQuery } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
-import { IChapterSchema } from '@mangayomu/schemas';
 
 export const ROW_CHAPTER_HEIGHT = moderateScale(60);
 
 const RowChapter: React.FC<RowChapterProps> = (props) => {
-  const { mangaKey, date, isReading, name, chapterKey } = props;
+  const { mangaKey, date, isReading, name, chapterKey, subname } = props;
   const navigation = useRootNavigation();
   const theme = useTheme();
   const parsed = Date.parse(date);
-  const realm = useRealm();
   const isRecent = Date.now() - 6.048e7 < parsed;
   const isWithinWeek = Date.now() - 6.048e8 < parsed;
   const k = useQuery(
@@ -42,7 +40,7 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
       });
   }
   // function handleOnLongPress() {
-  //   console.log(k);
+  //   console.log(chapterKey);
   // }
 
   // React.useEffect(() => {
@@ -91,6 +89,16 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
               </Text>
             )}
           </Stack>
+          {subname && (
+            <Text
+              color="textSecondary"
+              variant="body-sub"
+              numberOfLines={2}
+              italic
+            >
+              {subname}
+            </Text>
+          )}
           <Text color={isRecent ? 'secondary' : 'textSecondary'}>
             {formattedDate}
           </Text>
