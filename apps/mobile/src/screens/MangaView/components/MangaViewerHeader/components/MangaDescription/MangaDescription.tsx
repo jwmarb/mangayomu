@@ -29,7 +29,7 @@ const MangaDescription: React.FC<MangaDescriptionProps> = (props) => {
         align-items="center"
       >
         <Text variant="header" bold>
-          {loading && !error ? 'Synopsis' : 'Error'}
+          {error ? 'Error' : 'Synopsis'}
         </Text>
         {showExpand && (
           <Button
