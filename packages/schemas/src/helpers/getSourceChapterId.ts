@@ -1,9 +1,9 @@
-import {
+import type {
   Manga,
   MangaChapter,
-  MangaHost,
   MangaMultilingualChapter,
 } from '@mangayomu/mangascraper';
+import MangaHost from '@mangayomu/mangascraper/dist/src/scraper/scraper.abstract';
 import getSourceMangaId from './getSourceMangaId';
 import slugify from './slugify';
 import languages from '@mangayomu/language-codes';

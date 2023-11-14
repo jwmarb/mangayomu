@@ -1,5 +1,7 @@
-import { MangaChapter } from '@mangayomu/mangascraper';
-import { MangaMultilingualChapter } from '@mangayomu/mangascraper/src';
+import type {
+  MangaChapter,
+  MangaMultilingualChapter,
+} from '@mangayomu/mangascraper';
 
 export interface ILocalChapterSchema
   extends Omit<MangaMultilingualChapter, 'link'> {

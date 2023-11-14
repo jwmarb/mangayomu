@@ -1,6 +1,6 @@
-import { ISOLangCode } from '@mangayomu/language-codes';
-import { Manga } from '@mangayomu/mangascraper';
-import { BSON } from 'realm';
+import type { ISOLangCode } from '@mangayomu/language-codes';
+import type { Manga } from '@mangayomu/mangascraper';
+import type { BSON } from 'realm';
 
 export interface IMangaSchema extends Manga {
   currentlyReadingChapter?: CurrentlyReadingChapter;
