@@ -31,10 +31,18 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
     chapter: Pick<MangaChapter, 'link'>,
   ): Promise<string[]> {
     const $ = await super.route(chapter);
-    const images = $('img.w-full.h-full')
-      .map((_, el) => $(el).attr('src'))
-      .toArray();
-
+    const { objs } = JSON.parse($('script[type="qwik/json"]').text()) as {
+      objs: unknown[];
+    };
+    const images: string[] = [];
+    const start = Math.floor(objs.length * 0.45);
+    for (let i = start; i >= 0; i--) {
+      const val = objs[i];
+      if (typeof val === 'string' && val.startsWith('https://'))
+        images.push(val);
+      else if (images.length > 0) break;
+    }
+    images.reverse();
     return images;
   }
   public async listRecentlyUpdatedManga(): Promise<Manga[]> {
