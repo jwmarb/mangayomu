@@ -43,27 +43,6 @@ export type MangaParkV5HotMangas = {
   };
 };
 
-export type MangaParkV5NextDataReader = {
-  props: {
-    pageProps: {
-      dehydratedState: {
-        queries: {
-          state: {
-            data: {
-              data: {
-                imageSet: {
-                  httpLis: string[];
-                  wordLis: string[];
-                };
-              };
-            };
-          };
-        }[];
-      };
-    };
-  };
-};
-
 /**
  * For ENGLISH chapters only
  */

@@ -17,7 +17,6 @@ import {
   MangaParkV5GetContentChapterList,
   MangaParkV5HotMangas,
   MangaParkV5MangaMeta,
-  MangaParkV5NextDataReader,
   MangaParkV5SearchManga,
 } from './MangaPark_v5.interfaces';
 import { MangaHostWithFilters } from '../scraper/scraper.filters';
