@@ -17,7 +17,6 @@ import {
   MangaParkV5GetContentChapterList,
   MangaParkV5HotMangas,
   MangaParkV5MangaMeta,
-  MangaParkV5NextDataMeta,
   MangaParkV5NextDataReader,
   MangaParkV5SearchManga,
 } from './MangaPark_v5.interfaces';
@@ -32,15 +31,10 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
     chapter: Pick<MangaChapter, 'link'>,
   ): Promise<string[]> {
     const $ = await super.route(chapter);
-    const html = $('script#__NEXT_DATA__').html();
-    if (html == null) throw Error('HTML is null');
-    const meta: MangaParkV5NextDataReader = JSON.parse(html);
-    const { httpLis, wordLis } =
-      meta.props.pageProps.dehydratedState.queries[0].state.data.data.imageSet;
-    const images: string[] = [];
-    for (let i = 0; i < httpLis.length; i++) {
-      images.push(httpLis[i] + '?' + wordLis[i]);
-    }
+    const images = $('img.w-full.h-full')
+      .map((_, el) => $(el).attr('src'))
+      .toArray();
+
     return images;
   }
   public async listRecentlyUpdatedManga(): Promise<Manga[]> {
@@ -232,10 +226,6 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
           },
         },
       );
-    const html = _$('script#__NEXT_DATA__').html();
-    if (html == null) throw Error('Unknown page');
-    const parsedData: MangaParkV5NextDataMeta = JSON.parse(html);
-    const [data] = parsedData.props.pageProps.dehydratedState.queries;
 
     const [getEnglish, getMultilingual] = await Promise.all([
       createWorklet(mapQueryResponse, mapQueryResponseFallback),
@@ -256,32 +246,39 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
         getMultilingual(multilingualChapters, this.getLink()),
       ]);
 
-    const genres = data.state.data.data.genres;
+    const genres = _$('div[q\\:key="30_2"] > span')
+      .map((_, el) => _$(el).attr('q:key'))
+      .toArray();
 
-    const ratingValue = data.state.data.data.stat_score_bay;
+    const ratingEl = _$('div[q\\:key="VI_2"]');
+    const ratingValue = ratingEl.prev().text();
+    const ratingCount = parseInt(ratingEl.next().text().split(' ')[0]);
 
-    const authors = data.state.data.data.authors ?? [];
+    const titleEl = _$('div.space-y-2.hidden.md\\:block > h3');
+    const title = titleEl.text();
+    const authors = titleEl.next().next().text().split(' / ');
 
-    const imageCover = data.state.data.data.urlCoverOri;
+    const imageCover = _$('img[q\\:key="q1_1"]').attr('src') ?? '';
+
+    const description = _$('div.limit-html-p').text();
 
     const chapters = englishChapterObjects.concat(multilingualChapterObjects);
 
+    const status = _$('span[q\\:key="Yn_5"]').text();
+
     return {
-      title: data.state.data.data.name,
+      title,
       source: this.name,
       link: manga.link,
       authors,
-      description: data.state.data.data.summary.code,
+      description,
       genres,
       rating: {
         value: ratingValue || 'N/A',
-        voteCount: data.state.data.data.stat_count_vote,
+        voteCount: ratingCount,
       },
       status: {
-        publish: `${
-          data.state.data.data.originalStatus[0].toUpperCase() +
-          data.state.data.data.originalStatus.substring(1)
-        } (Status)`,
+        publish: `${status} (Status)`,
       },
       chapters,
       imageCover,
