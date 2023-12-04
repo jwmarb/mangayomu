@@ -34,7 +34,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       objs: unknown[];
     };
     const images: string[] = [];
-    const start = Math.floor(objs.length * 0.45);
+    const start = Math.floor(objs.length / 2);
     for (let i = start; i >= 0; i--) {
       const val = objs[i];
       if (typeof val === 'string' && val.startsWith('https://'))
