@@ -43,34 +43,6 @@ export type MangaParkV5HotMangas = {
   };
 };
 
-export type MangaParkV5NextDataMeta = {
-  props: {
-    pageProps: {
-      dehydratedState: {
-        queries: {
-          state: {
-            data: {
-              id: number;
-              data: {
-                authors: string[] | null;
-                originalStatus: string;
-                summary: {
-                  code: string;
-                };
-                stat_score_bay: number;
-                stat_count_vote: number;
-                genres: string[];
-                urlCoverOri: string;
-                name: string;
-              };
-            };
-          };
-        }[];
-      };
-    };
-  };
-};
-
 export type MangaParkV5NextDataReader = {
   props: {
     pageProps: {
