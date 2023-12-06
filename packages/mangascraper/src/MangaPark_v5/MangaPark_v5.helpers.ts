@@ -5,6 +5,7 @@ import {
   MangaParkV5GetContentChapterList,
   MangaParkV5GetComicRangeList,
 } from './MangaPark_v5.interfaces';
+import { WorkletFn, isWorkletSupported, useWorklets } from '../utils/worklets';
 
 export const GENRES = {
   Artbook: 'artbook',
@@ -415,3 +416,40 @@ export const mapQueryResponseFallback = (
   }
   return mapped;
 };
+
+// export const iteratePagesFallback = (objs: unknown[]): string[] => {
+//   const images: string[] = [];
+//   for (let i = 0; i < objs.length; i++) {
+//     const val = objs[i];
+//     if (typeof val === 'string' && val.startsWith('https://')) images.push(val);
+//   }
+//   return images;
+// };
+
+// const ITERATIONS_PER_THREAD = 250;
+
+// export const _iteratePages = (objs: unknown[], threadNum: number): string => {
+//   'worklet';
+//   const iters = Math.min((threadNum + 1) * ITERATIONS_PER_THREAD, objs.length);
+//   const start = threadNum * ITERATIONS_PER_THREAD;
+//   const images: string[] = [];
+//   for (let i = start; i < iters; i++) {
+//     const val = objs[i];
+//     if (typeof val === 'string' && val.startsWith('https://')) images.push(val);
+//   }
+//   return JSON.stringify(images);
+// };
+
+// export const iteratePages = async (objs: unknown[]): Promise<string[]> => {
+// const Worklets = await useWorklets();
+// if (Worklets != null) {
+//   const threadCount = Math.ceil(objs.length / ITERATIONS_PER_THREAD); // each thread will do 100 iterations
+//   const worklets: WorkletFn<typeof _iteratePages>[] = [];
+//   for (let i = 0; i < threadCount; i++) {
+//     worklets.push(Worklets.createRunInContextFn(_iteratePages));
+//   }
+//   const result = await Promise.all(worklets.map((x, i) => x(objs, i)));
+//   return result.flatMap((x) => JSON.parse(x));
+// }
+// return iteratePagesFallback(objs);
+// };
