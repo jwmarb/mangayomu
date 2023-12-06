@@ -348,7 +348,7 @@ export const MANGAPARKV5_INFO: MangaHostFiltersInfo<MangaParkV5Filter> = {
   hasLatestMangas: true,
   hasMangaDirectory: false,
   host: 'https://mangapark.net/',
-  version: '2.0.2',
+  version: '2.0.3',
   name: 'MangaPark v3',
   icon: 'https://mangapark.io/client-script/img/favicon.gif',
 };
