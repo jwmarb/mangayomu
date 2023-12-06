@@ -30,19 +30,24 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
     chapter: Pick<MangaChapter, 'link'>,
   ): Promise<string[]> {
     const $ = await super.route(chapter);
-    const { objs } = JSON.parse($('script[type="qwik/json"]').text()) as {
-      objs: unknown[];
-    };
+    const { objs } = JSON.parse($('script[type="qwik/json"]').text());
     const images: string[] = [];
-    const start = Math.floor(objs.length / 2);
-    for (let i = start; i >= 0; i--) {
+    for (let i = 0; i < objs.length; i++) {
       const val = objs[i];
       if (typeof val === 'string' && val.startsWith('https://'))
         images.push(val);
-      else if (images.length > 0) break;
     }
-    images.reverse();
-    return images;
+    const lastImage = images[images.length - 1];
+    const eqPos = lastImage.lastIndexOf('=');
+    const imgExp = lastImage.substring(eqPos);
+    const newArray = [];
+    for (let i = 0; i < images.length; i++) {
+      const exp = images[i].substring(
+        eqPos + images[i].length - lastImage.length,
+      );
+      if (exp === imgExp) newArray.push(images[i]);
+    }
+    return newArray;
   }
   public async listRecentlyUpdatedManga(): Promise<Manga[]> {
     const { data } = await super.route<MangaParkV5HotMangas>(
