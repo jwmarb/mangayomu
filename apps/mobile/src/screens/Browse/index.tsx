@@ -75,6 +75,7 @@ export default function Browse(props: HomeTabProps<'Browse'>) {
       <LazyBrowse
         ref={ref}
         {...collapsible}
+        showSearchBar={showSearchBar}
         setShowSearchBar={setShowSearchBar}
         initialQuery={props.route.params?.initialQuery}
       />

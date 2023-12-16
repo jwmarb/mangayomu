@@ -33,6 +33,7 @@ import { BrowseMethods } from '@screens/Browse';
 const Browse: React.ForwardRefRenderFunction<
   BrowseMethods,
   ReturnType<typeof useCollapsibleTabHeader> & {
+    showSearchBar: boolean;
     setShowSearchBar: (val?: boolean) => void;
     initialQuery?: string;
   }
@@ -43,6 +44,7 @@ const Browse: React.ForwardRefRenderFunction<
     contentContainerStyle,
     initialQuery,
     setShowSearchBar,
+    showSearchBar,
   },
   ref,
 ) => {
@@ -60,23 +62,48 @@ const Browse: React.ForwardRefRenderFunction<
   );
   const sources = useAppSelector((state) => state.host.name);
   const inputSubmitted = useAppSelector((state) => state.browse.inputSubmitted);
+  const [search, setSearch] = React.useState<string>('');
 
   React.useEffect(() => {
     if (initialQuery) {
+      const abortController = new AbortController();
       setShowSearchBar(true);
       dispatch(setQuery(initialQuery));
-      setTimeout(async () => await searchMangas(initialQuery), 500);
+      setTimeout(
+        async () => await searchMangas(initialQuery, abortController),
+        500,
+      );
+      return () => {
+        abortController.abort();
+      };
     }
   }, [initialQuery]);
-  async function searchMangas(query: string) {
+  React.useEffect(() => {
+    if (!showSearchBar) {
+      setSearch('');
+      dispatch(exitUniversalSearch());
+    }
+  }, [showSearchBar]);
+  React.useEffect(() => {
+    if (search) {
+      const abortController = new AbortController();
+      searchMangas(search, abortController);
+      return () => {
+        abortController.abort();
+      };
+    }
+  }, [search]);
+  async function searchMangas(query: string, abortController: AbortController) {
     dispatch(initializeUniversalSearch(hostsWithUniversalSearch));
     const results = await Promise.allSettled(
       hostsWithUniversalSearch.map(async (x) => {
         try {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const host = MangaHost.sourcesMap.get(x)!;
+          host.signal = abortController.signal;
           return {
             source: x,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            manga: await MangaHost.sourcesMap.get(x)!.search(query),
+            manga: await host.search(query),
           };
         } catch (e) {
           throw { source: x, error: e };
@@ -88,7 +115,7 @@ const Browse: React.ForwardRefRenderFunction<
   async function handleOnSubmitEditing(
     e: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
   ) {
-    await searchMangas(e.nativeEvent.text);
+    setSearch(e.nativeEvent.text);
   }
 
   React.useImperativeHandle(ref, () => ({
@@ -111,7 +138,7 @@ const Browse: React.ForwardRefRenderFunction<
       },
     ];
   }, [sources.length, pinnedSources.length]);
-  if (inputSubmitted)
+  if (inputSubmitted && search.length > 0)
     return (
       <ScrollView
         onScroll={onScroll}
