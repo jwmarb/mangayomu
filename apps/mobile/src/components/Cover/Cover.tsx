@@ -1,24 +1,15 @@
 import { AnimatedBox } from '@components/Box';
-import connector, { ConnectedCoverProps } from '@components/Cover/Cover.redux';
+import { CoverProps } from '@components/Cover';
 import useImageHandler from '@components/Cover/useImageHandler';
 import Progress from '@components/Progress';
 import { useTheme } from '@emotion/react';
-import useBoolean from '@hooks/useBoolean';
-import { Manga } from '@mangayomu/mangascraper/src';
-import { useAppDispatch } from '@redux/main';
-import {
-  ImageResolverListener,
-  queue,
-  unqueue,
-} from '@redux/slices/imageresolver';
+import useAppSelector from '@hooks/useAppSelector';
 import { BookStyle } from '@redux/slices/settings';
+import { BOOK_COVER_HEIGHT, BOOK_DIMENSIONS } from '@theme/constants';
 import React from 'react';
 import { Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 
 export const coverStyles = ScaledSheet.create({
@@ -42,15 +33,16 @@ export const coverStyles = ScaledSheet.create({
   },
 });
 
-const Cover: React.FC<ConnectedCoverProps> = (props) => {
-  const {
-    scale = 1,
-    coverHeight,
-    width,
-    bookHeight,
-    coverStyle,
-    children,
-  } = props;
+const Cover: React.FC<CoverProps> = (props) => {
+  const { scale = 1, normalBookDimensions, children } = props;
+  const bookHeight = useAppSelector((state) => state.settings.book.height);
+  const coverStyle = useAppSelector((state) => state.settings.book.style);
+  const coverHeight = useAppSelector((state) =>
+    normalBookDimensions ? BOOK_COVER_HEIGHT : state.settings.book.coverHeight,
+  );
+  const width = useAppSelector((state) =>
+    normalBookDimensions ? BOOK_DIMENSIONS.width : state.settings.book.width,
+  );
 
   const { source, onLoad, onLoadStart, onError, opacity, loadingOpacity } =
     useImageHandler(props);
@@ -123,4 +115,4 @@ const Cover: React.FC<ConnectedCoverProps> = (props) => {
   );
 };
 
-export default connector(Cover);
+export default Cover;
