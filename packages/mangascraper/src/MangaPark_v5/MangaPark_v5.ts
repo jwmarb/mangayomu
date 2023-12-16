@@ -263,7 +263,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       .toArray();
 
     const ratingEl = _$('div[q\\:key="VI_2"]');
-    const ratingValue = ratingEl.prev().text();
+    const ratingValue = parseFloat(ratingEl.prev().text());
     const ratingCount = parseInt(ratingEl.next().text().split(' ')[0]);
 
     const titleEl = _$('div.space-y-2.hidden.md\\:block > h3');
