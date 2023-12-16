@@ -45,6 +45,7 @@ export function useLibraryData() {
   const realm = useRealm();
   const localRealm = useLocalRealm();
   const currentUser = useUser();
+  const query = React.useRef<string>('');
   const applyFilters = React.useMemo(() => {
     const ignoreGenres = new Set<string>();
     const requireGenres = new Set<string>();
@@ -116,10 +117,13 @@ export function useLibraryData() {
 
   const [data, setData] = React.useState(sortedData);
   useMountedEffect(() => {
-    setData(sortedData);
+    setData(
+      sortedData.filter((x) => x.title.toLowerCase().includes(query.current)),
+    );
   }, [sortedData]);
 
   function updateQuerifiedData(text: string) {
+    query.current = text.trim().toLowerCase();
     setTransition(() => {
       setData(
         sortedData.filter((x) =>
