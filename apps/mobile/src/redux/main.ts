@@ -59,7 +59,7 @@ export const store = configureStore({
           'reader/fetchPagesByChapter/rejected',
           'reader/setCurrentChapter',
           'imageResolver/queue',
-          'imageResolver/dequeue',
+          'imageResolver/unqueue',
           'payload.listener',
         ],
       },
