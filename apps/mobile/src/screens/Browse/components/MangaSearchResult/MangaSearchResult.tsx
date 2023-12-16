@@ -6,9 +6,7 @@ import { useTheme } from '@emotion/react';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import connector, {
-  ConnectedMangaSearchResultProps,
-} from './MangaSearchResult.redux';
+
 import { BOOK_DIMENSIONS } from '@theme/constants';
 import {
   renderItem,
@@ -18,10 +16,13 @@ import {
 import Text from '@components/Text';
 import Icon from '@components/Icon';
 import useRootNavigation from '@hooks/useRootNavigation';
-const MangaSearchResult: React.FC<ConnectedMangaSearchResultProps> = (
-  props,
-) => {
-  const { status, mangas, error, source } = props;
+import useAppSelector from '@hooks/useAppSelector';
+import type { MangaSearchResultProps } from './index';
+const MangaSearchResult: React.FC<MangaSearchResultProps> = (props) => {
+  const { source } = props;
+  const { status, mangas, error } = useAppSelector(
+    (state) => state.browse.states[source],
+  );
   const theme = useTheme();
   const navigation = useRootNavigation();
   function handleOnMore() {
@@ -82,4 +83,4 @@ const MangaSearchResult: React.FC<ConnectedMangaSearchResultProps> = (
   );
 };
 
-export default connector(React.memo(MangaSearchResult));
+export default React.memo(MangaSearchResult);
