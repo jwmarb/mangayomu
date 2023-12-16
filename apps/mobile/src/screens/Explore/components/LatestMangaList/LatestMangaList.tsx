@@ -16,12 +16,16 @@ import {
 } from '@screens/Explore/Explore.flatlist';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
-import connector, {
-  ConnectedLatestMangaListProps,
-} from './LatestMangaList.redux';
+import useAppSelector from '@hooks/useAppSelector';
 
-const LatestMangaList: React.FC<ConnectedLatestMangaListProps> = (props) => {
-  const { latestMangas, status, errors, isOffline, bookHeight } = props;
+const LatestMangaList: React.FC = () => {
+  const latestMangas = useAppSelector((state) => state.explore.states.latest);
+  const status = useAppSelector((state) => state.explore.status.latest);
+  const errors = useAppSelector((state) => state.explore.errors.latest);
+  const isOffline = useAppSelector(
+    (state) => state.explore.internetStatus === 'offline',
+  );
+  const bookHeight = useAppSelector((state) => state.settings.book.height);
   const theme = useTheme();
   const navigation = useRootNavigation();
   const ref = React.useRef<BottomSheet>(null);
@@ -105,4 +109,4 @@ const LatestMangaList: React.FC<ConnectedLatestMangaListProps> = (props) => {
   );
 };
 
-export default connector(LatestMangaList);
+export default LatestMangaList;

@@ -5,6 +5,7 @@ import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
+import useAppSelector from '@hooks/useAppSelector';
 import useRootNavigation from '@hooks/useRootNavigation';
 import SourceWarningDetails from '@screens/Explore/components/SourceWarningDetails';
 import { EmptyMangaListComponent } from '@screens/Explore/Explore';
@@ -16,10 +17,15 @@ import {
 } from '@screens/Explore/Explore.flatlist';
 import FlashList from '@shopify/flash-list/dist/FlashList';
 import React from 'react';
-import connector, { ConnectedHotMangaListProps } from './HotMangaList.redux';
 
-const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
-  const { hotMangas, status, errors, isOffline, bookHeight } = props;
+const HotMangaList: React.FC = () => {
+  const hotMangas = useAppSelector((state) => state.explore.states.hot);
+  const status = useAppSelector((state) => state.explore.status.hot);
+  const errors = useAppSelector((state) => state.explore.errors.hot);
+  const isOffline = useAppSelector(
+    (state) => state.explore.internetStatus === 'offline',
+  );
+  const bookHeight = useAppSelector((state) => state.settings.book.height);
   const navigation = useRootNavigation();
   const theme = useTheme();
   const ref = React.useRef<BottomSheet>(null);
@@ -102,4 +108,4 @@ const HotMangaList: React.FC<ConnectedHotMangaListProps> = (props) => {
   );
 };
 
-export default connector(HotMangaList);
+export default HotMangaList;
