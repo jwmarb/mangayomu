@@ -55,12 +55,13 @@ const Cover: React.FC<ConnectedCoverProps> = (props) => {
   const dispatch = useAppDispatch();
   const src = typeof cover === 'string' ? cover : cover?.imageCover;
   const [imgSrc, setImgSrc] = React.useState<string | undefined | null>(src);
+  const [error, toggleError] = useBoolean();
   const prevImgSrc = React.useRef<string | undefined | null>(src);
   if (prevImgSrc.current !== src) {
     prevImgSrc.current = src;
     setImgSrc(src);
+    toggleError(false); // reset to default state
   }
-  const [error, toggleError] = useBoolean();
   const resolveImage = (manga: Manga, listener?: ImageResolverListener) => {
     dispatch(queue({ manga, listener }));
     return () => dispatch(unqueue({ manga, listener }));
