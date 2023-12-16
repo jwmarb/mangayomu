@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-undef
 module.exports = {
-  presets: ['@rnx-kit/babel-preset-metro-react-native'],
+  presets: ['module:@react-native/babel-preset'],
   plugins: [
     ['react-native-worklets-core/plugin'],
     'module:react-native-dotenv',

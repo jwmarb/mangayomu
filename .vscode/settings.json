@@ -1,7 +1,7 @@
 {
   "java.compile.nullAnalysis.mode": "automatic",
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "eslint.validate": ["typescript", "javascript"],
   "java.configuration.updateBuildConfiguration": "automatic"
