@@ -39,24 +39,7 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
         manga: mangaKey,
       });
   }
-  // function handleOnLongPress() {
-  //   console.log(chapterKey);
-  // }
 
-  // React.useEffect(() => {
-  //   if (k?._id != null) {
-  //     const o = realm.objectForPrimaryKey(ChapterSchema, k._id);
-  //     const callback: Realm.ObjectChangeCallback<IChapterSchema> = (
-  //       changes,
-  //     ) => {
-  //       console.log(changes);
-  //     };
-  //     o?.addListener(callback);
-  //     return () => {
-  //       o?.removeListener(callback);
-  //     };
-  //   }
-  // }, []);
   return (
     <Pressable
       // onLongPress={handleOnLongPress}
