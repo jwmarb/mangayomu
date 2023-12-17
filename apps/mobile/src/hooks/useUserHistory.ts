@@ -2,6 +2,7 @@ import { useRealm } from '@database/main';
 import { UserHistorySchema } from '@database/schemas/History';
 import { MangaSchema } from '@database/schemas/Manga';
 import { Manga, MangaChapter } from '@mangayomu/mangascraper/src';
+import Realm from 'realm';
 import { useUser } from '@realm/react';
 
 const useUserHistory = (config?: { incognito: boolean }) => {

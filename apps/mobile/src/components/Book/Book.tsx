@@ -15,8 +15,9 @@ import { BookStyle } from '@redux/slices/settings';
 import React from 'react';
 import { Pressable } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { moderateScale, ScaledSheet } from 'react-native-size-matters';
+import { ScaledSheet } from 'react-native-size-matters';
 import useAppSelector from '@hooks/useAppSelector';
+import Realm from 'realm';
 
 const styles = ScaledSheet.create({
   linearGradient: {
