@@ -14,11 +14,7 @@ import Root from './src/Root';
 import { store, persistor } from '@redux/main';
 import { PersistGate } from 'redux-persist/integration/react';
 import { enableFreeze } from 'react-native-screens';
-import {
-  LocalRealmProvider,
-  RealmProvider,
-  RealmUserProvider,
-} from '@database/main';
+import { LocalRealmProvider, RealmProvider } from '@database/main';
 import { REACT_APP_REALM_ID } from '@env';
 import { RealmEffect } from '@database/providers/RealmProvider';
 import { AppearanceProvider } from '@theme/provider';
@@ -27,6 +23,16 @@ import { ImageResolver } from '@redux/slices/imageresolver';
 import SyncData from './src/context/SyncData';
 import { AppProvider, UserProvider } from '@realm/react';
 enableFreeze(true);
+
+const sync: Partial<Realm.SyncConfiguration> = {
+  flexible: true,
+  onError: (_, error) => {
+    console.error(error);
+  },
+  clientReset: {
+    mode: Realm.ClientResetMode.RecoverUnsyncedChanges,
+  },
+};
 
 function App(): JSX.Element {
   React.useEffect(() => {
@@ -37,6 +43,7 @@ function App(): JSX.Element {
       'memoryWarning',
       handleMemoryWarning,
     );
+
     return () => {
       subscription.remove();
     };
@@ -49,18 +56,8 @@ function App(): JSX.Element {
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <AppProvider id={REACT_APP_REALM_ID}>
-              <UserProvider fallback={<RealmUserProvider />}>
-                <RealmProvider
-                  sync={{
-                    flexible: true,
-                    onError: (_, error) => {
-                      console.error(error);
-                    },
-                    clientReset: {
-                      mode: Realm.ClientResetMode.RecoverUnsyncedChanges,
-                    },
-                  }}
-                >
+              <UserProvider>
+                <RealmProvider sync={sync}>
                   <LocalRealmProvider>
                     <RealmEffect>
                       <AppearanceProvider>
