@@ -19,7 +19,11 @@
       "**/@react-native-community/*",
       "**/@react-native-*",
       "**/next",
-      "**/@spartiuz/chromium-min"
+      "**/@spartiuz/chromium-min",
+      "**/@realm",
+      "**/@realm/*",
+      "**/realm",
+      "**/realm/*"
     ]
   },
   "scripts": {
