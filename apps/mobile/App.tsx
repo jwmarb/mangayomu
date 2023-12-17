@@ -14,7 +14,11 @@ import Root from './src/Root';
 import { store, persistor } from '@redux/main';
 import { PersistGate } from 'redux-persist/integration/react';
 import { enableFreeze } from 'react-native-screens';
-import { LocalRealmProvider, RealmProvider } from '@database/main';
+import {
+  LocalRealmProvider,
+  RealmProvider,
+  RealmUserProvider,
+} from '@database/main';
 import { REACT_APP_REALM_ID } from '@env';
 import { RealmEffect } from '@database/providers/RealmProvider';
 import { AppearanceProvider } from '@theme/provider';
@@ -56,7 +60,7 @@ function App(): JSX.Element {
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <AppProvider id={REACT_APP_REALM_ID}>
-              <UserProvider>
+              <UserProvider fallback={<RealmUserProvider />}>
                 <RealmProvider sync={sync}>
                   <LocalRealmProvider>
                     <RealmEffect>
