@@ -124,7 +124,6 @@ const SyncData: React.FC<React.PropsWithChildren> = ({ children }) => {
                 const { chapters, availableLanguages } = writeLocalChapters(
                   localRealm,
                   meta,
-                  user,
                 );
                 writeManga(
                   localRealm,
@@ -182,7 +181,6 @@ const SyncData: React.FC<React.PropsWithChildren> = ({ children }) => {
                   const { chapters, availableLanguages } = writeLocalChapters(
                     localRealm,
                     meta,
-                    user,
                   );
                   writeManga(
                     localRealm,
