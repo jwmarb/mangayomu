@@ -2,7 +2,10 @@ import React from 'react';
 import Radio from '@components/Radio';
 import RadioGroup from '@components/RadioGroup';
 import Stack from '@components/Stack';
-import { AppearanceMode as Mode, useAppearanceMode } from '@theme/provider';
+import {
+  AppearanceMode as Mode,
+  useAppearanceMode,
+} from '@theme/appearanceprovider';
 import Box from '@components/Box/Box';
 import PreviewSelectorWrapper from '@screens/Appearance/components/Style/components/PreviewSelectorWrapper/PreviewSelectorWrapper';
 import { useTheme } from '@emotion/react';

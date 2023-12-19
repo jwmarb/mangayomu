@@ -1,5 +1,5 @@
 import { Theme } from '@emotion/react';
-import { AppearanceMode } from '@theme/provider';
+import { AppearanceMode } from '@theme/appearanceprovider';
 
 export interface AppearanceModePreviewProps {
   isSelected: boolean;

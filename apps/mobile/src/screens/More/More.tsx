@@ -16,6 +16,7 @@ const Settings: React.FC = () => {
     navigation.navigate('Settings');
   }, [navigation]);
 
+
   return (
     <ScrollView>
       <User />

@@ -21,11 +21,14 @@ import {
 } from '@database/main';
 import { REACT_APP_REALM_ID } from '@env';
 import { RealmEffect } from '@database/providers/RealmProvider';
-import { AppearanceProvider } from '@theme/provider';
+import { AppearanceProvider } from '@theme/appearanceprovider';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ImageResolver } from '@redux/slices/imageresolver';
 import SyncData from './src/context/SyncData';
 import { AppProvider, UserProvider } from '@realm/react';
+import ErrorBoundary from 'react-native-error-boundary';
+import ErrorFallback from '@components/ErrorFallback';
+import ThemeProvider from '@theme/themeprovider';
 enableFreeze(true);
 
 const sync: Partial<Realm.SyncConfiguration> = {
@@ -57,27 +60,31 @@ function App(): JSX.Element {
     <>
       <StatusBar translucent backgroundColor="transparent" />
       <SafeAreaProvider>
-        <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-            <AppProvider id={REACT_APP_REALM_ID}>
-              <UserProvider fallback={<RealmUserProvider />}>
-                <RealmProvider sync={sync}>
-                  <LocalRealmProvider>
-                    <RealmEffect>
-                      <AppearanceProvider>
-                        <ImageResolver>
-                          <SyncData>
-                            <Root />
-                          </SyncData>
-                        </ImageResolver>
-                      </AppearanceProvider>
-                    </RealmEffect>
-                  </LocalRealmProvider>
-                </RealmProvider>
-              </UserProvider>
-            </AppProvider>
-          </PersistGate>
-        </Provider>
+        <ThemeProvider>
+          <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+              <ErrorBoundary FallbackComponent={ErrorFallback}>
+                <AppProvider id={REACT_APP_REALM_ID}>
+                  <UserProvider fallback={<RealmUserProvider />}>
+                    <RealmProvider sync={sync}>
+                      <LocalRealmProvider>
+                        <RealmEffect>
+                          <ImageResolver>
+                            <SyncData>
+                              <AppearanceProvider>
+                                <Root />
+                              </AppearanceProvider>
+                            </SyncData>
+                          </ImageResolver>
+                        </RealmEffect>
+                      </LocalRealmProvider>
+                    </RealmProvider>
+                  </UserProvider>
+                </AppProvider>
+              </ErrorBoundary>
+            </PersistGate>
+          </Provider>
+        </ThemeProvider>
       </SafeAreaProvider>
     </>
   );

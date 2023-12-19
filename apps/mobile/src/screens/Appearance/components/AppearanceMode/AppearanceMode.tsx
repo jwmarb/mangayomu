@@ -1,6 +1,9 @@
 import Stack from '@components/Stack';
 import React from 'react';
-import { AppearanceMode as Mode, useAppearanceMode } from '@theme/provider';
+import {
+  AppearanceMode as Mode,
+  useAppearanceMode,
+} from '@theme/appearanceprovider';
 import { useTheme } from '@emotion/react';
 import { ScrollView } from 'react-native-gesture-handler';
 import AppearanceModePreview from '@screens/Appearance/components/AppearanceMode/components/AppearanceModePreview/AppearanceModePreview';

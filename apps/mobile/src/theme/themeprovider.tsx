@@ -1,60 +1,21 @@
-import React from 'react';
-import { ColorSchemeName, StatusBar, useColorScheme } from 'react-native';
-
-import {
-  NavigationContainer,
-  DefaultTheme as NavigationDefaultTheme,
-} from '@react-navigation/native';
 import { createTheme, UserDefinedPalette } from '@mangayomu/theme';
-import { Theme, ThemeProvider } from '@emotion/react';
+import { DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
+import { Theme, ThemeProvider as EmotionThemeProvider } from '@emotion/react';
 import { shadow, spacing, typography } from '@theme/theme';
 import { helpers } from '@theme/helpers';
 import { moderateScale } from 'react-native-size-matters';
-import { MenuProvider } from 'react-native-popup-menu';
-import DialogProvider from '@components/Dialog/DialogProvider';
-import { PortalProvider } from '@gorhom/portal';
 import { useMMKV } from 'react-native-mmkv';
-
-export enum AppearanceMode {
-  SYSTEM = 'System',
-  LIGHT = 'Light',
-  DARK = 'Dark',
-}
-
-export const useAppearanceColorScheme = (
-  mode: AppearanceMode,
-): ColorSchemeName => {
-  const theme = useColorScheme();
-  switch (mode) {
-    case AppearanceMode.SYSTEM:
-      return theme;
-    case AppearanceMode.LIGHT:
-      return 'light';
-    case AppearanceMode.DARK:
-      return 'dark';
-  }
-};
-
-export const AppearanceContext = React.createContext<
-  | {
-      mode: AppearanceMode;
-      setMode: (setter: AppearanceMode) => void;
-    }
-  | undefined
->(undefined);
-
-export const useAppearanceMode = () => {
-  const ctx = React.useContext(AppearanceContext);
-  if (ctx == null)
-    throw Error('This component is not a child of AppearanceContext');
-  return ctx;
-};
+import React from 'react';
+import {
+  AppearanceContext,
+  AppearanceMode,
+  useAppearanceColorScheme,
+} from '@theme/appearanceprovider';
+import { StatusBar } from 'react-native';
 
 const DEVICE_THEME = 'device_theme';
 
-export const AppearanceProvider: React.FC<React.PropsWithChildren> = ({
-  children,
-}) => {
+export default function ThemeProvider({ children }: React.PropsWithChildren) {
   const mmkv = useMMKV();
   const [mode, _setMode] = React.useState<AppearanceMode>(() => {
     const savedValue = mmkv.getString(DEVICE_THEME);
@@ -169,18 +130,10 @@ export const AppearanceProvider: React.FC<React.PropsWithChildren> = ({
   );
 
   return (
-    <ThemeProvider theme={theme}>
-      <MenuProvider>
-        <DialogProvider>
-          <PortalProvider>
-            <NavigationContainer theme={theme.__react_navigation__}>
-              <AppearanceContext.Provider value={providedContextValue}>
-                {children}
-              </AppearanceContext.Provider>
-            </NavigationContainer>
-          </PortalProvider>
-        </DialogProvider>
-      </MenuProvider>
-    </ThemeProvider>
+    <EmotionThemeProvider theme={theme}>
+      <AppearanceContext.Provider value={providedContextValue}>
+        {children}
+      </AppearanceContext.Provider>
+    </EmotionThemeProvider>
   );
-};
+}
