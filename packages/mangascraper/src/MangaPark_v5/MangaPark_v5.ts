@@ -263,12 +263,21 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       .toArray();
 
     const ratingEl = _$('div[q\\:key="VI_2"]');
-    const ratingValue = parseFloat(ratingEl.prev().text());
+    const ratingValueWidth = _$(ratingEl.children()[1]).attr('style');
+    const ratingValue =
+      ratingValueWidth != null
+        ? parseFloat(
+            ratingValueWidth.substring(
+              ratingValueWidth.indexOf(':') + 1,
+              ratingValueWidth.length - 1,
+            ),
+          ) / 10
+        : null;
     const ratingCount = parseInt(ratingEl.next().text().split(' ')[0]);
 
     const titleEl = _$('div.space-y-2.hidden.md\\:block > h3');
     const title = titleEl.text();
-    const authors = titleEl.next().next().text().split(' / ');
+    const authors = titleEl.siblings('div[q\\:key="tz_4"]').text().split(' / ');
 
     const imageCover = _$('img[q\\:key="q1_1"]').attr('src') ?? '';
 
