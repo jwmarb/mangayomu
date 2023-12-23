@@ -7,7 +7,6 @@ import MangaTitle from '@screens/MangaView/components/MangaViewerHeader/componen
 import React from 'react';
 import { MangaViewerHeaderProps } from './';
 import LinearGradient from 'react-native-linear-gradient';
-import FastImage from 'react-native-fast-image';
 import { ImageBackground, StyleSheet } from 'react-native';
 import { moderateScale } from 'react-native-size-matters';
 import MangaRating from '@screens/MangaView/components/MangaViewerHeader/components/MangaRating';

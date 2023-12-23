@@ -8,7 +8,6 @@ import { SourceError } from '@hooks/useMangaHost';
 import { MangaHost } from '@mangayomu/mangascraper/src';
 import React from 'react';
 import { Image, ListRenderItem } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { ScaledSheet } from 'react-native-size-matters';
 import { SourceWarningDetailsProps } from './SourceWarningDetails.interfaces';
 

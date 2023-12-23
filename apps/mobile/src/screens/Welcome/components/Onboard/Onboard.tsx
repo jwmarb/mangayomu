@@ -7,7 +7,6 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import React from 'react';
 import { Dimensions, Image } from 'react-native';
 import { ScrollView, useWindowDimensions } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,

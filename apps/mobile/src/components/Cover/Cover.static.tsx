@@ -7,7 +7,6 @@ import { Manga } from '@mangayomu/mangascraper/src';
 import { AUTO_HEIGHT_SCALAR } from '@redux/slices/settings';
 import React from 'react';
 import { Image, Pressable, StyleSheet } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
 import { MangaSchema } from '@database/schemas/Manga';
@@ -92,7 +91,7 @@ const StaticCover: React.FC<StaticCoverProps> = (props) => {
           onError={onError}
           source={source}
           style={fastImageStyle}
-          resizeMode={FastImage.resizeMode.cover}
+          resizeMode="cover"
         />
       )}
       <Image

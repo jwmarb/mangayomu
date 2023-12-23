@@ -10,7 +10,6 @@ import connector, {
 } from '@screens/Welcome/components/MainSourceSelector/components/Item/Item.redux';
 import React from 'react';
 import { Image, Pressable } from 'react-native';
-import FastImage, { FastImageProps } from 'react-native-fast-image';
 import { ScaledSheet } from 'react-native-size-matters';
 
 const Item: React.FC<ConnectedItemProps> = React.memo(
