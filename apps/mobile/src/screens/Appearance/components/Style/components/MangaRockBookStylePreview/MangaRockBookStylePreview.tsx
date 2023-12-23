@@ -31,11 +31,11 @@ const MangaRockBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
           border-radius="@theme"
           border-color={isSelected ? 'primary' : '@theme'}
           border-width="@theme"
+          overflow="hidden"
         >
           <Pressable
             onPress={handleOnPress}
             android_ripple={{ color: theme.palette.action.ripple }}
-            style={{ borderRadius: theme.style.borderRadius }}
           >
             <Stack
               m="m"

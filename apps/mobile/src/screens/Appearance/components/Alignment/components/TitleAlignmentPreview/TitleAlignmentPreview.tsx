@@ -22,40 +22,47 @@ const TitleAlignmentPreview: React.FC<TitleAlignmentPreviewProps> = (props) => {
   return (
     <PreviewSelectorWrapper isSelected={isSelected} background="paper">
       <Stack space="s">
-        <Pressable
-          onPress={handleOnPress}
-          android_ripple={{
-            color: theme.palette.action.ripple,
-          }}
-          style={{
-            borderRadius: theme.style.borderRadius,
-          }}
-        >
-          <Stack
-            border-color={isSelected ? 'primary' : '@theme'}
-            border-width="@theme"
-            border-radius="@theme"
-            px="m"
-            pb="m"
-            space="s"
+        <Box border-radius="@theme" overflow="hidden">
+          <Pressable
+            onPress={handleOnPress}
+            android_ripple={{
+              color: theme.palette.action.ripple,
+            }}
           >
-            <Box
-              width={BOOK_DIMENSIONS.width}
-              height={BOOK_DIMENSIONS.height / 5}
-              background-color="skeleton"
-              style={coverStyles.image}
-              border-radius={{ tr: 0, tl: 0 }}
-            />
-            <Stack space="s">
-              <Box maxWidth="90%" flex-direction="row" align-self={alignItems}>
-                {LinePlaceholder}
-              </Box>
-              <Box maxWidth="70%" flex-direction="row" align-self={alignItems}>
-                {LinePlaceholder}
-              </Box>
+            <Stack
+              border-color={isSelected ? 'primary' : '@theme'}
+              border-width="@theme"
+              border-radius="@theme"
+              px="m"
+              pb="m"
+              space="s"
+            >
+              <Box
+                width={BOOK_DIMENSIONS.width}
+                height={BOOK_DIMENSIONS.height / 5}
+                background-color="skeleton"
+                style={coverStyles.image}
+                border-radius={{ tr: 0, tl: 0 }}
+              />
+              <Stack space="s">
+                <Box
+                  maxWidth="90%"
+                  flex-direction="row"
+                  align-self={alignItems}
+                >
+                  {LinePlaceholder}
+                </Box>
+                <Box
+                  maxWidth="70%"
+                  flex-direction="row"
+                  align-self={alignItems}
+                >
+                  {LinePlaceholder}
+                </Box>
+              </Stack>
             </Stack>
-          </Stack>
-        </Pressable>
+          </Pressable>
+        </Box>
         <Text>{titleAlignment[0].toUpperCase() + titleAlignment.slice(1)}</Text>
       </Stack>
     </PreviewSelectorWrapper>
