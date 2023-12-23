@@ -47,7 +47,6 @@ const MangaRockBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
                 width={BOOK_DIMENSIONS.width}
                 height={BOOK_COVER_HEIGHT}
                 background-color={theme.palette.skeleton}
-                style={coverStyles.image}
               />
               {LinePlaceholder}
               {LinePlaceholder}
