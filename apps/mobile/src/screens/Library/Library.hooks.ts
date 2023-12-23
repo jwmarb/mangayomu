@@ -153,80 +153,81 @@ export function useLibraryData() {
     (async () => {
       if (refreshing) {
         displayMessage('Fetching updates...');
-        let numberOfUpdates = 0;
-        const updates = mangasInLibrary.map((manga) =>
-          limit(async () => {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const host = MangaHost.sourcesMap.get(manga.source)!;
-            const localManga = getLocalManga(manga.link);
-            const meta = await host.getMeta({
-              link: manga.link,
-            });
-            if (meta.chapters.length !== localManga.chapters.length) {
-              numberOfUpdates++;
-              const chapters: string[] = [];
-              localRealm.write(() => {
-                for (const chapter of meta.chapters) {
-                  chapters.push(chapter.link);
-                  localRealm.create(
-                    LocalChapterSchema,
-                    {
-                      _id: chapter.link,
-                      _mangaId: meta.link,
-                      name: chapter.name,
-                      index: chapter.index,
-                      date: chapter.date,
-                      language:
-                        (chapter as Partial<MangaMultilingualChapter>)
-                          ?.language ?? 'en',
-                    },
-                    Realm.UpdateMode.Modified,
-                  );
-                }
-              });
-              realm.write(() => {
-                realm.create<MangaSchema>(
-                  MangaSchema,
-                  {
-                    _id: manga._id,
-                    link: meta.link,
-                    _realmId: currentUser.id,
-                    notifyNewChaptersCount:
-                      manga.notifyNewChaptersCount +
-                      (meta.chapters.length - localManga.chapters.length),
-                    // description: meta.description,
-                    // genres: meta.genres as unknown as Set<string>,
-                    imageCover: meta.imageCover,
-                    source: meta.source,
-                    title: meta.title,
-                    // chapters,
-                  },
-                  Realm.UpdateMode.Modified,
-                );
-              });
-              if (sortBy === 'Number of updates')
-                setData((prev) => {
-                  integrateSortedList(
-                    prev,
-                    (a, b) =>
-                      SORT_LIBRARY_BY[sortBy](a) - SORT_LIBRARY_BY[sortBy](b),
-                  ).insertionSort();
-                  return [...prev];
-                });
-            }
-          }),
-        );
+        // const numberOfUpdates = 0;
+        // const updates = mangasInLibrary.map((manga) =>
+        //   limit(async () => {
+        //     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        //     const host = MangaHost.sourcesMap.get(manga.source)!;
+        //     const localManga = getLocalManga(manga.link);
+        //     const meta = await host.getMeta({
+        //       link: manga.link,
+        //     });
+        //     if (meta.chapters.length !== localManga.chapters.length) {
+        //       numberOfUpdates++;
+        //       const chapters: string[] = [];
+        //       localRealm.write(() => {
+        //         for (const chapter of meta.chapters) {
+        //           chapters.push(chapter.link);
+        //           localRealm.create(
+        //             LocalChapterSchema,
+        //             {
+        //               _id: chapter.link,
+        //               _mangaId: meta.link,
+        //               name: chapter.name,
+        //               index: chapter.index,
+        //               date: chapter.date,
+        //               language:
+        //                 (chapter as Partial<MangaMultilingualChapter>)
+        //                   ?.language ?? 'en',
+        //             },
+        //             Realm.UpdateMode.Modified,
+        //           );
+        //         }
+        //       });
+        //       realm.write(() => {
+        //         realm.create<MangaSchema>(
+        //           MangaSchema,
+        //           {
+        //             _id: manga._id,
+        //             link: meta.link,
+        //             _realmId: currentUser.id,
+        //             notifyNewChaptersCount:
+        //               manga.notifyNewChaptersCount +
+        //               (meta.chapters.length - localManga.chapters.length),
+        //             // description: meta.description,
+        //             // genres: meta.genres as unknown as Set<string>,
+        //             imageCover: meta.imageCover,
+        //             source: meta.source,
+        //             title: meta.title,
+        //             // chapters,
+        //           },
+        //           Realm.UpdateMode.Modified,
+        //         );
+        //       });
+        //       if (sortBy === 'Number of updates')
+        //         setData((prev) => {
+        //           integrateSortedList(
+        //             prev,
+        //             (a, b) =>
+        //               SORT_LIBRARY_BY[sortBy](a) - SORT_LIBRARY_BY[sortBy](b),
+        //           ).insertionSort();
+        //           return [...prev];
+        //         });
+        //     }
+        //   }),
+        // );
         try {
-          await Promise.all(updates);
+          // await Promise.all(updates);
         } finally {
           setRefreshing(false);
-          if (numberOfUpdates > 0)
-            displayMessage(
-              `Successfully updated ${numberOfUpdates} manga${
-                numberOfUpdates !== 1 ? 's' : ''
-              }.`,
-            );
-          else displayMessage('No updates were found.');
+          // if (numberOfUpdates > 0)
+          //   displayMessage(
+          //     `Successfully updated ${numberOfUpdates} manga${
+          //       numberOfUpdates !== 1 ? 's' : ''
+          //     }.`,
+          //   );
+          // else
+          displayMessage('No updates were found.');
         }
       }
     })();
