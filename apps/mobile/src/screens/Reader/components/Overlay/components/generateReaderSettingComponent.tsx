@@ -101,7 +101,7 @@ export default function generateReaderSettingComponent<T>(
         value={value}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onChange={setValue as any}
-        title="Zoom start position"
+        title={modalMenuText}
         enum={{
           ...(mangaKey != null
             ? { 'Use global setting': 'Use global setting' }
