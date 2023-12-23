@@ -139,8 +139,6 @@ export const useManga = (
   link: string | Manga | MangaSchema,
   options: UseMangaOptions = { preferLocal: true },
 ) => {
-  const realm = useRealm();
-  const user = useUser();
   const mangaId = typeof link === 'string' ? link : link.link;
 
   const { state, setState, fetchData } = useFetchManga(options, link);
@@ -162,43 +160,10 @@ export const useManga = (
     }
   }, [fetchData, combinedManga == null, setState]);
 
-  const update = React.useCallback(
-    (
-      fn: (
-        mangaRealmObject: Omit<CombinedMangaWithLocal, 'update'>,
-        getChapter: (key: string) => ChapterSchema | null,
-      ) => void,
-    ) => {
-      if (combinedManga != null) {
-        combinedManga.update((draft) =>
-          fn(draft, (k: string) =>
-            realm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
-          ),
-        );
-      }
-      // if (combinedManga == null && combinedManga != null) {
-      //   realm.write(() => {
-      //     fn(combinedManga, (k: string) =>
-      //       realm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
-      //     );
-      //     realm.create(MangaSchema, p);
-      //   });
-      // } else if (manga?.isValid()) {
-      // realm.write(() => {
-      //   fn(manga, (k: string) =>
-      //     realm.objectForPrimaryKey<ChapterSchema>('Chapter', k),
-      //   );
-      // });
-      // }
-    },
-    [combinedManga, realm, user],
-  );
-
   return {
     manga: combinedManga,
     refresh,
     status: state.status,
     error: state.error,
-    update,
   };
 };

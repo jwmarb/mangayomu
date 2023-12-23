@@ -10,6 +10,7 @@ import useChapterFetcher from '@screens/Reader/hooks/useChapterFetcher';
 import { runOnJS } from 'react-native-reanimated';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { CombinedMangaWithLocal } from '@hooks/useCombinedMangaWithLocal';
+import { MangaSchema } from '@database/schemas/Manga';
 
 export default function useViewableItemsChangedHandler(args: {
   manga: CombinedMangaWithLocal;
@@ -46,18 +47,21 @@ export default function useViewableItemsChangedHandler(args: {
               ChapterSchema,
               item.chapterId,
             );
+            const m = realm.objectForPrimaryKey(MangaSchema, manga._id);
 
-            manga.update((draft) => {
-              if (chapter?.numberOfPages != null)
-                draft.currentlyReadingChapter = {
+            realm.write(() => {
+              if (
+                chapter != null &&
+                m != null &&
+                chapter.numberOfPages != null
+              ) {
+                chapter.indexPage = item.pageNumber - 1;
+                m.currentlyReadingChapter = {
                   _id: item.chapter,
                   index: item.pageNumber - 1,
                   numOfPages: chapter.numberOfPages,
                 };
-            });
-
-            realm.write(() => {
-              if (chapter != null) chapter.indexPage = item.pageNumber - 1;
+              }
             });
             setCurrentPageNumber(item.pageNumber);
             dispatch(

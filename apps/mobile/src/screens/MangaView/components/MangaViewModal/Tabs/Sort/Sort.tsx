@@ -5,23 +5,26 @@ import React from 'react';
 import { ListRenderItem } from 'react-native';
 import SortItem from '@components/Filters/SortItem';
 import { SortChaptersBy } from '@mangayomu/schemas';
+import { useLocalRealm } from '@database/main';
+import { LocalMangaSchema } from '@database/schemas/LocalManga';
 
 const Sort: React.FC<SortProps> = (props) => {
-  const { update } = useManga(props.mangaLink);
+  const localRealm = useLocalRealm();
 
-  const onChange = React.useCallback(
-    (t: SortChaptersBy) => {
-      update((obj) => {
-        obj.sortChaptersBy = t;
+  const onChange = React.useCallback((t: SortChaptersBy) => {
+    const c = localRealm.objectForPrimaryKey(LocalMangaSchema, props.mangaLink);
+    if (c != null)
+      localRealm.write(() => {
+        c.sortChaptersBy = t;
       });
-    },
-    [update],
-  );
+  }, []);
   const onToggleReverse = React.useCallback(() => {
-    update((obj) => {
-      obj.reversedSort = !obj.reversedSort;
-    });
-  }, [update]);
+    const c = localRealm.objectForPrimaryKey(LocalMangaSchema, props.mangaLink);
+    if (c != null)
+      localRealm.write(() => {
+        c.reversedSort = !c.reversedSort;
+      });
+  }, []);
   const renderItem = React.useCallback<ListRenderItem<SortChaptersBy>>(
     ({ item }) => (
       <SortItem

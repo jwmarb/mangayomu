@@ -6,10 +6,7 @@ import { useUser } from '@realm/react';
 import React from 'react';
 import Realm from 'realm';
 
-export type CombinedMangaWithLocal = IMangaSchema &
-  Omit<ILocalManga, '_id'> & {
-    update: CombinedMangaWithLocalUpdater;
-  };
+export type CombinedMangaWithLocal = IMangaSchema & Omit<ILocalManga, '_id'>;
 
 export type CombinedMangaWithLocalUpdater = (
   fn: (obj: Omit<CombinedMangaWithLocal, 'update'>) => void,
@@ -97,75 +94,7 @@ export default function useCombinedMangaWithLocal<T extends boolean>(
       ...(manga?.toJSON() as unknown as IMangaSchema),
       link: localManga._id,
     } as CombinedMangaWithLocal;
-    obj.update = (fn: (obj: CombinedMangaWithLocal) => void) => {
-      const copy = { ...obj };
-      fn(copy);
-      const changedLocalMangaProperties: (keyof ILocalManga)[] = [];
-      const changedMangaProperties: (keyof IMangaSchema)[] = [];
-      for (const x in copy) {
-        const key = x as keyof typeof copy;
-        if (obj[key] !== copy[key]) {
-          if (key in localManga)
-            changedLocalMangaProperties.push(key as keyof ILocalManga);
-          else changedMangaProperties.push(key as keyof IMangaSchema);
-        }
-      }
 
-      if (changedLocalMangaProperties.length > 0) {
-        const overrideLocalProperties = {
-          _id: mangaId,
-        } as Partial<LocalMangaSchema>;
-        for (const x of changedLocalMangaProperties) {
-          (overrideLocalProperties as any)[x] = copy[x];
-        }
-
-        localRealm.write(() => {
-          localRealm.create<LocalMangaSchema>(
-            LocalMangaSchema,
-            overrideLocalProperties,
-            Realm.UpdateMode.Modified,
-          );
-        });
-      }
-      if (changedMangaProperties.length > 0) {
-        const overrideProperties = {
-          _id: manga?._id,
-          _realmId: user.id,
-          link: localManga._id,
-          title: obj.title,
-          imageCover: obj.imageCover,
-          source: obj.source,
-        } as Partial<MangaSchema>;
-
-        for (const x of changedMangaProperties) {
-          (overrideProperties as any)[x] = copy[x];
-        }
-
-        realm.write(() => {
-          realm.create<MangaSchema>(
-            MangaSchema,
-            overrideProperties,
-            Realm.UpdateMode.Modified,
-          );
-          // const isNotWorthSavingToCloud =
-          //   !updatedManga.inLibrary &&
-          //   updatedManga.readerDirection === 'Use global setting' &&
-          //   updatedManga.readerImageScaling === 'Use global setting' &&
-          //   updatedManga.readerLockOrientation === 'Use global setting' &&
-          //   updatedManga.readerZoomStartPosition === 'Use global setting' &&
-          //   (updatedManga.selectedLanguage === 'Use default language' ||
-          //     updatedManga.selectedLanguage === DEFAULT_LANGUAGE) &&
-          //   (updatedManga.currentlyReadingChapter == null ||
-          //     (updatedManga.currentlyReadingChapter != null &&
-          //       updatedManga.currentlyReadingChapter._id ===
-          //         localManga.chapters[localManga.chapters.length - 1]));
-          // if (isNotWorthSavingToCloud) {
-          //   setManga(undefined); // prevents access to invalidated fields
-          //   realm.delete(updatedManga);
-          // }
-        });
-      }
-    };
     return obj;
   }, [localManga, manga, mangaId, user.id]);
 

@@ -11,6 +11,8 @@ import { moderateScale } from 'react-native-size-matters';
 import React from 'react';
 import useCombinedMangaWithLocal from '@hooks/useCombinedMangaWithLocal';
 import useAppSelector from '@hooks/useAppSelector';
+import { useRealm } from '@database/main';
+import { MangaSchema } from '@database/schemas/Manga';
 
 // export enum ReadingDirection {
 //   LEFT_TO_RIGHT = 'Left to right',
@@ -329,14 +331,16 @@ export function useReaderSetting<
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return [globalSettingValue, payload] as any;
   }
+  const realm = useRealm();
   const manga = useCombinedMangaWithLocal(payload, true);
   const setter = React.useCallback(
     (val: IMangaSchema[T]) => {
-      manga.update((draft) => {
-        (draft as IMangaSchema)[key] = val;
+      const m = realm.objectForPrimaryKey(MangaSchema, manga._id);
+      realm.write(() => {
+        (m as IMangaSchema)[key] = val;
       });
     },
-    [manga, key],
+    [key],
   );
   if (manga == null) {
     console.warn(

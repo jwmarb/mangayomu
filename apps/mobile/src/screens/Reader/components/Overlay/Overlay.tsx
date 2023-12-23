@@ -25,6 +25,8 @@ import useAppSelector from '@hooks/useAppSelector';
 import { OverlayProps } from '@screens/Reader/components/Overlay';
 import { useAppDispatch } from '@redux/main';
 import { addIfNewSourceToLibrary } from '@redux/slices/library';
+import { useRealm } from '@database/main';
+import { MangaSchema } from '@database/schemas/Manga';
 
 const pageSliderTranslateYOffset = moderateScale(-78);
 
@@ -45,6 +47,7 @@ const Overlay: React.FC<OverlayProps> = (props) => {
   const showPageNumber = useAppSelector(
     (state) => state.settings.reader.showPageNumber,
   );
+  const realm = useRealm();
   const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
   const totalPages = savedChapterInfo.numberOfPages;
@@ -128,16 +131,18 @@ const Overlay: React.FC<OverlayProps> = (props) => {
   }, []);
 
   const handleOnBookmark = React.useCallback(() => {
-    manga.update((obj) => {
-      dispatch(addIfNewSourceToLibrary(obj.source));
-      obj.inLibrary = !obj.inLibrary;
-      displayMessage(
-        obj.inLibrary ? 'Added to library' : 'Removed from library',
-      );
-      if (obj.inLibrary) obj.dateAddedInLibrary = Date.now();
-      else obj.dateAddedInLibrary = undefined;
-    });
-  }, [manga.update]);
+    const obj = realm.objectForPrimaryKey(MangaSchema, manga._id);
+    if (obj != null)
+      realm.write(() => {
+        dispatch(addIfNewSourceToLibrary(obj.source));
+        obj.inLibrary = !obj.inLibrary;
+        displayMessage(
+          obj.inLibrary ? 'Added to library' : 'Removed from library',
+        );
+        if (obj.inLibrary) obj.dateAddedInLibrary = Date.now();
+        else obj.dateAddedInLibrary = undefined;
+      });
+  }, [manga._id]);
 
   const bottomOverlayTranslation = useDerivedValue(() =>
     interpolate(opacity.value, [0, 1], [64, 0]),
