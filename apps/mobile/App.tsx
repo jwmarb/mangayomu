@@ -31,6 +31,10 @@ import ErrorFallback from '@components/ErrorFallback';
 import ThemeProvider from '@theme/themeprovider';
 enableFreeze(true);
 
+const realmConfiguration: Realm.OpenRealmBehaviorConfiguration = {
+  type: Realm.OpenRealmBehaviorType.OpenImmediately,
+};
+
 const sync: Partial<Realm.SyncConfiguration> = {
   flexible: true,
   onError: (_, error) => {
@@ -39,6 +43,8 @@ const sync: Partial<Realm.SyncConfiguration> = {
   clientReset: {
     mode: Realm.ClientResetMode.RecoverUnsyncedChanges,
   },
+  newRealmFileBehavior: realmConfiguration,
+  existingRealmFileBehavior: realmConfiguration,
 };
 
 function App(): JSX.Element {
