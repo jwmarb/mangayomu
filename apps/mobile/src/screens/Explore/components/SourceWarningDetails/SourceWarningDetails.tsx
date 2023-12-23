@@ -7,7 +7,7 @@ import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { SourceError } from '@hooks/useMangaHost';
 import { MangaHost } from '@mangayomu/mangascraper/src';
 import React from 'react';
-import { ListRenderItem } from 'react-native';
+import { Image, ListRenderItem } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { ScaledSheet } from 'react-native-size-matters';
 import { SourceWarningDetailsProps } from './SourceWarningDetails.interfaces';
@@ -67,7 +67,10 @@ const MangaError: React.FC<{ item: SourceError }> = React.memo(
     const host = MangaHost.sourcesMap.get(source)!;
     return (
       <Stack flex-direction="row" space="m" m="s" align-items="center">
-        <FastImage source={{ uri: host.icon }} style={styles.icon} />
+        <Image // ImprovedImage
+          source={{ uri: host.icon }}
+          style={styles.icon}
+        />
         <Box flex-direction="column">
           <Text color="error">{error}</Text>
           <Text color="textSecondary">Source name: {source}</Text>

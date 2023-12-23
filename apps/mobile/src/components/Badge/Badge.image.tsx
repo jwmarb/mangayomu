@@ -5,6 +5,7 @@ import React from 'react';
 import FastImage from 'react-native-fast-image';
 import Animated from 'react-native-reanimated';
 import { ScaledSheet } from 'react-native-size-matters';
+import { Image } from 'react-native';
 
 const styles = ScaledSheet.create({
   image: {
@@ -32,7 +33,11 @@ const ImageBadge: React.FC<ImageBadgeProps> = (props) => {
     <Box>
       {children}
       <Box as={Animated.View} style={[style, styles.container]} box-shadow>
-        <FastImage source={{ uri }} style={styles.image} />
+        <Image
+          // Improved Image
+          source={{ uri }}
+          style={styles.image}
+        />
       </Box>
     </Box>
   );

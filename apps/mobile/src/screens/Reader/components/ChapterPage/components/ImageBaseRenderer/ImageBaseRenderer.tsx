@@ -2,9 +2,7 @@ import React from 'react';
 
 import { ReaderImageComponent } from '@redux/slices/settings';
 import WebViewImageElement from '@screens/Reader/components/ChapterPage/components/WebViewImageElement';
-import FastImageElement from '@screens/Reader/components/ChapterPage/components/FastImageElement';
 import ImageElement from '@screens/Reader/components/ChapterPage/components/ImageElement';
-import { FastImageElementProps } from '@screens/Reader/components/ChapterPage/components/FastImageElement/FastImageElement.interfaces';
 import WebView from 'react-native-webview';
 import useAppSelector from '@hooks/useAppSelector';
 import { ImageBaseRendererProps } from '@screens/Reader/components/ChapterPage/components/ImageBaseRenderer';
@@ -36,12 +34,7 @@ const ImageBaseRenderer: React.ForwardRefRenderFunction<
         <ImageElement style={style as any} {...rest} />
       );
     case ReaderImageComponent.FAST_IMAGE:
-      return (
-        <FastImageElement
-          style={style as any}
-          {...(rest as FastImageElementProps)}
-        />
-      );
+      return null;
     case ReaderImageComponent.IMAGE:
       return <ImageElement style={style as any} {...rest} />;
     case ReaderImageComponent.WEBVIEW:

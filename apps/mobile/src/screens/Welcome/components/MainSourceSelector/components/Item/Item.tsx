@@ -9,7 +9,7 @@ import connector, {
   ConnectedItemProps,
 } from '@screens/Welcome/components/MainSourceSelector/components/Item/Item.redux';
 import React from 'react';
-import { Pressable } from 'react-native';
+import { Image, Pressable } from 'react-native';
 import FastImage, { FastImageProps } from 'react-native-fast-image';
 import { ScaledSheet } from 'react-native-size-matters';
 
@@ -34,9 +34,9 @@ const Item: React.FC<ConnectedItemProps> = React.memo(
             <Checkbox onChange={handleOnPress} checked={isSelected} />
           </Box>
           <Stack py="s" flex-direction="row" space="m">
-            <FastImage
+            <Image // ImprovedImage
               source={{ uri: host.icon }}
-              style={styles.icon as FastImageProps['style']}
+              style={styles.icon}
             />
             <Stack>
               <Text bold>{host.name}</Text>

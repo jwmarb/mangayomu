@@ -10,12 +10,9 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
+import Box from '@components/Box';
 
 const borderRadius = moderateScale(8);
-
-const AnimatedFastImage = Animated.createAnimatedComponent(
-  FastImage as React.FC<FastImageProps>,
-);
 
 const CustomizableCover: React.FC<CustomizableCoverProps> = (props) => {
   const { width, height, src, bookStyle, bookHeight, children } = props;
@@ -55,21 +52,23 @@ const CustomizableCover: React.FC<CustomizableCoverProps> = (props) => {
         <Progress />
       </Animated.View>
       <Animated.View style={style}>
-        <AnimatedFastImage
+        <Animated.Image
           source={require('@assets/No-Image-Placeholder.png')}
           style={combinedStyles}
-        >
+        />
+        <Box position="absolute" left={0} right={0} top={0} bottom={0}>
           {children}
-        </AnimatedFastImage>
+        </Box>
       </Animated.View>
-      <AnimatedFastImage
+      <Animated.Image // ImprovedImage
         source={{ uri: src }}
         resizeMode="cover"
         style={imageStyle}
         onError={handleOnError}
-      >
+      />
+      <Box position="absolute" left={0} right={0} top={0} bottom={0}>
         {children}
-      </AnimatedFastImage>
+      </Box>
     </>
   );
 };

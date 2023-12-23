@@ -8,7 +8,7 @@ import React from 'react';
 import { MangaViewerHeaderProps } from './';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
-import { StyleSheet } from 'react-native';
+import { ImageBackground, StyleSheet } from 'react-native';
 import { moderateScale } from 'react-native-size-matters';
 import MangaRating from '@screens/MangaView/components/MangaViewerHeader/components/MangaRating';
 import { useTheme } from '@emotion/react';
@@ -51,8 +51,12 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
   const isLoading = !error && (status === 'loading' || meta == null);
   return (
     <Box>
-      <FastImage
-        source={{ uri: fallback ? meta?.imageCover : manga.imageCover }}
+      <ImageBackground // ImprovedImage
+        source={
+          fallback
+            ? require('@assets/No-Image-Placeholder.png')
+            : { uri: meta?.imageCover ?? manga.imageCover }
+        }
         style={styles.imageBackground}
         onError={() => toggleFallback(true)}
       >
@@ -97,7 +101,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
             />
           </Box>
         </LinearGradient>
-      </FastImage>
+      </ImageBackground>
       <Stack
         space="s"
         background-color="paper"

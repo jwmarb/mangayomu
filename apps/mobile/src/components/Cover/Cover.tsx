@@ -1,4 +1,4 @@
-import { AnimatedBox } from '@components/Box';
+import Box, { AnimatedBox } from '@components/Box';
 import { CoverProps } from '@components/Cover';
 import useImageHandler from '@components/Cover/useImageHandler';
 import Progress from '@components/Progress';
@@ -8,7 +8,6 @@ import { BookStyle } from '@redux/slices/settings';
 import { BOOK_COVER_HEIGHT, BOOK_DIMENSIONS } from '@theme/constants';
 import React from 'react';
 import { Image } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 
@@ -101,15 +100,21 @@ const Cover: React.FC<CoverProps> = (props) => {
         />
       </Animated.View>
       {source.uri != null && (
-        <FastImage
-          source={source}
-          onLoadStart={onLoadStart}
-          onLoad={onLoad}
-          style={imageStyle}
-          onError={onError}
-        >
-          {children}
-        </FastImage>
+        <>
+          <Image // ImprovedImage
+            progressiveRenderingEnabled
+            source={source}
+            onLoadStart={onLoadStart}
+            onLoad={onLoad}
+            style={imageStyle}
+            onError={onError}
+          />
+          {React.Children.count(children) > 0 && (
+            <Box position="absolute" left={0} right={0} top={0} bottom={0}>
+              {children}
+            </Box>
+          )}
+        </>
       )}
     </>
   );

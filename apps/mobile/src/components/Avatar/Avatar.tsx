@@ -1,7 +1,7 @@
 import Icon from '@components/Icon';
 import { useUser } from '@realm/react';
 import React from 'react';
-import FastImage from 'react-native-fast-image';
+import { Image } from 'react-native';
 import { moderateScale } from 'react-native-size-matters';
 
 export interface AvatarProps {
@@ -25,7 +25,7 @@ const Avatar: React.FC<AvatarProps> = (props) => {
   if (user.profile.pictureUrl == null)
     return <Icon type="font" size={size} name="account-circle" />;
   return (
-    <FastImage source={{ uri: user.profile.pictureUrl }} style={avatarStyle} />
+    <Image source={{ uri: user.profile.pictureUrl }} style={avatarStyle} /> // ImprovedImage
   );
 };
 

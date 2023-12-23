@@ -5,7 +5,7 @@ import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import BottomSheet from '@gorhom/bottom-sheet';
 import React from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, Image } from 'react-native';
 import { ScrollView, useWindowDimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Animated, {
@@ -211,7 +211,7 @@ const Onboard: React.FC<ConnectedOnboardProps> = ({
               <Box align-self="center" maxWidth={moderateScale(350)}>
                 <Stack space="m">
                   <Animated.View style={fastImageStyle}>
-                    <FastImage
+                    <Image
                       source={require('@assets/reading.png')}
                       resizeMode="contain"
                       style={styles.fastImage}
