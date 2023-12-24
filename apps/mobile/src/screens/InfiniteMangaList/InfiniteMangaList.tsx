@@ -196,6 +196,7 @@ const InfiniteMangaList: React.ForwardRefRenderFunction<
     key,
     overrideItemLayout,
     drawDistance,
+    estimatedListSize,
   } = useMangaFlashlistLayout(mangas.length);
 
   useMountedEffect(() => {
@@ -469,6 +470,7 @@ const InfiniteMangaList: React.ForwardRefRenderFunction<
         }
         onScroll={onScroll}
         estimatedItemSize={estimatedItemSize}
+        estimatedListSize={estimatedListSize}
         numColumns={columns}
         key={key}
         renderItem={renderItem}

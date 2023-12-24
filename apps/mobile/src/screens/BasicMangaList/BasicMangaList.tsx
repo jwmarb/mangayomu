@@ -44,6 +44,7 @@ const BasicMangaList: React.FC<RootStackProps<'BasicMangaList'>> = (props) => {
     keyExtractor,
     key,
     overrideItemLayout,
+    estimatedListSize,
     drawDistance,
   } = useMangaFlashlistLayout(mangas.length);
   const flashList = useAnimatedRef<FlashList<any>>();
@@ -78,6 +79,7 @@ const BasicMangaList: React.FC<RootStackProps<'BasicMangaList'>> = (props) => {
     <>
       <AnimatedFlashList
         ref={flashList}
+        estimatedListSize={estimatedListSize}
         drawDistance={drawDistance}
         estimatedItemSize={estimatedItemSize}
         overrideItemLayout={overrideItemLayout}
