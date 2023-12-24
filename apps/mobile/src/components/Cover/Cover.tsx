@@ -2,6 +2,7 @@ import Box, { AnimatedBox } from '@components/Box';
 import { CoverProps } from '@components/Cover';
 import useImageHandler from '@components/Cover/useImageHandler';
 import Progress from '@components/Progress';
+import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import useAppSelector from '@hooks/useAppSelector';
 import { BookStyle } from '@redux/slices/settings';
@@ -43,8 +44,15 @@ const Cover: React.FC<CoverProps> = (props) => {
     normalBookDimensions ? BOOK_DIMENSIONS.width : state.settings.book.width,
   );
 
-  const { source, onLoad, onLoadStart, onError, opacity, loadingOpacity } =
-    useImageHandler(props);
+  const {
+    source,
+    onLoad,
+    onLoadStart,
+    onError,
+    opacity,
+    loadingOpacity,
+    error,
+  } = useImageHandler(props);
   const theme = useTheme();
   const imageStyle = React.useMemo(
     () => ({
@@ -83,22 +91,19 @@ const Cover: React.FC<CoverProps> = (props) => {
     ],
     [imageStyle, theme.palette.skeleton, coverStyles.imageOverlay],
   );
-  const imagePlaceHolderStyle = React.useMemo(
-    () => [coverStyles.imageOverlay, style],
-    [style],
-  );
 
   return (
     <>
       <AnimatedBox style={combinedLoadingStyle}>
         <Progress />
       </AnimatedBox>
-      <Animated.View style={imagePlaceHolderStyle}>
+
+      {error && (
         <Image
           source={require('@assets/No-Image-Placeholder.png')}
           style={imageStyle}
         />
-      </Animated.View>
+      )}
       {source.uri != null && (
         <>
           <Image // ImprovedImage
@@ -111,6 +116,7 @@ const Cover: React.FC<CoverProps> = (props) => {
           />
           {React.Children.count(children) > 0 && (
             <Box position="absolute" left={0} right={0} top={0} bottom={0}>
+              {error && <Text color="error">Error</Text>}
               {children}
             </Box>
           )}

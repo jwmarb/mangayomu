@@ -19,10 +19,10 @@ export default function useImageHandler(props: {
   const src =
     typeof cover === 'string' ? cover : cover?.imageCover ?? manga.imageCover;
   const [imgSrc, setImgSrc] = React.useState<string | undefined | null>(src);
-  const [error, toggleError] = useBoolean();
+  const [error, toggleError] = useBoolean(src == null);
   const prevImgSrc = React.useRef<string | undefined | null>(src);
-  const opacity = useSharedValue(0);
-  const loadingOpacity = useSharedValue(1);
+  const opacity = useSharedValue(src == null ? 1 : 0);
+  const loadingOpacity = useSharedValue(src == null ? 0 : 1);
   if (prevImgSrc.current !== src) {
     prevImgSrc.current = src;
     setImgSrc(src);
@@ -38,6 +38,7 @@ export default function useImageHandler(props: {
     if (imgSrc == null) {
       loadingOpacity.value = 0;
       opacity.value = 1;
+      toggleError(true);
     } else {
       loadingOpacity.value = 1;
       opacity.value = 0;
@@ -56,8 +57,10 @@ export default function useImageHandler(props: {
   }, [error]);
 
   function handleOnError() {
-    if (!error) toggleError(true);
-    else {
+    if (!error) {
+      console.log(`Failed to load image ${imgSrc}`);
+      toggleError(true);
+    } else {
       // This is run if refetched image fails to load (error will have already been set to true)
       loadingOpacity.value = 0;
       opacity.value = 1;
@@ -80,5 +83,6 @@ export default function useImageHandler(props: {
     source: { uri: imgSrc || undefined },
     loadingOpacity,
     opacity,
+    error,
   };
 }

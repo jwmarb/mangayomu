@@ -7,7 +7,7 @@ import { Manga } from '@mangayomu/mangascraper/src';
 import { AUTO_HEIGHT_SCALAR } from '@redux/slices/settings';
 import React from 'react';
 import { Image, Pressable, StyleSheet } from 'react-native';
-import { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
 import { MangaSchema } from '@database/schemas/Manga';
 import mangaSchemaToManga from '@helpers/mangaSchemaToManga';
@@ -29,19 +29,26 @@ interface StaticCoverProps {
 
 const StaticCover: React.FC<StaticCoverProps> = (props) => {
   const { manga, scale = 1, sharp = false } = props;
-  const { loadingOpacity, opacity, source, onLoad, onLoadStart, onError } =
-    useImageHandler({
-      cover: manga.imageCover,
-      manga:
-        'link' in manga
-          ? manga
-          : {
-              link: manga._id,
-              imageCover: manga.imageCover,
-              title: manga.title,
-              source: manga.source,
-            },
-    });
+  const {
+    loadingOpacity,
+    opacity,
+    source,
+    onLoad,
+    onLoadStart,
+    onError,
+    error,
+  } = useImageHandler({
+    cover: manga.imageCover,
+    manga:
+      'link' in manga
+        ? manga
+        : {
+            link: manga._id,
+            imageCover: manga.imageCover,
+            title: manga.title,
+            source: manga.source,
+          },
+  });
 
   const styles = React.useMemo(
     () => ({
@@ -70,13 +77,13 @@ const StaticCover: React.FC<StaticCoverProps> = (props) => {
     opacity: loadingOpacity.value,
   }));
 
+  const errorOpacity = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
   const styledError = React.useMemo(
-    () => [
-      mangaHistoryItemStyles.error,
-      styles.cover,
-      { opacity: opacity.value },
-    ],
-    [styles.cover, mangaHistoryItemStyles.error],
+    () => [mangaHistoryItemStyles.error, styles.cover, errorOpacity],
+    [styles.cover, mangaHistoryItemStyles.error, errorOpacity],
   );
   const fastImageStyle = React.useMemo(
     () => [styles.cover, { backgroundColor: theme.palette.skeleton }],
@@ -94,7 +101,7 @@ const StaticCover: React.FC<StaticCoverProps> = (props) => {
           resizeMode="cover"
         />
       )}
-      <Image
+      <Animated.Image
         source={require('@assets/No-Image-Placeholder.png')}
         style={styledError}
       />
