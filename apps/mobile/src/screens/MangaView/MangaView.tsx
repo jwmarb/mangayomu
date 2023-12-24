@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import Box from '@components/Box';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
-import { useManga } from '@database/schemas/Manga';
+import { MangaSchema, useManga } from '@database/schemas/Manga';
 import React from 'react';
 import MangaViewerHeader from './components/MangaViewerHeader';
 import { useTheme } from '@emotion/react';
@@ -44,6 +44,7 @@ import { addIfNewSourceToLibrary } from '@redux/slices/library';
 import { useAppDispatch } from '@redux/main';
 import { RootStackProps } from '@navigators/Root/Root.interfaces';
 import { ErrorContext } from '@screens/MangaView/context/ErrorContext';
+import { useRealm } from '@database/main';
 
 export const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 
@@ -56,22 +57,27 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
   );
   const dispatch = useAppDispatch();
   const ref = React.useRef<BottomSheet>(null);
-  const { manga, status, error, refresh, update } = useManga(params, {
+  const realm = useRealm();
+  const { manga, status, error, refresh } = useManga(params, {
     preferLocal: false,
   });
   const { data, firstChapter } = useChapters(manga);
   const [refreshing, onRefresh] = useRefresh(refresh);
   const handleOnBookmark = React.useCallback(() => {
-    update((mangaObj) => {
+    const mangaObj = realm.objectForPrimaryKey(MangaSchema, manga?._id);
+    if (mangaObj != null) {
       dispatch(addIfNewSourceToLibrary(mangaObj.source));
-      mangaObj.inLibrary = !mangaObj.inLibrary;
+      realm.write(() => {
+        mangaObj.inLibrary = !mangaObj.inLibrary;
+
+        if (mangaObj.inLibrary) mangaObj.dateAddedInLibrary = Date.now();
+        else mangaObj.dateAddedInLibrary = undefined;
+      });
       displayMessage(
         mangaObj.inLibrary ? 'Added to library' : 'Removed from library',
       );
-      if (mangaObj.inLibrary) mangaObj.dateAddedInLibrary = Date.now();
-      else mangaObj.dateAddedInLibrary = undefined;
-    });
-  }, [update, dispatch]);
+    }
+  }, [manga?._id, dispatch]);
 
   const textOpacity = useSharedValue(0);
   const networkStatusOffset = useSharedValue(moderateScale(32));

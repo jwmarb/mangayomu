@@ -1,23 +1,30 @@
 import Box from '@components/Box';
 import SelectItem from '@components/Filters/SelectItem';
-import { useManga } from '@database/schemas/Manga';
+import { MangaSchema } from '@database/schemas/Manga';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import React from 'react';
 import { ListRenderItem } from 'react-native';
 import { moderateScale } from 'react-native-size-matters';
 import { LanguageProps } from './Language.interfaces';
+import { useRealm } from '@database/main';
 
 const Language: React.FC<LanguageProps> = (props) => {
   const { selectedLanguage, supportedLanguages, mangaLink } = props;
-  const { update } = useManga(mangaLink);
+  const localRealm = useRealm();
   const handleOnChange = React.useCallback(
     (i: ISOLangCode | 'Use default language') => {
-      update((obj) => {
-        obj.selectedLanguage = i;
-      });
+      const mangas = localRealm
+        .objects(MangaSchema)
+        .filtered('link = $0', mangaLink);
+      if (mangas.length > 0) {
+        const obj = mangas[0];
+        localRealm.write(() => {
+          obj.selectedLanguage = i;
+        });
+      }
     },
-    [update],
+    [localRealm, mangaLink],
   );
   const renderItem = React.useCallback<
     ListRenderItem<ISOLangCode | 'Use default language'>
