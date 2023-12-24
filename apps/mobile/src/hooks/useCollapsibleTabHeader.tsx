@@ -1,5 +1,4 @@
-import Box from '@components/Box';
-import { BoxProps } from '@components/Box/Box.interfaces';
+import Box, { BoxProps } from '@components/Box';
 import LoadingBar from '@components/LoadingBar';
 import { NAVHEADER_HEIGHT, useNavStyles } from '@components/NavHeader';
 import Stack from '@components/Stack';
@@ -7,18 +6,10 @@ import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import useRootNavigation from '@hooks/useRootNavigation';
 import React from 'react';
-import {
-  Dimensions,
-  NativeScrollEvent,
-  NativeScrollVelocity,
-  StyleProp,
-  ViewStyle,
-} from 'react-native';
-import { NativeSyntheticEvent } from 'react-native';
+import { Dimensions, StyleProp, ViewStyle } from 'react-native';
 import Animated, {
   interpolate,
   interpolateColor,
-  runOnUI,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useDerivedValue,
