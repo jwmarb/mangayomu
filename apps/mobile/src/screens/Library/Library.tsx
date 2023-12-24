@@ -1,6 +1,5 @@
 import Box from '@components/Box';
 import Icon from '@components/Icon';
-import IconButton from '@components/IconButton';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import useCollapsibleTabHeader from '@hooks/useCollapsibleTabHeader';
 import useMangaFlashlistLayout from '@hooks/useMangaFlashlistLayout';
@@ -12,10 +11,7 @@ import { moderateScale } from 'react-native-size-matters';
 import { useWindowDimensions } from 'react-native';
 import Stack from '@components/Stack';
 import Checkbox from '@components/Checkbox';
-import Badge from '@components/Badge';
-import Input from '@components/Input';
-import { RefreshControl } from 'react-native-gesture-handler';
-import useBoolean from '@hooks/useBoolean';
+import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 
 import { useLibraryData } from '@screens/Library/Library.hooks';
 import { AnimatedFlashList } from '@components/animated';
@@ -24,6 +20,39 @@ import { useUser } from '@realm/react';
 import useAppSelector from '@hooks/useAppSelector';
 import { LibraryMethods, useLibrarySetRefreshing } from '@screens/Library';
 import { useIsLibrarySynced } from '../../context/SyncData';
+import { useIsFocused } from '@react-navigation/native';
+import { LoadingBook } from '@components/Book';
+import { useNavStyles } from '@components/NavHeader';
+
+const LoadingBookPlaceholder = (
+  <Box my="s" align-items="center" justify-content="center" flex-grow>
+    <LoadingBook />
+  </Box>
+);
+
+const Placeholder = React.memo(() => {
+  const NavStyles = useNavStyles();
+  return (
+    <ScrollView>
+      <Box style={NavStyles.offset} />
+      <Box flex-grow flex-direction="row" flex-wrap="wrap">
+        {LoadingBookPlaceholder}
+        {LoadingBookPlaceholder}
+        {LoadingBookPlaceholder}
+        {LoadingBookPlaceholder}
+        {LoadingBookPlaceholder}
+        {LoadingBookPlaceholder}
+        {LoadingBookPlaceholder}
+        {LoadingBookPlaceholder}
+        {LoadingBookPlaceholder}
+        {LoadingBookPlaceholder}
+        {LoadingBookPlaceholder}
+        {LoadingBookPlaceholder}
+      </Box>
+      <Box style={NavStyles.contentContainerStyle} />
+    </ScrollView>
+  );
+});
 
 const _Library: React.ForwardRefRenderFunction<
   LibraryMethods,
@@ -32,6 +61,7 @@ const _Library: React.ForwardRefRenderFunction<
   const bottomSheet = React.useRef<BottomSheetMethods>(null);
   const user = useUser();
   const { data, mangasInLibrary, updateQuerifiedData } = useLibraryData();
+  const isFocused = useIsFocused();
   React.useImperativeHandle(ref, () => ({
     openFilters() {
       bottomSheet.current?.snapToIndex(1);
@@ -52,36 +82,38 @@ const _Library: React.ForwardRefRenderFunction<
 
   return (
     <>
-      <AnimatedFlashList
-        refreshControl={
-          <RefreshControl
-            refreshing={false}
-            onRefresh={() => {
-              setRefreshing(true);
-            }}
-          />
-        }
-        onScroll={onScroll}
-        onMomentumScrollEnd={onScroll}
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        key={key + user.id}
-        numColumns={columns}
-        ListHeaderComponent={
-          <>{data.length > 0 && <Box style={scrollViewStyle} />}</>
-        }
-        ListFooterComponent={
-          <>{data.length > 0 && <Box style={contentContainerStyle} />}</>
-        }
-        estimatedItemSize={estimatedItemSize}
-        estimatedListSize={estimatedListSize}
-        overrideItemLayout={overrideItemLayout}
-        drawDistance={drawDistance}
-        ListEmptyComponent={
-          <ListEmptyComponent libraryIsEmpty={mangasInLibrary.length === 0} />
-        }
-      />
+      <Freeze freeze={!isFocused} placeholder={<Placeholder />}>
+        <AnimatedFlashList
+          refreshControl={
+            <RefreshControl
+              refreshing={false}
+              onRefresh={() => {
+                setRefreshing(true);
+              }}
+            />
+          }
+          onScroll={onScroll}
+          onMomentumScrollEnd={onScroll}
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
+          key={key + user.id}
+          numColumns={columns}
+          ListHeaderComponent={
+            <>{data.length > 0 && <Box style={scrollViewStyle} />}</>
+          }
+          ListFooterComponent={
+            <>{data.length > 0 && <Box style={contentContainerStyle} />}</>
+          }
+          estimatedItemSize={estimatedItemSize}
+          estimatedListSize={estimatedListSize}
+          overrideItemLayout={overrideItemLayout}
+          drawDistance={drawDistance}
+          ListEmptyComponent={
+            <ListEmptyComponent libraryIsEmpty={mangasInLibrary.length === 0} />
+          }
+        />
+      </Freeze>
       <Freeze freeze={mangasInLibrary.length === 0}>
         <LibraryFilterMenu ref={bottomSheet} filtered={mangasInLibrary} />
       </Freeze>
