@@ -14,22 +14,13 @@ import Animated, {
   cancelAnimation,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-import { AppState } from '@redux/main';
-import { connect, ConnectedProps } from 'react-redux';
 import { BookStyle } from '@redux/slices/settings';
+import useAppSelector from '@hooks/useAppSelector';
 
-const mapStateToProps = (state: AppState) => state.settings.book;
-
-const connector = connect(mapStateToProps);
-type LoadingBookProps = ConnectedProps<typeof connector>;
-
-const LoadingBook: React.FC<LoadingBookProps> = ({
-  width,
-  height,
-  coverHeight,
-  title,
-  style,
-}) => {
+const LoadingBook: React.FC = () => {
+  const { width, height, coverHeight, title, style } = useAppSelector(
+    (state) => state.settings.book,
+  );
   const opacity = useSharedValue(0.5);
   const theme = useTheme();
   const textStyle = React.useMemo(
@@ -81,7 +72,7 @@ const LoadingBook: React.FC<LoadingBookProps> = ({
     [loading, coverStyles.image, theme.palette.skeleton, style],
   );
   return (
-    <Stack space="s" width={width} minHeight={height}>
+    <Stack space="s" width={width} minHeight={height} align-self="center">
       <Animated.View style={loadingStyles} />
       {style !== BookStyle.TACHIYOMI && (
         <Box>
@@ -135,4 +126,4 @@ const LoadingBook: React.FC<LoadingBookProps> = ({
   );
 };
 
-export default connector(React.memo(LoadingBook));
+export default React.memo(LoadingBook);
