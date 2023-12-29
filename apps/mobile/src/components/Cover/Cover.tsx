@@ -98,31 +98,27 @@ const Cover: React.FC<CoverProps> = (props) => {
         <Progress />
       </AnimatedBox>
 
-      {error && (
-        <Image
-          source={require('@assets/No-Image-Placeholder.png')}
-          style={imageStyle}
-        />
-      )}
-      {source.uri != null && (
-        <>
-          {!error && (
-            <Image // ImprovedImage
-              progressiveRenderingEnabled
-              source={source}
-              onLoadStart={onLoadStart}
-              onLoad={onLoad}
-              style={imageStyle}
-              onError={onError}
-            />
-          )}
-          {React.Children.count(children) > 0 && (
-            <Box position="absolute" left={0} right={0} top={0} bottom={0}>
-              {error && <Text color="error">Error</Text>}
-              {children}
-            </Box>
-          )}
-        </>
+      <Animated.Image
+        source={require('@assets/No-Image-Placeholder.png')}
+        style={[
+          imageStyle,
+          style,
+          { position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 },
+        ]}
+      />
+      <Image // ImprovedImage
+        progressiveRenderingEnabled
+        source={source}
+        onLoadStart={onLoadStart}
+        onLoad={onLoad}
+        style={imageStyle}
+        onError={onError}
+      />
+      {React.Children.count(children) > 0 && (
+        <Box position="absolute" left={0} right={0} top={0} bottom={0}>
+          {error && <Text color="error">Error</Text>}
+          {children}
+        </Box>
       )}
     </>
   );
