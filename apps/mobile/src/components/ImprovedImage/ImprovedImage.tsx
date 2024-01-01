@@ -6,12 +6,15 @@ import {
   ImageSourcePropType,
   ImageURISource,
 } from 'react-native';
-import RNFetchBlob, { FetchBlobResponse } from 'rn-fetch-blob';
+import RNFetchBlob, { FetchBlobResponse, StatefulPromise } from 'rn-fetch-blob';
 import React from 'react';
 import { IMAGE_CACHE_DIR } from '../../../App';
 import { addSeconds, formatDistanceToNow, isAfter } from 'date-fns';
 
-export interface ImprovedImageProps extends Omit<ImageProps, 'source'> {
+export interface ImprovedImageProps
+  extends Omit<ImageProps, 'source' | 'onLoad'> {
+  onLoad?: () => void;
+
   source?: ImageURISource | ImageRequireSource;
   /**
    * Enables image caching through disk
@@ -25,7 +28,7 @@ export interface ImprovedImageProps extends Omit<ImageProps, 'source'> {
   ttl?: number;
 }
 
-const sync = new Map<string, Promise<FetchBlobResponse>>();
+const sync = new Map<string, StatefulPromise<FetchBlobResponse>>();
 
 function sanitizeUri(uri: string): string {
   const parametersIndex = uri.indexOf('?');
@@ -41,7 +44,9 @@ function toFSCacheURI(file: string): string {
 function getOrCreateDownloadRequest(key: string, uri: string, stale?: boolean) {
   if (!stale) {
     const existingPromise = sync.get(key);
-    if (existingPromise) return existingPromise;
+    if (existingPromise) {
+      return existingPromise;
+    }
   }
   const p = RNFetchBlob.config({ path: key }).fetch('GET', uri);
   sync.set(key, p);
@@ -64,7 +69,7 @@ async function retrieveImageFromCache(
       console.log(`${filename} is stale. Redownloading...`);
       const response = await getOrCreateDownloadRequest(cacheUri, uri, true);
       const fileExtension = cacheUri.substring(cacheUri.lastIndexOf('.') + 1);
-      const base64 = `data:image/${fileExtension};base64,${response.base64()}`;
+      const base64 = `data:image/${fileExtension};base64,${await response.base64()}`;
       return { uri: base64 };
     } else {
       const r = await RNFetchBlob.fs.readFile(cacheUri, 'base64');
@@ -77,13 +82,21 @@ async function retrieveImageFromCache(
   } else {
     const response = await getOrCreateDownloadRequest(cacheUri, uri);
     const fileExtension = cacheUri.substring(cacheUri.lastIndexOf('.') + 1);
-    const base64 = `data:image/${fileExtension};base64,${response.base64()}`;
+    const base64 = `data:image/${fileExtension};base64,${await response.base64()}`;
     return { uri: base64 };
   }
 }
 
 function useImageCaching(props: ImprovedImageProps) {
-  const { source: src, cache = true, ttl = 259200, ...rest } = props;
+  const {
+    source: src,
+    cache = true,
+    ttl = 259200,
+    onLoadEnd = () => void 0,
+    onLoadStart = () => void 0,
+    onError = () => void 0,
+    ...rest
+  } = props;
   const [uri, setUri] = React.useState<ImageSourcePropType | undefined>(() => {
     if (!cache || typeof src === 'number') return src;
 
@@ -96,12 +109,27 @@ function useImageCaching(props: ImprovedImageProps) {
           setUri(src);
           break;
         case 'object':
-          if (src.uri != null)
-            retrieveImageFromCache(src.uri, ttl).then(setUri);
+          if (src.uri != null) {
+            onLoadStart();
+            retrieveImageFromCache(src.uri, ttl)
+              .then(setUri)
+              .catch(onError)
+              .finally(onLoadEnd);
+          }
           break;
       }
     else setUri(src);
   }, [typeof src === 'object' ? src.uri : src, ttl, cache]);
+
+  if (
+    (typeof src === 'object' && src.uri == null) ||
+    typeof src === 'number' ||
+    !cache
+  ) {
+    (rest as ImageProps).onError = onError;
+    (rest as ImageProps).onLoadEnd = onLoadEnd;
+    (rest as ImageProps).onLoadStart = onLoadStart;
+  }
   return [uri, rest] as const;
 }
 

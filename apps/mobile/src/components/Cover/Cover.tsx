@@ -108,7 +108,6 @@ const Cover: React.FC<CoverProps> = (props) => {
         ]}
       />
       <ImprovedImage // ImprovedImage
-        progressiveRenderingEnabled
         source={source}
         onLoadStart={onLoadStart}
         onLoad={onLoad}
