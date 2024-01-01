@@ -26,7 +26,6 @@ export interface ImprovedImageProps extends Omit<ImageProps, 'source'> {
 }
 
 const sync = new Map<string, Promise<FetchBlobResponse>>();
-const memoryCache = new Map<string, string>();
 
 function sanitizeUri(uri: string): string {
   const parametersIndex = uri.indexOf('?');
@@ -54,8 +53,6 @@ async function retrieveImageFromCache(
   ttl: number,
 ): Promise<ImageSourcePropType> {
   const sanitizedUri = sanitizeUri(uri);
-  const memCached = memoryCache.get(sanitizedUri);
-  if (memCached != null) return { uri: memCached };
   const cacheUri = toFSCacheURI(sanitizedUri);
   const fileExists = await RNFetchBlob.fs.exists(cacheUri);
   if (fileExists) {
@@ -68,7 +65,6 @@ async function retrieveImageFromCache(
       const response = await getOrCreateDownloadRequest(cacheUri, uri, true);
       const fileExtension = cacheUri.substring(cacheUri.lastIndexOf('.') + 1);
       const base64 = `data:image/${fileExtension};base64,${response.base64()}`;
-      memoryCache.set(sanitizedUri, base64);
       return { uri: base64 };
     } else {
       const r = await RNFetchBlob.fs.readFile(cacheUri, 'base64');
@@ -76,28 +72,20 @@ async function retrieveImageFromCache(
         sanitizedUri.lastIndexOf('.') + 1,
       );
       const base64 = `data:image/${fileExtension};base64,${r}`;
-      memoryCache.set(sanitizedUri, base64);
       return { uri: base64 };
     }
   } else {
     const response = await getOrCreateDownloadRequest(cacheUri, uri);
     const fileExtension = cacheUri.substring(cacheUri.lastIndexOf('.') + 1);
     const base64 = `data:image/${fileExtension};base64,${response.base64()}`;
-    memoryCache.set(sanitizedUri, base64);
     return { uri: base64 };
   }
 }
 
-export function ImprovedImageBackground(
-  props: React.PropsWithChildren<ImprovedImageProps>,
-) {
+function useImageCaching(props: ImprovedImageProps) {
   const { source: src, cache = true, ttl = 259200, ...rest } = props;
   const [uri, setUri] = React.useState<ImageSourcePropType | undefined>(() => {
     if (!cache || typeof src === 'number') return src;
-    if (src?.uri != null) {
-      const cached = memoryCache.get(sanitizeUri(src.uri));
-      return cached ? { uri: cached } : undefined;
-    }
 
     return undefined;
   });
@@ -114,6 +102,13 @@ export function ImprovedImageBackground(
       }
     else setUri(src);
   }, [typeof src === 'object' ? src.uri : src, ttl, cache]);
+  return [uri, rest] as const;
+}
+
+export function ImprovedImageBackground(
+  props: React.PropsWithChildren<ImprovedImageProps>,
+) {
+  const [uri, rest] = useImageCaching(props);
   return <ImageBackground source={uri} {...rest} />;
 }
 
@@ -121,29 +116,7 @@ function ImprovedImage(
   props: ImprovedImageProps,
   ref: React.ForwardedRef<Image>,
 ) {
-  const { source: src, cache = true, ttl = 259200, ...rest } = props;
-  const [uri, setUri] = React.useState<ImageSourcePropType | undefined>(() => {
-    if (!cache || typeof src === 'number') return src;
-    if (src?.uri != null) {
-      const cached = memoryCache.get(sanitizeUri(src.uri));
-      return cached ? { uri: cached } : undefined;
-    }
-
-    return undefined;
-  });
-  React.useEffect(() => {
-    if (cache)
-      switch (typeof src) {
-        case 'number':
-          setUri(src);
-          break;
-        case 'object':
-          if (src.uri != null)
-            retrieveImageFromCache(src.uri, ttl).then(setUri);
-          break;
-      }
-    else setUri(src);
-  }, [typeof src === 'object' ? src.uri : src, ttl, cache]);
+  const [uri, rest] = useImageCaching(props);
   return <Image ref={ref} source={uri} {...rest} />;
 }
 
