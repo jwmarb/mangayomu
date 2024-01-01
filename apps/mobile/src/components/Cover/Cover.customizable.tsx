@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
 import Box from '@components/Box';
+import { AnimatedImprovedImage } from '@components/ImprovedImage';
 
 const borderRadius = moderateScale(8);
 
@@ -59,7 +60,7 @@ const CustomizableCover: React.FC<CustomizableCoverProps> = (props) => {
           {children}
         </Box>
       </Animated.View>
-      <Animated.Image // ImprovedImage
+      <AnimatedImprovedImage // ImprovedImage
         source={{ uri: src }}
         resizeMode="cover"
         style={imageStyle}

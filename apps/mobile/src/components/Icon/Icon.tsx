@@ -7,6 +7,7 @@ import MaterialCommunityIconNames from 'react-native-vector-icons/glyphmaps/Mate
 import Animated from 'react-native-reanimated';
 import { getOrUseCustomColor } from '@components/Text';
 import { Image } from 'react-native';
+import ImprovedImage from '@components/ImprovedImage';
 
 const styles = ScaledSheet.create({
   imageIcon: {
@@ -28,7 +29,7 @@ const Icon: React.FC<IconProps | ImageIconProps> = (props) => {
     );
   const { size = moderateScale(32) } = props;
   return (
-    <Image // ImprovedImage
+    <ImprovedImage // ImprovedImage
       source={{ uri: props.name }}
       style={[styles.imageIcon, { width: size, height: size }]}
     />

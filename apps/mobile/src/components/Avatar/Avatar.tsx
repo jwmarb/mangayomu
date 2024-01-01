@@ -1,4 +1,5 @@
 import Icon from '@components/Icon';
+import ImprovedImage from '@components/ImprovedImage';
 import { useUser } from '@realm/react';
 import React from 'react';
 import { Image } from 'react-native';
@@ -25,7 +26,10 @@ const Avatar: React.FC<AvatarProps> = (props) => {
   if (user.profile.pictureUrl == null)
     return <Icon type="font" size={size} name="account-circle" />;
   return (
-    <Image source={{ uri: user.profile.pictureUrl }} style={avatarStyle} /> // ImprovedImage
+    <ImprovedImage
+      source={{ uri: user.profile.pictureUrl }}
+      style={avatarStyle}
+    /> // ImprovedImage
   );
 };
 

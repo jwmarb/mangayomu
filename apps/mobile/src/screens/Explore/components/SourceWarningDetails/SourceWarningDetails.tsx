@@ -10,6 +10,7 @@ import React from 'react';
 import { Image, ListRenderItem } from 'react-native';
 import { ScaledSheet } from 'react-native-size-matters';
 import { SourceWarningDetailsProps } from './SourceWarningDetails.interfaces';
+import ImprovedImage from '@components/ImprovedImage';
 
 const Empty = (
   <Box>
@@ -66,7 +67,7 @@ const MangaError: React.FC<{ item: SourceError }> = React.memo(
     const host = MangaHost.sourcesMap.get(source)!;
     return (
       <Stack flex-direction="row" space="m" m="s" align-items="center">
-        <Image // ImprovedImage
+        <ImprovedImage // ImprovedImage
           source={{ uri: host.icon }}
           style={styles.icon}
         />

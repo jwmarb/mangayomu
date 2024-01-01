@@ -23,6 +23,7 @@ import IconButton from '@components/IconButton';
 import useBoolean from '@hooks/useBoolean';
 import { useMangaViewError } from '@screens/MangaView/context/ErrorContext';
 import { MangaHost } from '@mangayomu/mangascraper/src';
+import { ImprovedImageBackground } from '@components/ImprovedImage/ImprovedImage';
 
 const styles = StyleSheet.create({
   imageBackground: {
@@ -50,7 +51,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
   const isLoading = !error && (status === 'loading' || meta == null);
   return (
     <Box>
-      <ImageBackground // ImprovedImage
+      <ImprovedImageBackground // ImprovedImage
         source={
           fallback
             ? require('@assets/No-Image-Placeholder.png')
@@ -100,7 +101,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
             />
           </Box>
         </LinearGradient>
-      </ImageBackground>
+      </ImprovedImageBackground>
       <Stack
         space="s"
         background-color="paper"

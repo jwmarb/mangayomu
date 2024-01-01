@@ -1,6 +1,7 @@
 import Box from '@components/Box';
 import Checkbox from '@components/Checkbox';
 import Hyperlink from '@components/Hyperlink';
+import ImprovedImage from '@components/ImprovedImage';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
@@ -33,7 +34,7 @@ const Item: React.FC<ConnectedItemProps> = React.memo(
             <Checkbox onChange={handleOnPress} checked={isSelected} />
           </Box>
           <Stack py="s" flex-direction="row" space="m">
-            <Image // ImprovedImage
+            <ImprovedImage // ImprovedImage
               source={{ uri: host.icon }}
               style={styles.icon}
             />

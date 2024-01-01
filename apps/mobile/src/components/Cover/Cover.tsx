@@ -1,6 +1,7 @@
 import Box, { AnimatedBox } from '@components/Box';
 import { CoverProps } from '@components/Cover';
 import useImageHandler from '@components/Cover/useImageHandler';
+import ImprovedImage from '@components/ImprovedImage';
 import Progress from '@components/Progress';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
@@ -106,7 +107,7 @@ const Cover: React.FC<CoverProps> = (props) => {
           { position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 },
         ]}
       />
-      <Image // ImprovedImage
+      <ImprovedImage // ImprovedImage
         progressiveRenderingEnabled
         source={source}
         onLoadStart={onLoadStart}
