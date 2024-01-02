@@ -29,6 +29,8 @@ import { AppProvider, UserProvider } from '@realm/react';
 import ErrorBoundary from 'react-native-error-boundary';
 import ErrorFallback from '@components/ErrorFallback';
 import ThemeProvider from '@theme/themeprovider';
+import { getErrorMessage } from '@helpers/getErrorMessage';
+import RNFetchBlob from 'rn-fetch-blob';
 enableFreeze(true);
 
 const realmConfiguration: Realm.OpenRealmBehaviorConfiguration = {
@@ -38,17 +40,37 @@ const realmConfiguration: Realm.OpenRealmBehaviorConfiguration = {
 const sync: Partial<Realm.SyncConfiguration> = {
   flexible: true,
   onError: (_, error) => {
-    console.error(error);
+    if (error instanceof Realm.SyncError)
+      console.log({
+        code: error.code,
+        message: error.message,
+        type: 'SyncError',
+      });
+    else
+      console.log({
+        type: 'ClientResetError',
+        message: getErrorMessage(error),
+      });
   },
   clientReset: {
-    mode: Realm.ClientResetMode.RecoverUnsyncedChanges,
+    mode: Realm.ClientResetMode.RecoverOrDiscardUnsyncedChanges,
   },
+
   newRealmFileBehavior: realmConfiguration,
   existingRealmFileBehavior: realmConfiguration,
 };
 
+export const IMAGE_CACHE_DIR = `${RNFetchBlob.fs.dirs.CacheDir}/images`;
+
 function App(): JSX.Element {
   React.useEffect(() => {
+    RNFetchBlob.fs.exists(IMAGE_CACHE_DIR).then((exists) => {
+      if (!exists)
+        RNFetchBlob.fs
+          .mkdir(IMAGE_CACHE_DIR)
+          .then(() => console.log('Created image cache directory'))
+          .catch(() => console.error('Failed to create image cache directory'));
+    });
     function handleMemoryWarning(e: AppStateStatus) {
       console.log(`memoryWarning:: ${e}`);
     }
