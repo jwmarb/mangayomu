@@ -23,9 +23,7 @@ import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSh
 import MangaViewModal from '@screens/MangaView/components/MangaViewModal';
 import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 import { ISOLangCode } from '@mangayomu/language-codes';
-import connector, {
-  ConnectedMangaViewProps,
-} from '@screens/MangaView/MangaView.redux';
+
 import Text from '@components/Text';
 import { moderateScale } from 'react-native-size-matters';
 import Stack from '@components/Stack';
@@ -274,4 +272,4 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
   );
 };
 
-export default connector(MangaView);
+export default MangaView;
