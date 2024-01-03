@@ -23,20 +23,22 @@ import type { FlashList } from '@shopify/flash-list';
 
 const translationInterpolation = [moderateScale(24), 0];
 
-const BasicMangaList: React.FC<RootStackProps<'BasicMangaList'>> = (props) => {
+export type BasicMangaListProps = RootStackProps<'BasicMangaList'> &
+  ReturnType<typeof useCollapsibleHeader>;
+
+const BasicMangaList: React.FC<BasicMangaListProps> = (props) => {
   const {
     route: {
       params: { stateKey },
     },
+    scrollOffset,
+    onScroll,
+    scrollViewStyle,
+    contentContainerStyle,
   } = props;
   const mangas = useAppSelector((state) => state.explore.states[stateKey]);
-  const title =
-    props.route.params.stateKey === 'latest'
-      ? 'Recently updated'
-      : 'Trending updates';
+
   const { height } = useWindowDimensions();
-  const { onScroll, contentContainerStyle, scrollViewStyle, scrollOffset } =
-    useCollapsibleHeader({ headerTitle: title });
   const {
     estimatedItemSize,
     columns,
