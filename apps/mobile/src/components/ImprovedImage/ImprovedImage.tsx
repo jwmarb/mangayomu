@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import RNFetchBlob, { FetchBlobResponse, StatefulPromise } from 'rn-fetch-blob';
 import React, { useId } from 'react';
-import { IMAGE_CACHE_DIR } from '../../../App';
+import { IMAGE_CACHE_DIR } from 'env';
 import { addSeconds, isAfter } from 'date-fns';
 
 export interface ImprovedImageProps
