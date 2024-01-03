@@ -31,6 +31,7 @@ import ErrorFallback from '@components/ErrorFallback';
 import ThemeProvider from '@theme/themeprovider';
 import { getErrorMessage } from '@helpers/getErrorMessage';
 import RNFetchBlob from 'rn-fetch-blob';
+import { IMAGE_CACHE_DIR } from 'env';
 enableFreeze(true);
 
 const realmConfiguration: Realm.OpenRealmBehaviorConfiguration = {
@@ -59,8 +60,6 @@ const sync: Partial<Realm.SyncConfiguration> = {
   newRealmFileBehavior: realmConfiguration,
   existingRealmFileBehavior: realmConfiguration,
 };
-
-export const IMAGE_CACHE_DIR = `${RNFetchBlob.fs.dirs.CacheDir}/images`;
 
 function App(): JSX.Element {
   React.useEffect(() => {
