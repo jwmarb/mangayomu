@@ -1,9 +1,6 @@
 import { inPlaceSort } from 'fast-sort';
 import React from 'react';
-import {
-  getErrorMessage,
-  getErrorMessageWorklet,
-} from '@helpers/getErrorMessage';
+import { getErrorMessage } from '@helpers/getErrorMessage';
 import { MangaHost, Manga } from '@mangayomu/mangascraper/src';
 import { EqualityFn } from 'react-redux';
 import useAppSelector from '@hooks/useAppSelector';
