@@ -46,7 +46,7 @@ const computeSettledPromised = (
       case 'rejected':
         errors.push({
           source: mangaHosts[key].name,
-          error: getErrorMessageWorklet(settledResult.reason),
+          error: settledResult.reason,
         });
         break;
     }
@@ -126,7 +126,18 @@ export default function getMangaHost() {
               : ([] as Manga[]),
           ),
         );
-        const result = await executeParallelTask(hosts, mangaCollection);
+
+        const result = await executeParallelTask(
+          hosts,
+          mangaCollection.map((x) =>
+            x.status === 'rejected'
+              ? ({
+                  status: 'rejected',
+                  reason: getErrorMessage(x.reason),
+                } as PromiseSettledResult<Manga[]>)
+              : x,
+          ),
+        );
         return JSON.parse(result);
       },
       async getLatestMangas(): Promise<MangaConcurrencyResult> {
@@ -137,14 +148,34 @@ export default function getMangaHost() {
               : ([] as Manga[]),
           ),
         );
-        const result = await executeParallelTask(hosts, mangaCollection);
+        const result = await executeParallelTask(
+          hosts,
+          mangaCollection.map((x) =>
+            x.status === 'rejected'
+              ? ({
+                  status: 'rejected',
+                  reason: getErrorMessage(x.reason),
+                } as PromiseSettledResult<Manga[]>)
+              : x,
+          ),
+        );
         return JSON.parse(result);
       },
       async getMangaDirectory(): Promise<MangaConcurrencyResult> {
         const mangaCollection = await Promise.allSettled(
           hosts.map((x) => x.listMangas()),
         );
-        const result = await executeParallelTask(hosts, mangaCollection);
+        const result = await executeParallelTask(
+          hosts,
+          mangaCollection.map((x) =>
+            x.status === 'rejected'
+              ? ({
+                  status: 'rejected',
+                  reason: getErrorMessage(x.reason),
+                } as PromiseSettledResult<Manga[]>)
+              : x,
+          ),
+        );
         return JSON.parse(result);
       },
     }),
