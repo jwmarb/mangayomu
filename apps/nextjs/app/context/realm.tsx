@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { EmbeddedResponseStatus } from '@mangayomu/request-handler';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import RealmObjectProvider from '@app/context/realmobject';
 
 const AppContext = React.createContext<ReturnType<
   typeof Realm.App.getApp
@@ -116,7 +117,7 @@ export function ClientRealmProvider({
     <AppContext.Provider value={app}>
       <UserContext.Provider value={user}>
         <UserSetterContext.Provider value={setUser}>
-          {children}
+          <RealmObjectProvider>{children}</RealmObjectProvider>
         </UserSetterContext.Provider>
       </UserContext.Provider>
     </AppContext.Provider>

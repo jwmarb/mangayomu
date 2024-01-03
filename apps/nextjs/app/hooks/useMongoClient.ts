@@ -11,14 +11,23 @@ type TCollection<T extends { _id: string | Realm.BSON.ObjectId }> =
 
 interface MongoDBCollection<T extends { _id: string | Realm.BSON.ObjectId }>
   extends TCollection<T> {
+  /**
+   * Initializes fields for the purpose of creating a document
+   * @returns Returns properties of a document with values initialized
+   */
   initFields: () => Partial<T>;
+  /**
+   * The name of the collection
+   */
+  name: string;
 }
 
 export default function useMongoClient<
   TSchema extends { _id: string | Realm.BSON.ObjectId },
 >(
   MongoDBCollection: (new (user: RealmUser) => {
-    collection: TCollection<TSchema>;
+    readonly collection: TCollection<TSchema>;
+    readonly name: string;
   }) & {
     type: '_realmObjectSchema';
   },
@@ -27,6 +36,7 @@ export default function useMongoClient<
   const collection = React.useMemo(() => {
     const val = new MongoDBCollection(user);
     const collection = val.collection as MongoDBCollection<TSchema>;
+    collection.name = val.name;
     collection.initFields = () => {
       const obj: Partial<TSchema> = {};
       for (const key in (

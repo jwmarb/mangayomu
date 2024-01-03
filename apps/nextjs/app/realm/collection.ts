@@ -16,12 +16,14 @@ export default function Collection<
   return class Collection {
     static schema: RealmObjectSchema<TObject> = schema;
     readonly collection: Realm.Services.MongoDB.MongoDBCollection<TObject>;
+    readonly name: string;
     static readonly type = '_realmObjectSchema';
     public constructor(user: RealmUser) {
       this.collection = user
         .mongoClient('mongodb-atlas')
         .db('mangayomu')
         .collection<TObject>(schema.name);
+      this.name = schema.name;
     }
   };
 }
