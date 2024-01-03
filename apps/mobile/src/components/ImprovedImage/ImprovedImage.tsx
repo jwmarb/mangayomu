@@ -29,7 +29,7 @@ export interface ImprovedImageProps
   ttl?: number;
 }
 
-const sync = new Map<string, StatefulPromise<FetchBlobResponse>>();
+const sync = new Map<string, Promise<FetchBlobResponse>>();
 const memoryCache = new Set<string>();
 
 function sanitizeUri(uri: string): string {
@@ -41,7 +41,7 @@ function sanitizeUri(uri: string): string {
   );
 
   return encodeURIComponent(
-    uri.replace(/[^a-zA-Z0-9]/g, '').substring(0, fileExtIdx - 1) + fileExt,
+    uri.substring(0, fileExtIdx).replace(/[^a-zA-Z0-9]/g, '') + fileExt,
   );
 }
 
@@ -49,16 +49,34 @@ function toFSCacheURI(file: string): string {
   return `${IMAGE_CACHE_DIR}/${file}`;
 }
 
-function getOrCreateDownloadRequest(key: string, uri: string, stale?: boolean) {
+function getOrCreateDownloadRequest(
+  cacheUri: string,
+  uri: string,
+  stale?: boolean,
+) {
   if (!stale) {
-    const existingPromise = sync.get(key);
+    const existingPromise = sync.get(cacheUri);
     if (existingPromise) {
       return existingPromise;
     }
   }
-  const p = RNFetchBlob.config({ path: key }).fetch('GET', uri);
-  sync.set(key, p);
+  const p = download(cacheUri, uri);
+  // Puts into map so that it can be referenced instead of creating new promises
+  sync.set(cacheUri, p);
   return p;
+}
+async function download(cacheUri: string, uri: string) {
+  const result = await RNFetchBlob.config({
+    path: cacheUri,
+    overwrite: true,
+    timeout: 1000,
+  }).fetch('GET', uri);
+  if (result.info().status !== 200) {
+    sync.delete(cacheUri);
+    await RNFetchBlob.fs.unlink(cacheUri);
+    throw Error('Cannot download image from provided url');
+  }
+  return result;
 }
 
 async function retrieveImageFromCache(
@@ -77,24 +95,15 @@ async function retrieveImageFromCache(
     if (isAfter(Date.now(), staleAtEpoch)) {
       console.log(`${filename} is stale. Redownloading...`);
       const response = await getOrCreateDownloadRequest(cacheUri, uri, true);
-      memoryCache.add(cacheUri);
-      // const fileExtension = cacheUri.substring(cacheUri.lastIndexOf('.') + 1);
-      // const base64 = `data:image/${fileExtension};base64,${await response.base64()}`;
+      memoryCache.add(sanitizedUri);
       return { uri: `file://${response.path()}` };
     } else {
-      // const r = await RNFetchBlob.fs.readFile(cacheUri, 'base64');
-      // const fileExtension = sanitizedUri.substring(
-      //   sanitizedUri.lastIndexOf('.') + 1,
-      // );
-      // const base64 = `data:image/${fileExtension};base64,${r}`;
-      memoryCache.add(cacheUri);
+      memoryCache.add(sanitizedUri);
       return { uri: `file://${cacheUri}` };
     }
   } else {
     const response = await getOrCreateDownloadRequest(cacheUri, uri);
-    memoryCache.add(cacheUri);
-    // const fileExtension = cacheUri.substring(cacheUri.lastIndexOf('.') + 1);
-    // const base64 = `data:image/${fileExtension};base64,${await response.base64()}`;
+    memoryCache.add(sanitizedUri);
     return { uri: `file://${response.path()}` };
   }
 }
@@ -114,7 +123,7 @@ function useImageCaching(props: ImprovedImageProps) {
     if (src?.uri) {
       const sanitizedUri = sanitizeUri(src.uri);
       if (memoryCache.has(sanitizedUri))
-        return { uri: toFSCacheURI(sanitizedUri) };
+        return { uri: `file://${toFSCacheURI(sanitizedUri)}` };
     }
     return undefined;
   }
