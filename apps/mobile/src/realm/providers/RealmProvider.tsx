@@ -67,7 +67,11 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
   }, [currentUser.id]);
 
   React.useEffect(() => {
-    if (currentUser != null && currentUser.isLoggedIn) {
+    if (
+      currentUser != null &&
+      currentUser.isLoggedIn &&
+      realm.syncSession?.isConnected()
+    ) {
       if (enableCloud) realm.syncSession?.resume();
       else realm.syncSession?.pause();
     }
