@@ -16,6 +16,7 @@ export type ObjectSubscription = {
   subscriptions: Set<(newDocument: unknown) => void>;
   document: Document | null;
 };
+const cache = new Map<string, Document>();
 
 export default function useObject<
   TSchema extends Document,
@@ -29,7 +30,7 @@ export default function useObject<
   },
 >(
   MongoDBCollection: Parameters<typeof useMongoClient<TSchema>>[0],
-  _id?: string | Partial<TSchema>,
+  _id: string | Partial<TSchema>,
 ): RealmObject {
   const id = useDeepMemo(() => _id, [_id]);
   const isSameDocument = React.useCallback(
@@ -47,7 +48,16 @@ export default function useObject<
   const collection = useMongoClient(MongoDBCollection);
   const user = useUser();
   const [doc, setDoc] = React.useState<Omit<TSchema, '_id'> | null | undefined>(
-    null,
+    () => {
+      const iter = cache.values();
+      let next = iter.next();
+      while (!next.done) {
+        if (isSameDocument(next.value as TSchema))
+          return next.value as unknown as Omit<TSchema, '_id'>;
+        next = iter.next();
+      }
+      return null;
+    },
   );
   const [draft, setDraft] = React.useState<TSchema | null>(null);
   const [insert, setInsert] = React.useState<TSchema | null>(null);
@@ -62,8 +72,14 @@ export default function useObject<
         switch (change.operationType) {
           case 'insert':
           case 'update':
-            if (isSameDocument(change.fullDocument))
+            if (isSameDocument(change.fullDocument)) {
+              if (change.fullDocument != null)
+                cache.set(
+                  change.documentKey._id.toString(),
+                  change.fullDocument,
+                );
               setDoc(change.fullDocument || null);
+            }
             break;
         }
       }
@@ -79,6 +95,10 @@ export default function useObject<
           });
         } else {
           document = await collection.findOne({ ...id, _realmId: user.id });
+        }
+        if (document != null) {
+          const docId = document._id.toString();
+          if (!cache.has(docId)) cache.set(document._id.toString(), document);
         }
         setDoc(document);
         toggleLoading(false);
