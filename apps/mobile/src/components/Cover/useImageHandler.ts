@@ -1,12 +1,8 @@
-import { CoverProps } from '@components/Cover';
+import { refetchImage } from './ImageResolver';
+import { useLocalRealm } from '@database/main';
 import useBoolean from '@hooks/useBoolean';
 import { Manga } from '@mangayomu/mangascraper/src';
-import { useAppDispatch } from '@redux/main';
-import {
-  ImageResolverListener,
-  queue,
-  unqueue,
-} from '@redux/slices/imageresolver';
+import { useUser } from '@realm/react';
 import React from 'react';
 import { useSharedValue } from 'react-native-reanimated';
 
@@ -15,7 +11,8 @@ export default function useImageHandler(props: {
   manga: Manga;
 }) {
   const { manga, cover } = props;
-  const dispatch = useAppDispatch();
+  const localRealm = useLocalRealm();
+  const user = useUser();
   const src =
     typeof cover === 'string' ? cover : cover?.imageCover ?? manga.imageCover;
   const [imgSrc, setImgSrc] = React.useState<string | undefined | null>(src);
@@ -30,10 +27,6 @@ export default function useImageHandler(props: {
     loadingOpacity.value = 1;
     opacity.value = 0;
   }
-  const resolveImage = (manga: Manga, listener?: ImageResolverListener) => {
-    dispatch(queue({ manga, listener }));
-    return () => dispatch(unqueue({ manga, listener }));
-  };
   React.useEffect(() => {
     if (imgSrc == null) {
       loadingOpacity.value = 0;
@@ -46,19 +39,20 @@ export default function useImageHandler(props: {
   }, [imgSrc]);
 
   React.useEffect(() => {
+    function callback(uri: string | null) {
+      setImgSrc(uri);
+    }
     if (error && imgSrc != null) {
-      const dequeue = resolveImage(manga, (r) => {
-        setImgSrc(r);
-      });
+      const task = refetchImage(localRealm, manga, callback, user);
       return () => {
-        dequeue();
+        task.unsubscribe(callback);
       };
     }
   }, [error]);
 
   function handleOnError() {
     if (!error) {
-      console.log(`Failed to load image ${imgSrc}`);
+      // console.log(`Failed to load image ${imgSrc}`);
       toggleError(true);
     } else {
       // This is run if refetched image fails to load (error will have already been set to true)
@@ -79,7 +73,6 @@ export default function useImageHandler(props: {
     onError: handleOnError,
     onLoadStart: handleOnLoadStart,
     onLoad: handleOnLoad,
-    resolveImage,
     source: { uri: imgSrc || undefined },
     loadingOpacity,
     opacity,

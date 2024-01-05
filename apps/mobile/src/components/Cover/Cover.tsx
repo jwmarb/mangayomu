@@ -45,15 +45,8 @@ const Cover: React.FC<CoverProps> = (props) => {
     normalBookDimensions ? BOOK_DIMENSIONS.width : state.settings.book.width,
   );
 
-  const {
-    source,
-    onLoad,
-    onLoadStart,
-    onError,
-    opacity,
-    loadingOpacity,
-    error,
-  } = useImageHandler(props);
+  const { source, onLoad, onLoadStart, onError, opacity, loadingOpacity } =
+    useImageHandler(props);
   const theme = useTheme();
   const imageStyle = React.useMemo(
     () => ({

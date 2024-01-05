@@ -29,26 +29,19 @@ interface StaticCoverProps {
 
 const StaticCover: React.FC<StaticCoverProps> = (props) => {
   const { manga, scale = 1, sharp = false } = props;
-  const {
-    loadingOpacity,
-    opacity,
-    source,
-    onLoad,
-    onLoadStart,
-    onError,
-    error,
-  } = useImageHandler({
-    cover: manga.imageCover,
-    manga:
-      'link' in manga
-        ? manga
-        : {
-            link: manga._id,
-            imageCover: manga.imageCover,
-            title: manga.title,
-            source: manga.source,
-          },
-  });
+  const { loadingOpacity, opacity, source, onLoad, onLoadStart, onError } =
+    useImageHandler({
+      cover: manga.imageCover,
+      manga:
+        'link' in manga
+          ? manga
+          : {
+              link: manga._id,
+              imageCover: manga.imageCover,
+              title: manga.title,
+              source: manga.source,
+            },
+    });
 
   const styles = React.useMemo(
     () => ({

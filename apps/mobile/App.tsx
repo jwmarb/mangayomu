@@ -23,7 +23,6 @@ import { REACT_APP_REALM_ID } from '@env';
 import { RealmEffect } from '@database/providers/RealmProvider';
 import { AppearanceProvider } from '@theme/appearanceprovider';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { ImageResolver } from '@redux/slices/imageresolver';
 import SyncData from './src/context/SyncData';
 import { AppProvider, UserProvider } from '@realm/react';
 import ErrorBoundary from 'react-native-error-boundary';
@@ -96,13 +95,11 @@ function App(): JSX.Element {
                     <RealmProvider sync={sync}>
                       <LocalRealmProvider>
                         <RealmEffect>
-                          <ImageResolver>
-                            <SyncData>
-                              <AppearanceProvider>
-                                <Root />
-                              </AppearanceProvider>
-                            </SyncData>
-                          </ImageResolver>
+                          <SyncData>
+                            <AppearanceProvider>
+                              <Root />
+                            </AppearanceProvider>
+                          </SyncData>
                         </RealmEffect>
                       </LocalRealmProvider>
                     </RealmProvider>
