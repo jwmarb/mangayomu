@@ -16,6 +16,7 @@ import Login from '@screens/Login';
 import Register from '@screens/Register';
 import SplashScreen from 'react-native-splash-screen';
 import useAppSelector from '@hooks/useAppSelector';
+import Performance from '@screens/Performance';
 // import { getTimeSinceStartup } from 'react-native-startup-time';
 // import { Alert } from 'react-native';
 
@@ -69,6 +70,7 @@ const Root: React.FC = () => {
       />
       <RootStack.Screen name="Login" component={Login} />
       <RootStack.Screen name="Register" component={Register} />
+      <RootStack.Screen name="Performance" component={Performance} />
     </RootStack.Navigator>
   );
 };

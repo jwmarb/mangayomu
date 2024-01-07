@@ -13,9 +13,7 @@ const InterfaceTheme: React.FC = () => {
         </Text>
         <Text color="textSecondary">Customize your application theme</Text>
       </Box>
-      <Stack space="s">
-        <AppearanceMode />
-      </Stack>
+      <AppearanceMode />
     </>
   );
 };

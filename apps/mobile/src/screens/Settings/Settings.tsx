@@ -22,32 +22,39 @@ const Settings: React.FC<ReturnType<typeof useCollapsibleHeader>> = ({
   const handleOnReaderSettings = React.useCallback(() => {
     navigation.navigate('GlobalReaderSettings');
   }, [navigation]);
+  const handleOnPerformanceSettings = React.useCallback(() => {
+    navigation.navigate('Performance');
+  }, [navigation]);
   return (
-    <>
-      <Animated.ScrollView
-        onScroll={onScroll}
-        contentContainerStyle={contentContainerStyle}
-        style={scrollViewStyle}
-      >
-        <PressableListItem
-          onPress={handleOnReaderSettings}
-          label="Reader"
-          iconLeft={<Icon type="font" name="book" />}
-        />
-        <Divider />
-        <PressableListItem
-          label="Sources"
-          onPress={handleOnSource}
-          iconLeft={<Icon type="font" name="bookshelf" />}
-        />
-        <Divider />
-        <PressableListItem
-          onPress={handleOnAppearance}
-          label="Appearance"
-          iconLeft={<Icon type="font" name="palette" />}
-        />
-      </Animated.ScrollView>
-    </>
+    <Animated.ScrollView
+      onScroll={onScroll}
+      contentContainerStyle={contentContainerStyle}
+      style={scrollViewStyle}
+    >
+      <PressableListItem
+        onPress={handleOnReaderSettings}
+        label="Reader"
+        iconLeft={<Icon type="font" name="book" />}
+      />
+      <Divider />
+      <PressableListItem
+        label="Sources"
+        onPress={handleOnSource}
+        iconLeft={<Icon type="font" name="bookshelf" />}
+      />
+      <Divider />
+      <PressableListItem
+        onPress={handleOnAppearance}
+        label="Appearance"
+        iconLeft={<Icon type="font" name="palette" />}
+      />
+      <Divider />
+      <PressableListItem
+        onPress={handleOnPerformanceSettings}
+        label="Performance"
+        iconLeft={<Icon type="font" name="lightning-bolt" />}
+      />
+    </Animated.ScrollView>
   );
 };
 

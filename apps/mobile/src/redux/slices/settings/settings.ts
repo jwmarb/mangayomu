@@ -13,6 +13,7 @@ import useCombinedMangaWithLocal from '@hooks/useCombinedMangaWithLocal';
 import useAppSelector from '@hooks/useAppSelector';
 import { useRealm } from '@database/main';
 import { MangaSchema } from '@database/schemas/Manga';
+import CacheManager from '@components/ImprovedImage/CacheManager';
 
 // export enum ReadingDirection {
 //   LEFT_TO_RIGHT = 'Left to right',
@@ -84,6 +85,21 @@ export enum AutoFetchThreshold {
   IMMEDIATELY = 'No threshold, fetch immediately',
 }
 
+export enum ImageCacheType {
+  /**
+   * File URIs are cached in memory while images are stored in the disk (fastest)
+   *
+   * While this is the fastest, this has an impact on memory
+   */
+  MEMORY = 'Memory & Disk',
+  /**
+   * A simple check if the image is stored in disk (fast)
+   *
+   * While image loading may not be instant, this is the best for devices with low RAM storage
+   */
+  DISK = 'Disk',
+}
+
 export interface SettingsState {
   history: {
     incognito: boolean;
@@ -108,6 +124,9 @@ export interface SettingsState {
     readingDirection: ReadingDirection;
     zoomStartPosition: ZoomStartPosition;
     advanced: {
+      /**
+       * @deprecated RN's Image is more than enough to render large images
+       */
       imageComponent: ReaderImageComponent;
     };
   };
@@ -124,6 +143,12 @@ export interface SettingsState {
       letterSpacing: number;
       autoLetterSpacing: boolean;
       alignment: TitleAlignment;
+    };
+  };
+  performance: {
+    imageCache: {
+      enabled: boolean;
+      type: ImageCacheType;
     };
   };
 }
@@ -169,12 +194,27 @@ const initialSettingsState: SettingsState = {
       alignment: TitleAlignment.START,
     },
   },
+  performance: {
+    imageCache: {
+      enabled: true,
+      type: ImageCacheType.MEMORY,
+    },
+  },
 };
 
 const settingsSlice = createSlice({
   name: 'settings',
   initialState: initialSettingsState,
   reducers: {
+    setImageCacheType: (state, action: PayloadAction<ImageCacheType>) => {
+      if (action.payload === ImageCacheType.DISK)
+        CacheManager.memoryCache.clear();
+      state.performance.imageCache.type = action.payload;
+    },
+    toggleImageCaching: (state) => {
+      state.performance.imageCache.enabled =
+        !state.performance.imageCache.enabled;
+    },
     toggleIncognitoMode: (state) => {
       state.history.incognito = !state.history.incognito;
     },
@@ -307,6 +347,8 @@ export const {
   setAutoFetch,
   setAutoFetchThresholdPosition,
   setAutoFetchPageThreshold,
+  toggleImageCaching,
+  setImageCacheType,
 } = settingsSlice.actions;
 
 export function useReaderSetting<
