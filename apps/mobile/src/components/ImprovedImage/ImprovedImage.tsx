@@ -11,6 +11,9 @@ import RNFetchBlob, { FetchBlobResponse, StatefulPromise } from 'rn-fetch-blob';
 import React, { useId } from 'react';
 import { IMAGE_CACHE_DIR } from 'env';
 import { addSeconds, isAfter } from 'date-fns';
+import useAppSelector from '@hooks/useAppSelector';
+import { ImageCacheType } from '@redux/slices/settings';
+import CacheManager from '@components/ImprovedImage/CacheManager';
 
 export interface ImprovedImageProps
   extends Omit<ImageProps, 'source' | 'onLoad'> {
@@ -34,11 +37,6 @@ export interface ImprovedImageProps
  */
 const sync = new Map<string, Promise<FetchBlobResponse>>();
 
-/**
- * Holds all cacheUri file paths in memory instead of using slower disk
- */
-const memoryCache = new Set<string>();
-
 function sanitizeUri(uri: string): string {
   const parametersIndex = uri.indexOf('?');
   const fileExtIdx = uri.lastIndexOf('.');
@@ -50,10 +48,6 @@ function sanitizeUri(uri: string): string {
   return encodeURIComponent(
     uri.substring(0, fileExtIdx).replace(/[^a-zA-Z0-9]/g, '') + fileExt,
   );
-}
-
-function toFSCacheURI(file: string): string {
-  return `${IMAGE_CACHE_DIR}/${file}`;
 }
 
 function getOrCreateDownloadRequest(
@@ -86,15 +80,21 @@ async function download(cacheUri: string, uri: string) {
 async function retrieveImageFromCache(
   uri: string,
   ttl: number,
+  cacheType: ImageCacheType,
 ): Promise<ImageSourcePropType> {
   const sanitizedUri = sanitizeUri(uri);
-  const cacheUri = toFSCacheURI(sanitizedUri);
+  const memoryCache = CacheManager.using(cacheType);
+  const cacheUri = memoryCache.toCacheUri(sanitizedUri);
   if (memoryCache.has(sanitizedUri)) return { uri: `file://${cacheUri}` };
+
+  // if it is downloading, we should use the existing Promise rather than the partially completed downloaded file...
+  if (sync.has(cacheUri)) {
+    const response = await getOrCreateDownloadRequest(cacheUri, uri);
+    memoryCache.add(sanitizedUri);
+    return { uri: `file://${response.path()}` };
+  }
   const fileExists = await RNFetchBlob.fs.exists(cacheUri);
-  if (
-    fileExists &&
-    !sync.has(cacheUri) // if it is downloading, we should use the existing Promise rather than the partially completed downloaded file...
-  ) {
+  if (fileExists) {
     // Check integrity of the file--that is, its TTL
     const { lastModified, filename } = await RNFetchBlob.fs.stat(cacheUri);
     const staleAtEpoch = addSeconds(lastModified, ttl);
@@ -116,21 +116,32 @@ async function retrieveImageFromCache(
 }
 
 function useImageCaching(props: ImprovedImageProps) {
+  const _cacheEnabled = useAppSelector(
+    (state) => state.settings.performance.imageCache.enabled,
+  );
+  const cacheType = useAppSelector(
+    (state) => state.settings.performance.imageCache.type,
+  );
+  const memoryCache = React.useMemo(
+    () => CacheManager.using(cacheType),
+    [cacheType],
+  );
   const {
     source: src,
-    cache = true,
+    cache = _cacheEnabled,
     ttl = 259200,
     onLoadEnd = () => void 0,
     onLoadStart = () => void 0,
     onError = () => void 0,
     ...rest
   } = props;
+
   function init() {
     if (!cache || typeof src === 'number') return src;
     if (src?.uri) {
       const sanitizedUri = sanitizeUri(src.uri);
       if (memoryCache.has(sanitizedUri))
-        return { uri: `file://${toFSCacheURI(sanitizedUri)}` };
+        return { uri: `file://${memoryCache.toCacheUri(sanitizedUri)}` };
     }
     return undefined;
   }
@@ -155,8 +166,26 @@ function useImageCaching(props: ImprovedImageProps) {
           if (src.uri) {
             const a = src.uri;
             onLoadStart();
-            retrieveImageFromCache(a, ttl)
-              .then(setUri)
+            retrieveImageFromCache(a, ttl, cacheType)
+              .then((incomingUri) => {
+                setUri((previousUri) => {
+                  if (typeof previousUri === typeof incomingUri)
+                    switch (typeof previousUri) {
+                      case 'number':
+                        return previousUri === incomingUri
+                          ? previousUri
+                          : incomingUri;
+                      case 'object':
+                        return (previousUri as ImageURISource).uri ===
+                          (incomingUri as ImageURISource).uri
+                          ? previousUri
+                          : incomingUri;
+                      default:
+                        return incomingUri;
+                    }
+                  return incomingUri;
+                });
+              })
               .catch(onError)
               .finally(onLoadEnd);
           }
