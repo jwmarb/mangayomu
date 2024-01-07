@@ -29,7 +29,14 @@ export interface ImprovedImageProps
   ttl?: number;
 }
 
+/**
+ * Holds all Promises so that there are no duplicate Promises resolving for the same thing
+ */
 const sync = new Map<string, Promise<FetchBlobResponse>>();
+
+/**
+ * Holds all cacheUri file paths in memory instead of using slower disk
+ */
 const memoryCache = new Set<string>();
 
 function sanitizeUri(uri: string): string {
@@ -56,27 +63,24 @@ function getOrCreateDownloadRequest(
 ) {
   if (!stale) {
     const existingPromise = sync.get(cacheUri);
-    if (existingPromise) {
-      return existingPromise;
-    }
+    if (existingPromise) return existingPromise;
   }
-  const p = download(cacheUri, uri);
-  // Puts into map so that it can be referenced instead of creating new promises
-  sync.set(cacheUri, p);
-  return p;
+  return download(cacheUri, uri);
 }
 async function download(cacheUri: string, uri: string) {
-  const result = await RNFetchBlob.config({
+  const result = RNFetchBlob.config({
     path: cacheUri,
     overwrite: true,
     timeout: 1000,
   }).fetch('GET', uri);
-  if (result.info().status !== 200) {
-    sync.delete(cacheUri);
+  sync.set(cacheUri, result); // Puts into map so that it can be referenced instead of creating new promises
+  const awaitedResult = await result;
+  sync.delete(cacheUri); // Once awaited, it is safe to delete this key
+  if (awaitedResult.info().status !== 200) {
     await RNFetchBlob.fs.unlink(cacheUri);
     throw Error('Cannot download image from provided url');
   }
-  return result;
+  return awaitedResult;
 }
 
 async function retrieveImageFromCache(
@@ -87,7 +91,10 @@ async function retrieveImageFromCache(
   const cacheUri = toFSCacheURI(sanitizedUri);
   if (memoryCache.has(sanitizedUri)) return { uri: `file://${cacheUri}` };
   const fileExists = await RNFetchBlob.fs.exists(cacheUri);
-  if (fileExists) {
+  if (
+    fileExists &&
+    !sync.has(cacheUri) // if it is downloading, we should use the existing Promise rather than the partially completed downloaded file...
+  ) {
     // Check integrity of the file--that is, its TTL
     const { lastModified, filename } = await RNFetchBlob.fs.stat(cacheUri);
     const staleAtEpoch = addSeconds(lastModified, ttl);
