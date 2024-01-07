@@ -207,8 +207,7 @@ const settingsSlice = createSlice({
   initialState: initialSettingsState,
   reducers: {
     setImageCacheType: (state, action: PayloadAction<ImageCacheType>) => {
-      if (action.payload === ImageCacheType.DISK)
-        CacheManager.memoryCache.clear();
+      CacheManager.using(action.payload);
       state.performance.imageCache.type = action.payload;
     },
     toggleImageCaching: (state) => {

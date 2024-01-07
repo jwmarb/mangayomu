@@ -80,17 +80,15 @@ async function download(cacheUri: string, uri: string) {
 async function retrieveImageFromCache(
   uri: string,
   ttl: number,
-  cacheType: ImageCacheType,
 ): Promise<ImageSourcePropType> {
   const sanitizedUri = sanitizeUri(uri);
-  const memoryCache = CacheManager.using(cacheType);
-  const cacheUri = memoryCache.toCacheUri(sanitizedUri);
-  if (memoryCache.has(sanitizedUri)) return { uri: `file://${cacheUri}` };
+  const cacheUri = CacheManager.toCacheUri(sanitizedUri);
+  if (CacheManager.has(sanitizedUri)) return { uri: `file://${cacheUri}` };
 
   // if it is downloading, we should use the existing Promise rather than the partially completed downloaded file...
   if (sync.has(cacheUri)) {
     const response = await getOrCreateDownloadRequest(cacheUri, uri);
-    memoryCache.add(sanitizedUri);
+    CacheManager.add(sanitizedUri);
     return { uri: `file://${response.path()}` };
   }
   const fileExists = await RNFetchBlob.fs.exists(cacheUri);
@@ -102,15 +100,15 @@ async function retrieveImageFromCache(
     if (isAfter(Date.now(), staleAtEpoch)) {
       console.log(`${filename} is stale. Redownloading...`);
       const response = await getOrCreateDownloadRequest(cacheUri, uri, true);
-      memoryCache.add(sanitizedUri);
+      CacheManager.add(sanitizedUri);
       return { uri: `file://${response.path()}` };
     } else {
-      memoryCache.add(sanitizedUri);
+      CacheManager.add(sanitizedUri);
       return { uri: `file://${cacheUri}` };
     }
   } else {
     const response = await getOrCreateDownloadRequest(cacheUri, uri);
-    memoryCache.add(sanitizedUri);
+    CacheManager.add(sanitizedUri);
     return { uri: `file://${response.path()}` };
   }
 }
@@ -118,13 +116,6 @@ async function retrieveImageFromCache(
 function useImageCaching(props: ImprovedImageProps) {
   const _cacheEnabled = useAppSelector(
     (state) => state.settings.performance.imageCache.enabled,
-  );
-  const cacheType = useAppSelector(
-    (state) => state.settings.performance.imageCache.type,
-  );
-  const memoryCache = React.useMemo(
-    () => CacheManager.using(cacheType),
-    [cacheType],
   );
   const {
     source: src,
@@ -140,8 +131,8 @@ function useImageCaching(props: ImprovedImageProps) {
     if (!cache || typeof src === 'number') return src;
     if (src?.uri) {
       const sanitizedUri = sanitizeUri(src.uri);
-      if (memoryCache.has(sanitizedUri))
-        return { uri: `file://${memoryCache.toCacheUri(sanitizedUri)}` };
+      if (CacheManager.has(sanitizedUri))
+        return { uri: `file://${CacheManager.toCacheUri(sanitizedUri)}` };
     }
     return undefined;
   }
@@ -166,7 +157,7 @@ function useImageCaching(props: ImprovedImageProps) {
           if (src.uri) {
             const a = src.uri;
             onLoadStart();
-            retrieveImageFromCache(a, ttl, cacheType)
+            retrieveImageFromCache(a, ttl)
               .then((incomingUri) => {
                 setUri((previousUri) => {
                   if (typeof previousUri === typeof incomingUri)

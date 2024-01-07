@@ -17,6 +17,7 @@ import Register from '@screens/Register';
 import SplashScreen from 'react-native-splash-screen';
 import useAppSelector from '@hooks/useAppSelector';
 import Performance from '@screens/Performance';
+import CacheManager from '@components/ImprovedImage/CacheManager';
 // import { getTimeSinceStartup } from 'react-native-startup-time';
 // import { Alert } from 'react-native';
 
@@ -24,8 +25,10 @@ const Root: React.FC = () => {
   const showWelcomeScreen = useAppSelector(
     (state) => state.__initial__.firstTimeUser,
   );
+
   React.useEffect(() => {
     SplashScreen.hide();
+    CacheManager.initialize();
     // getTimeSinceStartup().then((ms) => Alert.alert(`Startup took ${ms} ms`));
   }, []);
   return (

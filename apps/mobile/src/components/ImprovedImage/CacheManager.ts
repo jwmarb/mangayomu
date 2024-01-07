@@ -1,3 +1,4 @@
+import { store } from '@redux/main';
 import { ImageCacheType } from '@redux/slices/settings';
 import { IMAGE_CACHE_DIR } from 'env';
 
@@ -6,35 +7,28 @@ import { IMAGE_CACHE_DIR } from 'env';
  */
 export default class CacheManager {
   static memoryCache = new Set<string>();
-  private readonly preset: ImageCacheType;
+  private static preset: ImageCacheType;
 
-  public constructor(preset: ImageCacheType) {
+  public static using(preset: ImageCacheType) {
+    if (preset === ImageCacheType.DISK) this.memoryCache.clear();
     this.preset = preset;
   }
 
-  public static using(preset: ImageCacheType) {
-    return managers[preset];
+  public static initialize() {
+    this.preset = store.getState().settings.performance.imageCache.type;
   }
 
-  public add(cacheUri: string) {
-    if (this.preset === ImageCacheType.MEMORY)
+  public static add(cacheUri: string) {
+    if (CacheManager.preset === ImageCacheType.MEMORY)
       CacheManager.memoryCache.add(cacheUri);
   }
-  public has(cacheUri: string): boolean {
+  public static has(cacheUri: string): boolean {
     return (
-      this.preset === ImageCacheType.MEMORY &&
+      CacheManager.preset === ImageCacheType.MEMORY &&
       CacheManager.memoryCache.has(cacheUri)
     );
   }
-  public toCacheUri(sanitizedUri: string) {
+  public static toCacheUri(sanitizedUri: string) {
     return `${IMAGE_CACHE_DIR}/${sanitizedUri}`;
   }
 }
-
-/**
- * Holds single instances of CacheManager that can be reused
- */
-const managers: Record<ImageCacheType, CacheManager> = {
-  [ImageCacheType.DISK]: new CacheManager(ImageCacheType.DISK),
-  [ImageCacheType.MEMORY]: new CacheManager(ImageCacheType.MEMORY),
-};
