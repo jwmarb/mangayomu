@@ -19,6 +19,7 @@ import { LibraryReducer } from '@redux/slices/library';
 import { BrowseReducer } from '@redux/slices/browse';
 import { SettingsReducer } from '@redux/slices/settings';
 import { ReaderReducer } from '@redux/slices/reader';
+import { PERSIST_VERSION, migrate } from './migrate';
 import { useDispatch } from 'react-redux';
 
 const reducers = combineReducers({
@@ -35,7 +36,9 @@ const reducers = combineReducers({
 const persistConfig: PersistConfig<AppState> = {
   key: 'root',
   storage: reduxStorage,
+  version: PERSIST_VERSION,
   blacklist: ['explore', 'browse', 'reader'],
+  migrate,
 };
 
 const persisted = persistReducer(persistConfig, reducers);
