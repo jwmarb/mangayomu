@@ -3919,6 +3919,11 @@
   resolved "https://registry.yarnpkg.com/@rushstack/eslint-patch/-/eslint-patch-1.6.1.tgz#9ab8f811930d7af3e3d549183a50884f9eb83f36"
   integrity sha512-UY+FGM/2jjMkzQLn8pxcHGMaVLh9aEitG3zY2CiY7XHdLiz3bZOwa6oDxNqEMv7zZkV+cj5DOdz0cQ1BP5Hjgw==
 
+"@sayem314/react-native-keep-awake@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@sayem314/react-native-keep-awake/-/react-native-keep-awake-1.2.2.tgz#f75acf1db58c15ca7672e2ef2b156017ca67155a"
+  integrity sha512-IFkXUw2NaEENGNxK18QByQw8Zcg1qu5OKIry7rEllX6jMpsUmLyf7Nf2cnaIIzzG33UX+Gpx7HgtnRWrQyV4NQ==
+
 "@shopify/flash-list@^1.6.3":
   version "1.6.3"
   resolved "https://registry.yarnpkg.com/@shopify/flash-list/-/flash-list-1.6.3.tgz#463dc1703815bf916f8173afc22c852bf26337ad"
@@ -14061,11 +14066,6 @@ react-refresh@^0.4.0:
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.4.3.tgz#966f1750c191672e76e16c2efa569150cc73ab53"
   integrity sha512-Hwln1VNuGl/6bVwnd0Xdn1e84gT/8T9aYNL+HAKDArLCS7LWjwr7StE30IEYbIkx0Vi3vs+coQxe+SQDbGbbpA==
-
-react-screen-wake-lock@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/react-screen-wake-lock/-/react-screen-wake-lock-3.0.2.tgz#ce185ebfdb74a82c89d532726738f60466f00438"
-  integrity sha512-f88vcfMG1AWYRSIWQ5Qx5YVboH6TSL0F4ZlFLERZp6aKiZRGVRAAJ9wedJdO5jqTMcCDZ4OXJ8PjcSkDmvGSBg==
 
 react-select@^3.0.8:
   version "3.2.0"
