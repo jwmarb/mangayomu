@@ -1,7 +1,4 @@
 import React from 'react';
-import connector, {
-  ConnectedImageErrorRendererProps,
-} from './ImageErrorRenderer.redux';
 import Stack from '@components/Stack';
 import Icon from '@components/Icon';
 import Hyperlink from '@components/Hyperlink';
@@ -9,13 +6,11 @@ import Button from '@components/Button';
 import Text from '@components/Text';
 import { moderateScale } from 'react-native-size-matters';
 import useReaderBackgroundColor from '@hooks/useReaderBackgroundColor';
+import { ImageErrorRendererProps } from '@screens/Reader/components/ChapterPage/components/ImageErrorRenderer';
 
-const ImageErrorRenderer: React.FC<ConnectedImageErrorRendererProps> = (
-  props,
-) => {
-  const { style, onReload, pageKey, backgroundColor } = props;
-  const { textSecondary, textPrimary } =
-    useReaderBackgroundColor(backgroundColor);
+const ImageErrorRenderer: React.FC<ImageErrorRendererProps> = (props) => {
+  const { style, onReload, pageKey } = props;
+  const { textSecondary, textPrimary } = useReaderBackgroundColor();
   const baseStyle = React.useMemo(
     () => ({
       width: style[1].width,
@@ -57,4 +52,4 @@ const ImageErrorRenderer: React.FC<ConnectedImageErrorRendererProps> = (
   );
 };
 
-export default connector(ImageErrorRenderer);
+export default ImageErrorRenderer;
