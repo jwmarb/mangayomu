@@ -10,8 +10,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
-import { Pressable, StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
 import { CheckboxProps } from './';
+import Pressable from '@components/Pressable';
 
 const Checkbox: React.FC<CheckboxProps> = (props) => {
   const { checked, onChange = () => void 0, defaultState = false } = props;
@@ -57,10 +58,7 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
   return (
     <Box border-radius={10000}>
       <Pressable
-        android_ripple={{
-          color: theme.palette.action.ripple,
-          borderless: true,
-        }}
+        borderless
         onPress={handleOnPress}
         style={styles.borderlessButton as StyleProp<ViewStyle>}
       >

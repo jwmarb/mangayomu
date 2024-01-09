@@ -11,7 +11,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import { MultiCheckboxProps } from './';
-import { Pressable, StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
+import Pressable from '@components/Pressable';
 
 const MultiCheckbox: React.FC<MultiCheckboxProps> = (props) => {
   const {
@@ -72,10 +73,7 @@ const MultiCheckbox: React.FC<MultiCheckboxProps> = (props) => {
   return (
     <Box border-radius={10000} align-self="center">
       <Pressable
-        android_ripple={{
-          borderless: true,
-          color: theme.palette.action.ripple,
-        }}
+        borderless
         style={styles.borderlessButton as StyleProp<ViewStyle>}
         onPress={handleOnPress}
       >

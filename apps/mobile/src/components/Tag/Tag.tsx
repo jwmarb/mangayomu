@@ -5,7 +5,7 @@ import React from 'react';
 import { moderateScale } from 'react-native-size-matters';
 import { TagProps } from './';
 import Box from '@components/Box';
-import { Pressable } from 'react-native';
+import Pressable from '@components/Pressable';
 
 const Tag: React.FC<TagProps> = (props) => {
   const { label, icon, color = 'textPrimary' } = props;
@@ -18,13 +18,7 @@ const Tag: React.FC<TagProps> = (props) => {
     if ('id' in props) props.onPress && props.onPress(props.id);
   }
   return (
-    <Pressable
-      onPress={handleOnPress}
-      style={baseButtonStyle}
-      android_ripple={{
-        color: theme.palette.action.ripple,
-      }}
-    >
+    <Pressable onPress={handleOnPress} style={baseButtonStyle}>
       <Box
         px={moderateScale(10)}
         py={moderateScale(5)}

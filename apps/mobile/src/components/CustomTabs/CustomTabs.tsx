@@ -1,8 +1,9 @@
 import Box from '@components/Box';
+import Pressable from '@components/Pressable';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import React from 'react';
-import { Pressable, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -71,15 +72,14 @@ const TabBarItem = React.memo(function (props: {
   const style = useAnimatedStyle(() => ({
     color: color.value,
   }));
+  function handleOnPress() {
+    jumpTo(routeKey);
+  }
   return (
     <Pressable
-      android_ripple={{
-        color: theme.palette.primary.ripple,
-        borderless: true,
-      }}
-      onPress={() => {
-        jumpTo(routeKey);
-      }}
+      color="primary"
+      borderless
+      onPress={handleOnPress}
       style={{ width: width / numOfRoutes }}
     >
       <Box m="m">

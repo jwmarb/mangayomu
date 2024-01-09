@@ -12,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
 import { SwitchProps } from './';
-import { Pressable } from 'react-native';
+import Pressable from '@components/Pressable';
 
 const leftScaled = moderateScale(8);
 const rightScaled = moderateScale(22);
@@ -68,7 +68,7 @@ const Switch: React.FC<SwitchProps> = (props) => {
       height={moderateScale(36)}
       width={moderateScale(50)}
     >
-      <Pressable onPress={onToggle}>
+      <Pressable ripple={false} onPress={onToggle}>
         <Box
           width={moderateScale(34)}
           height={moderateScale(16)}
@@ -80,11 +80,9 @@ const Switch: React.FC<SwitchProps> = (props) => {
       </Pressable>
       <Box position="absolute" as={Animated.View} style={switchStyle}>
         <Pressable
-          android_ripple={{
-            borderless: true,
-            radius: moderateScale(18),
-            color: theme.helpers.getRippleColor(color),
-          }}
+          borderless
+          rippleRadius={moderateScale(18)}
+          color={theme.helpers.getRippleColor(color)}
           onPress={onToggle}
         >
           <Box

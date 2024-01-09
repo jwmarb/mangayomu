@@ -11,19 +11,7 @@ import { moderateScale } from 'react-native-size-matters';
 import { ScrollView } from 'react-native-gesture-handler';
 import Box from '@components/Box';
 import Text from '@components/Text';
-import { Pressable } from 'react-native';
-
-const OptionTouchableComponent: React.FC<React.PropsWithChildren> = (props) => {
-  const theme = useTheme();
-  return (
-    <Pressable
-      android_ripple={{
-        color: theme.palette.action.ripple,
-      }}
-      {...props}
-    />
-  );
-};
+import Pressable from '@components/Pressable';
 
 const Menu: React.FC<MenuProps> = (props) => {
   const { trigger, children, title } = props;
@@ -49,7 +37,7 @@ const Menu: React.FC<MenuProps> = (props) => {
         maxHeight: shouldUseScroll ? moderateScale(200) : undefined,
         overflow: 'scroll' as const,
       } as const,
-      OptionTouchableComponent,
+      Pressable,
     }),
     [theme, shouldUseScroll],
   );

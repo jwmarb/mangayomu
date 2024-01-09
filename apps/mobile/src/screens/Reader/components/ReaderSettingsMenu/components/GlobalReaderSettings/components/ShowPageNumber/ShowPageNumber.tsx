@@ -2,24 +2,22 @@ import Stack from '@components/Stack';
 import Switch from '@components/Switch';
 import Text from '@components/Text';
 import React from 'react';
-import connector, {
-  ConnectedShowPageNumberProps,
-} from './ShowPageNumber.redux';
 import Box from '@components/Box/Box';
-import { useTheme } from '@emotion/react';
-import { Pressable } from 'react-native';
+import Pressable from '@components/Pressable';
+import { toggleShowPageNumber } from '@redux/slices/settings';
+import { useAppDispatch } from '@redux/main';
+import useAppSelector from '@hooks/useAppSelector';
 
-const ShowPageNumber: React.FC<ConnectedShowPageNumberProps> = (props) => {
-  const { toggleShowPageNumber, showPageNumber } = props;
-  const theme = useTheme();
+const ShowPageNumber: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const showPageNumber = useAppSelector(
+    (state) => state.settings.reader.showPageNumber,
+  );
   function handleOnChange() {
-    toggleShowPageNumber();
+    dispatch(toggleShowPageNumber());
   }
   return (
-    <Pressable
-      android_ripple={{ color: theme.palette.action.ripple }}
-      onPress={handleOnChange}
-    >
+    <Pressable onPress={handleOnChange}>
       <Stack
         justify-content="space-between"
         space="s"
@@ -40,4 +38,4 @@ const ShowPageNumber: React.FC<ConnectedShowPageNumberProps> = (props) => {
   );
 };
 
-export default connector(React.memo(ShowPageNumber));
+export default React.memo(ShowPageNumber);

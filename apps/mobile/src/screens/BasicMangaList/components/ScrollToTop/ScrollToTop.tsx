@@ -1,13 +1,11 @@
 import Box, { AnimatedBox } from '@components/Box';
-import { Pressable } from 'react-native';
 import type { ScrollToTopProps } from './';
 import { moderateScale } from 'react-native-size-matters';
-import { useTheme } from '@emotion/react';
 import Icon from '@components/Icon';
+import Pressable from '@components/Pressable';
 
 export default function ScrollToTop(props: ScrollToTopProps) {
   const { style, onLongPress, onPress } = props;
-  const theme = useTheme();
   return (
     <AnimatedBox
       style={style}
@@ -20,14 +18,7 @@ export default function ScrollToTop(props: ScrollToTopProps) {
       background-color="primary"
       border-radius={1000}
     >
-      <Pressable
-        android_ripple={{
-          color: theme.palette.primary.ripple,
-          borderless: true,
-        }}
-        onPress={onPress}
-        onLongPress={onLongPress}
-      >
+      <Pressable borderless onPress={onPress} onLongPress={onLongPress}>
         <Box p="m">
           <Icon
             type="font"

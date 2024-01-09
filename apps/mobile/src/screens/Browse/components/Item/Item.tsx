@@ -3,24 +3,26 @@ import Icon from '@components/Icon';
 import IconButton from '@components/IconButton';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import { useTheme } from '@emotion/react';
 import useMangaSource from '@hooks/useMangaSource';
 import useRootNavigation from '@hooks/useRootNavigation';
 import React from 'react';
 import { moderateScale } from 'react-native-size-matters';
-import connector, { ConnectedItemProps } from './Item.redux';
-import { Pressable } from 'react-native';
+import Pressable from '@components/Pressable';
+import useAppSelector from '@hooks/useAppSelector';
+import { useAppDispatch } from '@redux/main';
+import { toggleSourcePin } from '@redux/slices/host';
 
-const Item: React.FC<ConnectedItemProps> = ({
-  item,
-  isPinned,
-  toggleSourcePin,
-}) => {
-  const theme = useTheme();
+export interface ItemProps {
+  item: string;
+}
+
+const Item: React.FC<ItemProps> = ({ item }) => {
+  const isPinned = useAppSelector((state) => item in state.host.pinned);
+  const dispatch = useAppDispatch();
   const source = useMangaSource(item);
   const navigation = useRootNavigation();
   function handleOnPin() {
-    toggleSourcePin(item);
+    dispatch(toggleSourcePin(item));
   }
   function navigateToSettings() {
     navigation.navigate('SourceView', { source: item });
@@ -29,12 +31,7 @@ const Item: React.FC<ConnectedItemProps> = ({
     navigation.navigate('InfiniteMangaList', { source: item });
   }
   return (
-    <Pressable
-      android_ripple={{
-        color: theme.palette.action.ripple,
-      }}
-      onPress={handleOnPress}
-    >
+    <Pressable onPress={handleOnPress}>
       <Stack
         space="s"
         flex-direction="row"
@@ -76,4 +73,4 @@ const Item: React.FC<ConnectedItemProps> = ({
   );
 };
 
-export default connector(React.memo(Item));
+export default React.memo(Item);

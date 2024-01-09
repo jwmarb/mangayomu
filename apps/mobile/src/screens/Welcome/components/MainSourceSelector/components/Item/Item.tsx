@@ -2,15 +2,14 @@ import Box from '@components/Box';
 import Checkbox from '@components/Checkbox';
 import Hyperlink from '@components/Hyperlink';
 import ImprovedImage from '@components/ImprovedImage';
+import Pressable from '@components/Pressable';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import { useTheme } from '@emotion/react';
 import { MangaHost } from '@mangayomu/mangascraper/src';
 import connector, {
   ConnectedItemProps,
 } from '@screens/Welcome/components/MainSourceSelector/components/Item/Item.redux';
 import React from 'react';
-import { Image, Pressable } from 'react-native';
 import { ScaledSheet } from 'react-native-size-matters';
 
 const Item: React.FC<ConnectedItemProps> = React.memo(
@@ -21,14 +20,8 @@ const Item: React.FC<ConnectedItemProps> = React.memo(
       if (!isSelected) addSource(host.name);
       else removeSource(host.name);
     }
-    const theme = useTheme();
     return (
-      <Pressable
-        onPress={handleOnPress}
-        android_ripple={{
-          color: theme.palette.action.ripple,
-        }}
-      >
+      <Pressable onPress={handleOnPress}>
         <Box flex-direction="row" align-items="center">
           <Box align-self="center" ml="s">
             <Checkbox onChange={handleOnPress} checked={isSelected} />

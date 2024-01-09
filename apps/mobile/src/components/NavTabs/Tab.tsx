@@ -1,10 +1,9 @@
 import Box from '@components/Box';
 import Icon from '@components/Icon';
 import Text from '@components/Text';
-import { useTheme } from '@emotion/react';
 import displayMessage from '@helpers/displayMessage';
 import React from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -14,6 +13,7 @@ import Animated, {
 import { moderateScale } from 'react-native-size-matters';
 import { TabProps } from './';
 import vibrate from '@helpers/vibrate';
+import Pressable from '@components/Pressable';
 
 const tabIcons = {
   Explore: (
@@ -60,7 +60,6 @@ const tabIcons = {
 
 const Tab: React.FC<TabProps> = (props) => {
   const { routeName, isFocused, navigation } = props;
-  const theme = useTheme();
   const indicator = useSharedValue(isFocused ? 1 : 0);
   React.useEffect(() => {
     if (isFocused) {
@@ -112,10 +111,7 @@ const Tab: React.FC<TabProps> = (props) => {
       style={styles.button}
       onPress={handleOnPress}
       onLongPress={handleOnLongPress}
-      android_ripple={{
-        color: theme.palette.action.ripple,
-        borderless: true,
-      }}
+      borderless
     >
       <Box py="m" px="s" flex-direction="column" align-items="center" flex-grow>
         <Text

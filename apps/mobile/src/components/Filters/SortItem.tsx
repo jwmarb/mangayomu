@@ -11,7 +11,7 @@ import Icon from '@components/Icon';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
-import { Pressable } from 'react-native';
+import Pressable from '@components/Pressable';
 
 export interface SortItemProps<T extends string> {
   reversed: boolean;
@@ -49,12 +49,7 @@ function SortItem<T extends string>(props: SortItemProps<T>) {
     else props.onToggleReverse();
   }
   return (
-    <Pressable
-      android_ripple={{
-        color: theme.palette.action.ripple,
-      }}
-      onPress={handleOnPress}
-    >
+    <Pressable onPress={handleOnPress}>
       <Stack p="m" space="m" flex-direction="row" align-items="center">
         <Animated.View style={iconStyle}>
           <Icon type="font" name="arrow-up" color="primary" />

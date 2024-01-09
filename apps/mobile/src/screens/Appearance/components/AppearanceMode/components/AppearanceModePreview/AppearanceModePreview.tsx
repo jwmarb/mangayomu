@@ -1,23 +1,15 @@
 import React from 'react';
-import Radio from '@components/Radio';
-import RadioGroup from '@components/RadioGroup';
 import Stack from '@components/Stack';
-import {
-  AppearanceMode as Mode,
-  useAppearanceMode,
-} from '@theme/appearanceprovider';
+import { AppearanceMode as Mode } from '@theme/appearanceprovider';
 import Box from '@components/Box/Box';
 import PreviewSelectorWrapper from '@screens/Appearance/components/Style/components/PreviewSelectorWrapper/PreviewSelectorWrapper';
-import { useTheme } from '@emotion/react';
 import { moderateScale } from 'react-native-size-matters';
-import { Pressable, useWindowDimensions } from 'react-native';
-import { LinePlaceholder } from '@screens/Appearance/components/Style/Style';
 import { DIVIDER_DEPTH } from '@theme/constants';
 import { coverStyles } from '@components/Cover/Cover';
 import Icon from '@components/Icon/Icon';
-import { BaseButton } from 'react-native-gesture-handler';
 import Text from '@components/Text/Text';
 import { AppearanceModePreviewProps } from '@screens/Appearance/components/AppearanceMode/AppearanceMode.interfaces';
+import Pressable from '@components/Pressable';
 
 const TEXT_SKELETON_HEIGHT = moderateScale(5);
 
@@ -37,12 +29,7 @@ const AppearanceModePreview: React.FC<AppearanceModePreviewProps> = (props) => {
           border-width="@theme"
           overflow="hidden"
         >
-          <Pressable
-            android_ripple={{
-              color: theme.palette.action.ripple,
-            }}
-            onPress={handleOnPress}
-          >
+          <Pressable onPress={handleOnPress}>
             <Stack
               space={moderateScale(4)}
               width={moderateScale(120)}

@@ -6,12 +6,10 @@ import connector, {
   ConnectedBackgroundColorProps,
 } from './BackgroundColor.redux';
 import ModalMenu from '@components/ModalMenu';
-import { Pressable } from 'react-native';
-import { useTheme } from '@emotion/react';
+import Pressable from '@components/Pressable';
 
 const BackgroundColor: React.FC<ConnectedBackgroundColorProps> = (props) => {
   const { backgroundColor, setReaderBackgroundColor } = props;
-  const theme = useTheme();
 
   return (
     <ModalMenu
@@ -20,7 +18,7 @@ const BackgroundColor: React.FC<ConnectedBackgroundColorProps> = (props) => {
       onChange={setReaderBackgroundColor}
       enum={ReaderBackgroundColor}
       trigger={
-        <Pressable android_ripple={{ color: theme.palette.action.ripple }}>
+        <Pressable>
           <Stack m="m">
             <Text>Background color</Text>
             <Text variant="body-sub" color="textSecondary">

@@ -9,7 +9,7 @@ import { LinePlaceholder } from '@screens/Appearance/components/Style/Style';
 import Text from '@components/Text';
 import PreviewSelectorWrapper from '@screens/Appearance/components/Style/components/PreviewSelectorWrapper/PreviewSelectorWrapper';
 import { BookStyle } from '@redux/slices/settings';
-import { Pressable } from 'react-native';
+import Pressable from '@components/Pressable';
 
 const DefaultBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
   const { onSelect, isSelected } = props;
@@ -28,12 +28,7 @@ const DefaultBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
           border-width="@theme"
           overflow="hidden"
         >
-          <Pressable
-            onPress={handleOnPress}
-            android_ripple={{
-              color: theme.palette.action.ripple,
-            }}
-          >
+          <Pressable onPress={handleOnPress}>
             <Stack
               m="m"
               justify-content="center"

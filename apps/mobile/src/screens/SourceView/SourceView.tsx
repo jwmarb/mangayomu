@@ -8,13 +8,14 @@ import { useTheme } from '@emotion/react';
 import displayMessage from '@helpers/displayMessage';
 import useCollapsibleHeader from '@hooks/useCollapsibleHeader';
 import React from 'react';
-import { Linking, Pressable, ScrollView } from 'react-native';
+import { Linking, ScrollView } from 'react-native';
 import { moderateScale } from 'react-native-size-matters';
 import { RootStackProps } from '@navigators/Root/Root.interfaces';
 import { MangaHost } from '@mangayomu/mangascraper/src';
 import { toggleConfig } from '@redux/slices/host';
 import { useAppDispatch } from '@redux/main';
 import useAppSelector from '@hooks/useAppSelector';
+import Pressable from '@components/Pressable';
 
 const SourceView: React.FC<
   RootStackProps<'SourceView'> & ReturnType<typeof useCollapsibleHeader>
@@ -36,7 +37,6 @@ const SourceView: React.FC<
   function handleOnLongPress() {
     displayMessage(url);
   }
-  const theme = useTheme();
 
   function handleOnToggleHot() {
     dispatch(toggleConfig({ source: source.name, key: 'useHottestUpdates' }));
@@ -92,10 +92,7 @@ const SourceView: React.FC<
           <Box mx="m" my="s">
             <Text variant="header">Configuration</Text>
           </Box>
-          <Pressable
-            android_ripple={{ color: theme.palette.action.ripple }}
-            onPress={handleOnToggleWithSearch}
-          >
+          <Pressable onPress={handleOnToggleWithSearch}>
             <Stack
               mx="m"
               my="s"
@@ -112,10 +109,7 @@ const SourceView: React.FC<
             </Stack>
           </Pressable>
           {source.hasHotMangas() && (
-            <Pressable
-              android_ripple={{ color: theme.palette.action.ripple }}
-              onPress={handleOnToggleHot}
-            >
+            <Pressable onPress={handleOnToggleHot}>
               <Stack
                 mx="m"
                 my="s"
@@ -133,10 +127,7 @@ const SourceView: React.FC<
             </Pressable>
           )}
           {source.hasLatestMangas() && (
-            <Pressable
-              android_ripple={{ color: theme.palette.action.ripple }}
-              onPress={handleOnToggleLatest}
-            >
+            <Pressable onPress={handleOnToggleLatest}>
               <Stack
                 mx="m"
                 my="s"

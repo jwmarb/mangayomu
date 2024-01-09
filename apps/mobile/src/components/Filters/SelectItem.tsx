@@ -1,9 +1,9 @@
 import Icon from '@components/Icon';
+import Pressable from '@components/Pressable';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import React from 'react';
-import { Pressable } from 'react-native';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -36,10 +36,7 @@ function SelectItem<T extends string>(props: SelectItemProps<T>) {
     props.onChange(props.itemKey);
   }
   return (
-    <Pressable
-      android_ripple={{ color: theme.palette.action.ripple }}
-      onPress={handleOnPress}
-    >
+    <Pressable onPress={handleOnPress}>
       <Stack p="m" space="m" flex-direction="row" align-items="center">
         <Animated.View style={iconStyle}>
           <Icon type="font" name="check" color="primary" />

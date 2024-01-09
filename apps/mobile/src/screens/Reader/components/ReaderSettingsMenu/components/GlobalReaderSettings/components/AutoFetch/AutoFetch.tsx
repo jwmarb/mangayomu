@@ -10,9 +10,9 @@ import { DIVIDER_DEPTH } from '@theme/constants';
 import ModalInput from '@components/ModalInput/ModalInput';
 import {
   NativeSyntheticEvent,
-  Pressable,
   TextInputSubmitEditingEventData,
 } from 'react-native';
+import Pressable from '@components/Pressable';
 
 const AutoFetch: React.FC<ConnectedAutoFetchProps> = (props) => {
   const {
@@ -34,7 +34,7 @@ const AutoFetch: React.FC<ConnectedAutoFetchProps> = (props) => {
     <>
       <ModalMenu
         trigger={
-          <Pressable android_ripple={{ color: theme.palette.action.ripple }}>
+          <Pressable>
             <Stack
               align-items="center"
               flex-direction="row"
@@ -70,9 +70,7 @@ const AutoFetch: React.FC<ConnectedAutoFetchProps> = (props) => {
         >
           <ModalMenu
             trigger={
-              <Pressable
-                android_ripple={{ color: theme.palette.action.ripple }}
-              >
+              <Pressable>
                 <Stack
                   flex-direction="row"
                   space="s"
@@ -105,9 +103,7 @@ const AutoFetch: React.FC<ConnectedAutoFetchProps> = (props) => {
               defaultValue={String(pageThreshold)}
               keyboardType="number-pad"
               trigger={
-                <Pressable
-                  android_ripple={{ color: theme.palette.action.ripple }}
-                >
+                <Pressable>
                   <Stack
                     flex-direction="row"
                     space="s"

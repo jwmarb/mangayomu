@@ -1,10 +1,11 @@
 import Box from '@components/Box';
 import Divider from '@components/Divider';
+import CacheManager from '@components/ImprovedImage/CacheManager';
 import ModalMenu from '@components/ModalMenu';
+import Pressable from '@components/Pressable';
 import Stack from '@components/Stack';
 import Switch from '@components/Switch';
 import Text from '@components/Text';
-import { useTheme } from '@emotion/react';
 import useAppSelector from '@hooks/useAppSelector';
 import { useAppDispatch } from '@redux/main';
 import {
@@ -13,8 +14,9 @@ import {
   toggleImageCaching,
 } from '@redux/slices/settings';
 import { DIVIDER_DEPTH } from '@theme/constants';
+import { IMAGE_CACHE_DIR } from 'env';
 import React from 'react';
-import { Pressable } from 'react-native';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const Title = React.memo(() => (
   <Box py="s">
@@ -26,7 +28,6 @@ const Title = React.memo(() => (
 ));
 
 const ImageCachingType = React.memo(() => {
-  const theme = useTheme();
   const dispatch = useAppDispatch();
   const imageCachingType = useAppSelector(
     (state) => state.settings.performance.imageCache.type,
@@ -41,7 +42,7 @@ const ImageCachingType = React.memo(() => {
       value={imageCachingType}
       onChange={handleOnChange}
       trigger={
-        <Pressable android_ripple={{ color: theme.palette.action.ripple }}>
+        <Pressable>
           <Stack
             ml="m"
             border-width={{ l: DIVIDER_DEPTH }}
@@ -63,8 +64,70 @@ const ImageCachingType = React.memo(() => {
   );
 });
 
+const log1024 = Math.log(1024);
+
+function toReadableBytes(size: number) {
+  const i = size === 0 ? 0 : Math.floor(Math.log(size) / log1024);
+  return (
+    (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB'][i]
+  );
+}
+
+const ClearCache = React.memo(() => {
+  const [spaceOccupied, setSpaceOccupied] = React.useState<
+    number | undefined
+  >(); // in bytes
+  React.useEffect(() => {
+    if (spaceOccupied == null)
+      RNFetchBlob.fs
+        .ls(IMAGE_CACHE_DIR)
+        .then((files) =>
+          Promise.all(
+            files.map((file) =>
+              RNFetchBlob.fs.stat(`${IMAGE_CACHE_DIR}/${file}`),
+            ),
+          ),
+        )
+        .then((stats) => {
+          let inc = 0;
+          for (let i = 0; i < stats.length; i++) {
+            inc += stats[i].size;
+          }
+          return inc;
+        })
+        .then(setSpaceOccupied);
+  }, [spaceOccupied]);
+  async function clearCache() {
+    await RNFetchBlob.fs.unlink(IMAGE_CACHE_DIR);
+    CacheManager.memoryCache.clear();
+    setSpaceOccupied(0);
+    await RNFetchBlob.fs.mkdir(IMAGE_CACHE_DIR);
+  }
+  const occupied = React.useMemo(() => {
+    if (spaceOccupied == null) return 'Calculating...';
+
+    return toReadableBytes(spaceOccupied);
+  }, [spaceOccupied]);
+  return (
+    <>
+      <Divider />
+      <Pressable onPress={clearCache}>
+        <Stack
+          p="m"
+          space="s"
+          justify-content="space-between"
+          align-items="center"
+          flex-direction="row"
+        >
+          <Text>Clear Cache</Text>
+          <Text color="textSecondary">{occupied}</Text>
+        </Stack>
+      </Pressable>
+    </>
+  );
+});
+
 export default function ImageCaching() {
-  const theme = useTheme();
   const imageCachingEnabled = useAppSelector(
     (state) => state.settings.performance.imageCache.enabled,
   );
@@ -83,12 +146,7 @@ export default function ImageCaching() {
         border-color="@theme"
         overflow="hidden"
       >
-        <Pressable
-          android_ripple={{
-            color: theme.palette.action.ripple,
-          }}
-          onPress={handleOnChange}
-        >
+        <Pressable onPress={handleOnChange}>
           <Stack
             flex-direction="row"
             space="s"
@@ -112,6 +170,7 @@ export default function ImageCaching() {
         ) : (
           <ImageCachingType />
         )}
+        <ClearCache />
       </Box>
     </>
   );

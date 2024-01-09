@@ -18,8 +18,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import { SliderProps, SliderMethods } from './';
-
-const AnimatedButton = Animated.createAnimatedComponent(Pressable);
+import { AnimatedPressable } from '@components/Pressable';
 
 const styles = ScaledSheet.create({
   button: {
@@ -179,12 +178,10 @@ const Slider: React.ForwardRefRenderFunction<SliderMethods, SliderProps> = (
         </Box>
       </GestureDetector>
       <GestureDetector gesture={panGesture}>
-        <AnimatedButton
-          android_ripple={{
-            borderless: true,
-            color: theme.helpers.getRippleColor(color),
-            foreground: true,
-          }}
+        <AnimatedPressable
+          borderless
+          foreground
+          color={theme.helpers.getRippleColor(color)}
           style={combinedBarStyles}
         >
           <Box
@@ -194,7 +191,7 @@ const Slider: React.ForwardRefRenderFunction<SliderMethods, SliderProps> = (
             background-color={theme.helpers.getColor(color)}
             border-radius={10000}
           ></Box>
-        </AnimatedButton>
+        </AnimatedPressable>
       </GestureDetector>
     </Box>
   );

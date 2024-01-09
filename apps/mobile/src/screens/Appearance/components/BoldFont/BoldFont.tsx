@@ -4,24 +4,17 @@ import React from 'react';
 
 import { BoldFontProps } from './BoldFont.interfaces';
 import Switch from '@components/Switch/Switch';
-import { useTheme } from '@emotion/react';
-import { Pressable } from 'react-native';
 import useAppSelector from '@hooks/useAppSelector';
 import { toggleBoldTitleFont } from '@redux/slices/settings';
 import { useAppDispatch } from '@redux/main';
+import Pressable from '@components/Pressable';
 
 const BoldFont: React.FC = () => {
   const isBold = useAppSelector((state) => state.settings.book.title.bold);
-  const theme = useTheme();
   const dispatch = useAppDispatch();
   const onToggleBold = () => dispatch(toggleBoldTitleFont());
   return (
-    <Pressable
-      android_ripple={{
-        color: theme.palette.action.ripple,
-      }}
-      onPress={onToggleBold}
-    >
+    <Pressable onPress={onToggleBold}>
       <Stack
         px="l"
         py="s"

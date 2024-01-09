@@ -10,7 +10,8 @@ import Text from '@components/Text';
 import { moderateScale } from 'react-native-size-matters';
 import PreviewSelectorWrapper from '@screens/Appearance/components/Style/components/PreviewSelectorWrapper/PreviewSelectorWrapper';
 import { BookStyle } from '@redux/slices/settings';
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import Pressable from '@components/Pressable';
 
 const styles = StyleSheet.create({
   pressable: {
@@ -28,13 +29,7 @@ const TachiyomiBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
     <PreviewSelectorWrapper isSelected={isSelected}>
       <Stack space="s" overflow="hidden" flex-grow justify-content="center">
         <Box flex-grow border-radius="@theme" overflow="hidden">
-          <Pressable
-            style={styles.pressable}
-            onPress={handleOnPress}
-            android_ripple={{
-              color: theme.palette.action.ripple,
-            }}
-          >
+          <Pressable style={styles.pressable} onPress={handleOnPress}>
             <Stack
               height={BOOK_DIMENSIONS.height}
               px="m"

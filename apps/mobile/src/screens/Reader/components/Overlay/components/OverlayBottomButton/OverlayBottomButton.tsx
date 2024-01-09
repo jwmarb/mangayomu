@@ -6,7 +6,7 @@ import { moderateScale } from 'react-native-size-matters';
 import { useTheme } from '@emotion/react';
 import { OVERLAY_TEXT_PRIMARY } from '@theme/constants';
 import displayMessage from '@helpers/displayMessage';
-import { Pressable } from 'react-native';
+import Pressable from '@components/Pressable';
 
 const OverlayBottomButton: React.FC<OverlayBottomButtonProps> = (props) => {
   const { name, settingName, ...rest } = props;
@@ -15,14 +15,7 @@ const OverlayBottomButton: React.FC<OverlayBottomButtonProps> = (props) => {
     displayMessage(settingName);
   }
   return (
-    <Pressable
-      android_ripple={{
-        color: theme.palette.action.ripple,
-        borderless: true,
-      }}
-      {...rest}
-      onLongPress={handleOnLongPress}
-    >
+    <Pressable borderless {...rest} onLongPress={handleOnLongPress}>
       <Box py={theme.style.spacing.m} flex-grow align-items="center">
         <Icon
           type="font"

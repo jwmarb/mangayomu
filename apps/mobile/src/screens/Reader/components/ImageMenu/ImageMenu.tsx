@@ -12,7 +12,6 @@ import {
   Share,
   Platform,
   Linking,
-  Pressable,
   Alert,
 } from 'react-native';
 
@@ -34,6 +33,7 @@ import removeURLParams from '@screens/Reader/components/ChapterPage/helpers/remo
 import useAppSelector from '@hooks/useAppSelector';
 import { toggleImageModal } from '@redux/slices/reader';
 import { useAppDispatch } from '@redux/main';
+import Pressable from '@components/Pressable';
 
 const ImageMenu: React.ForwardRefRenderFunction<ImageMenuMethods> = (
   _,
@@ -175,7 +175,7 @@ const ImageMenu: React.ForwardRefRenderFunction<ImageMenuMethods> = (
         top={0}
         pointerEvents={show ? 'auto' : 'none'}
       >
-        <Pressable onPress={handleOnClose}>
+        <Pressable ripple={false} onPress={handleOnClose}>
           <AnimatedBox
             style={overlayStyle}
             width={width}
@@ -192,9 +192,6 @@ const ImageMenu: React.ForwardRefRenderFunction<ImageMenuMethods> = (
               background-color="paper"
             >
               <Pressable
-                android_ripple={{
-                  color: theme.palette.action.ripple,
-                }}
                 onLongPress={handleOnLongPressSaveImage}
                 onPress={handleOnSaveImage}
               >
@@ -209,9 +206,6 @@ const ImageMenu: React.ForwardRefRenderFunction<ImageMenuMethods> = (
                 </Stack>
               </Pressable>
               <Pressable
-                android_ripple={{
-                  color: theme.palette.action.ripple,
-                }}
                 onPress={handleOnShare}
                 onLongPress={handleOnLongPressShare}
               >
@@ -230,9 +224,6 @@ const ImageMenu: React.ForwardRefRenderFunction<ImageMenuMethods> = (
                 </Stack>
               </Pressable>
               <Pressable
-                android_ripple={{
-                  color: theme.palette.action.ripple,
-                }}
                 onPress={handleOnViewInBrowser}
                 onLongPress={handleOnLongPressViewInBrowser}
               >

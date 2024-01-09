@@ -6,17 +6,15 @@ import { moderateScale } from 'react-native-size-matters';
 import { RowChapterProps } from './';
 import { format, formatDistanceToNow } from 'date-fns';
 import useRootNavigation from '@hooks/useRootNavigation';
-import { useTheme } from '@emotion/react';
-import { Pressable } from 'react-native';
 import { useQuery } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
+import Pressable from '@components/Pressable';
 
 export const ROW_CHAPTER_HEIGHT = moderateScale(60);
 
 const RowChapter: React.FC<RowChapterProps> = (props) => {
   const { mangaKey, date, isReading, name, chapterKey, subname } = props;
   const navigation = useRootNavigation();
-  const theme = useTheme();
   const parsed = Date.parse(date);
   const isRecent = Date.now() - 6.048e7 < parsed;
   const isWithinWeek = Date.now() - 6.048e8 < parsed;
@@ -44,9 +42,6 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
     <Pressable
       // onLongPress={handleOnLongPress}
       onPress={handleOnPress}
-      android_ripple={{
-        color: theme.palette.action.ripple,
-      }}
     >
       <Stack
         space="s"

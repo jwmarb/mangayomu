@@ -5,7 +5,7 @@ import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import Stack from '@components/Stack';
 import Box from '@components/Box/Box';
-import { Pressable } from 'react-native';
+import Pressable from '@components/Pressable';
 
 const Button: React.FC<ButtonProps> = (props) => {
   const {
@@ -36,16 +36,7 @@ const Button: React.FC<ButtonProps> = (props) => {
         },
       ]}
     >
-      <Pressable
-        // shouldCancelWhenOutside
-        // disallowInterruption
-        disabled={disabled}
-        android_ripple={{
-          color: theme.palette[color].ripple,
-        }}
-        {...rest}
-        // rippleColor={theme.palette[color].ripple}
-      >
+      <Pressable disabled={disabled} color={color} {...rest}>
         <Stack
           space={moderateScale(4)}
           py={moderateScale(12)}

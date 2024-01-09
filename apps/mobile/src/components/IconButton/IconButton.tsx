@@ -1,10 +1,8 @@
 import Box from '@components/Box';
-import { useTheme } from '@emotion/react';
-import { ButtonColors } from '@mangayomu/theme';
 import React from 'react';
 import { moderateScale } from 'react-native-size-matters';
 import { IconButtonProps } from './';
-import { Pressable } from 'react-native';
+import Pressable from '@components/Pressable';
 
 const IconButton: React.FC<IconButtonProps> = (props) => {
   const {
@@ -12,16 +10,9 @@ const IconButton: React.FC<IconButtonProps> = (props) => {
     icon,
     compact,
     animated,
-    rippleColor: defaultRippleColor,
+    rippleColor,
     ...rest
   } = props;
-  const theme = useTheme();
-  const rippleColor = React.useMemo(() => {
-    if (defaultRippleColor != null) return defaultRippleColor;
-    if (color in theme.palette)
-      return theme.palette[color as ButtonColors].ripple;
-    return theme.palette.action.ripple;
-  }, [color, theme, defaultRippleColor]);
 
   const borderlessButtonStyle = React.useMemo(
     () =>
@@ -41,10 +32,8 @@ const IconButton: React.FC<IconButtonProps> = (props) => {
       border-radius={10000}
     >
       <Pressable
-        android_ripple={{
-          borderless: true,
-          color: rippleColor,
-        }}
+        borderless
+        color={rippleColor}
         style={borderlessButtonStyle}
         {...rest}
       >

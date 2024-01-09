@@ -1,8 +1,8 @@
 import Box from '@components/Box';
 import { coverStyles } from '@components/Cover/Cover';
+import Pressable from '@components/Pressable';
 import Stack from '@components/Stack';
 import Text from '@components/Text/Text';
-import { useTheme } from '@emotion/react';
 import { useAppDispatch } from '@redux/main';
 import { setTitleAlignment } from '@redux/slices/settings';
 import { TitleAlignmentPreviewProps } from '@screens/Appearance/components/Alignment';
@@ -10,11 +10,9 @@ import { LinePlaceholder } from '@screens/Appearance/components/Style/Style';
 import PreviewSelectorWrapper from '@screens/Appearance/components/Style/components/PreviewSelectorWrapper/PreviewSelectorWrapper';
 import { BOOK_DIMENSIONS } from '@theme/constants';
 import React from 'react';
-import { Pressable } from 'react-native';
 
 const TitleAlignmentPreview: React.FC<TitleAlignmentPreviewProps> = (props) => {
   const { isSelected, alignItems = 'flex-start', titleAlignment } = props;
-  const theme = useTheme();
   const dispatch = useAppDispatch();
   function handleOnPress() {
     dispatch(setTitleAlignment(titleAlignment));
@@ -23,12 +21,7 @@ const TitleAlignmentPreview: React.FC<TitleAlignmentPreviewProps> = (props) => {
     <PreviewSelectorWrapper isSelected={isSelected} background="paper">
       <Stack space="s">
         <Box border-radius="@theme" overflow="hidden">
-          <Pressable
-            onPress={handleOnPress}
-            android_ripple={{
-              color: theme.palette.action.ripple,
-            }}
-          >
+          <Pressable onPress={handleOnPress}>
             <Stack
               border-color={isSelected ? 'primary' : '@theme'}
               border-width="@theme"

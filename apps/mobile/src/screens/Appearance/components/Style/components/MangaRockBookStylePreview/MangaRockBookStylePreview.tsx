@@ -1,20 +1,14 @@
 import React from 'react';
 import { PreviewBookStyleProps } from '@screens/Appearance/components/Style';
-import {
-  BOOK_COVER_HEIGHT,
-  BOOK_DIMENSIONS,
-  RADIO_BUTTON_BORDER_WIDTH,
-} from '@theme/constants';
+import { BOOK_COVER_HEIGHT, BOOK_DIMENSIONS } from '@theme/constants';
 import Stack from '@components/Stack';
 import { useTheme } from '@emotion/react';
-import { coverStyles } from '@components/Cover/Cover';
 import Box from '@components/Box';
 import { LinePlaceholder } from '@screens/Appearance/components/Style/Style';
 import Text from '@components/Text';
-import { BaseButton } from 'react-native-gesture-handler';
 import PreviewSelectorWrapper from '@screens/Appearance/components/Style/components/PreviewSelectorWrapper';
 import { BookStyle } from '@redux/slices/settings';
-import { Pressable } from 'react-native';
+import Pressable from '@components/Pressable';
 
 const MangaRockBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
   const { isSelected, onSelect } = props;
@@ -33,10 +27,7 @@ const MangaRockBookStylePreview: React.FC<PreviewBookStyleProps> = (props) => {
           border-width="@theme"
           overflow="hidden"
         >
-          <Pressable
-            onPress={handleOnPress}
-            android_ripple={{ color: theme.palette.action.ripple }}
-          >
+          <Pressable onPress={handleOnPress}>
             <Stack
               m="m"
               justify-content="center"

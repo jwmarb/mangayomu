@@ -6,22 +6,17 @@ import connector, {
   ConnectedNotifyOnLastChapterProps,
 } from './NotifyOnLastChapter.redux';
 import Box from '@components/Box/Box';
-import { useTheme } from '@emotion/react';
-import { Pressable } from 'react-native';
+import Pressable from '@components/Pressable';
 
 const NotifyOnLastChapter: React.FC<ConnectedNotifyOnLastChapterProps> = (
   props,
 ) => {
   const { notifyOnLastChapter, toggleNotifyOnLastChapter } = props;
-  const theme = useTheme();
   function handleOnChange() {
     toggleNotifyOnLastChapter();
   }
   return (
-    <Pressable
-      android_ripple={{ color: theme.palette.action.ripple }}
-      onPress={handleOnChange}
-    >
+    <Pressable onPress={handleOnChange}>
       <Stack
         space="s"
         justify-content="space-between"

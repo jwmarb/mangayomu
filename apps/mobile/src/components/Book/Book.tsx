@@ -13,7 +13,7 @@ import useMangaSource from '@hooks/useMangaSource';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { BookStyle } from '@redux/slices/settings';
 import React from 'react';
-import { Pressable } from 'react-native';
+import Pressable from '@components/Pressable';
 import LinearGradient from 'react-native-linear-gradient';
 import { ScaledSheet } from 'react-native-size-matters';
 import useAppSelector from '@hooks/useAppSelector';
@@ -77,10 +77,7 @@ const Book: React.FC<BookProps> = (props) => {
     return (
       <Box align-self="center" overflow="hidden" style={coverStyles.button}>
         <Pressable
-          android_ripple={{
-            color: theme.palette.action.ripple,
-            foreground: true,
-          }}
+          foreground
           onPress={handleOnPress}
           onLongPress={handleOnLongPress}
         >
@@ -119,13 +116,7 @@ const Book: React.FC<BookProps> = (props) => {
 
   return (
     <Box style={coverStyles.button} overflow="hidden" align-self="center">
-      <Pressable
-        android_ripple={{
-          color: theme.palette.action.ripple,
-        }}
-        onPress={handleOnPress}
-        onLongPress={handleOnLongPress}
-      >
+      <Pressable onPress={handleOnPress} onLongPress={handleOnLongPress}>
         <Stack space="s" width={width} minHeight={height}>
           <Badge
             type="number"

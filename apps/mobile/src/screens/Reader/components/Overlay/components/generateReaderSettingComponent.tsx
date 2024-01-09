@@ -3,9 +3,9 @@ import Box from '@components/Box';
 import Icon, { IconProps } from '@components/Icon';
 import { Menu, MenuItem } from '@components/Menu';
 import ModalMenu from '@components/ModalMenu';
+import Pressable from '@components/Pressable';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import { useTheme } from '@emotion/react';
 import useAppSelector from '@hooks/useAppSelector';
 import {
   ImageScaling,
@@ -20,7 +20,6 @@ import { ReaderSettingProps } from '@screens/Reader/components/Overlay';
 import OverlayBottomButton from '@screens/Reader/components/Overlay/components/OverlayBottomButton';
 import { useMangaKey } from '@screens/Reader/context/MangaKey';
 import React from 'react';
-import { Pressable } from 'react-native';
 
 type ReaderSetting<State = AppState['settings']['reader']> = keyof {
   [K in keyof State as State[K] extends
@@ -59,8 +58,6 @@ export default function generateReaderSettingComponent<T>(
       globalZoomStartPosition,
       mangaKey ?? set,
     );
-
-    const theme = useTheme();
 
     if (type === 'button')
       return (
@@ -109,7 +106,7 @@ export default function generateReaderSettingComponent<T>(
           ...staticEnum,
         }}
         trigger={
-          <Pressable android_ripple={{ color: theme.palette.action.ripple }}>
+          <Pressable>
             <Stack flex-direction="row" space="s" align-items="center">
               <Box align-self="center" ml="l">
                 <Icon type="font" name={modalMenuIcon} variant="header" />

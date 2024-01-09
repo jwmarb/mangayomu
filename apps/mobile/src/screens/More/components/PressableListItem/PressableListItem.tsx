@@ -2,11 +2,11 @@ import Box from '@components/Box';
 import Icon from '@components/Icon';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import { useTheme } from '@emotion/react';
 import React from 'react';
 import { moderateScale } from 'react-native-size-matters';
 import { PressableListItemProps } from './PressableListItem.interfaces';
-import { Pressable } from 'react-native';
+import Pressable from '@components/Pressable';
+import { useTheme } from '@emotion/react';
 
 const PressableListItem: React.FC<PressableListItemProps> = (props) => {
   const {
@@ -17,12 +17,7 @@ const PressableListItem: React.FC<PressableListItemProps> = (props) => {
   } = props;
   const theme = useTheme();
   return (
-    <Pressable
-      android_ripple={{
-        color: theme.palette.action.ripple,
-      }}
-      onPress={onPress}
-    >
+    <Pressable onPress={onPress}>
       <Stack
         mx="l"
         my="s"

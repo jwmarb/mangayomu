@@ -3,9 +3,8 @@ import { QuickReadButtonProps } from './QuickReadButton.interfaces';
 import { useIsFocused } from '@react-navigation/native';
 import Box, { AnimatedBox } from '@components/Box';
 import { moderateScale } from 'react-native-size-matters';
-import { Pressable, StyleSheet, TouchableNativeFeedback } from 'react-native';
-import { useTheme } from '@emotion/react';
-import Stack, { AnimatedStack } from '@components/Stack';
+import { StyleSheet } from 'react-native';
+import { AnimatedStack } from '@components/Stack';
 import Icon from '@components/Icon';
 import Text from '@components/Text';
 import Animated, {
@@ -15,11 +14,10 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 import displayMessage from '@helpers/displayMessage';
-import { useLocalRealm, useRealm } from '@database/main';
-import { ChapterSchema } from '@database/schemas/Chapter';
+import { useLocalRealm } from '@database/main';
 import useRootNavigation from '@hooks/useRootNavigation';
-import { MangaSchema } from '@database/schemas/Manga';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
+import Pressable from '@components/Pressable';
 
 const styles = StyleSheet.create({
   icon: {
@@ -44,7 +42,6 @@ const QuickReadButton: React.FC<QuickReadButtonProps> = (props) => {
     [currentlyReadingChapter == null],
   );
   const isFocused = useIsFocused();
-  const theme = useTheme();
   const localRealm = useLocalRealm();
   const handleOnLongPress = () => {
     if (currentlyReadingChapter != null) {
@@ -93,10 +90,7 @@ const QuickReadButton: React.FC<QuickReadButtonProps> = (props) => {
         overflow="hidden"
       >
         <Pressable
-          android_ripple={{
-            foreground: true,
-            color: theme.palette.primary.ripple,
-          }}
+          foreground
           onPress={handleOnPress}
           onLongPress={handleOnLongPress}
         >

@@ -1,11 +1,10 @@
 import MultiCheckbox from '@components/MultiCheckbox';
+import Pressable from '@components/Pressable';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
-import { useTheme } from '@emotion/react';
 import { FilterState } from '@redux/slices/mainSourceSelector';
 import { ACCORDION_ITEM_HEIGHT } from '@theme/constants';
 import React from 'react';
-import { Pressable } from 'react-native';
 
 export interface FilterItemProps<T extends string> {
   state: FilterState;
@@ -15,17 +14,11 @@ export interface FilterItemProps<T extends string> {
 }
 
 function FilterItem<T extends string>(props: FilterItemProps<T>) {
-  const theme = useTheme();
   function handleOnToggle() {
     props.onToggle(props.itemKey);
   }
   return (
-    <Pressable
-      android_ripple={{
-        color: theme.palette.action.ripple,
-      }}
-      onPress={handleOnToggle}
-    >
+    <Pressable onPress={handleOnToggle}>
       <Stack
         height={ACCORDION_ITEM_HEIGHT}
         space="s"

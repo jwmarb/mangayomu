@@ -6,16 +6,14 @@ import Stack from '@components/Stack';
 import { StaticCover } from '@components/Cover';
 import Text from '@components/Text';
 import Icon from '@components/Icon';
-import { useTheme } from '@emotion/react';
 import displayMessage from '@helpers/displayMessage';
 import useRootNavigation from '@hooks/useRootNavigation';
 import { UNFINISHED_MANGA_WIDTH } from '@theme/constants';
 import useUnfinishedManga from '@hooks/useUnfinishedManga';
-import { Pressable } from 'react-native';
+import Pressable from '@components/Pressable';
 
 const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
   const { manga } = props;
-  const theme = useTheme();
   const navigation = useRootNavigation();
   const { currentChapter, nextChapter } = useUnfinishedManga(manga);
 
@@ -43,13 +41,7 @@ const UnfinishedManga: React.FC<UnfinishedMangaProps> = (props) => {
       border-color="@theme"
       border-width="@theme"
     >
-      <Pressable
-        onPress={handleOnPress}
-        android_ripple={{
-          color: theme.palette.action.ripple,
-        }}
-        onLongPress={handleOnLongPress}
-      >
+      <Pressable onPress={handleOnPress} onLongPress={handleOnLongPress}>
         <Stack space="s" flex-direction="row" py="s" px="m">
           <StaticCover manga={manga} />
           <Box flex-shrink justify-content="center">
