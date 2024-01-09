@@ -10,12 +10,7 @@ import {
 } from '@redux/slices/settings';
 import { ImageMenuMethods } from '@screens/Reader/components/ImageMenu';
 import { PageGestures } from '@screens/Reader/hooks/useOverlayGesture';
-import {
-  NativeGesture,
-  PanGesture,
-  PinchGesture,
-} from 'react-native-gesture-handler';
-import { SharedValue } from 'react-native-reanimated';
+import { NativeGesture, PinchGesture } from 'react-native-gesture-handler';
 
 export interface ChapterPageProps {
   page: ChapterPage;
