@@ -138,7 +138,7 @@ export default function useChapterFetcher(
     return () => {
       if (listener != null) listener();
     };
-  }, [autoFetch, args.currentPage]);
+  }, [autoFetch, args.currentPage, args.chapter._id]);
 
   /**
    * Initially fetches current chapter
