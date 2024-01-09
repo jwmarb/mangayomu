@@ -4,13 +4,16 @@ import { getErrorMessage } from '@helpers/getErrorMessage';
 import { MangaHost } from '@mangayomu/mangascraper/src';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Image } from 'react-native';
-import RNFetchBlob from 'rn-fetch-blob';
+import RNFetchBlob, { FetchBlobResponse } from 'rn-fetch-blob';
 import NetInfo from '@react-native-community/netinfo';
 import removeURLParams from '@screens/Reader/components/ChapterPage/helpers/removeURLParams';
 import { LocalChapterSchema } from '@database/schemas/LocalChapter';
 import { useUser } from '@realm/react';
 import { CombinedMangaWithLocal } from '@hooks/useCombinedMangaWithLocal';
 import Realm from 'realm';
+import { READER_CACHE_DIR } from 'env';
+import getFileExtension from '@screens/Reader/components/ChapterPage/helpers/getFileExtension';
+import PageManager from '@redux/slices/reader/PageManager';
 
 export type Page = ChapterPage | NoMorePages | TransitionPage | ChapterError;
 export type ChapterError = {
@@ -122,13 +125,18 @@ export const fetchPagesByChapter = createAsyncThunk(
     try {
       const { isInternetReachable } = await NetInfo.fetch();
       if (!isInternetReachable) throw Error('Internet unavailable');
+      const pageManager = new PageManager(payload.manga);
       fetchingChapters.add(payload.chapter._id);
-      const response = await payload.source.getPages({
-        date: payload.chapter.date,
-        index: payload.chapter.index,
-        link: payload.chapter._id,
-        name: payload.chapter.name,
-      });
+      const [response] = await Promise.all([
+        payload.source.getPages({
+          date: payload.chapter.date,
+          index: payload.chapter.index,
+          link: payload.chapter._id,
+          name: payload.chapter.name,
+        }),
+        pageManager.validateDirs(),
+      ]);
+      pageManager.setPageURIS(response);
       if (payload.mockError) mockError();
       const chapterWithData = payload.realm
         .objects(ChapterSchema)
@@ -146,39 +154,15 @@ export const fetchPagesByChapter = createAsyncThunk(
           Realm.UpdateMode.Modified,
         );
       });
-      const dimensions = Promise.all(
+      await pageManager.startDownload();
+      const data = await Promise.all(
         response.map(async (uri) => {
           const localPage = payload.localRealm.objectForPrimaryKey(
             PageSchema,
             removeURLParams(uri),
           );
-
-          // const fileExtension = 1(uri);
-          // /**
-          //  * Download image locally
-          //  */
-          // const path =
-          //   RNFetchBlob.fs.dirs['CacheDir'] +
-          //   '/' +
-          //   payload.source.name +
-          //   '/' +
-          //   encodePathName(payload.manga.title) +
-          //   '/' +
-          //   encodePathName(payload.chapter.name) +
-          //   '/' +
-          //   index +
-          //   `.${fileExtension}`;
-
-          // const base64 = `data:image/${fileExtension};base64,${await RNFetchBlob.config(
-          //   {
-          //     path,
-          //   },
-          // )
-          //   .fetch('GET', uri)
-          //   .then((res) => res.base64() as string)}`;
-
           if (localPage == null) {
-            const { width, height } = await getImageSizeAsync(uri);
+            const { width, height } = await pageManager.getImageDimension(uri);
             payload.localRealm.write(() => {
               payload.localRealm.create<PageSchema>(
                 PageSchema,
@@ -208,8 +192,6 @@ export const fetchPagesByChapter = createAsyncThunk(
           };
         }),
       );
-
-      const data = await dimensions;
 
       return {
         type: 'response' as const,

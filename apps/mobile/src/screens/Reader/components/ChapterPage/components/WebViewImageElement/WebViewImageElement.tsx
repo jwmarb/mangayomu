@@ -19,6 +19,7 @@ const WebViewImageElement: React.ForwardRefRenderFunction<
       renderToHardwareTextureAndroid
     >
       <WebView
+        allowFileAccess
         scrollEnabled={false}
         scalesPageToFit={false}
         setDisplayZoomControls={false}

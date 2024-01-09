@@ -33,6 +33,8 @@ import useViewableItemsChangedHandler from '@screens/Reader/hooks/useViewableIte
 import useSharedValuePageState from '@screens/Reader/hooks/useSharedValuePageState';
 import { RootStackProps } from '@navigators/Root/Root.interfaces';
 import useAppSelector from '@hooks/useAppSelector';
+import { Manga } from '@mangayomu/mangascraper/src';
+import { ImmutableMangaContext } from '@screens/Reader/components/ChapterPage/context/ImmutableMangaContext';
 
 const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
   // const {
@@ -167,93 +169,107 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
     [extendedState, readingDirection, chapter],
   );
 
+  const immutableManga = React.useMemo(
+    (): Manga => ({
+      title: manga.title,
+      link: manga.link,
+      source: manga.source,
+      imageCover: manga.imageCover,
+    }),
+    [manga.title, manga.link, manga.source, manga.imageCover],
+  );
+
   return (
-    <ChapterErrorContext.Provider value={fetchPagesByChapter}>
-      <ChapterPageContext.Provider
-        value={{
-          animatedPreviousState,
-          mangaTitle: manga.title,
-          readingDirection,
-          sourceName: manga.source,
-          imageMenuRef,
-          pageGestures,
-          rootPinchGesture: pinchGesture,
-          imageScaling,
-          zoomStartPosition,
-          nativeFlatListGesture,
-        }}
-      >
-        <TransitionPageContext.Provider value={transitionPageContextValue}>
-          <Overlay
-            imageMenuRef={imageMenuRef}
-            topOverlayStyle={topOverlayStyle}
-            isFinishedInitialScrollOffset={isFinishedInitialScrollOffset}
-            pageSliderNavRef={pageSliderNavRef}
-            scrollRef={ref}
-            readerProps={readerProps}
-            currentPage={currentPage}
-            manga={manga}
-            chapter={chapter}
-            savedChapterInfo={chapterWithData}
-            opacity={overlayOpacity}
-          />
-          <NetworkToast style={toastStyle} />
-          <GestureDetector gesture={combinedGestures}>
-            {pages.length === 0 ? (
-              <Box
-                flex-grow
-                align-items="center"
-                justify-content="center"
-                width={width}
-                height={height}
-                background-color={backgroundColor.toLowerCase()}
-              >
-                <Progress />
-              </Box>
-            ) : (
-              <Box
-                minWidth={width}
-                minHeight={height}
-                height="100%"
-                background-color={backgroundColor.toLowerCase()}
-              >
-                <PageList
-                  key={width}
-                  nativeFlatListGesture={nativeFlatListGesture}
-                  ref={ref}
-                  getItemLayout={getItemLayout}
-                  maxToRenderPerBatch={10}
-                  windowSize={9}
-                  updateCellsBatchingPeriod={0}
-                  initialNumToRender={0}
-                  extraData={extraData}
-                  maintainVisibleContentPosition={
-                    !isFetchingPrevious ? undefined : { minIndexForVisible: 0 }
-                  }
-                  viewabilityConfigCallbackPairs={
-                    viewabilityConfigCallbackPairs.current
-                  }
-                  data={pages}
-                  horizontal={horizontal}
-                  pagingEnabled={pagingEnabled}
-                  estimatedItemSize={estimatedItemSize}
-                  estimatedFirstItemOffset={
-                    isOnFirstChapter ? 0 : estimatedItemSize
-                  }
-                  overrideItemLayout={overrideItemLayout}
-                  keyExtractor={keyExtractor}
-                  inverted={reversed.current}
-                  initialScrollIndex={chapterWithData.indexPage}
-                  renderItem={renderItem}
-                  getItemType={getItemType}
-                  onScroll={onScroll}
-                />
-              </Box>
-            )}
-          </GestureDetector>
-        </TransitionPageContext.Provider>
-      </ChapterPageContext.Provider>
-    </ChapterErrorContext.Provider>
+    <ImmutableMangaContext.Provider value={immutableManga}>
+      <ChapterErrorContext.Provider value={fetchPagesByChapter}>
+        <ChapterPageContext.Provider
+          value={{
+            animatedPreviousState,
+            mangaTitle: manga.title,
+            readingDirection,
+            sourceName: manga.source,
+            imageMenuRef,
+            pageGestures,
+            rootPinchGesture: pinchGesture,
+            imageScaling,
+            zoomStartPosition,
+            nativeFlatListGesture,
+          }}
+        >
+          <TransitionPageContext.Provider value={transitionPageContextValue}>
+            <Overlay
+              imageMenuRef={imageMenuRef}
+              topOverlayStyle={topOverlayStyle}
+              isFinishedInitialScrollOffset={isFinishedInitialScrollOffset}
+              pageSliderNavRef={pageSliderNavRef}
+              scrollRef={ref}
+              readerProps={readerProps}
+              currentPage={currentPage}
+              manga={manga}
+              chapter={chapter}
+              savedChapterInfo={chapterWithData}
+              opacity={overlayOpacity}
+            />
+            <NetworkToast style={toastStyle} />
+            <GestureDetector gesture={combinedGestures}>
+              {pages.length === 0 ? (
+                <Box
+                  flex-grow
+                  align-items="center"
+                  justify-content="center"
+                  width={width}
+                  height={height}
+                  background-color={backgroundColor.toLowerCase()}
+                >
+                  <Progress />
+                </Box>
+              ) : (
+                <Box
+                  minWidth={width}
+                  minHeight={height}
+                  height="100%"
+                  background-color={backgroundColor.toLowerCase()}
+                >
+                  <PageList
+                    key={width}
+                    nativeFlatListGesture={nativeFlatListGesture}
+                    ref={ref}
+                    getItemLayout={getItemLayout}
+                    maxToRenderPerBatch={10}
+                    windowSize={9}
+                    updateCellsBatchingPeriod={0}
+                    initialNumToRender={0}
+                    extraData={extraData}
+                    maintainVisibleContentPosition={
+                      !isFetchingPrevious
+                        ? undefined
+                        : { minIndexForVisible: 0 }
+                    }
+                    viewabilityConfigCallbackPairs={
+                      viewabilityConfigCallbackPairs.current
+                    }
+                    data={pages}
+                    horizontal={horizontal}
+                    pagingEnabled={pagingEnabled}
+                    estimatedItemSize={estimatedItemSize}
+                    estimatedFirstItemOffset={
+                      isOnFirstChapter ? 0 : estimatedItemSize
+                    }
+                    overrideItemLayout={overrideItemLayout}
+                    keyExtractor={keyExtractor}
+                    inverted={reversed.current}
+                    initialScrollIndex={chapterWithData.indexPage}
+                    renderItem={renderItem}
+                    getItemType={getItemType}
+                    onScroll={onScroll}
+                  />
+                </Box>
+              )}
+            </GestureDetector>
+          </TransitionPageContext.Provider>
+        </ChapterPageContext.Provider>
+      </ChapterErrorContext.Provider>
+    </ImmutableMangaContext.Provider>
   );
 };
 

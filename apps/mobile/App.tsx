@@ -30,7 +30,8 @@ import ErrorFallback from '@components/ErrorFallback';
 import ThemeProvider from '@theme/themeprovider';
 import { getErrorMessage } from '@helpers/getErrorMessage';
 import RNFetchBlob from 'rn-fetch-blob';
-import { IMAGE_CACHE_DIR } from 'env';
+import { IMAGE_CACHE_DIR, READER_CACHE_DIR } from 'env';
+import { MangaHost } from '@mangayomu/mangascraper/src';
 enableFreeze(true);
 
 const realmConfiguration: Realm.OpenRealmBehaviorConfiguration = {
@@ -60,15 +61,23 @@ const sync: Partial<Realm.SyncConfiguration> = {
   existingRealmFileBehavior: realmConfiguration,
 };
 
+const cacheDirs = [
+  IMAGE_CACHE_DIR,
+  ...MangaHost.sources.map((x) => `${READER_CACHE_DIR}/${x}`),
+];
+
 function App(): JSX.Element {
   React.useEffect(() => {
-    RNFetchBlob.fs.exists(IMAGE_CACHE_DIR).then((exists) => {
-      if (!exists)
+    Promise.all(
+      cacheDirs.map((dir) =>
         RNFetchBlob.fs
-          .mkdir(IMAGE_CACHE_DIR)
-          .then(() => console.log('Created image cache directory'))
-          .catch(() => console.error('Failed to create image cache directory'));
-    });
+          .exists(dir)
+          .then((exists) => {
+            if (!exists) RNFetchBlob.fs.mkdir(dir);
+          })
+          .catch(console.error),
+      ),
+    );
     function handleMemoryWarning(e: AppStateStatus) {
       console.log(`memoryWarning:: ${e}`);
     }

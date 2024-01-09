@@ -3,11 +3,13 @@ import useAppSelector from '@hooks/useAppSelector';
 import useScreenDimensions from '@hooks/useScreenDimensions';
 import { useAppDispatch } from '@redux/main';
 import { setPageError } from '@redux/slices/reader';
+import PageManager from '@redux/slices/reader/PageManager';
 import { ReadingDirection } from '@redux/slices/settings';
 import { ChapterPageProps } from '@screens/Reader/components/ChapterPage';
 import ImageBaseRenderer from '@screens/Reader/components/ChapterPage/components/ImageBaseRenderer/ImageBaseRenderer';
 import ImageErrorRenderer from '@screens/Reader/components/ChapterPage/components/ImageErrorRenderer/ImageErrorRenderer';
 import { useChapterPageContext } from '@screens/Reader/components/ChapterPage/context/ChapterPageContext';
+import { useImmutableManga } from '@screens/Reader/components/ChapterPage/context/ImmutableMangaContext';
 import React from 'react';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
 
@@ -48,11 +50,13 @@ export default function usePageRenderer(
     page: { page: pageKey },
     extendedPageState,
   } = props;
+
   const backgroundColor = useAppSelector((state) =>
     state.settings.reader.backgroundColor.toLowerCase(),
   );
   const { readingDirection } = useChapterPageContext();
   const { width, height } = useScreenDimensions();
+  const manga = useImmutableManga();
   /**
    * In the case of very large images which can be observed in some webtoons (e.g. images that exceed the device's height by 5-8 times),
    * Image performs downsampling on the image, reducing its quality that could make its text unreadable or its content uncomprehensible. As a workaround, the page will fallback to using WebView, which is
@@ -70,12 +74,13 @@ export default function usePageRenderer(
   // const fallBackToFastImage = stylizedHeight / height > 1;
   const dispatch = useAppDispatch();
   const webViewRef = React.useRef<WebView>(null);
-  const uri = extendedPageState?.localPageUri ?? pageKey;
+  const fileUri = PageManager.getCachedFileURI(manga, pageKey);
+  const uri =
+    extendedPageState?.localPageUri ?? (fileUri ? `file://${fileUri}` : null);
   const handleOnReload = React.useCallback(() => {
     dispatch(setPageError({ pageKey, value: false }));
     webViewRef.current?.reload();
   }, [dispatch, setPageError, pageKey]);
-
   const handleOnError = React.useCallback(() => {
     dispatch(setPageError({ pageKey, value: true }));
   }, [dispatch, setPageError, pageKey]);
