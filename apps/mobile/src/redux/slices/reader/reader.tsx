@@ -146,7 +146,6 @@ export const fetchPagesByChapter = createAsyncThunk(
           Realm.UpdateMode.Modified,
         );
       });
-      const preload = Promise.all(response.map((x) => Image.prefetch(x)));
       const dimensions = Promise.all(
         response.map(async (uri) => {
           const localPage = payload.localRealm.objectForPrimaryKey(
@@ -210,7 +209,7 @@ export const fetchPagesByChapter = createAsyncThunk(
         }),
       );
 
-      const [data] = await Promise.all([dimensions, preload]);
+      const data = await dimensions;
 
       return {
         type: 'response' as const,
