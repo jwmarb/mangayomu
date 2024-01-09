@@ -1,6 +1,5 @@
 import Box from '@components/Box';
 import Divider from '@components/Divider';
-import Stack from '@components/Stack';
 import Text from '@components/Text';
 import DeviceOrientation from '@screens/Reader/components/Overlay/components/DeviceOrientation';
 import ImageScaling from '@screens/Reader/components/Overlay/components/ImageScaling';
@@ -8,6 +7,7 @@ import ReaderDirection from '@screens/Reader/components/Overlay/components/Reade
 import ZoomStartPosition from '@screens/Reader/components/Overlay/components/ZoomStartPosition';
 import AutoFetch from '@screens/Reader/components/ReaderSettingsMenu/components/GlobalReaderSettings/components/AutoFetch/AutoFetch';
 import BackgroundColor from '@screens/Reader/components/ReaderSettingsMenu/components/GlobalReaderSettings/components/BackgroundColor';
+import KeepDeviceAwake from '@screens/Reader/components/ReaderSettingsMenu/components/GlobalReaderSettings/components/KeepDeviceAwake';
 import NotifyOnLastChapter from '@screens/Reader/components/ReaderSettingsMenu/components/GlobalReaderSettings/components/NotifyOnLastChapter';
 import ShowPageNumber from '@screens/Reader/components/ReaderSettingsMenu/components/GlobalReaderSettings/components/ShowPageNumber';
 import React from 'react';
@@ -59,6 +59,8 @@ const GlobalReaderSettings: React.FC = () => {
         <ShowPageNumber />
         <Divider />
         <NotifyOnLastChapter />
+        <Divider />
+        <KeepDeviceAwake />
         <Divider />
         <AutoFetch />
       </Box>

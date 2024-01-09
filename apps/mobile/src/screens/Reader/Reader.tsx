@@ -35,18 +35,10 @@ import { RootStackProps } from '@navigators/Root/Root.interfaces';
 import useAppSelector from '@hooks/useAppSelector';
 import { Manga } from '@mangayomu/mangascraper/src';
 import { ImmutableMangaContext } from '@screens/Reader/components/ChapterPage/context/ImmutableMangaContext';
+import useNotifyLastChapter from '@screens/Reader/hooks/useNotifyLastChapter';
+import useKeepDeviceAwake from '@screens/Reader/hooks/useKeepDeviceAwake';
 
 const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
-  // const {
-  //   chapter: chapterKey,
-  //   incognito,
-  //   pages,
-  //   backgroundColor,
-  //   manga: mangaKey,
-  //   extendedState,
-  //   notifyOnLastChapter,
-  //   autoFetch,
-  // } = props;
   const {
     route: {
       params: { manga: mangaKey },
@@ -55,9 +47,7 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
   const chapterKey = useAppSelector(
     (state) => state.reader.currentChapter ?? props.route.params.chapter,
   );
-  const notifyOnLastChapter = useAppSelector(
-    (state) => state.settings.reader.notifyOnLastChapter,
-  );
+
   const pages = useAppSelector((state) => state.reader.pages);
   const backgroundColor = useAppSelector(
     (state) => state.settings.reader.backgroundColor,
@@ -69,10 +59,9 @@ const Reader: React.FC<RootStackProps<'Reader'>> = (props) => {
     mangaKey,
     chapterKey,
   );
-  React.useEffect(() => {
-    if (notifyOnLastChapter && availableChapters[0]._id === chapter._id)
-      displayMessage('Final chapter');
-  }, [notifyOnLastChapter, chapter._id]);
+
+  useNotifyLastChapter(availableChapters, chapter);
+  useKeepDeviceAwake();
 
   const pageSliderNavRef = React.useRef<PageSliderNavigatorMethods>(null);
   const imageMenuRef = React.useRef<ImageMenuMethods>(null);

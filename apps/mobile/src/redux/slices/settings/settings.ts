@@ -114,6 +114,7 @@ export interface SettingsState {
     lockOrientation: ReaderScreenOrientation; // this property should be local only
     backgroundColor: ReaderBackgroundColor;
     showPageNumber: boolean;
+    keepDeviceAwake: boolean;
     notifyOnLastChapter: boolean;
     automaticallyFetchNextChapter: {
       type: AutoFetchType;
@@ -163,6 +164,7 @@ const initialSettingsState: SettingsState = {
     enabled: true,
   },
   reader: {
+    keepDeviceAwake: true,
     lockOrientation: ReaderScreenOrientation.FREE,
     backgroundColor: ReaderBackgroundColor.BLACK,
     showPageNumber: true,
@@ -206,6 +208,9 @@ const settingsSlice = createSlice({
   name: 'settings',
   initialState: initialSettingsState,
   reducers: {
+    toggleKeepDeviceAwake: (state) => {
+      state.reader.keepDeviceAwake = !state.reader.keepDeviceAwake;
+    },
     setImageCacheType: (state, action: PayloadAction<ImageCacheType>) => {
       CacheManager.using(action.payload);
       state.performance.imageCache.type = action.payload;
@@ -325,6 +330,7 @@ const settingsSlice = createSlice({
 });
 
 export const {
+  toggleKeepDeviceAwake,
   toggleCloudSync,
   setBookDimensions,
   toggleAutoLetterSpacing,

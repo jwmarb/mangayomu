@@ -18,7 +18,7 @@ declare module 'redux-persist' {
   ): PersistMigrate;
 }
 
-export const PERSIST_VERSION = 1;
+export const PERSIST_VERSION = 2;
 
 export const migrate: PersistMigrate = createMigrate(
   {
@@ -48,6 +48,16 @@ export const migrate: PersistMigrate = createMigrate(
           },
         },
       } as PersistedAppState),
+    2: (state) => ({
+      ...state,
+      settings: {
+        ...state.settings,
+        reader: {
+          ...state.settings.reader,
+          keepDeviceAwake: true,
+        },
+      },
+    }),
   },
   { debug: true },
 );
