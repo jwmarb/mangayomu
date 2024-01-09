@@ -47,15 +47,11 @@ export default function usePageDownloader(args: UsePageDownloaderArgs) {
           pageNumber +
           `.${fileExtension}`;
 
-        const base64 = `data:image/${fileExtension};base64,${await RNFetchBlob.config(
-          {
-            path,
-          },
-        )
+        const uri = await RNFetchBlob.config({ path })
           .fetch('GET', pageKey)
-          .then((res) => res.base64() as string)}`;
+          .then((res) => res.path());
 
-        dispatch(setLocalPageURI({ pageKey, value: base64 }));
+        dispatch(setLocalPageURI({ pageKey, value: `file://${uri}` }));
       }
     })();
   }, [extendedPageState?.retries, extendedPageState?.error]);
