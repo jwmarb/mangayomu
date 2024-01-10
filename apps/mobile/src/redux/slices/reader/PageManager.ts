@@ -57,7 +57,9 @@ export default class PageManager {
    * Immediately starts the download queue for these files
    */
   public async startDownload() {
-    const fileUris = this.pageUris.map((uri) => this.toFileURI(uri));
+    const fileUris = this.pageUris.map((uri) =>
+      this.toFileURI(removeURLParams(uri)),
+    );
     const allExists = await Promise.all(fileUris.map(RNFetchBlob.fs.exists));
     for (let i = 0; i < this.pageUris.length; i++) {
       const path = fileUris[i];
@@ -70,6 +72,7 @@ export default class PageManager {
             RNFetchBlob.config({ path })
               .fetch('GET', this.pageUris[i])
               .then((result) => {
+                console.log(result.info());
                 pageDownloadQueue.delete(key);
                 if (result.info().status !== 200)
                   RNFetchBlob.fs
