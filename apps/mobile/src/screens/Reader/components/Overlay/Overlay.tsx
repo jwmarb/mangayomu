@@ -27,6 +27,7 @@ import { useAppDispatch } from '@redux/main';
 import { addIfNewSourceToLibrary } from '@redux/slices/library';
 import { useRealm } from '@database/main';
 import { MangaSchema } from '@database/schemas/Manga';
+import { useImmutableManga } from '@screens/Reader/components/ChapterPage/context/ImmutableMangaContext';
 
 const pageSliderTranslateYOffset = moderateScale(-78);
 
@@ -44,6 +45,7 @@ const Overlay: React.FC<OverlayProps> = (props) => {
     imageMenuRef,
     savedChapterInfo,
   } = props;
+  const immutableManga = useImmutableManga();
   const showPageNumber = useAppSelector(
     (state) => state.settings.reader.showPageNumber,
   );
@@ -166,7 +168,7 @@ const Overlay: React.FC<OverlayProps> = (props) => {
   return (
     <Portal>
       <ReaderSettingsMenu ref={ref} mangaKey={manga.link} />
-      <ImageMenu ref={imageMenuRef} />
+      <ImageMenu manga={immutableManga} ref={imageMenuRef} />
       <Box
         z-index={-1}
         pointerEvents="box-none"

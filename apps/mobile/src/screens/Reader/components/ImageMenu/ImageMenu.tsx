@@ -7,13 +7,7 @@ import { Portal } from '@gorhom/portal';
 import displayMessage from '@helpers/displayMessage';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import React from 'react';
-import {
-  LayoutChangeEvent,
-  Share,
-  Platform,
-  Linking,
-  Alert,
-} from 'react-native';
+import { LayoutChangeEvent, Share, Linking, Alert } from 'react-native';
 
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {
@@ -26,19 +20,24 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
-import RNFetchBlob from 'rn-fetch-blob';
 import { ImageMenuMethods } from './';
 import useScreenDimensions from '@hooks/useScreenDimensions';
-import removeURLParams from '@screens/Reader/components/ChapterPage/helpers/removeURLParams';
 import useAppSelector from '@hooks/useAppSelector';
 import { toggleImageModal } from '@redux/slices/reader';
 import { useAppDispatch } from '@redux/main';
 import Pressable from '@components/Pressable';
+import PageManager from '@redux/slices/reader/PageManager';
+import { Manga } from '@mangayomu/mangascraper/src';
 
-const ImageMenu: React.ForwardRefRenderFunction<ImageMenuMethods> = (
-  _,
-  ref,
-) => {
+interface ImageMenuProps {
+  manga: Manga;
+}
+
+const ImageMenu: React.ForwardRefRenderFunction<
+  ImageMenuMethods,
+  ImageMenuProps
+> = (props, ref) => {
+  const { manga } = props;
   const show = useAppSelector((state) => state.reader.showImageModal);
   const dispatch = useAppDispatch();
   const theme = useTheme();
@@ -113,36 +112,15 @@ const ImageMenu: React.ForwardRefRenderFunction<ImageMenuMethods> = (
   async function handleOnSaveImage() {
     if (url.current != null) {
       handleOnClose();
-      const path =
-        Platform.OS === 'ios'
-          ? RNFetchBlob.fs.dirs['MainBundleDir'] +
-            removeURLParams(url.current).substring(url.current.lastIndexOf('/'))
-          : RNFetchBlob.fs.dirs['PictureDir'] +
-            removeURLParams(url.current).substring(
-              url.current.lastIndexOf('/'),
-            );
-      if (Platform.OS === 'android') {
-        RNFetchBlob.config({
-          fileCache: true,
-          path,
-          addAndroidDownloads: {
-            useDownloadManager: true,
-            notification: true,
-            path,
-            description: 'Downloading image',
-          },
-        })
-          .fetch('GET', url.current)
-          .then((res) => {
-            CameraRoll.save(res.data, { type: 'photo' })
-              .then(() => displayMessage('Image saved.'))
-              .catch(() => displayMessage('Failed to save image.'));
-          })
-          .catch(() => displayMessage('Failed to save image.'));
-      } else
-        CameraRoll.save(url.current, { type: 'photo' })
-          .then(() => displayMessage('Image saved.'))
-          .catch(() => displayMessage('Failed to save image.'));
+
+      CameraRoll.save(PageManager.toFileURI(manga, url.current), {
+        type: 'photo',
+      })
+        .then(() => displayMessage('Image saved.'))
+        .catch((e) => {
+          console.error(e);
+          displayMessage('Failed to save image.');
+        });
     } else {
       Alert.alert('Invalid image', `Got ${url.current}`);
     }
