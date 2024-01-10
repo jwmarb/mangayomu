@@ -1,7 +1,8 @@
 import CacheManager from '@components/ImprovedImage/CacheManager';
-import { Manga } from '@mangayomu/mangascraper/src';
+import { Manga, MangaHost } from '@mangayomu/mangascraper/src';
 import getFileExtension from '@screens/Reader/components/ChapterPage/helpers/getFileExtension';
 import removeURLParams from '@screens/Reader/components/ChapterPage/helpers/removeURLParams';
+import { isToday } from 'date-fns';
 import { READER_CACHE_DIR } from 'env';
 import { Image } from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
@@ -39,6 +40,34 @@ export default class PageManager {
   public async validateDirs() {
     const doesPathExist = await RNFetchBlob.fs.exists(this.dir); // asserting that manga.source exists
     if (!doesPathExist) await RNFetchBlob.fs.mkdir(this.dir);
+  }
+  public static async deleteOldCache() {
+    const paths = MangaHost.sources.map((x) => `${READER_CACHE_DIR}/${x}`);
+    const series = (
+      await Promise.all(
+        paths.map(async (x) => {
+          const ls = await RNFetchBlob.fs.ls(x);
+          return Promise.all(
+            ls.map((title) => RNFetchBlob.fs.stat(`${x}/${title}`)),
+          );
+        }),
+      )
+    ).flat();
+    try {
+      await Promise.all(
+        series.map((stat) => {
+          if (!isToday(stat.lastModified)) {
+            console.log(`Deleted ${stat.filename}`);
+
+            return RNFetchBlob.fs.unlink(stat.path);
+          } else Promise.resolve();
+        }),
+      );
+      return true;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
   }
   private toFileURI(pageUri: string) {
     return `${this.dir}/${pageUri.replace(

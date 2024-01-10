@@ -32,6 +32,7 @@ import { getErrorMessage } from '@helpers/getErrorMessage';
 import RNFetchBlob from 'rn-fetch-blob';
 import { IMAGE_CACHE_DIR, READER_CACHE_DIR } from 'env';
 import { MangaHost } from '@mangayomu/mangascraper/src';
+import PageManager from '@redux/slices/reader/PageManager';
 enableFreeze(true);
 
 const realmConfiguration: Realm.OpenRealmBehaviorConfiguration = {
@@ -77,18 +78,9 @@ function App(): JSX.Element {
           })
           .catch(console.error),
       ),
-    );
-    function handleMemoryWarning(e: AppStateStatus) {
-      console.log(`memoryWarning:: ${e}`);
-    }
-    const subscription = AppState.addEventListener(
-      'memoryWarning',
-      handleMemoryWarning,
-    );
-
-    return () => {
-      subscription.remove();
-    };
+    ).then(() => {
+      PageManager.deleteOldCache();
+    });
   }, []);
 
   return (
