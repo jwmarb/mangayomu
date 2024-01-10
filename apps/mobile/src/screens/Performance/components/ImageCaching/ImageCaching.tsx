@@ -13,6 +13,7 @@ import {
   setImageCacheType,
   toggleImageCaching,
 } from '@redux/slices/settings';
+import toReadableBytes from '@screens/Performance/helpers/toReadableBytes';
 import { DIVIDER_DEPTH } from '@theme/constants';
 import { IMAGE_CACHE_DIR } from 'env';
 import React from 'react';
@@ -63,15 +64,6 @@ const ImageCachingType = React.memo(() => {
     />
   );
 });
-
-const log1024 = Math.log(1024);
-
-function toReadableBytes(size: number) {
-  const i = size === 0 ? 0 : Math.floor(Math.log(size) / log1024);
-  return (
-    (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB'][i]
-  );
-}
 
 const ClearCache = React.memo(() => {
   const [spaceOccupied, setSpaceOccupied] = React.useState<
