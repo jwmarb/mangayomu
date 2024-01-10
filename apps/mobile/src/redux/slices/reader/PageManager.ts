@@ -70,7 +70,7 @@ export default class PageManager {
     }
   }
   private toFileURI(pageUri: string) {
-    return `${this.dir}/${pageUri.replace(
+    return `${this.dir}/${removeURLParams(pageUri).replace(
       /[^a-zA-Z0-9]/g,
       '',
     )}.${getFileExtension(pageUri)}`;
@@ -79,7 +79,10 @@ export default class PageManager {
     return `${READER_CACHE_DIR}/${manga.source}/${manga.title.replace(
       /[^a-zA-Z0-9]/g,
       '',
-    )}/${pageUri.replace(/[^a-zA-Z0-9]/g, '')}.${getFileExtension(pageUri)}`;
+    )}/${removeURLParams(pageUri).replace(
+      /[^a-zA-Z0-9]/g,
+      '',
+    )}.${getFileExtension(pageUri)}`;
   }
 
   /**
@@ -110,9 +113,7 @@ export default class PageManager {
                       reject(`Failed to download ${this.pageUris[i]}`),
                     );
                 else {
-                  console.log(`Download finished for ${fileUris[i]}`);
                   CacheManager.add(key);
-
                   resolve(result.path());
                 }
               }),
