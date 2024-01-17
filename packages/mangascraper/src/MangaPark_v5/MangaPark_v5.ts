@@ -12,6 +12,7 @@ import {
   VIEW_CHAPTERS,
 } from './MangaPark_v5.helpers';
 import {
+  MangaParkV5GetChapterNode,
   MangaParkV5GetComicChapters,
   MangaParkV5GetComicRangeList,
   MangaParkV5GetContentChapterList,
@@ -29,25 +30,42 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
   public async getPages(
     chapter: Pick<MangaChapter, 'link'>,
   ): Promise<string[]> {
-    const $ = await super.route(chapter);
-    const { objs } = JSON.parse($('script[type="qwik/json"]').text());
-    const images: string[] = [];
-    for (let i = 0; i < objs.length; i++) {
-      const val = objs[i];
-      if (typeof val === 'string' && val.startsWith('https://'))
-        images.push(val);
-    }
-    const lastImage = images[images.length - 1];
-    const eqPos = lastImage.lastIndexOf('=');
-    const imgExp = lastImage.substring(eqPos);
-    const newArray = [];
-    for (let i = 0; i < images.length; i++) {
-      const exp = images[i].substring(
-        eqPos + images[i].length - lastImage.length,
-      );
-      if (exp === imgExp) newArray.push(images[i]);
-    }
-    return newArray;
+    const chapterNodeId = chapter.link.substring(
+      chapter.link.lastIndexOf('/') + 1,
+    );
+    const pages = await super.route<MangaParkV5GetChapterNode>(
+      { link: MangaParkV5.API_ROUTE },
+      'POST',
+      {
+        operationName: 'get_chapterNode',
+        query:
+          'query get_chapterNode($getChapterNodeId: ID!) {\n  get_chapterNode(id: $getChapterNodeId) {\n    data {\n      imageFile {\n        urlList\n      }\n    }\n  }\n}',
+        variables: {
+          getChapterNodeId: chapterNodeId,
+        },
+      },
+      { proxyEnabled: false },
+    );
+    // const $ = await super.route(chapter);
+    // const { objs } = JSON.parse($('script[type="qwik/json"]').text());
+    // const images: string[] = [];
+    // for (let i = 0; i < objs.length; i++) {
+    //   const val = objs[i];
+    //   if (typeof val === 'string' && val.startsWith('https://'))
+    //     images.push(val);
+    // }
+    // const lastImage = images[images.length - 1];
+    // const eqPos = lastImage.lastIndexOf('=');
+    // const imgExp = lastImage.substring(eqPos);
+    // const newArray = [];
+    // for (let i = 0; i < images.length; i++) {
+    //   const exp = images[i].substring(
+    //     eqPos + images[i].length - lastImage.length,
+    //   );
+    //   if (exp === imgExp) newArray.push(images[i]);
+    // }
+    // return newArray;
+    return pages.data.get_chapterNode.data.imageFile.urlList;
   }
   public async listRecentlyUpdatedManga(): Promise<Manga[]> {
     const { data } = await super.route<MangaParkV5HotMangas>(

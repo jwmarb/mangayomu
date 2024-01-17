@@ -41,6 +41,18 @@ export type MangaParkV5HotMangas = {
   };
 };
 
+export type MangaParkV5GetChapterNode = {
+  data: {
+    get_chapterNode: {
+      data: {
+        imageFile: {
+          urlList: string[];
+        };
+      };
+    };
+  };
+};
+
 /**
  * For ENGLISH chapters only
  */
