@@ -55,20 +55,21 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       'POST',
       {
         query:
-          'query get_content_browse_latest($select: ComicLatestSelect) {\n  get_content_browse_latest(select: $select) {\n    items {\n      comic {\n        data {\n          name\n          urlPath\n          urlCoverOri\n        }\n      }\n    }\n  }\n}\n',
+          'query get_latestReleases($select: LatestReleases_Select) {\n  get_latestReleases(select: $select) {\n    items {\n      data {\n        name\n        urlPath\n        urlCoverOri\n      }\n    }\n  }\n}',
         variables: {
           select: {
-            where: 'release',
-            limit: 100,
+            where: 'popular',
+            init: 0,
+            size: 120,
+            page: 1,
           },
         },
-        operationName: 'get_content_browse_latest',
       },
       { proxyEnabled: false },
     );
 
-    return data.get_content_browse_latest.items.map(
-      ({ comic: { data } }): Manga => ({
+    return data.get_latestReleases.items.map(
+      ({ data }): Manga => ({
         imageCover: data.urlCoverOri,
         link: 'https://' + super.getLink() + getV3URL(data.urlPath),
         source: this.name,
@@ -82,20 +83,21 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       'POST',
       {
         query:
-          'query get_content_browse_latest($select: ComicLatestSelect) {\n  get_content_browse_latest(select: $select) {\n    items {\n      comic {\n        data {\n          name\n          urlPath\n          urlCoverOri\n        }\n      }\n    }\n  }\n}\n',
+          'query get_latestReleases($select: LatestReleases_Select) {\n  get_latestReleases(select: $select) {\n    items {\n      data {\n        name\n        urlPath\n        urlCoverOri\n      }\n    }\n  }\n}',
         variables: {
           select: {
-            where: 'popular',
-            limit: 100,
+            where: 'release',
+            init: 0,
+            size: 120,
+            page: 1,
           },
         },
-        operationName: 'get_content_browse_latest',
       },
       { proxyEnabled: false },
     );
 
-    return data.get_content_browse_latest.items.map(
-      ({ comic: { data } }): Manga => ({
+    return data.get_latestReleases.items.map(
+      ({ data }): Manga => ({
         imageCover: data.urlCoverOri,
         link: 'https://' + super.getLink() + getV3URL(data.urlPath),
         source: this.name,
