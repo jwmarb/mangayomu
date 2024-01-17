@@ -24,7 +24,7 @@
   "dependencies": {
     "@emotion/native": "^11.11.0",
     "@emotion/react": "^11.11.1",
-    "@gorhom/bottom-sheet": "4.5.1",
+    "@gorhom/bottom-sheet": "5.0.0-alpha.6",
     "@gorhom/portal": "^1.0.14",
     "@mangayomu/algorithms": "^1.0.0",
     "@mangayomu/mangascraper": "^1.0.0",
