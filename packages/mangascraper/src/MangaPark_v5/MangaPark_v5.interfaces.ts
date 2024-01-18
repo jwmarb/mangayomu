@@ -29,16 +29,26 @@ export type MangaParkV5SearchManga = {
 
 export type MangaParkV5HotMangas = {
   data: {
-    get_content_browse_latest: {
+    get_latestReleases: {
       items: {
-        comic: {
-          data: {
-            name: string;
-            urlPath: string;
-            urlCoverOri: string;
-          };
+        data: {
+          name: string;
+          urlPath: string;
+          urlCoverOri: string;
         };
       }[];
+    };
+  };
+};
+
+export type MangaParkV5GetChapterNode = {
+  data: {
+    get_chapterNode: {
+      data: {
+        imageFile: {
+          urlList: string[];
+        };
+      };
     };
   };
 };
