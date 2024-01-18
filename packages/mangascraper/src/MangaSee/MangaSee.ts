@@ -232,6 +232,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     const [scanStatus, publishStatus] = $('a[href*="/search/?status="]')
       .map((_, el) => $(el).text())
       .get();
+
     const type = $('a[href*="/search/?type="]').text();
     const imageCover = $('img.img-fluid.bottom-5').attr('src')!;
     const chapters = Chapters.map((chapter, index) => ({
@@ -256,8 +257,10 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       yearReleased,
       type,
       status: {
-        scan: scanStatus,
-        publish: publishStatus,
+        scan: scanStatus.toLowerCase().substring(0, scanStatus.indexOf(' ')),
+        publish: publishStatus
+          .toLowerCase()
+          .substring(0, publishStatus.indexOf(' ')),
       },
       date: {
         modified: parseMangaSeeDate(data.dateModified),

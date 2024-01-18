@@ -20,12 +20,19 @@ const MangaStatus: React.FC<MangaStatusProps> = (props) => {
   const error = useMangaViewError();
 
   function getColor(status: string) {
-    const parsed = status.substring(0, status.lastIndexOf(' ')).toLowerCase();
-    if (ongoingSet.has(parsed)) return theme.palette.status.ongoing;
-    if (discontinuedSet.has(parsed)) return theme.palette.status.discontinued;
-    if (hiatusSet.has(parsed)) return theme.palette.status.hiatus;
-    if (completedSet.has(parsed)) return theme.palette.status.completed;
+    if (ongoingSet.has(status)) return theme.palette.status.ongoing;
+    if (discontinuedSet.has(status)) return theme.palette.status.discontinued;
+    if (hiatusSet.has(status)) return theme.palette.status.hiatus;
+    if (completedSet.has(status)) return theme.palette.status.completed;
     return theme.palette.text.primary;
+  }
+
+  function getReadableStatus(status: string) {
+    if (ongoingSet.has(status)) return 'Ongoing';
+    if (discontinuedSet.has(status)) return 'Cancelled';
+    if (hiatusSet.has(status)) return 'Hiatus';
+    if (completedSet.has(status)) return 'Completed';
+    return 'Unknown';
   }
 
   return (
@@ -40,7 +47,7 @@ const MangaStatus: React.FC<MangaStatusProps> = (props) => {
 
         {data && data.scan ? (
           <Text color={getColor(data.scan)}>
-            {data.scan.substring(0, data.scan.indexOf(' '))}
+            {getReadableStatus(data.scan)}
           </Text>
         ) : loading ? (
           <Text.Skeleton lineStyles={[{ width: moderateScale(72) }]} />
@@ -58,7 +65,7 @@ const MangaStatus: React.FC<MangaStatusProps> = (props) => {
         {!error ? (
           data && data.publish ? (
             <Text color={getColor(data.publish)}>
-              {data.publish.substring(0, data.publish.lastIndexOf(' '))}
+              {getReadableStatus(data.publish)}
             </Text>
           ) : (
             <Text.Skeleton lineStyles={[{ width: moderateScale(72) }]} />

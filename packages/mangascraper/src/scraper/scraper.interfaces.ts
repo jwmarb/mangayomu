@@ -174,11 +174,15 @@ export declare interface WithStatus {
     /**
      * The scan status of the manga
      * This can be undefined because some manga websites only show the publish status of the manga
+     *
+     * The scan status must be a value that is lowercase such as "ongoing" or "hiatus"
      */
     scan?: string;
 
     /**
-     * The publish status of the manga
+     * The publish status of the manga.
+     *
+     * This must be lowercase such as "ongoing" or "hiatus"
      */
     publish: string;
   };
@@ -275,7 +279,7 @@ export declare interface MangaChapter {
   /**
    * After the name of a chapter is given, there may be a subtitle associated with it
    */
-  subname?: string;
+  subname?: string | null;
 }
 
 export type WithFilters =
