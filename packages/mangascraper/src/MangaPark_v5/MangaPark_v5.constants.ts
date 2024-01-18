@@ -160,7 +160,22 @@ const filters = createSchema(
       options: ['Any', 'Chinese', 'English', 'Japanese', 'Korean'],
       default: 'Any',
     }),
+    'Translated Work Language': createOptionFilter({
+      options: ['Any', 'Chinese', 'English', 'Japanese', 'Korean'],
+      default: 'Any',
+    }),
     'Original Work Status': createOptionFilter({
+      options: [
+        'All',
+        'Pending',
+        'Ongoing',
+        'Completed',
+        'Hiatus',
+        'Cancelled',
+      ],
+      default: 'All',
+    }),
+    'MangaPark Upload Status': createOptionFilter({
       options: [
         'All',
         'Pending',
@@ -348,7 +363,7 @@ export const MANGAPARKV5_INFO: MangaHostFiltersInfo<MangaParkV5Filter> = {
   hasLatestMangas: true,
   hasMangaDirectory: false,
   host: 'https://mangapark.net/',
-  version: '2.1.0',
+  version: '3.0.0',
   name: 'MangaPark v3',
   icon: 'https://mangapark.io/static-assets/img/favicon.png',
 };

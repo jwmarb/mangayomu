@@ -1,21 +1,15 @@
 import {
   getV3URL,
-  getV5URL,
-  mapMultilingualQueryResponse,
-  mapMultilingualQueryResponseFallback,
-  mapQueryResponse,
-  mapQueryResponseFallback,
   OFFICIAL_WORK_STATUS,
   ORDER_BY,
-  ORIGINAL_WORK_LANGUAGE,
+  MANGAPARK_LANG,
   TYPE,
   VIEW_CHAPTERS,
+  compressURL,
 } from './MangaPark_v5.helpers';
 import {
   MangaParkV5GetChapterNode,
-  MangaParkV5GetComicChapters,
   MangaParkV5GetComicRangeList,
-  MangaParkV5GetContentChapterList,
   MangaParkV5HotMangas,
   MangaParkV5MangaMeta,
   MangaParkV5SearchManga,
@@ -23,7 +17,7 @@ import {
 import { MangaHostWithFilters } from '../scraper/scraper.filters';
 import { GetMeta, Manga, MangaChapter } from '../scraper/scraper.interfaces';
 import { MangaParkV5Filter, MANGAPARKV5_INFO } from './MangaPark_v5.constants';
-import { createWorklet } from '../utils/worklets';
+import { ISOLangCode } from '@mangayomu/language-codes';
 
 class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
   private static API_ROUTE = 'https://mangapark.net/apo/';
@@ -101,7 +95,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       'POST',
       {
         query:
-          'query get_latestReleases($select: LatestReleases_Select) {\n  get_latestReleases(select: $select) {\n    items {\n      data {\n        name\n        urlPath\n        urlCoverOri\n      }\n    }\n  }\n}',
+          'query get_latestReleases($select: LatestReleases_Select) {\n  get_latestReleases(select: $select) {\n    items {\n      data {\n        name\n        tranLang\n        urlPath\n        urlCoverOri\n      }\n    }\n  }\n}',
         variables: {
           select: {
             where: 'release',
@@ -120,6 +114,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
         link: 'https://' + super.getLink() + getV3URL(data.urlPath),
         source: this.name,
         title: data.name,
+        language: data.tranLang as ISOLangCode,
       }),
     );
   }
@@ -130,15 +125,15 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
     if (filters) {
       const {
         data: {
-          get_content_browse_search: { items },
+          get_searchComic: { items },
         },
       } = await super.route<MangaParkV5SearchManga>(
         { link: MangaParkV5.API_ROUTE },
         'POST',
         {
-          operationName: 'get_content_browse_search',
+          operationName: 'get_searchComic',
           query:
-            'query get_content_browse_search($select: ComicSearchSelect) {\n  get_content_browse_search(select: $select) {\n    items {\n      data {\n        name\n        urlPath\n        imageCoverUrl\n      }\n    }\n  }\n}\n',
+            'query get_searchComic($select: SearchComic_Select) {\n  get_searchComic(select: $select) {\n    items {\n      data {\n        tranLang\n        name\n        urlCoverOri\n        urlPath\n      }\n    }\n  }\n}',
           variables: {
             select: {
               chapCount: VIEW_CHAPTERS[filters['Number of Chapters'].value],
@@ -148,12 +143,21 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
               incGenres: filters.Genres.include.concat(
                 filters.Type.include.map((x) => TYPE[x]),
               ),
-              oficStatus:
+              size: 120,
+              origStatus:
                 OFFICIAL_WORK_STATUS[filters['Original Work Status'].value],
-              origLang:
-                ORIGINAL_WORK_LANGUAGE[filters['Original Work Language'].value],
+              siteStatus:
+                OFFICIAL_WORK_STATUS[filters['MangaPark Upload Status'].value],
+              incOLangs: MANGAPARK_LANG[filters['Original Work Language'].value]
+                ? [MANGAPARK_LANG[filters['Original Work Language'].value]]
+                : [],
+              incTLangs: MANGAPARK_LANG[
+                filters['Translated Work Language'].value
+              ]
+                ? [MANGAPARK_LANG[filters['Original Work Language'].value]]
+                : [],
               page: super.getPage(),
-              sort: ORDER_BY[filters['Order by'].value],
+              sortby: ORDER_BY[filters['Order by'].value],
               word: query,
             },
           },
@@ -162,33 +166,29 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       );
       return items.map(
         ({ data }): Manga => ({
-          imageCover: data.imageCoverUrl,
+          imageCover: data.urlCoverOri,
           link: 'https://' + super.getLink() + getV3URL(data.urlPath),
           source: this.name,
           title: data.name,
+          language: data.tranLang as ISOLangCode,
         }),
       );
     }
     const {
       data: {
-        get_content_browse_search: { items },
+        get_searchComic: { items },
       },
     } = await super.route<MangaParkV5SearchManga>(
       { link: MangaParkV5.API_ROUTE },
       'POST',
       {
-        operationName: 'get_content_browse_search',
+        operationName: 'get_searchComic',
         query:
-          'query get_content_browse_search($select: ComicSearchSelect) {\n  get_content_browse_search(select: $select) {\n    items {\n      data {\n        name\n        urlPath\n        imageCoverUrl\n      }\n    }\n  }\n}\n',
+          'query get_searchComic($select: SearchComic_Select) {\n  get_searchComic(select: $select) {\n    items {\n      data {\n        name\n        urlCoverOri\n        urlPath\n      }\n    }\n  }\n}',
         variables: {
           select: {
-            chapCount: null,
-            excGenres: [],
-            incGenres: [],
-            oficStatus: null,
-            origLang: null,
             page: super.getPage(),
-            sort: null,
+            size: 120,
             word: query,
           },
         },
@@ -197,10 +197,11 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
     );
     return items.map(
       ({ data }): Manga => ({
-        imageCover: data.imageCoverUrl,
+        imageCover: data.urlCoverOri,
         link: 'https://' + super.getLink() + getV3URL(data.urlPath),
         source: this.name,
         title: data.name,
+        language: data.tranLang as ISOLangCode,
       }),
     );
   }
@@ -208,121 +209,51 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
     const comicId = parseInt(
       manga.link.substring(manga.link.lastIndexOf('/') + 1),
     );
-    const [unparsedEnglishChapters, unparsedMultilingualChapters, _$] =
-      await Promise.all([
-        super.route<MangaParkV5GetComicRangeList>(
-          { link: MangaParkV5.API_ROUTE },
-          'POST',
-          {
-            operationName: 'get_content_comicChapterRangeList',
-            query:
-              'query get_content_comicChapterRangeList(\n  $select: Content_ComicChapterRangeList_Select\n) {\n  get_content_comicChapterRangeList(select: $select) {\n    reqRange {\n      x\n      y\n    }\n    missing\n    pager {\n      x\n      y\n    }\n    items {\n      serial\n      chapterNodes {\n        id\n        data {\n          serial\n          dname\n          title\n          urlPath\n          datePublic\n          lang\n          srcTitle\n        }\n\n      }\n    }\n  }\n}',
-            variables: {
-              select: {
-                comicId,
-                range: { x: Number.MAX_SAFE_INTEGER, y: 0 },
-                isAsc: false,
-              },
-            },
-          },
-        ),
-        super.route<MangaParkV5GetComicChapters>(
-          { link: MangaParkV5.API_ROUTE },
-          'POST',
-          {
-            operationName: 'get_content_comic_chapters',
-            query:
-              'query get_content_comic_chapters(\n  $comicId: Int!\n  $isPref: Boolean\n  $incLangs: [String]\n  $excLangs: [String]\n) {\n  get_content_comic_chapters(\n    comicId: $comicId\n    isPref: $isPref\n    incLangs: $incLangs\n    excLangs: $excLangs\n  ) {\n    serial\n    chapters {\n      lang\n      cids\n    }\n  }\n}',
-            variables: {
-              comicId,
-              isPref: false,
-            },
-          },
-        ),
-        super.route({ link: getV5URL(manga.link) }),
-      ]);
-    const multilingualChapters =
-      await super.route<MangaParkV5GetContentChapterList>(
-        { link: MangaParkV5.API_ROUTE },
-        'POST',
-        {
-          operationName: 'get_content_chapter_list',
-          query:
-            'query get_content_chapter_list($comicId: Int!, $chapterIds: [Int]) {\n  get_content_chapter_list(comicId: $comicId, chapterIds: $chapterIds) {\n    id\n    data {\n      datePublic\n      lang\n      serial\n      dname\n      title\n      urlPath\n    }\n  }\n}',
-          variables: {
-            comicId,
-            chapterIds:
-              unparsedMultilingualChapters.data.get_content_comic_chapters.flatMap(
-                (x) => x.chapters.flatMap((x) => x.cids),
-              ),
-          },
+    const meta = await super.route<MangaParkV5GetComicRangeList>(
+      { link: MangaParkV5.API_ROUTE },
+      'POST',
+      {
+        query:
+          'query Get_comicChapterList($comicId: ID!, $getComicNodeId: ID!) {\n  \n  get_comicChapterList(comicId: $comicId) {\n    data {\n      dname\n      urlPath\n      dateCreate\n      title\n    }\n  }\n  get_comicNode(id: $getComicNodeId) {\n    data {\n      authors\n      genres\n      name\n      originalStatus\n      score_bay\n      summary\n      uploadStatus\n      urlCoverOri\n      urlPath\n      votes\n      tranLang\n    }\n  }\n}',
+        variables: {
+          comicId,
+          getComicNodeId: comicId,
         },
-      );
+        operationName: 'Get_comicChapterList',
+      },
+    );
 
-    const [getEnglish, getMultilingual] = await Promise.all([
-      createWorklet(mapQueryResponse, mapQueryResponseFallback),
-      createWorklet(
-        mapMultilingualQueryResponse,
-        mapMultilingualQueryResponseFallback,
-      ),
-    ]);
+    const chapters: MangaChapter[] = [];
 
-    multilingualChapters.data.get_content_chapter_list.sort((a, b) => {
-      if (a.data.lang === b.data.lang) return b.data.serial - a.data.serial;
-      return a.data.lang.localeCompare(b.data.lang);
-    });
-
-    const [englishChapterObjects, multilingualChapterObjects] =
-      await Promise.all([
-        getEnglish(unparsedEnglishChapters, this.getLink()),
-        getMultilingual(multilingualChapters, this.getLink()),
-      ]);
-
-    const genres = _$('div[q\\:key="30_2"] > span')
-      .map((_, el) => _$(el).attr('q:key'))
-      .toArray();
-
-    const ratingEl = _$('div[q\\:key="VI_2"]');
-    const ratingValueWidth = _$(ratingEl.children()[1]).attr('style');
-    const ratingValue =
-      ratingValueWidth != null
-        ? parseFloat(
-            ratingValueWidth.substring(
-              ratingValueWidth.indexOf(':') + 1,
-              ratingValueWidth.length - 1,
-            ),
-          ) / 10
-        : null;
-    const ratingCount = parseInt(ratingEl.next().text().split(' ')[0]);
-
-    const titleEl = _$('div.space-y-2.hidden.md\\:block > h3');
-    const title = titleEl.text();
-    const authors = titleEl.siblings('div[q\\:key="tz_4"]').text().split(' / ');
-
-    const imageCover = _$('img[q\\:key="q1_1"]').attr('src') ?? '';
-
-    const description = _$('div.limit-html-p').text();
-
-    const chapters = englishChapterObjects.concat(multilingualChapterObjects);
-
-    const status = _$('span[q\\:key="Yn_5"]').text();
+    for (let i = meta.data.get_comicChapterList.length - 1; i >= 0; i--) {
+      const ch = meta.data.get_comicChapterList[i];
+      chapters.push({
+        date: new Date(ch.data.dateCreate).toString(),
+        index: meta.data.get_comicChapterList.length - 1 - i,
+        link: compressURL('https://' + super.getLink() + ch.data.urlPath),
+        name: ch.data.dname,
+        subname: ch.data.title,
+      });
+    }
 
     return {
-      title,
+      title: meta.data.get_comicNode.data.name,
       source: this.name,
       link: manga.link,
-      authors,
-      description,
-      genres,
+      authors: meta.data.get_comicNode.data.authors,
+      description: meta.data.get_comicNode.data.summary,
+      genres: meta.data.get_comicNode.data.genres,
+      language: meta.data.get_comicNode.data.tranLang as ISOLangCode,
       rating: {
-        value: ratingValue || 'N/A',
-        voteCount: ratingCount,
+        value: meta.data.get_comicNode.data.score_bay,
+        voteCount: meta.data.get_comicNode.data.votes,
       },
       status: {
-        publish: `${status} (Status)`,
+        publish: meta.data.get_comicNode.data.originalStatus,
+        scan: meta.data.get_comicNode.data.uploadStatus,
       },
       chapters,
-      imageCover,
+      imageCover: meta.data.get_comicNode.data.urlCoverOri,
     };
   }
 }
