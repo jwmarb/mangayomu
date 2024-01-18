@@ -57,13 +57,13 @@ export const SORT_CHAPTERS_BY_LEGACY = {
     a: Omit<MangaChapter, 'link'>,
     b: Omit<MangaChapter, 'link'>,
   ) => {
+    if (a.index != null && b.index != null) return b.index - a.index;
     if (a.name && b.name) {
       const aName = a.name.match(/(0|[1-9]\d*)(\.\d+)?/g);
       const bName = b.name.match(/(0|[1-9]\d*)(\.\d+)?/g);
       if (aName != null && bName != null)
         return parseFloat(bName[0]) - parseFloat(aName[0]);
     }
-    if (a.index != null && b.index != null) return b.index - a.index;
     throw Error('Chapter cannot be sorted due to undefined name and index');
   },
   Timestamp: (a: Omit<MangaChapter, 'link'>, b: Omit<MangaChapter, 'link'>) =>
