@@ -210,6 +210,15 @@ export declare interface Manga {
    * The link that redirects to the manga page
    */
   link: string;
+
+  /**
+   * The language of this manga (if applicable)
+   *
+   * Setting this value will display the language region flag this manga is translated for.
+   *
+   * For example, "en" will show the United Kingdom flag  while "ch" will show a Chinese flag
+   */
+  language?: ISOLangCode | null;
 }
 
 export declare interface WithModificationDate {
@@ -234,6 +243,8 @@ export declare interface MangaMeta<
 > extends WithGenres {
   /**
    * The chapters of the manga
+   *
+   * ORDER MATTERS! The chapters must be sorted by their placement where the latest chapter is the 0th element and the first chapter is the last element
    */
   chapters: TChapters[];
 
