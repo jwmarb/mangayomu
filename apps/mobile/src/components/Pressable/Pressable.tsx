@@ -4,17 +4,8 @@ import React from 'react';
 import {
   PressableAndroidRippleConfig,
   Pressable as NativePressable,
-  PressableProps as NativePressableProps,
 } from 'react-native';
-
-interface PressableProps extends NativePressableProps {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  color?: ButtonColors | (string & {});
-  ripple?: boolean;
-  borderless?: boolean;
-  foreground?: boolean;
-  rippleRadius?: number | null;
-}
+import type { PressableProps } from './index';
 
 /**
  * MangaYomu theme-wrapped `Pressable` from React Native
