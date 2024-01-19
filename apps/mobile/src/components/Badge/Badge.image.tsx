@@ -3,20 +3,12 @@ import { ImageBadgeProps } from './';
 import Box from '@components/Box';
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import { ScaledSheet } from 'react-native-size-matters';
-import { Image } from 'react-native';
+import { ScaledSheet, moderateScale } from 'react-native-size-matters';
+import ImprovedImage from '@components/ImprovedImage';
 
 const styles = ScaledSheet.create({
-  image: {
-    width: '16@ms' as unknown as number,
-    height: '16@ms' as unknown as number,
-  },
   container: {
     position: 'absolute',
-    top: '4@ms' as unknown as number,
-    right: '4@ms' as unknown as number,
-    width: '16@ms' as unknown as number,
-    height: '16@ms' as unknown as number,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#fff',
@@ -25,17 +17,25 @@ const styles = ScaledSheet.create({
 });
 
 const ImageBadge: React.FC<ImageBadgeProps> = (props) => {
-  const { show = false, children, uri, placement } = props;
+  const {
+    show = false,
+    children,
+    uri,
+    placement,
+    width = moderateScale(16),
+    height = moderateScale(16),
+  } = props;
   const style = useBadgeLayoutAnimation(show, placement);
 
   return (
     <Box>
       {children}
-      <Box as={Animated.View} style={[style, styles.container]} box-shadow>
-        <Image
+      <Box as={Animated.View} style={[style, styles.container]}>
+        <ImprovedImage
           // Improved Image
           source={{ uri }}
-          style={styles.image}
+          width={width}
+          height={height}
         />
       </Box>
     </Box>

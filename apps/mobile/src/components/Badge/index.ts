@@ -35,4 +35,6 @@ export type BadgeProps =
 
 export interface ImageBadgeProps extends AbstractBadgeProps<'image'> {
   uri?: string;
+  width?: number;
+  height?: number;
 }
