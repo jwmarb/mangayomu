@@ -2,6 +2,7 @@ import Badge from './Badge';
 export default Badge;
 import { Colors } from '@mangayomu/theme';
 import React from 'react';
+import { ImageProps } from 'react-native';
 
 export enum BadgeLocation {
   TOP_LEFT,
@@ -33,8 +34,8 @@ export type BadgeProps =
   | NumberBadgeProps
   | ImageBadgeProps;
 
-export interface ImageBadgeProps extends AbstractBadgeProps<'image'> {
+export interface ImageBadgeProps
+  extends AbstractBadgeProps<'image'>,
+    ImageProps {
   uri?: string;
-  width?: number;
-  height?: number;
 }
