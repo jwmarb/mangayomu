@@ -3,6 +3,7 @@ import { CustomBottomSheetProps } from './';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetHandleProps,
+  SNAP_POINT_TYPE,
 } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { useTheme } from '@emotion/react';
@@ -81,8 +82,12 @@ const CustomBottomSheet: React.ForwardRefRenderFunction<
     onClose && onClose();
     setIsOpened(false);
   }
-  function handleOnChange(i: number) {
-    onChange && onChange(i);
+  function handleOnChange(
+    i: number,
+    position: number,
+    snap_type: SNAP_POINT_TYPE,
+  ) {
+    onChange && onChange(i, position, snap_type);
     if (i === -1) setIsOpened(false);
     else {
       onOpen();
