@@ -7,6 +7,7 @@ import {
   MangaMeta,
   MangaMultilingualChapter,
   Manga,
+  MangaHost,
 } from '@mangayomu/mangascraper/src';
 import { useUser } from '@realm/react';
 import Realm from 'realm';
@@ -22,8 +23,11 @@ export default function writeLocalChapters(
   localRealm: Realm,
   meta: MangaMeta & Manga,
 ) {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const host = MangaHost.sourcesMap.get(meta.source)!;
   const chapters: string[] = [];
   const availableLanguages: ISOLangCode[] = [];
+  const mangaLanguage = meta.language ?? host.defaultLanguage;
   localRealm.write(() => {
     const uniqChapters: Set<string> = new Set();
     const lookup = new Set<string>();
@@ -38,9 +42,9 @@ export default function writeLocalChapters(
           );
           lookup.add(multilingualChapter.language);
         }
-      } else if (!lookup.has('en')) {
-        availableLanguages.push('en');
-        lookup.add('en');
+      } else if (!lookup.has(mangaLanguage)) {
+        availableLanguages.push(mangaLanguage);
+        lookup.add(mangaLanguage);
       }
 
       const existingChapter = localRealm.objectForPrimaryKey(
