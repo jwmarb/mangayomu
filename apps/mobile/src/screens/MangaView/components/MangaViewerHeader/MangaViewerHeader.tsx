@@ -121,6 +121,7 @@ const MangaViewerHeader: React.FC<MangaViewerHeaderProps> = (props) => {
         <MangaSource mangaSource={manga.source} />
         <MangaSupportedLanguages
           data={meta?.availableLanguages}
+          mangaLanguage={meta?.language || manga?.language}
           hostDefaultLanguage={
             MangaHost.sourcesMap.get(manga.source)?.defaultLanguage
           }
