@@ -6,7 +6,7 @@ export class LocalChapterSchema extends Realm.Object<ILocalChapterSchema> {
   _id!: string;
   _mangaId!: string;
   name!: string;
-  subname?: string;
+  subname?: string | null;
   index!: number;
   language!: ISOLangCode;
   date!: string;
