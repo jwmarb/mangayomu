@@ -67,7 +67,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
       'POST',
       {
         query:
-          'query get_latestReleases($select: LatestReleases_Select) {\n  get_latestReleases(select: $select) {\n    items {\n      data {\n        name\n        urlPath\n        urlCoverOri\n      }\n    }\n  }\n}',
+          'query get_latestReleases($select: LatestReleases_Select) {\n  get_latestReleases(select: $select) {\n    items {\n      data {\n        name\n        tranLang\n        urlPath\n        urlCoverOri\n      }\n    }\n  }\n}',
         variables: {
           select: {
             where: 'popular',
@@ -86,6 +86,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
         link: 'https://' + super.getLink() + getV3URL(data.urlPath),
         source: this.name,
         title: data.name,
+        language: data.tranLang as ISOLangCode,
       }),
     );
   }

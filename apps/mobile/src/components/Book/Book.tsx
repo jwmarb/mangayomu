@@ -15,9 +15,10 @@ import { BookStyle } from '@redux/slices/settings';
 import React from 'react';
 import Pressable from '@components/Pressable';
 import LinearGradient from 'react-native-linear-gradient';
-import { ScaledSheet } from 'react-native-size-matters';
+import { ScaledSheet, moderateScale } from 'react-native-size-matters';
 import useAppSelector from '@hooks/useAppSelector';
 import Realm from 'realm';
+import languages, { ISOLangCode } from '@mangayomu/language-codes';
 
 const styles = ScaledSheet.create({
   linearGradient: {
@@ -25,6 +26,40 @@ const styles = ScaledSheet.create({
     flexDirection: 'column-reverse',
   },
 });
+
+function Flag(
+  props: React.PropsWithChildren<{
+    language?: ISOLangCode | null;
+  }>,
+) {
+  const { children, language } = props;
+
+  if (language == null) return <>{children}</>;
+
+  const lang = languages[language];
+
+  const uri =
+    lang != null && 'flag' in lang
+      ? `https://flagcdn.com/w20/${lang.flag}.png`
+      : null;
+
+  if (uri == null) {
+    return <>{children}</>;
+  }
+
+  return (
+    <Badge
+      type="image"
+      uri={uri}
+      width={moderateScale(20)}
+      height={moderateScale(11)}
+      show
+      placement={BadgeLocation.BOTTOM_LEFT}
+    >
+      {children}
+    </Badge>
+  );
+}
 
 const Book: React.FC<BookProps> = (props) => {
   const { manga } = props;
@@ -82,33 +117,35 @@ const Book: React.FC<BookProps> = (props) => {
           onLongPress={handleOnLongPress}
         >
           <Stack space="s" width={width} minHeight={height}>
-            <Badge
-              type="number"
-              count={dbManga?.notifyNewChaptersCount ?? 0}
-              placement={BadgeLocation.TOP_LEFT}
-              color="primary"
-            >
-              <Badge type="image" uri={source.icon} show>
-                <Cover cover={manga} manga={manga}>
-                  <LinearGradient
-                    colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 0, y: 1 }}
-                    style={linearGradientStyle}
-                  >
-                    <Text
-                      style={textStyle}
-                      numberOfLines={2}
-                      bold={bold}
-                      align={align}
-                      color={theme.helpers.getContrastText('#000000')}
+            <Flag language={manga.language}>
+              <Badge
+                type="number"
+                count={dbManga?.notifyNewChaptersCount ?? 0}
+                placement={BadgeLocation.TOP_LEFT}
+                color="primary"
+              >
+                <Badge type="image" uri={source.icon} show>
+                  <Cover cover={manga} manga={manga}>
+                    <LinearGradient
+                      colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 0, y: 1 }}
+                      style={linearGradientStyle}
                     >
-                      {manga.title}
-                    </Text>
-                  </LinearGradient>
-                </Cover>
+                      <Text
+                        style={textStyle}
+                        numberOfLines={2}
+                        bold={bold}
+                        align={align}
+                        color={theme.helpers.getContrastText('#000000')}
+                      >
+                        {manga.title}
+                      </Text>
+                    </LinearGradient>
+                  </Cover>
+                </Badge>
               </Badge>
-            </Badge>
+            </Flag>
           </Stack>
         </Pressable>
       </Box>
@@ -118,16 +155,19 @@ const Book: React.FC<BookProps> = (props) => {
     <Box style={coverStyles.button} overflow="hidden" align-self="center">
       <Pressable onPress={handleOnPress} onLongPress={handleOnLongPress}>
         <Stack space="s" width={width} minHeight={height}>
-          <Badge
-            type="number"
-            count={dbManga?.notifyNewChaptersCount ?? 0}
-            placement={BadgeLocation.TOP_LEFT}
-            color="primary"
-          >
-            <Badge type="image" uri={source.icon} show>
-              <Cover cover={manga} manga={manga} />
+          <Flag language={manga.language}>
+            <Badge
+              type="number"
+              count={dbManga?.notifyNewChaptersCount ?? 0}
+              placement={BadgeLocation.TOP_LEFT}
+              color="primary"
+            >
+              <Badge type="image" uri={source.icon} show>
+                <Cover cover={manga} manga={manga} />
+              </Badge>
             </Badge>
-          </Badge>
+          </Flag>
+
           <Text style={textStyle} numberOfLines={2} bold={bold} align={align}>
             {manga.title}
           </Text>

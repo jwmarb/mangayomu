@@ -5,4 +5,5 @@ import { MangaMetaProperty } from '@screens/MangaView/components/MangaViewerHead
 export type MangaSupportedLanguagesProps =
   MangaMetaProperty<'availableLanguages'> & {
     hostDefaultLanguage?: ISOLangCode;
+    mangaLanguage?: ISOLangCode | null;
   };

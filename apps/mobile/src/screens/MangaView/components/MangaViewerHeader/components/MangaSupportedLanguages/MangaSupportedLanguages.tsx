@@ -9,7 +9,7 @@ import { useMangaViewError } from '@screens/MangaView/context/ErrorContext';
 const MangaSupportedLanguages: React.FC<MangaSupportedLanguagesProps> = (
   props,
 ) => {
-  const { data, hostDefaultLanguage } = props;
+  const { data, hostDefaultLanguage, mangaLanguage } = props;
   const error = useMangaViewError();
   return (
     <Stack space="s" flex-direction="row" justify-content="space-between">
@@ -33,7 +33,9 @@ const MangaSupportedLanguages: React.FC<MangaSupportedLanguagesProps> = (
             {data == null &&
               error &&
               hostDefaultLanguage != null &&
-              languages[hostDefaultLanguage].name}
+              (mangaLanguage != null
+                ? languages[mangaLanguage].name
+                : languages[hostDefaultLanguage].name)}
           </Text>
         )}
       </Box>
