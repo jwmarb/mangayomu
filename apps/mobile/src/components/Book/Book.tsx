@@ -1,86 +1,22 @@
-import Badge, { BadgeLocation } from '@components/Badge';
 import { BookProps } from './';
-import Box from '@components/Box/Box';
 import Cover from '@components/Cover';
-import { coverStyles } from '@components/Cover/Cover';
-import Stack from '@components/Stack';
-import Text from '@components/Text';
-import { MangaSchema } from '@database/schemas/Manga';
-import { useTheme } from '@emotion/react';
 import displayMessage from '@helpers/displayMessage';
 import vibrate from '@helpers/vibrate';
 import useMangaSource from '@hooks/useMangaSource';
 import useRootNavigation from '@hooks/useRootNavigation';
-import { BookStyle } from '@redux/slices/settings';
 import React from 'react';
-import Pressable from '@components/Pressable';
-import LinearGradient from 'react-native-linear-gradient';
-import { ScaledSheet, moderateScale } from 'react-native-size-matters';
-import useAppSelector from '@hooks/useAppSelector';
-import Realm from 'realm';
-import languages, { ISOLangCode } from '@mangayomu/language-codes';
+import Flag from '@components/Book/Flag';
+import BookPressableWrapper from '@components/Book/BookPressableWrapper';
+import BookTitle from '@components/Book/BookTitle';
+import CoverLayoutStyle from '@components/Book/CoverLayoutStyle';
+import SourceIcon from '@components/Book/SourceIcon';
+import NewChapterCounter from '@components/Book/NewChapterCounter';
 
-const styles = ScaledSheet.create({
-  linearGradient: {
-    flexGrow: 1,
-    flexDirection: 'column-reverse',
-  },
-});
-
-function Flag(
-  props: React.PropsWithChildren<{
-    language?: ISOLangCode | null;
-  }>,
-) {
-  const { children, language } = props;
-
-  if (language == null) return <>{children}</>;
-
-  const lang = languages[language];
-
-  const uri =
-    lang != null && 'flag' in lang
-      ? `https://flagcdn.com/w20/${lang.flag}.png`
-      : null;
-
-  if (uri == null) {
-    return <>{children}</>;
-  }
-
-  return (
-    <Badge
-      type="image"
-      uri={uri}
-      width={moderateScale(20)}
-      height={moderateScale(11)}
-      show
-      placement={BadgeLocation.BOTTOM_LEFT}
-    >
-      {children}
-    </Badge>
-  );
-}
-
-const Book: React.FC<BookProps> = (props) => {
+function Book(props: BookProps) {
   const { manga } = props;
-  const width = useAppSelector((state) => state.settings.book.width);
-  const height = useAppSelector((state) => state.settings.book.height);
-  const fontSize = useAppSelector((state) => state.settings.book.title.size);
-  const letterSpacing = useAppSelector(
-    (state) => state.settings.book.title.letterSpacing,
-  );
-  const bold = useAppSelector((state) => state.settings.book.title.bold);
-  const align = useAppSelector((state) => state.settings.book.title.alignment);
-  const bookStyle = useAppSelector((state) => state.settings.book.style);
-  const paddingHorizontal = useAppSelector(
-    (state) => state.settings.book.paddingHorizontal,
-  );
 
   const navigation = useRootNavigation();
-  const dbManga =
-    '_id' in manga
-      ? (manga as unknown as MangaSchema & Realm.Object<MangaSchema>)
-      : null;
+
   const source = useMangaSource(manga);
 
   function handleOnPress() {
@@ -90,91 +26,25 @@ const Book: React.FC<BookProps> = (props) => {
     displayMessage(manga.title);
     vibrate();
   }
-  const theme = useTheme();
-
-  const textStyle = React.useMemo(
-    () => ({ fontSize, letterSpacing }),
-    [fontSize, letterSpacing],
-  );
-
-  const linearGradientStyle = React.useMemo(
-    () => [
-      {
-        paddingHorizontal,
-        paddingBottom: theme.style.spacing.s,
-      },
-      styles.linearGradient,
-    ],
-    [styles.linearGradient, theme.style.spacing.s],
-  );
-
-  if (bookStyle === BookStyle.TACHIYOMI)
-    return (
-      <Box align-self="center" overflow="hidden" style={coverStyles.button}>
-        <Pressable
-          foreground
-          onPress={handleOnPress}
-          onLongPress={handleOnLongPress}
-        >
-          <Stack space="s" width={width} minHeight={height}>
-            <Flag language={manga.language}>
-              <Badge
-                type="number"
-                count={dbManga?.notifyNewChaptersCount ?? 0}
-                placement={BadgeLocation.TOP_LEFT}
-                color="primary"
-              >
-                <Badge type="image" uri={source.icon} show>
-                  <Cover cover={manga} manga={manga}>
-                    <LinearGradient
-                      colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 0, y: 1 }}
-                      style={linearGradientStyle}
-                    >
-                      <Text
-                        style={textStyle}
-                        numberOfLines={2}
-                        bold={bold}
-                        align={align}
-                        color={theme.helpers.getContrastText('#000000')}
-                      >
-                        {manga.title}
-                      </Text>
-                    </LinearGradient>
-                  </Cover>
-                </Badge>
-              </Badge>
-            </Flag>
-          </Stack>
-        </Pressable>
-      </Box>
-    );
 
   return (
-    <Box style={coverStyles.button} overflow="hidden" align-self="center">
-      <Pressable onPress={handleOnPress} onLongPress={handleOnLongPress}>
-        <Stack space="s" width={width} minHeight={height}>
-          <Flag language={manga.language}>
-            <Badge
-              type="number"
-              count={dbManga?.notifyNewChaptersCount ?? 0}
-              placement={BadgeLocation.TOP_LEFT}
-              color="primary"
-            >
-              <Badge type="image" uri={source.icon} show>
-                <Cover cover={manga} manga={manga} />
-              </Badge>
-            </Badge>
-          </Flag>
-
-          <Text style={textStyle} numberOfLines={2} bold={bold} align={align}>
-            {manga.title}
-          </Text>
-        </Stack>
-      </Pressable>
-    </Box>
+    <BookPressableWrapper
+      onPress={handleOnPress}
+      onLongPress={handleOnLongPress}
+    >
+      <Flag language={manga.language}>
+        <NewChapterCounter manga={manga}>
+          <SourceIcon iconUri={source.icon}>
+            <Cover cover={manga} manga={manga}>
+              <CoverLayoutStyle>
+                <BookTitle title={manga.title} />
+              </CoverLayoutStyle>
+            </Cover>
+          </SourceIcon>
+        </NewChapterCounter>
+      </Flag>
+    </BookPressableWrapper>
   );
-};
+}
 
 export default React.memo(Book);
