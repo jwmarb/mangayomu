@@ -9,12 +9,8 @@ import useRootNavigation from '@hooks/useRootNavigation';
 import { useQuery } from '@database/main';
 import { ChapterSchema } from '@database/schemas/Chapter';
 import Pressable from '@components/Pressable';
-import { StyleSheet } from 'react-native';
 
 export const ROW_CHAPTER_HEIGHT = moderateScale(60);
-const styles = StyleSheet.create({
-  title: { maxWidth: '80%' },
-});
 
 const RowChapter: React.FC<RowChapterProps> = (props) => {
   const { mangaKey, date, isReading, name, chapterKey, subname } = props;
@@ -57,8 +53,6 @@ const RowChapter: React.FC<RowChapterProps> = (props) => {
         <Box align-self="center">
           <Stack space="s" flex-direction="row">
             <Text
-              style={styles.title}
-              numberOfLines={2}
               color={k?.dateRead || isReading ? 'disabled' : 'textPrimary'}
               bold={!k?.dateRead}
             >
