@@ -29,7 +29,7 @@ export default function useChapters(
   const data = React.useMemo(() => {
     if (manga != null && chapters.length > 0) {
       const sorted = sort(Array.from(chapters))[
-        manga.reversedSort ? 'desc' : 'asc'
+        manga.reversedSort ? 'asc' : 'desc'
       ](SORT_CHAPTERS_BY[manga.sortChaptersBy]);
       return sorted;
     }
