@@ -32,6 +32,13 @@ export const coverStyles = ScaledSheet.create({
   placeholderText: {
     opacity: 0,
   },
+  animatedImageStyle: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0,
+  },
 });
 
 const Cover: React.FC<CoverProps> = (props) => {
@@ -66,10 +73,7 @@ const Cover: React.FC<CoverProps> = (props) => {
     }),
     [scale, width, coverHeight, bookHeight, coverStyle],
   );
-  const combinedStyles = React.useMemo(
-    () => [imageStyle, coverStyles.imageOverlay],
-    [imageStyle, coverStyles.imageOverlay],
-  );
+  const combinedStyles = [imageStyle, coverStyles.imageOverlay];
 
   const style = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -77,28 +81,27 @@ const Cover: React.FC<CoverProps> = (props) => {
   const loadingStyle = useAnimatedStyle(() => ({
     opacity: loadingOpacity.value,
   }));
-  const combinedLoadingStyle = React.useMemo(
-    () => [
-      combinedStyles,
-      { backgroundColor: theme.palette.skeleton },
-      loadingStyle,
-    ],
-    [imageStyle, theme.palette.skeleton, coverStyles.imageOverlay],
-  );
+
+  const combinedLoadingStyle = [
+    combinedStyles,
+    { backgroundColor: theme.palette.skeleton },
+    loadingStyle,
+  ];
+
+  const animatedImageStyle = [
+    imageStyle,
+    style,
+    coverStyles.animatedImageStyle,
+  ];
 
   return (
     <>
       <AnimatedBox style={combinedLoadingStyle}>
         <Progress />
       </AnimatedBox>
-
       <Animated.Image
         source={require('@assets/No-Image-Placeholder.png')}
-        style={[
-          imageStyle,
-          style,
-          { position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 },
-        ]}
+        style={animatedImageStyle}
       />
       <ImprovedImage // ImprovedImage
         source={source}
