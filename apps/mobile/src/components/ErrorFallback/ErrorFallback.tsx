@@ -3,6 +3,8 @@ import Box from '@components/Box';
 import Button from '@components/Button';
 import Stack from '@components/Stack';
 import Text from '@components/Text';
+import { useTheme } from '@emotion/react';
+import { StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -11,14 +13,25 @@ interface ErrorFallbackProps {
   resetError(): void;
 }
 
+const styles = StyleSheet.create({
+  scrollView: {
+    minHeight: '100%',
+  },
+});
+
 export default function ErrorFallback(props: ErrorFallbackProps) {
   const { error, resetError } = props;
+  const theme = useTheme();
   const { top } = useSafeAreaInsets();
   function handleOnPress() {
     resetError();
   }
+  const contentContainerStyle = [
+    styles.scrollView,
+    { backgroundColor: theme.palette.background.paper },
+  ];
   return (
-    <ScrollView contentContainerStyle={{ minHeight: '100%' }}>
+    <ScrollView contentContainerStyle={contentContainerStyle}>
       <Stack
         space="s"
         pt={top}

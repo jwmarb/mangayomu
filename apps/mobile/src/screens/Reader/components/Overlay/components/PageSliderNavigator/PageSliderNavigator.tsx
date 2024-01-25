@@ -6,6 +6,7 @@ import {
   OVERLAY_COLOR,
   OVERLAY_SLIDER_CIRCLE_RIPPLE_RADIUS,
   OVERLAY_SLIDER_HEIGHT,
+  OVERLAY_TEXT_PRIMARY,
 } from '@theme/constants';
 import { Gesture } from 'react-native-gesture-handler';
 import SkipButton from '@screens/Reader/components/Overlay/components/PageSliderNavigator/components/SkipButton/SkipButton';
@@ -238,7 +239,7 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
         </PageSliderNavigatorSnapPointsContext.Provider>
 
         <Box ml="m" align-self="center">
-          <Text>{reversed ? 1 : totalPages}</Text>
+          <Text color={OVERLAY_TEXT_PRIMARY}>{reversed ? 1 : totalPages}</Text>
         </Box>
       </Box>
       <SkipButton next onSkip={onSkipNext} />

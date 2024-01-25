@@ -2,7 +2,11 @@ import React from 'react';
 import { SkipButtonProps } from './';
 import Box from '@components/Box';
 import { moderateScale } from 'react-native-size-matters';
-import { OVERLAY_COLOR, OVERLAY_SLIDER_HEIGHT } from '@theme/constants';
+import {
+  OVERLAY_COLOR,
+  OVERLAY_SLIDER_HEIGHT,
+  OVERLAY_TEXT_PRIMARY,
+} from '@theme/constants';
 import Icon from '@components/Icon';
 import Pressable from '@components/Pressable';
 
@@ -25,10 +29,20 @@ const SkipButton: React.FC<SkipButtonProps> = (props) => {
           justify-content="center"
         >
           {'previous' in props && (
-            <Icon type="font" name="skip-previous" size={moderateScale(24)} />
+            <Icon
+              type="font"
+              name="skip-previous"
+              size={moderateScale(24)}
+              color={OVERLAY_TEXT_PRIMARY}
+            />
           )}
           {'next' in props && (
-            <Icon type="font" name="skip-next" size={moderateScale(24)} />
+            <Icon
+              type="font"
+              name="skip-next"
+              size={moderateScale(24)}
+              color={OVERLAY_TEXT_PRIMARY}
+            />
           )}
         </Box>
       </Pressable>
