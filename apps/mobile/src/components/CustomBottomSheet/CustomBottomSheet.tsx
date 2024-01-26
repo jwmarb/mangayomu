@@ -1,14 +1,9 @@
 import React from 'react';
 import { CustomBottomSheetProps } from './';
-import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetHandleProps,
-  SNAP_POINT_TYPE,
-} from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { useTheme } from '@emotion/react';
-import { BackHandler } from 'react-native';
-import Animated, {
+import {
   interpolate,
   useAnimatedStyle,
   useDerivedValue,
@@ -16,34 +11,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Portal } from '@gorhom/portal';
 import { AnimatedBox } from '@components/Box';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import CustomHandle from './CustomHandle';
+import useForwardedRef from '@hooks/useForwardedRef';
+import useActionsHandler from '@components/CustomBottomSheet/useActionsHandler';
 
-const CustomHandle: React.FC<BottomSheetHandleProps> = ({ animatedIndex }) => {
-  const theme = useTheme();
-  const insets = useSafeAreaInsets();
-  const indicatorHeight = useDerivedValue(() =>
-    interpolate(animatedIndex.value, [1.8, 2], [0, insets.top]),
-  );
-
-  const style = useAnimatedStyle(() => ({
-    height: indicatorHeight.value,
-  }));
-
-  const styles = React.useMemo(
-    () => [
-      style,
-      {
-        backgroundColor: theme.palette.background.paper,
-      },
-    ],
-    [style, theme.palette.background.paper],
-  );
-  return <Animated.View style={styles} />;
-};
-const CustomBottomSheet: React.ForwardRefRenderFunction<
-  BottomSheetMethods,
-  CustomBottomSheetProps
-> = (props, ref) => {
+function CustomBottomSheet(
+  props: CustomBottomSheetProps,
+  ref: React.ForwardedRef<BottomSheetMethods>,
+) {
   const theme = useTheme();
   const {
     enablePanDownToClose = true,
@@ -51,24 +26,18 @@ const CustomBottomSheet: React.ForwardRefRenderFunction<
     snapPoints = ['40%', '70%', '100%'],
     backgroundStyle,
     children,
-    onClose,
-    onChange,
     header,
     handleComponent = CustomHandle,
-    onOpen = () => void 0,
     showIndicator = true,
     ...rest
   } = props;
-  const bottomSheet = React.useRef<BottomSheet>(null);
+  const bottomSheet = useForwardedRef<BottomSheetMethods>(ref);
+  const { onChange, onClose } = useActionsHandler(props, bottomSheet);
   const animatedIndex = useSharedValue(0);
-  const [isOpened, setIsOpened] = React.useState<boolean>(false);
-  const styledBackground = React.useMemo(
-    () => [
-      backgroundStyle,
-      { backgroundColor: theme.palette.background.default },
-    ],
-    [theme.palette.background.default, backgroundStyle],
-  );
+  const styledBackground = [
+    backgroundStyle,
+    { backgroundColor: theme.palette.background.default },
+  ];
 
   const borderRadius = useDerivedValue(() =>
     interpolate(animatedIndex.value, [1.8, 2], [2, 0]),
@@ -78,46 +47,12 @@ const CustomBottomSheet: React.ForwardRefRenderFunction<
     borderTopRightRadius: borderRadius.value,
   }));
 
-  function handleOnClose() {
-    onClose && onClose();
-    setIsOpened(false);
-  }
-  function handleOnChange(
-    i: number,
-    position: number,
-    snap_type: SNAP_POINT_TYPE,
-  ) {
-    onChange && onChange(i, position, snap_type);
-    if (i === -1) setIsOpened(false);
-    else {
-      onOpen();
-      setIsOpened(true);
-    }
-  }
-  React.useEffect(() => {
-    const p = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (isOpened) {
-        bottomSheet.current?.close();
-        return true;
-      }
-      return false;
-    });
-    return () => {
-      p.remove();
-      bottomSheet.current?.close();
-    };
-  }, []);
   return (
     <Portal>
       <BottomSheet
-        onChange={handleOnChange}
-        onClose={handleOnClose}
-        ref={(r) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (bottomSheet as any).current = r;
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (ref as any).current = r;
-        }}
+        onChange={onChange}
+        onClose={onClose}
+        ref={bottomSheet}
         index={index}
         animatedIndex={animatedIndex}
         backdropComponent={BottomSheetBackdrop}
@@ -137,7 +72,7 @@ const CustomBottomSheet: React.ForwardRefRenderFunction<
       </BottomSheet>
     </Portal>
   );
-};
+}
 
 export default React.forwardRef<BottomSheetMethods, CustomBottomSheetProps>(
   CustomBottomSheet,

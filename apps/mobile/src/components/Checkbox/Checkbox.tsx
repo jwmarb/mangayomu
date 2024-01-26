@@ -9,14 +9,14 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { moderateScale, ScaledSheet } from 'react-native-size-matters';
-import { StyleProp, ViewStyle } from 'react-native';
+import { ScaledSheet } from 'react-native-size-matters';
 import { CheckboxProps } from './';
 import Pressable from '@components/Pressable';
 
 const Checkbox: React.FC<CheckboxProps> = (props) => {
   const { checked, onChange = () => void 0, defaultState = false } = props;
   const theme = useTheme();
+
   const opacity = useSharedValue(defaultState || checked ? 1 : 0);
   const backgroundColor = useDerivedValue(() =>
     interpolateColor(
@@ -30,7 +30,7 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
       ],
     ),
   );
-  const boxStyle = useAnimatedStyle(() => ({
+  const containerStyle = useAnimatedStyle(() => ({
     backgroundColor: backgroundColor.value,
   }));
   const checkmarkStyle = useAnimatedStyle(() => ({
@@ -55,25 +55,21 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
       }
     } else onChange(!checked);
   }
+
+  const checkmarkContainerStyle = [containerStyle, styles.checkmarkContainer];
+
   return (
     <Box border-radius={10000}>
       <Pressable
         borderless
         onPress={handleOnPress}
-        style={styles.borderlessButton as StyleProp<ViewStyle>}
+        style={styles.borderlessButton}
       >
-        <Box
-          as={Animated.View}
-          p={moderateScale(1)}
-          align-self="center"
-          border-radius={moderateScale(4)}
-          justify-content="center"
-          style={boxStyle}
-        >
+        <Animated.View style={checkmarkContainerStyle}>
           <Animated.View style={checkmarkStyle}>
             <Icon type="font" name="check-bold" color="primary@contrast" />
           </Animated.View>
-        </Box>
+        </Animated.View>
       </Pressable>
     </Box>
   );
@@ -85,6 +81,12 @@ const styles = ScaledSheet.create({
     height: '36@ms',
     borderRadius: 10000,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkmarkContainer: {
+    padding: '1@ms',
+    alignSelf: 'center',
+    borderRadius: '4@ms',
     justifyContent: 'center',
   },
 });
