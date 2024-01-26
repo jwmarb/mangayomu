@@ -13,6 +13,7 @@ import { MangaSchema } from '@database/schemas/Manga';
 import mangaSchemaToManga from '@helpers/mangaSchemaToManga';
 import { LocalMangaSchema } from '@database/schemas/LocalManga';
 import useImageHandler from '@components/Cover/useImageHandler';
+import ImprovedImage from '@components/ImprovedImage';
 
 const mangaHistoryItemStyles = StyleSheet.create({
   error: {
@@ -74,18 +75,19 @@ const StaticCover: React.FC<StaticCoverProps> = (props) => {
     opacity: opacity.value,
   }));
 
-  const styledError = React.useMemo(
-    () => [mangaHistoryItemStyles.error, styles.cover, errorOpacity],
-    [styles.cover, mangaHistoryItemStyles.error, errorOpacity],
-  );
-  const fastImageStyle = React.useMemo(
-    () => [styles.cover, { backgroundColor: theme.palette.skeleton }],
-    [theme.palette.skeleton, styles.cover],
-  );
+  const styledError = [
+    mangaHistoryItemStyles.error,
+    styles.cover,
+    errorOpacity,
+  ];
+  const fastImageStyle = [
+    styles.cover,
+    { backgroundColor: theme.palette.skeleton },
+  ];
   return (
     <Pressable onPress={handleOnPressCover}>
       {source.uri != null && (
-        <Image
+        <ImprovedImage
           onLoadStart={onLoadStart}
           onLoad={onLoad}
           onError={onError}
