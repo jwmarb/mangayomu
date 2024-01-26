@@ -8,9 +8,13 @@ import { PagesContext } from '@app/(root)/[source]/[title]/[chapter]/context/Pag
 import useReaderSetting from '@app/(root)/[source]/[title]/[chapter]/hooks/useReaderSetting';
 import Text from '@app/components/Text';
 import { useReaderSettings } from '@app/context/readersettings';
+import { useUser } from '@app/context/realm';
 import getErrorMessage from '@app/helpers/getErrorMessage';
 import useBoolean from '@app/hooks/useBoolean';
 import useMangaHost from '@app/hooks/useMangaHost';
+import useObject from '@app/hooks/useObject';
+import ChapterSchema from '@app/realm/Chapter';
+import MangaSchema from '@app/realm/Manga';
 import {
   ISourceChapterSchema,
   ISourceMangaSchema,
@@ -38,35 +42,141 @@ export default function Reader({
   const [pages, setPages] = React.useState<string[]>([]);
   const [chapter, setChapter] =
     React.useState<ISourceChapterSchema>(initialChapter);
+  const userChapterData = useObject(ChapterSchema, { link: chapter.link });
+  const userMangaData = useObject(MangaSchema, { link: manga.link });
   const [error, setError] = React.useState<string>('');
   const [index, _setIndex] = React.useState<number>(() => {
     const x = params.get('page');
     if (x == null) return 0;
     return Math.max(0, parseInt(x) - 1);
   });
+  const [loading, toggleLoading] = useBoolean(true);
+
   const pagesLenRef = React.useRef(pages.length);
   pagesLenRef.current = pages.length;
 
   const indexRef = React.useRef(index);
   indexRef.current = index;
+
+  const hasStartAtIndex = React.useRef<boolean>(false);
   const setIndex: typeof _setIndex = React.useCallback(
     (x) => {
       if (typeof x === 'function') {
         const r = x(indexRef.current);
-        indexRef.current = r;
-        router.replace(pathname + '?' + `page=${r + 1}`);
-        _setIndex(r);
+        if (r >= pagesLenRef.current) {
+          if (chapter._nextId != null)
+            router.replace('/' + chapter._nextId + '?' + 'page=1');
+          else router.push('/' + manga._id);
+        } else if (r < 0) {
+          if (chapter._prevId != null) router.replace('/' + chapter._prevId);
+        } else {
+          indexRef.current = r;
+          _setIndex(r);
+        }
       } else {
         indexRef.current = x;
-        router.replace(pathname + '?' + `page=${x + 1}`);
         _setIndex(x);
       }
     },
-    [pathname, router],
+    [chapter._nextId, chapter._prevId, router, manga._id],
   );
-  const [loading, toggleLoading] = useBoolean(true);
   React.useEffect(() => {
-    console.log(`fetching ${chapter}`);
+    if (!loading) {
+      const timeout = setTimeout(
+        () => router.replace(pathname + '?' + `page=${index + 1}`),
+        50,
+      );
+
+      const mangaId = userMangaData._id;
+      console.log(userChapterData);
+      if (mangaId != null) {
+        userMangaData.update((draft) => {
+          draft.currentlyReadingChapter = {
+            _id: chapter.link,
+            index,
+            numOfPages: pages.length,
+          };
+        });
+        userChapterData.update((draft) => {
+          draft.indexPage = index;
+        });
+      }
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router, pathname, index, loading]);
+
+  // React.useEffect(() => {
+  //   if (
+  //     !userMangaData.initializing &&
+  //     userMangaData.link != null &&
+  //     pages.length > 0
+  //   ) {
+  //     console.log('Inserting');
+  //     userMangaData.insert({
+  //       dateAddedInLibrary: undefined,
+  //       currentlyReadingChapter: {
+  //         _id: chapter.link,
+  //         index: 0,
+  //         numOfPages: pages.length,
+  //       },
+  //       imageCover: manga.imageCover,
+  //       inLibrary: false,
+  //       link: manga.link,
+  //       title: manga.title,
+  //       source: manga.source,
+  //     });
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [
+  //   userMangaData.initializing,
+  //   userMangaData.link,
+  //   pages,
+  //   manga.imageCover,
+  //   manga.link,
+  //   manga.title,
+  //   manga.source,
+  //   chapter.link,
+  // ]);
+
+  // React.useEffect(() => {
+  //   if (!hasStartAtIndex.current) {
+  //     const _mangaId = userMangaData._id;
+  //     if (!userChapterData.initializing && userChapterData.indexPage != null) {
+  //       setIndex(userChapterData.indexPage);
+  //       hasStartAtIndex.current = true;
+  //     } else if (
+  //       !userChapterData.initializing &&
+  //       pages.length > 0 &&
+  //       userChapterData.indexPage == null &&
+  //       _mangaId != null
+  //     ) {
+  //       userChapterData.insert({
+  //         _mangaId,
+  //         dateRead: Date.now(),
+  //         indexPage: 0,
+  //         language: chapter.language,
+  //         link: chapter.link,
+  //         numberOfPages: pages.length,
+  //         savedScrollPositionType: 'portrait',
+  //         scrollPosition: undefined,
+  //       });
+  //     }
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [
+  //   setIndex,
+  //   userChapterData.initializing,
+  //   userChapterData.indexPage,
+  //   pages,
+  //   chapter.link,
+  //   chapter.language,
+  //   userMangaData._id,
+  // ]);
+
+  React.useEffect(() => {
     toggleLoading(true);
     host
       .getPages(chapter)
@@ -82,11 +192,12 @@ export default function Reader({
       .finally(() => toggleLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const next = React.useCallback(() => {
-    setIndex((prev) => Math.min(prev + 1, pagesLenRef.current - 1));
+    setIndex((prev) => prev + 1);
   }, [setIndex]);
   const previous = React.useCallback(() => {
-    setIndex((prev) => Math.max(0, prev - 1));
+    setIndex((prev) => prev - 1);
   }, [setIndex]);
   React.useEffect(() => {
     const listener = (e: KeyboardEvent) => {
