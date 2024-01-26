@@ -29,22 +29,18 @@ const CustomizableCover: React.FC<CustomizableCoverProps> = (props) => {
         : undefined,
   }));
 
-  const combinedStyles = React.useMemo(
-    () => [imageStyle, coverStyles.imageOverlay],
-    [imageStyle, coverStyles.imageOverlay],
-  );
+  const combinedStyles = [imageStyle, coverStyles.imageOverlay];
+  const style = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+  const loadingStyle = [
+    combinedStyles,
+    { backgroundColor: theme.palette.skeleton },
+  ];
 
   function handleOnError() {
     opacity.value = 1;
   }
-
-  const style = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }));
-  const loadingStyle = React.useMemo(
-    () => [combinedStyles, { backgroundColor: theme.palette.skeleton }],
-    [imageStyle, theme.palette.skeleton, coverStyles.imageOverlay],
-  );
 
   return (
     <>
