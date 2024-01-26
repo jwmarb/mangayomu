@@ -1,6 +1,6 @@
 import Badge, { BadgeLocation } from '@components/Badge';
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
-import { ScaledSheet } from 'react-native-size-matters';
+import { ScaledSheet, moderateScale } from 'react-native-size-matters';
 
 const styles = ScaledSheet.create({
   flag: {
@@ -8,6 +8,10 @@ const styles = ScaledSheet.create({
     height: '11@ms',
   },
 });
+
+const placementOffset = {
+  t: moderateScale(18),
+};
 
 export default function Flag(
   props: React.PropsWithChildren<{
@@ -33,7 +37,8 @@ export default function Flag(
       uri={uri}
       style={styles.flag}
       show
-      placement={BadgeLocation.BOTTOM_LEFT}
+      placement={BadgeLocation.TOP_RIGHT}
+      placementOffset={placementOffset}
     >
       {children}
     </Badge>
