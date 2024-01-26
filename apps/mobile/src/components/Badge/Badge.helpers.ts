@@ -1,4 +1,4 @@
-import { BadgeLocation } from '@components/Badge';
+import { BadgeLocation, BadgePlacementOffset } from '@components/Badge';
 import React from 'react';
 import {
   Easing,
@@ -17,6 +17,7 @@ import { moderateScale } from 'react-native-size-matters';
 export function useBadgeLayoutAnimation(
   show: boolean,
   placement?: BadgeLocation,
+  placementOffset?: BadgePlacementOffset,
 ) {
   const opacity = useSharedValue(show ? 1 : 0);
   React.useEffect(() => {
@@ -31,7 +32,7 @@ export function useBadgeLayoutAnimation(
   }));
 
   const style = React.useMemo(
-    () => [animatedStyle, generateBadgePlacement(placement)],
+    () => [animatedStyle, generateBadgePlacement(placement, placementOffset)],
     [placement],
   );
 
@@ -40,28 +41,32 @@ export function useBadgeLayoutAnimation(
 
 const OFFSET = moderateScale(4);
 
-export function generateBadgePlacement(placement?: BadgeLocation) {
+export function generateBadgePlacement(
+  placement?: BadgeLocation,
+  placementOffset: BadgePlacementOffset = {},
+) {
+  const { t = 0, l = 0, r = 0, b = 0 } = placementOffset;
   switch (placement) {
     case BadgeLocation.BOTTOM_LEFT:
       return {
-        left: OFFSET,
-        bottom: OFFSET,
+        left: OFFSET + l,
+        bottom: OFFSET + b,
       };
     case BadgeLocation.BOTTOM_RIGHT:
       return {
-        right: OFFSET,
-        bottom: OFFSET,
+        right: OFFSET + r,
+        bottom: OFFSET + b,
       };
     case BadgeLocation.TOP_LEFT:
       return {
-        top: OFFSET,
-        left: OFFSET,
+        top: OFFSET + t,
+        left: OFFSET + l,
       };
     default:
     case BadgeLocation.TOP_RIGHT:
       return {
-        top: OFFSET,
-        right: OFFSET,
+        top: OFFSET + t,
+        right: OFFSET + r,
       };
   }
 }
