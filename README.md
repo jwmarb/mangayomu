@@ -101,5 +101,6 @@ After you have `vercel-cli` installed, refer to this [documentation](/apps/nextj
 
 ## Todo
 
-- Add database
+- ~~Add database~~
 - Add manga page sharing (share page that redirects to web app version)
+- Complete website reader features
