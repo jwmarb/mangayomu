@@ -11,11 +11,19 @@ export enum BadgeLocation {
   BOTTOM_RIGHT,
 }
 
+export type BadgePlacementOffset = {
+  t?: number;
+  b?: number;
+  l?: number;
+  r?: number;
+};
+
 interface AbstractBadgeProps<T> extends React.PropsWithChildren {
   type: T;
   color?: Colors;
   show?: boolean;
   placement?: BadgeLocation;
+  placementOffset?: BadgePlacementOffset;
 }
 
 export interface NumberBadgeProps extends AbstractBadgeProps<'number'> {
