@@ -81,6 +81,7 @@ const Cover: React.FC<CoverProps> = (props) => {
   const loadingStyle = useAnimatedStyle(() => ({
     opacity: loadingOpacity.value,
   }));
+
   const combinedLoadingStyle = [
     combinedStyles,
     { backgroundColor: theme.palette.skeleton },
@@ -98,7 +99,6 @@ const Cover: React.FC<CoverProps> = (props) => {
       <AnimatedBox style={combinedLoadingStyle}>
         <Progress />
       </AnimatedBox>
-
       <Animated.Image
         source={require('@assets/No-Image-Placeholder.png')}
         style={animatedImageStyle}

@@ -1,8 +1,34 @@
 import Box from '@components/Box';
 import React from 'react';
-import { moderateScale } from 'react-native-size-matters';
+import { ScaledSheet, moderateScale } from 'react-native-size-matters';
 import { IconButtonProps } from './';
 import Pressable from '@components/Pressable';
+import { View } from 'react-native';
+
+const styles = ScaledSheet.create({
+  compact: {
+    width: '32@ms',
+    height: '32@ms',
+  },
+  normal: {
+    width: '48@ms',
+    height: '48@ms',
+  },
+  pressable: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  container: {
+    alignSelf: 'center',
+    borderRadius: 100000,
+  },
+});
+
+const compactPressableStyle = [styles.compact, styles.pressable];
+const normalPressableStyle = [styles.normal, styles.pressable];
+
+const compactContainerStyle = [styles.compact, styles.container];
+const normalContainerStyle = [styles.normal, styles.container];
 
 const IconButton: React.FC<IconButtonProps> = (props) => {
   const {
@@ -14,33 +40,21 @@ const IconButton: React.FC<IconButtonProps> = (props) => {
     ...rest
   } = props;
 
-  const borderlessButtonStyle = React.useMemo(
-    () =>
-      ({
-        width: compact ? moderateScale(32) : moderateScale(48),
-        height: compact ? moderateScale(32) : moderateScale(48),
-        alignItems: 'center',
-        justifyContent: 'center',
-      } as const),
-    [compact],
-  );
+  const pressableStyle = compact ? compactPressableStyle : normalPressableStyle;
+  const containerStyle = compact ? compactContainerStyle : normalContainerStyle;
+
   return (
-    <Box
-      align-self="center"
-      width={borderlessButtonStyle.width}
-      height={borderlessButtonStyle.height}
-      border-radius={10000}
-    >
+    <View style={containerStyle}>
       <Pressable
         borderless
         color={rippleColor}
-        style={borderlessButtonStyle}
+        style={pressableStyle}
         {...rest}
       >
         {icon &&
           React.cloneElement(icon, { variant: 'icon-button', color, animated })}
       </Pressable>
-    </Box>
+    </View>
   );
 };
 
