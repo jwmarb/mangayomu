@@ -1502,10 +1502,10 @@
   dependencies:
     tslib "^2.4.0"
 
-"@gorhom/bottom-sheet@5.0.0-alpha.6":
-  version "5.0.0-alpha.6"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-5.0.0-alpha.6.tgz#bb310d67bf8e7f951d6984e95ae245060ab64db4"
-  integrity sha512-0SQOZwfoyTxxad0Izy7I4s3HP7PGSsRVOhLHLAEbyh/3YHEWKKWkk27mXIVPPZIcEG6PeST8sMkGk7kMLOkxRA==
+"@gorhom/bottom-sheet@4.6.0":
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.6.0.tgz#16bebbe4f5925447ece0d727830cf1776d5620f8"
+  integrity sha512-XgNflkhATUqTIiMDGuLaQZAtjUzcrhGOEJGHT+7Tou1ctTMb958YRGGnU9KFo5TkD6YCZcfWfxHPi9F0FF+DjA==
   dependencies:
     "@gorhom/portal" "1.0.14"
     invariant "^2.2.4"
