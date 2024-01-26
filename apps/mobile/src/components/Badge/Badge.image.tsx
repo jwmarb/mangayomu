@@ -1,10 +1,10 @@
 import { useBadgeLayoutAnimation } from '@components/Badge/Badge.helpers';
 import { ImageBadgeProps } from './';
-import Box from '@components/Box';
+import Box, { AnimatedBox } from '@components/Box';
 import React from 'react';
-import Animated from 'react-native-reanimated';
 import { ScaledSheet, moderateScale } from 'react-native-size-matters';
 import ImprovedImage from '@components/ImprovedImage';
+import Animated from 'react-native-reanimated';
 
 const styles = ScaledSheet.create({
   container: {
@@ -16,28 +16,33 @@ const styles = ScaledSheet.create({
   },
 });
 
+const DEFAULT_IMAGE_STYLE = {
+  width: moderateScale(16),
+  height: moderateScale(16),
+} as const;
+
 const ImageBadge: React.FC<ImageBadgeProps> = (props) => {
   const {
     show = false,
     children,
     uri,
     placement,
-    width = moderateScale(16),
-    height = moderateScale(16),
+    style: imageStyle = DEFAULT_IMAGE_STYLE,
+    placementOffset,
   } = props;
-  const style = useBadgeLayoutAnimation(show, placement);
+  const style = useBadgeLayoutAnimation(show, placement, placementOffset);
+  const badgeStyle = [style, styles.container];
 
   return (
     <Box>
       {children}
-      <Box as={Animated.View} style={[style, styles.container]}>
+      <Animated.View style={badgeStyle}>
         <ImprovedImage
           // Improved Image
           source={{ uri }}
-          width={width}
-          height={height}
+          style={imageStyle}
         />
-      </Box>
+      </Animated.View>
     </Box>
   );
 };
