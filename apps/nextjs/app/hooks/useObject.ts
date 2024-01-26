@@ -26,7 +26,7 @@ export default function useObject<
       fn: (draft: Omit<TSchema, '_id'>) => void,
       options?: UpdateOptions,
     ) => void;
-    create: (obj: TSchema) => void;
+    insert: (obj: Partial<TSchema>) => void;
   },
 >(
   MongoDBCollection: Parameters<typeof useMongoClient<TSchema>>[0],
@@ -147,7 +147,7 @@ export default function useObject<
       }
     };
     object.insert = (obj) => {
-      setInsert({ ...collection.initFields(), ...obj });
+      setInsert({ ...collection.initFields(), ...obj, _realmId: user.id });
     };
     return object as RealmObject;
   }, [collection, doc, user.id, loading]);
