@@ -226,7 +226,7 @@ const PageSliderNavigator: React.ForwardRefRenderFunction<
         px="m"
       >
         <Box mr="m" align-self="center">
-          <Text>{reversed ? totalPages : 1}</Text>
+          <Text color={OVERLAY_TEXT_PRIMARY}>{reversed ? totalPages : 1}</Text>
         </Box>
         <PageSliderNavigatorSnapPointsContext.Provider value={snapPoints}>
           <PageSliderDecorators
