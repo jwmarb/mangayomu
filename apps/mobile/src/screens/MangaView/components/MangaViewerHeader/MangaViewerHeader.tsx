@@ -7,7 +7,7 @@ import MangaTitle from '@screens/MangaView/components/MangaViewerHeader/componen
 import React from 'react';
 import { MangaViewerHeaderProps } from './';
 import LinearGradient from 'react-native-linear-gradient';
-import { ImageBackground, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { moderateScale } from 'react-native-size-matters';
 import MangaRating from '@screens/MangaView/components/MangaViewerHeader/components/MangaRating';
 import { useTheme } from '@emotion/react';
@@ -23,7 +23,7 @@ import IconButton from '@components/IconButton';
 import useBoolean from '@hooks/useBoolean';
 import { useMangaViewError } from '@screens/MangaView/context/ErrorContext';
 import { MangaHost } from '@mangayomu/mangascraper/src';
-import { ImprovedImageBackground } from '@components/ImprovedImage/ImprovedImage';
+import { ImprovedImageBackground } from '@components/ImprovedImage';
 
 const styles = StyleSheet.create({
   imageBackground: {
