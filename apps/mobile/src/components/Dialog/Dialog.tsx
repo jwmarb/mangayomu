@@ -5,10 +5,15 @@ import Text from '@components/Text';
 import useBoolean from '@hooks/useBoolean';
 import React from 'react';
 import { Modal } from 'react-native';
-
+import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { DialogAction, DialogMethods, DialogOptions } from './';
 
+const styles = StyleSheet.create({
+  gestureHandlerRootView: {
+    flex: 1,
+  },
+});
 const actionsDefaultState: DialogAction[] = [{ text: 'Close' }];
 
 const Dialog: React.ForwardRefRenderFunction<DialogMethods> = (props, ref) => {
@@ -38,6 +43,26 @@ const Dialog: React.ForwardRefRenderFunction<DialogMethods> = (props, ref) => {
     open,
   }));
 
+  const mapDialogActions = (x: DialogAction, i: number) => {
+    const onPress = () => {
+      if (x.onPress != null) x.onPress();
+      close();
+    };
+    const color = x.type === 'destructive' ? 'error' : undefined;
+    const { variant, text: label } = x;
+    return (
+      <Button
+        key={i}
+        label={label}
+        onPress={onPress}
+        variant={variant}
+        color={color}
+      />
+    );
+  };
+
+  const dialogActions = actions.map(mapDialogActions);
+
   return (
     <Modal
       statusBarTranslucent
@@ -46,7 +71,7 @@ const Dialog: React.ForwardRefRenderFunction<DialogMethods> = (props, ref) => {
       onRequestClose={close}
       animationType="fade"
     >
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView style={styles.gestureHandlerRootView}>
         <Box
           pointerEvents={show ? 'auto' : 'none'}
           width="100%"
@@ -76,28 +101,7 @@ const Dialog: React.ForwardRefRenderFunction<DialogMethods> = (props, ref) => {
               </Text>
               <Text color="textSecondary">{text}</Text>
               <Stack space="s" flex-direction="row" justify-content="flex-end">
-                {/* {actions.map((x, i) => (
-                <TouchableNativeFeedback
-                  key={i}
-                  onPress={() => {
-                    console.log('pressed');
-                  }}
-                >
-                  <Text>{x.text}</Text>
-                </TouchableNativeFeedback>
-              ))} */}
-                {actions.map((x, i) => (
-                  <Button
-                    key={i}
-                    label={x.text}
-                    onPress={() => {
-                      if (x.onPress != null) x.onPress();
-                      close();
-                    }}
-                    variant={x.variant}
-                    color={x.type === 'destructive' ? 'error' : undefined}
-                  />
-                ))}
+                {dialogActions}
               </Stack>
             </Stack>
           </Box>

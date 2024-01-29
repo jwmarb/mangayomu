@@ -12,6 +12,9 @@ import { InputProps } from './';
 import { moderateScale } from 'react-native-size-matters';
 import { TextInput } from 'react-native';
 import useBoolean from '@hooks/useBoolean';
+import Adornment from '@components/Input/Adornment';
+
+const left = moderateScale(-8);
 
 const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
   const {
@@ -23,7 +26,7 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
     ...rest
   } = props;
   const [visible, toggleVisible] = useBoolean();
-  const textRef = React.useRef<TextInput>(null);
+  const textRef = React.useRef<TextInput | null>(null);
   const opacity = useSharedValue(
     defaultValue.length > 0 || (props.value && props.value.length > 0) ? 1 : 0,
   );
@@ -65,13 +68,36 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
     opacity: opacity.value,
   }));
 
+  const secureTextEntry =
+    rest.textContentType === 'password' ? !visible : undefined;
+
+  const iconElement = icon && (
+    <Box position="absolute" left={0} align-self="center" ml="m">
+      {React.cloneElement(icon, { variant: 'icon-button' })}
+    </Box>
+  );
+
+  const iconButtonElement = iconButton && (
+    <Box left={left} position="absolute" align-self="center" ml="m">
+      {React.cloneElement(iconButton, { compact: true })}
+    </Box>
+  );
+
+  const togglePasswordVisibilityIndicator = rest.textContentType ===
+    'password' && (
+    <AnimatedBox style={style}>
+      <IconButton
+        onPress={handleOnToggleShowPassword}
+        icon={<Icon type="font" name={visible ? 'eye' : 'eye-off'} />}
+        compact
+        color="textSecondary"
+      />
+    </AnimatedBox>
+  );
+
   return (
     <Box flex-direction="row" flex-grow>
-      {icon && (
-        <Box position="absolute" left={0} align-self="center" ml="m">
-          {React.cloneElement(icon, { variant: 'icon-button' })}
-        </Box>
-      )}
+      {iconElement}
       <InputBase
         iconButton={iconButton}
         icon={icon}
@@ -79,54 +105,18 @@ const Input = React.forwardRef<TextInput, InputProps>((props, ref) => {
         defaultValue={defaultValue}
         expanded={expanded}
         {...rest}
-        secureTextEntry={
-          rest.textContentType === 'password' ? !visible : undefined
-        }
-        ref={(r: unknown) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (textRef as any).current = r;
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          if (ref != null) (ref as any).current = r;
-        }}
+        secureTextEntry={secureTextEntry}
+        ref={textRef}
         placeholderTextColor={theme.palette.text.hint}
       />
-      {iconButton && (
-        <Box
-          left={moderateScale(-8)}
-          position="absolute"
-          align-self="center"
-          ml="m"
-        >
-          {React.cloneElement(iconButton, { compact: true })}
-        </Box>
-      )}
-      <Box
-        position="absolute"
-        right={moderateScale(-8)}
-        align-self="center"
-        mr="m"
-        flex-direction="row"
-        pointerEvents={isInputEmpty ? 'none' : 'auto'}
+      {iconButtonElement}
+      <Adornment
+        onClearText={handleOnClear}
+        isInputEmpty={isInputEmpty}
+        style={style}
       >
-        {rest.textContentType === 'password' && (
-          <AnimatedBox style={style}>
-            <IconButton
-              onPress={handleOnToggleShowPassword}
-              icon={<Icon type="font" name={visible ? 'eye' : 'eye-off'} />}
-              compact
-              color="textSecondary"
-            />
-          </AnimatedBox>
-        )}
-        <AnimatedBox style={style}>
-          <IconButton
-            icon={<Icon type="font" name="close" />}
-            compact
-            color="textSecondary"
-            onPress={handleOnClear}
-          />
-        </AnimatedBox>
-      </Box>
+        {togglePasswordVisibilityIndicator}
+      </Adornment>
     </Box>
   );
 });
