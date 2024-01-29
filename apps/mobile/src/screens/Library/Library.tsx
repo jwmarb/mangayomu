@@ -80,17 +80,15 @@ const _Library: React.ForwardRefRenderFunction<
   } = useMangaFlashlistLayout(data.length);
   const setRefreshing = useLibrarySetRefreshing();
 
+  function handleOnRefresh() {
+    setRefreshing(true);
+  }
   return (
     <>
       <Freeze freeze={!isFocused} placeholder={<Placeholder />}>
         <AnimatedFlashList
           refreshControl={
-            <RefreshControl
-              refreshing={false}
-              onRefresh={() => {
-                setRefreshing(true);
-              }}
-            />
+            <RefreshControl refreshing={false} onRefresh={handleOnRefresh} />
           }
           onScroll={onScroll}
           onMomentumScrollEnd={onScroll}
