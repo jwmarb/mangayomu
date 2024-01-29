@@ -6,6 +6,8 @@ import type {
   ImageURISource,
 } from 'react-native';
 export default ImprovedImage;
+export { default as ImprovedImageBackground } from './ImprovedImageBackground';
+
 export const AnimatedImprovedImage =
   Animated.createAnimatedComponent(ImprovedImage);
 export interface ImprovedImageProps
