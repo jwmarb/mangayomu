@@ -28,10 +28,9 @@ const MainSourceSelector = React.forwardRef<BottomSheetMethods>((_, ref) => {
   const dispatch = useAppDispatch();
   const [data, setData] = React.useState<string[]>(state);
   const theme = useTheme();
-  const contentContainerStyle = React.useMemo(
-    () => [{ backgroundColor: theme.palette.background.default }],
-    [theme.palette.background.default],
-  );
+  const contentContainerStyle = {
+    backgroundColor: theme.palette.background.default,
+  };
   React.useEffect(() => {
     setData(
       state
@@ -58,10 +57,18 @@ const MainSourceSelector = React.forwardRef<BottomSheetMethods>((_, ref) => {
     reversed,
   ]);
 
+  function handleOnOpen() {
+    dispatch(suspendRendering());
+  }
+
+  function handleOnClose() {
+    dispatch(enableRerendering());
+  }
+
   return (
     <CustomBottomSheet
-      onOpen={() => dispatch(suspendRendering())}
-      onClose={() => dispatch(enableRerendering())}
+      onOpen={handleOnOpen}
+      onClose={handleOnClose}
       header={<Header />}
       ref={ref}
     >
