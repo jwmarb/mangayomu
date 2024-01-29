@@ -11,7 +11,12 @@ import { Page } from '@redux/slices/reader';
 import usePageLayout from '@screens/Reader/hooks/usePageLayout';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
-import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import {
+  AppState,
+  AppStateStatus,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from 'react-native';
 import Realm from 'realm';
 
 export default function useSavedChapterInfo(
@@ -117,13 +122,29 @@ export default function useSavedChapterInfo(
         }
       }, 20);
 
-      const scrollTracker = setInterval(() => {
+      let scrollTracker: NodeJS.Timeout = setInterval(() => {
         saveScrollPosition();
       }, 500);
+      const listener = AppState.addEventListener(
+        'change',
+        (state: AppStateStatus) => {
+          switch (state) {
+            case 'active':
+              scrollTracker = setInterval(() => {
+                saveScrollPosition();
+              }, 500);
+              break;
+            default:
+              clearInterval(scrollTracker);
+              break;
+          }
+        },
+      );
 
       return () => {
         // clearInterval(scrollOffsetReturner);
         clearInterval(scrollTracker);
+        listener.remove();
       };
     }
   }, [pages.length > 0]);
