@@ -6,15 +6,13 @@ import { AppState } from '@redux/main';
 import { connect, ConnectedProps } from 'react-redux';
 import { UserHistorySchema } from '@database/schemas/History';
 import { ChapterSchema } from '@database/schemas/Chapter';
+import useAppSelector from '@hooks/useAppSelector';
 
-const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
-  children,
-  enableCloud,
-}) => {
+export function RealmEffect({ children }: React.PropsWithChildren) {
   // const mangas = useQuery(MangaSchema);
+  const enableCloud = useAppSelector((state) => state.settings.cloud.enabled);
   const realm = useRealm();
   const currentUser = useUser();
-  const app = useApp();
 
   // const callback: Realm.CollectionChangeCallback<
   //   MangaSchema & Realm.Object<unknown, never>
@@ -37,27 +35,15 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
 
   React.useEffect(() => {
     const addSubscriptions = async () => {
-      for (const userId in app.allUsers) {
-        if (app.allUsers[userId].isLoggedIn && userId === currentUser.id) {
-          await realm.subscriptions.update((sub) => {
-            console.log(`Setting subscription for ${userId}`);
-            sub.add(mangas);
-            sub.add(userHistory);
-            sub.add(chapters);
-          });
-        } else {
-          await app.allUsers[userId].logOut();
-          // console.log(
-          //   `Logged out ${userId} because they are not the active user`,
-          // );
-        }
-      }
+      await realm.subscriptions.update((sub) => {
+        sub.add(mangas);
+        sub.add(userHistory);
+        sub.add(chapters);
+      });
     };
 
-    realm.subscriptions
-      .waitForSynchronization()
-      .then(() => addSubscriptions())
-      .then(() => realm.syncSession?.downloadAllServerChanges());
+    addSubscriptions();
+
     return () => {
       // console.log('Removing all subscriptions');
       realm.subscriptions.update((sub) => {
@@ -78,15 +64,4 @@ const _RealmEffect: React.FC<ConnectedRealmEffectProps> = ({
   }, [enableCloud, currentUser]);
 
   return <>{children}</>;
-};
-
-const mapStateToProps = (state: AppState, props: React.PropsWithChildren) => ({
-  children: props.children,
-  enableCloud: state.settings.cloud.enabled,
-});
-
-const connector = connect(mapStateToProps);
-
-type ConnectedRealmEffectProps = ConnectedProps<typeof connector>;
-
-export const RealmEffect = connector(_RealmEffect);
+}
