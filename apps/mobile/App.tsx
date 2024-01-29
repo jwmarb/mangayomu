@@ -37,6 +37,7 @@ enableFreeze(true);
 
 const realmConfiguration: Realm.OpenRealmBehaviorConfiguration = {
   type: Realm.OpenRealmBehaviorType.OpenImmediately,
+  timeOutBehavior: Realm.OpenRealmTimeOutBehavior.OpenLocalRealm,
 };
 
 const sync: Partial<Realm.SyncConfiguration> = {
@@ -57,7 +58,6 @@ const sync: Partial<Realm.SyncConfiguration> = {
   clientReset: {
     mode: Realm.ClientResetMode.RecoverOrDiscardUnsyncedChanges,
   },
-
   newRealmFileBehavior: realmConfiguration,
   existingRealmFileBehavior: realmConfiguration,
 };
