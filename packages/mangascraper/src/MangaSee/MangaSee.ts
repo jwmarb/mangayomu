@@ -24,7 +24,7 @@ import {
 import { sortChapters } from '../scraper/scraper.helpers';
 import { WorkletFn, useWorklets } from '../utils/worklets';
 
-const mapLatestHottestManga = (
+export const mapLatestHottestManga = (
   x: (HotUpdateJSON | LatestJSON)[],
   hostLink: string,
   imageURLBase: string,
