@@ -5,38 +5,40 @@ import { MangaViewModalProps } from '@screens/MangaView/components/MangaViewModa
 import React from 'react';
 import Sort from './Tabs/Sort';
 import Language from './Tabs/Language';
+import { Route, TabViewProps } from 'react-native-tab-view';
 
 const MangaViewModal: React.ForwardRefRenderFunction<
   BottomSheetMethods,
   MangaViewModalProps
 > = (props, ref) => {
   const [index, setIndex] = React.useState<number>(0);
+  const renderScene: TabViewProps<Route>['renderScene'] = ({ route }) => {
+    switch (route.key) {
+      case 'sort':
+        return (
+          <Sort
+            mangaLink={props.mangaLink}
+            reversed={props.reversed}
+            sortMethod={props.sortMethod}
+          />
+        );
+      case 'language':
+        return (
+          <Language
+            selectedLanguage={props.selectedLanguage}
+            supportedLanguages={props.supportedLanguages}
+            mangaLink={props.mangaLink}
+          />
+        );
+      case 'display':
+        return null;
+    }
+  };
   return (
     <CustomBottomSheet ref={ref}>
       <CustomTabs
         navigationState={{ index, routes }}
-        renderScene={({ route }) => {
-          switch (route.key) {
-            case 'sort':
-              return (
-                <Sort
-                  mangaLink={props.mangaLink}
-                  reversed={props.reversed}
-                  sortMethod={props.sortMethod}
-                />
-              );
-            case 'language':
-              return (
-                <Language
-                  selectedLanguage={props.selectedLanguage}
-                  supportedLanguages={props.supportedLanguages}
-                  mangaLink={props.mangaLink}
-                />
-              );
-            case 'display':
-              return null;
-          }
-        }}
+        renderScene={renderScene}
         onIndexChange={setIndex}
       />
     </CustomBottomSheet>
