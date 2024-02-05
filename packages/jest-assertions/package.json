@@ -4,7 +4,11 @@
   "main": "./src/index.ts",
   "types": "./src/index.d.ts",
   "license": "MIT",
+  "scripts": {
+    "test": "jest"
+  },
   "devDependencies": {
+    "jest": "^29.7.0",
     "ts-jest": "^29.1.2"
   }
 }
