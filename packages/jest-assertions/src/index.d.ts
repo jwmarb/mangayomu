@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { JSType } from './utils/helpers';
 
-interface CustomMatchers<R = any>  {
+export interface CustomMatchers<R = any>  {
   toMatchType<T>(type: JSType<T>): R;
 }
 

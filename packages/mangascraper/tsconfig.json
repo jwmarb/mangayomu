@@ -6,6 +6,5 @@
     "target": "ES5"
   },
   "include": ["./src"],
-  "exclude": ["dist", "node_modules", "__tests__/", "src/**/*.test.ts"],
-  "files": ["global.d.ts"]
+  "exclude": ["dist", "node_modules", "__tests__/", "src/**/*.test.ts"]
 }
