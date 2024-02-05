@@ -7,6 +7,7 @@
   "description": "A scraper for mangas",
   "dependencies": {
     "@mangayomu/algorithms": "^1.0.0",
+    "@mangayomu/jest-assertions": "1.0.0",
     "@mangayomu/language-codes": "^1.0.0",
     "@mangayomu/schema-creator": "^1.0.0",
     "cheerio": "^1.0.0-rc.10",
@@ -21,6 +22,7 @@
     "test": "jest"
   },
   "devDependencies": {
+    "@mangayomu/jest-assertions": "1.0.0",
     "@types/jest": "^29.5.3",
     "@types/user-agents": "^1.0.2",
     "ts-jest": "^29.1.1"
