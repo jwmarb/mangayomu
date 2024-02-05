@@ -8,7 +8,18 @@ import React from 'react';
 export default function useForwardedRef<T>(
   forwardedRef: React.ForwardedRef<T>,
 ): React.MutableRefObject<T | null> {
-  const ref = React.useRef<T | null>(null);
-  React.useImperativeHandle(forwardedRef, () => ref.current as T);
-  return ref;
+  const ref = React.useRef<T | null>(
+    forwardedRef && (forwardedRef as React.MutableRefObject<T | null>).current,
+  );
+  /**
+   * This will also act as a function for initialization and a ref object at the same time
+   */
+  const fn = React.useRef((refProp: T | null) => {
+    ref.current = refProp;
+    (forwardedRef as React.MutableRefObject<T | null>).current = refProp;
+  }).current;
+  (fn as unknown as { current: React.MutableRefObject<T | null> }).current =
+    ref;
+
+  return fn as unknown as React.MutableRefObject<T | null>;
 }
