@@ -43,6 +43,7 @@ import { useAppDispatch } from '@redux/main';
 import { RootStackProps } from '@navigators/Root/Root.interfaces';
 import { ErrorContext } from '@screens/MangaView/context/ErrorContext';
 import { useRealm } from '@database/main';
+import useMangaSource from '@hooks/useMangaSource';
 
 export const DEFAULT_LANGUAGE: ISOLangCode = 'en';
 
@@ -59,6 +60,7 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
   const { manga, status, error, refresh } = useManga(params, {
     preferLocal: false,
   });
+  const source = useMangaSource(params.source);
   const { data, firstChapter } = useChapters(manga);
   const [refreshing, onRefresh] = useRefresh(refresh);
   const handleOnBookmark = React.useCallback(() => {
@@ -243,7 +245,12 @@ const MangaView: React.FC<RootStackProps<'MangaView'>> = (props) => {
           sortMethod={manga.sortChaptersBy}
           reversed={manga.reversedSort ?? false}
           mangaLink={params.link}
-          selectedLanguage={manga?.selectedLanguage ?? DEFAULT_LANGUAGE}
+          selectedLanguage={
+            manga?.selectedLanguage ??
+            (manga?.availableLanguages && manga.availableLanguages.length > 0
+              ? manga.availableLanguages[0]
+              : source.defaultLanguage)
+          }
           supportedLanguages={manga.availableLanguages}
         />
       )}
