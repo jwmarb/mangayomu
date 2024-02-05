@@ -35,14 +35,16 @@
     "android:start": "yarn workspace @mangayomu/mobile android",
     "start:web": "yarn --cwd apps/nextjs start",
     "build:web": "yarn --cwd apps/nextjs build && yarn build",
-    "dev:web": "yarn workspace @mangayomu/nextjs dev"
+    "dev:web": "yarn workspace @mangayomu/nextjs dev",
+    "syncdeps": "syncpack fix-mismatches"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.48.1",
     "@typescript-eslint/parser": "^5.48.1",
-    "eslint": "^8.32.0",
+    "eslint": "8.43.0",
     "eslint-config-prettier": "^8.6.0",
-    "nx": "^16.4.0"
+    "nx": "^16.4.0",
+    "syncpack": "^12.3.0"
   },
   "packageManager": "yarn@3.3.1",
   "engines": {
