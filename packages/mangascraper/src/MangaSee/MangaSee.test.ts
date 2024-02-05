@@ -120,6 +120,10 @@ describe('manga type definitions scraped correctly', () => {
         .map((x) => MangaSee.getMeta(x)),
     );
     expect(metas).toMatchType<MangaSeeMangaMeta[]>(list([assertion]));
+    for (let i = 0; i < metas.length; i++) {
+      const chapters = metas[i].chapters;
+      (expect(chapters) as any).toMatchChapterOrder();
+    }
   }, 30000);
   it('manga pages fetched correctly', async () => {
     const chapters = [
