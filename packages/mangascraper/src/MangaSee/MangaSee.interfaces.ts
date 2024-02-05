@@ -32,7 +32,8 @@ export type MangaSeeManga = Manga &
     vm: number;
   };
 
-export type MangaSeeMangaMeta = MangaMeta<MangaSeeChapter> &
+export type MangaSeeMangaMeta = MangaMeta &
+  MangaMeta<MangaSeeChapter> &
   WithGenres &
   WithYearReleased &
   WithType &
@@ -50,7 +51,7 @@ export interface CurChapter {
   Date: string;
 }
 
-export interface Directory {
+export type Directory = {
   /**
    * Authors of the manga
    */
@@ -64,7 +65,7 @@ export interface Directory {
   /**
    * Date of latest chapter
    */
-  ls: string;
+  ls: string | number;
 
   /**
    * Short for genres
@@ -125,7 +126,7 @@ export interface Directory {
    * Latest chapter time value
    */
   lt: string;
-}
+};
 
 export interface TopTenJSON {
   IndexName: string;

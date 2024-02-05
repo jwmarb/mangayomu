@@ -14,32 +14,32 @@ export type RouteFetchOptions = {
 /**
  * A manga that has official translations
  */
-export interface WithOfficialTranslations {
+export type WithOfficialTranslations = {
   /**
    * Whether or not the manga is officially translated
    */
   officialTranslation: boolean;
-}
+};
 
 /**
  * A manga with an author
  */
-export interface WithAuthors {
+export type WithAuthors = {
   /**
    * The authors of the manga
    */
   authors: string[];
-}
+};
 
 /**
  * A manga/chapter with a given release date
  */
-export interface WithDate {
+export type WithDate = {
   /**
    * The date the manga/chapter was released
    */
   date: string;
-}
+};
 
 export declare interface MangaHostFiltersInfo<T> extends MangaHostInfo {
   filters: FilterSchemaObject<T>;
@@ -103,48 +103,48 @@ export declare interface MangaHostInfo {
 /**
  * A manga with a given released date
  */
-export declare interface WithYearReleased {
+export declare type WithYearReleased = {
   /**
    * The time the manga was released
    */
   yearReleased: string;
-}
+};
 
 /**
  * A manga that is a hentai or not
  */
-export declare interface WithHentai {
+export declare type WithHentai = {
   /**
    * Whether the manga is a hentai or not
    */
   isHentai: boolean;
-}
+};
 
 /**
  * A type of manga (manga, manhwa, manhua)
  */
-export declare interface WithType {
+export declare type WithType = {
   /**
    * The type of the manga
    */
   type: string;
-}
+};
 
 /**
  * A manga with listed genres
  */
-export declare interface WithGenres {
+export type WithGenres = {
   /**
    * The category genre that matches the manga
    */
   genres: string[];
-}
+};
 
-export declare interface WithAltTitles {
+export declare type WithAltTitles = {
   altTitles: string[];
-}
+};
 
-export declare interface WithRating {
+export declare type WithRating = {
   /**
    * The rating of the manga
    */
@@ -161,12 +161,12 @@ export declare interface WithRating {
      */
     voteCount: number;
   };
-}
+};
 
 /**
  * The status of the manga (Ongoing, Hiatus, etc.)
  */
-export declare interface WithStatus {
+export declare type WithStatus = {
   /**
    * The status of the manga
    */
@@ -186,12 +186,12 @@ export declare interface WithStatus {
      */
     publish: string;
   };
-}
+};
 
 /**
  * The generic interface for a Manga. This is meant to be universal and should work with every manga website.
  */
-export declare interface Manga {
+export type Manga = {
   /**
    * The source the manga was fetched from
    */
@@ -219,9 +219,9 @@ export declare interface Manga {
    * For example, "en" will show the United Kingdom flag  while "ch" will show a Chinese flag
    */
   language?: ISOLangCode | null;
-}
+};
 
-export declare interface WithModificationDate {
+export declare type WithModificationDate = {
   /**
    * The date describing when the manga was published or modified
    */
@@ -236,11 +236,9 @@ export declare interface WithModificationDate {
      */
     modified: string;
   };
-}
+};
 
-export declare interface MangaMeta<
-  TChapters extends MangaChapter = MangaChapter,
-> extends WithGenres {
+export declare type MangaMeta<TChapters extends MangaChapter = MangaChapter> = {
   /**
    * The chapters of the manga
    *
@@ -257,16 +255,16 @@ export declare interface MangaMeta<
    * Image cover of the manga. This needs to be put to update the image cover whenever the user fetches an update from the manga. This is useful when the user resets their cache and the image cover URL contains an expired access key.
    */
   imageCover: string;
-}
+} & WithGenres;
 
-export declare interface MangaMultilingualChapter extends MangaChapter {
+export declare type MangaMultilingualChapter = {
   /**
    * The language of the chapter. It must be in the format of a language code (e.g. english = en, brazilian portuguese = pt)
    */
   language: ISOLangCode;
-}
+} & MangaChapter;
 
-export declare interface MangaChapter {
+export type MangaChapter = {
   /**
    * The string URL that redirects to the chapter page
    */
@@ -291,7 +289,7 @@ export declare interface MangaChapter {
    * After the name of a chapter is given, there may be a subtitle associated with it
    */
   subname?: string | null;
-}
+};
 
 export type WithFilters =
   | WithGenresFilter
