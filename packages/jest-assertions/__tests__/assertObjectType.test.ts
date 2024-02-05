@@ -1,19 +1,17 @@
-import * as Assertions from '../src';
+import { assertObjectType } from '../src/jest-fns';
+import { t } from '../src/utils/jstypes';
+import { union, list, List, JSType } from '../src/utils/helpers';
 
 it('assertObjectType (single-property)', () => {
   type T = {
     a: string;
   };
-  const assertion = <const>{ a: Assertions.t.string };
-  expect(
-    Assertions.assertObjectType<T>({ a: 'test' }, assertion).pass,
-  ).toBeTruthy();
-  expect(Assertions.assertObjectType<T>({} as any, assertion).pass).toBeFalsy();
-  expect(
-    Assertions.assertObjectType<T>({ a: 0 } as any, assertion).pass,
-  ).toBeFalsy();
-  expect(Assertions.assertObjectType<T>(null, assertion).pass).toBeFalsy();
-  expect(Assertions.assertObjectType<T>(null, assertion).message()).toBe(
+  const assertion = <const>{ a: t.string };
+  expect(assertObjectType<T>({ a: 'test' }, assertion).pass).toBeTruthy();
+  expect(assertObjectType<T>({} as any, assertion).pass).toBeFalsy();
+  expect(assertObjectType<T>({ a: 0 } as any, assertion).pass).toBeFalsy();
+  expect(assertObjectType<T>(null, assertion).pass).toBeFalsy();
+  expect(assertObjectType<T>(null, assertion).message()).toBe(
     'null is not an object\nExpected types: {"a":"string"}',
   );
 });
@@ -24,17 +22,15 @@ it('assertObjectType (multi-property)', () => {
     c: number;
   };
   const assertion = <const>{
-    a: Assertions.t.string,
-    b: Assertions.t.boolean,
-    c: Assertions.t.number,
+    a: t.string,
+    b: t.boolean,
+    c: t.number,
   };
   expect(
-    Assertions.assertObjectType<T>({ a: 'test', b: true, c: 0 }, assertion)
-      .pass,
+    assertObjectType<T>({ a: 'test', b: true, c: 0 }, assertion).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>({ a: null, b: true, c: 0 } as any, assertion)
-      .pass,
+    assertObjectType<T>({ a: null, b: true, c: 0 } as any, assertion).pass,
   ).toBeFalsy();
 });
 it('assertObjectType (nested object)', () => {
@@ -47,15 +43,15 @@ it('assertObjectType (nested object)', () => {
     c: number;
   };
   const assertion = <const>{
-    a: Assertions.t.string,
+    a: t.string,
     b: {
-      aNested: Assertions.t.string,
-      bNested: Assertions.t.number,
+      aNested: t.string,
+      bNested: t.number,
     },
-    c: Assertions.t.number,
+    c: t.number,
   };
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: 'test',
         b: {
@@ -73,23 +69,12 @@ it('assertObjectType (unions)', () => {
     a: string | null;
   };
   const assertion = {
-    a: Assertions.union<Assertions.t.null | Assertions.t.string>([
-      Assertions.t.null,
-      Assertions.t.string,
-    ]),
+    a: union<t.null | t.string>([t.null, t.string]),
   };
-  expect(
-    Assertions.assertObjectType<T>({ a: null }, assertion).pass,
-  ).toBeTruthy();
-  expect(
-    Assertions.assertObjectType<T>({ a: 'test' }, assertion).pass,
-  ).toBeTruthy();
-  expect(
-    Assertions.assertObjectType<T>({ a: 0 as any }, assertion).pass,
-  ).toBeFalsy();
-  expect(
-    Assertions.assertObjectType<T>({ a: 0 as any }, assertion).message(),
-  ).toBe(
+  expect(assertObjectType<T>({ a: null }, assertion).pass).toBeTruthy();
+  expect(assertObjectType<T>({ a: 'test' }, assertion).pass).toBeTruthy();
+  expect(assertObjectType<T>({ a: 0 as any }, assertion).pass).toBeFalsy();
+  expect(assertObjectType<T>({ a: 0 as any }, assertion).message()).toBe(
     'Property "a" does not match with the union type: (null | string)\nGot: 0',
   );
 });
@@ -101,18 +86,20 @@ it('assertObjectType (unions w/ nested object)', () => {
     };
   };
   const assertion = {
-    a: Assertions.union([
-      Assertions.t.undefined,
+    a: union([
+      t.undefined,
       {
-        b: Assertions.t.string as const,
-        c: Assertions.union<
-          Assertions.t.null | Assertions.t.string | Assertions.t.undefined
-        >([Assertions.t.null, Assertions.t.string, Assertions.t.undefined]),
+        b: t.string as const,
+        c: union<t.null | t.string | t.undefined>([
+          t.null,
+          t.string,
+          t.undefined,
+        ]),
       },
     ] as const),
   };
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: {
           b: '',
@@ -123,7 +110,7 @@ it('assertObjectType (unions w/ nested object)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: {
           b: '',
@@ -133,7 +120,7 @@ it('assertObjectType (unions w/ nested object)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: {
           b: '',
@@ -143,12 +130,12 @@ it('assertObjectType (unions w/ nested object)', () => {
       assertion,
     ).pass,
   ).toBeTruthy();
-  expect(Assertions.assertObjectType<T>({}, assertion).pass).toBeTruthy();
+  expect(assertObjectType<T>({}, assertion).pass).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: {
-          b: Assertions.t.string,
+          b: t.string,
           c: 0 as any,
         },
       },
@@ -176,9 +163,7 @@ it('assertObjectType (deeply nested object)', () => {
         c: {
           d: {
             e: {
-              f: Assertions.union<Assertions.t.string | Assertions.t.undefined>(
-                [Assertions.t.string, Assertions.t.undefined],
-              ),
+              f: union<t.string | t.undefined>([t.string, t.undefined]),
             },
           },
         },
@@ -186,7 +171,7 @@ it('assertObjectType (deeply nested object)', () => {
     },
   };
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: {
           b: {
@@ -204,7 +189,7 @@ it('assertObjectType (deeply nested object)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: {
           b: {
@@ -222,7 +207,7 @@ it('assertObjectType (deeply nested object)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: {
           b: {
@@ -238,7 +223,7 @@ it('assertObjectType (deeply nested object)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: {
           b: {
@@ -261,60 +246,45 @@ it('assertObjectType (array)', () => {
     a: string[];
   };
   const assertion = {
-    a: Assertions.list<Assertions.t.string>([Assertions.t.string]),
+    a: list<t.string>([t.string]),
   };
-  expect(
-    Assertions.assertObjectType<T>({ a: [''] }, assertion).pass,
-  ).toBeTruthy();
-  expect(
-    Assertions.assertObjectType<T>({ a: [] }, assertion).pass,
-  ).toBeTruthy();
-  expect(
-    Assertions.assertObjectType<T>({ a: [0] as any }, assertion).pass,
-  ).toBeFalsy();
-  expect(
-    Assertions.assertObjectType<T>({ a: [0] as any }, assertion).message(),
-  ).toBe(
+  expect(assertObjectType<T>({ a: [''] }, assertion).pass).toBeTruthy();
+  expect(assertObjectType<T>({ a: [] }, assertion).pass).toBeTruthy();
+  expect(assertObjectType<T>({ a: [0] as any }, assertion).pass).toBeFalsy();
+  expect(assertObjectType<T>({ a: [0] as any }, assertion).message()).toBe(
     'Property "a" has elements that violate the type: string[]\nFound: [0]',
   );
-  expect(
-    Assertions.assertObjectType<T>({ a: 1 as any }, assertion).pass,
-  ).toBeFalsy();
-  expect(
-    Assertions.assertObjectType<T>({ a: 1 as any }, assertion).message(),
-  ).toBe('Property "a" does not match with the type: string[]');
+  expect(assertObjectType<T>({ a: 1 as any }, assertion).pass).toBeFalsy();
+  expect(assertObjectType<T>({ a: 1 as any }, assertion).message()).toBe(
+    'Property "a" does not match with the type: string[]',
+  );
 });
 it('assertObjectType (array of objects)', () => {
   type T = {
     a: { b: string | null }[];
   };
   const assertion = {
-    a: Assertions.list([
+    a: list([
       {
-        b: Assertions.union<Assertions.t.string | Assertions.t.null>([
-          Assertions.t.null,
-          Assertions.t.string,
-        ]),
+        b: union<t.string | t.null>([t.null, t.string]),
       },
     ]),
   };
   expect(
-    Assertions.assertObjectType<T>({ a: [{ b: null }] }, assertion).pass,
+    assertObjectType<T>({ a: [{ b: null }] }, assertion).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
-      { a: [{ b: null }, { b: '' }, { b: '' }] },
-      assertion,
-    ).pass,
+    assertObjectType<T>({ a: [{ b: null }, { b: '' }, { b: '' }] }, assertion)
+      .pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       { a: [{ b: null }, { b: '' }, { b: '' }, undefined as any] },
       assertion,
     ).pass,
   ).toBeFalsy();
   expect(
-    Assertions.assertObjectType<T>({ a: [{ b: 0 as any }] }, assertion).pass,
+    assertObjectType<T>({ a: [{ b: 0 as any }] }, assertion).pass,
   ).toBeFalsy();
 });
 it('assertObjectType (2d array)', () => {
@@ -322,12 +292,10 @@ it('assertObjectType (2d array)', () => {
     a: number[][];
   };
   const assertion = {
-    a: Assertions.list([
-      Assertions.list<Assertions.t.number>([Assertions.t.number]),
-    ]),
+    a: list([list<t.number>([t.number])]),
   };
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [
           [1, 2, 3],
@@ -339,7 +307,7 @@ it('assertObjectType (2d array)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [
           [1, 2, 3],
@@ -351,7 +319,7 @@ it('assertObjectType (2d array)', () => {
     ).pass,
   ).toBeFalsy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [[], [], []],
       },
@@ -359,7 +327,7 @@ it('assertObjectType (2d array)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [],
       },
@@ -372,13 +340,10 @@ it('assertObjectType (union array)', () => {
     a: (number | null)[];
   };
   const assertion = {
-    a: Assertions.list<Assertions.t.number | Assertions.t.null>([
-      Assertions.t.number,
-      Assertions.t.null,
-    ]),
+    a: list<t.number | t.null>([t.number, t.null]),
   };
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [0, 10, null],
       },
@@ -386,7 +351,7 @@ it('assertObjectType (union array)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [],
       },
@@ -399,18 +364,14 @@ it('assertObjectType (union 2d array)', () => {
     a: (number | null | number[])[];
   };
   const assertion = {
-    a: Assertions.list<
-      | Assertions.t.number
-      | Assertions.List<Assertions.t.number>
-      | Assertions.t.null
-    >([
-      Assertions.t.number,
-      Assertions.t.null,
-      Assertions.list([Assertions.t.number]),
+    a: list<t.number | List<t.number> | t.null>([
+      t.number,
+      t.null,
+      list([t.number]),
     ]),
   };
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [0, 10, [1, 4, 5]],
       },
@@ -418,7 +379,7 @@ it('assertObjectType (union 2d array)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [[1, 4, 5], [1], []],
       },
@@ -426,7 +387,7 @@ it('assertObjectType (union 2d array)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [],
       },
@@ -434,7 +395,7 @@ it('assertObjectType (union 2d array)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [[1, 4, 5], [1], [undefined as any]],
       },
@@ -442,7 +403,7 @@ it('assertObjectType (union 2d array)', () => {
     ).pass,
   ).toBeFalsy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [undefined as any],
       },
@@ -455,18 +416,14 @@ it('assertObjectType (union 2d array of unions)', () => {
     a: (number | null | (number | null)[])[];
   };
   const assertion = <const>{
-    a: Assertions.list<
-      | Assertions.t.number
-      | Assertions.t.null
-      | Assertions.List<Assertions.t.number | Assertions.t.null>
-    >([
-      Assertions.t.number,
-      Assertions.t.null,
-      Assertions.list([Assertions.t.number, Assertions.t.null]),
+    a: list<t.number | t.null | List<t.number | t.null>>([
+      t.number,
+      t.null,
+      list([t.number, t.null]),
     ]),
   };
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [10, 20, 30, null, [1, 2, null]],
       },
@@ -474,7 +431,7 @@ it('assertObjectType (union 2d array of unions)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [[]],
       },
@@ -482,7 +439,7 @@ it('assertObjectType (union 2d array of unions)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [],
       },
@@ -490,7 +447,7 @@ it('assertObjectType (union 2d array of unions)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [[1, 2, 3, 4]],
       },
@@ -498,7 +455,7 @@ it('assertObjectType (union 2d array of unions)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [[1, null, 3, null]],
       },
@@ -506,7 +463,7 @@ it('assertObjectType (union 2d array of unions)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [[1, 2, 3, 4, undefined as any]],
       },
@@ -514,7 +471,7 @@ it('assertObjectType (union 2d array of unions)', () => {
     ).pass,
   ).toBeFalsy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [[1, 2, 3, 4], undefined as any],
       },
@@ -522,7 +479,7 @@ it('assertObjectType (union 2d array of unions)', () => {
     ).pass,
   ).toBeFalsy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [[1, 2, 3, 4], undefined as any],
       },
@@ -532,7 +489,7 @@ it('assertObjectType (union 2d array of unions)', () => {
     'Property "a" has elements that violate the type: (number | null | (number | null)[])[]\nFound: [undefined]',
   );
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [undefined as any],
       },
@@ -540,7 +497,7 @@ it('assertObjectType (union 2d array of unions)', () => {
     ).pass,
   ).toBeFalsy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [[undefined] as any],
       },
@@ -554,14 +511,11 @@ it('assertObjectType (union of constants)', () => {
     b?: 'primary';
   };
   const assertion = <const>{
-    a: Assertions.union<T['a']>(['high', 'medium', 'low']),
-    b: Assertions.union([
-      'primary',
-      Assertions.t.undefined,
-    ]) as Assertions.JSType<T['b']>,
+    a: union<T['a']>(['high', 'medium', 'low']),
+    b: union(['primary', t.undefined]) as JSType<T['b']>,
   };
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: 'high',
         b: 'primary',
@@ -570,7 +524,7 @@ it('assertObjectType (union of constants)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: 'invalid' as any,
         b: 'primary',
@@ -579,7 +533,7 @@ it('assertObjectType (union of constants)', () => {
     ).pass,
   ).toBeFalsy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: 'high',
       },
@@ -591,20 +545,17 @@ it('assertObjectType (array of union objects)', () => {
   type T = {
     a: ({ b: string | number } | null | undefined)[];
   };
-  const assertion: Assertions.JSType<T> = <const>{
-    a: Assertions.list([
-      Assertions.t.undefined,
-      Assertions.t.null,
+  const assertion: JSType<T> = <const>{
+    a: list([
+      t.undefined,
+      t.null,
       {
-        b: Assertions.union<Assertions.t.string | Assertions.t.number>([
-          Assertions.t.string,
-          Assertions.t.number,
-        ]),
+        b: union<t.string | t.number>([t.string, t.number]),
       },
     ]),
   };
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [null, undefined, { b: 'hello world' }, { b: 0 }],
       },
@@ -612,7 +563,7 @@ it('assertObjectType (array of union objects)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [null, undefined, { b: 'hello world' }, { b: 0 }, {} as any],
       },
@@ -625,15 +576,12 @@ it('assertObjectType (error message matches #1)', () => {
     a: string;
   };
   expect(
-    Assertions.assertObjectType<T>(
-      { a: false as any },
-      { a: Assertions.t.string },
-    ).message(),
+    assertObjectType<T>({ a: false as any }, { a: t.string }).message(),
   ).toBe('Property "a" does not match with the type: string\nGot: false');
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       { a: { b: 'hello' } as any },
-      { a: Assertions.t.string },
+      { a: t.string },
     ).message(),
   ).toBe(
     'Property "a" does not match with the type: string\nGot: {"b":"hello"}',
@@ -645,22 +593,21 @@ it('assertObjectType (error message matches #2)', () => {
   };
   const assertion = <const>{
     a: {
-      b: Assertions.union<
-        Assertions.t.string | Assertions.t.null | Assertions.t.undefined
-      >([Assertions.t.string, Assertions.t.undefined, Assertions.t.null]),
+      b: union<t.string | t.null | t.undefined>([
+        t.string,
+        t.undefined,
+        t.null,
+      ]),
     },
   };
   const type = JSON.stringify({
     b: '(string | undefined | null)',
   });
+  expect(assertObjectType<T>({ a: false as any }, assertion).message()).toBe(
+    `Property "a" does not match with the type: ${type}\nGot: false`,
+  );
   expect(
-    Assertions.assertObjectType<T>({ a: false as any }, assertion).message(),
-  ).toBe(`Property "a" does not match with the type: ${type}\nGot: false`);
-  expect(
-    Assertions.assertObjectType<T>(
-      { a: { b: false } as any },
-      assertion,
-    ).message(),
+    assertObjectType<T>({ a: { b: false } as any }, assertion).message(),
   ).toBe(
     `Property "a" does not match with the type: ${type}\nGot: {"b":false}`,
   );
@@ -676,18 +623,15 @@ it('assertObjectType (error message matches #3)', () => {
   };
   const assertion = <const>{
     a: {
-      b: Assertions.union<
-        Assertions.t.string | Assertions.t.null | Assertions.t.undefined
-      >([Assertions.t.string, Assertions.t.undefined, Assertions.t.null]),
-      c: Assertions.union<
-        Assertions.t.undefined | Assertions.JSType<Required<T['a']>>['c']
-      >([
-        Assertions.t.undefined,
+      b: union<t.string | t.null | t.undefined>([
+        t.string,
+        t.undefined,
+        t.null,
+      ]),
+      c: union<t.undefined | JSType<Required<T['a']>>['c']>([
+        t.undefined,
         {
-          d: Assertions.union<Assertions.t.undefined | Assertions.t.number>([
-            Assertions.t.number,
-            Assertions.t.undefined,
-          ]),
+          d: union<t.undefined | t.number>([t.number, t.undefined]),
         },
       ]),
     },
@@ -698,14 +642,11 @@ it('assertObjectType (error message matches #3)', () => {
       d: '(number | undefined)',
     })})`,
   });
+  expect(assertObjectType<T>({ a: false as any }, assertion).message()).toBe(
+    `Property "a" does not match with the type: ${type}\nGot: false`,
+  );
   expect(
-    Assertions.assertObjectType<T>({ a: false as any }, assertion).message(),
-  ).toBe(`Property "a" does not match with the type: ${type}\nGot: false`);
-  expect(
-    Assertions.assertObjectType<T>(
-      { a: { b: false } as any },
-      assertion,
-    ).message(),
+    assertObjectType<T>({ a: { b: false } as any }, assertion).message(),
   ).toBe(
     `Property "a" does not match with the type: ${type}\nGot: {"b":false}`,
   );
@@ -721,22 +662,19 @@ it('assertObjectType (complex object)', () => {
       g: { status: 'OK' } | { status: 'ERROR'; error: string };
     };
   };
-  const assertion: Assertions.JSType<T> = {
-    a: Assertions.list([Assertions.t.string]),
-    b: Assertions.list([Assertions.t.number]),
-    c: Assertions.t.string,
-    d: Assertions.t.boolean,
+  const assertion: JSType<T> = {
+    a: list([t.string]),
+    b: list([t.number]),
+    c: t.string,
+    d: t.boolean,
     e: {
-      f: Assertions.list([Assertions.t.string, Assertions.t.null]),
-      g: Assertions.union([
-        { status: 'OK' },
-        { status: 'ERROR', error: Assertions.t.string },
-      ]),
+      f: list([t.string, t.null]),
+      g: union([{ status: 'OK' }, { status: 'ERROR', error: t.string }]),
     },
   };
 
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [''],
         b: [100, 200],
@@ -752,7 +690,7 @@ it('assertObjectType (complex object)', () => {
   ).toBeTruthy();
 
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: [''],
         b: [100, 200],
@@ -781,12 +719,12 @@ it('assertObjectType (classes)', () => {
     b: Foobar;
   };
 
-  const assertion: Assertions.JSType<T> = {
-    a: Assertions.t.string,
+  const assertion: JSType<T> = {
+    a: t.string,
     b: Foobar,
   };
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: 'hello world',
         b: new Foobar(1),
@@ -795,7 +733,7 @@ it('assertObjectType (classes)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         a: 'hello world',
         b: null as any,
@@ -851,14 +789,14 @@ it('assertObjectType (union array of classes)', () => {
     students: Student[];
     classroom: (Teacher | Student)[];
   };
-  const assertion: Assertions.JSType<T> = {
-    students: Assertions.list([Student]),
-    teachers: Assertions.list([Teacher]),
-    users: Assertions.list([Person]),
-    classroom: Assertions.list([Teacher, Student]),
+  const assertion: JSType<T> = {
+    students: list([Student]),
+    teachers: list([Teacher]),
+    users: list([Person]),
+    classroom: list([Teacher, Student]),
   };
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         users: [
           studentA,
@@ -881,7 +819,7 @@ it('assertObjectType (union array of classes)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         users: [
           studentA,
@@ -904,7 +842,7 @@ it('assertObjectType (union array of classes)', () => {
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertObjectType<T>(
+    assertObjectType<T>(
       {
         users: [
           studentA,

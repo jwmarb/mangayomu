@@ -1,110 +1,83 @@
-import * as Assertions from '../src';
+import { assertArrayType } from '../src/jest-fns';
+import { t } from '../src/utils/jstypes';
+import { union } from '../src/utils/helpers';
 
 it('assertArrayType (primitives only)', () => {
+  expect(assertArrayType([1, 2, 3], t.number).pass).toBeTruthy();
+  expect(assertArrayType(undefined, t.number).pass).toBeFalsy();
+  expect(assertArrayType(undefined, t.number).message()).toBe(
+    'Did not receive an array.\nExpected: number[]\nGot: undefined',
+  );
+  expect(assertArrayType(['hello', 'world'], t.string).pass).toBeTruthy();
+  expect(assertArrayType([true, false], t.boolean).pass).toBeTruthy();
+  expect(assertArrayType([{}, {}, {}], t.object).pass).toBeTruthy();
   expect(
-    Assertions.assertArrayType([1, 2, 3], Assertions.t.number).pass,
+    assertArrayType([undefined, undefined], t.undefined).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertArrayType(undefined, Assertions.t.number).pass,
-  ).toBeFalsy();
-  expect(
-    Assertions.assertArrayType(undefined, Assertions.t.number).message(),
-  ).toBe('Did not receive an array.\nExpected: number[]\nGot: undefined');
-  expect(
-    Assertions.assertArrayType(['hello', 'world'], Assertions.t.string).pass,
-  ).toBeTruthy();
-  expect(
-    Assertions.assertArrayType([true, false], Assertions.t.boolean).pass,
-  ).toBeTruthy();
-  expect(
-    Assertions.assertArrayType([{}, {}, {}], Assertions.t.object).pass,
-  ).toBeTruthy();
-  expect(
-    Assertions.assertArrayType([undefined, undefined], Assertions.t.undefined)
-      .pass,
-  ).toBeTruthy();
-  expect(
-    Assertions.assertArrayType(
+    assertArrayType(
       [],
-      Assertions.t.string,
-      Assertions.t.bigint,
-      Assertions.t.boolean,
-      Assertions.t.function,
-      Assertions.t.number,
-      Assertions.t.object,
-      Assertions.t.symbol,
-      Assertions.t.undefined,
+      t.string,
+      t.bigint,
+      t.boolean,
+      t.function,
+      t.number,
+      t.object,
+      t.symbol,
+      t.undefined,
     ).pass,
   ).toBeTruthy();
-  expect(
-    Assertions.assertArrayType(['hello world'], Assertions.t.number).pass,
-  ).toBeFalsy();
-  expect(
-    Assertions.assertArrayType(['hello world'], Assertions.t.number).message(),
-  ).toBe('List does not match type\nExpected: number[]\nGot: ["hello world"]');
+  expect(assertArrayType(['hello world'], t.number).pass).toBeFalsy();
+  expect(assertArrayType(['hello world'], t.number).message()).toBe(
+    'List does not match type\nExpected: number[]\nGot: ["hello world"]',
+  );
 });
 it('assertArrayType (union)', () => {
   expect(
-    Assertions.assertArrayType(
+    assertArrayType(
       [1, '', null, undefined, false, {}],
-      Assertions.t.number,
+      t.number,
       null,
-      Assertions.t.string,
+      t.string,
       undefined,
-      Assertions.t.boolean,
-      Assertions.t.object,
+      t.boolean,
+      t.object,
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertArrayType(
-      [1],
-      Assertions.t.number,
-      null,
-      Assertions.t.string,
-      undefined,
-      Assertions.t.object,
-    ).pass,
+    assertArrayType([1], t.number, null, t.string, undefined, t.object).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertArrayType(
+    assertArrayType(
       [() => void 0],
-      Assertions.t.number,
+      t.number,
       null,
-      Assertions.t.string,
+      t.string,
       undefined,
-      Assertions.t.object,
+      t.object,
     ).pass,
   ).toBeFalsy();
 });
 it('assertArrayType (objects)', () => {
   expect(
-    Assertions.assertArrayType([{ a: '' }, { a: 0 }, { a: 'hello world' }], {
-      a: Assertions.union<Assertions.t.string | Assertions.t.number>([
-        Assertions.t.string,
-        Assertions.t.number,
-      ]),
+    assertArrayType([{ a: '' }, { a: 0 }, { a: 'hello world' }], {
+      a: union<t.string | t.number>([t.string, t.number]),
     }).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertArrayType(
+    assertArrayType(
       [{ a: '' }, null, { a: 0 }, { a: 'hello world' }, null],
       {
-        a: Assertions.union<Assertions.t.string | Assertions.t.number>([
-          Assertions.t.string,
-          Assertions.t.number,
-        ]),
+        a: union<t.string | t.number>([t.string, t.number]),
       },
       null,
     ).pass,
   ).toBeTruthy();
   expect(
-    Assertions.assertArrayType(
+    assertArrayType(
       [{ a: '' }, null, { a: 0 }, { a: 'hello world' }, null, 10, null, null],
       {
-        a: Assertions.union<Assertions.t.string | Assertions.t.number>([
-          Assertions.t.string,
-          Assertions.t.number,
-        ]),
+        a: union<t.string | t.number>([t.string, t.number]),
       },
       null,
     ).pass,
