@@ -3,7 +3,11 @@ import { Manga, MangaChapter, MangaMeta } from '../scraper/scraper.interfaces';
 import { t, union, list, JSType } from '@mangayomu/jest-assertions';
 export const Assertions = {
   Manga: {
-    imageCover: union<t.string | t.null>([t.string, t.null]),
+    imageCover: union<t.string | t.null | t.undefined>([
+      t.undefined,
+      t.string,
+      t.null,
+    ]),
     source: t.string,
     language: union([
       t.undefined,
@@ -14,7 +18,11 @@ export const Assertions = {
     title: t.string,
   } as JSType<Manga>,
   MangaMeta: {
-    imageCover: t.string,
+    imageCover: union<t.string | t.null | t.undefined>([
+      t.string,
+      t.null,
+      t.undefined,
+    ]),
     source: t.string,
     language: union([
       t.undefined,
@@ -32,7 +40,7 @@ export const Assertions = {
         subname: union([t.string, t.undefined, t.null]),
       },
     ]),
-    description: t.string,
+    description: union([t.string, t.undefined, t.null]),
     genres: list([t.string]),
   } as JSType<Manga & MangaMeta<MangaChapter>>,
 };

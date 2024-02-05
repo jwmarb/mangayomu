@@ -102,7 +102,7 @@ describe('manga type definitions scraped correctly', () => {
     const assertion: JSType<MangaSeeMangaMeta> = {
       ...Assertions.MangaMeta,
       status: {
-        scan: union([t.string, t.undefined]),
+        scan: union([t.string, t.undefined, t.null]),
         publish: t.string,
       },
       date: {

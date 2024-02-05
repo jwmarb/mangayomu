@@ -177,7 +177,7 @@ export declare type WithStatus = {
      *
      * The scan status must be a value that is lowercase such as "ongoing" or "hiatus"
      */
-    scan?: string;
+    scan?: string | null;
 
     /**
      * The publish status of the manga.
@@ -204,7 +204,7 @@ export type Manga = {
   /**
    * The image cover of the manga in the form of a URL link
    */
-  imageCover: string | null;
+  imageCover?: string | null;
 
   /**
    * The link that redirects to the manga page
@@ -249,12 +249,12 @@ export declare type MangaMeta<TChapters extends MangaChapter = MangaChapter> = {
   /**
    * The description of the manga, also known as the synopsis
    */
-  description: string;
+  description?: string | null;
 
   /**
    * Image cover of the manga. This needs to be put to update the image cover whenever the user fetches an update from the manga. This is useful when the user resets their cache and the image cover URL contains an expired access key.
    */
-  imageCover: string;
+  imageCover?: string | null;
 } & WithGenres;
 
 export declare type MangaMultilingualChapter = {
