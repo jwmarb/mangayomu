@@ -1,4 +1,5 @@
 import {
+  Manga,
   MangaChapter,
   MangaMeta,
   WithAuthors,
@@ -7,7 +8,8 @@ import {
   WithStatus,
 } from '../scraper/scraper.interfaces';
 
-export type MangaParkV5MangaMeta = MangaMeta<MangaChapter> &
+export type MangaParkV5MangaMeta = Manga &
+  MangaMeta<MangaChapter> &
   WithGenres &
   WithStatus &
   WithRating &
