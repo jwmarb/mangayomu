@@ -3,6 +3,7 @@ import { Assertions } from '../utils/assertions';
 import MangaSee, { mapLatestHottestManga } from './MangaSee';
 import { Directory, MangaSeeMangaMeta } from './MangaSee.interfaces';
 import { Manga } from '../scraper/scraper.interfaces';
+import { extractDataFromVariable } from './MangaSee.utils';
 
 describe('helper functions', () => {
   it('mapLatestHottestManga', () => {
@@ -73,6 +74,9 @@ describe('directory', () => {
     } as const;
 
     expect(directory).toMatchType<Directory[]>(list([assertion]));
+
+    const mangas = directory.map((x) => MangaSee['mapDirectory'](x));
+    expect(mangas).toMatchType<Manga[]>(list([Assertions.Manga]));
   });
   it('lists directory manga', () => {
     MangaSee.listMangas().then((directory) => {
@@ -137,5 +141,13 @@ describe('manga type definitions scraped correctly', () => {
       chapters.map((x) => MangaSee.getPages({ link: x })),
     );
     expect(result).toMatchType<string[][]>(list([list([t.string])]));
+  });
+});
+
+describe('utils', () => {
+  it('extractDataFromVariable', () => {
+    expect(extractDataFromVariable('')('hello')).rejects.toEqual(
+      'hello does not exist. Received html: ',
+    );
   });
 });
