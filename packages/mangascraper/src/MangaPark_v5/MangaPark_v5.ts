@@ -121,7 +121,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
   }
   public async search(
     query: string,
-    filters: MangaParkV5Filter,
+    filters?: MangaParkV5Filter,
   ): Promise<Manga[]> {
     if (filters) {
       const {
