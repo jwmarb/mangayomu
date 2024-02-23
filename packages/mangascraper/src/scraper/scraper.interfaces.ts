@@ -38,7 +38,7 @@ export type WithDate = {
   /**
    * The date the manga/chapter was released
    */
-  date: string;
+  date: string | number;
 };
 
 export declare interface MangaHostFiltersInfo<T> extends MangaHostInfo {
@@ -74,7 +74,7 @@ export declare interface MangaHostInfo {
   /**
    * Whether or not the manga host has a page for listing hot/trending updated manga
    */
-  hasHotMangas: boolean;
+  hasTrendingMangas: boolean;
 
   /**
    * Whether or not the manga host has a page for listing latest/recently updated manga
@@ -97,7 +97,7 @@ export declare interface MangaHostInfo {
   /**
    * Whether or not the manga host is mostly composed of adult content such as hentai
    */
-  isAdult: boolean;
+  containsNSFW: boolean;
 }
 
 /**
@@ -229,22 +229,22 @@ export declare type WithModificationDate = {
     /**
      * The date that describes when the manga was published
      */
-    published: string;
+    published: string | number;
 
     /**
      * The date that describes when the manga was modified, usually due to an update
      */
-    modified: string;
+    modified: string | number;
   };
 };
 
-export declare type MangaMeta<TChapters extends MangaChapter = MangaChapter> = {
+export declare type MangaMeta<TChapter = unknown> = {
   /**
    * The chapters of the manga
    *
    * ORDER MATTERS! The chapters must be sorted by their placement where the latest chapter is the 0th element and the first chapter is the last element
    */
-  chapters: TChapters[];
+  chapters: TChapter[];
 
   /**
    * The description of the manga, also known as the synopsis
@@ -277,13 +277,14 @@ export type MangaChapter = {
 
   /**
    * The index the chapter belongs to in the array
+   * @deprecated
    */
   index: number;
 
   /**
-   * The date the chapter was released
+   * The date the chapter was released.
    */
-  date: string;
+  date: string | number;
 
   /**
    * After the name of a chapter is given, there may be a subtitle associated with it

@@ -14,6 +14,9 @@ import { ISOLangCode } from '@mangayomu/language-codes';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fetch = require('node-fetch');
 
+/**
+ * @deprecated Use MangaHost from `scraper.ts` instead
+ */
 abstract class MangaHost {
   /**
    * Proxy route URL to fallback to
@@ -101,12 +104,12 @@ abstract class MangaHost {
     this.formattedGenres = info.genres.map((x) => toPascalCase(x));
     this.icon = info.icon;
     this.name = info.name;
-    this.hotMangas = info.hasHotMangas ?? false;
+    this.hotMangas = info.hasTrendingMangas ?? false;
     this.latestMangas = info.hasLatestMangas ?? false;
     this.page = 1;
     if (info.version == null) this.version = '1.0.0';
     else this.version = info.version;
-    this._isAdult = info.isAdult;
+    this._isAdult = info.containsNSFW;
     this._hasMangaDirectory = info.hasMangaDirectory;
 
     MangaHost.sourcesMap.set(info.name, this);

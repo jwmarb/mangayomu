@@ -110,8 +110,8 @@ describe('manga type definitions scraped correctly', () => {
         publish: t.string,
       },
       date: {
-        modified: t.string,
-        published: t.string,
+        modified: union([t.number, t.string]),
+        published: union([t.number, t.string]),
       },
       type: t.string,
       yearReleased: t.string,
