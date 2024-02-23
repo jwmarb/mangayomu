@@ -20,7 +20,7 @@ import {
   RealmUserProvider,
 } from '@database/main';
 import { REACT_APP_REALM_ID } from '@env';
-import { RealmEffect } from '@database/providers/RealmProvider';
+import { MongoDBRealmProvider } from '@database/providers/RealmProvider';
 import { AppearanceProvider } from '@theme/appearanceprovider';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import SyncData from './src/context/SyncData';
@@ -34,33 +34,6 @@ import { IMAGE_CACHE_DIR, READER_CACHE_DIR } from 'env';
 import { MangaHost } from '@mangayomu/mangascraper/src';
 import PageManager from '@redux/slices/reader/PageManager';
 enableFreeze(true);
-
-const realmConfiguration: Realm.OpenRealmBehaviorConfiguration = {
-  type: Realm.OpenRealmBehaviorType.OpenImmediately,
-  timeOutBehavior: Realm.OpenRealmTimeOutBehavior.OpenLocalRealm,
-};
-
-const sync: Partial<Realm.SyncConfiguration> = {
-  flexible: true,
-  onError: (_, error) => {
-    if (error instanceof Realm.SyncError)
-      console.log({
-        code: error.code,
-        message: error.message,
-        type: 'SyncError',
-      });
-    else
-      console.log({
-        type: 'ClientResetError',
-        message: getErrorMessage(error),
-      });
-  },
-  clientReset: {
-    mode: Realm.ClientResetMode.RecoverOrDiscardUnsyncedChanges,
-  },
-  newRealmFileBehavior: realmConfiguration,
-  existingRealmFileBehavior: realmConfiguration,
-};
 
 const cacheDirs = [
   IMAGE_CACHE_DIR,
@@ -91,19 +64,20 @@ function App(): JSX.Element {
           <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
               <ErrorBoundary FallbackComponent={ErrorFallback}>
-                <AppProvider id={REACT_APP_REALM_ID}>
+                <AppProvider
+                  id={REACT_APP_REALM_ID}
+                  baseUrl="https://services.cloud.mongodb.com"
+                >
                   <UserProvider fallback={<RealmUserProvider />}>
-                    <RealmProvider sync={sync}>
-                      <LocalRealmProvider>
-                        <RealmEffect>
-                          <SyncData>
-                            <AppearanceProvider>
-                              <Root />
-                            </AppearanceProvider>
-                          </SyncData>
-                        </RealmEffect>
-                      </LocalRealmProvider>
-                    </RealmProvider>
+                    <LocalRealmProvider>
+                      <MongoDBRealmProvider>
+                        <SyncData>
+                          <AppearanceProvider>
+                            <Root />
+                          </AppearanceProvider>
+                        </SyncData>
+                      </MongoDBRealmProvider>
+                    </LocalRealmProvider>
                   </UserProvider>
                 </AppProvider>
               </ErrorBoundary>

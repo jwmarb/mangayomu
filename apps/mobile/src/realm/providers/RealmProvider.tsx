@@ -1,56 +1,78 @@
 import { MangaSchema } from '../schemas/Manga';
-import { useQuery, useRealm } from '@database/main';
-import { useApp, useUser } from '@realm/react';
+import { useRealm } from '@database/main';
+import { useUser } from '@realm/react';
 import React from 'react';
-import { AppState } from '@redux/main';
-import { connect, ConnectedProps } from 'react-redux';
 import { UserHistorySchema } from '@database/schemas/History';
 import { ChapterSchema } from '@database/schemas/Chapter';
+import { RealmProvider } from '@database/main';
 import useAppSelector from '@hooks/useAppSelector';
+import { getErrorMessage } from '@helpers/getErrorMessage';
+import Realm from 'realm';
 
-export function RealmEffect({ children }: React.PropsWithChildren) {
-  // const mangas = useQuery(MangaSchema);
-  const enableCloud = useAppSelector((state) => state.settings.cloud.enabled);
-  const realm = useRealm();
+const realmConfiguration: Realm.OpenRealmBehaviorConfiguration = {
+  type: Realm.OpenRealmBehaviorType.OpenImmediately,
+  timeOutBehavior: Realm.OpenRealmTimeOutBehavior.OpenLocalRealm,
+};
+
+const onError: Realm.ErrorCallback = (_, error) => {
+  if (error instanceof Realm.SyncError)
+    console.log({
+      code: error.code,
+      name: error.name,
+      message: error.message,
+      logUrl: error.logUrl,
+      reason: error.reason,
+      userInfo: error.userInfo,
+      type: 'SyncError',
+    });
+  else
+    console.log({
+      type: 'ClientResetError',
+      message: getErrorMessage(error),
+    });
+};
+
+const clientReset: Realm.ClientResetConfig = {
+  mode: Realm.ClientResetMode.RecoverOrDiscardUnsyncedChanges,
+};
+
+export function MongoDBRealmProvider({ children }: React.PropsWithChildren) {
   const currentUser = useUser();
 
-  // const callback: Realm.CollectionChangeCallback<
-  //   MangaSchema & Realm.Object<unknown, never>
-  // > = React.useCallback((collection, changes) => {
-  //   for (const index of changes.newModifications) {
-  //     const { inLibrary, title } = collection[index];
-  //     console.log(`${user?.deviceId} - ${title}`);
-  //   }
-  // }, []);
+  const sync: Partial<Realm.SyncConfiguration> = {
+    flexible: true,
+    onError,
+    clientReset: clientReset,
+    newRealmFileBehavior: realmConfiguration,
+    existingRealmFileBehavior: realmConfiguration,
+    initialSubscriptions: {
+      update: (subs, realm) => {
+        subs.add(
+          realm.objects(MangaSchema).filtered('_realmId = $0', currentUser.id),
+        );
+        subs.add(
+          realm
+            .objects(UserHistorySchema)
+            .filtered('_realmId = $0', currentUser.id),
+        );
+        subs.add(
+          realm
+            .objects(ChapterSchema)
+            .filtered('_realmId = $0', currentUser.id),
+        );
+      },
+    },
+  };
 
-  const mangas = useQuery(MangaSchema, (collection) =>
-    collection.filtered('_realmId = $0', currentUser.id),
-  );
-  const userHistory = useQuery(UserHistorySchema, (collection) =>
-    collection.filtered('_realmId = $0', currentUser.id),
-  );
-  const chapters = useQuery(ChapterSchema, (collection) =>
-    collection.filtered('_realmId = $0', currentUser.id),
-  );
+  return <RealmProvider sync={sync}>{children}</RealmProvider>;
+}
 
-  React.useEffect(() => {
-    const addSubscriptions = async () => {
-      await realm.subscriptions.update((sub) => {
-        sub.add(mangas);
-        sub.add(userHistory);
-        sub.add(chapters);
-      });
-    };
-
-    addSubscriptions();
-
-    return () => {
-      // console.log('Removing all subscriptions');
-      realm.subscriptions.update((sub) => {
-        sub.removeAll();
-      });
-    };
-  }, [currentUser.id]);
+// todo
+function ApplyRealmSettings(props: React.PropsWithChildren) {
+  const { children } = props;
+  const currentUser = useUser();
+  const enableCloud = useAppSelector((state) => state.settings.cloud.enabled);
+  const realm = useRealm();
 
   React.useEffect(() => {
     if (
