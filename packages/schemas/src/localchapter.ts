@@ -18,7 +18,8 @@ export const SORT_CHAPTERS_BY = {
     }
     throw Error('Chapter cannot be sorted due to undefined name and index');
   },
-  Timestamp: (a: Omit<MangaChapter, 'link'>) => Date.parse(a.date),
+  Timestamp: (a: Omit<MangaChapter, 'link'>) =>
+    typeof a.date === 'number' ? a.date : Date.parse(a.date),
 };
 
 export type SortChaptersBy = keyof typeof SORT_CHAPTERS_BY;
