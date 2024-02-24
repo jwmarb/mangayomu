@@ -7,9 +7,10 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc --build",
-    "reset": "rm -rf dist"
+    "reset": "rm -rf dist node_modules"
   },
   "devDependencies": {
+    "eslint": "^8.57.0",
     "typescript": "^5.3.3"
   }
 }
