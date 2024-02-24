@@ -81,11 +81,28 @@ function promiseAllSettledResolver<T>(arr: Promise<T>[]) {
   return Promise.allSettled(arr);
 }
 
+/**
+ * An asynchronous execution pool that is used in "for loops"
+ * @param iterable An object that implements an iterator
+ * @param concurrencyLimit The limit of the concurrency
+ * @param asyncMapper A map function that processes an input and returns a promise
+ * @returns Returns an object containing an asynchronous iterator that will iterate through each element with `n` steps,
+ * which is based on `concurrencyLimit`
+ */
 export const asyncPool: AsyncResolver = (
   iterable,
   concurrencyLimit,
   asyncMapper,
 ) => async(iterable, concurrencyLimit, asyncMapper, promiseAllResolver);
+
+/**
+ * An asynchronous execution pool that is used in "for loops", however, each iteration is a `SettledPromiseResult`.
+ * @param iterable An object that implements an iterator
+ * @param concurrencyLimit The limit of the concurrency
+ * @param asyncMapper A map function that processes an input and returns a promise
+ * @returns Returns an object containing an asynchronous iterator that will iterate through each element with `n` steps,
+ * which is based on `concurrencyLimit`
+ */
 export const asyncSettledPool: AsyncSettledResolver = (
   iterable,
   concurrencyLimit,
