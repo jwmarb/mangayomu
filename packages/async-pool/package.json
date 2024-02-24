@@ -1,5 +1,5 @@
 {
-  "name": "async-pool",
+  "name": "@mangayomu/async-pool",
   "version": "1.0.0",
   "description": "A library to customize concurrency for Promises",
   "main": "dist/index.js",
