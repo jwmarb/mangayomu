@@ -1,7 +1,7 @@
 import axios from 'axios';
-import MangaHost from '../scraper/scraper.abstract';
-import '../MangaSee';
-import '../MangaPark_v5';
+import MangaHost from '../src/scraper/scraper.abstract';
+import '../src/MangaSee';
+import '../src/MangaPark_v5';
 
 interface DomainErrorException {
   error: unknown;

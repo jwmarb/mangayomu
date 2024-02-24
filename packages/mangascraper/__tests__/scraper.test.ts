@@ -1,6 +1,10 @@
-import { InvalidSourceException } from '../exceptions';
-import MangaSource from '../scraper/scraper';
-import { Manga, MangaChapter, WithGenres } from '../scraper/scraper.interfaces';
+import { InvalidSourceException } from '../src/exceptions';
+import MangaSource from '../src/scraper/scraper';
+import {
+  Manga,
+  MangaChapter,
+  WithGenres,
+} from '../src/scraper/scraper.interfaces';
 type MockManga = { name: string; href: string; coverURI: string };
 type MockMangaMeta = MockManga & {
   summary: string;
