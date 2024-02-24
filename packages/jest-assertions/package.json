@@ -5,7 +5,8 @@
   "types": "./src/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "reset": "rm -rf coverage node_modules"
   },
   "devDependencies": {
     "jest": "^29.7.0",
