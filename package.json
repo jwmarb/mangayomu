@@ -29,7 +29,7 @@
   "scripts": {
     "build": "yarn nx run-many --target=build --exclude=@mangayomu/nextjs",
     "reset": "yarn nx run-many --target=reset --all",
-    "postreset": "rm -rf yarn.lock && rmdir node_modules /s /q",
+    "postreset": "rm -rf yarn.lock node_modules",
     "test": "yarn nx run-many --target=test --all",
     "android:metro": "yarn workspace @mangayomu/mobile start",
     "android:start": "yarn workspace @mangayomu/mobile android",
