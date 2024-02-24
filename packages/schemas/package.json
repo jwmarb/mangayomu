@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc --build",
-    "reset": "rm -rf node_modules dist"
+    "reset": "rm -rf node_modules dist",
+    "lint": "eslint ./src"
   },
   "dependencies": {
     "@mangayomu/language-codes": "1.0.0",
@@ -13,6 +14,7 @@
   },
   "devDependencies": {
     "@types/realm": "^1.13.0",
+    "eslint": "^8.57.0",
     "typescript": "^5.3.3"
   }
 }

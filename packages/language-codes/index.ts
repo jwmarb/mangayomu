@@ -1,4 +1,3 @@
-/* eslint-disable */
 export type Languages = typeof languages;
 export type ISOLangCode = keyof typeof languages;
 export type Language = keyof {
