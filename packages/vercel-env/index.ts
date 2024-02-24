@@ -72,7 +72,7 @@ function generateVariables() {
     }
   else if (VERCEL_ENV === 'development')
     console.warn(
-      "Using UNSAFE_ALLOW_ENVIRONMENT_VARS will allow undefined environment variables to be processed during runtime. Unless you know what you're doing, this should be set to false or removed completely",
+      'Using UNSAFE_ALLOW_ENVIRONMENT_VARS will allow undefined environment variables to be processed during runtime. Unless you know what you\'re doing, this should be set to false or removed completely',
     );
 
   return cached;
