@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { t, list, union, JSType } from '@mangayomu/jest-assertions';
 import { Assertions } from '../utils/assertions';
 import MangaSee, { mapLatestHottestManga } from './MangaSee';

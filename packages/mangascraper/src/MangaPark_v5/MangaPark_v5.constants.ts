@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MangaHostFiltersInfo } from '../scraper/scraper.interfaces';
 import createSchema from '@mangayomu/schema-creator';
 import { GENRES } from './MangaPark_v5.helpers';

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface ISharedValue<T> {
   get value(): T;
   set value(v: T);

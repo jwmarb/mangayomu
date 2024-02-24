@@ -109,7 +109,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       return JSON.parse(v);
     }
     return Promise.resolve<Manga[]>(
-      LatestJSON.map((x, i) => ({
+      LatestJSON.map((x) => ({
         link: `https://${super.getLink()}/manga/${x.IndexName}`,
         title: x.SeriesName,
         imageCover: this.getImageCover(html, x.IndexName),
@@ -142,7 +142,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       return JSON.parse(v);
     }
     return Promise.resolve<Manga[]>(
-      HotUpdateJSON.map((x, i) => ({
+      HotUpdateJSON.map((x) => ({
         link: `https://${super.getLink()}/manga/${x.IndexName}`,
         title: x.SeriesName,
         imageCover: this.getImageCover(html, x.IndexName),
@@ -234,7 +234,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       .get();
 
     const type = $('a[href*="/search/?type="]').text();
-    const imageCover = $('img.img-fluid.bottom-5').attr('src')!;
+    const imageCover = $('img.img-fluid.bottom-5').attr('src');
     const chapters = Chapters.map((chapter, index) => ({
       date: parseMangaSeeDate(chapter.Date),
       name: `${chapter.Type != '' ? chapter.Type : 'Chapter'} ${ChapterDisplay(

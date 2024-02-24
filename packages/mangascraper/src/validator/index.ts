@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Manga,
   MangaMultilingualChapter,
@@ -28,7 +29,9 @@ class MangaValidator {
    * @param chapter The chapter
    * @returns Returns a boolean indicating whether or not the chapter supports multiple languages
    */
-  public isMultilingualChapter(chapter: any): chapter is MangaMultilingualChapter {
+  public isMultilingualChapter(
+    chapter: any,
+  ): chapter is MangaMultilingualChapter {
     return 'language' in chapter;
   }
 
@@ -68,7 +71,8 @@ class MangaValidator {
      */
     for (let i = 0; i < genres.length; i++) {
       for (let x = 0; x < ADULT_GENRES.length; x++) {
-        if (genres[i].toLowerCase() === ADULT_GENRES[x].toLowerCase()) return true;
+        if (genres[i].toLowerCase() === ADULT_GENRES[x].toLowerCase())
+          return true;
       }
     }
     return false;

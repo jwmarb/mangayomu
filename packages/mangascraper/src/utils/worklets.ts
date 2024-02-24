@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IWorkletNativeApi } from './types';
 const lib = 'react-native-worklets-core';
 export async function isWorkletSupported() {

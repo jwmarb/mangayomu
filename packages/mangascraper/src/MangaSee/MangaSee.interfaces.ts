@@ -6,13 +6,7 @@ import {
   WithStatus,
   WithType,
   MangaMeta,
-  ExclusiveInclusiveFilter,
-  WithGenresFilter,
-  WithSortFilter,
-  WithOfficialTranslationFilter,
-  WithStatusFilter,
   MangaChapter,
-  WithDate,
   WithOfficialTranslations,
   WithAltTitles,
   WithAuthors,
@@ -32,8 +26,7 @@ export type MangaSeeManga = Manga &
     vm: number;
   };
 
-export type MangaSeeMangaMeta = MangaMeta &
-  MangaMeta<MangaSeeChapter> &
+export type MangaSeeMangaMeta = MangaMeta<MangaSeeChapter> &
   WithGenres &
   WithYearReleased &
   WithType &
