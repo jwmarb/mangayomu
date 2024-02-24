@@ -27,16 +27,17 @@
     ]
   },
   "scripts": {
-    "build": "yarn nx run-many --target=build --exclude=@mangayomu/nextjs",
-    "reset": "yarn nx run-many --target=reset --all",
+    "build": "yarn nx run-many --parallel=10 --target=build --exclude=@mangayomu/nextjs",
+    "reset": "yarn nx run-many --parallel=10 --target=reset --all",
     "postreset": "rm -rf yarn.lock node_modules",
-    "test": "yarn nx run-many --target=test --all",
+    "test": "yarn nx run-many --parallel=10 --target=test --all",
     "android:metro": "yarn workspace @mangayomu/mobile start",
     "android:start": "yarn workspace @mangayomu/mobile android",
     "start:web": "yarn --cwd apps/nextjs start",
     "build:web": "yarn --cwd apps/nextjs build && yarn build",
     "dev:web": "yarn workspace @mangayomu/nextjs dev",
-    "syncdeps": "syncpack fix-mismatches"
+    "syncdeps": "syncpack fix-mismatches",
+    "lint": "yarn nx run-many --parallel=10 --target=lint --exclude=@mangayomu/nextjs,@mangayomu/mobile --fix"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.48.1",
