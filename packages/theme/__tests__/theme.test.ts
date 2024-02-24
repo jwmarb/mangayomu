@@ -1,4 +1,4 @@
-import { Colors, createTheme, DefaultTheme, DefaultThemeHelpers } from '..';
+import { Colors, createTheme, DefaultTheme, DefaultThemeHelpers } from '../src';
 
 interface TestTheme extends DefaultTheme {
   helpers: typeof helpers & DefaultThemeHelpers;
