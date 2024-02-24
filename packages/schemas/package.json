@@ -4,7 +4,8 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "build": "tsc --build"
+    "build": "tsc --build",
+    "reset": "rm -rf node_modules dist"
   },
   "dependencies": {
     "@mangayomu/language-codes": "1.0.0",

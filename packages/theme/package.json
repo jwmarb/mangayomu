@@ -5,8 +5,8 @@
   "types": "dist/src/index.d.ts",
   "main": "dist/src/index.js",
   "scripts": {
-    "build": "rm -rf dist && tsc",
-    "reset": "rm -rf node_modules",
+    "build": "tsc --build",
+    "reset": "rm -rf node_modules dist",
     "test": "jest"
   },
   "keywords": [],
