@@ -38,9 +38,11 @@ export default function assertType(
     | object
     | List<unknown>
     | Class<unknown>
+    | unknown
   )[]
 ): AssertionResult {
   for (let i = 0; i < types.length; i++) {
+    if (types[i] === t.any) return PASS;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof types[i] === 'string' && JS_TYPES_SET.has(types[i] as any)) {
       if (

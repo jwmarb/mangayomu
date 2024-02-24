@@ -9,6 +9,7 @@ export enum t {
   function = '__function__',
   undefined = '__undefined__',
   null = '__null__',
+  any = '__any__',
 }
 
 export const JS_TYPES = [

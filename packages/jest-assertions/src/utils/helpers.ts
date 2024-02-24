@@ -90,6 +90,8 @@ export type JSType<T> = IsUnion<T> extends true
   ? {
       [K in keyof T]-?: JSType<T[K]>;
     }
+  : unknown extends T
+  ? t.any
   : string extends T
   ? t.string
   : number extends T

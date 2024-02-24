@@ -865,3 +865,36 @@ it('assertObjectType (union array of classes)', () => {
     ).pass,
   ).toBeFalsy();
 });
+
+it('assertObjectType (unknown properties)', () => {
+  type T = {
+    a: unknown[];
+    b: unknown;
+    c: {
+      nested: unknown;
+      arr: (unknown | null)[];
+    };
+  };
+  const assertion: JSType<T> = {
+    a: list([t.any]),
+    b: t.any,
+    c: {
+      nested: t.any,
+      arr: list([t.any]),
+    },
+  };
+
+  expect(
+    assertObjectType<T>(
+      {
+        a: ['', 0, null, undefined, {}, []],
+        b: 10,
+        c: {
+          nested: null,
+          arr: [null, 'hello', 0, {}, []],
+        },
+      },
+      assertion,
+    ).pass,
+  ).toBeTruthy();
+});

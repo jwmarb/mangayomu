@@ -86,3 +86,9 @@ it('assertType (Object)', () => {
   expect(result.pass).toBeTruthy();
   expect(result.message()).toBe('');
 });
+
+it('assertType (unknown types)', () => {
+  result = assertType('unknown' as unknown, t.any);
+  expect(result.pass).toBeTruthy();
+  expect(result.message()).toBe('');
+});
