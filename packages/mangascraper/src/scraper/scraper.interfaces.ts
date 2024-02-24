@@ -238,7 +238,7 @@ export declare type WithModificationDate = {
   };
 };
 
-export declare type MangaMeta<TChapter> = {
+export declare type MangaMeta<TChapter = unknown> = {
   /**
    * The chapters of the manga
    *
