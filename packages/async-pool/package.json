@@ -2,10 +2,13 @@
   "name": "async-pool",
   "version": "1.0.0",
   "description": "A library to customize concurrency for Promises",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc --build",
+    "reset": "rm -rf node_modules dist"
   },
   "devDependencies": {
     "jest": "^29.7.0",
