@@ -67,9 +67,11 @@ const async: AbstractAsyncResolver = (
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const resolvedArr = await resolver(pool.slice(0, r) as any); // It is necessary to slice to not return old promises
-      for (let i = 0; i < r; i++) {
-        yield resolvedArr[i];
+      if (r > 0) {
+        const resolvedArr = await resolver(pool.slice(0, r) as any); // It is necessary to slice to not return old promises
+        for (let i = 0; i < r; i++) {
+          yield resolvedArr[i];
+        }
       }
     },
   };
