@@ -1,40 +1,11 @@
 import { promiseAllResolver, promiseAllSettledResolver } from './resolvers';
 
-export type AbstractAsyncResolver = <T, R, Result = Awaited<R>>(
+function async<T, R, Result>(
   iterable: Iterable<T>,
   concurrencyLimit: number,
   asyncMapper: (element: T, index: number) => Promise<R>,
   resolver: (arr: Promise<R>[]) => Promise<Result[]>,
-) => {
-  [Symbol.asyncIterator]: () => AsyncGenerator<Result, void, unknown>;
-};
-
-export type AsyncResolver = <T, R>(
-  iterable: Iterable<T>,
-  concurrencyLimit: number,
-  asyncMapper: (element: T, index: number) => Promise<R>,
-) => {
-  [Symbol.asyncIterator]: () => AsyncGenerator<Awaited<R>, void, unknown>;
-};
-
-export type AsyncSettledResolver = <T, R>(
-  iterable: Iterable<T>,
-  concurrencyLimit: number,
-  asyncMapper: (element: T, index: number) => Promise<R>,
-) => {
-  [Symbol.asyncIterator]: () => AsyncGenerator<
-    PromiseSettledResult<R>,
-    void,
-    unknown
-  >;
-};
-
-const async: AbstractAsyncResolver = (
-  iterable,
-  concurrencyLimit,
-  asyncMapper,
-  resolver,
-) => {
+) {
   return {
     [Symbol.asyncIterator]: async function* () {
       // keeps track of current index
@@ -75,7 +46,7 @@ const async: AbstractAsyncResolver = (
       }
     },
   };
-};
+}
 
 /**
  * An asynchronous execution pool that is used in "for loops"
