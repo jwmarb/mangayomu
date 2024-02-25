@@ -1,16 +1,8 @@
-import { promiseAllResolver, promiseAllSettledResolver } from './resolvers';
-
-type AsyncMap = <T, R>(
-  array: T[],
-  concurrencyLimit: number,
-  mapFn: (element: T, i: number, self: T[]) => Promise<R>,
-) => Promise<Awaited<R>[]>;
-
-type AsyncSettledMap = <T, R>(
-  array: T[],
-  concurrencyLimit: number,
-  mapFn: (element: T, i: number, self: T[]) => Promise<R>,
-) => Promise<PromiseSettledResult<Awaited<R>>[]>;
+import {
+  MapFn,
+  promiseAllResolver,
+  promiseAllSettledResolver,
+} from './resolvers';
 
 async function async<T, R, Result>(
   array: T[],
@@ -48,10 +40,33 @@ async function async<T, R, Result>(
   return result;
 }
 
-export const asyncMap: AsyncMap = (array, concurrencyLimit, mapFn) =>
-  async(array, concurrencyLimit, mapFn, promiseAllResolver);
-export const asyncSettledMap: AsyncSettledMap = (
-  array,
-  concurrencyLimit,
-  mapFn,
-) => async(array, concurrencyLimit, mapFn, promiseAllSettledResolver);
+/**
+ * Asynchronous operation for `Array.map` that operates concurrently
+ * @param array The input array
+ * @param concurrencyLimit The # of concurrent executions
+ * @param mapFn A callback function that maps an element of `array` to something else
+ * @returns Returns a Promise containing the resolved elements of `array`
+ */
+export function asyncMap<T, R>(
+  array: T[],
+  concurrencyLimit: number,
+  mapFn: MapFn<T, R>,
+) {
+  return async(array, concurrencyLimit, mapFn, promiseAllResolver);
+}
+
+/**
+ * Asynchronous operation for `Array.map` that operates concurrently. If at least one Promise rejects in the input
+ * array, the whole operation will not throw an error.
+ * @param array The input array
+ * @param concurrencyLimit The # of concurrent executions
+ * @param mapFn A callback function that maps an element of `array` to something else
+ * @returns Returns each mapped element wrapped with a `PromiseSettledResult`
+ */
+export function asyncSettledMap<T, R>(
+  array: T[],
+  concurrencyLimit: number,
+  mapFn: MapFn<T, R>,
+) {
+  return async(array, concurrencyLimit, mapFn, promiseAllSettledResolver);
+}
