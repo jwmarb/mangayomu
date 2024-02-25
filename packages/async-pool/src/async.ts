@@ -1,3 +1,5 @@
+import { promiseAllResolver, promiseAllSettledResolver } from './resolvers';
+
 export type AbstractAsyncResolver = <T, R, Result = Awaited<R>>(
   iterable: Iterable<T>,
   concurrencyLimit: number,
@@ -54,7 +56,7 @@ const async: AbstractAsyncResolver = (
         pool[r] = asyncMapper(result.value as any, n);
         r = (r + 1) % concurrencyLimit;
 
-        if (r % concurrencyLimit === 0) {
+        if (r === 0) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const resolvedArr = await resolver(pool as any);
           for (let i = 0; i < concurrencyLimit; i++) {
@@ -72,14 +74,6 @@ const async: AbstractAsyncResolver = (
     },
   };
 };
-
-function promiseAllResolver<T>(arr: Promise<T>[]) {
-  return Promise.all(arr);
-}
-
-function promiseAllSettledResolver<T>(arr: Promise<T>[]) {
-  return Promise.allSettled(arr);
-}
 
 /**
  * An asynchronous execution pool that is used in "for loops"
