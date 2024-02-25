@@ -83,11 +83,13 @@ const async: AbstractAsyncResolver = (
  * @returns Returns an object containing an asynchronous iterator that will iterate through each element with `n` steps,
  * which is based on `concurrencyLimit`
  */
-export const asyncPool: AsyncResolver = (
-  iterable,
-  concurrencyLimit,
-  asyncMapper,
-) => async(iterable, concurrencyLimit, asyncMapper, promiseAllResolver);
+export function asyncPool<T, R>(
+  iterable: Iterable<T>,
+  concurrencyLimit: number,
+  asyncMapper: (element: T, index: number) => Promise<R>,
+) {
+  return async(iterable, concurrencyLimit, asyncMapper, promiseAllResolver);
+}
 
 /**
  * An asynchronous execution pool that is used in "for loops", however, each iteration is a `SettledPromiseResult`.
@@ -97,8 +99,15 @@ export const asyncPool: AsyncResolver = (
  * @returns Returns an object containing an asynchronous iterator that will iterate through each element with `n` steps,
  * which is based on `concurrencyLimit`
  */
-export const asyncSettledPool: AsyncSettledResolver = (
-  iterable,
-  concurrencyLimit,
-  asyncMapper,
-) => async(iterable, concurrencyLimit, asyncMapper, promiseAllSettledResolver);
+export function asyncSettledPool<T, R>(
+  iterable: Iterable<T>,
+  concurrencyLimit: number,
+  asyncMapper: (element: T, index: number) => Promise<R>,
+) {
+  return async(
+    iterable,
+    concurrencyLimit,
+    asyncMapper,
+    promiseAllSettledResolver,
+  );
+}
