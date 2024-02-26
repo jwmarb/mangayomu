@@ -1,4 +1,4 @@
-import { asyncPool } from '../src/async';
+import { asyncPool } from '../src';
 
 function delay(ms: number) {
   return new Promise<number>((res) => setTimeout(() => res(ms), ms));
