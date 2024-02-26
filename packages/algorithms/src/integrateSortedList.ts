@@ -5,6 +5,9 @@ export type Comparators<T, O> = {
   [K in keyof O]: Comparator<T, T>;
 };
 
+/**
+ * @deprecated
+ */
 export default function integrateSortedList<T>(
   arr: T[],
   _comparator: Comparator<T, T>,
