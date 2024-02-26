@@ -1,3 +1,15 @@
+/**
+ * A function that compares two elements. Return order should be based on `elementToFind`.
+ *
+ * @example
+ * ```ts
+ * const comparator: Comparator<number> = (elementToFind, item) => {
+ *   if (elementToFind > item) return 1;
+ *   else if (elementToFind === item) return 0;
+ *   else return -1; // elementToFind < item
+ * }
+ * ```
+ */
 export type Comparator<T, E = T> = (elementToFind: E, item: T) => number;
 
 export const AscendingStringComparator: Comparator<string, string> = (a, b) => {
