@@ -69,7 +69,7 @@ function lowerBound<T, E>(
       l = m + 1;
     }
   }
-  return l;
+  return comparator(elementToFind, arr[l]) === 0 ? l : -1;
 }
 
 function upperBound<T, E>(
@@ -89,9 +89,16 @@ function upperBound<T, E>(
       r = m;
     }
   }
-  return l - 1;
+  return comparator(elementToFind, arr[l - 1]) === 0 ? l - 1 : -1;
 }
 
+/**
+ * Gets the index range from the beginning inclusive to the end exclusive [start, end)
+ * @param arr The array
+ * @param elementToFind The element to find within the array
+ * @param comparator A function that compares `elementToFind` to some element E in `arr`
+ * @returns Returns the range [start, end)
+ */
 function range<T, E>(
   arr: ArrayLike<T>,
   elementToFind: E,
@@ -100,7 +107,7 @@ function range<T, E>(
   const l = lowerBound(arr, elementToFind, comparator);
   if (l === -1) return [-1, -1];
   const r = upperBound(arr, elementToFind, comparator);
-  return [l, r];
+  return [l, r + 1];
 }
 
 export const binary = {
