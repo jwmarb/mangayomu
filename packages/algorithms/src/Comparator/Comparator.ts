@@ -1,11 +1,18 @@
 export type Comparator<T, E = T> = (item: E, elementToFind: T) => number;
 
-export const StringComparator: Comparator<string, string> = (a, b) => {
+export const AscendingStringComparator: Comparator<string, string> = (a, b) => {
   return a.localeCompare(b);
 };
 
-export const NumberComparator: Comparator<number, number> = (a, b) => {
-  if (a < b) return -1;
-  else if (a === b) return 0;
-  else return 1;
+export const DescendingStringComparator: Comparator<string, string> = (
+  a,
+  b,
+) => {
+  return b.localeCompare(a);
 };
+
+export const AscendingNumberComparator: Comparator<number, number> = (a, b) =>
+  a - b;
+
+export const DescendingNumberComparator: Comparator<number, number> = (a, b) =>
+  b - a;
