@@ -1,4 +1,4 @@
-export type Comparator<T, E = T> = (elementToFind: T, item: E) => number;
+export type Comparator<T, E = T> = (elementToFind: E, item: T) => number;
 
 export const AscendingStringComparator: Comparator<string, string> = (a, b) => {
   return a.localeCompare(b);
