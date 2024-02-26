@@ -57,19 +57,19 @@ function lowerBound<T, E>(
   elementToFind: E,
   comparator: Comparator<T, E>,
 ): number {
-  let l = 0;
-  let r = arr.length - 1;
-  let pos = -1;
+  let l = 0,
+    r = arr.length - 1,
+    m: number;
   while (l < r) {
-    const m = Math.floor((l + r) / 2);
+    m = Math.floor((l + r) / 2);
     const comparison = comparator(elementToFind, arr[m]);
-    if (comparison === 0) {
-      pos = m;
-      r = m - 1;
-    } else if (comparison > 0) l = m + 1;
-    else r = m - 1;
+    if (comparison <= 0) {
+      r = m;
+    } else {
+      l = m + 1;
+    }
   }
-  return pos;
+  return l;
 }
 
 function upperBound<T, E>(
@@ -77,19 +77,19 @@ function upperBound<T, E>(
   elementToFind: E,
   comparator: Comparator<T, E>,
 ): number {
-  let l = 0;
-  let r = arr.length - 1;
-  let pos = -1;
+  let l = 0,
+    r = arr.length,
+    m: number;
   while (l < r) {
-    const m = Math.floor((l + r) / 2);
+    m = Math.floor((l + r) / 2);
     const comparison = comparator(elementToFind, arr[m]);
-    if (comparison === 0) {
-      pos = m;
+    if (comparison >= 0) {
       l = m + 1;
-    } else if (comparison > 0) l = m + 1;
-    else r = m - 1;
+    } else {
+      r = m;
+    }
   }
-  return pos;
+  return l - 1;
 }
 
 function range<T, E>(
