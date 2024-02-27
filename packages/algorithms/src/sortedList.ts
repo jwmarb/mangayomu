@@ -40,8 +40,6 @@ export function remove<T>(
       idx = binary.search(array, el[i], comparator);
       if (idx !== -1) {
         array.splice(idx, 1);
-      } else {
-        return false;
       }
     }
   } else {

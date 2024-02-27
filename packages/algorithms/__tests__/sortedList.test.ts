@@ -31,5 +31,7 @@ test('removes elements from sorted array', () => {
   expect(remove(numbers, [], AscendingNumberComparator)).toBeTruthy();
   expect(numbers).toEqual([0, 1, 2, 3, 4, 6, 7]);
 
-  expect(remove(numbers, [8], AscendingNumberComparator)).toBeFalsy();
+  expect(remove(numbers, [8], AscendingNumberComparator)).toBeTruthy();
+  expect(remove(numbers, [0, 2, 8], AscendingNumberComparator)).toBeTruthy();
+  expect(numbers).toEqual([1, 3, 4, 6, 7]);
 });
