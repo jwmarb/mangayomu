@@ -30,4 +30,6 @@ test('removes elements from sorted array', () => {
 
   expect(remove(numbers, [], AscendingNumberComparator)).toBeTruthy();
   expect(numbers).toEqual([0, 1, 2, 3, 4, 6, 7]);
+
+  expect(remove(numbers, [8], AscendingNumberComparator)).toBeFalsy();
 });
