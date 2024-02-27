@@ -20,18 +20,22 @@ test('removes elements from sorted array', () => {
 
   expect(
     remove(numbers, [0, 1, 2, 3, 4, 5, 6, 7], AscendingNumberComparator),
-  ).toBeTruthy();
+  ).toBe(8);
   expect(numbers).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
 
-  expect(remove(numbers, 5, AscendingNumberComparator)).toBeTruthy();
+  expect(remove(numbers, 5, AscendingNumberComparator)).toBe(1);
   expect(numbers).toEqual([0, 1, 2, 3, 4, 6, 7]);
 
-  expect(remove(numbers, 831783, AscendingNumberComparator)).toBeFalsy();
+  expect(remove(numbers, 831783, AscendingNumberComparator)).toBe(0);
 
-  expect(remove(numbers, [], AscendingNumberComparator)).toBeTruthy();
+  expect(remove(numbers, [], AscendingNumberComparator)).toBe(0);
   expect(numbers).toEqual([0, 1, 2, 3, 4, 6, 7]);
 
-  expect(remove(numbers, [8], AscendingNumberComparator)).toBeTruthy();
-  expect(remove(numbers, [0, 2, 8], AscendingNumberComparator)).toBeTruthy();
+  expect(remove(numbers, [8], AscendingNumberComparator)).toBe(0);
+  expect(remove(numbers, [0, 2, 8], AscendingNumberComparator)).toBe(2);
   expect(numbers).toEqual([1, 3, 4, 6, 7]);
+
+  expect(remove([], 1, AscendingNumberComparator)).toBe(0);
+  expect(remove([], [30], AscendingNumberComparator)).toBe(0);
+  expect(remove([], [], AscendingNumberComparator)).toBe(0);
 });

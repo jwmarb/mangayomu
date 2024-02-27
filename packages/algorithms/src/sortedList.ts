@@ -26,13 +26,14 @@ export function add<T>(array: T[], el: T | T[], comparator: Comparator<T>) {
  * @param array A sorted array of elements
  * @param el The element(s) to remove from the `array`
  * @param comparator A comparison function that compares `el` to `array[i]`
- * @returns Returns a boolean indicating whether the operation is successful
+ * @returns Returns a number indicating the # of elements removed
  */
 export function remove<T>(
   array: T[],
   el: T | T[],
   comparator: Comparator<T>,
-): boolean {
+): number {
+  let removed = 0;
   if (Array.isArray(el)) {
     const n = el.length;
     let idx = -1;
@@ -40,15 +41,15 @@ export function remove<T>(
       idx = binary.search(array, el[i], comparator);
       if (idx !== -1) {
         array.splice(idx, 1);
+        removed++;
       }
     }
   } else {
     const idx = binary.search(array, el, comparator);
     if (idx !== -1) {
       array.splice(idx, 1);
-    } else {
-      return false;
+      removed++;
     }
   }
-  return true;
+  return removed;
 }
