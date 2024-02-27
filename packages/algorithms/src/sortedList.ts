@@ -33,6 +33,7 @@ export function remove<T>(
   el: T | T[],
   comparator: Comparator<T>,
 ): number {
+  if (array.length === 0) return 0;
   let removed = 0;
   if (Array.isArray(el)) {
     const n = el.length;
