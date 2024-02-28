@@ -1,7 +1,8 @@
+/* eslint-disable no-undef */
 /**
  * @type {import("eslint").ESLint.ConfigData}
  */
 module.exports = {
-  extends: ['@react-native', '../../.eslintrc.js'],
+  extends: '../../.eslintrc.js',
   ignorePatterns: ['metro.config.js', 'index.js'],
 };
