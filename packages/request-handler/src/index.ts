@@ -91,8 +91,8 @@ export class HandlerRequest<M = Record<PropertyKey, unknown>> {
   }
   public headers<
     T extends Record<string, unknown>,
-  >(): typeof this.request.headers & T {
-    return this.request.headers as typeof this.request.headers & T;
+  >(): VercelRequest['headers'] & T {
+    return this.request.headers as VercelRequest['headers'] & T;
   }
   public body<T>(): T {
     return this.request.body;
