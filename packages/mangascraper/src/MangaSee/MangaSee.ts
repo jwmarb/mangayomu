@@ -19,7 +19,7 @@ import { Manga, MangaChapter } from '../scraper/scraper.interfaces';
 import {
   binary,
   integrateSortedList,
-  StringComparator,
+  AscendingStringComparator,
 } from '@mangayomu/algorithms';
 import { sortChapters } from '../scraper/scraper.helpers';
 import { WorkletFn, useWorklets } from '../utils/worklets';
@@ -321,7 +321,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
             binary.search(
               manga.g,
               filters.Genres.include[i],
-              StringComparator,
+              AscendingStringComparator,
             ) !== -1
           )
             return true;
@@ -335,7 +335,7 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
             binary.search(
               manga.g,
               filters.Genres.exclude[i],
-              StringComparator,
+              AscendingStringComparator,
             ) !== -1
           )
             return false;
