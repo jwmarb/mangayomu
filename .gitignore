@@ -13,6 +13,7 @@ npm-debug.*
 web-build/
 .yarn
 yarn-error.log
+.nx
 
 # macOS
 .DS_Store
