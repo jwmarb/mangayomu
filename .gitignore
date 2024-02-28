@@ -90,3 +90,5 @@ npm-debug.log
 apps/nextjs/api/**/*.js
 **/*.tsbuildinfo
 **/*/bundle
+
+storybook-static

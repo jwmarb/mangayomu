@@ -14,17 +14,20 @@
     ],
     "nohoist": [
       "**/react-native",
+      "**/react-native/**",
       "**/react-native-*",
+      "**/react-native-*/**",
       "**/@react-native",
-      "**/@react-native/*",
-      "**/@react-native-community/*",
+      "**/@react-native/**",
+      "**/@react-native-community/**",
       "**/@react-native-*",
-      "**/next",
-      "**/@spartiuz/chromium-min",
+      "**/@react-native-*/**",
       "**/@realm",
-      "**/@realm/*",
+      "**/@realm/**",
       "**/realm",
-      "**/realm/*"
+      "**/realm/**",
+      "**/next",
+      "**/next/**"
     ]
   },
   "scripts": {
@@ -41,11 +44,14 @@
     "lint": "yarn nx run-many --parallel=10 --target=lint --exclude=@mangayomu/nextjs,@mangayomu/mobile-legacy --fix"
   },
   "devDependencies": {
+    "@nx/storybook": "18.0.5",
+    "@nx/web": "18.0.5",
     "@typescript-eslint/eslint-plugin": "^5.48.1",
     "@typescript-eslint/parser": "^5.48.1",
     "eslint": "8.43.0",
     "eslint-config-prettier": "^8.6.0",
     "nx": "18.0.5",
+    "storybook": "^7.5.3",
     "syncpack": "^12.3.0"
   },
   "packageManager": "yarn@3.3.1",
@@ -55,5 +61,6 @@
   "resolutions": {
     "@types/react": "18.2.14",
     "@types/react-dom": "18.2.6"
-  }
+  },
+  "dependencies": {}
 }
