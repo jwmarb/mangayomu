@@ -38,14 +38,14 @@
     "build:web": "yarn --cwd apps/nextjs build && yarn build",
     "dev:web": "yarn workspace @mangayomu/nextjs dev",
     "syncdeps": "syncpack fix-mismatches",
-    "lint": "yarn nx run-many --parallel=10 --target=lint --exclude=@mangayomu/nextjs,@mangayomu/mobile --fix"
+    "lint": "yarn nx run-many --parallel=10 --target=lint --exclude=@mangayomu/nextjs,@mangayomu/mobile-legacy --fix"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.48.1",
     "@typescript-eslint/parser": "^5.48.1",
     "eslint": "8.43.0",
     "eslint-config-prettier": "^8.6.0",
-    "nx": "^16.4.0",
+    "nx": "18.0.5",
     "syncpack": "^12.3.0"
   },
   "packageManager": "yarn@3.3.1",
