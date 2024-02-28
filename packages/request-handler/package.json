@@ -5,7 +5,7 @@
   "types": "./dist/src/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "build": "rm -rf dist && tsc",
+    "build": "rm -rf dist && tsc --build",
     "reset": "rm -rf node_modules"
   },
   "dependencies": {
