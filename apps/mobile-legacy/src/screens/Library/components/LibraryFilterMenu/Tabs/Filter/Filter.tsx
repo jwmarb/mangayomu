@@ -5,7 +5,7 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import Button from '@components/Button';
 import { MangaHost } from '@mangayomu/mangascraper/src';
 import integrateSortedList from '@helpers/integrateSortedList';
-import { StringComparator } from '@mangayomu/algorithms';
+import { AscendingStringComparator } from '@mangayomu/algorithms';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import {
   ACCORDION_ITEM_HEIGHT,
@@ -100,7 +100,7 @@ const Filter: React.FC<FilterProps> = (props) => {
   const sortedGenres = React.useMemo(() => {
     const arr: string[] = [];
     for (const genre of genresSet) {
-      integrateSortedList(arr, StringComparator).add(genre);
+      integrateSortedList(arr, AscendingStringComparator).add(genre);
     }
     return arr;
   }, [genresSet]);

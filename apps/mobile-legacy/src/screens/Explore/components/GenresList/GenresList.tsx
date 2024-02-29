@@ -5,7 +5,7 @@ import Text from '@components/Text';
 import { useTheme } from '@emotion/react';
 import integrateSortedList from '@helpers/integrateSortedList';
 import useMangaHost from '@hooks/useMangaHost';
-import { StringComparator } from '@mangayomu/algorithms';
+import { AscendingStringComparator } from '@mangayomu/algorithms';
 import React from 'react';
 import { ListRenderItem } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
@@ -24,7 +24,7 @@ const GenresList: React.FC = () => {
     }
     const uniqArr: string[] = [];
     for (const genre of uniq) {
-      integrateSortedList(uniqArr, StringComparator).add(genre);
+      integrateSortedList(uniqArr, AscendingStringComparator).add(genre);
     }
     return uniqArr;
   }, [source.getSourcesLength()]);
