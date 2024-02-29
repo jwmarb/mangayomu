@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc --build",
-    "reset": "rm -rf dist",
+    "reset": "npx rimraf dist",
     "lint": "eslint index.ts"
   },
   "devDependencies": {

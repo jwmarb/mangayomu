@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "reset": "rm -rf node_modules && rm -rf .vercel && rm -rf .next && rm -rf yarn.lock",
+    "reset": "npx rimraf node_modules && npx rimraf .vercel && npx rimraf .next && npx rimraf yarn.lock",
     "dev": "next dev"
   },
   "dependencies": {

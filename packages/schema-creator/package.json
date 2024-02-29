@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc --build",
-    "reset": "rm -rf dist"
+    "reset": "npx rimraf dist"
   },
   "keywords": [],
   "author": "",

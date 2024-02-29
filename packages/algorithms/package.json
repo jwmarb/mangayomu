@@ -6,8 +6,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rm -rf dist && tsc --build",
-    "reset": "rm -rf dist",
+    "build": "npx rimraf dist && tsc --build",
+    "reset": "npx rimraf dist",
     "lint": "eslint ./src",
     "test": "jest"
   },

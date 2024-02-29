@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "test": "jest",
-    "reset": "rm -rf coverage node_modules"
+    "reset": "npx rimraf coverage node_modules"
   },
   "devDependencies": {
     "jest": "^29.7.0",

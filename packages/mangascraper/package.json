@@ -18,7 +18,7 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "reset": "rm -rf node_modules coverage dist",
+    "reset": "npx rimraf node_modules coverage dist",
     "test": "jest",
     "lint": "eslint ./src"
   },

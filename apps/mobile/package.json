@@ -8,8 +8,8 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "reset": "rm -rf node_modules yarn.lock android/src/app/build",
-    "android:production": "rm -rf android/src/app/build && react-native run-android --mode release"
+    "reset": "npx rimraf node_modules yarn.lock android/src/app/build",
+    "android:production": "npx rimraf android/src/app/build && react-native run-android --mode release"
   },
   "dependencies": {
     "react": "18.2.0",

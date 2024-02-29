@@ -5,8 +5,8 @@
   "types": "./dist/src/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "build": "rm -rf dist && tsc --build",
-    "reset": "rm -rf node_modules"
+    "build": "npx rimraf dist && tsc --build",
+    "reset": "npx rimraf node_modules"
   },
   "dependencies": {
     "http-status-codes": "^2.2.0",

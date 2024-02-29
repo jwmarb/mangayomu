@@ -6,7 +6,7 @@
   "main": "dist/src/index.js",
   "scripts": {
     "build": "tsc --build",
-    "reset": "rm -rf node_modules dist",
+    "reset": "npx rimraf node_modules dist",
     "test": "jest",
     "lint": "eslint ./src"
   },

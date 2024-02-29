@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "android:release": "rm -rf android/app/build && react-native run-android --mode release",
+    "android:release": "npx rimraf android/app/build && react-native run-android --mode release",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "reset": "rm -rf node_modules && rm -rf yarn.lock",
+    "reset": "npx rimraf node_modules && npx rimraf yarn.lock",
     "prestorybook": "rnstl",
     "storybook": "start-storybook -p 7007",
     "build-storybook": "build-storybook"
