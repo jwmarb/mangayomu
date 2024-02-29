@@ -15,6 +15,7 @@ const config = {
   watchFolders: [
     ...metroTools.watchFolders,
     path.resolve(__dirname, 'node_modules'),
+    path.resolve('..', '..', 'node_modules'),
   ],
   resolver: {
     blockList: exclusionList(metroTools.blockList),
