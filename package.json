@@ -35,6 +35,8 @@
       "@mangayomu/mobile/react-cosmos-native/**",
       "@mangayomu/mobile/react-cosmos",
       "@mangayomu/mobile/react-cosmos/**",
+      "@mangayomu/mobile/@testing-library/react-native",
+      "@mangayomu/mobile/@testing-library/react-native/**",
       "**/@realm",
       "**/@realm/**",
       "**/realm",
