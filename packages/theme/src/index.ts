@@ -75,7 +75,7 @@ export interface DefaultThemeHelpers {
 }
 
 export interface IThemeHelpers {
-  helpers: ThemeHelpers;
+  helpers?: ThemeHelpers;
 }
 
 export interface DefaultTheme extends IThemeHelpers {
@@ -88,7 +88,7 @@ export interface DefaultTheme extends IThemeHelpers {
     background: BackgroundColor;
     text: TextColor;
   };
-  style: {
+  style?: {
     borderRadius: number;
     borderWidth: number;
     spacing: {
@@ -100,7 +100,7 @@ export interface DefaultTheme extends IThemeHelpers {
   };
 }
 
-export type Spacing = keyof DefaultTheme['style']['spacing'];
+export type Spacing = keyof NonNullable<DefaultTheme['style']>['spacing'];
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Theme extends DefaultTheme {}
@@ -220,31 +220,44 @@ export function createTheme<T extends Theme>(
     helpers: {},
   };
 
-  for (const key in template.helpers) {
+  if (template.helpers) {
+    for (const key in template.helpers) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (parsed.helpers as any)[key] = (...args: unknown[]) =>
+        (template.helpers as any)[key](...args)(parsed);
+
+      (oppositeParsed.helpers as any)[key] = (...args: unknown[]) =>
+        (template.helpers as any)[key](...args)(oppositeParsed);
+    }
+    (
+      parsed as unknown as { helpers: NonNullable<IThemeHelpers['helpers']> }
+    ).helpers['isPaletteColor'] = isPaletteColor(parsed as DefaultTheme);
+    (
+      parsed as unknown as { helpers: NonNullable<IThemeHelpers['helpers']> }
+    ).helpers['getColor'] = getColor(parsed as DefaultTheme);
+    (
+      parsed as unknown as { helpers: NonNullable<IThemeHelpers['helpers']> }
+    ).helpers['getContrastText'] = parsedGetContrastText;
+
+    (
+      oppositeParsed as unknown as {
+        helpers: NonNullable<IThemeHelpers['helpers']>;
+      }
+    ).helpers['isPaletteColor'] = isPaletteColor(
+      oppositeParsed as DefaultTheme,
+    );
+    (
+      oppositeParsed as unknown as {
+        helpers: NonNullable<IThemeHelpers['helpers']>;
+      }
+    ).helpers['getColor'] = getColor(oppositeParsed as DefaultTheme);
+    (
+      oppositeParsed as unknown as {
+        helpers: NonNullable<IThemeHelpers['helpers']>;
+      }
+    ).helpers['getContrastText'] = parsedGetContrastText;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (parsed.helpers as any)[key] = (...args: unknown[]) =>
-      (template.helpers as any)[key](...args)(parsed);
-
-    (oppositeParsed.helpers as any)[key] = (...args: unknown[]) =>
-      (template.helpers as any)[key](...args)(oppositeParsed);
+    (parsed as any).opposite = oppositeParsed;
   }
-  (parsed as DefaultTheme).helpers['isPaletteColor'] = isPaletteColor(
-    parsed as DefaultTheme,
-  );
-  (parsed as DefaultTheme).helpers['getColor'] = getColor(
-    parsed as DefaultTheme,
-  );
-  (parsed as DefaultTheme).helpers['getContrastText'] = parsedGetContrastText;
-
-  (oppositeParsed as DefaultTheme).helpers['isPaletteColor'] = isPaletteColor(
-    oppositeParsed as DefaultTheme,
-  );
-  (oppositeParsed as DefaultTheme).helpers['getColor'] = getColor(
-    oppositeParsed as DefaultTheme,
-  );
-  (oppositeParsed as DefaultTheme).helpers['getContrastText'] =
-    parsedGetContrastText;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (parsed as any).opposite = oppositeParsed;
   return parsed as T & DefaultThemeHelpers & { opposite: T };
 }
