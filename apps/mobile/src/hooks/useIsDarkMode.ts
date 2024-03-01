@@ -7,8 +7,5 @@ import { ThemeDarkModeContext } from '../providers/theme';
  */
 export default function useIsDarkMode() {
   const context = React.useContext(ThemeDarkModeContext);
-  if (context == null)
-    throw new Error('Tried to consume ThemeContext without a provider');
-
   return context;
 }
