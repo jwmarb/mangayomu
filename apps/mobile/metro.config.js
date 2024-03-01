@@ -1,4 +1,4 @@
-const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
+const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 const path = require('path');
 /**
  * Metro configuration
@@ -11,6 +11,7 @@ const config = {
     path.resolve('node_modules'),
     // Here we need to resolve node_modules because there are dependencies that aren't part of nohoist
     path.resolve('..', '..', 'node_modules'),
+    path.resolve('..', '..', 'packages'),
   ],
 };
 
