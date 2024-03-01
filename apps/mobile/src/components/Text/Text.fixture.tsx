@@ -7,8 +7,6 @@ import Text, {
   TextColors,
   TextVariants,
 } from './Text';
-import { Button, StyleSheet } from 'react-native';
-import useDarkModeSetter from '../../hooks/useDarkModeSetter';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelect, useValue } from 'react-cosmos/client';
 import useModeSelect from '../../hooks/useModeSelect';
