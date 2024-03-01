@@ -2,6 +2,7 @@ import { Colors, createTheme, DefaultTheme, DefaultThemeHelpers } from '../src';
 
 interface TestTheme extends DefaultTheme {
   helpers: typeof helpers & DefaultThemeHelpers;
+  style: NonNullable<DefaultTheme['style']>;
 }
 
 interface CustomPaletteTheme extends DefaultTheme {
