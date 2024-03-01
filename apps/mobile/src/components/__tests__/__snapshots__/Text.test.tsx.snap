@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<Text
+  style={
+    [
+      {
+        "fontSize": 16,
+        "fontWeight": "normal",
+      },
+      {
+        "color": "rgba(0, 0, 0, 0.87)",
+      },
+      {
+        "textAlign": "left",
+      },
+      undefined,
+    ]
+  }
+>
+  Hello World
+</Text>
+`;
