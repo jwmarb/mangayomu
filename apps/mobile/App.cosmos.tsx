@@ -4,6 +4,7 @@ import { rendererConfig, moduleWrappers } from './cosmos.imports';
 
 // react-cosmos-native does not support TurboModules because NativeModules.SourceCode.scriptURL returns undefined. As a
 // fix, the a websocket URL it would have created is hard-coded here and will remain here until they release a patch for this
+// react-cosmos-native only works with a simulator and not a physical device
 import * as Cosmos from 'react-cosmos-native/dist/getSocketUrl';
 type CosmosImport = {
   getSocketUrl: () => string;
