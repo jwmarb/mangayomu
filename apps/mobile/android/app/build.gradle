@@ -76,7 +76,7 @@ android {
 
     namespace "com.mangayomu"
     defaultConfig {
-        applicationId "com.mangayomu"
+        applicationId "com.mangayomu.dev"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
