@@ -2,8 +2,6 @@ import {
   Pressable as NativePressable,
   PressableAndroidRippleConfig,
   PressableProps as NativePressableProps,
-  ViewStyle,
-  StyleProp,
 } from 'react-native';
 import { createThemedProps } from '../../utils/theme';
 import { pressableStyles } from './styles';
