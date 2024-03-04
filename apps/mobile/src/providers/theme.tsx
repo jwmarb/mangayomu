@@ -20,6 +20,16 @@ declare module '@mangayomu/theme' {
       };
     };
     helpers: ThemeHelpers;
+    style: {
+      rippleRadius: number;
+      borderRadius: number;
+      size: {
+        s: number;
+        m: number;
+        l: number;
+        xl: number;
+      };
+    };
   }
 }
 
@@ -45,7 +55,7 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
     palette: {
       skeleton: color('rgba(255, 255, 255, 0.12)', 'rgba(0, 0, 0, 0.12)'),
       action: {
-        ripple: color('#606060', '#C4C4C4'),
+        ripple: color('#606060', '#484848'),
         disabled: color('#102A2D', '#EFEFEF'),
       },
       primary: {
@@ -84,6 +94,16 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
         hiatus: color('#ffc53d', '#ffe58f'),
         discontinued: color('#f5222d', '#ff7875'),
         completed: color('#434343', '#8c8c8c'),
+      },
+    },
+    style: {
+      rippleRadius: 16,
+      borderRadius: 10,
+      size: {
+        s: 4,
+        m: 8,
+        l: 12,
+        xl: 16,
       },
     },
   }),
