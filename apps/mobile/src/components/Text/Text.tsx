@@ -2,6 +2,7 @@ import React from 'react';
 import { TextProps as NativeTextProps, Text as NativeText } from 'react-native';
 import { variants, colors, alignments } from './styles';
 import useStyles from '../../hooks/useStyles';
+import { APP_COLORS } from '../types';
 
 export const TEXT_VARIANTS = [
   'h1',
@@ -12,8 +13,7 @@ export const TEXT_VARIANTS = [
   'button',
 ] as const;
 export const TEXT_COLORS = [
-  'primary',
-  'secondary',
+  ...APP_COLORS,
   'textPrimary',
   'textSecondary',
   'disabled',
@@ -30,6 +30,9 @@ export type TextProps = NativeTextProps & {
   contrast?: boolean;
 };
 
+/**
+ * Text component to render text.
+ */
 function Text(props: TextProps, ref: React.ForwardedRef<NativeText>) {
   const {
     variant: variantProp = 'body1',
