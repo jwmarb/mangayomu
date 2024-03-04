@@ -3,6 +3,11 @@ import { StyleSheet } from 'react-native';
 import { lightTheme, darkTheme } from '../providers/theme';
 import { Theme } from '@mangayomu/theme';
 
+/**
+ * Same as `StyleSheet.create` except the theme can be passed into it to create theme-dependent styles
+ * @param styles A callback function with the theme passed as an argument that returns styles
+ * @returns Returns an array with a light and dark theme styles
+ */
 export function createStyles<
   T extends StyleSheet.NamedStyles<any> | StyleSheet.NamedStyles<T>,
 >(styles: (theme: Theme) => T) {
@@ -10,4 +15,13 @@ export function createStyles<
     StyleSheet.create(styles(lightTheme)),
     StyleSheet.create(styles(darkTheme)),
   ] as const;
+}
+
+/**
+ * Creates props with a theme imbued with it
+ * @param withProps A callback function with the theme passed as an argument that returns props
+ * @returns Returns an array with a light theme and a dark theme props.
+ */
+export function createThemedProps<T>(withProps: (theme: Theme) => T) {
+  return [withProps(lightTheme), withProps(darkTheme)] as const;
 }
