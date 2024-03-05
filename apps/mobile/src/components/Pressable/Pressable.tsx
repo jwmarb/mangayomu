@@ -6,6 +6,7 @@ import {
 import { createThemedProps } from '../../utils/theme';
 import { pressableStyles } from './styles';
 import useThemedProps from '../../hooks/useThemedProps';
+import useContrast from '../../hooks/useContrast';
 
 const themedProps = createThemedProps((theme) => ({
   androidRipple: {
@@ -24,7 +25,8 @@ export type PressableProps = NativePressableProps & {
  * @returns
  */
 export default function Pressable(props: PressableProps) {
-  const { androidRipple } = useThemedProps(themedProps, props.contrast);
+  const contrast = useContrast(props.contrast);
+  const { androidRipple } = useThemedProps(themedProps, contrast);
   props.android_ripple = {
     ...props.android_ripple,
     ...androidRipple,
