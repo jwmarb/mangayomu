@@ -1,5 +1,5 @@
 import { StyleSheet, TextStyle } from 'react-native';
-import { TextAlignments, TextColors, TextVariants } from './Text';
+import { TextAlignments, TextColors, TextVariants } from '../types';
 import { createStyles } from '../../utils/theme';
 export const variants = StyleSheet.create<Record<TextVariants, TextStyle>>({
   h1: {
@@ -48,6 +48,9 @@ export const colors = createStyles<Record<TextColors, TextStyle>>((theme) => ({
   },
   disabled: {
     color: theme.palette.text.disabled,
+  },
+  error: {
+    color: theme.palette.error.main,
   },
 }));
 
