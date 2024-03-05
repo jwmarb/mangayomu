@@ -16,7 +16,7 @@ export const variants = (color: ButtonColors) =>
 export const styles = (variant: ButtonVariants, color: ButtonColors) =>
   createStyles((theme) => ({
     button: {
-      paddingHorizontal: theme.style.size.xl,
+      paddingHorizontal: theme.style.size.xxl,
       paddingVertical: theme.style.size.l,
     },
     container: {

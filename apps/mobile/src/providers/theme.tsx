@@ -28,6 +28,7 @@ declare module '@mangayomu/theme' {
         m: number;
         l: number;
         xl: number;
+        xxl: number;
       };
     };
   }
@@ -98,12 +99,13 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
     },
     style: {
       rippleRadius: 16,
-      borderRadius: 10,
+      borderRadius: 32,
       size: {
         s: 4,
         m: 8,
         l: 12,
         xl: 16,
+        xxl: 20,
       },
     },
   }),
