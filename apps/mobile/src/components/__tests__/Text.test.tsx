@@ -4,12 +4,7 @@ import Text from '../Text';
 import { it } from '@jest/globals';
 import renderer from 'react-test-renderer';
 
-jest.mock('react-native-mmkv', () => ({
-  useMMKVBoolean: () => [undefined, undefined],
-  MMKV: class MMKV {},
-}));
-
-jest.mock('../../hooks/useIsDarkMode', () => jest.fn());
+jest.mock('react-native-mmkv');
 
 it('renders correctly', () => {
   const tree = renderer.create(<Text>Hello World</Text>).toJSON();

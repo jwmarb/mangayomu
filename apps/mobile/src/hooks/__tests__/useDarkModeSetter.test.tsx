@@ -5,11 +5,6 @@ import { Button, Text, View } from 'react-native';
 import useIsDarkMode from '../useIsDarkMode';
 import { ThemeProvider } from '../../providers/theme';
 
-jest.mock('react-native-mmkv', () => ({
-  useMMKVBoolean: () => jest.requireActual('react').useState(),
-  MMKV: class MMKV {},
-}));
-
 beforeAll(() => {
   jest.spyOn(console, 'error').mockImplementation(jest.fn());
 });
