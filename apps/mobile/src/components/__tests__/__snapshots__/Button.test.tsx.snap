@@ -1,0 +1,81 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders properly 1`] = `
+<View
+  style={
+    {
+      "borderColor": "transparent",
+      "borderRadius": 32,
+      "borderWidth": 1.5,
+      "overflow": "hidden",
+    }
+  }
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      [
+        {
+          "flex": 1,
+        },
+        [
+          {},
+          {
+            "paddingHorizontal": 20,
+            "paddingVertical": 12,
+          },
+        ],
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "fontSize": 16,
+            "fontWeight": "500",
+            "letterSpacing": 0.56,
+          },
+          {
+            "color": "#1996FD",
+          },
+          {
+            "textAlign": "left",
+          },
+          undefined,
+        ]
+      }
+    >
+      My Button Component
+    </Text>
+  </View>
+</View>
+`;
