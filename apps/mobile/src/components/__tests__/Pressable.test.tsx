@@ -39,4 +39,5 @@ test('style prop rendered properly', async () => {
   jest.runOnlyPendingTimers();
 
   expect(style).toHaveBeenCalled();
+  expect(style).toHaveReturnedWith({ backgroundColor: 'blue' });
 });
