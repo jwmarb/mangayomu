@@ -1,6 +1,6 @@
 import { StyleSheet, TextStyle } from 'react-native';
-import { TextAlignments, TextColors, TextVariants } from '../types';
-import { createStyles } from '../../utils/theme';
+import { TextAlignments, TextColors, TextVariants } from '@/components/types';
+import { createStyles } from '@/utils/theme';
 export const variants = StyleSheet.create<Record<TextVariants, TextStyle>>({
   h1: {
     fontSize: 48,

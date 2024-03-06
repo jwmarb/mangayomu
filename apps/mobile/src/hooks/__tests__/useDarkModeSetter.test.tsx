@@ -1,9 +1,8 @@
-import { render } from '@testing-library/react-native';
-import useDarkModeSetter from '../useDarkModeSetter';
-// import useIsDarkMode from '../useIsDarkMode';
 import { Button, Text, View } from 'react-native';
-import useIsDarkMode from '../useIsDarkMode';
-import { ThemeProvider } from '../../providers/theme';
+import { render } from '@testing-library/react-native';
+import useDarkModeSetter from '@/hooks/useDarkModeSetter';
+import useIsDarkMode from '@/hooks/useIsDarkMode';
+import { ThemeProvider } from '@/providers/theme';
 
 beforeAll(() => {
   jest.spyOn(console, 'error').mockImplementation(jest.fn());

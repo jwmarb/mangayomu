@@ -1,6 +1,6 @@
 import { ViewStyle } from 'react-native';
-import { createStyles } from '../../utils/theme';
-import type { ButtonVariants, ButtonColors } from '../types';
+import type { ButtonVariants, ButtonColors } from '@/components/types';
+import { createStyles } from '@/utils/theme';
 
 export const variants = (color: ButtonColors) =>
   createStyles<Record<ButtonVariants, ViewStyle>>((theme) => ({

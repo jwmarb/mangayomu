@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react-native';
-import { View } from 'react-native';
 import Contrast from '@/components/Contrast';
 import useContrast from '@/hooks/useContrast';
 import Text from '@/components/Text';

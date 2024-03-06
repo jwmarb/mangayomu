@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { StyleSheet } from 'react-native';
-import { lightTheme, darkTheme } from '../providers/theme';
 import { Theme } from '@mangayomu/theme';
+import { lightTheme, darkTheme } from '@/providers/theme';
 
 /**
  * Same as `StyleSheet.create` except the theme can be passed into it to create theme-dependent styles

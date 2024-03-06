@@ -1,27 +1,28 @@
 import {
+  PressableProps as NativeButtonProps,
+  PressableAndroidRippleConfig,
+  View,
+} from 'react-native';
+import { styles, variants } from '@/components/Button/styles';
+import {
   BUTTON_COLORS,
   BUTTON_VARIANTS,
   ButtonColors,
   ButtonVariants,
-} from '../types';
-import {
-  ButtonProps as NativeButtonProps,
-  PressableAndroidRippleConfig,
-  View,
-} from 'react-native';
-import { styles, variants } from './styles';
-import useStyles from '../../hooks/useStyles';
-import Pressable from '../Pressable';
-import { createThemedProps } from '../../utils/theme';
-import useThemedProps from '../../hooks/useThemedProps';
-import Text from '../Text';
-import useContrast from '../../hooks/useContrast';
+} from '@/components/types';
+import useStyles from '@/hooks/useStyles';
+import Pressable from '@/components/Pressable';
+import { createThemedProps } from '@/utils/theme';
+import useThemedProps from '@/hooks/useThemedProps';
+import Text from '@/components/Text';
+import useContrast from '@/hooks/useContrast';
 
 export type ButtonProps = NativeButtonProps & {
   variant?: ButtonVariants;
   color?: ButtonColors;
   contrast?: boolean;
   textAlignment?: 'left' | 'center' | 'right';
+  title: string;
 };
 
 const themedProps = (color: ButtonColors) =>

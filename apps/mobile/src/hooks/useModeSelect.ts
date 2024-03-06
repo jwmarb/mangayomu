@@ -1,5 +1,5 @@
 import { useSelect } from 'react-cosmos/client';
-import useIsDarkMode from './useIsDarkMode';
+import useIsDarkMode from '@/hooks/useIsDarkMode';
 
 /**
  * Converts mode to contrast

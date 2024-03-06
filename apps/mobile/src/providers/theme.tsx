@@ -2,7 +2,7 @@ import React from 'react';
 import { useMMKVBoolean } from 'react-native-mmkv';
 import { Theme, createTheme } from '@mangayomu/theme';
 import { Appearance, useColorScheme } from 'react-native';
-import { mmkv } from '../utils/persist';
+import { mmkv } from '@/utils/persist';
 
 declare module '@mangayomu/theme' {
   export interface Theme extends Pick<DefaultTheme, 'mode'> {

@@ -1,17 +1,18 @@
+import { useSelect, useValue } from 'react-cosmos/client';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import React from 'react';
-import Text, {
+import useModeSelect from '@/hooks/useModeSelect';
+import { createStyles } from '@/utils/theme';
+import useStyles from '@/hooks/useStyles';
+import {
   TEXT_ALIGNMENTS,
   TEXT_COLORS,
   TEXT_VARIANTS,
   TextAlignments,
   TextColors,
   TextVariants,
-} from './Text';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useSelect, useValue } from 'react-cosmos/client';
-import useModeSelect from '../../hooks/useModeSelect';
-import { createStyles } from '../../utils/theme';
-import useStyles from '../../hooks/useStyles';
+} from '@/components/types';
+import Text from '@/components/Text';
 
 const PANGRAM = 'The quick brown fox jumps over the lazy dog';
 

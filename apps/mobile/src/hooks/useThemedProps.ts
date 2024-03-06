@@ -1,4 +1,4 @@
-import useIsDarkMode from './useIsDarkMode';
+import useIsDarkMode from '@/hooks/useIsDarkMode';
 
 // Converts any boolean expression to a number...
 function toInt(b: unknown) {

@@ -1,8 +1,8 @@
 import 'react-native';
 import React from 'react';
-import Text from '../Text';
 import { it } from '@jest/globals';
 import renderer from 'react-test-renderer';
+import Text from '@/components/Text';
 
 jest.mock('react-native-mmkv');
 

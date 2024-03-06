@@ -1,6 +1,6 @@
 import React from 'react';
-import { ThemeProvider } from './theme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ThemeProvider } from '@/providers/theme';
 
 export type AppProviderProps = React.PropsWithChildren;
 

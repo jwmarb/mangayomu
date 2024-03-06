@@ -3,8 +3,9 @@
  */
 
 import 'react-native';
-import React from 'react';
+// eslint-disable-next-line no-restricted-imports
 import App from '../App.main';
+import React from 'react';
 
 // Note: import explicitly to use the types shipped with jest.
 import { it } from '@jest/globals';

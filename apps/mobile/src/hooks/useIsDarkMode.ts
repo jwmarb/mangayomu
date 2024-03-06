@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeDarkModeContext } from '../providers/theme';
+import { ThemeDarkModeContext } from '@/providers/theme';
 
 /**
  * A hook that determines if app is in dark mode

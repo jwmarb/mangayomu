@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeSetDarkModeContext } from '../providers/theme';
+import { ThemeSetDarkModeContext } from '@/providers/theme';
 
 /**
  * A hook that gets the setter for isDarkMode

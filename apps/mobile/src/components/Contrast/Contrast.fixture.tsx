@@ -1,11 +1,11 @@
-import { SafeAreaView } from 'react-native-safe-area-context';
-import useModeSelect from '../../hooks/useModeSelect';
-import { createStyles } from '../../utils/theme';
-import useStyles from '../../hooks/useStyles';
-import Text from '../Text';
-import Contrast from '.';
 import { ScrollView, View } from 'react-native';
-import Button from '../Button/Button';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Contrast from '@/components/Contrast';
+import useModeSelect from '@/hooks/useModeSelect';
+import { createStyles } from '@/utils/theme';
+import useStyles from '@/hooks/useStyles';
+import Text from '@/components/Text';
+import Button from '@/components/Button';
 
 const styles = createStyles((theme) => ({
   container: {

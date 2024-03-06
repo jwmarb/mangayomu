@@ -1,2 +1,2 @@
-import App from './App.main';
+import App from 'App.main';
 export default () => <App />;

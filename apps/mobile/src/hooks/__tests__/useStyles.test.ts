@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import 'react-native';
 import { render } from '@testing-library/react-native';
-import { createStyles } from '../../utils/theme';
-import useStyles from '../useStyles';
-import useIsDarkMode from '../useIsDarkMode';
+import { createStyles } from '@/utils/theme';
+import useStyles from '@/hooks/useStyles';
+import useIsDarkMode from '@/hooks/useIsDarkMode';
 
 type MockTheme = {
   primary: string;

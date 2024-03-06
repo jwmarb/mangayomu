@@ -3,10 +3,10 @@ import {
   PressableAndroidRippleConfig,
   PressableProps as NativePressableProps,
 } from 'react-native';
-import { createThemedProps } from '../../utils/theme';
-import { pressableStyles } from './styles';
-import useThemedProps from '../../hooks/useThemedProps';
-import useContrast from '../../hooks/useContrast';
+import { pressableStyles } from '@/components/Pressable/styles';
+import { createThemedProps } from '@/utils/theme';
+import useThemedProps from '@/hooks/useThemedProps';
+import useContrast from '@/hooks/useContrast';
 
 const themedProps = createThemedProps((theme) => ({
   androidRipple: {

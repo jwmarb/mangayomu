@@ -1,6 +1,6 @@
 import { Appearance } from 'react-native';
-import useIsDarkMode from '../useIsDarkMode';
 import { render } from '@testing-library/react-native';
+import useIsDarkMode from '@/hooks/useIsDarkMode';
 
 function Component() {
   const k = useIsDarkMode();

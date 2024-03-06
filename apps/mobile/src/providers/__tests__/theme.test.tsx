@@ -1,11 +1,11 @@
 import 'react-native';
-import { fireEvent, render, screen } from '@testing-library/react-native';
-import { ThemeProvider } from '../theme';
-import useIsDarkMode from '../../hooks/useIsDarkMode';
 import { Button, Text, View } from 'react-native';
-import useDarkModeSetter from '../../hooks/useDarkModeSetter';
+import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { Appearance } from 'react-native';
+import useDarkModeSetter from '@/hooks/useDarkModeSetter';
+import useIsDarkMode from '@/hooks/useIsDarkMode';
+import { ThemeProvider } from '@/providers/theme';
 
 jest.mock('react-native-mmkv', () => ({
   useMMKVBoolean: () => {
