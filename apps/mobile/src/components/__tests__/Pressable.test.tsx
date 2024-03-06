@@ -1,6 +1,5 @@
-import { render, userEvent, waitFor } from '@testing-library/react-native';
+import { render, userEvent } from '@testing-library/react-native';
 import React from 'react';
-import { act } from 'react-test-renderer';
 import Pressable from '@/components/Pressable';
 
 beforeAll(() => {

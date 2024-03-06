@@ -1,6 +1,5 @@
 import { render, userEvent } from '@testing-library/react-native';
 import Button from '@/components/Button';
-import { lightTheme } from '@/providers/theme';
 
 beforeAll(() => {
   jest.useFakeTimers();
