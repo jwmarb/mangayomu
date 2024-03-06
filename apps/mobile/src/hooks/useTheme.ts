@@ -1,5 +1,5 @@
-import { lightTheme, darkTheme } from '../providers/theme';
-import useIsDarkMode from './useIsDarkMode';
+import useIsDarkMode from '@/hooks/useIsDarkMode';
+import { lightTheme, darkTheme } from '@/providers/theme';
 
 /**
  * Uses the theme object generated from the device's theme
@@ -8,5 +8,5 @@ import useIsDarkMode from './useIsDarkMode';
  */
 export default function useTheme(isContrast?: boolean) {
   const isDarkTheme = useIsDarkMode();
-  return (isContrast ? isDarkTheme : !isDarkTheme) ? darkTheme : lightTheme;
+  return (isContrast ? !isDarkTheme : isDarkTheme) ? darkTheme : lightTheme;
 }
