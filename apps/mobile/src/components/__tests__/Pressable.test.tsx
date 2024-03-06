@@ -1,5 +1,6 @@
-import { render, userEvent } from '@testing-library/react-native';
+import { render, userEvent, waitFor } from '@testing-library/react-native';
 import React from 'react';
+import { act } from 'react-test-renderer';
 import Pressable from '@/components/Pressable';
 
 beforeAll(() => {
@@ -24,4 +25,19 @@ test('renders properly', async () => {
   jest.runOnlyPendingTimers();
   expect(handleOnPress).toHaveBeenCalled();
   expect(handleOnLongPress).toHaveBeenCalled();
+});
+
+test('style prop rendered properly', async () => {
+  const user = userEvent.setup();
+  const style = jest.fn(({ pressed }: { pressed: boolean }) =>
+    pressed ? { backgroundColor: 'blue' } : { backgroundColor: 'red' },
+  );
+  const tree = render(<Pressable style={style} />);
+
+  expect(tree.root).toHaveStyle({ backgroundColor: 'red' });
+
+  await user.longPress(tree.root);
+  jest.runOnlyPendingTimers();
+
+  expect(style).toHaveBeenCalled();
 });
