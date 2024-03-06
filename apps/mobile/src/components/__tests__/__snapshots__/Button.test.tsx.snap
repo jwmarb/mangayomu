@@ -79,3 +79,167 @@ exports[`renders properly 1`] = `
   </View>
 </View>
 `;
+
+exports[`renders properly 2`] = `
+<View
+  style={
+    {
+      "borderColor": "transparent",
+      "borderRadius": 32,
+      "borderWidth": 1.5,
+      "overflow": "hidden",
+    }
+  }
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      [
+        {
+          "flex": 1,
+        },
+        [
+          {
+            "backgroundColor": "#1996FD",
+          },
+          {
+            "paddingHorizontal": 20,
+            "paddingVertical": 12,
+          },
+        ],
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "fontSize": 16,
+            "fontWeight": "500",
+            "letterSpacing": 0.56,
+          },
+          {
+            "color": "rgba(0, 0, 0, 0.87)",
+          },
+          {
+            "textAlign": "left",
+          },
+          undefined,
+        ]
+      }
+    >
+      My Button Component
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`renders properly 3`] = `
+<View
+  style={
+    {
+      "borderColor": "#1996FD",
+      "borderRadius": 32,
+      "borderWidth": 1.5,
+      "overflow": "hidden",
+    }
+  }
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      [
+        {
+          "flex": 1,
+        },
+        [
+          {
+            "borderColor": "#1996FD",
+          },
+          {
+            "paddingHorizontal": 20,
+            "paddingVertical": 12,
+          },
+        ],
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "fontSize": 16,
+            "fontWeight": "500",
+            "letterSpacing": 0.56,
+          },
+          {
+            "color": "#1996FD",
+          },
+          {
+            "textAlign": "left",
+          },
+          undefined,
+        ]
+      }
+    >
+      My Button Component
+    </Text>
+  </View>
+</View>
+`;

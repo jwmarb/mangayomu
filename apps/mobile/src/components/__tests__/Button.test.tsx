@@ -1,5 +1,6 @@
 import { render, userEvent } from '@testing-library/react-native';
 import Button from '@/components/Button';
+import { lightTheme } from '@/providers/theme';
 
 beforeAll(() => {
   jest.useFakeTimers();
@@ -10,7 +11,13 @@ afterAll(() => {
 });
 
 test('renders properly', () => {
-  const tree = render(<Button title="My Button Component" />);
+  let tree = render(<Button title="My Button Component" />);
+  expect(tree).toMatchSnapshot();
+
+  tree = render(<Button title="My Button Component" variant="contained" />);
+  expect(tree).toMatchSnapshot();
+
+  tree = render(<Button title="My Button Component" variant="outlined" />);
   expect(tree).toMatchSnapshot();
 });
 
