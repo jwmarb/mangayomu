@@ -1,7 +1,7 @@
 import React from 'react';
 import { useMMKVBoolean } from 'react-native-mmkv';
 import { Theme, createTheme } from '@mangayomu/theme';
-import { Appearance, useColorScheme } from 'react-native';
+import { Appearance, StatusBar, useColorScheme } from 'react-native';
 import { mmkv } from '@/utils/persist';
 
 declare module '@mangayomu/theme' {
@@ -114,11 +114,15 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const [isDarkMode, setIsDarkMode] = useMMKVBoolean('theme', mmkv);
   const systemPreference = useColorScheme();
+  const isEffectivelyDarkMode = isDarkMode ?? systemPreference === 'dark';
+
+  React.useEffect(() => {
+    if (isEffectivelyDarkMode) StatusBar.setBarStyle('light-content');
+    else StatusBar.setBarStyle('dark-content');
+  }, [isEffectivelyDarkMode]);
 
   return (
-    <ThemeDarkModeContext.Provider
-      value={isDarkMode ?? systemPreference === 'dark'}
-    >
+    <ThemeDarkModeContext.Provider value={isEffectivelyDarkMode}>
       <ThemeSetDarkModeContext.Provider value={setIsDarkMode}>
         {children}
       </ThemeSetDarkModeContext.Provider>
