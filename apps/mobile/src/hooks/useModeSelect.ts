@@ -1,4 +1,6 @@
 import { useSelect } from 'react-cosmos/client';
+import React from 'react';
+import { StatusBar } from 'react-native';
 import useIsDarkMode from '@/hooks/useIsDarkMode';
 
 /**
@@ -10,6 +12,21 @@ export default function useModeSelect(): boolean | undefined {
     options: ['dark', 'light', 'system'],
   });
   const isDarkMode = useIsDarkMode();
+
+  React.useEffect(() => {
+    switch (mode) {
+      case 'dark':
+        StatusBar.setBarStyle('light-content');
+        break;
+      case 'light':
+        StatusBar.setBarStyle('dark-content');
+        break;
+      case 'system':
+        if (isDarkMode) StatusBar.setBarStyle('light-content');
+        else StatusBar.setBarStyle('dark-content');
+        break;
+    }
+  }, [mode, isDarkMode]);
 
   if (isDarkMode && mode === 'dark') return false;
 

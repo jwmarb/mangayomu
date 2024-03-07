@@ -1,4 +1,5 @@
 import { useSelect } from 'react-cosmos/client';
+import React from 'react';
 import useModeSelect from '@/hooks/useModeSelect';
 import useIsDarkMode from '@/hooks/useIsDarkMode';
 
@@ -13,6 +14,9 @@ jest.mock('@/hooks/useIsDarkMode', () => ({
   __esModule: true,
   default: jest.fn(),
 }));
+
+// It is not necessary to change StatusBar in a testing environment like this
+jest.spyOn(React, 'useEffect').mockImplementation((f) => f());
 
 test('uses system theme', () => {
   mockedUseIsDarkMode.mockReturnValue('dark');
