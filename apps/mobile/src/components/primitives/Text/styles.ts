@@ -69,3 +69,12 @@ export const alignments = StyleSheet.create<Record<TextAlignments, TextStyle>>({
     textAlign: 'right',
   },
 });
+
+export const decorators = StyleSheet.create({
+  bold: {
+    fontWeight: 'bold',
+  },
+  italic: {
+    fontStyle: 'italic',
+  },
+});

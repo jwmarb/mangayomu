@@ -11,6 +11,7 @@ import {
   variants,
   colors,
   alignments,
+  decorators,
 } from '@/components/primitives/Text/styles';
 
 export type TextProps = NativeTextProps & {
@@ -18,6 +19,8 @@ export type TextProps = NativeTextProps & {
   color?: TextColors;
   alignment?: TextAlignments;
   contrast?: boolean;
+  bold?: boolean;
+  italic?: boolean;
 };
 
 /**
@@ -29,13 +32,22 @@ function Text(props: TextProps, ref: React.ForwardedRef<NativeText>) {
     color: colorProp = 'textPrimary',
     alignment: alignmentProp = 'left',
     contrast: contrastProp,
+    bold,
+    italic,
     ...rest
   } = props;
   const contrast = useContrast(contrastProp);
   const color = useStyles(colors, contrast)[colorProp];
   const alignment = alignments[alignmentProp];
   const variant = variants[variantProp];
-  const style = [variant, color, alignment, rest.style];
+  const style = [
+    variant,
+    color,
+    alignment,
+    bold ? decorators.bold : [],
+    italic ? decorators.italic : [],
+    rest.style,
+  ];
   return <NativeText {...rest} style={style} ref={ref} />;
 }
 
