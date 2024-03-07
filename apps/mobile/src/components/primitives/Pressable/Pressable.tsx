@@ -3,7 +3,7 @@ import {
   PressableAndroidRippleConfig,
   PressableProps as NativePressableProps,
 } from 'react-native';
-import { pressableStyles } from '@/components/Pressable/styles';
+import { pressableStyles } from '@/components/primitives/Pressable/styles';
 import { createThemedProps } from '@/utils/theme';
 import useThemedProps from '@/hooks/useThemedProps';
 import useContrast from '@/hooks/useContrast';

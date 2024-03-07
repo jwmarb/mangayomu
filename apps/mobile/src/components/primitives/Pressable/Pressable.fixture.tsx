@@ -1,11 +1,11 @@
 import { useSelect, useValue } from 'react-cosmos/client';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React from 'react';
-import Pressable from '@/components/Pressable';
+import Pressable from '@/components/primitives/Pressable';
 import useModeSelect from '@/hooks/useModeSelect';
 import { createStyles } from '@/utils/theme';
 import useStyles from '@/hooks/useStyles';
-import Text from '@/components/Text';
+import Text from '@/components/primitives/Text';
 import useTheme from '@/hooks/useTheme';
 
 const styles = createStyles((theme) => ({

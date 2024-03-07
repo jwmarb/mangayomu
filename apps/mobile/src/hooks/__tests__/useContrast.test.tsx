@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react-native';
-import Contrast from '@/components/Contrast';
+import Contrast from '@/components/primitives/Contrast';
 import useContrast from '@/hooks/useContrast';
-import Text from '@/components/Text';
+import Text from '@/components/primitives/Text';
 
 function Consumer(props: { contrast?: boolean }) {
   const contrast = useContrast(props.contrast);

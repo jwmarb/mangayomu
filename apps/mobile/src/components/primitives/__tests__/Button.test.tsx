@@ -1,5 +1,5 @@
 import { render, userEvent } from '@testing-library/react-native';
-import Button from '@/components/Button';
+import Button from '@/components/primitives/Button';
 
 beforeAll(() => {
   jest.useFakeTimers();

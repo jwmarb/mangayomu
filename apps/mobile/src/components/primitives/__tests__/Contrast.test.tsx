@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react-native';
-import Text from '@/components/Text';
+import Text from '@/components/primitives/Text';
 import { lightTheme, darkTheme } from '@/providers/theme';
-import Contrast from '@/components/Contrast';
+import Contrast from '@/components/primitives/Contrast';
 
 test('passes context correctly', () => {
   let tree = render(

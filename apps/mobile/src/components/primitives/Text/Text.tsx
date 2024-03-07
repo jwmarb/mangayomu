@@ -1,9 +1,17 @@
 import { TextProps as NativeTextProps, Text as NativeText } from 'react-native';
 import React from 'react';
 import useContrast from '@/hooks/useContrast';
-import { TextVariants, TextAlignments, TextColors } from '@/components/types';
+import {
+  TextVariants,
+  TextAlignments,
+  TextColors,
+} from '@/components/primitives/types';
 import useStyles from '@/hooks/useStyles';
-import { variants, colors, alignments } from '@/components/Text/styles';
+import {
+  variants,
+  colors,
+  alignments,
+} from '@/components/primitives/Text/styles';
 
 export type TextProps = NativeTextProps & {
   variant?: TextVariants;

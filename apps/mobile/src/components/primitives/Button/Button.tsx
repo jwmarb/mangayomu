@@ -3,18 +3,18 @@ import {
   PressableAndroidRippleConfig,
   View,
 } from 'react-native';
-import { styles, variants } from '@/components/Button/styles';
+import { styles, variants } from '@/components/primitives/Button/styles';
 import {
   BUTTON_COLORS,
   BUTTON_VARIANTS,
   ButtonColors,
   ButtonVariants,
-} from '@/components/types';
+} from '@/components/primitives/types';
 import useStyles from '@/hooks/useStyles';
-import Pressable from '@/components/Pressable';
+import Pressable from '@/components/primitives/Pressable';
 import { createThemedProps } from '@/utils/theme';
 import useThemedProps from '@/hooks/useThemedProps';
-import Text from '@/components/Text';
+import Text from '@/components/primitives/Text';
 import useContrast from '@/hooks/useContrast';
 
 export type ButtonProps = NativeButtonProps & {

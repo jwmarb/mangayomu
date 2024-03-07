@@ -1,12 +1,12 @@
 import { ScrollView } from 'react-native';
 import { useSelect } from 'react-cosmos/client';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Button from '@/components/Button';
+import Button from '@/components/primitives/Button';
 import { createStyles } from '@/utils/theme';
 import useStyles from '@/hooks/useStyles';
 import useModeSelect from '@/hooks/useModeSelect';
-import Contrast from '@/components/Contrast';
-import { BUTTON_COLORS, ButtonColors } from '@/components/types';
+import Contrast from '@/components/primitives/Contrast';
+import { BUTTON_COLORS, ButtonColors } from '@/components/primitives/types';
 
 const styles = createStyles((theme) => ({
   container: {

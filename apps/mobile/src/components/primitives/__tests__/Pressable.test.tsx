@@ -1,6 +1,6 @@
 import { render, userEvent } from '@testing-library/react-native';
 import React from 'react';
-import Pressable from '@/components/Pressable';
+import Pressable from '@/components/primitives/Pressable';
 
 beforeAll(() => {
   jest.useFakeTimers();

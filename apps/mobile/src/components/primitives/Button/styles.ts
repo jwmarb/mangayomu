@@ -1,5 +1,8 @@
 import { ViewStyle } from 'react-native';
-import type { ButtonVariants, ButtonColors } from '@/components/types';
+import type {
+  ButtonVariants,
+  ButtonColors,
+} from '@/components/primitives/types';
 import { createStyles } from '@/utils/theme';
 
 export const variants = (color: ButtonColors) =>

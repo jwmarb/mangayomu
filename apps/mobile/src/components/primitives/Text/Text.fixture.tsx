@@ -11,8 +11,8 @@ import {
   TextAlignments,
   TextColors,
   TextVariants,
-} from '@/components/types';
-import Text from '@/components/Text';
+} from '@/components/primitives/types';
+import Text from '@/components/primitives/Text';
 
 const PANGRAM = 'The quick brown fox jumps over the lazy dog';
 

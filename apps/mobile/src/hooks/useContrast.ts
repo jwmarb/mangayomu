@@ -1,5 +1,5 @@
 import React from 'react';
-import { ContrastContext } from '@/components/Contrast/Contrast';
+import { ContrastContext } from '@/components/primitives/Contrast/Contrast';
 
 /**
  * Switches between contrast as a regular prop or as a context-provided prop
