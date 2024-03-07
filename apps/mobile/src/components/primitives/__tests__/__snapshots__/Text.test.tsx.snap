@@ -14,6 +14,8 @@ exports[`renders correctly 1`] = `
       {
         "textAlign": "left",
       },
+      [],
+      [],
       undefined,
     ]
   }

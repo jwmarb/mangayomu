@@ -70,6 +70,8 @@ exports[`renders properly 1`] = `
           {
             "textAlign": "left",
           },
+          [],
+          [],
           undefined,
         ]
       }
@@ -152,6 +154,8 @@ exports[`renders properly 2`] = `
           {
             "textAlign": "left",
           },
+          [],
+          [],
           undefined,
         ]
       }
@@ -234,6 +238,8 @@ exports[`renders properly 3`] = `
           {
             "textAlign": "left",
           },
+          [],
+          [],
           undefined,
         ]
       }
