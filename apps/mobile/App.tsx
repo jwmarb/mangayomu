@@ -1,5 +1,6 @@
-import CosmosApp from 'App.cosmos';
-import MainApp from 'App.main';
+/* eslint-disable no-restricted-imports */
+import CosmosApp from './App.cosmos';
+import MainApp from './App.main';
 import AppProvider from '@/providers/app';
 
 export default function App() {

@@ -1,4 +1,5 @@
-import { rendererConfig, moduleWrappers } from 'cosmos.imports';
+/* eslint-disable no-restricted-imports */
+import { rendererConfig, moduleWrappers } from './cosmos.imports';
 import React from 'react';
 import { NativeFixtureLoader } from 'react-cosmos-native';
 
