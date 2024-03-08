@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders properly 1`] = `
+<Text
+  name="ab-testing"
+  style={
+    [
+      {
+        "fontSize": 24,
+      },
+      {
+        "color": "rgba(0, 0, 0, 0.87)",
+      },
+      undefined,
+    ]
+  }
+  type="icon"
+>
+  icon
+</Text>
+`;
+
+exports[`renders properly 2`] = `
+<Image
+  src="uri"
+  style={
+    [
+      {
+        "height": 24,
+        "width": 24,
+      },
+      undefined,
+    ]
+  }
+  type="image"
+  uri="uri"
+/>
+`;

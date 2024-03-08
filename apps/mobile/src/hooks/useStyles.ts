@@ -1,3 +1,4 @@
+import useContrast from '@/hooks/useContrast';
 import useIsDarkMode from '@/hooks/useIsDarkMode';
 
 // Converts any boolean expression to a number...
@@ -13,7 +14,7 @@ function toInt(b: unknown) {
  */
 export default function useStyles<T>(
   themedStyles: readonly [T, T],
-  isContrast?: boolean,
+  isContrast: boolean = useContrast(),
 ): T {
   const isDarkMode = useIsDarkMode();
   return themedStyles[isContrast ? toInt(!isDarkMode) : toInt(isDarkMode)];

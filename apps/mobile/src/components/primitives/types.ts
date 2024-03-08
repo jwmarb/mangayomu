@@ -16,6 +16,7 @@ export const TEXT_COLORS = [
   'textSecondary',
   'disabled',
 ] as const;
+export const ICON_SIZES = ['small', 'medium', 'large'] as const;
 
 export type AppColor = (typeof APP_COLORS)[number];
 export type ButtonVariants = (typeof BUTTON_VARIANTS)[number];
@@ -23,3 +24,4 @@ export type ButtonColors = (typeof BUTTON_COLORS)[number];
 export type TextColors = (typeof TEXT_COLORS)[number];
 export type TextVariants = (typeof TEXT_VARIANTS)[number];
 export type TextAlignments = (typeof TEXT_ALIGNMENTS)[number];
+export type IconSizes = (typeof ICON_SIZES)[number];
