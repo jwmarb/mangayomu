@@ -151,10 +151,12 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     .reactNavigation;
 
   return (
-    <ThemeDarkModeContext.Provider value={isEffectivelyDarkMode}>
-      <ThemeSetDarkModeContext.Provider value={setIsDarkMode}>
-        {children}
-      </ThemeSetDarkModeContext.Provider>
-    </ThemeDarkModeContext.Provider>
+    <NavigationContainer theme={navigationTheme}>
+      <ThemeDarkModeContext.Provider value={isEffectivelyDarkMode}>
+        <ThemeSetDarkModeContext.Provider value={setIsDarkMode}>
+          {children}
+        </ThemeSetDarkModeContext.Provider>
+      </ThemeDarkModeContext.Provider>
+    </NavigationContainer>
   );
 }
