@@ -21,6 +21,11 @@ export const variants = StyleSheet.create<Record<TextVariants, TextStyle>>({
     fontWeight: '400',
     letterSpacing: -0.16,
   },
+  h4: {
+    fontSize: 20,
+    fontWeight: '400',
+    letterSpacing: -0.2,
+  },
   body1: {
     fontSize: 16,
     fontWeight: 'normal',

@@ -3,6 +3,7 @@ export const TEXT_VARIANTS = [
   'h1',
   'h2',
   'h3',
+  'h4',
   'body1',
   'body2',
   'button',
