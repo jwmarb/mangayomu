@@ -325,3 +325,135 @@ test('Opposite theme helpers work as intended', () => {
     theme.opposite.helpers.getContrastText(theme.opposite.palette.primary.main),
   );
 });
+
+test('getTheme gets the theme', () => {
+  const theme = createTheme<CustomPaletteTheme>(({ color, colorConstant }) => ({
+    mode: 'light',
+    palette: {
+      customPaletteColor: (theme) => theme.palette.nested.one,
+      nested: {
+        one: color('#ffffff', '#000000'),
+      },
+      error: {
+        main: color('#f44336', '#d32f2f'),
+        light: color('#e57373', '#ef5350'),
+        dark: color('#d32f2f', '#c62828'),
+      },
+      warning: {
+        main: color('#ed6c02', '#ffa726'),
+        light: color('#ff9800', '#ffb74d'),
+        dark: color('#e65100', '#f57c00'),
+      },
+      primary: {
+        light: colorConstant('#69c0ff'),
+        main: colorConstant('#1890ff'),
+        dark: colorConstant('#0050b3'),
+      },
+      secondary: {
+        light: colorConstant('#ffa39e'),
+        main: colorConstant('#ff7875'),
+        dark: colorConstant('#ff4d4f'),
+      },
+      text: {
+        primary: color('rgba(255, 255, 255, 1)', 'rgba(0, 0, 0, 0.87)'),
+        secondary: color('rgba(255, 255, 255, 0.7)', 'rgba(0, 0, 0, 0.6)'),
+        disabled: color('rgba(255, 255, 255, 0.5)', 'rgba(0, 0, 0, 0.38)'),
+        hint: color('rgba(255, 255, 255, 0.5)', 'rgba(0, 0, 0, 0.38)'),
+      },
+      background: {
+        default: color('#141414', '#fafafa'),
+        paper: color('#262626', '#ffffff'),
+        disabled: color('#141414', '#fafafa'),
+      },
+    },
+    style: {
+      borderRadius: 4,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      borderWidth: (theme) => theme.style!.borderRadius * 10,
+      spacing: {
+        s: 2,
+        m: 6,
+        l: 10,
+        xl: 16,
+      },
+    },
+    helpers,
+  }));
+  expect(theme.palette.customPaletteColor).toEqual(theme.palette.nested.one);
+  expect(theme.style?.borderWidth).toEqual(40);
+
+  const themeWithReactNavigation = createTheme<
+    CustomPaletteTheme & {
+      reactNavigation: ReactNavigationTheme['__react_navigation__'];
+    }
+  >(({ color, colorConstant, definePalette }) => ({
+    mode: 'light',
+    palette: {
+      customPaletteColor: (theme) => theme.palette.nested.one,
+      nested: {
+        one: color('#ffffff', '#000000'),
+      },
+      error: {
+        main: color('#f44336', '#d32f2f'),
+        light: color('#e57373', '#ef5350'),
+        dark: color('#d32f2f', '#c62828'),
+      },
+      warning: {
+        main: color('#ed6c02', '#ffa726'),
+        light: color('#ff9800', '#ffb74d'),
+        dark: color('#e65100', '#f57c00'),
+      },
+      primary: {
+        light: colorConstant('#69c0ff'),
+        main: colorConstant('#1890ff'),
+        dark: colorConstant('#0050b3'),
+      },
+      secondary: {
+        light: colorConstant('#ffa39e'),
+        main: colorConstant('#ff7875'),
+        dark: colorConstant('#ff4d4f'),
+      },
+      text: {
+        primary: color('rgba(255, 255, 255, 1)', 'rgba(0, 0, 0, 0.87)'),
+        secondary: color('rgba(255, 255, 255, 0.7)', 'rgba(0, 0, 0, 0.6)'),
+        disabled: color('rgba(255, 255, 255, 0.5)', 'rgba(0, 0, 0, 0.38)'),
+        hint: color('rgba(255, 255, 255, 0.5)', 'rgba(0, 0, 0, 0.38)'),
+      },
+      background: {
+        default: color('#141414', '#fafafa'),
+        paper: color('#262626', '#ffffff'),
+        disabled: color('#141414', '#fafafa'),
+      },
+    },
+    style: {
+      borderRadius: 4,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      borderWidth: (theme) => theme.style!.borderRadius * 10,
+      spacing: {
+        s: 2,
+        m: 6,
+        l: 10,
+        xl: 16,
+      },
+    },
+    helpers,
+    reactNavigation: {
+      dark: (theme) => theme.mode === 'dark',
+      colors: {
+        background: (theme) => theme.palette.background.default,
+        primary: (theme) => theme.palette.primary.main,
+        text: (theme) => theme.palette.text.primary,
+      },
+    },
+  }));
+  expect(themeWithReactNavigation.reactNavigation.colors.background).toEqual(
+    '#fafafa',
+  );
+  expect(themeWithReactNavigation.reactNavigation.colors.primary).toEqual(
+    '#1890ff',
+  );
+  expect(themeWithReactNavigation.reactNavigation.colors.text).toEqual(
+    'rgba(0, 0, 0, 0.87)',
+  );
+  expect(themeWithReactNavigation.reactNavigation.dark).toEqual(false);
+});

@@ -54,7 +54,9 @@ export function readColors(
           break;
       }
     } else {
-      converted[typedName] = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (converted as any)[typedName] =
+        typeof obj[typedName] === 'function' ? obj[typedName] : {};
       for (const variety in obj[typedName]) {
         switch (mode) {
           case null:
@@ -114,6 +116,25 @@ export function mutatePalette<T>(a: T, mode: ThemeMode) {
         mutatePalette(a[key], mode);
       }
     }
+  }
+}
+
+/**
+ * Processes object to convert getters into their actual value
+ * @param obj The object that contains getter functions
+ * @param parsedTheme A preprocessed theme object for reference to access non-getter values
+ */
+export function parseGetters<T extends Record<PropertyKey, unknown>>(
+  obj: T,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  parsedTheme: any,
+) {
+  for (const key in obj) {
+    if (key === 'helpers') continue;
+    const typed = obj[key];
+    if (typed != null && typeof typed === 'object')
+      parseGetters(typed as Record<PropertyKey, unknown>, parsedTheme);
+    else if (typeof typed === 'function') obj[key] = typed(parsedTheme);
   }
 }
 

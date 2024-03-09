@@ -6,6 +6,7 @@ import {
   getContrastText,
   isPaletteColor,
   mutatePalette,
+  parseGetters,
   readColors,
 } from './helpers';
 export * from './colorHelpers';
@@ -105,20 +106,20 @@ export type Spacing = keyof NonNullable<DefaultTheme['style']>['spacing'];
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Theme extends DefaultTheme {}
 
-export interface ThemeBuilder {
+export interface ThemeBuilder<Theme> {
   color(dark: string, light: string): ColorSchema;
   colorConstant(color: string): ColorSchema;
   definePalette<T extends Record<PropertyKey, unknown>>(
-    obj: UserDefinedPalette<T>,
+    obj: UserDefinedPalette<T, Theme>,
   ): T;
 }
 
-export type UserDefinedPalette<T extends Record<PropertyKey, unknown>> = {
-  [K in keyof T]: T[K] extends string
+export type UserDefinedPalette<R extends Record<PropertyKey, unknown>, T> = {
+  [K in keyof R]: R[K] extends string
     ? ColorSchema
-    : T[K] extends Record<PropertyKey, string>
-    ? UserDefinedPalette<T[K]>
-    : T[K];
+    : R[K] extends Record<PropertyKey, string>
+    ? UserDefinedPalette<R[K], T>
+    : Getter<R[K], T>;
 };
 
 export type ThemeSchema<T extends DefaultTheme> = {
@@ -129,15 +130,15 @@ export type ThemeSchema<T extends DefaultTheme> = {
               {
                 [S in keyof T[K][V]]: T[K][V][S] extends string
                   ? ColorSchema
-                  : T[K][V][S];
+                  : Getter<T[K][V][S], T>;
               },
               'contrastText' | 'ripple'
             >
           : T[K][V] extends string
-          ? ColorSchema
+          ? ColorSchema | Getter<string, T>
           : T[K][V] extends Record<PropertyKey, unknown>
-          ? UserDefinedPalette<T[K][V]>
-          : T[K][V];
+          ? UserDefinedPalette<T[K][V], T>
+          : Getter<T[K][V], T>;
       }
     : K extends 'helpers'
     ? Omit<
@@ -155,11 +156,20 @@ export type ThemeSchema<T extends DefaultTheme> = {
         },
         keyof DefaultThemeHelpers
       >
-    : T[K];
+    : K extends 'mode'
+    ? T[K]
+    : Getter<T[K], T>;
 };
 
+type Getter<R, T> = R extends Record<string, unknown>
+  ? {
+      [K in keyof R]: R[K] extends Record<string, unknown>
+        ? Getter<R[K], T>
+        : R[K] | ((theme: T) => R[K]);
+    }
+  : R | ((theme: T) => R);
 type ThemeCreator<T extends Theme> = (
-  builder: ThemeBuilder,
+  builder: ThemeBuilder<Omit<ThemeSchema<T>, 'opposite'>>,
 ) => Omit<ThemeSchema<T>, 'opposite'>;
 /**
  * Create a theme for the application. Must be placed at the most top-level of the React app, and must be inside the component.
@@ -178,7 +188,7 @@ export function createTheme<T extends Theme>(
   const template: Omit<ThemeSchema<T>, 'opposite'> = builder({
     color,
     colorConstant,
-    definePalette: definePalette as ThemeBuilder['definePalette'],
+    definePalette: definePalette as ThemeBuilder<T>['definePalette'],
   });
   const opposite = deepcopy(template);
 
@@ -259,5 +269,7 @@ export function createTheme<T extends Theme>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (parsed as any).opposite = oppositeParsed;
   }
+
+  parseGetters(parsed, parsed);
   return parsed as T & DefaultThemeHelpers & { opposite: T };
 }
