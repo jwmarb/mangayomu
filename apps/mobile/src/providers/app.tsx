@@ -13,12 +13,10 @@ const styles = StyleSheet.create({
 
 export default function AppProvider({ children }: AppProviderProps) {
   return (
-    <NavigationContainer>
-      <GestureHandlerRootView style={styles.gestureHandlerRootView}>
-        <SafeAreaProvider>
-          <ThemeProvider>{children}</ThemeProvider>
-        </SafeAreaProvider>
-      </GestureHandlerRootView>
-    </NavigationContainer>
+    <GestureHandlerRootView style={styles.gestureHandlerRootView}>
+      <SafeAreaProvider>
+        <ThemeProvider>{children}</ThemeProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

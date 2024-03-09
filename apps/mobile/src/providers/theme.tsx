@@ -2,12 +2,21 @@ import React from 'react';
 import { useMMKVBoolean } from 'react-native-mmkv';
 import { Theme, createTheme } from '@mangayomu/theme';
 import { Appearance, StatusBar, useColorScheme } from 'react-native';
+import {
+  NavigationContainer,
+  Theme as NavigationTheme,
+} from '@react-navigation/native';
 import { mmkv } from '@/utils/persist';
 
 declare module '@mangayomu/theme' {
   export interface Theme extends Pick<DefaultTheme, 'mode'> {
     palette: DefaultTheme['palette'] & {
       skeleton: string;
+      divider: string;
+      common: {
+        white: string;
+        black: string;
+      };
       action: {
         disabled: string;
         ripple: string;
@@ -31,6 +40,7 @@ declare module '@mangayomu/theme' {
         xxl: number;
       };
     };
+    reactNavigation: NavigationTheme;
   }
 }
 
@@ -50,11 +60,16 @@ export const ThemeSetDarkModeContext = React.createContext<
 >(null);
 
 export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
-  ({ color }) => ({
+  ({ color, colorConstant }) => ({
     mode: 'dark',
     helpers: {},
     palette: {
       skeleton: color('rgba(255, 255, 255, 0.12)', 'rgba(0, 0, 0, 0.12)'),
+      divider: color('rgba(255, 255, 255, 0.12)', 'rgba(0, 0, 0, 0.12)'),
+      common: {
+        white: colorConstant('#fff'),
+        black: colorConstant('#000'),
+      },
       action: {
         ripple: color('#606060', '#484848'),
         disabled: color('#102A2D', '#EFEFEF'),
@@ -108,6 +123,17 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
         xxl: 20,
       },
     },
+    reactNavigation: {
+      dark: (theme) => theme.mode === 'dark',
+      colors: {
+        background: (theme) => theme.palette.background.default,
+        primary: (theme) => theme.palette.primary.main,
+        text: (theme) => theme.palette.text.primary,
+        border: (theme) => theme.palette.divider,
+        card: (theme) => theme.palette.background.paper,
+        notification: (theme) => theme.palette.secondary.main,
+      },
+    },
   }),
 );
 
@@ -121,11 +147,16 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     else StatusBar.setBarStyle('dark-content');
   }, [isEffectivelyDarkMode]);
 
+  const navigationTheme = (isEffectivelyDarkMode ? darkTheme : lightTheme)
+    .reactNavigation;
+
   return (
-    <ThemeDarkModeContext.Provider value={isEffectivelyDarkMode}>
-      <ThemeSetDarkModeContext.Provider value={setIsDarkMode}>
-        {children}
-      </ThemeSetDarkModeContext.Provider>
-    </ThemeDarkModeContext.Provider>
+    <NavigationContainer theme={navigationTheme}>
+      <ThemeDarkModeContext.Provider value={isEffectivelyDarkMode}>
+        <ThemeSetDarkModeContext.Provider value={setIsDarkMode}>
+          {children}
+        </ThemeSetDarkModeContext.Provider>
+      </ThemeDarkModeContext.Provider>
+    </NavigationContainer>
   );
 }
