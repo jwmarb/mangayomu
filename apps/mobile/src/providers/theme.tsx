@@ -72,7 +72,7 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
       },
       action: {
         ripple: color('#606060', '#484848'),
-        disabled: color('#102A2D', '#EFEFEF'),
+        disabled: color('rgba(255, 255, 255, 0.12)', 'rgba(0, 0, 0, 0.12)'),
       },
       primary: {
         light: color('#B2CBE6', '#34A1FB'),
@@ -97,7 +97,7 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
       text: {
         primary: color('rgba(255, 255, 255, 1)', 'rgba(0, 0, 0, 0.87)'),
         secondary: color('rgba(255, 255, 255, 0.7)', 'rgba(0, 0, 0, 0.6)'),
-        disabled: color('rgba(255, 255, 255, 0.5)', 'rgba(0, 0, 0, 0.38)'),
+        disabled: color('rgba(255, 255, 255, 0.3)', 'rgba(0, 0, 0, 0.26)'),
         hint: color('rgba(255, 255, 255, 0.5)', 'rgba(0, 0, 0, 0.38)'),
       },
       background: {
@@ -151,12 +151,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     .reactNavigation;
 
   return (
-    <NavigationContainer theme={navigationTheme}>
-      <ThemeDarkModeContext.Provider value={isEffectivelyDarkMode}>
-        <ThemeSetDarkModeContext.Provider value={setIsDarkMode}>
-          {children}
-        </ThemeSetDarkModeContext.Provider>
-      </ThemeDarkModeContext.Provider>
-    </NavigationContainer>
+    <ThemeDarkModeContext.Provider value={isEffectivelyDarkMode}>
+      <ThemeSetDarkModeContext.Provider value={setIsDarkMode}>
+        {children}
+      </ThemeSetDarkModeContext.Provider>
+    </ThemeDarkModeContext.Provider>
   );
 }
