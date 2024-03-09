@@ -1,15 +1,6 @@
 import { render } from '@testing-library/react-native';
 import Icon, { composedSizes } from '@/components/primitives/Icon';
 
-jest.mock('react-native-vector-icons/MaterialCommunityIcons', () => ({
-  __esModule: true,
-  default: (props: Record<string, unknown>) => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { Text } = require('react-native');
-    return <Text {...props}>icon</Text>;
-  },
-}));
-
 test('renders properly', () => {
   let tree = render(<Icon type="icon" name="ab-testing" />);
   expect(tree).toMatchSnapshot();
