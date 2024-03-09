@@ -32,6 +32,10 @@ declare module '@mangayomu/theme' {
     style: {
       rippleRadius: number;
       borderRadius: number;
+      screen: {
+        paddingVertical: number;
+        paddingHorizontal: number;
+      };
       size: {
         s: number;
         m: number;
@@ -115,6 +119,10 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
     style: {
       rippleRadius: 16,
       borderRadius: 32,
+      screen: {
+        paddingVertical: (theme) => theme.style.size.s,
+        paddingHorizontal: (theme) => theme.style.size.m,
+      },
       size: {
         s: 4,
         m: 8,
