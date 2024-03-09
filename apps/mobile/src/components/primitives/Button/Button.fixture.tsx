@@ -1,5 +1,5 @@
 import { ScrollView } from 'react-native';
-import { useSelect } from 'react-cosmos/client';
+import { useSelect, useFixtureInput } from 'react-cosmos/client';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '@/components/primitives/Button';
 import { createStyles } from '@/utils/theme';
@@ -34,6 +34,10 @@ export default function ButtonFixture() {
     defaultValue: 'left',
     options: ['left', 'center', 'right'],
   });
+  const [disabled] = useSelect('disabled', {
+    defaultValue: 'false',
+    options: ['true', 'false'],
+  });
   return (
     <SafeAreaView style={style.container}>
       <ScrollView contentContainerStyle={style.content}>
@@ -43,14 +47,21 @@ export default function ButtonFixture() {
             textAlignment={textAlignment}
             variant="contained"
             color={color}
+            disabled={JSON.parse(disabled)}
           />
           <Button
             title="Outlined"
             textAlignment={textAlignment}
             variant="outlined"
             color={color}
+            disabled={JSON.parse(disabled)}
           />
-          <Button title="Text" textAlignment={textAlignment} color={color} />
+          <Button
+            title="Text"
+            textAlignment={textAlignment}
+            color={color}
+            disabled={JSON.parse(disabled)}
+          />
         </Contrast>
       </ScrollView>
     </SafeAreaView>

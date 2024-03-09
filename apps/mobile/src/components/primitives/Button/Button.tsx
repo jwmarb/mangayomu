@@ -32,10 +32,13 @@ const themedProps = (color: ButtonColors) =>
     } as PressableAndroidRippleConfig,
   }));
 
-const composedVariants = BUTTON_COLORS.reduce((prev, curr) => {
-  prev[curr] = variants(curr);
-  return prev;
-}, {} as Record<ButtonColors, ReturnType<typeof variants>>);
+const composedVariants = BUTTON_COLORS.reduce((prev1, curr1) => {
+  prev1[curr1] = (['disabled', 'enabled'] as const).reduce((prev2, curr2) => {
+    prev2[curr2] = variants(curr1, curr2);
+    return prev2;
+  }, {} as Record<'disabled' | 'enabled', ReturnType<typeof variants>>);
+  return prev1;
+}, {} as Record<ButtonColors, Record<'disabled' | 'enabled', ReturnType<typeof variants>>>);
 
 const composedRippleColors = BUTTON_COLORS.reduce((prev, curr) => {
   prev[curr] = themedProps(curr);
@@ -57,21 +60,34 @@ export default function Button(props: ButtonProps) {
     title,
     contrast: contrastProp,
     textAlignment = 'left',
+    disabled,
     ...rest
   } = props;
   const contrast = useContrast(contrastProp);
-  const variant = useStyles(composedVariants[color], contrast);
+  const variant = useStyles(
+    composedVariants[color][disabled ? 'disabled' : 'enabled'],
+    contrast,
+  );
   const btnStyles = useStyles(composedStyles[variantProp][color], contrast);
   const { android_ripple } = useThemedProps(
     composedRippleColors[color],
     contrast,
   );
   const style = [variant[variantProp], btnStyles.button];
-  const textColor = variantProp === 'contained' ? 'textPrimary' : color;
+  const textColor = disabled
+    ? 'disabled'
+    : variantProp === 'contained'
+    ? 'textPrimary'
+    : color;
 
   return (
     <View style={btnStyles.container}>
-      <Pressable android_ripple={android_ripple} style={style} {...rest}>
+      <Pressable
+        android_ripple={android_ripple}
+        style={style}
+        disabled={disabled}
+        {...rest}
+      >
         <Text alignment={textAlignment} variant="button" color={textColor}>
           {title}
         </Text>

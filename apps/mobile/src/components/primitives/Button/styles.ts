@@ -5,13 +5,19 @@ import type {
 } from '@/components/primitives/types';
 import { createStyles } from '@/utils/theme';
 
-export const variants = (color: ButtonColors) =>
+export const variants = (color: ButtonColors, state: 'enabled' | 'disabled') =>
   createStyles<Record<ButtonVariants, ViewStyle>>((theme) => ({
     contained: {
-      backgroundColor: theme.palette[color].main,
+      backgroundColor:
+        state === 'disabled'
+          ? theme.palette.action.disabled
+          : theme.palette[color].main,
     },
     outlined: {
-      borderColor: theme.palette[color].main,
+      borderColor:
+        state === 'disabled'
+          ? theme.palette.action.disabled
+          : theme.palette[color].main,
     },
     text: {},
   }));
