@@ -17,6 +17,7 @@ export default function CosmosApp() {
     <NativeFixtureLoader
       rendererConfig={rendererConfig}
       moduleWrappers={moduleWrappers}
+      initialFixtureId={{ path: 'App.fixture.tsx' }}
     />
   );
 }
