@@ -3,6 +3,7 @@ import { ISOLangCode } from '@mangayomu/language-codes';
 import {
   Manga,
   MangaChapter,
+  MangaHostFiltersInfo,
   MangaHostInfo,
   MangaMeta,
   RouteFetchOptions,
@@ -11,23 +12,30 @@ import url from 'url';
 import { InvalidSourceException } from '../exceptions';
 import * as cheerio from 'cheerio';
 import UserAgent from 'user-agents';
+import { FilterSchemaObject } from '@mangayomu/schema-creator';
 
 export default abstract class MangaSource<
   TManga = unknown,
   TMangaMeta = unknown,
   TChapter = unknown,
+  FilterSchema = never,
 > {
   /**
    * All instances of MangaHost are contained here
    */
-  private static readonly sources: Map<string, MangaSource> = new Map();
+  private static readonly sources: Map<
+    string,
+    MangaSource<unknown, unknown, unknown, unknown>
+  > = new Map();
 
   /**
    * Gets the `MangaHost` instance of a source. Throws an error if not found.
    * @param name The name of the source
    * @returns Returns a class version of the source
    */
-  public static getSource(name: string): MangaSource {
+  public static getSource(
+    name: string,
+  ): MangaSource<unknown, unknown, unknown, unknown> {
     const source = this.sources.get(name);
     if (source == null) throw new InvalidSourceException(name);
     return source;
@@ -78,12 +86,14 @@ export default abstract class MangaSource<
    */
   public readonly URL: url.Url;
 
+  public readonly FILTER_SCHEMA: FilterSchemaObject<FilterSchema> | undefined;
+
   /**
    * Proxy URL for network requests
    */
   public _proxy: string | null;
 
-  public constructor(info: MangaHostInfo) {
+  public constructor(info: MangaHostInfo | MangaHostFiltersInfo<FilterSchema>) {
     MangaSource.sources.set(info.name, this);
 
     this.URL = url.parse(info.host);
@@ -95,6 +105,8 @@ export default abstract class MangaSource<
     this.SUPPORTS_LATEST_MANGAS = info.hasLatestMangas;
     this.SUPPORTS_TRENDING_MANGAS = info.hasTrendingMangas;
     this.CONTAINS_NSFW = info.containsNSFW;
+    if ('filters' in info) this.FILTER_SCHEMA = info.filters;
+
     this._proxy = null;
   }
 
