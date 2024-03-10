@@ -23,7 +23,7 @@ export default function Screen(props: ScreenProps) {
   return (
     <Animated.ScrollView
       {...rest}
-      style={scrollViewStyles}
+      contentContainerStyle={scrollViewStyles}
       onScroll={collapsible.onScroll}
     />
   );
