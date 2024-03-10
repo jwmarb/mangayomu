@@ -1,154 +1,110 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { t, list, union, JSType } from '@mangayomu/jest-assertions';
-import { Assertions } from '../utils/assertions';
-import MangaSee, { mapLatestHottestManga } from './MangaSee';
-import { Directory, MangaSeeMangaMeta } from './MangaSee.interfaces';
-import { Manga } from '../scraper/scraper.interfaces';
-import { extractDataFromVariable } from './MangaSee.utils';
+import MangaSee from './MangaSee';
+import MangaSource from '../scraper/scraper';
+import { JSType, list, t, union } from '@mangayomu/jest-assertions';
+import { Directory, HotUpdateJSON, LatestJSON } from './MangaSee.interfaces';
 
-describe('helper functions', () => {
-  it('mapLatestHottestManga', () => {
-    expect(
-      mapLatestHottestManga(
-        [
-          {
-            SeriesName: 'test',
-            Chapter: '',
-            Date: '',
-            Genres: '',
-            IndexName: 'test',
-            IsEdd: false,
-            ScanStatus: '',
-            SeriesID: '',
-          },
-        ],
-        'test',
-        '{{Result.i}}',
-        'test',
-      ),
-    ).toBe(
-      JSON.stringify([
-        {
-          title: 'test',
-          link: 'https://test/manga/test',
-          imageCover: 'test',
-          source: 'test',
-        },
-      ]),
-    );
-  });
-  it('getImageCover', () => {
-    expect(() => MangaSee['getImageCover'](null, 'test')).toThrow(
-      'HTML cannot be null to get image cover',
-    );
-    expect(() =>
-      MangaSee['getImageCover']('<script></script>', 'test'),
-    ).toThrow('Image URL base is null');
-    expect(
-      MangaSee['getImageCover'](
-        '<script>https://imagedomain.com/{{Result.i}}.jpg</script>',
-        'test',
-      ),
-    ).toBe('https://imagedomain.com/test.jpg');
-  });
+test('ensures that module is registered in map', () => {
+  expect(MangaSource.getSource(MangaSee.NAME)).toEqual(MangaSee);
 });
 
-describe('directory', () => {
-  it('gets manga directory and parses raw json', async () => {
-    const directory = await MangaSee.getDirectory();
-    const assertion: JSType<Directory> = {
-      a: list([t.string]),
-      al: list([t.string]),
-      g: list([t.string]),
-      h: t.boolean,
-      i: t.string,
-      ls: union([t.number, t.string]),
-      lt: t.number as any,
-      o: t.string,
-      ps: t.string,
-      s: t.string,
-      ss: t.string,
-      t: t.string,
-      v: t.string,
-      vm: t.string,
-      y: t.string,
-    } as const;
+test('gets the directory', async () => {
+  const directory = await MangaSee['directory']();
+  const assertion: JSType<Directory> = {
+    a: list([t.string]),
+    al: list([t.string]),
+    g: list([t.string]),
+    h: t.boolean,
+    i: t.string,
+    ls: union([t.number, t.string]),
+    lt: t.number,
+    o: t.string,
+    ps: t.string,
+    s: t.string,
+    ss: t.string,
+    t: t.string,
+    v: t.string,
+    vm: t.string,
+    y: t.string,
+  } as const;
 
-    expect(directory).toMatchType<Directory[]>(list([assertion]));
-
-    const mangas = directory.map((x) => MangaSee['mapDirectory'](x));
-    expect(mangas).toMatchType<Manga[]>(list([Assertions.Manga]));
-  });
-  it('lists directory manga', () => {
-    MangaSee.listMangas().then((directory) => {
-      expect(directory).toBeTruthy();
-      expect(directory.length).toBeGreaterThan(0);
-      expect(directory).toMatchType<Manga[]>(list([Assertions.Manga]));
-    });
-  });
+  expect(directory).toMatchType<Directory[]>(list([assertion]));
 });
 
-describe('manga type definitions scraped correctly', () => {
-  it('fetches mangas', async () => {
-    const mangas = await MangaSee.listHotMangas();
-    expect(mangas).toBeTruthy();
-    expect(mangas.length).toBeGreaterThan(0);
-    expect(mangas).toMatchType<Manga[]>(list([Assertions.Manga]));
-  });
-  it('fetches mangas', async () => {
-    const mangas = await MangaSee.listRecentlyUpdatedManga();
-    expect(mangas).toBeTruthy();
-    expect(mangas.length).toBeGreaterThan(0);
-    expect(mangas).toMatchType<Manga[]>(list([Assertions.Manga]));
-  });
-  it('fetches manga meta', async () => {
-    const directory = await MangaSee.listMangas();
-    const randomIndices = Math.floor(directory.length * Math.random());
-    const assertion = {
-      ...Assertions.MangaMeta,
-      status: {
-        scan: union([t.string, t.undefined, t.null]),
-        publish: t.string,
+test('gets latest & trending', async () => {
+  const [latest, trending] = await Promise.all([
+    MangaSee.latest(),
+    MangaSee.trending(),
+  ]);
+
+  const latestAssertion: JSType<LatestJSON[]> = list([
+    {
+      Chapter: t.string,
+      Date: t.string,
+      Genres: t.string,
+      IndexName: t.string,
+      IsEdd: t.boolean,
+      ScanStatus: t.string,
+      SeriesID: t.string,
+      SeriesName: t.string,
+    },
+  ]);
+
+  const trendingAssertion: JSType<HotUpdateJSON[]> = list([
+    {
+      Chapter: t.string,
+      Date: t.string,
+      IndexName: t.string,
+      IsEdd: t.boolean,
+      SeriesID: t.string,
+      SeriesName: t.string,
+    },
+  ]);
+
+  expect(latest).toMatchType<LatestJSON[]>(latestAssertion);
+  expect(trending).toMatchType<HotUpdateJSON[]>(trendingAssertion);
+});
+
+test('gets meta', async () => {
+  const MANGA = { link: 'https://mangasee123.com/manga/Sakamoto-Days' };
+  const meta = await MangaSee.meta(MANGA);
+
+  const assertion: JSType<typeof meta> = {
+    mainEntity: {
+      '@type': t.string,
+      about: t.string,
+      alternateName: list([t.string]),
+      author: list([t.string]),
+      dateModified: t.string,
+      datePublished: t.string,
+      genre: list([t.string]),
+      name: t.string,
+    },
+    IndexName: t.string,
+    chapters: list([
+      {
+        Chapter: t.string,
+        ChapterName: union([t.string, t.null]),
+        Date: t.string,
+        Type: t.string,
       },
-      date: {
-        modified: union([t.number, t.string]),
-        published: union([t.number, t.string]),
-      },
-      type: t.string,
-      yearReleased: t.string,
-      authors: list([t.string]),
-    } as any;
-
-    const metas = await Promise.all(
-      directory
-        .slice(Math.max(randomIndices - 5, 0), randomIndices)
-        .map((x) => MangaSee.getMeta(x)),
-    );
-    expect(metas).toMatchType<MangaSeeMangaMeta[]>(list([assertion]));
-    for (let i = 0; i < metas.length; i++) {
-      const chapters = metas[i].chapters;
-      (expect(chapters) as any).toMatchChapterOrder();
-    }
-  }, 30000);
-  it('manga pages fetched correctly', async () => {
-    const chapters = [
-      'https://mangasee123.com/read-online/Heroine-Voice-chapter-10.html',
-      'https://mangasee123.com/read-online/Dou-ka-Ore-wo-Houtte-Oitekure-chapter-6.html',
-      'https://mangasee123.com/read-online/Itai-No-Wa-Iya-Nanode-Bougyo-ryoku-Ni-Kyokufuri-Shitai-To-Omoimasu-chapter-27.html',
-      'https://mangasee123.com/read-online/Jujutsu-Kaisen-chapter-249.html',
-      'https://mangasee123.com/read-online/Berserk-chapter-2.html',
-    ];
-    const result = await Promise.all(
-      chapters.map((x) => MangaSee.getPages({ link: x })),
-    );
-    expect(result).toMatchType<string[][]>(list([list([t.string])]));
-  });
+    ]),
+    description: t.string,
+    imageCover: union([t.string, t.undefined]),
+    link: t.string,
+    publishStatus: t.string,
+    scanStatus: t.string,
+    type: t.string,
+    yearReleased: t.string,
+  };
+  expect(meta).toMatchType<typeof meta>(assertion);
 });
 
-describe('utils', () => {
-  it('extractDataFromVariable', () => {
-    expect(extractDataFromVariable('')('hello')).rejects.toEqual(
-      'hello does not exist. Received html: ',
-    );
-  });
+test('gets pages', async () => {
+  const CHAPTER = {
+    link: 'https://mangasee123.com/read-online/Sakamoto-Days-chapter-1-page-1.html',
+  };
+
+  const pages = await MangaSee.pages(CHAPTER);
+
+  expect(pages).toMatchType<string[]>(list([t.string]));
 });

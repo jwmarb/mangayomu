@@ -6,8 +6,7 @@ export function extractDataFromVariable(html: string | null) {
     return new Promise((res, rej) => {
       if (html == null) return rej('HTML is null');
       const match = html.match(new RegExp(`${variableName} = .*;`, 'g'));
-      if (match == null)
-        return rej(`${variableName} does not exist. Received html: ${html}`);
+      if (match == null) return rej(`${variableName} does not exist.`);
       const json = match[0].substring(
         variableName.length + 3,
         match[0].length - 1,
@@ -25,7 +24,7 @@ export function extractDataFromApplicationLDJson<T>(
     const target = /"mainEntity":{((\s|.)*?)}/g;
     const obj = html.match(target);
 
-    if (obj == null) return rej(`Invalid regular expression. Got ${html}`);
+    if (obj == null) return rej('Invalid regular expression.');
     const parsed = JSON.parse(
       `{${obj[0].replace(/ ".*" /g, (s) => {
         return s.replace(/"/g, '\\"');

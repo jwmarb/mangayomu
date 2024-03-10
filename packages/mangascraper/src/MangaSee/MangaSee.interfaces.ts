@@ -126,16 +126,16 @@ export interface TopTenJSON {
   SeriesName: string;
 }
 
-export interface HotUpdateJSON {
+export type HotUpdateJSON = {
   Chapter: string;
   Date: string;
   IndexName: string;
   IsEdd: boolean;
   SeriesID: string;
   SeriesName: string;
-}
+};
 
-export interface LatestJSON {
+export type LatestJSON = {
   Chapter: string;
   Date: string;
   Genres: string;
@@ -144,14 +144,14 @@ export interface LatestJSON {
   ScanStatus: string;
   SeriesID: string;
   SeriesName: string;
-}
+};
 
 export interface NewSeriesJSON {
   IndexName: string;
   SeriesName: string;
 }
 
-export interface MainEntityJSON {
+export type MainEntityJSON = {
   mainEntity: {
     '@type': string;
     name: string;
@@ -162,11 +162,11 @@ export interface MainEntityJSON {
     dateModified: string;
     genre: string[];
   };
-}
+};
 
-export interface MangaSeeChapterJSON {
+export type MangaSeeChapterJSON = {
   Chapter: string;
   Type: string;
   Date: string;
   ChapterName: string | null;
-}
+};
