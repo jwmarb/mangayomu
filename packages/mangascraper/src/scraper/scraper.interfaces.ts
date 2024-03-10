@@ -255,7 +255,18 @@ export declare type MangaMeta<TChapter = unknown> = {
    * Image cover of the manga. This needs to be put to update the image cover whenever the user fetches an update from the manga. This is useful when the user resets their cache and the image cover URL contains an expired access key.
    */
   imageCover?: string | null;
-} & WithGenres;
+} & Partial<
+  WithGenres &
+    WithAltTitles &
+    WithAuthors &
+    WithHentai &
+    WithModificationDate &
+    WithOfficialTranslations &
+    WithRating &
+    WithStatus &
+    WithType &
+    WithYearReleased
+>;
 
 export declare type MangaMultilingualChapter = {
   /**
@@ -277,7 +288,7 @@ export type MangaChapter = {
 
   /**
    * The index the chapter belongs to in the array
-   * @deprecated
+   * @deprecated This will be removed in the future. For now, just set this to 0
    */
   index: number;
 
