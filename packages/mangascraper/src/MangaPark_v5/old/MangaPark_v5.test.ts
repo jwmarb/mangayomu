@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { JSType, Union, list, t, union } from '@mangayomu/jest-assertions';
 import MangaParkv5 from './MangaPark_v5';
-import { Assertions } from '../utils/assertions';
-import { MangaParkV5MangaMeta } from './MangaPark_v5.interfaces';
+import { Assertions } from '../../utils/assertions';
+import { MangaParkV5MangaMeta } from '../MangaPark_v5.interfaces';
 import {
   compressURL,
   compressURLWorklet,
@@ -10,9 +10,9 @@ import {
   getV3URL,
   getV5URL,
   parseTimestamp,
-} from './MangaPark_v5.helpers';
+} from '../MangaPark_v5.helpers';
 import { sub } from 'date-fns';
-import { Manga } from '../scraper/scraper.interfaces';
+import { Manga } from '../../scraper/scraper.interfaces';
 const MANGAS = [
   'https://mangapark.net/title/10953-en-one-piece',
   'https://mangapark.net/title/11600-en-kingdom',
