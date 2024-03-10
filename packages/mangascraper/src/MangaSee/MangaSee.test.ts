@@ -104,7 +104,7 @@ describe('manga type definitions scraped correctly', () => {
   it('fetches manga meta', async () => {
     const directory = await MangaSee.listMangas();
     const randomIndices = Math.floor(directory.length * Math.random());
-    const assertion: JSType<MangaSeeMangaMeta> = {
+    const assertion = {
       ...Assertions.MangaMeta,
       status: {
         scan: union([t.string, t.undefined, t.null]),
@@ -117,7 +117,7 @@ describe('manga type definitions scraped correctly', () => {
       type: t.string,
       yearReleased: t.string,
       authors: list([t.string]),
-    };
+    } as any;
 
     const metas = await Promise.all(
       directory

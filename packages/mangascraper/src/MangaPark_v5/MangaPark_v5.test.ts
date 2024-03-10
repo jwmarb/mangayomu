@@ -38,18 +38,7 @@ test('listRecentlyUpdatedManga matches type', async () => {
 
 test('manga meta matches type', async () => {
   const metas = await MANGA_METAS;
-  const assertion: JSType<MangaParkV5MangaMeta> = {
-    ...Assertions.MangaMeta,
-    status: {
-      scan: union([t.string, t.undefined, t.null]),
-      publish: t.string,
-    },
-    rating: {
-      value: union(['N/A', t.number]),
-      voteCount: t.number,
-    },
-    authors: list([t.string]),
-  };
+  const assertion = Assertions.MangaMeta;
   for (const key in assertion) {
     const result = assertion[key as keyof typeof assertion];
 
