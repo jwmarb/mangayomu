@@ -22,8 +22,8 @@ export type MangaSeeManga = Manga &
   WithOfficialTranslations &
   WithAltTitles & {
     lt: number;
-    v: number;
-    vm: number;
+    v: string;
+    vm: string;
   };
 
 export type MangaSeeMangaMeta = MangaMeta<MangaSeeChapter> &
@@ -118,7 +118,7 @@ export type Directory = {
   /**
    * Latest chapter time value
    */
-  lt: string;
+  lt: number;
 };
 
 export interface TopTenJSON {

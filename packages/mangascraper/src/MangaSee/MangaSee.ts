@@ -69,9 +69,9 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       source: this.name,
       officialTranslation: x.o === 'yes' ? true : false,
       altTitles: x.al,
-      lt: parseInt(x.lt),
-      v: parseInt(x.v),
-      vm: parseInt(x.vm),
+      lt: x.lt,
+      v: x.v,
+      vm: x.vm,
     };
   }
   private getImageCover(html: string | null, indexName: string) {
@@ -186,9 +186,9 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
       source: this.name,
       officialTranslation: x.o === 'yes' ? true : false,
       altTitles: x.al,
-      lt: parseInt(x.lt),
-      v: parseInt(x.v),
-      vm: parseInt(x.vm),
+      lt: x.lt,
+      v: x.v,
+      vm: x.vm,
     }));
     return result;
   }
@@ -388,12 +388,12 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
                 parseInt(b.yearReleased) - parseInt(a.yearReleased),
             );
           case 'Popularity (All Time)':
-            return createSort(
-              (a: MangaSeeManga, b: MangaSeeManga) => b.v - a.v,
+            return createSort((a: MangaSeeManga, b: MangaSeeManga) =>
+              b.v.localeCompare(a.v),
             );
           case 'Popularity (Monthly)':
-            return createSort(
-              (a: MangaSeeManga, b: MangaSeeManga) => b.vm - a.vm,
+            return createSort((a: MangaSeeManga, b: MangaSeeManga) =>
+              b.vm.localeCompare(a.vm),
             );
           case 'Recently Released Chapter':
             return createSort(
