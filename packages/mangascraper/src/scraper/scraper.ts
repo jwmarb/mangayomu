@@ -126,8 +126,12 @@ export default abstract class MangaSource<
   /**
    * Converts `tchapter` into a `MangaChapter` type
    * @param tchapter A manga chapter from the source
+   * @param tmangameta The manga meta the chapter is from
    */
-  public abstract toChapter(tchapter: TChapter): MangaChapter;
+  public abstract toChapter(
+    tchapter: TChapter,
+    tmangameta: TMangaMeta,
+  ): MangaChapter;
 
   // Methods for accessing data from this source
 
