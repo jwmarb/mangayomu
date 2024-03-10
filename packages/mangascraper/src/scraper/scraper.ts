@@ -5,9 +5,12 @@ import {
   MangaChapter,
   MangaHostInfo,
   MangaMeta,
+  RouteFetchOptions,
 } from './scraper.interfaces';
 import url from 'url';
 import { InvalidSourceException } from '../exceptions';
+import * as cheerio from 'cheerio';
+import UserAgent from 'user-agents';
 
 export default abstract class MangaSource<
   TManga = unknown,
@@ -75,6 +78,11 @@ export default abstract class MangaSource<
    */
   public readonly URL: url.Url;
 
+  /**
+   * Proxy URL for network requests
+   */
+  public _proxy: string | null;
+
   public constructor(info: MangaHostInfo) {
     MangaSource.sources.set(info.name, this);
 
@@ -87,6 +95,16 @@ export default abstract class MangaSource<
     this.SUPPORTS_LATEST_MANGAS = info.hasLatestMangas;
     this.SUPPORTS_TRENDING_MANGAS = info.hasTrendingMangas;
     this.CONTAINS_NSFW = info.containsNSFW;
+    this._proxy = null;
+  }
+
+  // basic setters/getters
+  public get proxy(): string | null {
+    return this._proxy;
+  }
+
+  public set proxy(value: string) {
+    this._proxy = value;
   }
 
   // These methods below will convert data types to a universal data type that the applications can use
@@ -115,38 +133,55 @@ export default abstract class MangaSource<
 
   /**
    * Gets the latest mangas from this source
+   * @param {AbortSignal | undefined} signal A signal from `AbortController`
    * @returns Returns the latest mangas
    */
-  public latest(): Promise<TManga[]> {
+  public latest(signal?: AbortSignal): Promise<TManga[]> {
     return Promise.resolve([]);
   }
 
   /**
    * Gets trending mangas from this source
+   * @param {AbortSignal | undefined} signal A signal from `AbortController`
    * @returns Returns the top trending mangas
    */
-  public trending(): Promise<TManga[]> {
+  public trending(signal?: AbortSignal): Promise<TManga[]> {
     return Promise.resolve([]);
   }
 
   /**
    * Searches for mangas from this source
    * @param query An input search query, which is like using the search bar in the source
+   * @param {AbortSignal | undefined} signal A signal from `AbortController`
+   * @param filters An object containing fields that filter out results included in search. This object is the
+   * `schema` property from the `createSchema` function
    * @returns Returns a list of mangas based on this query
    */
-  public abstract search(query: string): Promise<TManga[]>;
+  public abstract search(
+    query: string,
+    signal?: AbortSignal,
+    filters?: unknown,
+  ): Promise<TManga[]>;
 
   /**
    * Gets the pages of a chapter
    * @param payload The link to a manga chapter
+   * @param {AbortSignal | undefined} signal A signal from `AbortController`
    */
-  public abstract pages(payload: Pick<MangaChapter, 'link'>): Promise<string[]>;
+  public abstract pages(
+    payload: Pick<MangaChapter, 'link'>,
+    signal?: AbortSignal,
+  ): Promise<string[]>;
 
   /**
    * Gets more detailed information about the manga
    * @param payload The link to a manga
+   * @param {AbortSignal | undefined} signal A signal from `AbortController`
    */
-  public abstract meta(payload: Pick<Manga, 'link'>): Promise<TMangaMeta>;
+  public abstract meta(
+    payload: Pick<Manga, 'link'>,
+    signal?: AbortSignal,
+  ): Promise<TMangaMeta>;
 
   /**
    * Converts this class into JSON
@@ -158,5 +193,51 @@ export default abstract class MangaSource<
       _name: this.NAME,
       _version: this.API_VERSION,
     };
+  }
+
+  protected async route<T = cheerio.CheerioAPI>(
+    path: string | { link: string } | { html: string },
+    signal?: AbortSignal,
+    method: 'GET' | 'POST' = 'GET',
+    body?: Record<string, unknown>,
+    options: RouteFetchOptions = { proxyEnabled: true },
+  ): Promise<T> {
+    if (typeof path === 'object' && 'html' in path) {
+      return cheerio.load(path.html, { decodeEntities: false }) as T;
+    }
+    const url =
+      typeof path === 'string'
+        ? `https://${this.URL.hostname}${path}`
+        : path.link;
+    try {
+      const response = await (this.proxy && options.proxyEnabled
+        ? fetch(this.proxy, {
+            method: 'POST',
+            body: JSON.stringify({
+              url,
+              method,
+              body,
+            }),
+            headers: { 'Content-Type': 'application/json' },
+            signal,
+          })
+        : fetch(url, {
+            method,
+            headers: {
+              'User-Agent': new UserAgent().toString(),
+              ...(body != null
+                ? {
+                    'Content-Type': 'application/json',
+                  }
+                : {}),
+            },
+            body: JSON.stringify(body),
+            signal,
+          }));
+      const data = await response[body ? 'json' : 'text']();
+      return body ? data : (cheerio.load(data, { decodeEntities: false }) as T);
+    } catch (e) {
+      throw new Error('Cancelled fetching of manga meta');
+    }
   }
 }
