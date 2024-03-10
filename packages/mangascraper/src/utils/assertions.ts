@@ -42,7 +42,34 @@ export const Assertions = {
       },
     ]),
     description: union([t.string, t.undefined, t.null]),
-    genres: list([t.string]),
+    genres: union([list([t.string]), t.undefined]),
+    altTitles: union([list([t.string]), t.undefined]),
+    authors: union([list([t.string]), t.undefined]),
+    isHentai: union([t.undefined, t.boolean]),
+    date: union([
+      t.undefined,
+      {
+        published: union([t.string, t.number]),
+        modified: union([t.string, t.number]),
+      },
+    ]),
+    officialTranslation: union([t.undefined, t.boolean]),
+    rating: union([
+      t.undefined,
+      {
+        value: union(['N/A', t.number]),
+        voteCount: t.number,
+      },
+    ]),
+    status: union([
+      t.undefined,
+      {
+        scan: union([t.null, t.undefined, t.string]),
+        publish: t.string,
+      },
+    ]),
+    type: union([t.undefined, t.string]),
+    yearReleased: union([t.string, t.undefined]),
   } as JSType<Manga & MangaMeta<MangaChapter>>,
 };
 
