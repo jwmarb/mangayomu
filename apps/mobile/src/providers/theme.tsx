@@ -121,7 +121,7 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
       borderRadius: 32,
       screen: {
         paddingVertical: (theme) => theme.style.size.s,
-        paddingHorizontal: (theme) => theme.style.size.m,
+        paddingHorizontal: (theme) => theme.style.size.l,
       },
       size: {
         s: 4,
