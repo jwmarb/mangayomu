@@ -7,6 +7,7 @@ export const TEXT_VARIANTS = [
   'body1',
   'body2',
   'button',
+  'bottom-tab',
 ] as const;
 export const TEXT_ALIGNMENTS = ['left', 'center', 'right'] as const;
 export const BUTTON_VARIANTS = ['contained', 'outlined', 'text'] as const;
