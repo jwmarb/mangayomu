@@ -168,6 +168,7 @@ export default abstract class MangaSource<
   /**
    * Searches for mangas from this source
    * @param query An input search query, which is like using the search bar in the source
+   * @param page The page for pagination
    * @param {AbortSignal | undefined} signal A signal from `AbortController`
    * @param filters An object containing fields that filter out results included in search. This object is the
    * `schema` property from the `createSchema` function
@@ -175,6 +176,7 @@ export default abstract class MangaSource<
    */
   public abstract search(
     query: string,
+    page: number,
     signal?: AbortSignal,
     filters?: unknown,
   ): Promise<TManga[]>;
