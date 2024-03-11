@@ -173,10 +173,12 @@ class MangaSee extends MangaSource<
   }
   public async search(
     query: string,
+    page: number,
     signal?: AbortSignal | undefined,
     filters?: MangaSeeFilter,
   ): Promise<TManga[]> {
     const directory = await this.directory();
+    if (signal?.aborted) return [];
     const sanitizedTitle = query.trim().toLowerCase();
     if (filters != null) {
       const withIncludingGenre = (manga: Directory) => {
@@ -259,6 +261,7 @@ class MangaSee extends MangaSource<
       const filtered: Directory[] = [];
 
       for (let i = 0; i < directory.length; i++) {
+        if (signal?.aborted) return [];
         if (
           withOfficialTranslation(directory[i]) &&
           withPublishStatus(directory[i]) &&
@@ -276,6 +279,7 @@ class MangaSee extends MangaSource<
 
     const filtered: TManga[] = [];
     for (let i = 0; i < directory.length; i++) {
+      if (signal?.aborted) return [];
       if (directory[i].s.trim().toLowerCase().includes(sanitizedTitle))
         filtered.push(directory[i]);
     }
