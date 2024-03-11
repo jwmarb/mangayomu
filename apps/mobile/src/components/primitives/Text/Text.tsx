@@ -1,5 +1,6 @@
 import { TextProps as NativeTextProps, Text as NativeText } from 'react-native';
 import React from 'react';
+import Animated from 'react-native-reanimated';
 import useContrast from '@/hooks/useContrast';
 import {
   TextVariants,
@@ -51,4 +52,8 @@ function Text(props: TextProps, ref: React.ForwardedRef<NativeText>) {
   return <NativeText {...rest} style={style} ref={ref} />;
 }
 
-export default React.forwardRef(Text);
+const ForwardedText = React.forwardRef(Text);
+
+export const AnimatedText = Animated.createAnimatedComponent(ForwardedText);
+
+export default ForwardedText;

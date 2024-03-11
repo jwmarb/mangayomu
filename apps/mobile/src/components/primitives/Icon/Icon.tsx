@@ -7,6 +7,8 @@ import {
   TextProps,
   TextStyle,
 } from 'react-native';
+import React from 'react';
+import Animated from 'react-native-reanimated';
 import { sizes } from '@/components/primitives/Icon/styles';
 import { IconSizes, TextColors } from '@/components/primitives/types';
 import { colors } from '@/components/primitives/Text/styles';
@@ -39,7 +41,8 @@ export const composedSizes = (['icon', 'image'] as const).reduce(
   {} as Record<Pick<IconProps, 'type'>['type'], Record<IconSizes, TextStyle>>,
 );
 
-export default function Icon(props: IconProps) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function Icon(props: IconProps, ref: React.ForwardedRef<any>) {
   const {
     color: colorProp = 'textPrimary',
     size: sizeProp = 'medium',
@@ -58,6 +61,7 @@ export default function Icon(props: IconProps) {
       return (
         <MaterialCommunityIcons
           {...rest}
+          ref={ref}
           name={rest.name}
           style={style as any}
         />
@@ -66,9 +70,18 @@ export default function Icon(props: IconProps) {
       return (
         <Image
           {...rest}
+          ref={ref}
           src={rest.uri}
           style={style as StyleProp<ImageStyle>[]}
         />
       );
   }
 }
+
+const ForwardedIcon = React.forwardRef(Icon);
+
+export const AnimatedIcon = Animated.createAnimatedComponent(
+  ForwardedIcon,
+) as typeof Icon;
+
+export default ForwardedIcon as typeof Icon;
