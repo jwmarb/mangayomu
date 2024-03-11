@@ -2,6 +2,8 @@ import MangaSee from './MangaSee';
 import MangaSource from '../scraper/scraper';
 import { JSType, list, t, union } from '@mangayomu/jest-assertions';
 import { Directory, HotUpdateJSON, LatestJSON } from './MangaSee.interfaces';
+import { Manga, MangaChapter, MangaMeta } from '../scraper/scraper.interfaces';
+import { Assertions } from '../utils/assertions';
 
 test('ensures that module is registered in map', () => {
   expect(MangaSource.getSource(MangaSee.NAME)).toEqual(MangaSee);
@@ -28,6 +30,9 @@ test('gets the directory', async () => {
   } as const;
 
   expect(directory).toMatchType<Directory[]>(list([assertion]));
+  expect(directory.map((x) => MangaSee.toManga(x))).toMatchType<Manga[]>(
+    list([Assertions.Manga]),
+  );
 });
 
 test('gets latest & trending', async () => {
@@ -62,6 +67,12 @@ test('gets latest & trending', async () => {
 
   expect(latest).toMatchType<LatestJSON[]>(latestAssertion);
   expect(trending).toMatchType<HotUpdateJSON[]>(trendingAssertion);
+  expect(latest.map((x) => MangaSee.toManga(x))).toMatchType<Manga[]>(
+    list([Assertions.Manga]),
+  );
+  expect(trending.map((x) => MangaSee.toManga(x))).toMatchType<Manga[]>(
+    list([Assertions.Manga]),
+  );
 });
 
 test('gets meta', async () => {
@@ -97,6 +108,12 @@ test('gets meta', async () => {
     yearReleased: t.string,
   };
   expect(meta).toMatchType<typeof meta>(assertion);
+  expect(MangaSee.toMangaMeta(meta)).toMatchType<
+    MangaMeta<(typeof meta.chapters)[number]>
+  >({ ...Assertions.MangaMeta, chapters: assertion.chapters });
+  expect(meta.chapters.map((x) => MangaSee.toChapter(x, meta))).toMatchType<
+    MangaChapter[]
+  >(Assertions.MangaMeta.chapters);
 });
 
 test('gets pages', async () => {
@@ -107,4 +124,32 @@ test('gets pages', async () => {
   const pages = await MangaSee.pages(CHAPTER);
 
   expect(pages).toMatchType<string[]>(list([t.string]));
+});
+
+test('invalid `toManga`', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  expect(() => MangaSee.toManga({} as any)).toThrow();
+  expect(() => MangaSee.toManga(undefined as any)).toThrow();
+});
+
+test('chapter parsing', async () => {
+  const meta = await MangaSee.meta({
+    link: 'https://mangasee123.com/manga/Dandadan',
+  });
+  expect(
+    MangaSee.toChapter(
+      {
+        Chapter: '101420',
+        Type: 'Chapter',
+        Date: '2024-02-26 18:03:10',
+        ChapterName: null,
+      },
+      meta,
+    ),
+  ).toEqual<MangaChapter>({
+    date: Date.parse('2024-02-26 18:03:10'),
+    link: 'https://mangasee123.com/read-online/Dandadan-chapter-142',
+    name: 'Chapter 142',
+    index: 0,
+  });
 });
