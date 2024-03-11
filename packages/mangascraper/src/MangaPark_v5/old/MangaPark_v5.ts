@@ -229,7 +229,7 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
     for (let i = meta.data.get_comicChapterList.length - 1; i >= 0; i--) {
       const ch = meta.data.get_comicChapterList[i];
       chapters.push({
-        date: new Date(ch.data.dateCreate).toString(),
+        date: ch.data.dateCreate,
         index: meta.data.get_comicChapterList.length - 1 - i,
         link: compressURL('https://' + super.getLink() + ch.data.urlPath),
         name: ch.data.dname,

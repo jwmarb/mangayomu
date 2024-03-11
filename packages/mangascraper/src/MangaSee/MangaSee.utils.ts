@@ -63,5 +63,5 @@ export function processScript(html: string | null) {
 }
 
 export function parseMangaSeeDate(dateStr: string) {
-  return parse(dateStr, 'yyyy-MM-dd HH:mm:ss', new Date()).toString();
+  return Date.parse(dateStr);
 }

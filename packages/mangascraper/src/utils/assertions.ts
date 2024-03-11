@@ -35,7 +35,7 @@ export const Assertions = {
     chapters: list([
       {
         name: t.string,
-        date: union([t.number, t.string]),
+        date: t.number,
         index: t.number,
         link: t.string,
         subname: union([t.string, t.undefined, t.null]),

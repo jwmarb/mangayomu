@@ -293,9 +293,9 @@ export type MangaChapter = {
   index: number;
 
   /**
-   * The date the chapter was released.
+   * The date the chapter was released, in milliseconds from epoch.
    */
-  date: string | number;
+  date: number;
 
   /**
    * After the name of a chapter is given, there may be a subtitle associated with it
