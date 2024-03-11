@@ -37,8 +37,8 @@ export type MangaParkV5HotMangas = {
         data: {
           name: string;
           urlPath: string;
-          urlCoverOri: string;
-          tranLang: string;
+          urlCoverOri: string | null;
+          tranLang?: string;
         };
       }[];
     };
