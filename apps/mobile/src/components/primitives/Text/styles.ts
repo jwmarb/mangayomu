@@ -40,6 +40,11 @@ export const variants = StyleSheet.create<Record<TextVariants, TextStyle>>({
     fontWeight: '500',
     letterSpacing: 0.56,
   },
+  'bottom-tab': {
+    fontSize: 12,
+    fontWeight: 'normal',
+    letterSpacing: 0.1,
+  },
 });
 
 export const colors = createStyles<Record<TextColors, TextStyle>>((theme) => ({
