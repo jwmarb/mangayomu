@@ -88,8 +88,8 @@ class MangaSee extends MangaSource<
     if (this._directory != null) return this._directory;
 
     const $ = await super.route('/search');
-    const html = $('body').html();
-    const { variable } = processScript(html);
+    this.html = $('body').html();
+    const { variable } = processScript(this.html);
     this._directory = await variable<Directory[]>('vm.Directory');
     return this._directory;
   }
@@ -107,17 +107,15 @@ class MangaSee extends MangaSource<
 
   public async latest(signal?: AbortSignal) {
     const $ = await super.route('/', signal);
-    const html = $('body').html();
-    this.html = html;
-    const { variable } = processScript(html);
+    this.html = $('body').html();
+    const { variable } = processScript(this.html);
     const LatestJSON = await variable<LatestJSON[]>('vm.LatestJSON');
     return LatestJSON;
   }
   public async trending(signal?: AbortSignal | undefined) {
     const $ = await super.route('/', signal);
-    const html = $('body').html();
-    this.html = html;
-    const { variable } = processScript(html);
+    this.html = $('body').html();
+    const { variable } = processScript(this.html);
     const HotUpdateJSON = await variable<LatestJSON[]>('vm.HotUpdateJSON');
     return HotUpdateJSON;
   }
@@ -165,7 +163,7 @@ class MangaSee extends MangaSource<
       name: `${
         tchapter.Type != '' ? tchapter.Type : 'Chapter'
       } ${this.ChapterDisplay(tchapter.Chapter)}`,
-      link: `https://${this.URL.host}/read-online/${
+      link: `https://${this.URL.hostname}/read-online/${
         tmangameta.IndexName
       }${this.ChapterURLEncode(tchapter.Chapter)}`,
       index: 0,
