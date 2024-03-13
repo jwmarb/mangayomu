@@ -4,6 +4,7 @@ import { JSType, list, t, union } from '@mangayomu/jest-assertions';
 import { Directory, HotUpdateJSON, LatestJSON } from './MangaSee.interfaces';
 import { Manga, MangaChapter, MangaMeta } from '../scraper/scraper.interfaces';
 import { Assertions } from '../utils/assertions';
+import { MANGASEE_INFO } from './MangaSee.constants';
 
 test('ensures that module is registered in map', () => {
   expect(MangaSource.getSource(MangaSee.NAME)).toEqual(MangaSee);
@@ -152,4 +153,84 @@ test('chapter parsing', async () => {
     name: 'Chapter 142',
     index: 0,
   });
+});
+
+test('signal cancels search results', async () => {
+  const controller = new AbortController();
+  const [result] = await Promise.all([
+    MangaSee.search('', 1, controller.signal),
+    new Promise<void>((res) => {
+      res();
+      controller.abort();
+    }),
+  ]);
+  expect(result).toEqual([]);
+});
+
+test('search filters work as intended', async () => {
+  const filters = structuredClone(MANGASEE_INFO.filters.schema);
+  filters.Genres.include = [
+    'Shounen',
+    'Action',
+    'Adventure',
+    'Comedy',
+    'Drama',
+    'Fantasy',
+  ];
+  filters['Official Translation'].value = 'Official Translation Only';
+  filters['Publish Status'].value = 'Ongoing';
+  filters['Scan Status'].value = 'Ongoing';
+  filters['Sort By'].value = 'Popularity (All Time)';
+  filters['Type'].value = 'Manga';
+
+  let result = await MangaSee.search('One Piece', 1, undefined, filters);
+  type Manga = Partial<(typeof result)[number]>;
+  expect(result).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining<Manga>({
+        y: '1997',
+        s: 'One Piece',
+      }),
+    ]),
+  );
+
+  filters.Genres.include = [];
+  filters.Genres.exclude = ['Adult', 'Ecchi'];
+  filters['Official Translation'].value = 'Any';
+  filters['Publish Status'].value = 'Any';
+  filters['Scan Status'].value = 'Any';
+  filters['Sort By'].value = 'Alphabetical';
+  filters['Type'].value = 'Any';
+
+  result = await MangaSee.search('', 1, undefined, filters);
+
+  expect(result).not.toEqual(
+    expect.arrayContaining([
+      expect.objectContaining<Manga>({
+        s: 'Parallel Paradise',
+      }),
+      expect.objectContaining<Manga>({
+        s: 'Gushing Over Magical Girls',
+      }),
+    ]),
+  );
+  expect(result).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining<Manga>({
+        s: 'My Hero Academia',
+      }),
+    ]),
+  );
+
+  filters.Genres.exclude = ['Mature'];
+
+  result = await MangaSee.search('Berserk', 1, undefined, filters);
+
+  expect(result).not.toEqual(
+    expect.arrayContaining([
+      expect.objectContaining<Manga>({
+        s: 'Berserk',
+      }),
+    ]),
+  );
 });
