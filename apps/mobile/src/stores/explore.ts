@@ -14,20 +14,16 @@ const useExploreStore = create(
     (set, get) => ({
       pinnedSources: [],
       pinSource(source: string) {
-        get().pinnedSources.push(MangaSource.getSource(source) as MangaSource);
         set({
-          pinnedSources: Array.from(get().pinnedSources),
+          pinnedSources: [
+            ...get().pinnedSources,
+            MangaSource.getSource(source) as MangaSource,
+          ],
         });
       },
       unpinSource(source: string) {
-        get().pinnedSources.splice(
-          get().pinnedSources.indexOf(
-            MangaSource.getSource(source) as MangaSource,
-          ),
-          1,
-        );
         set({
-          pinnedSources: Array.from(get().pinnedSources),
+          pinnedSources: get().pinnedSources.filter((x) => x.NAME !== source),
         });
       },
     }),
