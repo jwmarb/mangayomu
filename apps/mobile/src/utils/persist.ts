@@ -20,10 +20,11 @@ type Deserializer = (value: unknown) => unknown;
  */
 type Migrations = Record<number, (persistedState: unknown) => unknown>;
 
-type PersistConfigOptions = {
+type PersistConfigOptions<T> = {
   serializers?: Serializer[];
   deserializers?: Deserializer[];
   migrations?: Migrations;
+  partialize?: (state: T) => Partial<T>;
   version: number;
   name: string;
 };
@@ -41,7 +42,7 @@ const storage = {
 };
 
 export function createPersistConfig<T>(
-  options: PersistConfigOptions,
+  options: PersistConfigOptions<T>,
 ): PersistOptions<T> {
   return {
     name: options.name,
