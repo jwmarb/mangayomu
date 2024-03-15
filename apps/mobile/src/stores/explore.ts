@@ -1,12 +1,23 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { MangaSource } from '@mangayomu/mangascraper';
+import { Manga, MangaSource } from '@mangayomu/mangascraper';
 import { createPersistConfig } from '@/utils/persist';
 
+type SourceError = { source: string; error: string };
 type ExploreState = {
   pinnedSources: MangaSource[];
   pinSource(source: string): void;
   unpinSource(source: string): void;
+  getMangasFromPinnedSources(): Promise<{
+    latest: {
+      errors: SourceError[];
+      mangas: Manga[];
+    };
+    trending: {
+      errors: SourceError[];
+      mangas: Manga[];
+    };
+  }>;
 };
 
 const useExploreStore = create(
@@ -26,10 +37,14 @@ const useExploreStore = create(
           pinnedSources: get().pinnedSources.filter((x) => x.NAME !== source),
         });
       },
+      getMangasFromPinnedSources: async () => {
+        // todo
+      },
     }),
-    createPersistConfig({
+    createPersistConfig<ExploreState>({
       name: 'explore',
       version: 0,
+      partialize: (state) => ({ pinnedSources: state.pinnedSources }),
     }),
   ),
 );
