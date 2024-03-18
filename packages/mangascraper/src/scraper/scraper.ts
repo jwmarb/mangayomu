@@ -41,13 +41,8 @@ export default abstract class MangaSource<
     return source;
   }
 
-  public static getAllSources(): MangaSource<
-    unknown,
-    unknown,
-    unknown,
-    unknown
-  >[] {
-    return [...this.sources.values()];
+  public static getAllSources(): string[] {
+    return [...this.sources.keys()];
   }
 
   /**
