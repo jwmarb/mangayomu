@@ -18,7 +18,8 @@ export default abstract class MangaSource<
   TManga = unknown,
   TMangaMeta = unknown,
   TChapter = unknown,
-  FilterSchema = never,
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  FilterSchema = unknown,
 > {
   /**
    * All instances of MangaHost are contained here
@@ -41,8 +42,13 @@ export default abstract class MangaSource<
     return source;
   }
 
-  public static getAllSources(): string[] {
-    return [...this.sources.keys()];
+  public static getAllSources(): MangaSource<
+    unknown,
+    unknown,
+    unknown,
+    unknown
+  >[] {
+    return [...this.sources.values()];
   }
 
   /**
