@@ -93,3 +93,47 @@ export const MangaSourceDeserializer: Deserializer = (value: unknown) => {
   }
   return value;
 };
+
+export const SetSerializer: Serializer = (value: unknown) => {
+  if (value instanceof Set) {
+    const typed = { _type: 'Set', elements: [...value] };
+    return typed;
+  }
+  return value;
+};
+
+export const SetDeserializer: Deserializer = (value: unknown) => {
+  if (
+    value != null &&
+    typeof value === 'object' &&
+    '_type' in value &&
+    value._type === 'Set' &&
+    'elements' in value &&
+    Array.isArray(value.elements)
+  ) {
+    return new Set(value.elements);
+  }
+  return value;
+};
+
+export const MapSerializer: Serializer = (value: unknown) => {
+  if (value instanceof Map) {
+    const typed = { _type: 'Map', elements: [...value] };
+    return typed;
+  }
+  return value;
+};
+
+export const MapDeserializer: Deserializer = (value: unknown) => {
+  if (
+    value != null &&
+    typeof value === 'object' &&
+    '_type' in value &&
+    value._type === 'Map' &&
+    'elements' in value &&
+    Array.isArray(value.elements)
+  ) {
+    return new Map(value.elements);
+  }
+  return value;
+};
