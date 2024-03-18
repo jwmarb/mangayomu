@@ -12,7 +12,6 @@ import createSchema from '@mangayomu/schema-creator';
 import {
   FetchedMangaResults,
   MangaResult,
-  SourceError,
   SourceStatus,
   useExploreStore,
 } from '@/stores/explore';

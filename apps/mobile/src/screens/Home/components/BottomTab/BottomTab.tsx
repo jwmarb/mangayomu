@@ -1,5 +1,4 @@
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';

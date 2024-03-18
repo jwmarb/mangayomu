@@ -1,5 +1,5 @@
 import { ScrollView } from 'react-native';
-import { useSelect, useFixtureInput } from 'react-cosmos/client';
+import { useSelect } from 'react-cosmos/client';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '@/components/primitives/Button';
 import { createStyles } from '@/utils/theme';

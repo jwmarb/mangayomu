@@ -63,6 +63,7 @@ function Icon(props: IconProps, ref: React.ForwardedRef<any>) {
           {...rest}
           ref={ref}
           name={rest.name}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           style={style as any}
         />
       );

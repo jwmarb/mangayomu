@@ -2,7 +2,6 @@ import { BottomTabNavigationEventMap } from '@react-navigation/bottom-tabs';
 import { NavigationHelpers, ParamListBase } from '@react-navigation/native';
 import {
   Easing,
-  cancelAnimation,
   interpolate,
   interpolateColor,
   useAnimatedStyle,
