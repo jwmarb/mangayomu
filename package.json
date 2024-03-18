@@ -27,6 +27,8 @@
       "**/react-cosmos/**",
       "**/@react-navigation",
       "**/@react-navigation/**",
+      "**/@tanstack/react-query",
+      "**/@tanstack/react-query/**",
       "**/zustand",
       "**/zustand/**",
       "**/@realm",
