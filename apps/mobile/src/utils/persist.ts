@@ -77,7 +77,7 @@ export function createPersistConfig<T>(
 
 // All available serializers/deserializers
 
-export const MangaSourceDeserializer: Serializer = (value: unknown) => {
+export const MangaSourceDeserializer: Deserializer = (value: unknown) => {
   if (
     value != null &&
     typeof value === 'object' &&
