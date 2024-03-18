@@ -65,6 +65,10 @@ function mapPinnedSourceCreator(key: 'latest' | 'trending') {
 export const getTrendingFromPinned = mapPinnedSourceCreator('trending');
 export const getLatestFromPinned = mapPinnedSourceCreator('latest');
 
+const partialize = (state: ExploreState): Partial<ExploreState> => ({
+  pinnedSources: state.pinnedSources,
+});
+
 export const useExploreStore = create(
   persist<ExploreState>(
     (set, get) => ({
@@ -153,7 +157,7 @@ export const useExploreStore = create(
     createPersistConfig<ExploreState>({
       name: 'explore',
       version: 0,
-      partialize: (state) => ({ pinnedSources: state.pinnedSources }),
+      partialize,
       deserializers: [MangaSourceDeserializer],
     }),
   ),
