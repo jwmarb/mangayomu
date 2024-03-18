@@ -36,6 +36,10 @@ declare module '@mangayomu/theme' {
         paddingVertical: number;
         paddingHorizontal: number;
       };
+      container: {
+        paddingVertical: number;
+        paddingHorizontal: number;
+      };
       size: {
         s: number;
         m: number;
@@ -122,6 +126,10 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
       screen: {
         paddingVertical: (theme) => theme.style.size.s,
         paddingHorizontal: (theme) => theme.style.size.l,
+      },
+      container: {
+        paddingVertical: (theme) => theme.style.size.s,
+        paddingHorizontal: (theme) => theme.style.size.m,
       },
       size: {
         s: 4,
