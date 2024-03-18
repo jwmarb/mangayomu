@@ -27,17 +27,14 @@ export type PressableProps = NativePressableProps & {
 export default function Pressable(props: PressableProps) {
   const contrast = useContrast(props.contrast);
   const { androidRipple } = useThemedProps(themedProps, contrast);
-  props.android_ripple = {
-    ...props.android_ripple,
-    ...androidRipple,
-  };
+
   const { android_ripple, style: styleProp, ...rest } = props;
   const style: NativePressableProps['style'] =
     typeof styleProp === 'function'
       ? (state) => [pressableStyles.container, styleProp(state)]
       : [pressableStyles.container, styleProp];
 
-  return (
-    <NativePressable {...rest} style={style} android_ripple={android_ripple} />
-  );
+  const ripple = { ...android_ripple, ...androidRipple };
+
+  return <NativePressable {...rest} style={style} android_ripple={ripple} />;
 }
