@@ -79,7 +79,6 @@ export default function Sources() {
   return (
     <Screen.SectionList
       sections={data}
-      ListFooterComponent={<View style={{ height: 2000 }} />}
       renderSectionHeader={renderSectionHeader}
       renderItem={renderItem}
       getItemLayout={getItemLayout}
