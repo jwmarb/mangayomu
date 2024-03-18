@@ -27,6 +27,8 @@
       "**/react-cosmos/**",
       "**/@react-navigation",
       "**/@react-navigation/**",
+      "**/zustand",
+      "**/zustand/**",
       "**/@realm",
       "**/@realm/**",
       "**/realm",
