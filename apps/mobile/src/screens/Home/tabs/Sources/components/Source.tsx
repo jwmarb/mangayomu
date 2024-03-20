@@ -6,7 +6,6 @@ import { createStyles } from '@/utils/theme';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
 import Pressable from '@/components/primitives/Pressable';
-import useTheme from '@/hooks/useTheme';
 import IconButton from '@/components/primitives/IconButton';
 import Icon from '@/components/primitives/Icon';
 import { useExploreStore } from '@/stores/explore';
