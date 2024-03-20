@@ -31,20 +31,19 @@ const renderItem: ListRenderItem<unknown> = ({ item }) => (
 );
 const keyExtractor = (item: unknown, index: number) => index.toString();
 
-function ListEmptyComponent() {
-  return (
-    <>
-      {new Array(10).fill(0).map((x, i) => (
-        <Manga.Skeleton key={i} />
-      ))}
-    </>
-  );
-}
+const ListEmptyComponent = (
+  <>
+    {new Array(10).fill(0).map((x, i) => (
+      <Manga.Skeleton key={i} />
+    ))}
+  </>
+);
 
 export default function MangaList(props: MangaListProps) {
   const contrast = useContrast();
   const theme = useTheme();
   const style = useStyles(styles, contrast);
+  const data = props.data != null ? props.data.mangas.slice(0, 10) : [];
   return (
     <View style={style.container}>
       <View style={style.title}>
@@ -55,7 +54,7 @@ export default function MangaList(props: MangaListProps) {
       </View>
       <FlatList
         ListEmptyComponent={ListEmptyComponent}
-        data={props.data != null ? props.data.mangas.slice(0, 10) : []}
+        data={data}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         horizontal
