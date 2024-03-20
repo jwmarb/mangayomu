@@ -267,9 +267,10 @@ export function createTheme<T extends Theme>(
       }
     ).helpers['getContrastText'] = parsedGetContrastText;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (parsed as any).opposite = oppositeParsed;
   }
+  (parsed as any).opposite = oppositeParsed;
 
   parseGetters(parsed, parsed);
+  parseGetters((parsed as any).opposite, oppositeParsed);
   return parsed as T & DefaultThemeHelpers & { opposite: T };
 }

@@ -456,4 +456,6 @@ test('getTheme gets the theme', () => {
     'rgba(0, 0, 0, 0.87)',
   );
   expect(themeWithReactNavigation.reactNavigation.dark).toEqual(false);
+
+  expect(themeWithReactNavigation.opposite.reactNavigation.dark).toEqual(true);
 });

@@ -128,12 +128,14 @@ export function parseGetters<T extends Record<PropertyKey, unknown>>(
   obj: T,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   parsedTheme: any,
+  skip = true,
 ) {
   for (const key in obj) {
+    if (key === 'opposite' && skip) continue;
     if (key === 'helpers') continue;
     const typed = obj[key];
     if (typed != null && typeof typed === 'object')
-      parseGetters(typed as Record<PropertyKey, unknown>, parsedTheme);
+      parseGetters(typed as Record<PropertyKey, unknown>, parsedTheme, false);
     else if (typeof typed === 'function') obj[key] = typed(parsedTheme);
   }
 }
