@@ -40,7 +40,6 @@ export default function Explore() {
         data={data?.trending}
         isFetching={isFetching}
       />
-      <View style={{ height: 2000 }} />
     </Screen>
   );
 }
