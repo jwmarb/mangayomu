@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import React from 'react';
 import { iconButton } from '@/components/primitives/IconButton/styles';
 import { ButtonProps } from '@/components/primitives/Button/Button';
@@ -12,9 +12,11 @@ import {
 import useThemedProps from '@/hooks/useThemedProps';
 import useContrast from '@/hooks/useContrast';
 
-export type IconButtonProps = Omit<ButtonProps, 'title' | 'color'> & {
+export type IconButtonProps = Omit<ButtonProps, 'title' | 'color' | 'style'> & {
   icon: React.ReactElement<IconProps, typeof Icon>;
+  size?: 'small' | 'medium';
   color?: IconButtonColors;
+  style?: StyleProp<ViewStyle>;
 };
 
 const clonedIconProps = (color: IconButtonColors) => ({
@@ -39,14 +41,25 @@ const composedPressableProps = ICON_BUTTON_COLORS.reduce((prev, curr) => {
 }, {} as Record<IconButtonColors, ReturnType<typeof pressableProps>>);
 
 export default function IconButton(props: IconButtonProps) {
-  const { icon, contrast: contrastProp, color = 'default', ...rest } = props;
+  const {
+    icon,
+    contrast: contrastProp,
+    color = 'default',
+    style: styleProp,
+    size = 'medium',
+    ...rest
+  } = props;
   const contrast = useContrast(contrastProp);
   const { android_ripple } = useThemedProps(
     composedPressableProps[color],
     contrast,
   );
+  const style = [
+    size === 'medium' ? iconButton.container : iconButton.containerSmall,
+    styleProp,
+  ];
   return (
-    <View style={iconButton.container}>
+    <View style={style}>
       <Pressable
         style={iconButton.pressable}
         android_ripple={android_ripple}

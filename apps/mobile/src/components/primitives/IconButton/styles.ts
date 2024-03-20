@@ -7,6 +7,12 @@ export const iconButton = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: 10000,
   },
+  containerSmall: {
+    width: 36,
+    height: 36,
+    overflow: 'hidden',
+    borderRadius: 10000,
+  },
   pressable: {
     justifyContent: 'center',
     alignItems: 'center',
