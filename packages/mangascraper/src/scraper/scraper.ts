@@ -13,6 +13,7 @@ import { InvalidSourceException } from '../exceptions';
 import * as cheerio from 'cheerio';
 import UserAgent from 'user-agents';
 import { FilterSchemaObject } from '@mangayomu/schema-creator';
+import { PromiseCancelledException } from '../exceptions/PromiseCancelledException';
 
 export default abstract class MangaSource<
   TManga = unknown,
@@ -265,7 +266,7 @@ export default abstract class MangaSource<
       const data = await response[body ? 'json' : 'text']();
       return body ? data : (cheerio.load(data, { decodeEntities: false }) as T);
     } catch (e) {
-      throw new Error('Cancelled fetching of manga meta');
+      throw new PromiseCancelledException();
     }
   }
 }
