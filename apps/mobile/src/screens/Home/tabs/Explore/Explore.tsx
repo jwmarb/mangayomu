@@ -30,8 +30,16 @@ export default function Explore() {
         <RefreshControl refreshing={isFetching} onRefresh={refetch} />
       }
     >
-      <MangaList data={data?.latest} />
-      <MangaList data={data?.trending} />
+      <MangaList
+        title="Recently updated"
+        data={data?.latest}
+        isFetching={isFetching}
+      />
+      <MangaList
+        title="Trending updates"
+        data={data?.trending}
+        isFetching={isFetching}
+      />
       <View style={{ height: 2000 }} />
     </Screen>
   );
