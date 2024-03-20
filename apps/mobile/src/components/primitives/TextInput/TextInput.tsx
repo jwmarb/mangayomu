@@ -31,6 +31,9 @@ function TextInput(
   function handleOnPress() {
     inputRef.current?.clear();
     setHasInput(false);
+    if (onChangeText) {
+      onChangeText('');
+    }
   }
   function handleOnChangeText(e: string) {
     setHasInput(e.length > 0);
