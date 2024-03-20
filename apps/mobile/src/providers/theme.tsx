@@ -20,6 +20,7 @@ declare module '@mangayomu/theme' {
       action: {
         disabled: string;
         ripple: string;
+        textInput: string;
       };
       status: {
         ongoing: string;
@@ -69,7 +70,7 @@ export const ThemeSetDarkModeContext = React.createContext<
 
 export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
   ({ color, colorConstant }) => ({
-    mode: 'dark',
+    mode: 'dark' as const,
     helpers: {},
     palette: {
       skeleton: color('rgba(255, 255, 255, 0.12)', 'rgba(0, 0, 0, 0.12)'),
@@ -81,6 +82,7 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
       action: {
         ripple: color('#606060', '#484848'),
         disabled: color('rgba(255, 255, 255, 0.12)', 'rgba(0, 0, 0, 0.12)'),
+        textInput: color('rgba(128, 128, 128, 0.12)', 'rgba(61, 61, 61, 0.12)'),
       },
       primary: {
         light: color('#B2CBE6', '#34A1FB'),
@@ -110,7 +112,7 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
       },
       background: {
         default: color('#071113', '#fafafa'),
-        paper: color('#09181A', '#ffffff'),
+        paper: color('#09181a', '#ffffff'),
         disabled: color('#102A2D', '#EFEFEF'),
       },
       status: {
