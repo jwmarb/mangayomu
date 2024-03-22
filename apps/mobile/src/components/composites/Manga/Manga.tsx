@@ -1,22 +1,26 @@
 import React from 'react';
-import { Image, View } from 'react-native';
+import { FlatListProps, Image, ListRenderItem, View } from 'react-native';
 import Text from '@/components/primitives/Text';
 import useManga from '@/hooks/useManga';
 import Pressable from '@/components/primitives/Pressable';
 import { createStyles } from '@/utils/theme';
 import useStyles from '@/hooks/useStyles';
 import useContrast from '@/hooks/useContrast';
+import {
+  SourceProvider,
+  SourceProviderComponent,
+} from '@/components/composites/Manga/source';
 
-const WIDTH = 140;
-const HEIGHT = 240;
+export const MANGA_WIDTH = 140;
+export const MANGA_HEIGHT = 240;
 
 const COVER_WIDTH = 120;
 const COVER_HEIGHT = 180;
 
 const styles = createStyles((theme) => ({
   container: {
-    width: WIDTH,
-    height: HEIGHT,
+    width: MANGA_WIDTH,
+    height: MANGA_HEIGHT,
     padding: theme.style.size.m,
     gap: theme.style.size.m,
   },
@@ -70,10 +74,50 @@ function Skeleton() {
   );
 }
 
+type MangaFlatListPreset = {
+  renderItem: ListRenderItem<unknown>;
+  getItemLayout: (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: ArrayLike<unknown> | null | undefined,
+    index: number,
+  ) => { length: number; offset: number; index: number };
+  keyExtractor: (item: unknown, index: number) => string;
+  ListEmptyComponent: JSX.Element;
+};
+
+const MemoizedSkeleton = React.memo(Skeleton);
 const MemoizedManga = React.memo(Manga) as ReturnType<
   typeof React.memo<typeof Manga>
-> & { Skeleton: ReturnType<typeof React.memo<typeof Skeleton>> };
+> & {
+  Skeleton: ReturnType<typeof React.memo<typeof Skeleton>>;
+  generateFlatListProps: (
+    props?: Partial<FlatListProps<unknown>>,
+  ) => MangaFlatListPreset;
+  SourceProvider: SourceProviderComponent;
+};
 
-MemoizedManga.Skeleton = React.memo(Skeleton);
+MemoizedManga.SourceProvider = SourceProvider;
+MemoizedManga.Skeleton = MemoizedSkeleton;
+MemoizedManga.generateFlatListProps = function (props) {
+  return {
+    renderItem({ item }) {
+      return <MemoizedManga manga={item} />;
+    },
+    ListEmptyComponent: (
+      <>
+        {new Array(10).fill(0).map((_, i) => (
+          <MemoizedSkeleton key={i} />
+        ))}
+      </>
+    ),
+    keyExtractor(_, index) {
+      return index.toString();
+    },
+    getItemLayout(_, index) {
+      const length = props?.horizontal ? MANGA_WIDTH : MANGA_HEIGHT;
+      return { index, length, offset: length * index };
+    },
+  };
+};
 
 export default MemoizedManga;
