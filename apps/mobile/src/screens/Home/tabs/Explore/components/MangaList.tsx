@@ -26,18 +26,8 @@ type MangaListProps = {
   isFetching: boolean;
 };
 
-const renderItem: ListRenderItem<unknown> = ({ item }) => (
-  <Manga manga={item} />
-);
-const keyExtractor = (item: unknown, index: number) => index.toString();
-
-const ListEmptyComponent = (
-  <>
-    {new Array(10).fill(0).map((x, i) => (
-      <Manga.Skeleton key={i} />
-    ))}
-  </>
-);
+const { ListEmptyComponent, getItemLayout, keyExtractor, renderItem } =
+  Manga.generateFlatListProps({ horizontal: true });
 
 export default function MangaList(props: MangaListProps) {
   const contrast = useContrast();
@@ -57,7 +47,9 @@ export default function MangaList(props: MangaListProps) {
         data={data}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
+        getItemLayout={getItemLayout}
         horizontal
+        showsHorizontalScrollIndicator={false}
       />
     </View>
   );
