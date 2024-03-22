@@ -21,6 +21,7 @@ export type CollapsibleHeaderOptions = {
   headerCenter?: React.ReactNode;
   showHeaderCenter?: boolean;
   title?: string;
+  disableCollapsing?: boolean;
 };
 
 export default function useCollapsibleHeader(
@@ -33,12 +34,14 @@ export default function useCollapsibleHeader(
   const TRANSLATE_Y_HIDDEN_THRESHOLD = -insets.top - HEADER_HEIGHT;
   const BACKGROUND_TRANSPARENCY_THRESHOLD = HEADER_HEIGHT + insets.top;
   const BACKGROUND_INTERPOLATION = [
-    [BACKGROUND_TRANSPARENCY_THRESHOLD, BACKGROUND_TRANSPARENCY_THRESHOLD * 2],
+    [0, BACKGROUND_TRANSPARENCY_THRESHOLD * 0.5],
     ['transparent', theme.palette.background.paper],
   ] as const;
 
   const scrollPosition = useSharedValue(0);
+
   const translateY = useSharedValue(0);
+  const translateYStatic = useDerivedValue(() => 0);
   const backgroundColor = useDerivedValue(() =>
     interpolateColor(
       scrollPosition.value,
@@ -65,7 +68,9 @@ export default function useCollapsibleHeader(
         <Header
           {...props}
           {...options}
-          translateY={translateY}
+          translateY={
+            options?.disableCollapsing ? translateYStatic : translateY
+          }
           backgroundColor={backgroundColor}
         />
       ),
