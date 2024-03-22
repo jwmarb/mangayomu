@@ -8,7 +8,7 @@ import { getErrorMessage } from '@/utils/helpers';
 
 const TTL = 1000 * 60 * 3; // 3 minutes
 
-type SourceBrowseState =
+export type SourceBrowseState =
   | { state: 'loading' }
   | { state: 'error'; error: string }
   | { state: 'done'; mangas: unknown[] };
