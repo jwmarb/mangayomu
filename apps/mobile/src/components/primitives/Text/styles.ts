@@ -36,9 +36,9 @@ export const variants = StyleSheet.create<Record<TextVariants, TextStyle>>({
     letterSpacing: 0.44,
   },
   button: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
-    letterSpacing: 0.56,
+    letterSpacing: 0.3,
   },
   'bottom-tab': {
     fontSize: 12,
