@@ -34,7 +34,7 @@ export default function Pressable(props: PressableProps) {
       ? (state) => [pressableStyles.container, styleProp(state)]
       : [pressableStyles.container, styleProp];
 
-  const ripple = { ...android_ripple, ...androidRipple };
+  const ripple = { ...androidRipple, ...android_ripple };
 
   return <NativePressable {...rest} style={style} android_ripple={ripple} />;
 }
