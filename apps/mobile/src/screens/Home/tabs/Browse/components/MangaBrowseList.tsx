@@ -8,12 +8,21 @@ import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
 import { useBrowseStore } from '@/stores/browse';
 import { createStyles } from '@/utils/theme';
+import Button from '@/components/primitives/Button';
+import IconButton from '@/components/primitives/IconButton';
+import Icon from '@/components/primitives/Icon';
 
 const styles = createStyles((theme) => ({
   title: {
     flexDirection: 'row',
     gap: theme.style.size.m,
     paddingHorizontal: theme.style.screen.paddingHorizontal,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  leftTitleContainer: {
+    flexDirection: 'row',
+    gap: theme.style.size.m,
     alignItems: 'center',
   },
   container: {
@@ -52,19 +61,26 @@ function MangaBrowseList(props: MangaBrowseList) {
   return (
     <View style={style.container}>
       <View style={style.title}>
-        {result?.state === 'loading' && <ActivityIndicator />}
-        <Text variant="h4">{source.NAME}</Text>
-        {data.length > 0 && (
-          <Text variant="body2" color="textSecondary">
-            ({data.length} result{data.length !== 1 ? 's' : ''})
-          </Text>
-        )}
+        <View style={style.leftTitleContainer}>
+          {result?.state === 'loading' && <ActivityIndicator />}
+          <Text variant="h4">{source.NAME}</Text>
+          {data.length > 0 && (
+            <Text variant="body2" color="textSecondary">
+              ({data.length} result{data.length !== 1 ? 's' : ''})
+            </Text>
+          )}
+        </View>
+        <Button title="See More" />
       </View>
       <Manga.SourceProvider source={source}>
         <FlatList
           data={data.slice(0, 10)}
           ListEmptyComponent={
-            isEmptyResults ? <ListEmptyResultComponent /> : ListEmptyComponent
+            result == null ? null : isEmptyResults ? (
+              <ListEmptyResultComponent />
+            ) : (
+              ListEmptyComponent
+            )
           }
           getItemLayout={getItemLayout}
           keyExtractor={keyExtractor}
