@@ -3,6 +3,7 @@ import {
   PressableAndroidRippleConfig,
   View,
 } from 'react-native';
+import React from 'react';
 import { styles, variants } from '@/components/primitives/Button/styles';
 import {
   BUTTON_COLORS,
@@ -16,12 +17,15 @@ import { createThemedProps } from '@/utils/theme';
 import useThemedProps from '@/hooks/useThemedProps';
 import Text from '@/components/primitives/Text';
 import useContrast from '@/hooks/useContrast';
+import { IconProps } from '@/components/primitives/Icon';
 
 export type ButtonProps = NativeButtonProps & {
   variant?: ButtonVariants;
   color?: ButtonColors;
   contrast?: boolean;
   textAlignment?: 'left' | 'center' | 'right';
+  icon?: React.ReactElement<IconProps>;
+  iconPlacement?: 'left' | 'right';
   title: string;
 };
 
@@ -61,6 +65,8 @@ export default function Button(props: ButtonProps) {
     contrast: contrastProp,
     textAlignment = 'left',
     disabled,
+    iconPlacement = 'left',
+    icon,
     ...rest
   } = props;
   const contrast = useContrast(contrastProp);
@@ -84,13 +90,19 @@ export default function Button(props: ButtonProps) {
     <View style={btnStyles.container}>
       <Pressable
         android_ripple={android_ripple}
-        style={style}
+        style={[btnStyles.pressable, style]}
         disabled={disabled}
         {...rest}
       >
+        {iconPlacement === 'left' &&
+          icon &&
+          React.cloneElement(icon, { color })}
         <Text alignment={textAlignment} variant="button" color={textColor}>
           {title}
         </Text>
+        {iconPlacement === 'right' &&
+          icon &&
+          React.cloneElement(icon, { color })}
       </Pressable>
     </View>
   );

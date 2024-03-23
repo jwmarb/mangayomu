@@ -35,4 +35,9 @@ export const styles = (variant: ButtonVariants, color: ButtonColors) =>
         variant === 'outlined' ? theme.palette[color].main : 'transparent',
       overflow: 'hidden',
     },
+    pressable: {
+      gap: theme.style.size.m,
+      alignItems: 'center',
+      flexDirection: 'row',
+    },
   }));
