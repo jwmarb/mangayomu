@@ -6,11 +6,16 @@ export const styles = createStyles((theme) => ({
     flexShrink: 1,
     flexDirection: 'row',
     paddingHorizontal: theme.style.screen.paddingHorizontal,
+    paddingVertical: theme.style.screen.paddingVertical,
     height: HEADER_HEIGHT,
     justifyContent: 'space-between',
   },
   item: {
-    flex: 1,
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
+  itemShrink: {
+    flexShrink: 1,
     justifyContent: 'center',
   },
   headerLeft: {

@@ -1,5 +1,8 @@
-import { View } from 'react-native';
-import { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  SharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import Text from '@/components/primitives/Text';
 import useStyles from '@/hooks/useStyles';
@@ -7,7 +10,6 @@ import useContrast from '@/hooks/useContrast';
 import IconButton from '@/components/primitives/IconButton';
 import Icon from '@/components/primitives/Icon';
 import { CollapsibleHeaderOptions } from '@/hooks/useCollapsibleHeader';
-import AnimatedSafeAreaView from '@/components/animated/SafeAreaView';
 import { styles } from '@/components/composites/Header/styles';
 
 export type HeaderProps = NativeStackHeaderProps &
@@ -29,6 +31,11 @@ export default function Header(props: HeaderProps) {
     navigation,
     translateY,
     backgroundColor,
+    headerCenterStyle: headerCenterStyleProp,
+    headerLeftStyle: headerLeftStyleProp,
+    headerRightStyle: headerRightStyleProp,
+    headerStyle: headerStyleProp,
+    shrinkLeftAndRightHeaders = false,
   } = props;
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
@@ -37,17 +44,24 @@ export default function Header(props: HeaderProps) {
     transform: [{ translateY: translateY.value }],
   }));
 
-  const safeAreaViewStyle = [style.container, animatedStyle];
-  const headerLeftStyle = [style.item, style.headerLeft];
-  const headerCenterStyle = [style.item];
-  const headerRightStyle = [style.item];
+  const safeAreaViewStyle = [style.container, animatedStyle, headerStyleProp];
+  const headerLeftStyle = [
+    shrinkLeftAndRightHeaders ? style.itemShrink : style.item,
+    style.headerLeft,
+    headerLeftStyleProp,
+  ];
+  const headerCenterStyle = [style.item, headerCenterStyleProp];
+  const headerRightStyle = [
+    shrinkLeftAndRightHeaders ? style.itemShrink : style.item,
+    headerRightStyleProp,
+  ];
   function handleOnBack() {
     if (navigation.canGoBack()) navigation.goBack();
   }
   return (
-    <AnimatedSafeAreaView style={safeAreaViewStyle} edges={['top']}>
+    <Animated.View style={safeAreaViewStyle}>
       {showHeaderLeft && (
-        <View style={headerLeftStyle}>
+        <SafeAreaView edges={['top']} style={headerLeftStyle}>
           {back != null && (
             <IconButton
               icon={<Icon type="icon" name="arrow-left" />}
@@ -55,10 +69,10 @@ export default function Header(props: HeaderProps) {
             />
           )}
           {headerLeft}
-        </View>
+        </SafeAreaView>
       )}
       {showHeaderCenter && (
-        <View style={headerCenterStyle}>
+        <SafeAreaView edges={['top']} style={headerCenterStyle}>
           {!headerCenter && (
             <Text
               alignment={
@@ -74,9 +88,13 @@ export default function Header(props: HeaderProps) {
             </Text>
           )}
           {headerCenter}
-        </View>
+        </SafeAreaView>
       )}
-      {showHeaderRight && <View style={headerRightStyle}>{headerRight}</View>}
-    </AnimatedSafeAreaView>
+      {showHeaderRight && (
+        <SafeAreaView edges={['top']} style={headerRightStyle}>
+          {headerRight}
+        </SafeAreaView>
+      )}
+    </Animated.View>
   );
 }
