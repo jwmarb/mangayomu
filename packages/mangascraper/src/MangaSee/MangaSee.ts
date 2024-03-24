@@ -15,6 +15,7 @@ import MangaSource from '../scraper/scraper';
 import { Manga, MangaChapter } from '../scraper/scraper.interfaces';
 import { MANGASEE_INFO, MangaSeeFilter } from './MangaSee.constants';
 import { AscendingStringComparator, add, binary } from '@mangayomu/algorithms';
+import { CacheManager } from '../utils/cachemanager';
 
 type TMangaMeta = MainEntityJSON & {
   link: string;
@@ -40,6 +41,7 @@ class MangaSee extends MangaSource<
   private imageURLBase: string | null = null;
   private html: string | null = null;
   private _directory: Directory[] | null = null;
+  private cache: CacheManager<TManga> = new CacheManager(this);
 
   // Taken directly from https://mangasee123.com
   private ChapterDisplay = function (e: string) {
@@ -178,6 +180,11 @@ class MangaSee extends MangaSource<
     const directory = await this.directory();
     if (signal?.aborted) return [];
     const sanitizedTitle = query.trim().toLowerCase();
+    const cached = this.cache.get(query, filters);
+    if (cached != null) {
+      return cached.slice(page * 50, Math.min((page + 1) * 50, cached.length));
+    }
+
     if (filters != null) {
       const withIncludingGenre = (manga: Directory) => {
         if (filters.Genres == null || filters.Genres.include.length === 0)
@@ -272,6 +279,8 @@ class MangaSee extends MangaSource<
           else add(filtered, directory[i], sortBy);
         }
       }
+
+      this.cache.add(query, filtered, filters);
       return filtered;
     }
 
@@ -281,7 +290,11 @@ class MangaSee extends MangaSource<
       if (directory[i].s.trim().toLowerCase().includes(sanitizedTitle))
         filtered.push(directory[i]);
     }
-    return filtered;
+    this.cache.add(query, filtered, filters);
+    return filtered.slice(
+      page * 50,
+      Math.min((page + 1) * 50, filtered.length),
+    );
   }
   public async pages(
     payload: Pick<MangaChapter, 'link'>,
