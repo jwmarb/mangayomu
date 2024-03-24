@@ -7,6 +7,7 @@ import {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StyleProp, ViewStyle } from 'react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/screens/navigator';
 import Header from '@/components/composites/Header';
@@ -15,13 +16,18 @@ import { HEADER_HEIGHT } from '@/components/composites/types';
 
 export type CollapsibleHeaderOptions = {
   headerLeft?: React.ReactNode;
+  headerLeftStyle?: StyleProp<ViewStyle>;
   showHeaderLeft?: boolean;
   headerRight?: React.ReactNode;
   showHeaderRight?: boolean;
+  headerRightStyle?: StyleProp<ViewStyle>;
   headerCenter?: React.ReactNode;
+  headerCenterStyle?: StyleProp<ViewStyle>;
+  headerStyle?: StyleProp<ViewStyle>;
   showHeaderCenter?: boolean;
   title?: string;
   disableCollapsing?: boolean;
+  shrinkLeftAndRightHeaders?: boolean;
 };
 
 export default function useCollapsibleHeader(
