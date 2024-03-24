@@ -12,6 +12,10 @@ import IconButton from '@/components/primitives/IconButton';
 type TextInputProps = NativeTextInputProps & {
   contrast?: boolean;
   icon?: React.ReactElement<React.ComponentProps<typeof Icon>>;
+  /**
+   * Whether or not the `icon` prop is actually an IconButton
+   */
+  iconButton?: boolean;
 };
 
 const themedProps = createThemedProps((theme) => ({
@@ -22,7 +26,13 @@ function TextInput(
   props: TextInputProps,
   ref: React.ForwardedRef<NativeTextInput>,
 ) {
-  const { contrast: contrastProp, onChangeText, icon, ...rest } = props;
+  const {
+    contrast: contrastProp,
+    onChangeText,
+    icon,
+    iconButton = false,
+    ...rest
+  } = props;
   const [hasInput, setHasInput] = React.useState<boolean>(false);
   const inputRef = React.useRef<NativeTextInput>();
   const contrast = useContrast(contrastProp);
@@ -48,7 +58,10 @@ function TextInput(
   }
   return (
     <View style={style.view}>
-      {icon != null && React.cloneElement(icon, { style: style.iconLeft })}
+      {icon != null &&
+        React.cloneElement(icon, {
+          style: iconButton ? style.iconLeftButton : style.iconLeft,
+        })}
       {hasInput && (
         <IconButton
           onPress={handleOnPress}
@@ -59,7 +72,13 @@ function TextInput(
       )}
       <NativeTextInput
         ref={handleRef}
-        style={icon != null ? style.container : style.containerNoIcon}
+        style={
+          icon != null
+            ? iconButton
+              ? style.containerIconButton
+              : style.container
+            : style.containerNoIcon
+        }
         cursorColor={cursorColor}
         onChangeText={handleOnChangeText}
         {...rest}

@@ -11,6 +11,15 @@ export const styles = createStyles((theme) => ({
     color: theme.palette.text.primary,
     ...variants.body1,
   },
+  containerIconButton: {
+    paddingRight: theme.style.size.xxl * 2.5,
+    paddingLeft: theme.style.size.xxl * 2.5,
+    height: theme.style.size.xl * 3,
+    borderRadius: theme.style.borderRadius,
+    backgroundColor: theme.palette.action.textInput,
+    color: theme.palette.text.primary,
+    ...variants.body1,
+  },
   containerNoIcon: {
     paddingRight: theme.style.size.xxl * 2.5,
     paddingLeft: theme.style.size.xxl,
@@ -26,6 +35,11 @@ export const styles = createStyles((theme) => ({
   iconLeft: {
     position: 'absolute',
     left: theme.style.size.l,
+  },
+  iconLeftButton: {
+    position: 'absolute',
+    left: theme.style.size.l,
+    zIndex: 1,
   },
   iconRight: {
     position: 'absolute',
