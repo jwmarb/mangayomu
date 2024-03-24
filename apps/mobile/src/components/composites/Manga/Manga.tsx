@@ -1,45 +1,28 @@
 import React from 'react';
-import { FlatListProps, Image, ListRenderItem, View } from 'react-native';
+import {
+  Dimensions,
+  FlatListProps,
+  Image,
+  ListRenderItem,
+  StyleProp,
+  View,
+  ViewStyle,
+} from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import Text from '@/components/primitives/Text';
 import useManga from '@/hooks/useManga';
 import Pressable from '@/components/primitives/Pressable';
-import { createStyles } from '@/utils/theme';
 import useStyles from '@/hooks/useStyles';
 import useContrast from '@/hooks/useContrast';
 import {
   SourceProvider,
   SourceProviderComponent,
 } from '@/components/composites/Manga/source';
-
-export const MANGA_WIDTH = 140;
-export const MANGA_HEIGHT = 240;
-
-const COVER_WIDTH = 120;
-const COVER_HEIGHT = 180;
-
-const styles = createStyles((theme) => ({
-  container: {
-    width: MANGA_WIDTH,
-    height: MANGA_HEIGHT,
-    padding: theme.style.size.m,
-    gap: theme.style.size.m,
-  },
-  skeleton: {
-    backgroundColor: theme.palette.skeleton,
-  },
-  skeletonText: {
-    backgroundColor: theme.palette.skeleton,
-    width: '100%',
-    borderRadius: theme.style.borderRadius,
-    height: 14, // to be changed in the future,
-  },
-  cover: {
-    width: COVER_WIDTH,
-    height: COVER_HEIGHT,
-    borderRadius: theme.style.borderRadius / 4,
-    alignSelf: 'center',
-  },
-}));
+import {
+  listEmptyComponentStyles,
+  styles,
+} from '@/components/composites/Manga/styles';
+import { MANGA_HEIGHT, MANGA_WIDTH } from '@/components/composites/Manga';
 
 type MangaProps = {
   manga: unknown;
@@ -53,12 +36,14 @@ function Manga(props: MangaProps) {
     : require('@/assets/no-image-available.png');
   const style = useStyles(styles, contrast);
   return (
-    <Pressable style={style.container}>
-      <Image source={source} style={style.cover} />
-      <Text variant="body2" numberOfLines={2}>
-        {manga.title}
-      </Text>
-    </Pressable>
+    <View style={style.view}>
+      <Pressable style={style.container}>
+        <Image source={source} style={style.cover} />
+        <Text variant="body2" numberOfLines={2}>
+          {manga.title}
+        </Text>
+      </Pressable>
+    </View>
   );
 }
 
@@ -82,7 +67,9 @@ type MangaFlatListPreset = {
     index: number,
   ) => { length: number; offset: number; index: number };
   keyExtractor: (item: unknown, index: number) => string;
-  ListEmptyComponent: JSX.Element;
+  ListEmptyComponent: () => JSX.Element;
+  contentContainerStyle: StyleProp<ViewStyle>;
+  useColumns: () => number;
 };
 
 const MemoizedSkeleton = React.memo(Skeleton);
@@ -91,25 +78,61 @@ const MemoizedManga = React.memo(Manga) as ReturnType<
 > & {
   Skeleton: ReturnType<typeof React.memo<typeof Skeleton>>;
   generateFlatListProps: (
-    props?: Partial<FlatListProps<unknown>>,
+    props?: Partial<FlatListProps<unknown>> & { flexibleColumns?: boolean },
   ) => MangaFlatListPreset;
   SourceProvider: SourceProviderComponent;
 };
 
+function useColumns() {
+  const [columns, setColumns] = React.useState<number>(
+    Math.floor(Dimensions.get('window').width / MANGA_WIDTH),
+  );
+  React.useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setColumns(Math.floor(window.width / MANGA_WIDTH));
+    });
+    return () => {
+      subscription.remove();
+    };
+  });
+  return columns;
+}
+
 MemoizedManga.SourceProvider = SourceProvider;
 MemoizedManga.Skeleton = MemoizedSkeleton;
+const renderItem = () => (
+  <View style={listEmptyComponentStyles.skeleton}>
+    <MemoizedSkeleton />
+  </View>
+);
 MemoizedManga.generateFlatListProps = function (props) {
   return {
+    contentContainerStyle: listEmptyComponentStyles.contentContainerStyle,
     renderItem({ item }) {
       return <MemoizedManga manga={item} />;
     },
-    ListEmptyComponent: (
-      <>
-        {new Array(10).fill(0).map((_, i) => (
-          <MemoizedSkeleton key={i} />
-        ))}
-      </>
-    ),
+    // ListEmptyComponent: (
+    //   <>
+    //     {new Array(10).fill(0).map((_, i) => (
+    //       <MemoizedSkeleton key={i} />
+    //     ))}
+    //   </>
+    // ),
+    ListEmptyComponent() {
+      const numColumns = useColumns();
+      const data = new Array(props?.flexibleColumns ? numColumns * 4 : 10).fill(
+        0,
+      );
+      return (
+        <FlatList
+          numColumns={props?.flexibleColumns ? numColumns : props?.numColumns}
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={this.keyExtractor}
+          {...props}
+        />
+      );
+    },
     keyExtractor(_, index) {
       return index.toString();
     },
@@ -117,6 +140,7 @@ MemoizedManga.generateFlatListProps = function (props) {
       const length = props?.horizontal ? MANGA_WIDTH : MANGA_HEIGHT;
       return { index, length, offset: length * index };
     },
+    useColumns,
   };
 };
 
