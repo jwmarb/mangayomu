@@ -17,6 +17,7 @@ export const TEXT_COLORS = [
   'textPrimary',
   'textSecondary',
   'disabled',
+  'error',
 ] as const;
 export const ICON_BUTTON_COLORS = [...APP_COLORS, 'default'] as const;
 export const ICON_SIZES = ['small', 'medium', 'large'] as const;
