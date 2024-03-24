@@ -42,5 +42,6 @@ export const listEmptyComponentStyles = StyleSheet.create({
   },
   contentContainerStyle: {
     paddingBottom: MANGA_HEIGHT,
+    alignItems: 'center',
   },
 });
