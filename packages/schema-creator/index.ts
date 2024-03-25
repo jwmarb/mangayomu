@@ -137,6 +137,14 @@ export type MutableAbstractFilter = Record<
   | MutableOptionFilter<string>
 >;
 
+export type GeneratedFilterSchema = Record<
+  string,
+  | MutableSortFilter<string>
+  | MutableInclusiveExclusiveFilter<string>
+  | MutableOptionFilter<string>
+  | Description
+>;
+
 type FilterCreators = {
   createInclusiveExclusiveFilter<T>(
     obj: Omit<InclusiveExclusiveFilter<Const<T>>, 'type'>,

@@ -1,5 +1,6 @@
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import React from 'react';
+import { GeneratedFilterSchema } from '@mangayomu/schema-creator';
 import BottomSheet from '@/components/composites/BottomSheet';
 import Text from '@/components/primitives/Text';
 import useLoadAfterInteractions from '@/hooks/useLoadAfterInteractions';
@@ -13,7 +14,7 @@ function SourceFilters(_: unknown, ref: React.ForwardedRef<BottomSheet>) {
     <BottomSheet ref={ref}>
       <BottomSheetView>
         <Text>
-          {Object.keys(source.FILTER_SCHEMA.schema as Record<string, unknown>)}
+          {Object.keys(source.FILTER_SCHEMA.schema as GeneratedFilterSchema)}
         </Text>
       </BottomSheetView>
     </BottomSheet>
