@@ -157,7 +157,7 @@ export class CacheManager<TManga> {
             );
             delete this.table[i];
             this.resizeIfPossible();
-          }, CacheManager.TTL).unref(),
+          }, CacheManager.TTL),
         ];
         this.order.push(this.table[i]);
         return true;
@@ -178,7 +178,7 @@ export class CacheManager<TManga> {
             );
             delete this.table[i];
             this.resizeIfPossible();
-          }, CacheManager.TTL).unref(),
+          }, CacheManager.TTL),
         ];
         this.order.push(this.table[i]);
         this._size--;
@@ -199,7 +199,7 @@ export class CacheManager<TManga> {
             );
             delete this.table[i];
             this.resizeIfPossible();
-          }, CacheManager.TTL).unref(),
+          }, CacheManager.TTL),
         ];
         this.order.push(this.table[i]);
         return true;
@@ -220,7 +220,7 @@ export class CacheManager<TManga> {
             );
             delete this.table[i];
             this.resizeIfPossible();
-          }, CacheManager.TTL).unref(),
+          }, CacheManager.TTL),
         ];
         this.order.push(this.table[i]);
         this._size--;
