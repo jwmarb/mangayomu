@@ -9,6 +9,11 @@ export type RouteFetchOptions = {
    * Whether or not to fetch the provided route/link with a proxy (if provided). This option affects users on the web and not in native applciations. If using a proxy interferes with the functionality, set this to `false`.
    */
   proxyEnabled?: boolean;
+
+  /**
+   * Whether or not to return a cheerio object by default
+   */
+  cheerioLoad?: boolean;
 };
 
 /**

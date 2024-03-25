@@ -229,7 +229,7 @@ export default abstract class MangaSource<
     signal?: AbortSignal,
     method: 'GET' | 'POST' = 'GET',
     body?: Record<string, unknown>,
-    options: RouteFetchOptions = { proxyEnabled: true },
+    options: RouteFetchOptions = { proxyEnabled: true, cheerioLoad: true },
   ): Promise<T> {
     if (typeof path === 'object' && 'html' in path) {
       return cheerio.load(path.html, { decodeEntities: false }) as T;
@@ -264,7 +264,11 @@ export default abstract class MangaSource<
             signal,
           }));
       const data = await response[body ? 'json' : 'text']();
-      return body ? data : (cheerio.load(data, { decodeEntities: false }) as T);
+      return body
+        ? data
+        : options.cheerioLoad
+        ? (cheerio.load(data, { decodeEntities: false }) as T)
+        : data;
     } catch (e) {
       throw new PromiseCancelledException();
     }
