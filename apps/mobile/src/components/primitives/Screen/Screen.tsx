@@ -34,7 +34,12 @@ function Screen(props: ScreenProps) {
 Screen.FlatList = function <T>(
   props: FlatListProps<T> & Omit<ScreenProps, keyof AnimatedScrollViewProps>,
 ) {
-  const { collapsible, contrast: contrastProp, ...rest } = props;
+  const {
+    collapsible,
+    contrast: contrastProp,
+    contentContainerStyle: contentContainerStyleProp,
+    ...rest
+  } = props;
 
   const contrast = useContrast(contrastProp);
   const style = useStyles(styles, contrast);
@@ -42,7 +47,10 @@ Screen.FlatList = function <T>(
   return (
     <Animated.FlatList
       onScroll={collapsible.onScroll}
-      contentContainerStyle={style.contentContainerStyle}
+      contentContainerStyle={[
+        style.contentContainerStyle,
+        contentContainerStyleProp,
+      ]}
       {...rest}
     />
   );
