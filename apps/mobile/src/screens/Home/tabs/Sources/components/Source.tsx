@@ -1,6 +1,7 @@
 import { MangaSource } from '@mangayomu/mangascraper';
 import React from 'react';
 import { Image, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Text from '@/components/primitives/Text';
 import { createStyles } from '@/utils/theme';
 import useContrast from '@/hooks/useContrast';
@@ -37,10 +38,12 @@ const styles = createStyles((theme) => ({
 
 type SourceProps = {
   source: MangaSource;
+  showPin?: boolean;
 };
 
 function Source(props: SourceProps) {
-  const { source } = props;
+  const { source, showPin = true } = props;
+  const navigation = useNavigation();
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const imageSrc = { uri: source.ICON_URI };
@@ -53,8 +56,11 @@ function Source(props: SourceProps) {
     if (isPinned) unpinSource(source.NAME);
     else pinSource(source.NAME);
   }
+  function handleOnSourcePress() {
+    navigation.navigate('SourceBrowser', { source: source.NAME });
+  }
   return (
-    <Pressable style={style.container} onPress={() => console.log('pressed')}>
+    <Pressable style={style.container} onPress={handleOnSourcePress}>
       <View style={style.separator}>
         <View style={style.contentContainer}>
           <Image source={imageSrc} style={style.icon} />
@@ -65,10 +71,12 @@ function Source(props: SourceProps) {
             </Text>
           </View>
         </View>
-        <IconButton
-          icon={<Icon type="icon" name={isPinned ? 'pin' : 'pin-outline'} />}
-          onPress={handleOnPress}
-        />
+        {showPin && (
+          <IconButton
+            icon={<Icon type="icon" name={isPinned ? 'pin' : 'pin-outline'} />}
+            onPress={handleOnPress}
+          />
+        )}
       </View>
     </Pressable>
   );
