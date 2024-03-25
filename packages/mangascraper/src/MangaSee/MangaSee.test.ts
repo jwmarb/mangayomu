@@ -214,13 +214,11 @@ test('search filters work as intended', async () => {
       }),
     ]),
   );
-  expect(result).toEqual(
-    expect.arrayContaining([
-      expect.objectContaining<Manga>({
-        s: 'My Hero Academia',
-      }),
-    ]),
-  );
+  for (let i = 0; i < result.length; i++) {
+    const manga = result[i] as { g: string[] };
+    expect(manga.g).not.toContain('Adult');
+    expect(manga.g).not.toContain('Ecchi');
+  }
 
   filters.Genres.exclude = ['Mature'];
 
