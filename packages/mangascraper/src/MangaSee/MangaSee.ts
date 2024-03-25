@@ -89,8 +89,13 @@ class MangaSee extends MangaSource<
   private async directory() {
     if (this._directory != null) return this._directory;
 
-    const $ = await super.route('/search');
-    this.html = $('body').html();
+    this.html = await super.route<string>(
+      '/search',
+      undefined,
+      'GET',
+      undefined,
+      { cheerioLoad: false },
+    );
     const { variable } = processScript(this.html);
     this._directory = await variable<Directory[]>('vm.Directory');
     return this._directory;
@@ -182,7 +187,7 @@ class MangaSee extends MangaSource<
     const sanitizedTitle = query.trim().toLowerCase();
     const cached = this.cache.get(query, filters);
     if (cached != null) {
-      return cached.slice(page * 50, Math.min((page + 1) * 50, cached.length));
+      return cached.slice((page - 1) * 50, Math.min(page * 50, cached.length));
     }
 
     if (filters != null) {
@@ -281,7 +286,10 @@ class MangaSee extends MangaSource<
       }
 
       this.cache.add(query, filtered, filters);
-      return filtered;
+      return filtered.slice(
+        (page - 1) * 50,
+        Math.min(page * 50, filtered.length),
+      );
     }
 
     const filtered: TManga[] = [];
@@ -292,8 +300,8 @@ class MangaSee extends MangaSource<
     }
     this.cache.add(query, filtered, filters);
     return filtered.slice(
-      page * 50,
-      Math.min((page + 1) * 50, filtered.length),
+      (page - 1) * 50,
+      Math.min(page * 50, filtered.length),
     );
   }
   public async pages(
