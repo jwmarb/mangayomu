@@ -10,6 +10,14 @@ import Header, {
 import Source, {
   SOURCE_HEIGHT,
 } from '@/screens/Home/tabs/Sources/components/Source';
+import IconButton from '@/components/primitives/IconButton';
+import Icon from '@/components/primitives/Icon';
+import useStyles from '@/hooks/useStyles';
+import { styles } from '@/screens/Home/tabs/Sources/styles';
+import useContrast from '@/hooks/useContrast';
+import useUserInput from '@/hooks/useUserInput';
+import useBoolean from '@/hooks/useBoolean';
+import TextInput from '@/components/primitives/TextInput';
 
 type Item = MangaSource;
 type Section = { title?: string; data: readonly Item[] };
@@ -63,19 +71,61 @@ const keyExtractor = (item: Item) => item.NAME;
 
 export default function Sources() {
   const pinnedSources = useExploreStore((state) => state.pinnedSources);
-  const collapsible = useCollapsibleHeader({ title: 'Sources' });
-  const data = React.useMemo((): Section[] => {
-    return [
+  const contrast = useContrast();
+  const style = useStyles(styles, contrast);
+  const [showSearchBar, toggleSearchBar] = useBoolean();
+  const { input, setInput } = useUserInput();
+  const collapsible = useCollapsibleHeader(
+    {
+      title: 'Sources',
+      headerLeftStyle: style.headerLeft,
+      headerCenterStyle: style.headerCenter,
+      headerRightStyle: style.headerRight,
+      showHeaderRight: !showSearchBar,
+      showHeaderLeft: !showSearchBar,
+      headerCenter: showSearchBar ? (
+        <TextInput
+          placeholder="Search for a source..."
+          iconButton
+          onChangeText={setInput}
+          icon={
+            <IconButton
+              onPress={() => toggleSearchBar(false)}
+              icon={<Icon type="icon" name="arrow-left" />}
+              size="small"
+            />
+          }
+        />
+      ) : undefined,
+      headerRight: (
+        <IconButton
+          icon={<Icon type="icon" name="magnify" />}
+          onPress={() => toggleSearchBar(true)}
+        />
+      ),
+    },
+    [showSearchBar],
+  );
+
+  const deferredInput = React.useDeferredValue(input);
+
+  const data = React.useMemo(
+    () => [
       {
         title: 'Pinned Sources',
-        data: pinnedSources,
+        data: pinnedSources.filter((x) =>
+          x.NAME.toLowerCase().trim().includes(deferredInput),
+        ),
       },
       {
         title: 'All Sources',
-        data: MangaSource.getAllSources(),
+        data: MangaSource.getAllSources().filter((x) =>
+          x.NAME.toLowerCase().trim().includes(deferredInput),
+        ),
       },
-    ];
-  }, [pinnedSources]);
+    ],
+    [deferredInput],
+  );
   return (
     <Screen.SectionList
       sections={data}
