@@ -14,6 +14,8 @@ declare global {
 
 export type RootStackParamList = {
   Home: undefined;
+  MangaView: { manga: unknown; source?: string };
+  SourceBrowser: { source: string; genre?: string; initialQuery?: string };
 };
 
 export type RootStackProps<K extends keyof RootStackParamList> =

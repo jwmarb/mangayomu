@@ -1,6 +1,8 @@
 import React from 'react';
 import { RootStack } from '@/screens/navigator';
 import Home from '@/screens/Home';
+import MangaView from '@/screens/MangaView';
+import SourceBrowser from '@/screens/SourceBrowser';
 
 const HOME_SCREEN_OPTIONS = { headerShown: false };
 
@@ -12,6 +14,8 @@ function App(): React.JSX.Element {
         component={Home}
         options={HOME_SCREEN_OPTIONS}
       />
+      <RootStack.Screen name="MangaView" component={MangaView} />
+      <RootStack.Screen name="SourceBrowser" component={SourceBrowser} />
     </RootStack.Navigator>
   );
 }
