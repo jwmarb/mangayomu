@@ -1,15 +1,20 @@
-import { MangaSource } from '@mangayomu/mangascraper';
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 import Manga from '@/components/composites/Manga';
 import Text from '@/components/primitives/Text';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
-import { useBrowseStore } from '@/stores/browse';
 import { createStyles } from '@/utils/theme';
 import Button from '@/components/primitives/Button';
-import IconButton from '@/components/primitives/IconButton';
+import {
+  BrowseQueryResult,
+  useMangaQuery,
+} from '@/screens/Home/tabs/Browse/Browse';
+import Source from '@/screens/Home/tabs/Sources/components/Source';
+import { getErrorMessage } from '@/utils/helpers';
+import Progress from '@/components/primitives/Progress';
 import Icon from '@/components/primitives/Icon';
 
 const styles = createStyles((theme) => ({
@@ -34,7 +39,9 @@ const styles = createStyles((theme) => ({
 }));
 
 type MangaBrowseList = {
-  source: MangaSource;
+  browseQueryResult: BrowseQueryResult;
+  // source: MangaSource;
+  // mangas: unknown[];
 };
 
 const { ListEmptyComponent, getItemLayout, renderItem, keyExtractor } =
@@ -51,44 +58,95 @@ function ListEmptyResultComponent() {
 }
 
 function MangaBrowseList(props: MangaBrowseList) {
-  const { source } = props;
+  const { browseQueryResult } = props;
+  const navigation = useNavigation();
   const contrast = useContrast();
-  const result = useBrowseStore((state) => state.searchResults[source.NAME]);
+  const query = useMangaQuery();
   const style = useStyles(styles, contrast);
-  const data = result?.state === 'done' ? result.mangas : [];
-  const isEmptyResults = result?.state === 'done' && result.mangas.length === 0;
+  const data =
+    (browseQueryResult.data != null &&
+      browseQueryResult.data.pages.length > 0 &&
+      browseQueryResult.data.pages[0].mangas) ||
+    [];
+  const isEmptyResults = browseQueryResult.isFetched && data.length === 0;
+
+  function handleOnPress() {
+    const source =
+      browseQueryResult.data?.pages[0].source.NAME ??
+      browseQueryResult.error?.source.NAME;
+    if (source == null) return;
+
+    navigation.navigate('SourceBrowser', {
+      source,
+      initialQuery: query,
+    });
+  }
+
+  if (
+    browseQueryResult.data != null &&
+    browseQueryResult.isPlaceholderData &&
+    !browseQueryResult.isFetching &&
+    !browseQueryResult.isFetched
+  )
+    return (
+      <Source source={browseQueryResult.data.pages[0].source} showPin={false} />
+    );
 
   return (
     <View style={style.container}>
       <View style={style.title}>
         <View style={style.leftTitleContainer}>
-          {result?.state === 'loading' && <ActivityIndicator />}
-          <Text variant="h4">{source.NAME}</Text>
+          {browseQueryResult.isFetching && <Progress />}
+          {browseQueryResult.isError && (
+            <Icon type="icon" name="exclamation-thick" color="error" />
+          )}
+          <Text variant="h4">
+            {browseQueryResult.data?.pages[0].source.NAME ??
+              browseQueryResult.error?.source.NAME}
+          </Text>
           {data.length > 0 && (
             <Text variant="body2" color="textSecondary">
               ({data.length} result{data.length !== 1 ? 's' : ''})
             </Text>
           )}
         </View>
-        <Button title="See More" />
+        <Button title="See More" onPress={handleOnPress} />
       </View>
-      <Manga.SourceProvider source={source}>
-        <FlatList
-          data={data.slice(0, 10)}
-          ListEmptyComponent={
-            result == null ? null : isEmptyResults ? (
-              <ListEmptyResultComponent />
-            ) : (
-              ListEmptyComponent
-            )
+      {browseQueryResult.error != null && (
+        <Text
+          style={style.emptyResultContainer}
+          color="textSecondary"
+          variant="body2"
+        >
+          {getErrorMessage(browseQueryResult.error.error)}
+        </Text>
+      )}
+      {browseQueryResult.data != null && (
+        <Manga.SourceProvider
+          source={
+            browseQueryResult.data.pages[0].source ??
+            browseQueryResult.error?.source.NAME
           }
-          getItemLayout={getItemLayout}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-        />
-      </Manga.SourceProvider>
+        >
+          <FlatList
+            data={data.slice(0, 10)}
+            ListEmptyComponent={
+              browseQueryResult.isPlaceholderData ? (
+                ListEmptyComponent
+              ) : isEmptyResults ? (
+                <ListEmptyResultComponent />
+              ) : (
+                ListEmptyComponent
+              )
+            }
+            getItemLayout={getItemLayout}
+            keyExtractor={keyExtractor}
+            renderItem={renderItem}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          />
+        </Manga.SourceProvider>
+      )}
     </View>
   );
 }
