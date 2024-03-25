@@ -67,7 +67,7 @@ export default function useCollapsibleHeader(
   });
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     navigation.setOptions({
       headerTransparent: true,
       header: (props) => (
