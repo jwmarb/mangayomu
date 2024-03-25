@@ -2,7 +2,7 @@ import { MangaSource } from '@mangayomu/mangascraper';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { BackHandler, Linking } from 'react-native';
-import BottomSheet from '@gorhom/bottom-sheet';
+import BottomSheet from '@/components/composites/BottomSheet';
 import Icon from '@/components/primitives/Icon';
 import IconButton from '@/components/primitives/IconButton';
 import Text from '@/components/primitives/Text';
@@ -78,7 +78,7 @@ export default function useSourceBrowserHeader({
           )}
           <IconButton
             icon={<Icon type="icon" name="filter" />}
-            onPress={() => ref.current?.snapToIndex(0)}
+            onPress={() => ref.current?.open()}
           />
         </>
       ),

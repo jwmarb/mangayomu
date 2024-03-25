@@ -1,6 +1,7 @@
 import React from 'react';
 import { MangaSource } from '@mangayomu/mangascraper';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet from '@/components/composites/BottomSheet';
 import Screen from '@/components/primitives/Screen';
 import { RootStackProps } from '@/screens/navigator';
 import Manga from '@/components/composites/Manga';
@@ -114,14 +115,7 @@ export default function SourceBrowser(props: RootStackProps<'SourceBrowser'>) {
         onEndReached={handleOnEndReached}
         ListFooterComponent={ListFooterComponent}
       />
-      <BottomSheet
-        backgroundStyle={{ backgroundColor: 'black' }}
-        snapPoints={['40%', '80%']}
-        enableDynamicSizing={false}
-        enablePanDownToClose
-        index={-1}
-        ref={bottomSheet}
-      >
+      <BottomSheet ref={bottomSheet}>
         <BottomSheetView>
           <Text>Hello World</Text>
           <Text>Hello World</Text>
