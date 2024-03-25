@@ -76,10 +76,12 @@ export default function useSourceBrowserHeader({
               />
             </>
           )}
-          <IconButton
-            icon={<Icon type="icon" name="filter" />}
-            onPress={() => ref.current?.open()}
-          />
+          {source.FILTER_SCHEMA != null && (
+            <IconButton
+              icon={<Icon type="icon" name="filter" />}
+              onPress={() => ref.current?.open()}
+            />
+          )}
         </>
       ),
       headerCenter: (

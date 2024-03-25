@@ -1,6 +1,5 @@
 import React from 'react';
 import { MangaSource } from '@mangayomu/mangascraper';
-import { BottomSheetView } from '@gorhom/bottom-sheet';
 import BottomSheet from '@/components/composites/BottomSheet';
 import Screen from '@/components/primitives/Screen';
 import { RootStackProps } from '@/screens/navigator';
@@ -14,6 +13,9 @@ import useSourceBrowserHeader from '@/screens/SourceBrowser/hooks/useSourceBrows
 import useMangaSearchQuery from '@/screens/SourceBrowser/hooks/useMangaSearchQuery';
 import useLoadAfterInteractions from '@/hooks/useLoadAfterInteractions';
 import { getErrorMessage } from '@/utils/helpers';
+const SourceFilters = React.lazy(
+  () => import('@/screens/SourceBrowser/components/SourceFilters'),
+);
 
 export type InfiniteMangaData = {
   mangas: unknown[];
@@ -115,18 +117,9 @@ export default function SourceBrowser(props: RootStackProps<'SourceBrowser'>) {
         onEndReached={handleOnEndReached}
         ListFooterComponent={ListFooterComponent}
       />
-      <BottomSheet ref={bottomSheet}>
-        <BottomSheetView>
-          <Text>Hello World</Text>
-          <Text>Hello World</Text>
-          <Text>Hello World</Text>
-          <Text>Hello World</Text>
-          <Text>Hello World</Text>
-          <Text>Hello World</Text>
-          <Text>Hello World</Text>
-          <Text>Hello World</Text>
-        </BottomSheetView>
-      </BottomSheet>
+      <React.Suspense>
+        <SourceFilters ref={bottomSheet} />
+      </React.Suspense>
     </Manga.SourceProvider>
   );
 }
