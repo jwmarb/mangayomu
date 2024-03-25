@@ -1,6 +1,6 @@
 import React from 'react';
 import { MangaSource } from '@mangayomu/mangascraper';
-import BottomSheet, { BottomSheetMethods } from '@devvie/bottom-sheet';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import Screen from '@/components/primitives/Screen';
 import { RootStackProps } from '@/screens/navigator';
 import Manga from '@/components/composites/Manga';
@@ -39,7 +39,7 @@ export default function SourceBrowser(props: RootStackProps<'SourceBrowser'>) {
   const source = MangaSource.getSource(props.route.params.source);
   const numColumns = useColumns();
   const ready = useLoadAfterInteractions();
-  const bottomSheet = React.useRef<BottomSheetMethods>(null);
+  const bottomSheet = React.useRef<BottomSheet>(null);
   const { input, setInput } = useUserInput(props.route.params.initialQuery);
   const {
     data,
@@ -114,6 +114,25 @@ export default function SourceBrowser(props: RootStackProps<'SourceBrowser'>) {
         onEndReached={handleOnEndReached}
         ListFooterComponent={ListFooterComponent}
       />
+      <BottomSheet
+        backgroundStyle={{ backgroundColor: 'black' }}
+        snapPoints={['40%', '80%']}
+        enableDynamicSizing={false}
+        enablePanDownToClose
+        index={-1}
+        ref={bottomSheet}
+      >
+        <BottomSheetView>
+          <Text>Hello World</Text>
+          <Text>Hello World</Text>
+          <Text>Hello World</Text>
+          <Text>Hello World</Text>
+          <Text>Hello World</Text>
+          <Text>Hello World</Text>
+          <Text>Hello World</Text>
+          <Text>Hello World</Text>
+        </BottomSheetView>
+      </BottomSheet>
     </Manga.SourceProvider>
   );
 }
