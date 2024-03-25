@@ -2,6 +2,7 @@ import { MangaSource } from '@mangayomu/mangascraper';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { BackHandler, Linking } from 'react-native';
+import { BottomSheetMethods } from '@devvie/bottom-sheet';
 import Icon from '@/components/primitives/Icon';
 import IconButton from '@/components/primitives/IconButton';
 import Text from '@/components/primitives/Text';
@@ -16,6 +17,7 @@ export type UseSourceBrowserHeaderParams = {
   source: MangaSource;
   onUserInput: (text?: string) => void;
   defaultInput: string;
+  ref: React.RefObject<BottomSheetMethods>;
 };
 
 /**
@@ -27,6 +29,7 @@ export default function useSourceBrowserHeader({
   source,
   onUserInput,
   defaultInput,
+  ref,
 }: UseSourceBrowserHeaderParams) {
   const navigation = useNavigation();
   const [showSearchBar, toggleSearchBar] = useBoolean();
@@ -73,7 +76,10 @@ export default function useSourceBrowserHeader({
               />
             </>
           )}
-          <IconButton icon={<Icon type="icon" name="filter" />} />
+          <IconButton
+            icon={<Icon type="icon" name="filter" />}
+            onPress={() => ref.current?.open()}
+          />
         </>
       ),
       headerCenter: (

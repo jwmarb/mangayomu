@@ -29,6 +29,8 @@
       "**/@react-navigation/**",
       "**/@tanstack/react-query",
       "**/@tanstack/react-query/**",
+      "**/@devvie/bottom-sheet",
+      "**/@devvie/bottom-sheet/**",
       "**/zustand",
       "**/zustand/**",
       "**/@realm",

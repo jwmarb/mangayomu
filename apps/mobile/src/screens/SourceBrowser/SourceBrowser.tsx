@@ -1,5 +1,6 @@
 import React from 'react';
 import { MangaSource } from '@mangayomu/mangascraper';
+import BottomSheet, { BottomSheetMethods } from '@devvie/bottom-sheet';
 import Screen from '@/components/primitives/Screen';
 import { RootStackProps } from '@/screens/navigator';
 import Manga from '@/components/composites/Manga';
@@ -38,6 +39,7 @@ export default function SourceBrowser(props: RootStackProps<'SourceBrowser'>) {
   const source = MangaSource.getSource(props.route.params.source);
   const numColumns = useColumns();
   const ready = useLoadAfterInteractions();
+  const bottomSheet = React.useRef<BottomSheetMethods>(null);
   const { input, setInput } = useUserInput(props.route.params.initialQuery);
   const {
     data,
@@ -52,6 +54,7 @@ export default function SourceBrowser(props: RootStackProps<'SourceBrowser'>) {
     source,
     onUserInput: setInput,
     defaultInput: input,
+    ref: bottomSheet,
   });
 
   function ListEmptyComponent() {
