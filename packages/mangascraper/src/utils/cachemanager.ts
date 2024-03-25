@@ -3,15 +3,14 @@ import MangaSource from '../scraper/scraper';
 import {
   generateHash,
   hashCode,
-  hashFilter,
   isFiltersEqual,
 } from '../scraper/scraper.helpers';
 
 export type CacheEntry<TManga> = [
   string,
   MutableAbstractFilter,
-  unknown[],
-  number,
+  TManga[],
+  NodeJS.Timeout,
 ]; // [query, filters, mangas, expiry_date]
 
 export class CacheManager<TManga> {
@@ -119,9 +118,17 @@ export class CacheManager<TManga> {
     this.resizeIfPossible();
   }
 
+  private decrementSize() {
+    this._size--;
+  }
+
+  private getInsertionOrder() {
+    return this.order;
+  }
+
   public add(
     query: string,
-    mangas: unknown[],
+    mangas: TManga[],
     filters: MutableAbstractFilter = {},
   ): boolean {
     this._size++;
@@ -138,14 +145,41 @@ export class CacheManager<TManga> {
     // linear probe
     for (let i = idx; i < this._capacity; i++) {
       if (this.table[i] == null) {
-        this.table[i] = [query, filters, mangas, Date.now() + CacheManager.TTL];
+        this.table[i] = [
+          query,
+          filters,
+          mangas,
+          setTimeout(() => {
+            this.decrementSize();
+            this.getInsertionOrder().splice(
+              this.getInsertionOrder().indexOf(this.table[i]),
+              1,
+            );
+            delete this.table[i];
+            this.resizeIfPossible();
+          }, CacheManager.TTL).unref(),
+        ];
         this.order.push(this.table[i]);
         return true;
       }
       const [existingQuery, existingFilters] = this.table[i];
       if (existingQuery === query && isFiltersEqual(existingFilters, filters)) {
+        clearTimeout(this.table[i][3]);
         this.order.splice(this.order.indexOf(this.table[i]), 1);
-        this.table[i] = [query, filters, mangas, Date.now() + CacheManager.TTL];
+        this.table[i] = [
+          query,
+          filters,
+          mangas,
+          setTimeout(() => {
+            this.decrementSize();
+            this.getInsertionOrder().splice(
+              this.getInsertionOrder().indexOf(this.table[i]),
+              1,
+            );
+            delete this.table[i];
+            this.resizeIfPossible();
+          }, CacheManager.TTL).unref(),
+        ];
         this.order.push(this.table[i]);
         this._size--;
         return true;
@@ -153,14 +187,41 @@ export class CacheManager<TManga> {
     }
     for (let i = 0; i < idx; i++) {
       if (this.table[i] == null) {
-        this.table[i] = [query, filters, mangas, Date.now() + CacheManager.TTL];
+        this.table[i] = [
+          query,
+          filters,
+          mangas,
+          setTimeout(() => {
+            this.decrementSize();
+            this.getInsertionOrder().splice(
+              this.getInsertionOrder().indexOf(this.table[i]),
+              1,
+            );
+            delete this.table[i];
+            this.resizeIfPossible();
+          }, CacheManager.TTL).unref(),
+        ];
         this.order.push(this.table[i]);
         return true;
       }
       const [existingQuery, existingFilters] = this.table[i];
       if (existingQuery === query && isFiltersEqual(existingFilters, filters)) {
+        clearTimeout(this.table[i][3]);
         this.order.splice(this.order.indexOf(this.table[i]), 1);
-        this.table[i] = [query, filters, mangas, Date.now() + CacheManager.TTL];
+        this.table[i] = [
+          query,
+          filters,
+          mangas,
+          setTimeout(() => {
+            this.decrementSize();
+            this.getInsertionOrder().splice(
+              this.getInsertionOrder().indexOf(this.table[i]),
+              1,
+            );
+            delete this.table[i];
+            this.resizeIfPossible();
+          }, CacheManager.TTL).unref(),
+        ];
         this.order.push(this.table[i]);
         this._size--;
         return true;
@@ -175,45 +236,20 @@ export class CacheManager<TManga> {
   ): TManga[] | null {
     const idx = this.hash(query, filters);
 
-    const now = Date.now();
     // find where this entry is
     for (let i = idx; i < this._capacity; i++) {
       if (this.table[i] == null) return null;
-      const [queryEntry, filterEntry, mangas, exp] = this.table[i];
+      const [queryEntry, filterEntry, mangas] = this.table[i];
 
-      if (
-        queryEntry === query &&
-        isFiltersEqual(filterEntry, filters) &&
-        now <= exp
-      ) {
+      if (queryEntry === query && isFiltersEqual(filterEntry, filters)) {
         return mangas as TManga[];
-      }
-
-      // check if this entry is expired
-      if (now > exp) {
-        this.order.splice(this.order.indexOf(this.table[i]), 1);
-        delete this.table[i];
-        this._size--;
-        this.resizeIfPossible();
       }
     }
 
     for (let i = 0; i < idx; i++) {
-      const [queryEntry, filterEntry, mangas, exp] = this.table[i];
-      if (
-        queryEntry === query &&
-        isFiltersEqual(filterEntry, filters) &&
-        now <= exp
-      ) {
+      const [queryEntry, filterEntry, mangas] = this.table[i];
+      if (queryEntry === query && isFiltersEqual(filterEntry, filters)) {
         return mangas as TManga[];
-      }
-
-      // check if this entry is expired
-      if (now > exp) {
-        this.order.splice(this.order.indexOf(this.table[i]), 1);
-        delete this.table[i];
-        this._size--;
-        this.resizeIfPossible();
       }
     }
 
