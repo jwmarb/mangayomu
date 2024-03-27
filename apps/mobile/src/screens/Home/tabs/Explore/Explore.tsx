@@ -1,9 +1,7 @@
 import React from 'react';
-import { View } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
-import { FlatList, RefreshControl } from 'react-native-gesture-handler';
+import { RefreshControl } from 'react-native-gesture-handler';
 import Screen from '@/components/primitives/Screen';
-import Text from '@/components/primitives/Text';
 import useCollapsibleHeader from '@/hooks/useCollapsibleHeader';
 import { useExploreStore } from '@/stores/explore';
 import MangaList from '@/screens/Home/tabs/Explore/components/MangaList';

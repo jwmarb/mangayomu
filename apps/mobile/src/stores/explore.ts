@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
-import { Manga, MangaSource } from '@mangayomu/mangascraper';
+import { persist } from 'zustand/middleware';
+import { MangaSource } from '@mangayomu/mangascraper';
 import { MangaSourceDeserializer, createPersistConfig } from '@/utils/persist';
 import { getErrorMessage } from '@/utils/helpers';
 

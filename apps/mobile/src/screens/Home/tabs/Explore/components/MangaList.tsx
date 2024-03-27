@@ -1,4 +1,4 @@
-import { ActivityIndicator, ListRenderItem, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { FetchedMangaResults } from '@/stores/explore';
 import Text from '@/components/primitives/Text';

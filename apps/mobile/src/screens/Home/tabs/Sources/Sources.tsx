@@ -1,6 +1,6 @@
 import React from 'react';
 import { MangaSource } from '@mangayomu/mangascraper';
-import { SectionListProps, SectionListRenderItem, View } from 'react-native';
+import { SectionListProps, SectionListRenderItem } from 'react-native';
 import Screen from '@/components/primitives/Screen';
 import useCollapsibleHeader from '@/hooks/useCollapsibleHeader';
 import { useExploreStore } from '@/stores/explore';
