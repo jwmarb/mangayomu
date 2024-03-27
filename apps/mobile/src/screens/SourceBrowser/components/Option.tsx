@@ -9,7 +9,6 @@ import { createStyles } from '@/utils/theme';
 const styles = createStyles((theme) => ({
   container: {
     paddingHorizontal: theme.style.screen.paddingHorizontal,
-    height: 1000,
   },
 }));
 
