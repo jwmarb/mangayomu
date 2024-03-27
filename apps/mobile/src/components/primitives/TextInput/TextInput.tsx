@@ -8,6 +8,7 @@ import { createThemedProps } from '@/utils/theme';
 import useThemedProps from '@/hooks/useThemedProps';
 import Icon from '@/components/primitives/Icon';
 import IconButton from '@/components/primitives/IconButton';
+import { IconButtonProps } from '@/components/primitives/IconButton/IconButton';
 
 type TextInputProps = NativeTextInputProps & {
   contrast?: boolean;
@@ -16,6 +17,7 @@ type TextInputProps = NativeTextInputProps & {
    * Whether or not the `icon` prop is actually an IconButton
    */
   iconButton?: boolean;
+  closeButtonProps?: Partial<IconButtonProps>;
 };
 
 const themedProps = createThemedProps((theme) => ({
@@ -31,6 +33,7 @@ function TextInput(
     onChangeText,
     icon,
     iconButton = false,
+    closeButtonProps,
     ...rest
   } = props;
   const [hasInput, setHasInput] = React.useState<boolean>(false);
@@ -81,6 +84,7 @@ function TextInput(
           icon={<Icon type="icon" name="close" />}
           size="small"
           style={style.iconRight}
+          {...closeButtonProps}
         />
       )}
     </View>
