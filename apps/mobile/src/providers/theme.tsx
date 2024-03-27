@@ -28,6 +28,11 @@ declare module '@mangayomu/theme' {
         discontinued: string;
         completed: string;
       };
+      success: {
+        light: string;
+        main: string;
+        dark: string;
+      };
     };
     helpers: ThemeHelpers;
     style: {
@@ -95,9 +100,14 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
         dark: color('#BA5B7F', '#B55D14'),
       },
       error: {
-        main: color('#f44336', '#d32f2f'),
-        light: color('#e57373', '#ef5350'),
-        dark: color('#d32f2f', '#c62828'),
+        main: color('#883934', '#e65252'),
+        light: color('#e99090', '#e7a5a4'),
+        dark: color('#553c3c', '#3b2020'),
+      },
+      success: {
+        light: color('#d2f3c0', '#E1F7CF'),
+        main: color('#71A057', '#b7eb8f'),
+        dark: color('#3e4b36', '#72D129'),
       },
       warning: {
         main: color('#ed6c02', '#ffa726'),
