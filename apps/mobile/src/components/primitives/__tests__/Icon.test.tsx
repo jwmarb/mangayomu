@@ -14,12 +14,14 @@ test('styles properly', () => {
       <Icon type="icon" name="ab-testing" size="small" testID="small" />
       <Icon type="icon" name="ab-testing" size="medium" testID="medium" />
       <Icon type="icon" name="ab-testing" size="large" testID="large" />
+      <Icon type="icon" name="ab-testing" size={100} testID="numeric" />
     </>,
   );
 
   expect(tree.getByTestId('small')).toHaveStyle(composedSizes.icon.small);
   expect(tree.getByTestId('medium')).toHaveStyle(composedSizes.icon.medium);
   expect(tree.getByTestId('large')).toHaveStyle(composedSizes.icon.large);
+  expect(tree.getByTestId('numeric')).toHaveProp('size', 100);
 
   tree = render(
     <>
