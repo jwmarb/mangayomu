@@ -6,6 +6,7 @@ import {
   TextVariants,
   TextAlignments,
   TextColors,
+  TEXT_COLOR_TYPES,
 } from '@/components/primitives/types';
 import useStyles from '@/hooks/useStyles';
 import {
@@ -22,7 +23,13 @@ export type TextProps = NativeTextProps & {
   contrast?: boolean;
   bold?: boolean;
   italic?: boolean;
+  colorType?: 'light' | 'dark' | 'main';
 };
+
+export const composedColors = TEXT_COLOR_TYPES.reduce((prev, curr) => {
+  prev[curr] = colors(curr);
+  return prev;
+}, {} as Record<string, ReturnType<typeof colors>>);
 
 /**
  * Text component to render text.
@@ -31,6 +38,7 @@ function Text(props: TextProps, ref: React.ForwardedRef<NativeText>) {
   const {
     variant: variantProp = 'body1',
     color: colorProp = 'textPrimary',
+    colorType = 'main',
     alignment: alignmentProp = 'left',
     contrast: contrastProp,
     bold,
@@ -38,7 +46,7 @@ function Text(props: TextProps, ref: React.ForwardedRef<NativeText>) {
     ...rest
   } = props;
   const contrast = useContrast(contrastProp);
-  const color = useStyles(colors, contrast)[colorProp];
+  const color = useStyles(composedColors[colorType], contrast)[colorProp];
   const alignment = alignments[alignmentProp];
   const variant = variants[variantProp];
   const style = [
