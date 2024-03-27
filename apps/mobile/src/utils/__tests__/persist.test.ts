@@ -155,6 +155,9 @@ test('persists state', () => {
     },
     version: 1,
   });
+
+  store.persist.clearStorage();
+  expect(mmkv.getString(CONFIG_KEY)!).toBeUndefined();
 });
 
 test('migrations done properly', () => {
