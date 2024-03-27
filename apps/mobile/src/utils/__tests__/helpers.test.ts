@@ -1,4 +1,5 @@
-import { getErrorMessage } from '@/utils/helpers';
+import { Manga } from '@mangayomu/mangascraper';
+import { getErrorMessage, isManga, isUnparsedManga } from '@/utils/helpers';
 
 describe('getErrorMessage', () => {
   it('extracts error correctly', () => {
@@ -17,4 +18,48 @@ describe('getErrorMessage', () => {
       'No error code/message has been provided',
     );
   });
+});
+
+describe('isManga', () => {
+  it('correctly parses object', () => {
+    expect(isManga(null)).toBeFalsy();
+    expect(isManga({})).toBeFalsy();
+    expect(
+      isManga({
+        title: '',
+        imageCover: '',
+        link: '',
+        source: '',
+      } as Manga),
+    ).toBeTruthy();
+    expect(
+      isManga({
+        title: '',
+        imageCover: '',
+        link: '',
+        source: '',
+        language: 'en',
+      } as Manga),
+    ).toBeTruthy();
+    expect(
+      isManga({
+        title: '',
+        imageCover: null,
+        link: '',
+        source: '',
+      } as Manga),
+    ).toBeTruthy();
+    expect(
+      isManga({
+        title: '',
+        link: '',
+        source: '',
+      } as Manga),
+    ).toBeTruthy();
+  });
+});
+
+describe('isUnparsedManga', () => {
+  expect(isUnparsedManga({})).toBeFalsy();
+  expect(isUnparsedManga({ __source__: '' })).toBeTruthy();
 });
