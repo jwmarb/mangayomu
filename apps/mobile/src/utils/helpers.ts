@@ -17,13 +17,15 @@ export function isManga(obj: unknown): obj is Manga {
     typeof obj === 'object' &&
     'source' in obj &&
     'title' in obj &&
-    'imageCover' in obj &&
     'link' in obj &&
-    'language' in obj &&
     typeof obj.source === 'string' &&
-    (typeof obj.imageCover === 'string' || obj.imageCover == null) &&
+    ('imageCover' in obj === false ||
+      typeof obj.imageCover === 'string' ||
+      obj.imageCover == null) && // ~p v q
     typeof obj.link === 'string' &&
-    (typeof obj.language === 'string' || obj.language == null) &&
+    ('language' in obj === false ||
+      typeof obj.language === 'string' ||
+      obj.language == null) && // ~p v q
     typeof obj.title === 'string'
   );
 }
