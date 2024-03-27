@@ -58,18 +58,6 @@ function TextInput(
   }
   return (
     <View style={style.view}>
-      {icon != null &&
-        React.cloneElement(icon, {
-          style: iconButton ? style.iconLeftButton : style.iconLeft,
-        })}
-      {hasInput && (
-        <IconButton
-          onPress={handleOnPress}
-          icon={<Icon type="icon" name="close" />}
-          size="small"
-          style={style.iconRight}
-        />
-      )}
       <NativeTextInput
         ref={handleRef}
         style={
@@ -83,6 +71,18 @@ function TextInput(
         onChangeText={handleOnChangeText}
         {...rest}
       />
+      {icon != null &&
+        React.cloneElement(icon, {
+          style: iconButton ? style.iconLeftButton : style.iconLeft,
+        })}
+      {hasInput && (
+        <IconButton
+          onPress={handleOnPress}
+          icon={<Icon type="icon" name="close" />}
+          size="small"
+          style={style.iconRight}
+        />
+      )}
     </View>
   );
 }
