@@ -9,6 +9,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
+import Animated, { FadeOut } from 'react-native-reanimated';
 import Text from '@/components/primitives/Text';
 import useManga from '@/hooks/useManga';
 import Pressable from '@/components/primitives/Pressable';
@@ -51,11 +52,11 @@ function Skeleton() {
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   return (
-    <View style={style.container}>
+    <Animated.View exiting={FadeOut} style={style.container}>
       <View style={[style.cover, style.skeleton]} />
       <View style={style.skeletonText} />
       <View style={style.skeletonText} />
-    </View>
+    </Animated.View>
   );
 }
 

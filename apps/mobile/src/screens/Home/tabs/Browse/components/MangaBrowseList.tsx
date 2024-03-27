@@ -1,9 +1,14 @@
 import React from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
+import Animated, {
+  FadeIn,
+  FadeInLeft,
+  SequencedTransition,
+} from 'react-native-reanimated';
 import Manga from '@/components/composites/Manga';
-import Text from '@/components/primitives/Text';
+import Text, { AnimatedText } from '@/components/primitives/Text';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
 import { createStyles } from '@/utils/theme';
@@ -14,8 +19,8 @@ import {
 } from '@/screens/Home/tabs/Browse/Browse';
 import Source from '@/screens/Home/tabs/Sources/components/Source';
 import { getErrorMessage } from '@/utils/helpers';
-import Progress from '@/components/primitives/Progress';
-import Icon from '@/components/primitives/Icon';
+import { AnimatedProgress } from '@/components/primitives/Progress';
+import { AnimatedIcon } from '@/components/primitives/Icon';
 
 const styles = createStyles((theme) => ({
   title: {
@@ -95,21 +100,35 @@ function MangaBrowseList(props: MangaBrowseList) {
   return (
     <View style={style.container}>
       <View style={style.title}>
-        <View style={style.leftTitleContainer}>
-          {browseQueryResult.isFetching && <Progress />}
+        <Animated.View
+          layout={SequencedTransition}
+          style={style.leftTitleContainer}
+        >
+          {browseQueryResult.isFetching && (
+            <AnimatedProgress entering={FadeInLeft} />
+          )}
           {browseQueryResult.isError && (
-            <Icon type="icon" name="exclamation-thick" color="error" />
+            <AnimatedIcon
+              entering={FadeInLeft}
+              type="icon"
+              name="exclamation-thick"
+              color="error"
+            />
           )}
           <Text variant="h4">
             {browseQueryResult.data?.pages[0].source.NAME ??
               browseQueryResult.error?.source.NAME}
           </Text>
           {data.length > 0 && (
-            <Text variant="body2" color="textSecondary">
+            <AnimatedText
+              entering={FadeIn}
+              variant="body2"
+              color="textSecondary"
+            >
               ({data.length} result{data.length !== 1 ? 's' : ''})
-            </Text>
+            </AnimatedText>
           )}
-        </View>
+        </Animated.View>
         <Button title="See More" onPress={handleOnPress} />
       </View>
       {browseQueryResult.error != null && (
@@ -132,11 +151,11 @@ function MangaBrowseList(props: MangaBrowseList) {
             data={data.slice(0, 10)}
             ListEmptyComponent={
               browseQueryResult.isPlaceholderData ? (
-                ListEmptyComponent
+                <ListEmptyComponent />
               ) : isEmptyResults ? (
                 <ListEmptyResultComponent />
               ) : (
-                ListEmptyComponent
+                <ListEmptyComponent />
               )
             }
             getItemLayout={getItemLayout}
