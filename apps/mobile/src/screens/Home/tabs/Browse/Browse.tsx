@@ -23,6 +23,8 @@ import {
   InfiniteMangaData,
   InfiniteMangaError,
 } from '@/screens/SourceBrowser/SourceBrowser';
+import { HomeStackProps } from '@/screens/Home/Home';
+import { RootStack } from '@/screens/navigator';
 
 const styles = createStyles((theme) => ({
   divider: {
@@ -53,8 +55,10 @@ export function useMangaQuery() {
   return React.useContext(MangaQueryContext);
 }
 
-export default function Browse() {
+export default function Browse(props: HomeStackProps<'Browse'>) {
+  const { navigation, route } = props;
   const { input, setInput, isDirty } = useUserInput();
+  const shouldFocusInput = React.useRef<boolean>(true);
   const pinnedSources = useExploreStore((state) => state.pinnedSources);
   const results = useQueries<
     UseQueryOptions<InfiniteData<InfiniteMangaData>, InfiniteMangaError>[]
@@ -92,11 +96,26 @@ export default function Browse() {
       />
     ),
   });
+
   useFocusEffect(
     React.useCallback(() => {
-      inputRef.current?.focus();
+      if (shouldFocusInput.current) {
+        inputRef.current?.focus();
+      }
     }, []),
   );
+
+  React.useEffect(() => {
+    const blurListener = navigation.addListener('blur', () => {
+      const stack = navigation.getParent()?.getState().routes;
+      if (stack != null) {
+        shouldFocusInput.current = stack[stack.length - 1].name === 'Home';
+      }
+    });
+    return () => {
+      blurListener();
+    };
+  }, []);
   // React.useEffect(() => {
   //   console.log(results);
   // }, [results]);
