@@ -8,18 +8,23 @@ import {
   TextStyle,
 } from 'react-native';
 import React from 'react';
-import Animated from 'react-native-reanimated';
+import Animated, { AnimatedProps } from 'react-native-reanimated';
 import { sizes } from '@/components/primitives/Icon/styles';
-import { IconSizes, TextColors } from '@/components/primitives/types';
-import { colors } from '@/components/primitives/Text/styles';
+import {
+  IconSizes,
+  TextColorTypes,
+  TextColors,
+} from '@/components/primitives/types';
 import useStyles from '@/hooks/useStyles';
 import useContrast from '@/hooks/useContrast';
+import { composedColors } from '@/components/primitives/Text';
 
 export type IconProps = BaseProps & (FontIconProps | ImageIconProps);
 
 type BaseProps = Pick<TextProps, 'style'> & {
   color?: TextColors;
-  size?: 'large' | 'medium' | 'small';
+  colorType?: TextColorTypes;
+  size?: 'large' | 'medium' | 'small' | number;
   contrast?: boolean;
   testID?: string;
 };
@@ -45,14 +50,18 @@ export const composedSizes = (['icon', 'image'] as const).reduce(
 function Icon(props: IconProps, ref: React.ForwardedRef<any>) {
   const {
     color: colorProp = 'textPrimary',
+    colorType = 'main',
     size: sizeProp = 'medium',
     contrast: contrastProp,
     style: styleProp,
     ...rest
   } = props;
   const contrast = useContrast(contrastProp);
-  const size = composedSizes[rest.type][sizeProp];
-  const color = useStyles(colors, contrast)[colorProp];
+  const size =
+    typeof sizeProp === 'string'
+      ? composedSizes[rest.type][sizeProp]
+      : undefined;
+  const color = useStyles(composedColors[colorType], contrast)[colorProp];
   const style =
     rest.type === 'icon' ? [size, color, styleProp] : [size, styleProp];
   switch (rest.type) {
@@ -63,6 +72,7 @@ function Icon(props: IconProps, ref: React.ForwardedRef<any>) {
           {...rest}
           ref={ref}
           name={rest.name}
+          size={typeof sizeProp === 'number' ? sizeProp : undefined}
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           style={style as any}
         />
@@ -83,6 +93,6 @@ const ForwardedIcon = React.forwardRef(Icon);
 
 export const AnimatedIcon = Animated.createAnimatedComponent(
   ForwardedIcon,
-) as typeof Icon;
+) as React.FC<IconProps & AnimatedProps<IconProps>>;
 
 export default ForwardedIcon as typeof Icon;
