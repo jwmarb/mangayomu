@@ -1,6 +1,7 @@
 import { render, userEvent } from '@testing-library/react-native';
 import Icon from '@/components/primitives/Icon';
 import IconButton from '@/components/primitives/IconButton';
+import { iconButton } from '@/components/primitives/IconButton/styles';
 
 beforeAll(() => {
   jest.useFakeTimers();
@@ -33,4 +34,11 @@ test('proper interaction', async () => {
   jest.runOnlyPendingTimers();
 
   expect(callback).toHaveBeenCalled();
+});
+
+test('has correct styling', () => {
+  const { root } = render(
+    <IconButton size="small" icon={<Icon type="icon" name="ab-testing" />} />,
+  );
+  expect(root).toHaveStyle(iconButton.containerSmall);
 });
