@@ -45,28 +45,40 @@ export const variants = StyleSheet.create<Record<TextVariants, TextStyle>>({
     fontWeight: 'normal',
     letterSpacing: 0.1,
   },
+  chip: {
+    fontSize: 13,
+    fontWeight: 'normal',
+    letterSpacing: 0.15,
+  },
 });
 
-export const colors = createStyles<Record<TextColors, TextStyle>>((theme) => ({
-  primary: {
-    color: theme.palette.primary.main,
-  },
-  secondary: {
-    color: theme.palette.secondary.main,
-  },
-  textPrimary: {
-    color: theme.palette.text.primary,
-  },
-  textSecondary: {
-    color: theme.palette.text.secondary,
-  },
-  disabled: {
-    color: theme.palette.text.disabled,
-  },
-  error: {
-    color: theme.palette.error.main,
-  },
-}));
+export const colors = (colorType: 'main' | 'light' | 'dark') =>
+  createStyles<Record<TextColors, TextStyle>>((theme) => ({
+    primary: {
+      color: theme.palette.primary[colorType],
+    },
+    secondary: {
+      color: theme.palette.secondary[colorType],
+    },
+    textPrimary: {
+      color: theme.palette.text.primary,
+    },
+    textSecondary: {
+      color: theme.palette.text.secondary,
+    },
+    disabled: {
+      color: theme.palette.text.disabled,
+    },
+    error: {
+      color: theme.palette.error[colorType],
+    },
+    warning: {
+      color: theme.palette.warning[colorType],
+    },
+    success: {
+      color: theme.palette.success[colorType],
+    },
+  }));
 
 export const alignments = StyleSheet.create<Record<TextAlignments, TextStyle>>({
   left: {
