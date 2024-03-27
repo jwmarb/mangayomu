@@ -130,6 +130,10 @@ export type MutableInclusiveExclusiveFilter<T> = InclusiveExclusiveFilter<
 export type MutableOptionFilter<T> = OptionFilter<Const<T>> & {
   value: Const<T>;
 };
+
+/**
+ * @deprecated Use `GeneratedFilterSchema` instead
+ */
 export type MutableAbstractFilter = Record<
   string,
   | MutableSortFilter<string>
@@ -137,13 +141,19 @@ export type MutableAbstractFilter = Record<
   | MutableOptionFilter<string>
 >;
 
-export type GeneratedFilterSchema = Record<
-  string,
+export type GeneratedFilterSchema = Record<string, MutableFilters>;
+
+export type MutableFilters =
   | MutableSortFilter<string>
   | MutableInclusiveExclusiveFilter<string>
   | MutableOptionFilter<string>
+  | Description;
+
+export type ImmutableFilters =
   | Description
->;
+  | MutableSortFilter<string>
+  | MutableInclusiveExclusiveFilter<string>
+  | MutableOptionFilter<string>;
 
 type FilterCreators = {
   createInclusiveExclusiveFilter<T>(
