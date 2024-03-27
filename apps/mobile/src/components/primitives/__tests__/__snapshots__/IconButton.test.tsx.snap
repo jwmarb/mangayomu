@@ -3,12 +3,15 @@
 exports[`renders correctly 1`] = `
 <View
   style={
-    {
-      "borderRadius": 10000,
-      "height": 56,
-      "overflow": "hidden",
-      "width": 56,
-    }
+    [
+      {
+        "borderRadius": 10000,
+        "height": 56,
+        "overflow": "hidden",
+        "width": 56,
+      },
+      undefined,
+    ]
   }
 >
   <View
