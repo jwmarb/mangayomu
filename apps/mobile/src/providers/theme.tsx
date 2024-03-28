@@ -12,6 +12,8 @@ declare module '@mangayomu/theme' {
   export interface Theme extends Pick<DefaultTheme, 'mode'> {
     palette: DefaultTheme['palette'] & {
       skeleton: string;
+      overlay: string;
+      backdrop: string;
       divider: string;
       common: {
         white: string;
@@ -78,6 +80,8 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
     mode: 'dark' as const,
     helpers: {},
     palette: {
+      overlay: colorConstant('rgba(0, 0, 0, 0.5)'), // experimental
+      backdrop: colorConstant('rgba(0, 0, 0, 0.3)'),
       skeleton: color('rgba(255, 255, 255, 0.12)', 'rgba(0, 0, 0, 0.12)'),
       divider: color('rgba(255, 255, 255, 0.12)', 'rgba(0, 0, 0, 0.12)'),
       common: {
