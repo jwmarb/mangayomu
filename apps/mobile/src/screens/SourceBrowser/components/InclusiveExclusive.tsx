@@ -1,7 +1,8 @@
 import { MutableInclusiveExclusiveFilter } from '@mangayomu/schema-creator';
 import React from 'react';
-import { View } from 'react-native';
+import { ListRenderItem, StyleSheet, View } from 'react-native';
 import { AscendingStringComparator, binary } from '@mangayomu/algorithms';
+import { FlatList } from 'react-native-gesture-handler';
 import Text from '@/components/primitives/Text';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
@@ -9,16 +10,18 @@ import { createStyles } from '@/utils/theme';
 import Icon from '@/components/primitives/Icon';
 import {
   ITEM_HEIGHT,
+  InclusiveExclusiveDispatcher,
   useInclusiveExclusiveDispatcher,
 } from '@/screens/SourceBrowser/components/shared';
 import Chip from '@/components/primitives/Chip';
 import { ChipProps } from '@/components/primitives/Chip/Chip';
-import Modal from '@/components/primitives/Modal';
+import Modal from '@/components/composites/Modal';
+import useUserInput from '@/hooks/useUserInput';
 
 const styles = createStyles((theme) => ({
   container: {
     paddingHorizontal: theme.style.screen.paddingHorizontal,
-    height: ITEM_HEIGHT,
+    paddingVertical: theme.style.size.m,
     alignItems: 'center',
     flexDirection: 'row',
     gap: theme.style.size.s,
@@ -47,7 +50,16 @@ const styles = createStyles((theme) => ({
   text: {
     flexShrink: 1,
   },
+  itemSeparator: {
+    height: theme.style.size.s,
+  },
 }));
+
+const { flexGrow } = StyleSheet.create({
+  flexGrow: {
+    flexGrow: 1,
+  },
+});
 
 type InclusiveExclusiveProps = {
   title: string;
@@ -57,73 +69,168 @@ type InclusiveExclusiveProps = {
 const included = <Icon type="icon" name="check" size="small" />;
 const excluded = <Icon type="icon" name="cancel" size="small" />;
 
+function toSimpleNoun(s: string) {
+  if (s.charAt(s.length - 1) === 's') {
+    return s.substring(0, s.length - 1).toLowerCase();
+  }
+  return s.toLowerCase();
+}
+
+const ItemSeparatorComponent = React.memo(() => {
+  const contrast = useContrast();
+  const style = useStyles(styles, contrast);
+  return <View style={style.itemSeparator} />;
+});
+
+const keyExtractor = (item: string) => item;
+
 function InclusiveExclusive(props: InclusiveExclusiveProps) {
   const { inclusiveExclusive, title } = props;
   const contrast = useContrast();
   const modalRef = React.useRef<Modal>(null);
   const style = useStyles(styles, contrast);
+  const setInclusiveExclusive = useInclusiveExclusiveDispatcher();
+  const { input, setInput } = useUserInput();
+  const includeSet = React.useMemo(
+    () => new Set(inclusiveExclusive.include),
+    [inclusiveExclusive.include],
+  );
+  const excludeSet = React.useMemo(
+    () => new Set(inclusiveExclusive.exclude),
+    [inclusiveExclusive.exclude],
+  );
+  const deferredInput = React.useDeferredValue(input);
+  const inputMap = React.useRef(new Map<string, string[]>());
+  const data = React.useMemo(() => {
+    if (deferredInput.length === 0) return inclusiveExclusive.fields;
+    let cached = inputMap.current.get(deferredInput);
+    if (cached != null) return cached;
+    cached = inclusiveExclusive.fields.filter((x) => {
+      const mappedTitle =
+        inclusiveExclusive.map != null ? inclusiveExclusive.map[x] ?? x : x;
+      return mappedTitle.toLowerCase().includes(deferredInput);
+    });
+    inputMap.current.set(deferredInput, cached);
+    return cached;
+  }, [deferredInput, inclusiveExclusive.fields]);
   function mapInclusiveExclusiveFields(x: string) {
-    if (
-      binary.search(
-        inclusiveExclusive.exclude,
-        x,
-        AscendingStringComparator,
-      ) !== -1
-    )
+    const mappedTitle =
+      inclusiveExclusive.map != null ? inclusiveExclusive.map[x] ?? x : x;
+    if (excludeSet.has(x))
       return (
         <ChipFilter
+          titleKey={x}
           filterKey={title}
           color="error"
           icon={excluded}
           key={x}
-          title={
-            inclusiveExclusive.map != null ? inclusiveExclusive.map[x] ?? x : x
-          }
+          title={mappedTitle}
         />
       );
-    if (
-      binary.search(
-        inclusiveExclusive.include,
-        x,
-        AscendingStringComparator,
-      ) !== -1
-    )
+    if (includeSet.has(x))
       return (
         <ChipFilter
           filterKey={title}
+          titleKey={x}
           color="success"
           icon={included}
           key={x}
-          title={
-            inclusiveExclusive.map != null ? inclusiveExclusive.map[x] ?? x : x
-          }
+          title={mappedTitle}
         />
       );
 
     return (
-      <ChipFilter
-        filterKey={title}
-        key={x}
-        title={
-          inclusiveExclusive.map != null ? inclusiveExclusive.map[x] ?? x : x
-        }
-      />
+      <ChipFilter filterKey={title} titleKey={x} key={x} title={mappedTitle} />
     );
+  }
+
+  function mapOnlyInclusiveExclusiveFields(x: string) {
+    const mappedTitle =
+      inclusiveExclusive.map != null ? inclusiveExclusive.map[x] ?? x : x;
+    if (excludeSet.has(x))
+      return (
+        <ChipFilter
+          titleKey={x}
+          filterKey={title}
+          color="error"
+          icon={excluded}
+          key={x}
+          title={mappedTitle}
+        />
+      );
+    if (includeSet.has(x))
+      return (
+        <ChipFilter
+          filterKey={title}
+          titleKey={x}
+          color="success"
+          icon={included}
+          key={x}
+          title={mappedTitle}
+        />
+      );
+
+    return null;
   }
 
   function handleOnPress() {
     modalRef.current?.show();
   }
 
+  const renderItem: ListRenderItem<string> = React.useCallback(
+    ({ item }) => {
+      const mappedTitle =
+        inclusiveExclusive.map != null
+          ? inclusiveExclusive.map[item] ?? item
+          : item;
+      if (excludeSet.has(item))
+        return (
+          <ChipFilter
+            flexGrow
+            titleKey={item}
+            filterKey={title}
+            color="error"
+            icon={excluded}
+            title={mappedTitle}
+          />
+        );
+      if (includeSet.has(item))
+        return (
+          <ChipFilter
+            flexGrow
+            filterKey={title}
+            titleKey={item}
+            color="success"
+            icon={included}
+            key={item}
+            title={mappedTitle}
+          />
+        );
+
+      return (
+        <ChipFilter
+          flexGrow
+          filterKey={title}
+          titleKey={item}
+          key={item}
+          title={mappedTitle}
+        />
+      );
+    },
+    [inclusiveExclusive.map, includeSet, excludeSet, title],
+  );
+
   return (
     <>
       <View style={style.container}>
-        <Text bold>{title}</Text>
+        <Text bold variant="h4">
+          {title}
+        </Text>
       </View>
       <View style={style.chipsContainer}>
-        {inclusiveExclusive.fields.length <= 12 ? (
-          inclusiveExclusive.fields.map(mapInclusiveExclusiveFields)
-        ) : (
+        {inclusiveExclusive.fields.length <= 12 &&
+          inclusiveExclusive.fields.map(mapInclusiveExclusiveFields)}
+        {inclusiveExclusive.fields.length > 12 && (
           <Chip
             icon={<Icon type="icon" name="plus" />}
             onPress={handleOnPress}
@@ -131,39 +238,84 @@ function InclusiveExclusive(props: InclusiveExclusiveProps) {
             variant="filled"
           />
         )}
+        {inclusiveExclusive.fields.length > 12 &&
+          inclusiveExclusive.fields.map(mapOnlyInclusiveExclusiveFields)}
       </View>
       <Modal ref={modalRef}>
-        <Text>Hlelo World</Text>
+        <InclusiveExclusiveDispatcher.Provider value={setInclusiveExclusive}>
+          <Modal.Header
+            input
+            placeholder={`Search for a ${toSimpleNoun(title)}...`}
+            onChangeText={setInput}
+          />
+          <Modal.FlatList
+            windowSize={9}
+            maxToRenderPerBatch={9}
+            updateCellsBatchingPeriod={50}
+            keyboardShouldPersistTaps="handled"
+            data={data}
+            renderItem={renderItem}
+            ItemSeparatorComponent={ItemSeparatorComponent}
+            keyExtractor={keyExtractor}
+          />
+        </InclusiveExclusiveDispatcher.Provider>
       </Modal>
     </>
   );
 }
 
-const ChipFilter = React.memo((props: ChipProps & { filterKey: string }) => {
-  const { color, title, filterKey, ...rest } = props;
-  const setInclusiveExclusive = useInclusiveExclusiveDispatcher();
-  function onPress() {
-    switch (color) {
-      case 'error':
-        setInclusiveExclusive({ type: 'none', title: filterKey, item: title });
-        break;
-      case 'success':
-        setInclusiveExclusive({
-          type: 'exclude',
-          title: filterKey,
-          item: title,
-        });
-        break;
-      default:
-        setInclusiveExclusive({
-          type: 'include',
-          title: filterKey,
-          item: title,
-        });
-        break;
+const ChipFilter = React.memo(
+  (
+    props: ChipProps & {
+      filterKey: string;
+      titleKey: string;
+      flexGrow?: boolean;
+    },
+  ) => {
+    const {
+      color,
+      title,
+      filterKey,
+      titleKey,
+      flexGrow: flexGrowProp,
+      ...rest
+    } = props;
+    const setInclusiveExclusive = useInclusiveExclusiveDispatcher();
+    function onPress() {
+      switch (color) {
+        case 'error':
+          setInclusiveExclusive({
+            type: 'none',
+            title: filterKey,
+            item: titleKey,
+          });
+          break;
+        case 'success':
+          setInclusiveExclusive({
+            type: 'exclude',
+            title: filterKey,
+            item: titleKey,
+          });
+          break;
+        default:
+          setInclusiveExclusive({
+            type: 'include',
+            title: filterKey,
+            item: titleKey,
+          });
+          break;
+      }
     }
-  }
-  return <Chip {...rest} onPress={onPress} title={title} color={color} />;
-});
+    return (
+      <Chip
+        {...rest}
+        onPress={onPress}
+        title={title}
+        color={color}
+        style={flexGrowProp ? flexGrow : undefined}
+      />
+    );
+  },
+);
 
 export default React.memo(InclusiveExclusive);
