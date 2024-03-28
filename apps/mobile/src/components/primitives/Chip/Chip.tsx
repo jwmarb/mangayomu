@@ -1,5 +1,5 @@
 import React from 'react';
-import { PressableProps, View } from 'react-native';
+import { PressableProps, StyleProp, View, ViewStyle } from 'react-native';
 import { styles } from '@/components/primitives/Chip/styles';
 import Pressable from '@/components/primitives/Pressable';
 import Text from '@/components/primitives/Text';
@@ -22,7 +22,8 @@ export type ChipProps = {
   title: string;
   variant?: ChipVariants;
   icon?: React.ReactElement<IconProps>;
-} & PressableProps;
+  style?: StyleProp<ViewStyle>;
+} & Omit<PressableProps, 'style'>;
 
 const composedStyles = [...CHIP_COLORS, 'null'].reduce((prev, curr) => {
   prev[curr] = styles(curr as ChipColors | 'null');
@@ -51,6 +52,7 @@ function Chip(props: ChipProps) {
     contrast: contrastProp,
     variant = 'outlined',
     icon,
+    style: styleProp,
     ...rest
   } = props;
   const theme = useTheme();
@@ -70,13 +72,14 @@ function Chip(props: ChipProps) {
     themedProps[color == null ? 'null' : color].main,
     contrast,
   );
+  const pressableStyle = [style.chipPressable, styleProp];
 
   return (
     <View style={style[`chip_${variant}` as keyof typeof style]}>
       <Pressable
         {...rest}
         android_ripple={android_ripple}
-        style={style.chipPressable}
+        style={pressableStyle}
       >
         {icon != null &&
           React.cloneElement(icon, { size: 'small', color, colorType })}
