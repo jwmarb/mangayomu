@@ -10,7 +10,7 @@ import Icon from '@/components/primitives/Icon';
 import IconButton from '@/components/primitives/IconButton';
 import { IconButtonProps } from '@/components/primitives/IconButton/IconButton';
 
-type TextInputProps = NativeTextInputProps & {
+export type TextInputProps = NativeTextInputProps & {
   contrast?: boolean;
   icon?: React.ReactElement<React.ComponentProps<typeof Icon>>;
   /**
@@ -34,6 +34,7 @@ function TextInput(
     icon,
     iconButton = false,
     closeButtonProps,
+    style: styleProp,
     ...rest
   } = props;
   const [hasInput, setHasInput] = React.useState<boolean>(false);
@@ -41,6 +42,14 @@ function TextInput(
   const contrast = useContrast(contrastProp);
   const style = useStyles(styles, contrast);
   const { cursorColor } = useThemedProps(themedProps, contrast);
+  const textInputStyle = [
+    icon != null
+      ? iconButton
+        ? style.containerIconButton
+        : style.container
+      : style.containerNoIcon,
+    styleProp,
+  ];
   function handleOnPress() {
     inputRef.current?.clear();
     setHasInput(false);
@@ -63,13 +72,7 @@ function TextInput(
     <View style={style.view}>
       <NativeTextInput
         ref={handleRef}
-        style={
-          icon != null
-            ? iconButton
-              ? style.containerIconButton
-              : style.container
-            : style.containerNoIcon
-        }
+        style={textInputStyle}
         cursorColor={cursorColor}
         onChangeText={handleOnChangeText}
         {...rest}
