@@ -8,6 +8,7 @@ import useBoolean from '@/hooks/useBoolean';
 
 export type BottomSheet = {
   open: () => void;
+  expand: () => void;
   close: () => void;
 };
 
@@ -33,6 +34,9 @@ function BottomSheetComponent(
     },
     close() {
       bottomSheetRef.current?.close();
+    },
+    expand() {
+      bottomSheetRef.current?.snapToIndex(1);
     },
   }));
 
