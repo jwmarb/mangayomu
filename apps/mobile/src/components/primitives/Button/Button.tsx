@@ -97,7 +97,12 @@ export default function Button(props: ButtonProps) {
         {iconPlacement === 'left' &&
           icon &&
           React.cloneElement(icon, { color })}
-        <Text alignment={textAlignment} variant="button" color={textColor}>
+        <Text
+          alignment={textAlignment}
+          variant="button"
+          color={textColor}
+          style={btnStyles.text}
+        >
           {title}
         </Text>
         {iconPlacement === 'right' &&
