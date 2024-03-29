@@ -7,6 +7,9 @@ const DOWNLOAD_DIR = joinPath(blobUtil.fs.dirs.DownloadDir, 'images');
 // All images that are completely downloaded are stored here
 const IMAGE_CACHE_DIR = joinPath(blobUtil.fs.dirs.CacheDir, 'images');
 
+// A hashmap that maps from image url to filesystem uri
+const cache = new Map<string, string>();
+
 export async function initialize() {
   const [downloadDirExists, imageDirExists] = await Promise.all([
     blobUtil.fs.exists(DOWNLOAD_DIR),
@@ -24,6 +27,8 @@ export async function initialize() {
   }
   if (!imageDirExists) {
     missingDirs.push(blobUtil.fs.mkdir(IMAGE_CACHE_DIR));
+  } else {
+    // load all into a hashmap
   }
 
   await Promise.all(missingDirs);
