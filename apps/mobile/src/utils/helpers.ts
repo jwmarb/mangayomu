@@ -38,3 +38,31 @@ export function isUnparsedManga(obj: unknown): obj is MangaResult {
     typeof obj.__source__ === 'string'
   );
 }
+
+export function joinPath(...paths: string[]): string {
+  let joined = paths[0];
+  for (let i = 1, n = paths.length; i < n; i++) {
+    switch (joined[joined.length - 1]) {
+      case '/': {
+        if (paths[i][0] === '/') {
+          joined += paths[i].substring(1);
+        } else {
+          joined += paths[i];
+        }
+        break;
+      }
+      default: {
+        if (paths[i][0] === '/') {
+          joined += paths[i];
+        } else {
+          joined += '/' + paths[i];
+        }
+        break;
+      }
+    }
+  }
+  if (joined[joined.length - 1] === '/') {
+    joined = joined.substring(0, joined.length - 1);
+  }
+  return joined;
+}

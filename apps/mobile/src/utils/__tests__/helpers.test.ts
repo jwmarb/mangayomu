@@ -1,5 +1,10 @@
 import { Manga } from '@mangayomu/mangascraper';
-import { getErrorMessage, isManga, isUnparsedManga } from '@/utils/helpers';
+import {
+  getErrorMessage,
+  isManga,
+  isUnparsedManga,
+  joinPath,
+} from '@/utils/helpers';
 
 describe('getErrorMessage', () => {
   it('extracts error correctly', () => {
@@ -62,4 +67,32 @@ describe('isManga', () => {
 describe('isUnparsedManga', () => {
   expect(isUnparsedManga({})).toBeFalsy();
   expect(isUnparsedManga({ __source__: '' })).toBeTruthy();
+});
+
+describe('joinPaths', () => {
+  it('joins empty path', () => {
+    expect(joinPath('')).toEqual('');
+  });
+
+  it('joins two paths', () => {
+    expect(joinPath('root', 'child')).toEqual('root/child');
+    expect(joinPath('root', '/child')).toEqual('root/child');
+    expect(joinPath('root/', '/child')).toEqual('root/child');
+    expect(joinPath('root/', 'child')).toEqual('root/child');
+  });
+  it('joins completed path', () => {
+    expect(joinPath('root/child')).toEqual('root/child');
+    expect(joinPath('root/child/')).toEqual('root/child');
+    expect(joinPath('root/child/', 'hello/world')).toEqual(
+      'root/child/hello/world',
+    );
+    expect(joinPath('root/child/', 'hello', '/world')).toEqual(
+      'root/child/hello/world',
+    );
+  });
+  it('real os paths', () => {
+    expect(
+      joinPath('C:', 'Users/', 'You', '/test', '/hello_world.png'),
+    ).toEqual('C:/Users/You/test/hello_world.png');
+  });
 });
