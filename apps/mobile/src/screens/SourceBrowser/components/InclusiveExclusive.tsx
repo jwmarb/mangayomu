@@ -1,9 +1,7 @@
 import { MutableInclusiveExclusiveFilter } from '@mangayomu/schema-creator';
 import React from 'react';
-import { ListRenderItem, StyleSheet, View } from 'react-native';
-import { AscendingStringComparator, binary } from '@mangayomu/algorithms';
-import { FlatList } from 'react-native-gesture-handler';
-import Text from '@/components/primitives/Text';
+import { FlatListProps, ListRenderItem, StyleSheet, View } from 'react-native';
+import Text, { TextProps } from '@/components/primitives/Text';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
 import { createStyles } from '@/utils/theme';
@@ -50,14 +48,14 @@ const styles = createStyles((theme) => ({
   text: {
     flexShrink: 1,
   },
-  itemSeparator: {
-    height: theme.style.size.s,
-  },
 }));
 
-const { flexGrow } = StyleSheet.create({
+const { flexGrow, chipFilterItemHeight } = StyleSheet.create({
   flexGrow: {
     flexGrow: 1,
+  },
+  chipFilterItemHeight: {
+    height: ITEM_HEIGHT,
   },
 });
 
@@ -76,13 +74,17 @@ function toSimpleNoun(s: string) {
   return s.toLowerCase();
 }
 
-const ItemSeparatorComponent = React.memo(() => {
-  const contrast = useContrast();
-  const style = useStyles(styles, contrast);
-  return <View style={style.itemSeparator} />;
-});
-
 const keyExtractor = (item: string) => item;
+
+const getItemLayout: FlatListProps<string>['getItemLayout'] = (data, index) => {
+  return {
+    index,
+    length: ITEM_HEIGHT,
+    offset: ITEM_HEIGHT * index,
+  };
+};
+
+const simpleChipFilterTextProps: TextProps = { color: 'textSecondary' };
 
 function InclusiveExclusive(props: InclusiveExclusiveProps) {
   const { inclusiveExclusive, title } = props;
@@ -116,31 +118,16 @@ function InclusiveExclusive(props: InclusiveExclusiveProps) {
   function mapInclusiveExclusiveFields(x: string) {
     const mappedTitle =
       inclusiveExclusive.map != null ? inclusiveExclusive.map[x] ?? x : x;
-    if (excludeSet.has(x))
-      return (
-        <ChipFilter
-          titleKey={x}
-          filterKey={title}
-          color="error"
-          icon={excluded}
-          key={x}
-          title={mappedTitle}
-        />
-      );
-    if (includeSet.has(x))
-      return (
-        <ChipFilter
-          filterKey={title}
-          titleKey={x}
-          color="success"
-          icon={included}
-          key={x}
-          title={mappedTitle}
-        />
-      );
-
     return (
-      <ChipFilter filterKey={title} titleKey={x} key={x} title={mappedTitle} />
+      mapOnlyInclusiveExclusiveFields(x) || (
+        <ChipFilter
+          textProps={simpleChipFilterTextProps}
+          filterKey={title}
+          titleKey={x}
+          key={x}
+          title={mappedTitle}
+        />
+      )
     );
   }
 
@@ -185,8 +172,7 @@ function InclusiveExclusive(props: InclusiveExclusiveProps) {
           : item;
       if (excludeSet.has(item))
         return (
-          <ChipFilter
-            flexGrow
+          <FlatListFilterChipItem
             titleKey={item}
             filterKey={title}
             color="error"
@@ -196,8 +182,7 @@ function InclusiveExclusive(props: InclusiveExclusiveProps) {
         );
       if (includeSet.has(item))
         return (
-          <ChipFilter
-            flexGrow
+          <FlatListFilterChipItem
             filterKey={title}
             titleKey={item}
             color="success"
@@ -208,8 +193,8 @@ function InclusiveExclusive(props: InclusiveExclusiveProps) {
         );
 
       return (
-        <ChipFilter
-          flexGrow
+        <FlatListFilterChipItem
+          textProps={simpleChipFilterTextProps}
           filterKey={title}
           titleKey={item}
           key={item}
@@ -223,9 +208,7 @@ function InclusiveExclusive(props: InclusiveExclusiveProps) {
   return (
     <>
       <View style={style.container}>
-        <Text bold variant="h4">
-          {title}
-        </Text>
+        <Text variant="h4">{title}</Text>
       </View>
       <View style={style.chipsContainer}>
         {inclusiveExclusive.fields.length <= 12 &&
@@ -249,13 +232,13 @@ function InclusiveExclusive(props: InclusiveExclusiveProps) {
             onChangeText={setInput}
           />
           <Modal.FlatList
+            getItemLayout={getItemLayout}
             windowSize={9}
             maxToRenderPerBatch={9}
             updateCellsBatchingPeriod={50}
             keyboardShouldPersistTaps="handled"
             data={data}
             renderItem={renderItem}
-            ItemSeparatorComponent={ItemSeparatorComponent}
             keyExtractor={keyExtractor}
           />
         </InclusiveExclusiveDispatcher.Provider>
@@ -264,58 +247,62 @@ function InclusiveExclusive(props: InclusiveExclusiveProps) {
   );
 }
 
-const ChipFilter = React.memo(
-  (
-    props: ChipProps & {
-      filterKey: string;
-      titleKey: string;
-      flexGrow?: boolean;
-    },
-  ) => {
-    const {
-      color,
-      title,
-      filterKey,
-      titleKey,
-      flexGrow: flexGrowProp,
-      ...rest
-    } = props;
-    const setInclusiveExclusive = useInclusiveExclusiveDispatcher();
-    function onPress() {
-      switch (color) {
-        case 'error':
-          setInclusiveExclusive({
-            type: 'none',
-            title: filterKey,
-            item: titleKey,
-          });
-          break;
-        case 'success':
-          setInclusiveExclusive({
-            type: 'exclude',
-            title: filterKey,
-            item: titleKey,
-          });
-          break;
-        default:
-          setInclusiveExclusive({
-            type: 'include',
-            title: filterKey,
-            item: titleKey,
-          });
-          break;
-      }
+type ChipFilterProps = ChipProps & {
+  filterKey: string;
+  titleKey: string;
+  flexGrow?: boolean;
+};
+
+const ChipFilter = React.memo((props: ChipFilterProps) => {
+  const {
+    color,
+    title,
+    filterKey,
+    titleKey,
+    flexGrow: flexGrowProp,
+    ...rest
+  } = props;
+  const setInclusiveExclusive = useInclusiveExclusiveDispatcher();
+  function onPress() {
+    switch (color) {
+      case 'error':
+        setInclusiveExclusive({
+          type: 'none',
+          title: filterKey,
+          item: titleKey,
+        });
+        break;
+      case 'success':
+        setInclusiveExclusive({
+          type: 'exclude',
+          title: filterKey,
+          item: titleKey,
+        });
+        break;
+      default:
+        setInclusiveExclusive({
+          type: 'include',
+          title: filterKey,
+          item: titleKey,
+        });
+        break;
     }
-    return (
-      <Chip
-        {...rest}
-        onPress={onPress}
-        title={title}
-        color={color}
-        style={flexGrowProp ? flexGrow : undefined}
-      />
-    );
-  },
-);
+  }
+  return (
+    <Chip
+      {...rest}
+      onPress={onPress}
+      title={title}
+      color={color}
+      style={flexGrowProp ? flexGrow : undefined}
+    />
+  );
+});
+
+const FlatListFilterChipItem = React.memo((props: ChipFilterProps) => (
+  <View style={chipFilterItemHeight}>
+    <ChipFilter {...props} flexGrow />
+  </View>
+));
 
 export default React.memo(InclusiveExclusive);
