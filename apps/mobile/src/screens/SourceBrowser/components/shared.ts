@@ -1,6 +1,7 @@
 import React from 'react';
 
 export const ITEM_HEIGHT = 42;
+export const SORT_ITEM_HEIGHT = 50;
 
 export type InclusiveExclusiveType = 'exclude' | 'include' | 'none';
 export type InclusiveExclusiveOperation = {
