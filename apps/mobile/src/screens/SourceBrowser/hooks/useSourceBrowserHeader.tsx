@@ -79,7 +79,7 @@ export default function useSourceBrowserHeader({
           {source.FILTER_SCHEMA != null && (
             <IconButton
               icon={<Icon type="icon" name="filter" />}
-              onPress={() => ref.current?.open()}
+              onPress={() => ref.current?.expand()}
             />
           )}
         </>

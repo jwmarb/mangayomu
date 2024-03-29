@@ -13,6 +13,7 @@ import useSourceBrowserHeader from '@/screens/SourceBrowser/hooks/useSourceBrows
 import useMangaSearchQuery from '@/screens/SourceBrowser/hooks/useMangaSearchQuery';
 import useLoadAfterInteractions from '@/hooks/useLoadAfterInteractions';
 import { getErrorMessage } from '@/utils/helpers';
+import useFilters from '@/screens/SourceBrowser/hooks/useFilters';
 const SourceFilters = React.lazy(
   () => import('@/screens/SourceBrowser/components/SourceFilters'),
 );
@@ -44,6 +45,8 @@ export default function SourceBrowser(props: RootStackProps<'SourceBrowser'>) {
   const ready = useLoadAfterInteractions();
   const bottomSheet = React.useRef<BottomSheet>(null);
   const { input, setInput } = useUserInput(props.route.params.initialQuery);
+  const [filters, setFilters, appliedFilters, finalizeFilters] =
+    useFilters(source);
   const {
     data,
     isLoading,
@@ -52,13 +55,18 @@ export default function SourceBrowser(props: RootStackProps<'SourceBrowser'>) {
     hasNextPage,
     error,
     isFetchedAfterMount,
-  } = useMangaSearchQuery({ source, input });
+  } = useMangaSearchQuery({ source, input, filters: appliedFilters });
   const collapsible = useSourceBrowserHeader({
     source,
     onUserInput: setInput,
     defaultInput: input,
     ref: bottomSheet,
   });
+
+  function handleOnApplyFilters() {
+    finalizeFilters();
+    bottomSheet.current?.close();
+  }
 
   function ListEmptyComponent() {
     if (isLoading || !ready) return <ListLoadingComponent />;
@@ -118,7 +126,12 @@ export default function SourceBrowser(props: RootStackProps<'SourceBrowser'>) {
         ListFooterComponent={ListFooterComponent}
       />
       <React.Suspense>
-        <SourceFilters ref={bottomSheet} />
+        <SourceFilters
+          filters={filters}
+          onApplyFilters={handleOnApplyFilters}
+          setFilters={setFilters}
+          ref={bottomSheet}
+        />
       </React.Suspense>
     </Manga.SourceProvider>
   );

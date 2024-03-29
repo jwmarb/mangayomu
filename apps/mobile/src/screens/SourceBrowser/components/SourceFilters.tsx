@@ -21,6 +21,10 @@ import {
   SortDispatcher,
 } from '@/screens/SourceBrowser/components/shared';
 import BottomSheet from '@/components/composites/BottomSheet';
+import { createStyles } from '@/utils/theme';
+import useStyles from '@/hooks/useStyles';
+import useContrast from '@/hooks/useContrast';
+import SourceFiltersHeader from '@/screens/SourceBrowser/components/SourceFiltersHeader';
 
 type Item = [string, MutableFilters];
 
@@ -42,13 +46,29 @@ const renderItem: ListRenderItem<Item> = ({ item }) => {
   }
 };
 
-function SourceFilters(_: unknown, ref: React.ForwardedRef<BottomSheet>) {
-  const ready = useLoadAfterInteractions();
-  const source = useSourceContext();
+const styles = createStyles((theme) => ({
+  contentContainerStyle: {
+    paddingBottom: theme.style.size.xxl * 8,
+  },
+}));
 
-  const [filters, setFilters] = React.useState(
-    (source?.FILTER_SCHEMA?.schema as GeneratedFilterSchema) ?? {},
-  );
+type SourceFiltersProps = {
+  filters: GeneratedFilterSchema;
+  setFilters: React.Dispatch<React.SetStateAction<GeneratedFilterSchema>>;
+  onApplyFilters: () => void;
+};
+
+function SourceFilters(
+  props: SourceFiltersProps,
+  ref: React.ForwardedRef<BottomSheet>,
+) {
+  const ready = useLoadAfterInteractions();
+  const { filters, setFilters, onApplyFilters } = props;
+  const source = useSourceContext();
+  const INITIAL_FILTER_STATE =
+    (source?.FILTER_SCHEMA?.schema as GeneratedFilterSchema) ?? {};
+  const contrast = useContrast();
+  const style = useStyles(styles, contrast);
 
   const data = React.useMemo(() => {
     if (source?.FILTER_SCHEMA == null) {
@@ -58,12 +78,16 @@ function SourceFilters(_: unknown, ref: React.ForwardedRef<BottomSheet>) {
     return Object.entries(filters);
   }, [filters]);
 
+  function handleOnResetFilters() {
+    setFilters(INITIAL_FILTER_STATE);
+  }
+
   const toggleInclusiveExclusive = React.useCallback(
     (operation: InclusiveExclusiveOperation) => {
       const { title, type, item } = operation;
 
       setFilters((prev) => {
-        const filterObj = prev[title];
+        const filterObj = { ...prev[title] };
         if (filterObj.type === 'inclusive/exclusive') {
           switch (type) {
             case 'none': {
@@ -103,7 +127,7 @@ function SourceFilters(_: unknown, ref: React.ForwardedRef<BottomSheet>) {
   const setOption = React.useCallback((operation: OptionOperation) => {
     const { title, item } = operation;
     setFilters((prev) => {
-      const filterObj = prev[title];
+      const filterObj = { ...prev[title] };
       if (filterObj.type === 'option') {
         return {
           ...prev,
@@ -120,7 +144,7 @@ function SourceFilters(_: unknown, ref: React.ForwardedRef<BottomSheet>) {
   const setSort = React.useCallback((operation: OptionOperation) => {
     const { title, item } = operation;
     setFilters((prev) => {
-      const filterObj = prev[title];
+      const filterObj = { ...prev[title] };
       if (filterObj.type === 'sort') {
         if (filterObj.value === item) {
           filterObj.reversed = !filterObj.reversed;
@@ -146,9 +170,15 @@ function SourceFilters(_: unknown, ref: React.ForwardedRef<BottomSheet>) {
         <SortDispatcher.Provider value={setSort}>
           <BottomSheet ref={ref}>
             <BottomSheetFlatList
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={style.contentContainerStyle}
               data={data}
               renderItem={renderItem}
               keyExtractor={keyExtractor}
+            />
+            <SourceFiltersHeader
+              onApplyFilters={onApplyFilters}
+              onResetFilters={handleOnResetFilters}
             />
           </BottomSheet>
         </SortDispatcher.Provider>

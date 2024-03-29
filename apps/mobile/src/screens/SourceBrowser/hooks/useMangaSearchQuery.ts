@@ -4,6 +4,7 @@ import {
   QueryKey,
   useInfiniteQuery,
 } from '@tanstack/react-query';
+import { GeneratedFilterSchema } from '@mangayomu/schema-creator';
 import {
   InfiniteMangaData,
   InfiniteMangaError,
@@ -12,6 +13,7 @@ import {
 type UseMangaSearchQueryParameters = {
   source: MangaSource;
   input: string;
+  filters: GeneratedFilterSchema;
 };
 
 /**
@@ -22,6 +24,7 @@ type UseMangaSearchQueryParameters = {
 export default function useMangaSearchQuery({
   source,
   input,
+  filters,
 }: UseMangaSearchQueryParameters) {
   return useInfiniteQuery<
     InfiniteMangaData,
@@ -30,10 +33,15 @@ export default function useMangaSearchQuery({
     QueryKey,
     number
   >({
-    queryKey: ['browse', source.NAME, input],
+    queryKey: ['browse', source.NAME, input, filters],
     queryFn: ({ pageParam, signal }) =>
       source
-        .search(input, pageParam, signal)
+        .search(
+          input,
+          pageParam,
+          signal,
+          filters === source.FILTER_SCHEMA?.schema ? undefined : filters,
+        )
         .then(
           (mangas): InfiniteMangaData => ({
             source,
