@@ -270,7 +270,9 @@ export default abstract class MangaSource<
         ? (cheerio.load(data, { decodeEntities: false }) as T)
         : data;
     } catch (e) {
-      throw new PromiseCancelledException();
+      if ((e as any).name === 'AbortError')
+        throw new PromiseCancelledException();
+      else throw e;
     }
   }
 }
