@@ -64,7 +64,12 @@ export default function Browse(props: HomeStackProps<'Browse'>) {
     UseQueryOptions<InfiniteData<InfiniteMangaData>, InfiniteMangaError>[]
   >({
     queries: pinnedSources.map((source) => ({
-      queryKey: ['browse', source.NAME, input],
+      queryKey: [
+        'browse',
+        source.NAME,
+        input,
+        source.FILTER_SCHEMA?.schema ?? {},
+      ],
       queryFn: ({ signal }) =>
         source
           .search(input, 1, signal)
