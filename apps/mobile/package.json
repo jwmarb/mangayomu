@@ -22,6 +22,7 @@
     "@react-navigation/native-stack": "6.9.22",
     "@react-navigation/bottom-tabs": "6.5.17",
     "@react-native-menu/menu": "0.9.1",
+    "react-native-popup-menu": "0.16.1",
     "@tanstack/react-query": "5.28.4",
     "@nozbe/watermelondb": "0.27.1",
     "react": "18.2.0",

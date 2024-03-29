@@ -4,6 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PortalProvider } from '@gorhom/portal';
+import { MenuProvider } from 'react-native-popup-menu';
 import { ThemeProvider } from '@/providers/theme';
 
 export type AppProviderProps = React.PropsWithChildren;
@@ -20,7 +21,9 @@ export default function AppProvider({ children }: AppProviderProps) {
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
-            <PortalProvider>{children}</PortalProvider>
+            <MenuProvider>
+              <PortalProvider>{children}</PortalProvider>
+            </MenuProvider>
           </ThemeProvider>
         </QueryClientProvider>
       </SafeAreaProvider>
