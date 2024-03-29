@@ -231,4 +231,22 @@ test('search filters work as intended', async () => {
       }),
     ]),
   );
+
+  filters.Genres.exclude = [];
+
+  filters['Sort By'].value = 'Popularity (All Time)';
+
+  result = await MangaSee.search('', 1, undefined, filters);
+
+  expect(MangaSee.toManga(result[0])).toEqual(
+    expect.objectContaining({ title: 'One Piece' }),
+  );
+
+  filters['Sort By'].reversed = true;
+
+  result = await MangaSee.search('', 1, undefined, filters);
+
+  expect(MangaSee.toManga(result[0])).not.toEqual(
+    expect.objectContaining({ title: 'One Piece' }),
+  );
 });
