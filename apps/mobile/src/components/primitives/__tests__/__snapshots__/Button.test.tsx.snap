@@ -79,7 +79,9 @@ exports[`renders properly 1`] = `
           },
           [],
           [],
-          undefined,
+          {
+            "flexGrow": 1,
+          },
         ]
       }
     >
@@ -170,7 +172,9 @@ exports[`renders properly 2`] = `
           },
           [],
           [],
-          undefined,
+          {
+            "flexGrow": 1,
+          },
         ]
       }
     >
@@ -261,7 +265,9 @@ exports[`renders properly 3`] = `
           },
           [],
           [],
-          undefined,
+          {
+            "flexGrow": 1,
+          },
         ]
       }
     >
