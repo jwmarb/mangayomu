@@ -18,14 +18,14 @@ import useUserInput from '@/hooks/useUserInput';
 
 const styles = createStyles((theme) => ({
   container: {
-    paddingHorizontal: theme.style.screen.paddingHorizontal,
+    paddingHorizontal: theme.style.screen.paddingHorizontal * 2,
     paddingVertical: theme.style.size.m,
     alignItems: 'center',
     flexDirection: 'row',
     gap: theme.style.size.s,
   },
   chipsContainer: {
-    paddingHorizontal: theme.style.screen.paddingHorizontal,
+    paddingHorizontal: theme.style.screen.paddingHorizontal * 2,
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: theme.style.size.s,
@@ -208,7 +208,7 @@ function InclusiveExclusive(props: InclusiveExclusiveProps) {
   return (
     <>
       <View style={style.container}>
-        <Text variant="h4">{title}</Text>
+        <Text numberOfLines={1}>{title}</Text>
       </View>
       <View style={style.chipsContainer}>
         {inclusiveExclusive.fields.length <= 12 &&
