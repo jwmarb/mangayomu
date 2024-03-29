@@ -119,8 +119,10 @@ export function hashFilter(x: MutableAbstractFilter) {
           0;
         continue;
       case 'option':
-      case 'sort':
         hash = (hash + hashCode(value.value)) >> 3;
+        continue;
+      case 'sort':
+        hash = ((hash + hashCode(value.value)) >> 3) + (value.reversed ? 1 : 0);
         continue;
     }
   }
