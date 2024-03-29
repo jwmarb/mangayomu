@@ -2,7 +2,7 @@ import React from 'react';
 import { PressableProps, StyleProp, View, ViewStyle } from 'react-native';
 import { styles } from '@/components/primitives/Chip/styles';
 import Pressable from '@/components/primitives/Pressable';
-import Text from '@/components/primitives/Text';
+import Text, { TextProps } from '@/components/primitives/Text';
 import {
   CHIP_COLORS,
   ChipColors,
@@ -23,6 +23,7 @@ export type ChipProps = {
   variant?: ChipVariants;
   icon?: React.ReactElement<IconProps>;
   style?: StyleProp<ViewStyle>;
+  textProps?: TextProps;
 } & Omit<PressableProps, 'style'>;
 
 const composedStyles = [...CHIP_COLORS, 'null'].reduce((prev, curr) => {
@@ -53,6 +54,7 @@ function Chip(props: ChipProps) {
     variant = 'outlined',
     icon,
     style: styleProp,
+    textProps,
     ...rest
   } = props;
   const theme = useTheme();
@@ -83,7 +85,7 @@ function Chip(props: ChipProps) {
       >
         {icon != null &&
           React.cloneElement(icon, { size: 'small', color, colorType })}
-        <Text variant="chip" color={color} colorType={colorType}>
+        <Text variant="chip" color={color} colorType={colorType} {...textProps}>
           {title}
         </Text>
       </Pressable>
