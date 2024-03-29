@@ -1,7 +1,7 @@
 import React from 'react';
 import { useMMKVBoolean } from 'react-native-mmkv';
 import { Theme, createTheme } from '@mangayomu/theme';
-import { Appearance, StatusBar, useColorScheme } from 'react-native';
+import { Appearance, StatusBar, ViewStyle, useColorScheme } from 'react-native';
 import {
   NavigationContainer,
   Theme as NavigationTheme,
@@ -9,6 +9,9 @@ import {
 import { mmkv } from '@/utils/persist';
 
 declare module '@mangayomu/theme' {
+  export interface ThemeHelpers extends DefaultThemeHelpers {
+    elevation(n: number): ViewStyle;
+  }
   export interface Theme extends Pick<DefaultTheme, 'mode'> {
     palette: DefaultTheme['palette'] & {
       skeleton: string;
@@ -34,6 +37,9 @@ declare module '@mangayomu/theme' {
         light: string;
         main: string;
         dark: string;
+      };
+      background: DefaultTheme['palette']['background'] & {
+        menu: string;
       };
     };
     helpers: ThemeHelpers;
@@ -78,7 +84,19 @@ export const ThemeSetDarkModeContext = React.createContext<
 export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
   ({ color, colorConstant }) => ({
     mode: 'dark' as const,
-    helpers: {},
+    helpers: {
+      elevation(n: number) {
+        return (theme: Theme) => ({
+          shadowColor: theme.palette.common.black,
+          shadowOffset: {
+            width: 0,
+            height: n >> 1,
+          },
+          shadowOpacity: 0.16 + n * 0.2,
+          shadowRadius: n / 1.529,
+        });
+      },
+    },
     palette: {
       overlay: colorConstant('rgba(0, 0, 0, 0.5)'), // experimental
       backdrop: colorConstant('rgba(0, 0, 0, 0.3)'),
@@ -127,6 +145,7 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
       background: {
         default: color('#071113', '#fafafa'),
         paper: color('#09181a', '#ffffff'),
+        menu: color('#0e2629', '#eeeef1'),
         disabled: color('#102A2D', '#EFEFEF'),
       },
       status: {
@@ -168,6 +187,13 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
     },
   }),
 );
+
+/**
+ * Gets the theme, however, mode-dependent values are static and do not change
+ */
+export function dangerouslyGetTheme() {
+  return Appearance.getColorScheme() === 'dark' ? darkTheme : lightTheme;
+}
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const [isDarkMode, setIsDarkMode] = useMMKVBoolean('theme', mmkv);
