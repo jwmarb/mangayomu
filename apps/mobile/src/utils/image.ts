@@ -1,10 +1,11 @@
 import blobUtil from 'react-native-blob-util';
+import { joinPath } from '@/utils/helpers';
 
 // All images that are in the "downloading" state are stored here
-const DOWNLOAD_DIR = `${blobUtil.fs.dirs.DownloadDir}/images`;
+const DOWNLOAD_DIR = joinPath(blobUtil.fs.dirs.DownloadDir, 'images');
 
 // All images that are completely downloaded are stored here
-const IMAGE_CACHE_DIR = `${blobUtil.fs.dirs.CacheDir}/images`;
+const IMAGE_CACHE_DIR = joinPath(blobUtil.fs.dirs.CacheDir, 'images');
 
 export async function initialize() {
   const [downloadDirExists, imageDirExists] = await Promise.all([
