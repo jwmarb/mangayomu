@@ -40,4 +40,7 @@ export const styles = (variant: ButtonVariants, color: ButtonColors) =>
       alignItems: 'center',
       flexDirection: 'row',
     },
+    text: {
+      flexGrow: 1,
+    },
   }));
