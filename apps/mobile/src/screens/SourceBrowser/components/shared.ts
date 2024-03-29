@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const ITEM_HEIGHT = 64;
+export const ITEM_HEIGHT = 42;
 
 export type InclusiveExclusiveType = 'exclude' | 'include' | 'none';
 export type InclusiveExclusiveOperation = {
