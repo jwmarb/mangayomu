@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Dimensions,
   FlatListProps,
-  Image,
   ListRenderItem,
   StyleProp,
   View,
@@ -24,6 +23,7 @@ import {
   styles,
 } from '@/components/composites/Manga/styles';
 import { MANGA_HEIGHT, MANGA_WIDTH } from '@/components/composites/Manga';
+import Image from '@/components/primitives/Image';
 
 type MangaProps = {
   manga: unknown;
