@@ -25,7 +25,7 @@ function BottomSheetComponent(
 ) {
   const { children, contrast: contrastProp } = props;
   const bottomSheetRef = React.useRef<GorhomBottomSheet>(null);
-  const [hidden, toggle] = useBoolean();
+  const [hidden, toggle] = useBoolean(true);
   const contrast = useContrast(contrastProp);
   const style = useStyles(styles, contrast);
   React.useImperativeHandle(ref, () => ({
