@@ -5,18 +5,10 @@ import Screen from '@/components/primitives/Screen';
 import useCollapsibleHeader from '@/hooks/useCollapsibleHeader';
 import { useExploreStore } from '@/stores/explore';
 import MangaList from '@/screens/Home/tabs/Explore/components/MangaList';
-
-const REFETCH_INTERVAL = 1000 * 60 * 30; // 30 minutes
+import useExploreMangas from '@/screens/Home/tabs/Explore/hooks/useExploreMangas';
 
 export default function Explore() {
-  const getMangasFromPinnedSources = useExploreStore(
-    (state) => state.getMangasFromPinnedSources,
-  );
-  const { data, isFetching, refetch } = useQuery({
-    queryKey: ['explore'],
-    queryFn: () => getMangasFromPinnedSources(),
-    refetchInterval: REFETCH_INTERVAL,
-  });
+  const { data, isFetching, refetch } = useExploreMangas();
   const collapsible = useCollapsibleHeader({
     title: 'Explore',
   });
@@ -28,15 +20,11 @@ export default function Explore() {
         <RefreshControl refreshing={isFetching} onRefresh={refetch} />
       }
     >
+      <MangaList data={data?.latest} isFetching={isFetching} type="latest" />
       <MangaList
-        title="Recently updated"
-        data={data?.latest}
-        isFetching={isFetching}
-      />
-      <MangaList
-        title="Trending updates"
         data={data?.trending}
         isFetching={isFetching}
+        type="trending"
       />
     </Screen>
   );
