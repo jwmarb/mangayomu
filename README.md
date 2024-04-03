@@ -1,106 +1,40 @@
-# Manga Yomu
+<h1 align="center">
+  MangaYomu
+</h1>
+<h2 align="center">
+  A cross-platform application to make reading mangas easier and more accessible
+</h2>
 
-## What is it?
+## What is MangaYomu?
 
-MangaYomu will be a mobile application for manga reading. I plan to create a NextJS version of it for desktop devices.
+MangaYomu is a both a web and a native mobile application for reading manga/manhwa/manhua, whose sources are
+prevalent throughout Asia. Many of these reading materials are not available locally in many foreign countries, although,
+there are many websites that offer manga-reading services for free. **MangaYomu does NOT host or provide these reading materials**, but
+**it provides you a way to access these reading materials from different source providers--all in one application**.
 
-## Setup
+## Why use MangaYomu?
 
-Install all the necessary global dependencies
+There are so many websites that offer free reading materials, which is a problem when you use multiple websites to read
+manga/manhwa/manhua. Cross-saving progression does not exist, and all of these websites use your browser's local storage
+to store information about what mangas you have read. It is an issue if you want to continue where you left off in a
+different device, and you are forced to sync your data manually, which can be a tedious process.
 
-```sh
-npm i -g yarn concurrently nx
-```
+MangaYomu solves this by offering a free cloud storage solution and by providing a way to manage these source providers
+in one application. MangaYomu is offline-first, meaning cloud storage is optional, so you do not have to go through the
+process of signing up and go straight to reading.
 
-- **nx** Monorepo management tool
-- **concurrently** Parallelization tool
-- **yarn** Package manager / Monorepo management tool
+## Sources
 
-Then while you're still in the project root directory, install all the necessary dependencies by running:
+MangaYomu can provide any source as long as there is someone willing to maintain an API that gets data from that source.
+If you want to contribute to adding a source, refer to this [tutorial](/docs/adding-a-source-tutorial.md).
 
-```sh
-yarn install
-```
+Currently, MangaYomu supports _2_ sources.
 
-Then build all the necessary dependencies:
+| Sources      |
+| ------------ |
+| MangaSee123  |
+| MangaPark V5 |
 
-```sh
-yarn build
-```
+## Contributing
 
-_Note: building packages is required for all apps to run as they are local dependencies_
-
-## Using yarn workspaces
-
-### Installing dependencies
-
-In order to install a dependency on a package that will use a sibling package, use the following command while in the root directory:
-
-```sh
-yarn workspace <workspace-name> add <package-name>@^<version>
-```
-
-Do note that `version` is required because yarn will think you are trying to install from the npm registry.
-
-### Running mobile
-
-The mobile app uses [React Native](https://reactnative.dev/). There is no iOS support, however, I plan to add support for it once I can get my hands on a MacBook.
-
-Before starting the server, it is required to setup variables in a `.env` in the root directory of `apps/mobile`.
-
-```
-# Replace the following encapsulated by curly brackets
-REACT_APP_REALM_ID={realmId}
-BACK_END_DOMAIN={api.mydomain.com} # Auth requests are sent here
-GOOGLE_OAUTH2_ID={id} # Should be a web application id
-```
-
-#### Generating a SHA1 keystore
-
-Using a terminal, navigate to the `android` folder and run `./gradlew signingReport`. This will generate SHA1 keystores for both `release` and `debug`. Add the SHA1 certificates in the [Google Developer Console](https://console.developers.google.com/apis/credentials) under OAuth 2.0 Client IDs, in which the credentials are type `Android`.
-
-Additionally, you must create a web client id. Follow the instructions [here](https://developers.google.com/identity/sign-in/android/start#configure-a-google-api-project)
-
-Make sure to make changes to `apps\mobile\android\app\src\main\res\values\strings.xml` if you wish to use different values.
-
-To start the development server from the root directory:
-
-```sh
-yarn android:metro
-```
-
-followed by
-
-```sh
-yarn android:start
-```
-
-If you are in `apps/mobile` directory, you can simply run:
-
-```sh
-npx react-native start
-```
-
-or
-
-```sh
-yarn start
-```
-
-Both will work; it depends which one you want to use :)
-
-### Running web
-
-To run the development server, you must have `vercel-cli` installed in your system. If not, you can simply install it via:
-
-```sh
-npm i -g vercel
-```
-
-After you have `vercel-cli` installed, refer to this [documentation](/apps/nextjs/README.md)
-
-## Todo
-
-- ~~Add database~~
-- Add manga page sharing (share page that redirects to web app version)
-- Complete website reader features
+See [CONTRIBUTING](/CONTRIBUTING.md)
