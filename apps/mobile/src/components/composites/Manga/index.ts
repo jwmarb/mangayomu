@@ -5,3 +5,5 @@ export const MANGA_HEIGHT = 240;
 
 export const COVER_WIDTH = 120;
 export const COVER_HEIGHT = 180;
+
+export const COVER_WIDTH_HEIGHT_RATIO = COVER_WIDTH / COVER_HEIGHT;
