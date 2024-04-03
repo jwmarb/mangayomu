@@ -2,9 +2,14 @@ import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import {
+  QueryClient,
+  QueryClientProvider,
+  onlineManager,
+} from '@tanstack/react-query';
 import { PortalProvider } from '@gorhom/portal';
 import { MenuProvider } from 'react-native-popup-menu';
+import NetInfo from '@react-native-community/netinfo';
 import { ThemeProvider } from '@/providers/theme';
 
 export type AppProviderProps = React.PropsWithChildren;
@@ -14,6 +19,12 @@ const styles = StyleSheet.create({
 });
 
 const queryClient = new QueryClient();
+
+onlineManager.setEventListener((setOnline) =>
+  NetInfo.addEventListener((state) => {
+    setOnline(!!state.isConnected);
+  }),
+);
 
 export default function AppProvider({ children }: AppProviderProps) {
   return (
