@@ -32,25 +32,32 @@ function Screen(props: ScreenProps) {
 }
 
 Screen.FlatList = function <T>(
-  props: FlatListProps<T> & Omit<ScreenProps, keyof AnimatedScrollViewProps>,
+  props: FlatListProps<T> &
+    Omit<ScreenProps, keyof AnimatedScrollViewProps> & {
+      ignoreHeaderOffset?: boolean;
+    },
 ) {
   const {
     collapsible,
     contrast: contrastProp,
     contentContainerStyle: contentContainerStyleProp,
+    ignoreHeaderOffset,
     ...rest
   } = props;
 
   const contrast = useContrast(contrastProp);
   const style = useStyles(styles, contrast);
+  const contentContainerStyle = [
+    ignoreHeaderOffset
+      ? style.contentContainerStyleIgnoreHeading
+      : style.contentContainerStyle,
+    contentContainerStyleProp,
+  ];
 
   return (
     <Animated.FlatList
       onScroll={collapsible.onScroll}
-      contentContainerStyle={[
-        style.contentContainerStyle,
-        contentContainerStyleProp,
-      ]}
+      contentContainerStyle={contentContainerStyle}
       {...rest}
     />
   );

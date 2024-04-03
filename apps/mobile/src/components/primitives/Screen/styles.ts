@@ -6,4 +6,7 @@ export const styles = createStyles((theme) => ({
     paddingBottom: theme.style.screen.paddingVertical,
     paddingTop: HEADER_HEIGHT + theme.style.screen.paddingVertical,
   },
+  contentContainerStyleIgnoreHeading: {
+    paddingBottom: theme.style.screen.paddingVertical,
+  },
 }));
