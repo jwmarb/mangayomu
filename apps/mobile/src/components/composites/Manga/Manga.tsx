@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Animated, { FadeOut } from 'react-native-reanimated';
+import { useNavigation } from '@react-navigation/native';
 import Text from '@/components/primitives/Text';
 import useManga from '@/hooks/useManga';
 import Pressable from '@/components/primitives/Pressable';
@@ -30,15 +31,19 @@ type MangaProps = {
 };
 
 function Manga(props: MangaProps) {
+  const navigation = useNavigation();
   const manga = useManga(props.manga);
   const contrast = useContrast();
   const source = manga.imageCover
     ? { uri: manga.imageCover }
     : require('@/assets/no-image-available.png');
   const style = useStyles(styles, contrast);
+  function handleOnPress() {
+    navigation.navigate('MangaView', { manga });
+  }
   return (
     <View style={style.view}>
-      <Pressable style={style.container}>
+      <Pressable style={style.container} onPress={handleOnPress}>
         <Image source={source} style={style.cover} />
         <Text variant="body2" numberOfLines={2}>
           {manga.title}
