@@ -1,9 +1,15 @@
+<p align="center">
+  <img src="/assets/logo_circle.png" width="128" height="128">
+</p>
 <h1 align="center">
   MangaYomu
 </h1>
-<h2 align="center">
+<p align="center">
   A cross-platform application to make reading mangas easier and more accessible
-</h2>
+</p>
+
+<br>
+<br>
 
 ## What is MangaYomu?
 
