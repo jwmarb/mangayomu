@@ -23,6 +23,14 @@ export const DescendingStringComparator: Comparator<string, string> = (
   return b.localeCompare(a);
 };
 
+export const AscendingLengthComparator: Comparator<
+  string | ArrayLike<unknown>
+> = (a, b) => a.length - b.length;
+
+export const DescendingLengthComparator: Comparator<
+  string | ArrayLike<unknown>
+> = (a, b) => b.length - a.length;
+
 export const AscendingNumberComparator: Comparator<number, number> = (a, b) =>
   a - b;
 
