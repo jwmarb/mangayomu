@@ -100,3 +100,21 @@ export const decorators = StyleSheet.create({
     fontStyle: 'italic',
   },
 });
+
+export const styles = createStyles((theme) => ({
+  skeleton: {
+    backgroundColor: theme.palette.skeleton,
+    position: 'absolute',
+    height: '50%',
+    left: 0,
+    right: 0,
+    borderRadius: theme.style.borderRadius,
+  },
+  placeholderText: {
+    opacity: 0,
+  },
+  skeletonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+}));
