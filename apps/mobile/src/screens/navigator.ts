@@ -5,6 +5,7 @@ import {
   NativeStackScreenProps,
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
+import { FetchedMangaResults } from '@/stores/explore';
 
 declare global {
   namespace ReactNavigation {
@@ -16,6 +17,7 @@ export type RootStackParamList = {
   Home: undefined;
   MangaView: { manga: unknown; source?: string };
   SourceBrowser: { source: string; genre?: string; initialQuery?: string };
+  ExtendedMangaList: { type: keyof FetchedMangaResults };
 };
 
 export type RootStackProps<K extends keyof RootStackParamList> =
