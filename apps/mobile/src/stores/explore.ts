@@ -65,6 +65,11 @@ function mapPinnedSourceCreator(key: 'latest' | 'trending') {
 export const getTrendingFromPinned = mapPinnedSourceCreator('trending');
 export const getLatestFromPinned = mapPinnedSourceCreator('latest');
 
+export const titleMapping: Record<keyof FetchedMangaResults, string> = {
+  latest: 'Recently updated 🚀',
+  trending: 'Trending updates 🔥',
+};
+
 const partialize = (state: ExploreState): Partial<ExploreState> => ({
   pinnedSources: state.pinnedSources,
 });
