@@ -46,10 +46,87 @@ export type WithDate = {
   date: string | number;
 };
 
+/**
+ * @deprecated
+ */
 export declare interface MangaHostFiltersInfo<T> extends MangaHostInfo {
   filters: FilterSchemaObject<T>;
 }
 
+export type MangaSourceInfo<T> = {
+  /**
+   * The name of the manga source (e.g. MangaNato, Mangakakalot, etc.)
+   */
+  name: string;
+
+  /**
+   * The URL of the manga source
+   */
+  host: string;
+
+  /**
+   * The default language of the manga source. If uncertain (meaning that mangas do not have a preferred language like MangaPark), set this to the site's spoken language
+   */
+  language: ISOLangCode;
+
+  /**
+   * All the available genres the manga source provides
+   */
+  genres: string[];
+
+  /**
+   * The icon of the manga source. It is preferable to use favicon for this
+   */
+  icon: string;
+
+  /**
+   * The version of the source made by the creator. Should follow semantic versioning
+   * 1.x.x = major version that introduces incompatible API changes
+   * x.1.x = minor version that adds new functionality that is compatible with previous versions
+   * x.x.1 = patch version that fixes bugs
+   */
+  version: string;
+
+  /**
+   * Whether or not the manga source is mostly composed of adult content such as hentai. If the
+   */
+  containsNSFW: boolean;
+
+  /**
+   * A schema object that provides information on what filters the source provides when searching manga. If the manga source does not offer filtered querying or a way to filter mangas, this can be set `undefined`. To create a filter schema object, call `createSchema()` from `@mangayomu/schema-creator`. For a more in-depth tutorial about this, refer to the [documentation](https://github.com/jwmarb/mangayomu/blob/main/docs/adding-a-source-tutorial.md#creating-a-schema)
+   *
+   * @example
+   * ```js
+   * {
+   *    "Sort by": {
+   *      type: "sort",
+   *      options: ["Title", "Chapters", ...],
+   *      reversed: false,
+   *      default: "Title",
+   *      value: "Title"
+   *    },
+   *    "Genres": {
+   *      type: "inclusive/exclusive"
+   *      include: [],
+   *      exclude: [],
+   *      fields: ["Action", "Adventure", "Comedy", ...],
+   *    },
+   *    "Official Translation": {
+   *      type: "option",
+   *      options: ["Yes", "No"],
+   *      default: "Yes',
+   *      value: "No"
+   *    },
+   *    ...
+   * }
+   * ```
+   */
+  filterSchema?: FilterSchemaObject<T>;
+};
+
+/**
+ * @deprecated
+ */
 export declare interface MangaHostInfo {
   /**
    * The name of the manga host

@@ -6,6 +6,7 @@ import {
   MangaHostFiltersInfo,
   MangaHostInfo,
   MangaMeta,
+  MangaSourceInfo,
   RouteFetchOptions,
 } from './scraper.interfaces';
 import url from 'url';
@@ -78,16 +79,6 @@ export default abstract class MangaSource<
   public readonly NAME: string;
 
   /**
-   * Whether or not this source supports querying latest mangas
-   */
-  public readonly SUPPORTS_LATEST_MANGAS: boolean;
-
-  /**
-   * Whether or not this source supports querying trending mangas
-   */
-  public readonly SUPPORTS_TRENDING_MANGAS: boolean;
-
-  /**
    * Whether or not this source contains NSFW material
    */
   public readonly CONTAINS_NSFW: boolean;
@@ -104,7 +95,7 @@ export default abstract class MangaSource<
    */
   public _proxy: string | null;
 
-  public constructor(info: MangaHostInfo | MangaHostFiltersInfo<FilterSchema>) {
+  public constructor(info: MangaSourceInfo<FilterSchema>) {
     MangaSource.sources.set(info.name, this);
 
     this.URL = url.parse(info.host);
@@ -113,10 +104,8 @@ export default abstract class MangaSource<
     this.DEFAULT_LANGUAGE = info.language;
     this.ICON_URI = info.icon;
     this.NAME = info.name;
-    this.SUPPORTS_LATEST_MANGAS = info.hasLatestMangas;
-    this.SUPPORTS_TRENDING_MANGAS = info.hasTrendingMangas;
     this.CONTAINS_NSFW = info.containsNSFW;
-    if ('filters' in info) this.FILTER_SCHEMA = info.filters;
+    this.FILTER_SCHEMA = info.filterSchema;
 
     this._proxy = null;
   }
