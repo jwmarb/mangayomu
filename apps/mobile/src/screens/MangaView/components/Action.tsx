@@ -28,7 +28,7 @@ export type ActionProps = {
   icon: React.ReactElement<IconProps>;
 };
 
-export default function Action(props: ActionProps) {
+export default React.memo(function Action(props: ActionProps) {
   const { title, icon } = props;
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
@@ -39,4 +39,4 @@ export default function Action(props: ActionProps) {
       <Text variant="button">{title}</Text>
     </Pressable>
   );
-}
+});

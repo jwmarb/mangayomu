@@ -1,3 +1,4 @@
+import React from 'react';
 import Text from '@/components/primitives/Text';
 import useMangaViewFetchStatus from '@/screens/MangaView/hooks/useMangaViewFetchStatus';
 
@@ -5,7 +6,7 @@ export type AltTitleProps = {
   title?: string[];
 };
 
-export default function AltTitle(props: AltTitleProps) {
+export default React.memo(function AltTitle(props: AltTitleProps) {
   const { title } = props;
   const status = useMangaViewFetchStatus();
 
@@ -18,4 +19,4 @@ export default function AltTitle(props: AltTitleProps) {
       {title?.join(' · ')}
     </Text>
   );
-}
+});
