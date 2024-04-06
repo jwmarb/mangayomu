@@ -14,6 +14,8 @@ export default React.memo(function AltTitle(props: AltTitleProps) {
     return <Text.Skeleton variant="body2" />;
   }
 
+  if (title == null) return null;
+
   return (
     <Text variant="body2" color="textSecondary" numberOfLines={2}>
       {title?.join(' · ')}
