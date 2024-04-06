@@ -36,6 +36,8 @@ export const styles = createStyles((theme) => ({
     paddingVertical: theme.style.size.l,
     backgroundColor: theme.palette.background.paper,
     gap: theme.style.size.m,
+    borderBottomWidth: 1,
+    borderColor: theme.palette.divider,
   },
   actionContainer: {
     backgroundColor: theme.palette.background.menu,
@@ -44,5 +46,13 @@ export const styles = createStyles((theme) => ({
   },
   statusContainer: {
     paddingVertical: theme.style.size.s,
+  },
+  contentContainerStyle: {
+    paddingBottom: theme.style.size.xxl * 3,
+  },
+  sourceContainer: {
+    flexDirection: 'row',
+    gap: theme.style.size.m,
+    alignItems: 'center',
   },
 }));
