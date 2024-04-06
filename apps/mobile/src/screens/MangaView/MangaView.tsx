@@ -16,7 +16,7 @@ import {
   MangaViewMangaContext,
   MangaViewMangaSourceContext,
 } from '@/screens/MangaView/context';
-import ListHeaderComponent from '@/screens/MangaView/header';
+import ListHeaderComponent from '@/screens/MangaView/details';
 import Chapter from '@/screens/MangaView/components/primitives/Chapter';
 import headerLeft from '@/screens/MangaView/components/header/headerLeft';
 import headerRight from '@/screens/MangaView/components/header/headerRight';
