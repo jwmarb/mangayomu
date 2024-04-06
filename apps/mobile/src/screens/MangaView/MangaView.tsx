@@ -17,12 +17,10 @@ import {
   MangaViewMangaSourceContext,
 } from '@/screens/MangaView/context';
 import ListHeaderComponent from '@/screens/MangaView/header';
-import Chapter, {
-  BASE_CHAPTER_HEIGHT,
-  CHAPTER_HEIGHT_EXTENDED,
-} from '@/screens/MangaView/components/primitives/Chapter';
+import Chapter from '@/screens/MangaView/components/primitives/Chapter';
 import headerLeft from '@/screens/MangaView/components/header/headerLeft';
 import headerRight from '@/screens/MangaView/components/header/headerRight';
+import useItemLayout from '@/screens/MangaView/hooks/useItemLayout';
 
 const renderItem: ListRenderItem<unknown> = ({ item }) => (
   <Chapter chapter={item} />
@@ -56,36 +54,7 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
     [source, data],
   );
 
-  const layoutSize = React.useRef<number>(0);
-
-  const getItemLayout = React.useCallback(
-    (
-      element: ArrayLike<unknown> | null | undefined,
-      index: number,
-    ): {
-      length: number;
-      offset: number;
-      index: number;
-    } => {
-      if (element == null)
-        return {
-          length: 0,
-          offset: 0,
-          index,
-        };
-      const length = source.toChapter(element[index], data).subname
-        ? CHAPTER_HEIGHT_EXTENDED
-        : BASE_CHAPTER_HEIGHT;
-      const offset = layoutSize.current;
-      layoutSize.current += length;
-      return {
-        length,
-        offset,
-        index,
-      };
-    },
-    [data],
-  );
+  const getItemLayout = useItemLayout(source, data);
 
   return (
     <MangaViewMangaContext.Provider value={manga}>
