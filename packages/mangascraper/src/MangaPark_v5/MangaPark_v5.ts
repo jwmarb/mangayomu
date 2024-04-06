@@ -252,4 +252,4 @@ class MangaParkV5 extends MangaSource<
   }
 }
 
-export default new MangaParkV5({ ...MANGAPARKV5_INFO, name: 'MangaPark v5' });
+export default new MangaParkV5(MANGAPARKV5_INFO);

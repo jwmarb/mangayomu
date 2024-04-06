@@ -368,7 +368,7 @@ export const MANGAPARKV5_INFO: MangaSourceInfo<MangaParkV5Filter> = {
   mapToReadableGenres: map,
   host: 'https://mangapark.net/',
   version: '3.1.0',
-  name: 'MangaPark v3',
+  name: 'MangaPark v5',
   icon: 'https://mangapark.io/static-assets/img/favicon.png',
 };
 
