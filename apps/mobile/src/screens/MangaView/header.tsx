@@ -16,6 +16,7 @@ import useMangaViewData from '@/screens/MangaView/hooks/useMangaViewData';
 import { styles } from '@/screens/MangaView/styles';
 import { createThemedProps } from '@/utils/theme';
 import useMangaViewManga from '@/screens/MangaView/hooks/useMangaViewManga';
+import Genres from '@/screens/MangaView/components/Genres';
 
 const themedProps = createThemedProps((theme) => ({
   colors: ['rgba(0, 0, 0, 0.25)', theme.palette.background.paper],
@@ -66,6 +67,7 @@ export default function ListHeaderComponent() {
           <Action title="WebView" icon={WEBVIEW_ICON} />
         </View>
         <Synopsis description={data?.description} />
+        <Genres genres={data?.genres} />
       </View>
     </>
   );
