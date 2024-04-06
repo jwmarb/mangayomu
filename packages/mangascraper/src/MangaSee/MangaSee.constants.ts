@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { MangaHostFiltersInfo } from '../scraper/scraper.interfaces';
+import {
+  MangaHostFiltersInfo,
+  MangaSourceInfo,
+} from '../scraper/scraper.interfaces';
 import createSchema from '@mangayomu/schema-creator';
 
 const MANGASEE_URL = 'https://mangasee123.com/';
@@ -104,7 +107,9 @@ const filters = createSchema(
 
 export type MangaSeeFilter = typeof filters.schema;
 
-export const MANGASEE_INFO: MangaHostFiltersInfo<typeof filters.schema> = {
+export const MANGASEE_INFO_DEPRECATED: MangaHostFiltersInfo<
+  typeof filters.schema
+> = {
   language: 'en',
   host: MANGASEE_URL,
   containsNSFW: false,
@@ -116,4 +121,15 @@ export const MANGASEE_INFO: MangaHostFiltersInfo<typeof filters.schema> = {
   hasLatestMangas: true,
   hasMangaDirectory: true,
   filters,
+};
+
+export const MANGASEE_INFO: MangaSourceInfo<typeof filters.schema> = {
+  language: 'en',
+  host: MANGASEE_URL,
+  containsNSFW: false,
+  genres: MANGASEE_GENRES as any,
+  version: '1.1.0',
+  name: 'MangaSee',
+  icon: 'https://mangasee123.com/media/favicon.png',
+  filterSchema: filters,
 };
