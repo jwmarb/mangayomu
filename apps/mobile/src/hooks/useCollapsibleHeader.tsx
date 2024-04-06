@@ -13,17 +13,27 @@ import { RootStackParamList } from '@/screens/navigator';
 import Header from '@/components/composites/Header';
 import useTheme from '@/hooks/useTheme';
 import { HEADER_HEIGHT } from '@/components/composites/types';
+import { AnimatedHeaderComponentProps } from '@/components/composites/Header/Header';
+import useCollapsibleTranslationYLimit from '@/hooks/useCollapsibleTranslationYLimit';
+import useCollapsibleBackgroundInterpolation from '@/hooks/useCollapsibleBackgroundInterpolation';
 
 export type CollapsibleHeaderOptions = {
-  headerLeft?: React.ReactNode;
+  headerLeft?:
+    | React.ReactNode
+    | ((props: AnimatedHeaderComponentProps) => JSX.Element);
   headerLeftStyle?: StyleProp<ViewStyle>;
   showHeaderLeft?: boolean;
-  headerRight?: React.ReactNode;
+  headerRight?:
+    | React.ReactNode
+    | ((props: AnimatedHeaderComponentProps) => JSX.Element);
   showHeaderRight?: boolean;
   headerRightStyle?: StyleProp<ViewStyle>;
-  headerCenter?: React.ReactNode;
+  headerCenter?:
+    | React.ReactNode
+    | ((props: AnimatedHeaderComponentProps) => JSX.Element);
   headerCenterStyle?: StyleProp<ViewStyle>;
   headerStyle?: StyleProp<ViewStyle>;
+  showBackButton?: boolean;
   showHeaderCenter?: boolean;
   title?: string;
   disableCollapsing?: boolean;
@@ -37,11 +47,12 @@ export default function useCollapsibleHeader(
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
-  const TRANSLATE_Y_HIDDEN_THRESHOLD = -insets.top - HEADER_HEIGHT;
-  const BACKGROUND_TRANSPARENCY_THRESHOLD = HEADER_HEIGHT + insets.top;
+  const TRANSLATE_Y_HIDDEN_THRESHOLD = useCollapsibleTranslationYLimit();
+  const BACKGROUND_INTERPOLATION_INPUT =
+    useCollapsibleBackgroundInterpolation();
   const BACKGROUND_INTERPOLATION = [
-    [0, BACKGROUND_TRANSPARENCY_THRESHOLD * 0.5],
-    ['transparent', theme.palette.background.paper],
+    'transparent',
+    theme.palette.background.paper,
   ] as const;
 
   const scrollPosition = useSharedValue(0);
@@ -51,8 +62,8 @@ export default function useCollapsibleHeader(
   const backgroundColor = useDerivedValue(() =>
     interpolateColor(
       scrollPosition.value,
-      BACKGROUND_INTERPOLATION[0],
-      BACKGROUND_INTERPOLATION[1],
+      BACKGROUND_INTERPOLATION_INPUT,
+      BACKGROUND_INTERPOLATION,
     ),
   );
   const onScroll = useAnimatedScrollHandler((e) => {
@@ -78,6 +89,7 @@ export default function useCollapsibleHeader(
             options?.disableCollapsing ? translateYStatic : translateY
           }
           backgroundColor={backgroundColor}
+          scrollOffset={scrollPosition}
         />
       ),
     });
