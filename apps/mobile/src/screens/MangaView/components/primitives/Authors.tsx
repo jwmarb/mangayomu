@@ -6,7 +6,7 @@ export type AuthorsProps = {
   authors?: string[];
 };
 
-export default React.memo(function Authors({ authors }: AuthorsProps) {
+export default function Authors({ authors }: AuthorsProps) {
   const status = useMangaViewFetchStatus();
   if (authors != null)
     return <Text color="textSecondary">By {authors.join(', ')}</Text>;
@@ -15,4 +15,4 @@ export default React.memo(function Authors({ authors }: AuthorsProps) {
     return <Text.Skeleton />;
   }
   return null;
-});
+}

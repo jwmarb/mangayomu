@@ -6,7 +6,7 @@ export type AltTitleProps = {
   title?: string[];
 };
 
-export default React.memo(function AltTitle(props: AltTitleProps) {
+export default function AltTitle(props: AltTitleProps) {
   const { title } = props;
   const status = useMangaViewFetchStatus();
 
@@ -21,4 +21,4 @@ export default React.memo(function AltTitle(props: AltTitleProps) {
       {title?.join(' · ')}
     </Text>
   );
-});
+}
