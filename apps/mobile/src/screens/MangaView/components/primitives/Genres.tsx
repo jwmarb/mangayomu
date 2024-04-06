@@ -30,6 +30,7 @@ export default function Genres({ genres }: GenresProps) {
       <View style={style.container}>
         {genres.map((x) => (
           <Chip
+            variant="filled"
             key={x}
             title={source.toReadableGenre(x)}
             color={
