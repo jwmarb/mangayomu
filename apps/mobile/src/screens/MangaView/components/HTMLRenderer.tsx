@@ -4,7 +4,11 @@ import RenderHTML, {
   CustomTagRendererRecord,
   HTMLElementModelRecord,
 } from 'react-native-render-html';
-import { Dimensions } from 'react-native';
+import {
+  Dimensions,
+  NativeSyntheticEvent,
+  TextLayoutEventData,
+} from 'react-native';
 import React from 'react';
 import { variants } from '@/components/primitives/Text/styles';
 import { createThemedProps } from '@/utils/theme';
@@ -78,6 +82,14 @@ export default function HTMLRenderer(props: HTMLRendererProps) {
   );
   const source = React.useMemo(() => ({ html: data }), [data]);
 
+  const handleOnTextLayout = React.useCallback(
+    (event: NativeSyntheticEvent<TextLayoutEventData>) => {
+      if (event.nativeEvent.lines.length > MAX_NUMBER_OF_LINES)
+        setShowExpanded(true);
+    },
+    [setShowExpanded],
+  );
+
   const handleOnDocument = React.useCallback(
     (doc: Document) => {
       let numberOfLineBreaks = 0;
@@ -109,8 +121,9 @@ export default function HTMLRenderer(props: HTMLRendererProps) {
   const defaultTextProps = React.useMemo(
     () => ({
       numberOfLines: isExpanded ? undefined : MAX_NUMBER_OF_LINES,
+      onTextLayout: handleOnTextLayout,
     }),
-    [isExpanded],
+    [isExpanded, handleOnTextLayout],
   );
 
   return (
