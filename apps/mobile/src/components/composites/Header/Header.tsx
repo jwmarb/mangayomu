@@ -12,24 +12,30 @@ import Icon from '@/components/primitives/Icon';
 import { CollapsibleHeaderOptions } from '@/hooks/useCollapsibleHeader';
 import { styles } from '@/components/composites/Header/styles';
 
+export type AnimatedHeaderComponentProps = {
+  translateY: SharedValue<number>;
+  backgroundColor: SharedValue<string>;
+  scrollOffset: SharedValue<number>;
+};
+
 export type HeaderProps = NativeStackHeaderProps &
-  CollapsibleHeaderOptions & {
-    translateY: SharedValue<number>;
-    backgroundColor: SharedValue<string>;
-  };
+  CollapsibleHeaderOptions &
+  AnimatedHeaderComponentProps;
 
 export default function Header(props: HeaderProps) {
   const {
     back,
     showHeaderLeft = true,
-    headerLeft,
+    headerLeft: HeaderLeft,
     showHeaderCenter = true,
     showHeaderRight = true,
-    headerRight,
-    headerCenter,
+    headerRight: HeaderRight,
+    headerCenter: HeaderCenter,
     title,
     navigation,
     translateY,
+    scrollOffset,
+    showBackButton = true,
     backgroundColor,
     headerCenterStyle: headerCenterStyleProp,
     headerLeftStyle: headerLeftStyleProp,
@@ -62,18 +68,26 @@ export default function Header(props: HeaderProps) {
     <Animated.View style={safeAreaViewStyle}>
       {showHeaderLeft && (
         <SafeAreaView edges={['top']} style={headerLeftStyle}>
-          {back != null && (
+          {showBackButton && back != null && (
             <IconButton
               icon={<Icon type="icon" name="arrow-left" />}
               onPress={handleOnBack}
             />
           )}
-          {headerLeft}
+          {typeof HeaderLeft === 'function' ? (
+            <HeaderLeft
+              translateY={translateY}
+              backgroundColor={backgroundColor}
+              scrollOffset={scrollOffset}
+            />
+          ) : (
+            HeaderLeft
+          )}
         </SafeAreaView>
       )}
       {showHeaderCenter && (
         <SafeAreaView edges={['top']} style={headerCenterStyle}>
-          {!headerCenter && (
+          {!HeaderCenter && (
             <Text
               alignment={
                 (showHeaderLeft && showHeaderRight) ||
@@ -87,12 +101,28 @@ export default function Header(props: HeaderProps) {
               {title}
             </Text>
           )}
-          {headerCenter}
+          {typeof HeaderCenter === 'function' ? (
+            <HeaderCenter
+              translateY={translateY}
+              backgroundColor={backgroundColor}
+              scrollOffset={scrollOffset}
+            />
+          ) : (
+            HeaderCenter
+          )}
         </SafeAreaView>
       )}
       {showHeaderRight && (
         <SafeAreaView edges={['top']} style={headerRightStyle}>
-          {headerRight}
+          {typeof HeaderRight === 'function' ? (
+            <HeaderRight
+              translateY={translateY}
+              backgroundColor={backgroundColor}
+              scrollOffset={scrollOffset}
+            />
+          ) : (
+            HeaderRight
+          )}
         </SafeAreaView>
       )}
     </Animated.View>
