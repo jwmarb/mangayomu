@@ -107,7 +107,7 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
         black: colorConstant('#000'),
       },
       action: {
-        ripple: color('#606060', '#484848'),
+        ripple: color('#606060', '#c2c2c2'),
         disabled: color('rgba(255, 255, 255, 0.12)', 'rgba(0, 0, 0, 0.12)'),
         textInput: color('rgba(128, 128, 128, 0.12)', 'rgba(61, 61, 61, 0.12)'),
       },
