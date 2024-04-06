@@ -16,7 +16,10 @@ import {
 } from '../MangaPark_v5.interfaces';
 import { MangaHostWithFilters } from '../../scraper/scraper.filters';
 import { GetMeta, Manga, MangaChapter } from '../../scraper/scraper.interfaces';
-import { MangaParkV5Filter, MANGAPARKV5_INFO } from '../MangaPark_v5.constants';
+import {
+  MangaParkV5Filter,
+  MANGAPARKV5_INFO_DEPRECATED,
+} from '../MangaPark_v5.constants';
 import { ISOLangCode } from '@mangayomu/language-codes';
 
 class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
@@ -259,4 +262,4 @@ class MangaParkV5 extends MangaHostWithFilters<MangaParkV5Filter> {
   }
 }
 
-export default new MangaParkV5(MANGAPARKV5_INFO);
+export default new MangaParkV5(MANGAPARKV5_INFO_DEPRECATED);

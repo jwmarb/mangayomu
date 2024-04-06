@@ -90,6 +90,8 @@ export default abstract class MangaSource<
 
   public readonly FILTER_SCHEMA: FilterSchemaObject<FilterSchema> | undefined;
 
+  public readonly READABLE_GENRES_MAP: Record<string, string>;
+
   /**
    * Proxy URL for network requests
    */
@@ -106,6 +108,10 @@ export default abstract class MangaSource<
     this.NAME = info.name;
     this.CONTAINS_NSFW = info.containsNSFW;
     this.FILTER_SCHEMA = info.filterSchema;
+    this.READABLE_GENRES_MAP = info.mapToReadableGenres ?? {};
+    for (const genre of info.genres) {
+      this.READABLE_GENRES_MAP[genre] = genre;
+    }
 
     this._proxy = null;
   }
@@ -211,6 +217,15 @@ export default abstract class MangaSource<
       _name: this.NAME,
       _version: this.API_VERSION,
     };
+  }
+
+  /**
+   * Converts to a readable genre, if applicable
+   * @param genre A genre from `genres`
+   * @returns Returns a mapped name for genre
+   */
+  public toReadableGenre(genre: string) {
+    return this.READABLE_GENRES_MAP?.[genre] ?? genre;
   }
 
   protected async route<T = cheerio.CheerioAPI>(

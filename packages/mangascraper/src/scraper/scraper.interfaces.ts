@@ -75,6 +75,12 @@ export type MangaSourceInfo<T> = {
   genres: string[];
 
   /**
+   * Maps a genre from `genres` to a human-readable genre. For example, if a genre `action` is in `genres`, it should
+   * be mapped to be `Action`
+   */
+  mapToReadableGenres?: Record<string, string>;
+
+  /**
    * The icon of the manga source. It is preferable to use favicon for this
    */
   icon: string;
