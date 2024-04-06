@@ -1,4 +1,8 @@
-import { MANGASEE_INFO, MangaSeeFilter } from '../MangaSee.constants';
+import {
+  MANGASEE_INFO,
+  MANGASEE_INFO_DEPRECATED,
+  MangaSeeFilter,
+} from '../MangaSee.constants';
 import {
   CurChapter,
   Directory,
@@ -433,4 +437,4 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   }
 }
 
-export default new MangaSee(MANGASEE_INFO);
+export default new MangaSee(MANGASEE_INFO_DEPRECATED);
