@@ -14,6 +14,8 @@ import useMangaViewData from '@/screens/MangaView/hooks/useMangaViewData';
 import useMangaViewManga from '@/screens/MangaView/hooks/useMangaViewManga';
 import { styles } from '@/screens/MangaView/styles';
 import { createThemedProps } from '@/utils/theme';
+import Icon from '@/components/primitives/Icon';
+import useMangaViewSource from '@/screens/MangaView/hooks/useMangaViewSource';
 
 const themedProps = createThemedProps((theme) => ({
   colors: ['rgba(0, 0, 0, 0.25)', theme.palette.background.paper],
@@ -26,6 +28,7 @@ export default React.memo(function Overview() {
   const style = useStyles(styles, contrast);
   const themedLinearGradientProps = useThemedProps(themedProps, contrast);
   const manga = useMangaViewManga();
+  const source = useMangaViewSource();
   const imageSource =
     manga?.imageCover != null
       ? { uri: manga.imageCover }
@@ -39,6 +42,10 @@ export default React.memo(function Overview() {
       >
         <Image source={imageSource} style={style.floatingImage} />
         <View style={style.titleContainer}>
+          <View style={style.sourceContainer}>
+            <Icon type="image" uri={source.ICON_URI} />
+            <Text variant="chip">{source.NAME}</Text>
+          </View>
           <Text bold variant="h4" numberOfLines={3}>
             {manga?.title}
           </Text>
