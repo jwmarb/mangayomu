@@ -7,7 +7,6 @@ import { styles } from '@/screens/MangaView/styles';
 import Genres from '@/screens/MangaView/components/primitives/Genres';
 import Overview from '@/screens/MangaView/components/composites/Overview';
 import Actions from '@/screens/MangaView/components/composites/Actions';
-import Language from '@/screens/MangaView/components/primitives/Language';
 import Languages from '@/screens/MangaView/components/composites/Languages';
 
 export default function ListHeaderComponent() {
