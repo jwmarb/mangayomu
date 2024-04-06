@@ -11,7 +11,7 @@ import { SynopsisExpandedContext } from '@/screens/MangaView/context';
 import useMangaViewError from '@/screens/MangaView/hooks/useMangaViewError';
 import { getErrorMessage } from '@/utils/helpers';
 const HTMLRenderer = React.lazy(
-  () => import('@/screens/MangaView/components/HTMLRenderer'),
+  () => import('@/screens/MangaView/components/renderers/HTMLRenderer'),
 );
 
 const styles = createStyles((theme) => ({

@@ -7,16 +7,16 @@ import Text from '@/components/primitives/Text';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
 import useThemedProps from '@/hooks/useThemedProps';
-import Action from '@/screens/MangaView/components/Action';
-import AltTitle from '@/screens/MangaView/components/AltTitle';
-import Authors from '@/screens/MangaView/components/Authors';
-import Status from '@/screens/MangaView/components/Status';
-import Synopsis from '@/screens/MangaView/components/Synopsis';
+import Action from '@/screens/MangaView/components/primitives/Action';
+import AltTitle from '@/screens/MangaView/components/primitives/AltTitle';
+import Authors from '@/screens/MangaView/components/primitives/Authors';
+import Status from '@/screens/MangaView/components/primitives/Status';
+import Synopsis from '@/screens/MangaView/components/primitives/Synopsis';
 import useMangaViewData from '@/screens/MangaView/hooks/useMangaViewData';
 import { styles } from '@/screens/MangaView/styles';
 import { createThemedProps } from '@/utils/theme';
 import useMangaViewManga from '@/screens/MangaView/hooks/useMangaViewManga';
-import Genres from '@/screens/MangaView/components/Genres';
+import Genres from '@/screens/MangaView/components/primitives/Genres';
 
 const themedProps = createThemedProps((theme) => ({
   colors: ['rgba(0, 0, 0, 0.25)', theme.palette.background.paper],
