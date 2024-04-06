@@ -17,7 +17,6 @@ export const styles = (color: ChipColors | 'null') =>
           ? theme.palette.divider
           : theme.palette[color][theme.mode === 'dark' ? 'dark' : 'light'],
       borderRadius: theme.style.borderRadius / 3,
-      borderWidth: 1.5,
       flexDirection: 'row',
       overflow: 'hidden',
     },
