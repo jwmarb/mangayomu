@@ -1,5 +1,4 @@
 import React from 'react';
-import { MangaSource } from '@mangayomu/mangascraper';
 import { useQuery } from '@tanstack/react-query';
 import LinearGradient from 'react-native-linear-gradient';
 import { View } from 'react-native';
@@ -22,15 +21,10 @@ import Action from '@/screens/MangaView/components/Action';
 import AltTitle from '@/screens/MangaView/components/AltTitle';
 import Status from '@/screens/MangaView/components/Status';
 import Synopsis from '@/screens/MangaView/components/Synopsis';
-
-export const MangaViewMangaSourceContext =
-  React.createContext<MangaSource | null>(null);
-MangaViewMangaSourceContext.displayName = 'MangaViewMangaSourceContext';
-
-export const MangaViewFetchStatusContext = React.createContext<
-  'error' | 'success' | 'pending' | null
->(null);
-MangaViewFetchStatusContext.displayName = 'MangaViewFetchStatusContext';
+import {
+  MangaViewFetchStatusContext,
+  MangaViewMangaSourceContext,
+} from '@/screens/MangaView/context';
 
 const themedProps = createThemedProps((theme) => ({
   colors: ['rgba(0, 0, 0, 0.25)', theme.palette.background.paper],
