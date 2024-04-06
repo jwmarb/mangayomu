@@ -21,6 +21,15 @@ export const styles = (color: ChipColors | 'null') =>
       flexDirection: 'row',
       overflow: 'hidden',
     },
+    skeleton: {
+      backgroundColor: theme.palette.skeleton,
+      borderRadius: theme.style.borderRadius / 3,
+      paddingVertical: theme.style.size.m,
+      paddingHorizontal: theme.style.size.l,
+    },
+    skeletonText: {
+      opacity: 0,
+    },
     chipPressable: {
       flex: 0,
       flexDirection: 'row',

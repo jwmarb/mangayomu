@@ -93,4 +93,24 @@ function Chip(props: ChipProps) {
   );
 }
 
-export default React.memo(Chip);
+function Skeleton() {
+  const contrast = useContrast();
+  const style = useStyles(composedStyles['null'], contrast);
+  const random = new Array(10)
+    .fill('n[_>l'[Math.floor(Math.random() * 5)])
+    .join('');
+  return (
+    <View style={style.skeleton}>
+      <Text variant="chip" style={style.skeletonText}>
+        {random}
+      </Text>
+    </View>
+  );
+}
+
+const MemoizedChip = React.memo(Chip) as ReturnType<
+  typeof React.memo<typeof Chip>
+> & { Skeleton: ReturnType<typeof React.memo<typeof Skeleton>> };
+MemoizedChip.Skeleton = React.memo(Skeleton);
+
+export default MemoizedChip;
