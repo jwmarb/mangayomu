@@ -108,9 +108,12 @@ export default abstract class MangaSource<
     this.NAME = info.name;
     this.CONTAINS_NSFW = info.containsNSFW;
     this.FILTER_SCHEMA = info.filterSchema;
-    this.READABLE_GENRES_MAP = info.mapToReadableGenres ?? {};
+    this.READABLE_GENRES_MAP = {};
     for (const genre of info.genres) {
       this.READABLE_GENRES_MAP[genre] = genre;
+    }
+    for (const genre in info.mapToReadableGenres) {
+      this.READABLE_GENRES_MAP[genre] = info.mapToReadableGenres?.[genre];
     }
 
     this._proxy = null;
