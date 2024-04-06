@@ -1,5 +1,5 @@
 import MaterialCommunityIconNames from 'react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import _MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   Image,
   ImageStyle,
@@ -44,6 +44,10 @@ export const composedSizes = (['icon', 'image'] as const).reduce(
     return prev;
   },
   {} as Record<Pick<IconProps, 'type'>['type'], Record<IconSizes, TextStyle>>,
+);
+
+const MaterialCommunityIcons = Animated.createAnimatedComponent(
+  _MaterialCommunityIcons,
 );
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

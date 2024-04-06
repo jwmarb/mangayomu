@@ -58,6 +58,12 @@ export default function IconButton(props: IconButtonProps) {
     size === 'medium' ? iconButton.container : iconButton.containerSmall,
     styleProp,
   ];
+
+  const iconProps = {
+    ...icon.props,
+    ...composedClonedIconProps[color],
+    style: [icon.props.style, composedClonedIconProps[color].style],
+  };
   return (
     <View style={style}>
       <Pressable
@@ -65,7 +71,7 @@ export default function IconButton(props: IconButtonProps) {
         android_ripple={android_ripple}
         {...rest}
       >
-        {React.cloneElement(icon, composedClonedIconProps[color])}
+        {React.cloneElement(icon, iconProps)}
       </Pressable>
     </View>
   );
