@@ -1,7 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import Icon from '@/components/primitives/Icon';
-import IconButton from '@/components/primitives/IconButton';
+import { ListRenderItem } from 'react-native';
 import Screen from '@/components/primitives/Screen';
 import useCollapsibleHeader from '@/hooks/useCollapsibleHeader';
 import useManga from '@/hooks/useManga';
@@ -18,8 +17,16 @@ import {
   MangaViewMangaSourceContext,
 } from '@/screens/MangaView/context';
 import ListHeaderComponent from '@/screens/MangaView/header';
+import Chapter, {
+  BASE_CHAPTER_HEIGHT,
+  CHAPTER_HEIGHT_EXTENDED,
+} from '@/screens/MangaView/components/primitives/Chapter';
+import headerLeft from '@/screens/MangaView/components/header/headerLeft';
+import headerRight from '@/screens/MangaView/components/header/headerRight';
 
-const renderItem = () => null;
+const renderItem: ListRenderItem<unknown> = ({ item }) => (
+  <Chapter chapter={item} />
+);
 
 export default function MangaView(props: RootStackProps<'MangaView'>) {
   const {
@@ -38,14 +45,47 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
   const style = useStyles(styles, contrast);
   const collapsible = useCollapsibleHeader({
     showHeaderCenter: false,
+    showBackButton: false,
     headerRightStyle: style.headerRight,
-    headerRight: (
-      <>
-        <IconButton icon={<Icon type="icon" name="bookmark-outline" />} />
-        <IconButton icon={<Icon type="icon" name="web" />} />
-      </>
-    ),
+    headerLeft,
+    headerRight,
   });
+
+  const keyExtractor = React.useCallback(
+    (chapter: unknown) => source.toChapter(chapter, data).link,
+    [source, data],
+  );
+
+  const layoutSize = React.useRef<number>(0);
+
+  const getItemLayout = React.useCallback(
+    (
+      element: ArrayLike<unknown> | null | undefined,
+      index: number,
+    ): {
+      length: number;
+      offset: number;
+      index: number;
+    } => {
+      if (element == null)
+        return {
+          length: 0,
+          offset: 0,
+          index,
+        };
+      const length = source.toChapter(element[index], data).subname
+        ? CHAPTER_HEIGHT_EXTENDED
+        : BASE_CHAPTER_HEIGHT;
+      const offset = layoutSize.current;
+      layoutSize.current += length;
+      return {
+        length,
+        offset,
+        index,
+      };
+    },
+    [data],
+  );
 
   return (
     <MangaViewMangaContext.Provider value={manga}>
@@ -58,7 +98,10 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
                 ListHeaderComponent={ListHeaderComponent}
                 collapsible={collapsible}
                 data={data?.chapters}
+                getItemLayout={getItemLayout}
                 renderItem={renderItem}
+                keyExtractor={keyExtractor}
+                contentContainerStyle={style.contentContainerStyle}
               />
             </MangaViewMangaSourceContext.Provider>
           </MangaViewFetchStatusContext.Provider>
