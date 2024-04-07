@@ -1,15 +1,7 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { ListRenderItem } from 'react-native';
 import { RefreshControl } from 'react-native-gesture-handler';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
-import {
-  compose,
-  useDatabase,
-  withDatabase,
-  withObservables,
-} from '@nozbe/watermelondb/react';
-import { Database, Model, Q } from '@nozbe/watermelondb';
 import Screen from '@/components/primitives/Screen';
 import useCollapsibleHeader from '@/hooks/useCollapsibleHeader';
 import useManga from '@/hooks/useManga';
@@ -33,9 +25,6 @@ import headerRight from '@/screens/MangaView/components/header/headerRight';
 import useItemLayout from '@/screens/MangaView/hooks/useItemLayout';
 import BottomSheet from '@/components/composites/BottomSheet';
 import Text from '@/components/primitives/Text';
-import { Table } from '@/models/schema';
-import { LocalManga } from '@/models/LocalManga';
-import { LocalChapter } from '@/models/LocalChapter';
 import { isChapter } from '@/utils/helpers';
 import useMangaMeta from '@/screens/MangaView/hooks/useMangaMeta';
 

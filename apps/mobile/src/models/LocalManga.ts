@@ -1,6 +1,6 @@
 import { Database, Model, Q, Query } from '@nozbe/watermelondb';
 import { Associations } from '@nozbe/watermelondb/Model';
-import { children, date, field, writer } from '@nozbe/watermelondb/decorators';
+import { children, date, field } from '@nozbe/watermelondb/decorators';
 import {
   InvalidSourceException,
   Manga,
