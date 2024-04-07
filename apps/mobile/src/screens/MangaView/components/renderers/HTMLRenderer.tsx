@@ -17,8 +17,8 @@ import useContrast from '@/hooks/useContrast';
 import {
   spoilerElementModel,
   spoilerRenderer,
-} from '@/screens/MangaView/renderers/spoiler';
-import { bodyRenderer } from '@/screens/MangaView/renderers/body';
+} from '@/screens/MangaView/components/renderers/spoiler';
+import { bodyRenderer } from '@/screens/MangaView/components/renderers/body';
 
 const MAX_NUMBER_OF_LINES = 6;
 
