@@ -42,7 +42,7 @@ export default function Genres({ genres }: GenresProps) {
     );
   }
 
-  if (status === 'pending') {
+  if (status === 'fetching') {
     return (
       <View style={style.container}>
         <Chip.Skeleton />

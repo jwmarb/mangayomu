@@ -45,12 +45,12 @@ export default function Status(props: StatusProps) {
   const contrast = useContrast();
   const style = useStyles(
     composedStyles[
-      (fetchStatus === 'pending' ? 'loading' : status) ?? 'ongoing'
+      (fetchStatus === 'fetching' ? 'loading' : status) ?? 'ongoing'
     ],
     contrast,
   );
 
-  if (fetchStatus === 'pending') {
+  if (fetchStatus === 'fetching') {
     return null;
   }
 

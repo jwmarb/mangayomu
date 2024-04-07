@@ -51,7 +51,8 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
   } = props;
   const source = useMangaSource({ manga: unparsedManga, source: sourceStr });
   const manga = useManga(unparsedManga, source);
-  const { data, status, error, isFetching, refetch } = useMangaMeta(props);
+  const { data, status, error, isFetching, refetch, fetchStatus } =
+    useMangaMeta(props);
   const bottomSheet = React.useRef<BottomSheet>(null);
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
@@ -84,7 +85,7 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
       <MangaViewMangaContext.Provider value={manga}>
         <MangaViewDataContext.Provider value={data}>
           <MangaViewErrorContext.Provider value={error}>
-            <MangaViewFetchStatusContext.Provider value={status}>
+            <MangaViewFetchStatusContext.Provider value={fetchStatus}>
               <MangaViewMangaSourceContext.Provider value={source}>
                 <Screen.FlatList
                   refreshing={isFetching}

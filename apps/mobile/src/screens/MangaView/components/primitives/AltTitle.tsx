@@ -10,7 +10,7 @@ export default function AltTitle(props: AltTitleProps) {
   const { title } = props;
   const status = useMangaViewFetchStatus();
 
-  if (status === 'pending') {
+  if (status === 'fetching') {
     return <Text.Skeleton variant="body2" />;
   }
 

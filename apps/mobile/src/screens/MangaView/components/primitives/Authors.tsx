@@ -11,7 +11,7 @@ export default function Authors({ authors }: AuthorsProps) {
   if (authors != null)
     return <Text color="textSecondary">By {authors.join(', ')}</Text>;
 
-  if (status === 'pending') {
+  if (status === 'fetching') {
     return <Text.Skeleton />;
   }
   return null;

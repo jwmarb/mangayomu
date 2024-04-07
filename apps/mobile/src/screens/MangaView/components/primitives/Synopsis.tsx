@@ -82,12 +82,12 @@ export default React.memo(function Synopsis(props: SynopsisProps) {
           </React.Suspense>
         </SynopsisExpandedContext.Provider>
       )}
-      {status === 'success' && description == null && (
+      {(status === 'idle' || status === 'paused') && description == null && (
         <Text color="textSecondary" italic>
           No synopsis available.
         </Text>
       )}
-      {status === 'pending' && (
+      {status === 'fetching' && (
         <>
           <Text.Skeleton />
           <Text.Skeleton />
@@ -97,7 +97,7 @@ export default React.memo(function Synopsis(props: SynopsisProps) {
           <Text.Skeleton />
         </>
       )}
-      {status === 'error' && description == null && (
+      {status === 'idle' && error != null && description == null && (
         <Text color="error">{getErrorMessage(error)}</Text>
       )}
     </View>
