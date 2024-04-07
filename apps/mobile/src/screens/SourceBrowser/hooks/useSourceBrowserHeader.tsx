@@ -18,6 +18,7 @@ export type UseSourceBrowserHeaderParams = {
   onUserInput: (text?: string) => void;
   defaultInput: string;
   ref: React.RefObject<BottomSheet>;
+  loading: boolean;
 };
 
 /**
@@ -30,6 +31,7 @@ export default function useSourceBrowserHeader({
   onUserInput,
   defaultInput,
   ref,
+  loading,
 }: UseSourceBrowserHeaderParams) {
   const navigation = useNavigation();
   const [showSearchBar, toggleSearchBar] = useBoolean();
@@ -55,6 +57,7 @@ export default function useSourceBrowserHeader({
   const collapsible = useCollapsibleHeader(
     {
       showHeaderLeft: false,
+      loading,
       headerStyle: showSearchBar ? style.headerSearchBar : undefined,
       headerRightStyle: showSearchBar
         ? style.headerRightSearchBar
@@ -115,7 +118,7 @@ export default function useSourceBrowserHeader({
         </>
       ),
     },
-    [showSearchBar],
+    [showSearchBar, loading],
   );
   return collapsible;
 }

@@ -55,12 +55,14 @@ export default function SourceBrowser(props: RootStackProps<'SourceBrowser'>) {
     hasNextPage,
     error,
     isFetchedAfterMount,
+    isFetching,
   } = useMangaSearchQuery({ source, input, filters: appliedFilters });
   const collapsible = useSourceBrowserHeader({
     source,
     onUserInput: setInput,
     defaultInput: input,
     ref: bottomSheet,
+    loading: isFetching,
   });
 
   function handleOnApplyFilters() {
