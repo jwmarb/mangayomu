@@ -55,4 +55,10 @@ export const styles = createStyles((theme) => ({
     gap: theme.style.size.m,
     alignItems: 'center',
   },
+  chapterHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: theme.style.size.m,
+  },
 }));

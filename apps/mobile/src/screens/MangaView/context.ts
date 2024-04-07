@@ -18,3 +18,7 @@ export const MangaViewDataContext = React.createContext<
 >(null);
 
 export const MangaViewMangaContext = React.createContext<Manga | null>(null);
+
+export const MangaViewOpenFilterMenuContext = React.createContext<
+  (() => void) | null
+>(null);

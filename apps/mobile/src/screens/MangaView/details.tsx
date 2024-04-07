@@ -8,6 +8,7 @@ import Genres from '@/screens/MangaView/components/primitives/Genres';
 import Overview from '@/screens/MangaView/components/composites/Overview';
 import Actions from '@/screens/MangaView/components/composites/Actions';
 import Languages from '@/screens/MangaView/components/composites/Languages';
+import ChapterHeader from '@/screens/MangaView/components/composites/ChapterHeader';
 
 export default function ListHeaderComponent() {
   const contrast = useContrast();
@@ -22,6 +23,7 @@ export default function ListHeaderComponent() {
         <Synopsis description={data?.description} />
         <Genres genres={data?.genres} />
         <Languages />
+        <ChapterHeader />
       </View>
     </>
   );
