@@ -38,6 +38,7 @@ export type CollapsibleHeaderOptions = {
   title?: string;
   disableCollapsing?: boolean;
   shrinkLeftAndRightHeaders?: boolean;
+  loading?: boolean;
 };
 
 export default function useCollapsibleHeader(
@@ -45,7 +46,6 @@ export default function useCollapsibleHeader(
   dependencies: React.DependencyList = [],
 ) {
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
 
   const TRANSLATE_Y_HIDDEN_THRESHOLD = useCollapsibleTranslationYLimit();
   const BACKGROUND_INTERPOLATION_INPUT =

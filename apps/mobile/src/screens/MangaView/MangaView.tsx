@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ListRenderItem } from 'react-native';
+import { RefreshControl } from 'react-native-gesture-handler';
 import Screen from '@/components/primitives/Screen';
 import useCollapsibleHeader from '@/hooks/useCollapsibleHeader';
 import useManga from '@/hooks/useManga';
@@ -34,20 +35,24 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
   } = props;
   const source = useMangaSource({ manga: unparsedManga, source: sourceStr });
   const manga = useManga(unparsedManga, source);
-  const { data, status, error } = useQuery({
+  const { data, status, error, isFetching, refetch } = useQuery({
     queryKey: [manga.link],
     queryFn: ({ signal }) => source.meta(manga, signal),
     select: (data) => source.toMangaMeta(data),
   });
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
-  const collapsible = useCollapsibleHeader({
-    showHeaderCenter: false,
-    showBackButton: false,
-    headerRightStyle: style.headerRight,
-    headerLeft,
-    headerRight,
-  });
+  const collapsible = useCollapsibleHeader(
+    {
+      showHeaderCenter: false,
+      showBackButton: false,
+      headerRightStyle: style.headerRight,
+      headerLeft,
+      headerRight,
+      loading: isFetching,
+    },
+    [isFetching],
+  );
 
   const keyExtractor = React.useCallback(
     (chapter: unknown) => source.toChapter(chapter, data).link,
@@ -63,6 +68,10 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
           <MangaViewFetchStatusContext.Provider value={status}>
             <MangaViewMangaSourceContext.Provider value={source}>
               <Screen.FlatList
+                refreshing={isFetching}
+                refreshControl={
+                  <RefreshControl refreshing={isFetching} onRefresh={refetch} />
+                }
                 ignoreHeaderOffset
                 ListHeaderComponent={ListHeaderComponent}
                 collapsible={collapsible}
@@ -70,6 +79,8 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
                 getItemLayout={getItemLayout}
                 renderItem={renderItem}
                 keyExtractor={keyExtractor}
+                windowSize={7}
+                maxToRenderPerBatch={13}
                 contentContainerStyle={style.contentContainerStyle}
               />
             </MangaViewMangaSourceContext.Provider>
