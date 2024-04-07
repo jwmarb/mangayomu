@@ -1,3 +1,4 @@
+import { database } from 'database';
 import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -10,6 +11,7 @@ import {
 import { PortalProvider } from '@gorhom/portal';
 import { MenuProvider } from 'react-native-popup-menu';
 import NetInfo from '@react-native-community/netinfo';
+import { DatabaseProvider } from '@nozbe/watermelondb/react';
 import { ThemeProvider } from '@/providers/theme';
 
 export type AppProviderProps = React.PropsWithChildren;
@@ -33,7 +35,11 @@ export default function AppProvider({ children }: AppProviderProps) {
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
             <MenuProvider>
-              <PortalProvider>{children}</PortalProvider>
+              <PortalProvider>
+                <DatabaseProvider database={database}>
+                  {children}
+                </DatabaseProvider>
+              </PortalProvider>
             </MenuProvider>
           </ThemeProvider>
         </QueryClientProvider>

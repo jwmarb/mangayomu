@@ -38,7 +38,9 @@
       "**/realm",
       "**/realm/**",
       "**/next",
-      "**/next/**"
+      "**/next/**",
+      "**/@nozbe/watermelondb",
+      "**/@nozbe/watermelondb/**"
     ]
   },
   "scripts": {

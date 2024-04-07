@@ -1,4 +1,4 @@
-import { Manga } from '@mangayomu/mangascraper';
+import { Manga, MangaChapter } from '@mangayomu/mangascraper';
 import { MangaResult } from '@/stores/explore';
 
 export function getErrorMessage(err: unknown): string {
@@ -65,4 +65,16 @@ export function joinPath(...paths: string[]): string {
     joined = joined.substring(0, joined.length - 1);
   }
   return joined;
+}
+
+export function isChapter(x: unknown): x is MangaChapter {
+  return (
+    typeof x === 'object' &&
+    x != null &&
+    'name' in x &&
+    typeof x.name === 'string' &&
+    'date' in x &&
+    'link' in x &&
+    typeof x.link === 'string'
+  );
 }

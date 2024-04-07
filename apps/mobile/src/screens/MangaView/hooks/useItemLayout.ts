@@ -1,9 +1,10 @@
-import { MangaMeta, MangaSource } from '@mangayomu/mangascraper';
+import { MangaChapter, MangaMeta, MangaSource } from '@mangayomu/mangascraper';
 import React from 'react';
 import {
   BASE_CHAPTER_HEIGHT,
   CHAPTER_HEIGHT_EXTENDED,
 } from '@/screens/MangaView/components/primitives/Chapter';
+import { isChapter } from '@/utils/helpers';
 
 export default function useItemLayout(source: MangaSource, data?: MangaMeta) {
   const layoutSize = React.useRef<number>(0);
@@ -23,7 +24,11 @@ export default function useItemLayout(source: MangaSource, data?: MangaMeta) {
           offset: 0,
           index,
         };
-      const length = source.toChapter(element[index], data).subname
+      const length = (
+        isChapter(element[index])
+          ? (element[index] as MangaChapter).subname
+          : source.toChapter(element[index], data).subname
+      )
         ? CHAPTER_HEIGHT_EXTENDED
         : BASE_CHAPTER_HEIGHT;
       const offset = layoutSize.current;
