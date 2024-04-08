@@ -8,7 +8,7 @@ import {
   MangaSource,
 } from '@mangayomu/mangascraper';
 import type { ISOLangCode } from '@mangayomu/language-codes';
-import { LOCAL_MANGA_ID, Table } from '@/models/schema';
+import { ChapterSortOption, LOCAL_MANGA_ID, Table } from '@/models/schema';
 import { LocalChapter } from '@/models/LocalChapter';
 import { Genre } from '@/models/Genre';
 import { Author } from '@/models/Author';
@@ -54,7 +54,7 @@ export class LocalManga extends Model {
   @field('vote_count') voteCount?: number | null;
   @field('is_official_translation') isOfficialTranslation?: boolean;
 
-  @field('sort_chapters_by') sortChaptersBy!: string;
+  @field('sort_chapters_by') sortChaptersBy!: ChapterSortOption;
   @field('is_sort_reversed') isSortReversed!: boolean;
 
   @children(Table.LOCAL_CHAPTERS) chapters!: Query<LocalChapter>;

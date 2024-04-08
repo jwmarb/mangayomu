@@ -39,6 +39,12 @@ export enum ReadingOrientation {
   GLOBAL = globalSetting,
 }
 
+export enum ChapterSortOption {
+  CHAPTER_NUMBER,
+  DATE,
+  NAME,
+}
+
 export enum Table {
   MANGAS = 'mangas',
   CHAPTERS = 'chapters',
@@ -50,7 +56,7 @@ export enum Table {
 }
 
 export const schema = appSchema({
-  version: 3,
+  version: 4,
   tables: [
     tableSchema({
       name: Table.MANGAS,
@@ -195,7 +201,7 @@ export const schema = appSchema({
         },
         {
           name: 'sort_chapters_by',
-          type: 'string',
+          type: 'number',
         },
         {
           name: 'is_sort_reversed',
