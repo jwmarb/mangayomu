@@ -16,6 +16,7 @@ import { styles } from '@/screens/MangaView/styles';
 import { createThemedProps } from '@/utils/theme';
 import Icon from '@/components/primitives/Icon';
 import useMangaViewSource from '@/screens/MangaView/hooks/useMangaViewSource';
+import Stars from '@/screens/MangaView/components/primitives/Stars';
 
 const themedProps = createThemedProps((theme) => ({
   colors: ['rgba(0, 0, 0, 0.25)', theme.palette.background.paper],
@@ -55,6 +56,7 @@ export default React.memo(function Overview() {
             <Status type="scan" status={data?.status?.scan} />
             <Status type="publish" status={data?.status?.publish} />
           </View>
+          <Stars />
         </View>
       </LinearGradient>
     </ImageBackground>
