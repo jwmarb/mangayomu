@@ -88,6 +88,25 @@ const filterSchema = createSchema(
   default: string
 })`
 
+  - `options` - A `string[]` that contains all the possible fields for this option.
+  - `default` - A default value for this option. It should be an element from `options`
+
+- `createSortFilter(
+  options: string[],
+  default: string
+)`
+
+  - `options` - A `string[]` that contains all the names of all the possible sorting options
+  - `default` - A default value for this sorting option. It should be an element from `options`
+
+- `createDescription({
+  str: TextProperty | (TextProperty | TextProperty[])[]
+})`
+  - `str` - A `TextProperty` that creates a text in this filter. This is a union of multiple types to represent an html paragraph tag in an object.
+    - Example #1: `["Hello", { text: "Wo", bold: true }, "rld"]` would be converted into `<p>Hello <b>wo</b>rld</p>`
+    - Example #2: `"Hello World"` would be converted into `<p>Hello World</p>`
+    - Example #3: `{ text: "Colored warning", color: "warning" }` would be converted into `<p class="warning">Colored warning</p>`
+
 class MyMangaSource extends MangaSource {}
 
 export default new MyMangaSource();
