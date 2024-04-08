@@ -45,6 +45,12 @@ export enum ChapterSortOption {
   NAME,
 }
 
+export const ChapterSortOptionStrings: Record<ChapterSortOption, string> = {
+  [ChapterSortOption.CHAPTER_NUMBER]: 'Chapter #',
+  [ChapterSortOption.DATE]: 'Date',
+  [ChapterSortOption.NAME]: 'Name',
+};
+
 export enum Table {
   MANGAS = 'mangas',
   CHAPTERS = 'chapters',
