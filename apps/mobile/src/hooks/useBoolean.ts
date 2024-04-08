@@ -9,7 +9,7 @@ export default function useBoolean(initial = false) {
   const [bool, setBool] = React.useState<boolean>(initial);
 
   const toggle = React.useCallback(
-    (value?: boolean) => {
+    (value?: boolean | ((prev: boolean) => boolean)) => {
       if (value != null) setBool(value);
       else {
         setBool((prev) => !prev);
