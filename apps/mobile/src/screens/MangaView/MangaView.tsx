@@ -24,9 +24,9 @@ import headerLeft from '@/screens/MangaView/components/header/headerLeft';
 import headerRight from '@/screens/MangaView/components/header/headerRight';
 import useItemLayout from '@/screens/MangaView/hooks/useItemLayout';
 import BottomSheet from '@/components/composites/BottomSheet';
-import Text from '@/components/primitives/Text';
 import { isChapter } from '@/utils/helpers';
 import useMangaMeta from '@/screens/MangaView/hooks/useMangaMeta';
+import FilterMenu from '@/screens/MangaView/components/composites/FilterMenu';
 
 const renderItem: ListRenderItem<unknown> = ({ item }) => (
   <Chapter chapter={item} />
@@ -40,8 +40,7 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
   } = props;
   const source = useMangaSource({ manga: unparsedManga, source: sourceStr });
   const manga = useManga(unparsedManga, source);
-  const { data, status, error, isFetching, refetch, fetchStatus } =
-    useMangaMeta(props);
+  const { data, error, isFetching, refetch, fetchStatus } = useMangaMeta(props);
   const bottomSheet = React.useRef<BottomSheet>(null);
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
@@ -95,11 +94,7 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
                   maxToRenderPerBatch={13}
                   contentContainerStyle={style.contentContainerStyle}
                 />
-                <BottomSheet ref={bottomSheet}>
-                  <BottomSheetView>
-                    <Text>Hello World!</Text>
-                  </BottomSheetView>
-                </BottomSheet>
+                <FilterMenu ref={bottomSheet} />
               </MangaViewMangaSourceContext.Provider>
             </MangaViewFetchStatusContext.Provider>
           </MangaViewErrorContext.Provider>
