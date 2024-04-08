@@ -42,6 +42,8 @@ In **MyMangaSource** folder, create two files:
 In order for any application to a manga source API, the API needs information about the manga source. To define the information about the manga source, open `MyMangaSource.info.ts` and create a variable that will hold the information about your manga source:
 
 ```ts
+import type { MangaSourceInfo } from '../scrapers/scrapers.interfaces';
+
 const MYMANGASOURCE_INFO: MangaSourceInfo<undefined> = {
   name: 'MyMangaSource',
   host: 'https://mymangasource.com/',
@@ -107,10 +109,25 @@ const filterSchema = createSchema(
     - Example #2: `"Hello World"` would be converted into `<p>Hello World</p>`
     - Example #3: `{ text: "Colored warning", color: "warning" }` would be converted into `<p class="warning">Colored warning</p>`
 
-class MyMangaSource extends MangaSource {}
+Once you have defined a filter schema, you can now put it in the object defining the information about your manga source.
 
-export default new MyMangaSource();
+```ts
+import type { MangaSourceInfo } from '../scrapers/scrapers.interfaces';
+import createSchema from '@mangayomu/schema-creator';
 
-```
+const filterSchema = createSchema(
+  ({
+    createInclusiveExclusiveFilter,
+    createOptionFilter,
+    createSortFilter,
+    createDescription,
+  }) => ({
+    // DEFINE SCHEMA HERE
+  }),
+);
 
+const MYMANGASOURCE_INFO: MangaSourceInfo<undefined> = {
+  // ...
+  filterSchema: filterSchema,
+};
 ```
