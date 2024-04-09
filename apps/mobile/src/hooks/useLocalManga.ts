@@ -7,13 +7,19 @@ import { LocalManga } from '@/models/LocalManga';
 
 type Selector<T> = (model: LocalManga) => T;
 
-export default function useLocalManga<T>(
+export type UseLocalMangaOptions<TDefault> = {
+  onInitialize?: (model: LocalManga) => void;
+  onUpdate?: (model: LocalManga) => void;
+  default?: TDefault;
+};
+
+export default function useLocalManga<T, TDefault = T | undefined>(
   manga: Pick<Manga, 'link'>,
   selector: Selector<T>,
-  onInitialize?: (model: LocalManga) => void,
-) {
+  options?: UseLocalMangaOptions<TDefault>,
+): TDefault {
   const database = useDatabase();
-  const [state, setState] = React.useState<T | undefined>(undefined);
+  const [state, setState] = React.useState<T>(options?.default as T);
   const id = React.useRef<string>('');
   React.useEffect(() => {
     function initialize() {
@@ -26,7 +32,8 @@ export default function useLocalManga<T>(
           const [localManga] = updated;
           id.current = localManga.id;
           setState(selector(localManga as LocalManga));
-          if (onInitialize != null) onInitialize(localManga as LocalManga);
+          if (options?.onInitialize != null)
+            options.onInitialize(localManga as LocalManga);
         }
       };
       const subscription = observer.subscribe(callback);
@@ -41,8 +48,15 @@ export default function useLocalManga<T>(
         .get(Table.LOCAL_MANGAS)
         .findAndObserve(id.current);
 
+      let init = false;
+
       const callback = (updated: Model) => {
         setState(selector(updated as LocalManga));
+        if (init && options?.onUpdate != null)
+          options.onUpdate(updated as LocalManga);
+        else {
+          init = true;
+        }
       };
       const subscription = observer.subscribe(callback);
       return () => {
@@ -56,5 +70,5 @@ export default function useLocalManga<T>(
     }
   }, [state != null]);
 
-  return state;
+  return state as unknown as TDefault;
 }
