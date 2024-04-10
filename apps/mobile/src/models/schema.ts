@@ -1,6 +1,7 @@
 import { Comparator } from '@mangayomu/algorithms';
 import { MangaChapter } from '@mangayomu/mangascraper';
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
+import type { LocalManga } from '@/models/LocalManga';
 
 export const LOCAL_CHAPTER_ID = 'local_chapter_id';
 export const LOCAL_MANGA_ID = 'local_manga_id';
@@ -16,6 +17,7 @@ export enum ReadingDirection {
   VERTICAL,
   WEBTOON,
   GLOBAL = globalSetting,
+  DEFAULT = LEFT_TO_RIGHT,
 }
 
 export enum ImageScaling {
@@ -24,6 +26,7 @@ export enum ImageScaling {
   FIT_WIDTH,
   FIT_HEIGHT,
   GLOBAL = globalSetting,
+  DEFAULT = SMART_FIT,
 }
 
 export enum ZoomStartPosition {
@@ -32,6 +35,7 @@ export enum ZoomStartPosition {
   RIGHT,
   CENTER,
   GLOBAL = globalSetting,
+  DEFAULT = AUTOMATIC,
 }
 
 export enum ReadingOrientation {
@@ -39,12 +43,14 @@ export enum ReadingOrientation {
   PORTRAIT,
   LANDSCAPE,
   GLOBAL = globalSetting,
+  DEFAULT = FREE,
 }
 
 export enum ChapterSortOption {
   CHAPTER_NUMBER,
   DATE,
   NAME,
+  DEFAULT = CHAPTER_NUMBER,
 }
 
 export const CHAPTER_SORT_OPTIONS = Object.keys(ChapterSortOption)
@@ -77,8 +83,16 @@ export enum Table {
   HISTORY_ENTRIES = 'history_entries',
 }
 
+export type Selector<T, TModel> = (model: TModel) => T;
+
+export type UseRowOptions<TDefault, TModel> = {
+  onInitialize?: (model: TModel) => void;
+  onUpdate?: (model: TModel) => void;
+  default?: TDefault;
+};
+
 export const schema = appSchema({
-  version: 4,
+  version: 5,
   tables: [
     tableSchema({
       name: Table.MANGAS,
@@ -86,6 +100,11 @@ export const schema = appSchema({
         {
           name: 'title',
           type: 'string',
+        },
+        {
+          name: 'link',
+          type: 'string',
+          isIndexed: true,
         },
         {
           name: CURRENTLY_READING_CHAPTER_ID,
@@ -112,6 +131,7 @@ export const schema = appSchema({
         {
           name: 'selected_language',
           type: 'string',
+          isOptional: true,
         },
         {
           name: 'reading_direction',
