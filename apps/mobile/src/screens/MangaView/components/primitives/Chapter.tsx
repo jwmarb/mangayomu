@@ -97,10 +97,32 @@ function Chapter(props: ChapterProps) {
   );
 }
 
+function Skeleton(props: { type?: 'subname' | 'no-subname' }) {
+  const contrast = useContrast();
+  const style = useStyles(
+    composedStyles[props.type === 'subname' ? 1 : 0],
+    contrast,
+  );
+
+  return (
+    <View style={style.pressable}>
+      <View>
+        <Text.Skeleton />
+        {props.type === 'subname' && <Text.Skeleton />}
+        <Text.Skeleton variant="body2" />
+      </View>
+    </View>
+  );
+}
+
+const memoSkeleton = React.memo(Skeleton);
+
 const memoChapter = React.memo(Chapter) as ReturnType<
   typeof React.memo<typeof Chapter>
 > & {
-  Skeleton: () => JSX.Element;
+  Skeleton: typeof memoSkeleton;
 };
+
+memoChapter.Skeleton = memoSkeleton;
 
 export default memoChapter;

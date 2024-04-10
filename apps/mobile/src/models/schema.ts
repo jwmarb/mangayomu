@@ -1,3 +1,5 @@
+import { Comparator } from '@mangayomu/algorithms';
+import { MangaChapter } from '@mangayomu/mangascraper';
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const LOCAL_CHAPTER_ID = 'local_chapter_id';
@@ -45,12 +47,26 @@ export enum ChapterSortOption {
   NAME,
 }
 
+export const CHAPTER_SORT_OPTIONS = Object.keys(ChapterSortOption)
+  .filter((x) => !Number.isNaN(parseInt(x)))
+  .map((x) => parseInt(x));
+
 export const ChapterSortOptionStrings: Record<ChapterSortOption, string> = {
   [ChapterSortOption.CHAPTER_NUMBER]: 'Chapter #',
   [ChapterSortOption.DATE]: 'Date',
   [ChapterSortOption.NAME]: 'Name',
 };
 
+export const sortOptionComparators: Record<number, Comparator<MangaChapter>> = {
+  [ChapterSortOption.DATE]: (a, b) => {
+    'worklet';
+    return a.date - b.date;
+  },
+  [ChapterSortOption.NAME]: (a, b) => {
+    'worklet';
+    return a.name.localeCompare(b.name);
+  },
+};
 export enum Table {
   MANGAS = 'mangas',
   CHAPTERS = 'chapters',
