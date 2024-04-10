@@ -7,8 +7,16 @@ import {
   MangaMeta,
   MangaSource,
 } from '@mangayomu/mangascraper';
+import { useDatabase } from '@nozbe/watermelondb/react';
+import React from 'react';
 import type { ISOLangCode } from '@mangayomu/language-codes';
-import { ChapterSortOption, LOCAL_MANGA_ID, Table } from '@/models/schema';
+import {
+  ChapterSortOption,
+  LOCAL_MANGA_ID,
+  Selector,
+  Table,
+  UseRowOptions,
+} from '@/models/schema';
 import { LocalChapter } from '@/models/LocalChapter';
 import { Genre } from '@/models/Genre';
 import { Author } from '@/models/Author';
@@ -181,5 +189,65 @@ export class LocalManga extends Model {
     await database.write(async () => {
       await database.batch(operations);
     });
+  }
+
+  static useRow<T, TDefault = T | undefined>(
+    manga: Pick<Manga, 'link'>,
+    selector: Selector<T, LocalManga>,
+    options?: UseRowOptions<TDefault, LocalManga>,
+  ): TDefault {
+    const database = useDatabase();
+    const [state, setState] = React.useState<T>();
+    const id = React.useRef<string>('');
+    React.useEffect(() => {
+      function initialize() {
+        const observer = database
+          .get(Table.LOCAL_MANGAS)
+          .query(Q.where('link', manga.link))
+          .observe();
+        const callback = (updated: Model[]) => {
+          if (updated.length > 0) {
+            const [localManga] = updated;
+            id.current = localManga.id;
+            setState(selector(localManga as LocalManga));
+            if (options?.onInitialize != null)
+              options.onInitialize(localManga as LocalManga);
+          }
+        };
+        const subscription = observer.subscribe(callback);
+
+        return () => {
+          subscription.unsubscribe();
+        };
+      }
+
+      async function listenToChanges() {
+        const observer = database
+          .get(Table.LOCAL_MANGAS)
+          .findAndObserve(id.current);
+
+        let init = false;
+
+        const callback = (updated: Model) => {
+          setState(selector(updated as LocalManga));
+          if (init && options?.onUpdate != null)
+            options.onUpdate(updated as LocalManga);
+          else {
+            init = true;
+          }
+        };
+        const subscription = observer.subscribe(callback);
+        return () => {
+          subscription.unsubscribe();
+        };
+      }
+      if (state == null) {
+        initialize();
+      } else {
+        listenToChanges();
+      }
+    }, [state != null]);
+
+    return (state as TDefault | undefined) ?? (options?.default as TDefault);
   }
 }
