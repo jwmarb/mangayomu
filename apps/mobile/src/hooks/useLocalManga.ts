@@ -19,7 +19,7 @@ export default function useLocalManga<T, TDefault = T | undefined>(
   options?: UseLocalMangaOptions<TDefault>,
 ): TDefault {
   const database = useDatabase();
-  const [state, setState] = React.useState<T>(options?.default as T);
+  const [state, setState] = React.useState<T>();
   const id = React.useRef<string>('');
   React.useEffect(() => {
     function initialize() {
@@ -70,5 +70,5 @@ export default function useLocalManga<T, TDefault = T | undefined>(
     }
   }, [state != null]);
 
-  return state as unknown as TDefault;
+  return (state as TDefault | undefined) ?? (options?.default as TDefault);
 }
