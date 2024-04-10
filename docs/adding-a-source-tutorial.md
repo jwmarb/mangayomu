@@ -93,10 +93,10 @@ const filterSchema = createSchema(
   - `options` - A `string[]` that contains all the possible fields for this option.
   - `default` - A default value for this option. It should be an element from `options`
 
-- `createSortFilter(
+- `createSortFilter({
   options: string[],
   default: string
-)`
+})`
 
   - `options` - A `string[]` that contains all the names of all the possible sorting options
   - `default` - A default value for this sorting option. It should be an element from `options`
