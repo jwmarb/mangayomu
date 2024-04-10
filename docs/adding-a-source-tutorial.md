@@ -131,3 +131,44 @@ const MYMANGASOURCE_INFO: MangaSourceInfo<undefined> = {
   filterSchema: filterSchema,
 };
 ```
+
+#### Implementing the class
+
+We have defined information about the manga source, but it is only information about the source--not the implementation of the source itself. We can create a class that extends `MangaSource` to create the API of the manga source. Information about the manga source is passed into the constructor, which `MangaSource` will parse for you. Instantiating manga source class is all you have to do.
+
+```ts
+import { MYMANGASOURCE_INFO } from './MyMangaSource.info';
+import MangaSource from '../scraper/scraper';
+
+class MyMangaSource extends MangaSource {
+  // TODO: Implementation
+}
+
+export default new MyMangaSource(MYMANGASOURCE_INFO);
+```
+
+There will be errors because your class needs to implement required methods. Before implementing them, it would be better for your code editor to auto-generate them with the inferred types that your source uses. **The generic parameters of `MangaSource` allow you to infer types that the source uses as well as for those who wish to interact with your API specifically**.
+
+Implement your methods with the intent of being performant and optimized; do not perform expensive or unnecessary computations. For example:
+
+```ts
+// Do NOT do this
+largeListOfThings.reduce(
+  (previous, curr) => [...previous, doSomething(curr)],
+  [],
+);
+
+// Do this instead!
+largeListOfThings.reduce((previous, curr) => {
+  previous.push(curr);
+  return previous;
+}, []);
+
+// Alternatively, this works fine
+const accumulator = [];
+for (let i = 0, n = largeListOfThings.length; i < n; i++) {
+  accumulator.push(largeListOfThings[i]);
+}
+```
+
+Slow methods will cause lag spikes that ruin user experience. If necessary, use optimization techniques such as memoization and dynamic programming to make highly performant methods. It is also important to remember that "**premature optimization is the root of all evil**".
