@@ -136,8 +136,9 @@ export class LocalManga extends Model {
       model.voteCount = data.rating?.voteCount;
       model.ratingValue = data.rating?.value === 'N/A' ? 0 : data.rating?.value;
       model.isRatingValueNA = data.rating?.value === 'N/A';
-      model.sortChaptersBy = 'Chapter number';
-      model.isSortReversed = false;
+      model.sortChaptersBy =
+        model.sortChaptersBy ?? ChapterSortOption.CHAPTER_NUMBER;
+      model.isSortReversed = model.isSortReversed ?? false;
     }
 
     const localMangas = database.get(Table.LOCAL_MANGAS);
