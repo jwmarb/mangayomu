@@ -1,14 +1,14 @@
 import React from 'react';
 import { Manga } from '@mangayomu/mangascraper';
-import useLocalManga from '@/hooks/useLocalManga';
 import { ChapterSortOption } from '@/models/schema';
 import { INITIAL_CHAPTERS_BATCH } from '@/screens/MangaView';
+import { LocalManga } from '@/models/LocalManga';
 
 export default function useSortOptions(manga: Manga) {
   const [numOfChapters, setNumOfChapters] = React.useState<number>(
     INITIAL_CHAPTERS_BATCH,
   );
-  const sortChaptersBy = useLocalManga(
+  const sortChaptersBy = LocalManga.useRow(
     manga,
     (select) => select.sortChaptersBy,
     {
@@ -18,9 +18,13 @@ export default function useSortOptions(manga: Manga) {
       default: ChapterSortOption.CHAPTER_NUMBER,
     },
   );
-  const sortReversed = useLocalManga(manga, (select) => select.isSortReversed, {
-    default: false,
-  });
+  const sortReversed = LocalManga.useRow(
+    manga,
+    (select) => select.isSortReversed,
+    {
+      default: false,
+    },
+  );
 
   // The reason we need to defer these is because sorting is an expensive operation
   // Sorting and reversing large lists will delay the main thread

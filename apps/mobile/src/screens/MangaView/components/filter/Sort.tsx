@@ -1,8 +1,6 @@
 import { useDatabase } from '@nozbe/watermelondb/react';
 import React from 'react';
-import { Q } from '@nozbe/watermelondb';
 import Filter, { OptionChange } from '@/components/composites/Filter';
-import useLocalManga from '@/hooks/useLocalManga';
 import { LocalManga } from '@/models/LocalManga';
 import {
   ChapterSortOption,
@@ -12,33 +10,26 @@ import {
 import useMangaViewManga from '@/screens/MangaView/hooks/useMangaViewManga';
 import useBoolean from '@/hooks/useBoolean';
 
-const sortOptions = Object.values(ChapterSortOption).filter(
-  (x) => typeof x === 'number',
-) as ChapterSortOption[];
+const sortOptions = [
+  ...new Set(
+    Object.values(ChapterSortOption).filter((x) => typeof x === 'number'),
+  ),
+] as ChapterSortOption[];
 
 export default function Sort() {
   const manga = useMangaViewManga();
   const database = useDatabase();
-  const id = useLocalManga(manga, (localManga) => localManga.id);
+  const id = LocalManga.useRow(manga, (localManga) => localManga.id, {
+    onInitialize(localManga) {
+      setSortOption((prev) => localManga.sortChaptersBy ?? prev);
+      toggleReversed((prev) => localManga.isSortReversed ?? prev);
+    },
+  });
 
   const [sortOption, setSortOption] = React.useState<ChapterSortOption>(
     ChapterSortOption.CHAPTER_NUMBER,
   );
   const [reversed, toggleReversed] = useBoolean();
-
-  React.useEffect(() => {
-    async function initialize() {
-      const results = await database
-        .get(Table.LOCAL_MANGAS)
-        .query(Q.where('link', manga.link));
-      if (results.length > 0) {
-        const [localManga] = results as LocalManga[];
-        setSortOption((prev) => localManga.sortChaptersBy ?? prev);
-        toggleReversed((prev) => localManga.isSortReversed ?? prev);
-      }
-    }
-    initialize();
-  }, []);
 
   React.useEffect(() => {
     async function updateDb() {
