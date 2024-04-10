@@ -26,15 +26,20 @@ const themedProps = createThemedProps((theme) => ({
 export type ActionProps = {
   title: string;
   icon: React.ReactElement<IconProps>;
+  onPress?: () => void;
 };
 
 export default function Action(props: ActionProps) {
-  const { title, icon } = props;
+  const { title, icon, onPress } = props;
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const { android_ripple } = useThemedProps(themedProps, contrast);
   return (
-    <Pressable style={style.pressable} android_ripple={android_ripple}>
+    <Pressable
+      style={style.pressable}
+      android_ripple={android_ripple}
+      onPress={onPress}
+    >
       {React.cloneElement(icon, { color: 'primary' })}
       <Text variant="button">{title}</Text>
     </Pressable>
