@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders properly 1`] = `
+<View
+  style={
+    {
+      "borderColor": "rgba(0, 0, 0, 0.12)",
+      "borderRadius": 10.666666666666666,
+      "borderWidth": 1.5,
+      "flexDirection": "row",
+      "overflow": "hidden",
+    }
+  }
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      [
+        {
+          "flex": 1,
+        },
+        [
+          {
+            "alignItems": "center",
+            "flex": 0,
+            "flexDirection": "row",
+            "gap": 4,
+            "paddingHorizontal": 12,
+            "paddingVertical": 8,
+          },
+          undefined,
+        ],
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "fontSize": 13,
+            "fontWeight": "normal",
+            "letterSpacing": 0.15,
+          },
+          {
+            "color": "rgba(0, 0, 0, 0.87)",
+          },
+          {
+            "textAlign": "left",
+          },
+          [],
+          [],
+          undefined,
+        ]
+      }
+    >
+      Hello World
+    </Text>
+  </View>
+</View>
+`;
