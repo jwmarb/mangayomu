@@ -1,15 +1,11 @@
 import React from 'react';
 import { Linking, View } from 'react-native';
-import { useDatabase } from '@nozbe/watermelondb/react';
-import { Q } from '@nozbe/watermelondb';
 import Icon from '@/components/primitives/Icon';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
 import Action from '@/screens/MangaView/components/primitives/Action';
 import { styles } from '@/screens/MangaView/styles';
 import useMangaViewManga from '@/screens/MangaView/hooks/useMangaViewManga';
-import { Manga } from '@/models/Manga';
-import { Table } from '@/models/schema';
 import useIsInLibrary from '@/screens/MangaView/hooks/useIsInLibrary';
 
 const READ_ICON = <Icon type="icon" name="book-play-outline" />;

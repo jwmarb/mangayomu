@@ -86,9 +86,10 @@ function Sort(props: SortProps) {
     selected ? style.selected : style.notSelected,
     animatedIconIndicatorStyle,
   ];
+  const pressableStyle = [style.item, styleProp];
 
   return (
-    <Pressable onPress={handleOnPress} style={style.item}>
+    <Pressable onPress={handleOnPress} style={pressableStyle}>
       <AnimatedIcon
         color={color}
         style={animatedIconStyle}

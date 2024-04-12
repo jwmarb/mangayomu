@@ -1,7 +1,6 @@
 import { Comparator } from '@mangayomu/algorithms';
 import { MangaChapter } from '@mangayomu/mangascraper';
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
-import type { LocalManga } from '@/models/LocalManga';
 
 export const LOCAL_CHAPTER_ID = 'local_chapter_id';
 export const LOCAL_MANGA_ID = 'local_manga_id';

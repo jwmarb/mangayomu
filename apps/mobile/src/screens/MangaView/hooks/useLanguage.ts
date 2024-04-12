@@ -7,7 +7,7 @@ import { createStyles } from '@/utils/theme';
 const FLAG_WIDTH = 20;
 const FLAG_HEIGHT = 15;
 
-const styles = createStyles((theme) => ({
+const styles = createStyles(() => ({
   flag: {
     width: FLAG_WIDTH,
     height: FLAG_HEIGHT,

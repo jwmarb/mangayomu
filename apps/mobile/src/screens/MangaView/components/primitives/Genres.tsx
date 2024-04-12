@@ -1,5 +1,4 @@
 import { View } from 'react-native';
-import Text from '@/components/primitives/Text';
 import useMangaViewFetchStatus from '@/screens/MangaView/hooks/useMangaViewFetchStatus';
 import { createStyles } from '@/utils/theme';
 import useStyles from '@/hooks/useStyles';

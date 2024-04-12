@@ -24,7 +24,6 @@ import {
   InfiniteMangaError,
 } from '@/screens/SourceBrowser/SourceBrowser';
 import { HomeStackProps } from '@/screens/Home/Home';
-import { RootStack } from '@/screens/navigator';
 
 const styles = createStyles((theme) => ({
   divider: {
@@ -56,7 +55,7 @@ export function useMangaQuery() {
 }
 
 export default function Browse(props: HomeStackProps<'Browse'>) {
-  const { navigation, route } = props;
+  const { navigation } = props;
   const { input, setInput, isDirty } = useUserInput();
   const shouldFocusInput = React.useRef<boolean>(true);
   const pinnedSources = useExploreStore((state) => state.pinnedSources);
