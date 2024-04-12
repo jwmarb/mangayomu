@@ -20,7 +20,7 @@ import {
 import ListHeaderComponent from '@/screens/MangaView/details';
 import Chapter from '@/screens/MangaView/components/primitives/Chapter';
 import headerLeft from '@/screens/MangaView/components/header/headerLeft';
-import headerRight from '@/screens/MangaView/components/header/headerRight';
+import HeaderRight from '@/screens/MangaView/components/header/headerRight';
 import useItemLayout from '@/screens/MangaView/hooks/useItemLayout';
 import BottomSheet from '@/components/composites/BottomSheet';
 import { isChapter } from '@/utils/helpers';
@@ -52,10 +52,10 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
       showBackButton: false,
       headerRightStyle: style.headerRight,
       headerLeft,
-      headerRight,
+      headerRight: (props) => <HeaderRight {...props} manga={manga} />,
       loading: isFetching,
     },
-    [isFetching],
+    [isFetching, manga],
   );
 
   const openFilterMenu = React.useCallback(() => {
