@@ -55,22 +55,35 @@ export class Manga extends Model {
 
     if (found.length === 0) {
       return await database.write<Manga>(() => {
-        return mangas.create((_model) => {
-          const model = _model as Manga;
-          model.title = manga.title;
-          model.link = manga.link;
-          model.dateAddedInLibrary = null;
-          model.isInLibrary = 0;
-          model.selectedLanguage = manga.language;
-          model.readingDirection = ReadingDirection.DEFAULT;
-          model.imageScaling = ImageScaling.DEFAULT;
-          model.zoomStartPosition = ZoomStartPosition.DEFAULT;
-          model.readingOrientation = ReadingOrientation.DEFAULT;
-          model.newChaptersCount = 0;
-        });
+        return this.create(manga, database);
       });
     }
     return found[0];
+  }
+
+  /**
+   * Creates a manga in the database. This must be wrapped with `database.write()`
+   * @param manga A manga object from a manga source
+   * @param database WatermelonDB database
+   * @returns
+   */
+  static create(
+    manga: Pick<MManga, 'title' | 'link' | 'language'>,
+    database: Database,
+  ) {
+    return database.get<Manga>(Table.MANGAS).create((_model) => {
+      const model = _model as Manga;
+      model.title = manga.title;
+      model.link = manga.link;
+      model.dateAddedInLibrary = null;
+      model.isInLibrary = 0;
+      model.selectedLanguage = manga.language;
+      model.readingDirection = ReadingDirection.DEFAULT;
+      model.imageScaling = ImageScaling.DEFAULT;
+      model.zoomStartPosition = ZoomStartPosition.DEFAULT;
+      model.readingOrientation = ReadingOrientation.DEFAULT;
+      model.newChaptersCount = 0;
+    });
   }
 
   static useRow<T>(
