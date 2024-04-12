@@ -7,3 +7,4 @@ export const COVER_WIDTH = 120;
 export const COVER_HEIGHT = 180;
 
 export const COVER_WIDTH_HEIGHT_RATIO = COVER_WIDTH / COVER_HEIGHT;
+export const MANGA_SOURCE_BADGE_SIZE = 20;

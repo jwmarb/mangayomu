@@ -25,6 +25,8 @@ import {
 } from '@/components/composites/Manga/styles';
 import { MANGA_HEIGHT, MANGA_WIDTH } from '@/components/composites/Manga';
 import Image from '@/components/primitives/Image';
+import Flag from '@/components/primitives/Flag';
+import useMangaSource from '@/hooks/useMangaSource';
 
 type MangaProps = {
   manga: unknown;
@@ -34,6 +36,7 @@ function Manga(props: MangaProps) {
   const navigation = useNavigation();
   const manga = useManga(props.manga);
   const contrast = useContrast();
+  const mangaSource = useMangaSource({ manga });
   const source = manga.imageCover
     ? { uri: manga.imageCover }
     : require('@/assets/no-image-available.png');
@@ -41,6 +44,9 @@ function Manga(props: MangaProps) {
   function handleOnPress() {
     navigation.navigate('MangaView', { manga });
   }
+
+  const mangaSourceIcon = { uri: mangaSource.ICON_URI };
+
   return (
     <View style={style.view}>
       <Pressable style={style.container} onPress={handleOnPress}>
@@ -48,6 +54,10 @@ function Manga(props: MangaProps) {
         <Text variant="body2" numberOfLines={2}>
           {manga.title}
         </Text>
+        <Image style={style.source} source={mangaSourceIcon} />
+        {manga.language != null && (
+          <Flag style={style.flag} language={manga.language} />
+        )}
       </Pressable>
     </View>
   );

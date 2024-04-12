@@ -3,11 +3,26 @@ import {
   COVER_HEIGHT,
   COVER_WIDTH,
   MANGA_HEIGHT,
+  MANGA_SOURCE_BADGE_SIZE,
   MANGA_WIDTH,
 } from '@/components/composites/Manga';
 import { createStyles } from '@/utils/theme';
 
 export const styles = createStyles((theme) => ({
+  flag: {
+    position: 'absolute',
+    top: theme.style.size.xl * 2,
+    right: theme.style.size.l,
+  },
+  source: {
+    width: MANGA_SOURCE_BADGE_SIZE,
+    height: MANGA_SOURCE_BADGE_SIZE,
+    position: 'absolute',
+    top: theme.style.size.l,
+    right: theme.style.size.l,
+    backgroundColor: theme.palette.common.white,
+    borderRadius: theme.style.borderRadius / 8,
+  },
   view: {
     alignItems: 'center',
     justifyContent: 'center',
