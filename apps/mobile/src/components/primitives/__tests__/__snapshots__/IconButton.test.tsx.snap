@@ -66,9 +66,12 @@ exports[`renders correctly 1`] = `
           {
             "color": "rgba(0, 0, 0, 0.87)",
           },
-          {
-            "textAlign": "center",
-          },
+          [
+            undefined,
+            {
+              "textAlign": "center",
+            },
+          ],
         ]
       }
       type="icon"

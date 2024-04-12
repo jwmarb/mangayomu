@@ -101,6 +101,10 @@ const exists = jest.fn((path: string) => {
 
 const ls = jest.fn((path: string) => fsPromises.readdir(path));
 
+const cp = jest.fn((srcFile: string, dest: string) =>
+  fsPromises.cp(srcFile, dest),
+);
+
 const mkdir = jest.fn((path: string) => fsPromises.mkdir(path));
 
 const mv = jest.fn(async (path: string, dest: string) => {
@@ -139,6 +143,7 @@ export default {
     writeFile: fsPromises.writeFile,
     readFile: fsPromises.readFile,
     mv,
+    cp,
     stat,
     dirs,
     ls,

@@ -83,7 +83,7 @@ describe('downloads images', () => {
 
     const a = await downloadImage(LARGE_SAMPLE_IMAGE);
     expect(downloadSync.delete).toHaveBeenCalledWith(largeHashedKey);
-    expect(blobutil.fs.mv).toHaveBeenCalledWith(
+    expect(blobutil.fs.cp).toHaveBeenCalledWith(
       joinPath(DOWNLOAD_DIR, largeHashedKey),
       joinPath(IMAGE_CACHE_DIR, largeHashedKey),
     );
@@ -148,6 +148,7 @@ test('downloadSync remove download after failing to move', async () => {
       new FailedToMoveImageException(
         joinPath(DOWNLOAD_DIR, largeHashedKey),
         joinPath(IMAGE_CACHE_DIR, largeHashedKey),
+        e,
       ),
     );
 
