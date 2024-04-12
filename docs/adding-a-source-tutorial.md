@@ -130,6 +130,8 @@ const MYMANGASOURCE_INFO: MangaSourceInfo<undefined> = {
   // ...
   filterSchema: filterSchema,
 };
+
+export type MyMangaSourceFilter = typeof filterSchema.schema; // We will need this later!
 ```
 
 #### Implementing the class
@@ -137,7 +139,7 @@ const MYMANGASOURCE_INFO: MangaSourceInfo<undefined> = {
 We have defined information about the manga source, but it is only information about the source--not the implementation of the source itself. We can create a class that extends `MangaSource` to create the API of the manga source. Information about the manga source is passed into the constructor, which `MangaSource` will parse for you. Instantiating manga source class is all you have to do.
 
 ```ts
-import { MYMANGASOURCE_INFO } from './MyMangaSource.info';
+import { MYMANGASOURCE_INFO, MyMangaSourceFilter } from './MyMangaSource.info';
 import MangaSource from '../scraper/scraper';
 
 class MyMangaSource extends MangaSource {
@@ -147,7 +149,70 @@ class MyMangaSource extends MangaSource {
 export default new MyMangaSource(MYMANGASOURCE_INFO);
 ```
 
-There will be errors because your class needs to implement required methods. Before implementing them, it would be better for your code editor to auto-generate them with the inferred types that your source uses. **The generic parameters of `MangaSource` allow you to infer types that the source uses as well as for those who wish to interact with your API specifically**.
+There will be errors because your class needs to implement required methods. Before implementing them, it would be better for your code editor to auto-generate them with the inferred types that your source uses. **The generic parameters of `MangaSource` allow you to infer types that the source uses as well as for those who wish to interact with your API specifically**. For the sake of this tutorial, we will assume that the source returns the following types from its API:
+
+```ts
+import type { ISOLangCode } from '@mangayomu/language-codes';
+
+type TManga = {
+  name: string;
+  uriOriginal?: string;
+  href: string;
+  language: ISOLangCode;
+};
+
+type TChapter = { name: string; href: string };
+
+type TMangaMeta = TManga & { description: string; chapters: TChapter[] };
+```
+
+- `TManga` - This should always have a link associated with it
+
+- `TChapter` - This should always have a link associated with it AND must be present in `TMangaMeta` as a list.
+
+- `TMangaMeta` - This represents additional information about the manga, similar to how navigating to a manga page in a source gives more information about it.
+
+Now use your types like so:
+
+```ts
+import { MYMANGASOURCE_INFO, MyMangaSourceFilter } from './MyMangaSource.info';
+import MangaSource from '../scraper/scraper';
+import type { ISOLangCode } from '@mangayomu/language-codes';
+
+type TManga = {
+  name: string;
+  uriOriginal?: string;
+  href: string;
+  language: ISOLangCode;
+};
+
+type TChapter = { name: string; href: string };
+
+type TMangaMeta = TManga & { description: string; chapters: TChapter[] };
+
+class MyMangaSource extends MangaSource<
+  TManga,
+  TMangaMeta,
+  TChapter,
+  MyMangaSourceFilter
+> {
+  // TODO: Implementation
+}
+
+export default new MyMangaSource(MYMANGASOURCE_INFO);
+```
+
+> **Note**: the fourth parameter accepts a filter schema object, which we have created in `MyMangaSource.constants.ts`. This is important to access filter fields in your `search()` method.
+
+Regarding the `search()` method, you may ask: _How do I access filters provided by a user?_. Accessing filters is pretty straightforward. Each property is the same key as defined in your filter schema, however, there will be additional properties that the user can input. The following provides which properties to access that are user inputs:
+
+- **Inclusive/exclusive** - `include` and `exclude`
+
+- **Sort** - `value` and `reversed`
+
+- **Option** - `value`
+
+- **Description** - Users cannot change the state of this filter type because it is simply text that may show additional information.
 
 Implement your methods with the intent of being performant and optimized; do not perform expensive or unnecessary computations. For example:
 
@@ -172,3 +237,51 @@ for (let i = 0, n = largeListOfThings.length; i < n; i++) {
 ```
 
 Slow methods will cause lag spikes that ruin user experience. If necessary, use optimization techniques such as memoization and dynamic programming to make highly performant methods. It is also important to remember that "**premature optimization is the root of all evil**".
+
+#### Testing your source
+
+It is highly recommended to practice test-driven development to ensure your source works as intended. In the same directory as your source, create a file with the name of your source and the `.test.ts` extension. For example, `MyMangaSource.test.ts`. In this test file, you will create test cases using [jest](https://jestjs.io/). If you do not know the shape of your objects received from the source, it is mandatory to create tests checking for the structural integrity of the each object. Each test should account for something in your source class. As for reference, a test file may look like this:
+
+```ts
+import MyMangaSource from './MyMangaSource';
+import type { TManga } from './MyMangaSource';
+import { t, union, list } from '@mangayomu/jest-assertions';
+import { PromiseCancelledException } from '../../exceptions';
+
+// type TManga = { name: string; imageCoverUri?: string | null; genres: string[] }
+
+test('fetches latest updates properly', async () => {
+  const mangas: unknown[] = await MyMangaSource.latest();
+  expect(mangas.length).toBeGreaterThan(0);
+  expect(mangas).toMatchType<TManga>(
+    list([
+      {
+        name: t.string,
+        imageCoverUri: union([t.string, t.null, t.undefined]),
+        genres: list([t.string]),
+      },
+    ]),
+  );
+});
+
+test('cancels fetch request properly', () => {
+  try {
+    const controller = new AbortController();
+    const mangas = MyMangaSource.latest(controller.signal); // do not block thread to wait for this to complete
+    controller.abort();
+    fail('operation did not cancel');
+  } catch (e) {
+    expect(e instanceof PromiseCancelledException).toBeTruthy();
+  }
+});
+```
+
+Check out [MangaSee.test.ts](/packages/mangascraper/src/MangaSee/MangaSee.test.ts) and [MangaPark_v5.test.ts](/packages/mangascraper/src/MangaPark_v5/MangaPark_v5.test.ts) for a more detailed reference on how tests may look like.
+
+**It is highly recommended that your code has at least 98% coverage per file**, which is everything in the directory of your manga source.
+
+There is additional functionality for jest to help assert object structure integrity. `toMatchType()` is a jest assertion method to assert whether a value input matches your type definition.
+
+#### Trying out your source in an application
+
+If your manga source passes all its tests, you can try out your manga source through the [mobile application](/apps/mobile/) or through the [web application](/apps/web). Usually, this is not required since test-driven development ensures the functionality to work
