@@ -3,8 +3,6 @@ import fs from 'fs/promises';
 import * as ImageUtil from '@/utils/image';
 import {
   DOWNLOAD_DIR,
-  FailedToDownloadImageException,
-  FailedToMoveImageException,
   IMAGE_CACHE_DIR,
   downloadImage,
   downloadSync,
@@ -12,6 +10,8 @@ import {
   initialize,
 } from '@/utils/image';
 import { joinPath } from '@/utils/helpers';
+import { FailedToDownloadImageException } from '@/exceptions/FailedToDownloadImageException';
+import { FailedToMoveImageException } from '@/exceptions/FailedToMoveImageException';
 
 const LARGE_SAMPLE_IMAGE =
   'https://images.unsplash.com/photo-1546180147-af9074ff24aa';
@@ -83,7 +83,7 @@ describe('downloads images', () => {
 
     const a = await downloadImage(LARGE_SAMPLE_IMAGE);
     expect(downloadSync.delete).toHaveBeenCalledWith(largeHashedKey);
-    expect(blobutil.fs.mv).toHaveBeenCalledWith(
+    expect(blobutil.fs.cp).toHaveBeenCalledWith(
       joinPath(DOWNLOAD_DIR, largeHashedKey),
       joinPath(IMAGE_CACHE_DIR, largeHashedKey),
     );
@@ -148,6 +148,7 @@ test('downloadSync remove download after failing to move', async () => {
       new FailedToMoveImageException(
         joinPath(DOWNLOAD_DIR, largeHashedKey),
         joinPath(IMAGE_CACHE_DIR, largeHashedKey),
+        e,
       ),
     );
 

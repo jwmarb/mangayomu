@@ -1,6 +1,6 @@
-import { Manga, MangaSource } from '@mangayomu/mangascraper';
+import { MangaSource } from '@mangayomu/mangascraper';
 import { MMKV } from 'react-native-mmkv';
-import { PersistOptions, createJSONStorage, persist } from 'zustand/middleware';
+import { PersistOptions, createJSONStorage } from 'zustand/middleware';
 
 export const mmkv = new MMKV();
 

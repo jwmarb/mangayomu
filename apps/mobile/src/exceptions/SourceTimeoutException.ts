@@ -2,6 +2,7 @@ import { MangaSource } from '@mangayomu/mangascraper';
 import { getErrorMessage } from '@/utils/helpers';
 
 type MangaSourceMethods = keyof {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [K in keyof MangaSource as MangaSource[K] extends (...args: any[]) => any
     ? K
     : never]: null;

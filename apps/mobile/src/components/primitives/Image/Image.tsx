@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Image as NativeImage, View } from 'react-native';
+import { Image as NativeImage } from 'react-native';
 import { ImageProps as NativeImageProps } from 'react-native';
 import React from 'react';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';

@@ -1,17 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders correctly 1`] = `
+exports[`renders properly 1`] = `
 <View
   style={
-    [
-      {
-        "borderRadius": 10000,
-        "height": 56,
-        "overflow": "hidden",
-        "width": 56,
-      },
-      undefined,
-    ]
+    {
+      "borderColor": "rgba(0, 0, 0, 0.12)",
+      "borderRadius": 10.666666666666666,
+      "borderWidth": 1.5,
+      "flexDirection": "row",
+      "overflow": "hidden",
+    }
   }
 >
   <View
@@ -49,34 +47,41 @@ exports[`renders correctly 1`] = `
         {
           "flex": 1,
         },
-        {
-          "alignItems": "center",
-          "justifyContent": "center",
-        },
+        [
+          {
+            "alignItems": "center",
+            "flex": 0,
+            "flexDirection": "row",
+            "gap": 4,
+            "paddingHorizontal": 12,
+            "paddingVertical": 8,
+          },
+          undefined,
+        ],
       ]
     }
   >
     <Text
-      name="ab-testing"
       style={
         [
           {
-            "fontSize": 24,
+            "fontSize": 13,
+            "fontWeight": "normal",
+            "letterSpacing": 0.15,
           },
           {
             "color": "rgba(0, 0, 0, 0.87)",
           },
-          [
-            undefined,
-            {
-              "textAlign": "center",
-            },
-          ],
+          {
+            "textAlign": "left",
+          },
+          [],
+          [],
+          undefined,
         ]
       }
-      type="icon"
     >
-      icon
+      Hello World
     </Text>
   </View>
 </View>

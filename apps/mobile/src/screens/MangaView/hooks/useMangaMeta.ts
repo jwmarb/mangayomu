@@ -1,7 +1,6 @@
 import { useDatabase } from '@nozbe/watermelondb/react';
 import { useQuery } from '@tanstack/react-query';
 import { Q } from '@nozbe/watermelondb';
-import React from 'react';
 import useManga from '@/hooks/useManga';
 import useMangaSource from '@/hooks/useMangaSource';
 import { LocalManga } from '@/models/LocalManga';

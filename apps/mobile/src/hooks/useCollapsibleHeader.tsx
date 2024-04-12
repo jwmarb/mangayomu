@@ -6,13 +6,11 @@ import {
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleProp, ViewStyle } from 'react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/screens/navigator';
 import Header from '@/components/composites/Header';
 import useTheme from '@/hooks/useTheme';
-import { HEADER_HEIGHT } from '@/components/composites/types';
 import { AnimatedHeaderComponentProps } from '@/components/composites/Header/Header';
 import useCollapsibleTranslationYLimit from '@/hooks/useCollapsibleTranslationYLimit';
 import useCollapsibleBackgroundInterpolation from '@/hooks/useCollapsibleBackgroundInterpolation';

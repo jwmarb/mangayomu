@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react-native';
 import Icon, { composedSizes } from '@/components/primitives/Icon';
+import { lightTheme } from '@/providers/theme';
 
 test('renders properly', () => {
   let tree = render(<Icon type="icon" name="ab-testing" />);
@@ -34,4 +35,18 @@ test('styles properly', () => {
   expect(tree.getByTestId('small')).toHaveStyle(composedSizes.image.small);
   expect(tree.getByTestId('medium')).toHaveStyle(composedSizes.image.medium);
   expect(tree.getByTestId('large')).toHaveStyle(composedSizes.image.large);
+});
+
+test('gets color type properly', () => {
+  const tree = render(
+    <Icon
+      testID="icon"
+      color="primary"
+      type="icon"
+      name="ab-testing"
+      colorType="light"
+    />,
+  );
+  const icon = tree.getByTestId('icon');
+  expect(icon).toHaveStyle({ color: lightTheme.palette.primary.light });
 });

@@ -1,6 +1,8 @@
 import blobUtil from 'react-native-blob-util';
 import { ImageSourcePropType } from 'react-native';
 import { joinPath } from '@/utils/helpers';
+import { FailedToMoveImageException } from '@/exceptions/FailedToMoveImageException';
+import { FailedToDownloadImageException } from '@/exceptions/FailedToDownloadImageException';
 
 // Uncomment for testing
 // import * as self from '@/utils/image'; // jest is bad at mocking functions dependent on private functions
@@ -17,20 +19,6 @@ export const IMAGE_CACHE_DIR = joinPath(blobUtil.fs.dirs.CacheDir, 'images');
 
 // Holds all Promises so that there are no duplicate Promises resolving for the same thing
 export const downloadSync = new Map<string, Promise<ImageSourcePropType>>();
-
-export class FailedToDownloadImageException extends Error {
-  constructor(url: string, path: string, statusCode: number) {
-    super(
-      `Failed to download "${url}" as "${path}". The response sent a status code ${statusCode}`,
-    );
-  }
-}
-
-export class FailedToMoveImageException extends Error {
-  constructor(path: string, dest: string) {
-    super(`Failed to move "${path}" to "${dest}"`);
-  }
-}
 
 // stores all mapping of hashes to prevent expensive computations
 const hashMemo = new Map<string, string>();
@@ -78,7 +66,7 @@ export const _download = async (
         return { uri: `file://${fileCachePath}` };
       } catch (e) {
         // console.error(e);
-        throw new FailedToMoveImageException(path, fileCachePath);
+        throw new FailedToMoveImageException(path, fileCachePath, e);
       }
     }
     default:
