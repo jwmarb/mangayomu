@@ -1,6 +1,6 @@
 import blobUtil from 'react-native-blob-util';
 import { ImageSourcePropType } from 'react-native';
-import { joinPath } from '@/utils/helpers';
+import { getErrorMessage, joinPath } from '@/utils/helpers';
 
 // Uncomment for testing
 // import * as self from '@/utils/image'; // jest is bad at mocking functions dependent on private functions
@@ -27,8 +27,12 @@ export class FailedToDownloadImageException extends Error {
 }
 
 export class FailedToMoveImageException extends Error {
-  constructor(path: string, dest: string) {
-    super(`Failed to move "${path}" to "${dest}"`);
+  constructor(path: string, dest: string, e: unknown) {
+    super(
+      `Failed to move "${path}" to "${dest}". Received error:\n${getErrorMessage(
+        e,
+      )}`,
+    );
   }
 }
 
@@ -78,7 +82,7 @@ export const _download = async (
         return { uri: `file://${fileCachePath}` };
       } catch (e) {
         // console.error(e);
-        throw new FailedToMoveImageException(path, fileCachePath);
+        throw new FailedToMoveImageException(path, fileCachePath, e);
       }
     }
     default:
