@@ -366,7 +366,6 @@ class MangaSee extends MangaSource<
   }
 
   public toMangaMeta(tmangameta: TMangaMeta) {
-    console.log(tmangameta.scanStatus, tmangameta.publishStatus);
     return {
       title: tmangameta.mainEntity.name,
       altTitles: tmangameta.mainEntity.alternateName,
