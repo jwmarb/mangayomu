@@ -32,6 +32,7 @@ declare module '@mangayomu/theme' {
         hiatus: string;
         discontinued: string;
         completed: string;
+        cancelled: string;
       };
       success: {
         light: string;
@@ -86,16 +87,17 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
     mode: 'dark' as const,
     helpers: {
       elevation(n: number) {
-        return (theme: Theme) => ({
-          shadowColor: theme.palette.common.black,
-          shadowOffset: {
-            width: 0,
-            height: n >> 1,
-          },
-          shadowOpacity: 0.16 + n * 0.2,
-          shadowRadius: n / 1.529,
-          elevation: n,
-        });
+        return (theme: Theme) =>
+          ({
+            shadowColor: theme.palette.common.black,
+            shadowOffset: {
+              width: 0,
+              height: n >> 1,
+            },
+            shadowOpacity: 0.16 + n * 0.2,
+            shadowRadius: n / 1.529,
+            elevation: n,
+          } as ViewStyle);
       },
     },
     palette: {
@@ -153,6 +155,7 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
         ongoing: color('#73d13d', '#b7eb8f'),
         hiatus: color('#ffc53d', '#ffe58f'),
         discontinued: color('#f5222d', '#ff7875'),
+        cancelled: color('#f5222d', '#ff7875'),
         completed: color('#434343', '#8c8c8c'),
       },
     },
