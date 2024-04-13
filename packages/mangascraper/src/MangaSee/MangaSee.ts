@@ -17,7 +17,11 @@ import {
   MangaChapter,
   MangaStatus,
 } from '../scraper/scraper.interfaces';
-import { MANGASEE_INFO, MangaSeeFilter } from './MangaSee.constants';
+import {
+  MANGASEE_INFO,
+  MangaSeeFilter,
+  STATUS_MAPPINGS,
+} from './MangaSee.constants';
 import { AscendingStringComparator, add, binary } from '@mangayomu/algorithms';
 import { CacheManager } from '../utils/cachemanager';
 
@@ -362,6 +366,7 @@ class MangaSee extends MangaSource<
   }
 
   public toMangaMeta(tmangameta: TMangaMeta) {
+    console.log(tmangameta.scanStatus, tmangameta.publishStatus);
     return {
       title: tmangameta.mainEntity.name,
       altTitles: tmangameta.mainEntity.alternateName,
@@ -378,12 +383,16 @@ class MangaSee extends MangaSource<
       imageCover: tmangameta.imageCover,
       yearReleased: tmangameta.yearReleased,
       status: {
-        scan: tmangameta.scanStatus
-          .toLowerCase()
-          .substring(0, tmangameta.scanStatus.indexOf(' ')) as MangaStatus,
-        publish: tmangameta.publishStatus
-          .toLowerCase()
-          .substring(0, tmangameta.publishStatus.indexOf(' ')) as MangaStatus,
+        scan: STATUS_MAPPINGS[
+          tmangameta.scanStatus.substring(0, tmangameta.scanStatus.indexOf(' '))
+        ],
+        publish:
+          STATUS_MAPPINGS[
+            tmangameta.publishStatus.substring(
+              0,
+              tmangameta.publishStatus.indexOf(' '),
+            )
+          ],
       },
     };
   }

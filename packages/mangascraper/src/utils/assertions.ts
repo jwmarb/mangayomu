@@ -64,8 +64,22 @@ export const Assertions = {
     status: union([
       t.undefined,
       {
-        scan: union([t.null, t.undefined, t.string]),
-        publish: t.string,
+        scan: union([
+          t.null,
+          t.undefined,
+          'cancelled',
+          'completed',
+          'ongoing',
+          'hiatus',
+          'discontinued',
+        ]),
+        publish: union([
+          'cancelled',
+          'completed',
+          'ongoing',
+          'hiatus',
+          'discontinued',
+        ]),
       },
     ]),
     type: union([t.undefined, t.string]),
