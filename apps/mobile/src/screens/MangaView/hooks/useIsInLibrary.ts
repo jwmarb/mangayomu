@@ -8,38 +8,33 @@ import { Manga } from '@/models/Manga';
 export default function useIsInLibrary(manga: MManga) {
   const database = useDatabase();
   const [isInLibrary, setIsInLibrary] = React.useState<boolean | null>(null);
-  const row = React.useRef<Manga>();
-
-  React.useEffect(() => {
-    async function initialize() {
-      const mangas = database.get<Manga>(Table.MANGAS);
-      const query = mangas.query(Q.where('link', manga.link));
-      const results = await query;
-      if (results.length > 0) {
-        const [found] = results;
-        row.current = found;
-        setIsInLibrary(!!found.isInLibrary);
-      }
-    }
-    initialize();
-  }, []);
+  const [row, setRow] = React.useState<Manga>();
 
   React.useEffect(() => {
     async function uploadChanges() {
       if (isInLibrary == null) return;
-      if (row.current == null) {
-        row.current = await Manga.toManga(manga, database);
+      if (row == null) {
+        setRow(
+          await Manga.toManga(manga, database, {
+            isInLibrary: isInLibrary ? 1 : 0,
+          }),
+        );
+        return;
       }
       database.write(async () => {
-        await row.current?.update((model) => {
+        await row?.update((model) => {
           model.isInLibrary = isInLibrary ? 1 : 0;
         });
       });
     }
 
+    uploadChanges();
+  }, [isInLibrary]);
+
+  React.useEffect(() => {
     function listenForChanges() {
-      if (row.current != null) {
-        const observer = row.current.observe();
+      if (row != null) {
+        const observer = row.observe();
         const subscription = observer.subscribe((change) => {
           setIsInLibrary(!!change.isInLibrary);
         });
@@ -47,12 +42,23 @@ export default function useIsInLibrary(manga: MManga) {
         return () => {
           subscription.unsubscribe();
         };
+      } else {
+        const mangas = database.get<Manga>(Table.MANGAS);
+        const query = mangas.query(Q.where('link', manga.link));
+        const observer = query.observeWithColumns(['isInLibrary']);
+        const subscription = observer.subscribe((results) => {
+          if (results.length > 0) {
+            const [found] = results;
+            setRow(found);
+          }
+        });
+        return () => {
+          subscription.unsubscribe();
+        };
       }
     }
-
-    uploadChanges();
     listenForChanges();
-  }, [isInLibrary]);
+  }, [row != null]);
 
   return [isInLibrary, setIsInLibrary] as const;
 }
