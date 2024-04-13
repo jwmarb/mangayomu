@@ -49,13 +49,17 @@ export class Manga extends Model {
    * @param database WatermelonDB database
    * @returns
    */
-  static async toManga(manga: MManga, database: Database) {
+  static async toManga(
+    manga: MManga,
+    database: Database,
+    defaults?: Partial<Manga>,
+  ) {
     const mangas = database.get(Table.MANGAS) as Collection<Manga>;
     const found = await mangas.query(Q.where('link', manga.link));
 
     if (found.length === 0) {
       return await database.write<Manga>(() => {
-        return this.create(manga, database);
+        return this.create(manga, database, defaults);
       });
     }
     return found[0];
@@ -70,19 +74,23 @@ export class Manga extends Model {
   static create(
     manga: Pick<MManga, 'title' | 'link' | 'language'>,
     database: Database,
+    defaults?: Partial<Manga>,
   ) {
     return database.get<Manga>(Table.MANGAS).create((_model) => {
       const model = _model as Manga;
       model.title = manga.title;
       model.link = manga.link;
-      model.dateAddedInLibrary = null;
-      model.isInLibrary = 0;
+      model.dateAddedInLibrary = defaults?.dateAddedInLibrary ?? null;
+      model.isInLibrary = defaults?.isInLibrary ?? 0;
       model.selectedLanguage = manga.language;
-      model.readingDirection = ReadingDirection.DEFAULT;
-      model.imageScaling = ImageScaling.DEFAULT;
-      model.zoomStartPosition = ZoomStartPosition.DEFAULT;
-      model.readingOrientation = ReadingOrientation.DEFAULT;
-      model.newChaptersCount = 0;
+      model.readingDirection =
+        defaults?.readingDirection ?? ReadingDirection.DEFAULT;
+      model.imageScaling = defaults?.imageScaling ?? ImageScaling.DEFAULT;
+      model.zoomStartPosition =
+        defaults?.zoomStartPosition ?? ZoomStartPosition.DEFAULT;
+      model.readingOrientation =
+        defaults?.readingOrientation ?? ReadingOrientation.DEFAULT;
+      model.newChaptersCount = defaults?.newChaptersCount ?? 0;
     });
   }
 
