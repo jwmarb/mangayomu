@@ -9,19 +9,23 @@ import {
 import { createStyles } from '@/utils/theme';
 
 export const styles = createStyles((theme) => ({
-  flag: {
+  flagContainer: {
     position: 'absolute',
-    top: theme.style.size.xl * 2,
+    top: theme.style.size.xl * 2 + theme.style.size.s,
     right: theme.style.size.l,
+    ...theme.helpers.elevation(4),
   },
   source: {
     width: MANGA_SOURCE_BADGE_SIZE,
     height: MANGA_SOURCE_BADGE_SIZE,
+  },
+  sourceContainer: {
     position: 'absolute',
     top: theme.style.size.l,
     right: theme.style.size.l,
     backgroundColor: theme.palette.common.white,
     borderRadius: theme.style.borderRadius / 8,
+    ...theme.helpers.elevation(4),
   },
   view: {
     alignItems: 'center',

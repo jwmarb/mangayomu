@@ -54,9 +54,13 @@ function Manga(props: MangaProps) {
         <Text variant="body2" numberOfLines={2}>
           {manga.title}
         </Text>
-        <Image style={style.source} source={mangaSourceIcon} />
+        <View style={style.sourceContainer}>
+          <Image style={style.source} source={mangaSourceIcon} />
+        </View>
         {manga.language != null && (
-          <Flag style={style.flag} language={manga.language} />
+          <View style={style.flagContainer}>
+            <Flag language={manga.language} />
+          </View>
         )}
       </Pressable>
     </View>

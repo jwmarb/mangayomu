@@ -94,6 +94,7 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
           },
           shadowOpacity: 0.16 + n * 0.2,
           shadowRadius: n / 1.529,
+          elevation: n,
         });
       },
     },
