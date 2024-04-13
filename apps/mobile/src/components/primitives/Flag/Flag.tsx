@@ -1,6 +1,6 @@
 import languages, { ISOLangCode } from '@mangayomu/language-codes';
 import { ImageStyle, StyleProp } from 'react-native';
-import { FLAG_HEIGHT, FLAG_WIDTH } from '@/components/primitives/Flag';
+import { FLAG_ACTUAL_WIDTH } from '@/components/primitives/Flag';
 import { styles } from '@/components/primitives/Flag/styles';
 import Icon from '@/components/primitives/Icon';
 import Image from '@/components/primitives/Image';
@@ -40,7 +40,7 @@ export default function Flag(props: FlagProps) {
 
   const imageStyle = [style.flag, styleProp];
   const source = {
-    uri: `https://flagcdn.com/${FLAG_WIDTH}x${FLAG_HEIGHT}/${lang.flag}.png`,
+    uri: `https://flagcdn.com/w${FLAG_ACTUAL_WIDTH}/${lang.flag}.png`,
   };
 
   return <Image style={imageStyle} source={source} />;
