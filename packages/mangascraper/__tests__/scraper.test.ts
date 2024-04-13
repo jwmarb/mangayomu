@@ -114,9 +114,6 @@ class MockSource extends MangaSource<
 const MockSourceInstance = new MockSource({
   containsNSFW: false,
   genres: ['action', 'comedy'],
-  hasLatestMangas: true,
-  hasMangaDirectory: true,
-  hasTrendingMangas: true,
   host: 'https://mocksource.com/',
   icon: 'https://mocksource.com/favico.png',
   language: 'en',
@@ -130,8 +127,6 @@ test('scraper constructor', () => {
   expect(MockSourceInstance.DEFAULT_LANGUAGE).toBe('en');
   expect(MockSourceInstance.ICON_URI).toBe('https://mocksource.com/favico.png');
   expect(MockSourceInstance.NAME).toEqual('Mocks4Life');
-  expect(MockSourceInstance.SUPPORTS_LATEST_MANGAS).toBe(true);
-  expect(MockSourceInstance.SUPPORTS_TRENDING_MANGAS).toBe(true);
   expect(MockSourceInstance.URL.hostname).toBe('mocksource.com');
 });
 

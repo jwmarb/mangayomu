@@ -251,6 +251,13 @@ export declare type WithRating = {
   };
 };
 
+export type MangaStatus =
+  | 'ongoing'
+  | 'completed'
+  | 'hiatus'
+  | 'discontinued'
+  | 'cancelled';
+
 /**
  * The status of the manga (Ongoing, Hiatus, etc.)
  */
@@ -265,14 +272,16 @@ export declare type WithStatus = {
      *
      * The scan status must be a value that is lowercase such as "ongoing" or "hiatus"
      */
-    scan?: string | null;
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    scan?: MangaStatus | null | (string & {});
 
     /**
      * The publish status of the manga.
      *
      * This must be lowercase such as "ongoing" or "hiatus"
      */
-    publish: string;
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    publish: MangaStatus | (string & {});
   };
 };
 

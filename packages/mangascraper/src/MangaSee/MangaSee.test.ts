@@ -4,7 +4,7 @@ import { JSType, list, t, union } from '@mangayomu/jest-assertions';
 import { Directory, HotUpdateJSON, LatestJSON } from './MangaSee.interfaces';
 import { Manga, MangaChapter, MangaMeta } from '../scraper/scraper.interfaces';
 import { Assertions } from '../utils/assertions';
-import { MANGASEE_INFO } from './MangaSee.constants';
+import { MANGASEE_INFO, STATUS_MAPPINGS } from './MangaSee.constants';
 
 test('ensures that module is registered in map', () => {
   expect(MangaSource.getSource(MangaSee.NAME)).toEqual(MangaSee);
@@ -168,7 +168,8 @@ test('signal cancels search results', async () => {
 });
 
 test('search filters work as intended', async () => {
-  const filters = structuredClone(MANGASEE_INFO.filters.schema);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const filters = structuredClone(MANGASEE_INFO.filterSchema!.schema);
   filters.Genres.include = [
     'Shounen',
     'Action',
@@ -249,4 +250,14 @@ test('search filters work as intended', async () => {
   expect(MangaSee.toManga(result[0])).not.toEqual(
     expect.objectContaining({ title: 'One Piece' }),
   );
+});
+
+test('test all mappings for status', async () => {
+  const directory = await MangaSee['directory']();
+  const status = new Set(directory.flatMap((x) => [x.ss, x.ps]));
+
+  // console.log(status);
+  for (const x of status) {
+    expect(Object.keys(STATUS_MAPPINGS)).toContain(x);
+  }
 });

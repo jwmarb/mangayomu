@@ -1,6 +1,10 @@
 import { ISOLangCode } from '@mangayomu/language-codes';
 import MangaSource from '../scraper/scraper';
-import { Manga, MangaChapter } from '../scraper/scraper.interfaces';
+import {
+  Manga,
+  MangaChapter,
+  MangaStatus,
+} from '../scraper/scraper.interfaces';
 import { MANGAPARKV5_INFO, MangaParkV5Filter } from './MangaPark_v5.constants';
 import {
   MANGAPARK_LANG,
@@ -243,8 +247,9 @@ class MangaParkV5 extends MangaSource<
         voteCount: tmangameta.data.get_comicNode.data.votes,
       },
       status: {
-        publish: tmangameta.data.get_comicNode.data.originalStatus,
-        scan: tmangameta.data.get_comicNode.data.uploadStatus,
+        publish: tmangameta.data.get_comicNode.data
+          .originalStatus as MangaStatus,
+        scan: tmangameta.data.get_comicNode.data.uploadStatus as MangaStatus,
       },
       chapters: tmangameta.data.get_comicChapterList,
       imageCover: tmangameta.data.get_comicNode.data.urlCoverOri,

@@ -95,11 +95,8 @@ const filters = createSchema(
 
 const MockSourceInstance = new MockSource({
   containsNSFW: false,
-  filters,
+  filterSchema: filters,
   genres: ['action', 'comedy'],
-  hasLatestMangas: true,
-  hasMangaDirectory: true,
-  hasTrendingMangas: true,
   host: 'https://mocksource.com/',
   icon: 'https://mocksource.com/favico.png',
   language: 'en',

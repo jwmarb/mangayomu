@@ -12,7 +12,11 @@ import {
   MangaSeeChapterJSON,
 } from './MangaSee.interfaces';
 import MangaSource from '../scraper/scraper';
-import { Manga, MangaChapter } from '../scraper/scraper.interfaces';
+import {
+  Manga,
+  MangaChapter,
+  MangaStatus,
+} from '../scraper/scraper.interfaces';
 import { MANGASEE_INFO, MangaSeeFilter } from './MangaSee.constants';
 import { AscendingStringComparator, add, binary } from '@mangayomu/algorithms';
 import { CacheManager } from '../utils/cachemanager';
@@ -376,10 +380,10 @@ class MangaSee extends MangaSource<
       status: {
         scan: tmangameta.scanStatus
           .toLowerCase()
-          .substring(0, tmangameta.scanStatus.indexOf(' ')),
+          .substring(0, tmangameta.scanStatus.indexOf(' ')) as MangaStatus,
         publish: tmangameta.publishStatus
           .toLowerCase()
-          .substring(0, tmangameta.publishStatus.indexOf(' ')),
+          .substring(0, tmangameta.publishStatus.indexOf(' ')) as MangaStatus,
       },
     };
   }

@@ -2,8 +2,17 @@
 import {
   MangaHostFiltersInfo,
   MangaSourceInfo,
+  MangaStatus,
 } from '../scraper/scraper.interfaces';
 import createSchema from '@mangayomu/schema-creator';
+
+export const STATUS_MAPPINGS: Record<string, MangaStatus> = {
+  Ongoing: 'ongoing',
+  Complete: 'completed',
+  Hiatus: 'hiatus',
+  Cancelled: 'cancelled',
+  Discontinued: 'discontinued',
+} as const;
 
 const MANGASEE_URL = 'https://mangasee123.com/';
 const MANGASEE_GENRES = [
