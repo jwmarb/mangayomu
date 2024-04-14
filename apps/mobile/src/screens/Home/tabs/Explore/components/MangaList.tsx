@@ -32,6 +32,12 @@ const styles = createStyles((theme) => ({
   paused: {
     paddingHorizontal: theme.style.screen.paddingHorizontal,
   },
+  errorContainer: {
+    alignItems: 'center',
+    gap: theme.style.size.m,
+    flexDirection: 'row',
+    paddingHorizontal: theme.style.screen.paddingHorizontal,
+  },
 }));
 
 type MangaListProps = {
@@ -63,9 +69,11 @@ function ListEmptyComponent() {
 
   if (errors.length > 0) {
     return (
-      <Text style={style.paused} color="textSecondary">
-        {errors.length} source{errors.length !== 1 ? 's' : ''} failed to fetch
-      </Text>
+      <View style={style.errorContainer}>
+        <Text color="error" alignment="center" bold>
+          {errors.length} source{errors.length !== 1 ? 's' : ''} failed to fetch
+        </Text>
+      </View>
     );
   }
 
