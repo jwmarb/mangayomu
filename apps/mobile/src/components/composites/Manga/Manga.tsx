@@ -71,11 +71,11 @@ function Skeleton() {
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   return (
-    <Animated.View exiting={FadeOut} style={style.container}>
+    <View style={style.container}>
       <View style={[style.cover, style.skeleton]} />
       <View style={style.skeletonText} />
       <View style={style.skeletonText} />
-    </Animated.View>
+    </View>
   );
 }
 

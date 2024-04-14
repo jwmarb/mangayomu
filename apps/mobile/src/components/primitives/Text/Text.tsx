@@ -79,11 +79,7 @@ function Skeleton(props: TextSkeletonProps) {
     <View style={style.skeletonContainer}>
       {/* Placeholder text */}
       <NativeText style={textStyle}>a</NativeText>
-      <Animated.View
-        entering={FadeIn}
-        exiting={FadeOut}
-        style={style.skeleton}
-      />
+      <NativeText style={style.skeleton} />
     </View>
   );
 }
