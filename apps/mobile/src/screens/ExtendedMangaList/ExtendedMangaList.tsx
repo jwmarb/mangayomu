@@ -40,6 +40,9 @@ const styles = createStyles((theme) => ({
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
+  listHeader: {
+    paddingHorizontal: theme.style.screen.paddingHorizontal,
+  },
 }));
 
 const {
@@ -61,7 +64,8 @@ export default function ExtendedMangaList(
       params: { type },
     },
   } = props;
-  const { data: results } = useExploreMangas();
+  const { data: results, fetchStatus } = useExploreMangas();
+  const errors = results?.[type].errors ?? [];
   const queryClient = useQueryClient();
   const [show, toggle] = useBoolean();
   const mangas = results != null ? results[type].mangas : [];
@@ -134,7 +138,6 @@ export default function ExtendedMangaList(
         pages: data.pages.flat(),
       };
     },
-    networkMode: 'always',
   });
   const columns = useColumns();
 
@@ -190,17 +193,41 @@ export default function ExtendedMangaList(
   }
 
   function ListEmptyComponent() {
+    if (fetchStatus === 'paused') {
+      return (
+        <Text color="textSecondary">
+          There is no internet connection available :(
+        </Text>
+      );
+    }
+
+    if (fetchStatus === 'fetching') return <ActualListEmptyComponent />;
+
     if (!isFetching && data.pages.length === 0)
       return (
         <Text color="textSecondary">
           No results found for "<Text bold>{input}</Text>"
         </Text>
       );
-    return <ActualListEmptyComponent />;
+
+    return null;
+  }
+
+  function ListHeaderComponent() {
+    if (errors.length > 0 && fetchStatus === 'idle') {
+      return (
+        <Text color="warning" style={style.listHeader} alignment="center">
+          Some mangas may be missing because some sources threw an error.
+        </Text>
+      );
+    }
+
+    return null;
   }
 
   return (
     <Screen.FlatList
+      ListHeaderComponent={ListHeaderComponent}
       onEndReached={handleOnEndReached}
       onEndReachedThreshold={1}
       initialNumToRender={12}
