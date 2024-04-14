@@ -9,6 +9,9 @@ import useStyles from '@/hooks/useStyles';
 import useContrast from '@/hooks/useContrast';
 import useTheme from '@/hooks/useTheme';
 import Button from '@/components/primitives/Button';
+import useExploreFetchStatus from '@/screens/Home/tabs/Explore/hooks/useExploreFetchStatus';
+import { ExploreErrorsContext } from '@/screens/Home/tabs/Explore/context';
+import useExploreErrors from '@/screens/Home/tabs/Explore/hooks/useExploreErrors';
 
 const styles = createStyles((theme) => ({
   container: {
@@ -26,6 +29,9 @@ const styles = createStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  paused: {
+    paddingHorizontal: theme.style.screen.paddingHorizontal,
+  },
 }));
 
 type MangaListProps = {
@@ -34,42 +40,75 @@ type MangaListProps = {
   type: keyof FetchedMangaResults;
 };
 
-const { ListEmptyComponent, getItemLayout, keyExtractor, renderItem } =
-  Manga.generateFlatListProps({ horizontal: true });
+const {
+  ListEmptyComponent: LoadingComponent,
+  getItemLayout,
+  keyExtractor,
+  renderItem,
+} = Manga.generateFlatListProps({ horizontal: true });
+
+function ListEmptyComponent() {
+  const fetchStatus = useExploreFetchStatus();
+  const contrast = useContrast();
+  const style = useStyles(styles, contrast);
+  const errors = useExploreErrors();
+
+  if (fetchStatus === 'paused') {
+    return (
+      <Text style={style.paused} color="textSecondary">
+        Unable to connect to the internet.
+      </Text>
+    );
+  }
+
+  if (errors.length > 0) {
+    return (
+      <Text style={style.paused} color="textSecondary">
+        {errors.length} source{errors.length !== 1 ? 's' : ''} failed to fetch
+      </Text>
+    );
+  }
+
+  return <LoadingComponent />;
+}
 
 export default function MangaList(props: MangaListProps) {
   const navigation = useNavigation();
   const contrast = useContrast();
   const theme = useTheme();
   const style = useStyles(styles, contrast);
+  const errors = props.data?.errors ?? [];
   const data = props.data != null ? props.data.mangas.slice(0, 10) : [];
   function handleOnPress() {
     navigation.navigate('ExtendedMangaList', { type: props.type });
   }
+
   return (
-    <View style={style.container}>
-      <View style={style.titleContainer}>
-        <View style={style.title}>
-          {props.isFetching && (
-            <ActivityIndicator color={theme.palette.primary.main} />
-          )}
-          <Text variant="h4">{titleMapping[props.type]}</Text>
+    <ExploreErrorsContext.Provider value={errors}>
+      <View style={style.container}>
+        <View style={style.titleContainer}>
+          <View style={style.title}>
+            {props.isFetching && (
+              <ActivityIndicator color={theme.palette.primary.main} />
+            )}
+            <Text variant="h4">{titleMapping[props.type]}</Text>
+          </View>
+          <Button
+            title="Show more"
+            disabled={props.data == null}
+            onPress={handleOnPress}
+          />
         </View>
-        <Button
-          title="Show more"
-          disabled={props.data == null}
-          onPress={handleOnPress}
+        <FlatList
+          ListEmptyComponent={ListEmptyComponent}
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
+          getItemLayout={getItemLayout}
+          horizontal
+          showsHorizontalScrollIndicator={false}
         />
       </View>
-      <FlatList
-        ListEmptyComponent={ListEmptyComponent}
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        getItemLayout={getItemLayout}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-      />
-    </View>
+    </ExploreErrorsContext.Provider>
   );
 }
