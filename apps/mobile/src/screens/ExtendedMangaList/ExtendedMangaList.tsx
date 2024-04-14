@@ -1,15 +1,7 @@
 import React from 'react';
-import {
-  InfiniteData,
-  QueryKey,
-  useInfiniteQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
-import { MangaSource } from '@mangayomu/mangascraper';
 import Screen from '@/components/primitives/Screen';
 import useExploreMangas from '@/screens/Home/tabs/Explore/hooks/useExploreMangas';
 import { RootStackProps } from '@/screens/navigator';
-import { MangaResult } from '@/stores/explore';
 import ListHeaderComponent from '@/screens/ExtendedMangaList/header';
 import {
   contentContainerStyle,
