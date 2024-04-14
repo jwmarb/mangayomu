@@ -10,12 +10,14 @@ import { styles } from '@/screens/MangaView/styles';
 import useStyles from '@/hooks/useStyles';
 import useContrast from '@/hooks/useContrast';
 import {
+  MangaViewChaptersContext,
   MangaViewDataContext,
   MangaViewErrorContext,
   MangaViewFetchStatusContext,
   MangaViewMangaContext,
   MangaViewMangaSourceContext,
   MangaViewOpenFilterMenuContext,
+  MangaViewUnparsedDataContext,
 } from '@/screens/MangaView/context';
 import ListHeaderComponent from '@/screens/MangaView/details';
 import Chapter from '@/screens/MangaView/components/primitives/Chapter';
@@ -27,6 +29,8 @@ import { isChapter } from '@/utils/helpers';
 import useMangaMeta from '@/screens/MangaView/hooks/useMangaMeta';
 import FilterMenu from '@/screens/MangaView/components/composites/FilterMenu';
 import useChapters from '@/screens/MangaView/hooks/useChapters';
+import ListFooterComponent from '@/screens/MangaView/footer';
+import ListEmptyComponent from '@/screens/MangaView/empty';
 
 const renderItem: ListRenderItem<unknown> = ({ item }) => (
   <Chapter chapter={item} />
@@ -41,7 +45,9 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
   const source = useMangaSource({ manga: unparsedManga, source: sourceStr });
   const manga = useManga(unparsedManga, source);
   const { data, error, isFetching, refetch, fetchStatus } = useMangaMeta(props);
-  const { chapters, onEndReached, isLoading } = useChapters(manga, data);
+  const meta = data?.[1];
+  const unparsed = data?.[0];
+  const { chapters, onEndReached } = useChapters(manga, meta, unparsed);
 
   const bottomSheet = React.useRef<BottomSheet>(null);
   const contrast = useContrast();
@@ -64,11 +70,11 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
 
   const keyExtractor = React.useCallback(
     (chapter: unknown) =>
-      isChapter(chapter) ? chapter.link : source.toChapter(chapter, data).link,
-    [source, data],
+      isChapter(chapter) ? chapter.link : source.toChapter(chapter, meta).link,
+    [source, meta],
   );
 
-  const getItemLayout = useItemLayout(source, data);
+  const getItemLayout = useItemLayout(source, meta);
 
   const handleOnRefresh = React.useCallback(() => {
     refetch();
@@ -81,74 +87,41 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
     [isFetching, refetch],
   );
 
-  const ListEmptyComponent = React.useCallback(() => {
-    if (isLoading) {
-      return (
-        <>
-          <Chapter.Skeleton />
-          <Chapter.Skeleton />
-          <Chapter.Skeleton />
-          <Chapter.Skeleton />
-          <Chapter.Skeleton />
-          <Chapter.Skeleton />
-          <Chapter.Skeleton />
-          <Chapter.Skeleton />
-        </>
-      );
-    }
-    return null;
-  }, [isLoading]);
-
-  const ListFooterComponent = React.useCallback(() => {
-    if (data != null && chapters.length < data.chapters.length) {
-      return (
-        <View style={style.contentContainerStyle}>
-          <Chapter.Skeleton />
-          <Chapter.Skeleton />
-          <Chapter.Skeleton />
-          <Chapter.Skeleton />
-          <Chapter.Skeleton />
-          <Chapter.Skeleton />
-          <Chapter.Skeleton />
-          <Chapter.Skeleton />
-        </View>
-      );
-    }
-
-    return <View style={style.contentContainerStyle} />;
-  }, []);
-
   return (
-    <MangaViewOpenFilterMenuContext.Provider value={openFilterMenu}>
-      <MangaViewMangaContext.Provider value={manga}>
-        <MangaViewDataContext.Provider value={data}>
-          <MangaViewErrorContext.Provider value={error}>
-            <MangaViewFetchStatusContext.Provider value={fetchStatus}>
-              <MangaViewMangaSourceContext.Provider value={source}>
-                <Screen.FlatList
-                  ListEmptyComponent={ListEmptyComponent}
-                  ListFooterComponent={ListFooterComponent}
-                  refreshing={isFetching}
-                  refreshControl={refreshControl}
-                  initialNumToRender={0}
-                  ignoreHeaderOffset
-                  onEndReached={onEndReached}
-                  onEndReachedThreshold={1}
-                  ListHeaderComponent={ListHeaderComponent}
-                  collapsible={collapsible}
-                  data={chapters}
-                  getItemLayout={getItemLayout}
-                  renderItem={renderItem}
-                  keyExtractor={keyExtractor}
-                  windowSize={7}
-                  maxToRenderPerBatch={13}
-                />
-                <FilterMenu ref={bottomSheet} />
-              </MangaViewMangaSourceContext.Provider>
-            </MangaViewFetchStatusContext.Provider>
-          </MangaViewErrorContext.Provider>
-        </MangaViewDataContext.Provider>
-      </MangaViewMangaContext.Provider>
-    </MangaViewOpenFilterMenuContext.Provider>
+    <MangaViewChaptersContext.Provider value={chapters}>
+      <MangaViewUnparsedDataContext.Provider value={unparsed}>
+        <MangaViewOpenFilterMenuContext.Provider value={openFilterMenu}>
+          <MangaViewMangaContext.Provider value={manga}>
+            <MangaViewDataContext.Provider value={meta}>
+              <MangaViewErrorContext.Provider value={error}>
+                <MangaViewFetchStatusContext.Provider value={fetchStatus}>
+                  <MangaViewMangaSourceContext.Provider value={source}>
+                    <Screen.FlatList
+                      ListEmptyComponent={ListEmptyComponent}
+                      ListFooterComponent={ListFooterComponent}
+                      refreshing={isFetching}
+                      refreshControl={refreshControl}
+                      initialNumToRender={0}
+                      ignoreHeaderOffset
+                      onEndReached={onEndReached}
+                      onEndReachedThreshold={1}
+                      ListHeaderComponent={ListHeaderComponent}
+                      collapsible={collapsible}
+                      data={chapters}
+                      getItemLayout={getItemLayout}
+                      renderItem={renderItem}
+                      keyExtractor={keyExtractor}
+                      windowSize={7}
+                      maxToRenderPerBatch={13}
+                    />
+                    <FilterMenu ref={bottomSheet} />
+                  </MangaViewMangaSourceContext.Provider>
+                </MangaViewFetchStatusContext.Provider>
+              </MangaViewErrorContext.Provider>
+            </MangaViewDataContext.Provider>
+          </MangaViewMangaContext.Provider>
+        </MangaViewOpenFilterMenuContext.Provider>
+      </MangaViewUnparsedDataContext.Provider>
+    </MangaViewChaptersContext.Provider>
   );
 }
