@@ -21,22 +21,23 @@ export default function useMangaMeta(props: RootStackProps<'MangaView'>) {
     queryKey: [manga.link],
     queryFn: async ({ signal }) => {
       try {
-        const meta = source.toMangaMeta(await source.meta(manga, signal));
+        const meta = await source.meta(manga, signal);
+        const parsed = source.toMangaMeta(meta);
 
         // As a side-effect, write to the database locally
         // since this is a cached query. useEffect would be
         // a waste of performance here
-        LocalManga.toLocalManga(meta, database);
+        LocalManga.toLocalManga(parsed, meta, database);
 
-        return meta;
+        return [meta, parsed] as const;
       } catch (e) {
         const result = await database
-          .get(Table.LOCAL_MANGAS)
+          .get<LocalManga>(Table.LOCAL_MANGAS)
           .query(Q.where('link', manga.link));
         if (result.length > 0) {
-          const meta = await (result[0] as LocalManga).meta;
+          const [found] = result;
 
-          return meta;
+          return [found.raw, await found.meta] as const;
         }
         throw new SourceTimeoutException(source, 'meta', e);
       }

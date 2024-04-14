@@ -1,6 +1,6 @@
 import { Database, Model, Q, Query } from '@nozbe/watermelondb';
 import { Associations } from '@nozbe/watermelondb/Model';
-import { children, date, field } from '@nozbe/watermelondb/decorators';
+import { children, date, field, json } from '@nozbe/watermelondb/decorators';
 import {
   InvalidSourceException,
   Manga,
@@ -21,6 +21,10 @@ import { LocalChapter } from '@/models/LocalChapter';
 import { Genre } from '@/models/Genre';
 import { Author } from '@/models/Author';
 import { isChapter } from '@/utils/helpers';
+
+function rawSanitizer(s: unknown) {
+  return s;
+}
 
 export class LocalManga extends Model {
   static table = Table.LOCAL_MANGAS;
@@ -68,6 +72,8 @@ export class LocalManga extends Model {
   @children(Table.LOCAL_CHAPTERS) chapters!: Query<LocalChapter>;
   @children(Table.GENRES) _dbGenres!: Query<Genre>;
   @children(Table.AUTHORS) _dbAuthors!: Query<Author>;
+
+  @json('raw_json', rawSanitizer) raw!: unknown;
 
   get genres() {
     return this._dbGenres.fetch().then((a) => a.map((x) => x.name));
@@ -123,7 +129,11 @@ export class LocalManga extends Model {
     });
   }
 
-  static async toLocalManga(data: Manga & MangaMeta, database: Database) {
+  static async toLocalManga(
+    data: Manga & MangaMeta,
+    rawData: unknown,
+    database: Database,
+  ) {
     function addFields(_model: Model) {
       const model = _model as LocalManga;
       model.title = data.title;
@@ -147,6 +157,7 @@ export class LocalManga extends Model {
       model.sortChaptersBy =
         model.sortChaptersBy ?? ChapterSortOption.CHAPTER_NUMBER;
       model.isSortReversed = model.isSortReversed ?? false;
+      model.raw = rawData;
     }
 
     const localMangas = database.get(Table.LOCAL_MANGAS);

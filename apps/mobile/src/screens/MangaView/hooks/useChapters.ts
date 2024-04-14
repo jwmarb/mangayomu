@@ -9,11 +9,15 @@ function hash(sort: ChapterSortOption, reversed: boolean) {
   return sort.valueOf() | (reversed ? HASH_BIT_SHIFT : 0);
 }
 
-export default function useChapters(manga: Manga, data?: MangaMeta) {
+export default function useChapters(
+  manga: Manga,
+  meta?: MangaMeta,
+  unparsed?: unknown,
+) {
   const { sortChaptersBy, sortIsReversed, setNumOfChapters, numOfChapters } =
     useSortOptions(manga);
 
-  const [cached, isLoading] = useSorted(manga, data);
+  const [cached, isLoading] = useSorted(manga, meta, unparsed);
 
   const chapters = React.useMemo(
     () =>
@@ -26,12 +30,12 @@ export default function useChapters(manga: Manga, data?: MangaMeta) {
 
   const onEndReached = React.useCallback(() => {
     setNumOfChapters((prev) => {
-      if (data != null && prev < data.chapters.length) {
+      if (meta != null && prev < meta.chapters.length) {
         return prev << 1;
       }
       return prev;
     });
-  }, [setNumOfChapters, data?.chapters.length]);
+  }, [setNumOfChapters, meta?.chapters.length]);
 
   return {
     onEndReached,

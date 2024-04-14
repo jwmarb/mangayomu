@@ -91,7 +91,7 @@ export type UseRowOptions<TDefault, TModel> = {
 };
 
 export const schema = appSchema({
-  version: 5,
+  version: 6,
   tables: [
     tableSchema({
       name: Table.MANGAS,
@@ -157,6 +157,10 @@ export const schema = appSchema({
     tableSchema({
       name: Table.LOCAL_MANGAS,
       columns: [
+        {
+          name: 'raw_json',
+          type: 'string',
+        },
         {
           name: 'link',
           type: 'string',

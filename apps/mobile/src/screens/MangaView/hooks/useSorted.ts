@@ -24,7 +24,11 @@ function reverseCopy<T>(arr: ArrayLike<T>) {
   return reversed;
 }
 
-export default function useSorted(manga: Manga, data?: MangaMeta) {
+export default function useSorted(
+  manga: Manga,
+  data?: MangaMeta,
+  unparsedData?: unknown,
+) {
   const source = useMangaSource({ manga });
 
   const toChapter = useRunInJS<
@@ -50,12 +54,12 @@ export default function useSorted(manga: Manga, data?: MangaMeta) {
     'default',
     async () => {
       'worklet';
-      if (data == null) return;
+      if (data == null || unparsedData == null) return;
       const copy = [...data.chapters]; // copy onto this thread
       const map: Map<unknown, MangaChapter> = new Map();
       await Promise.all(
         copy.map((_, i) =>
-          toChapter(copy[i], data).then((x) => {
+          toChapter(copy[i], unparsedData).then((x) => {
             map.set(copy[i], x);
           }),
         ),
@@ -84,12 +88,12 @@ export default function useSorted(manga: Manga, data?: MangaMeta) {
 
       onFinishCreatingSorts();
     },
-    [data != null],
+    [data != null, unparsedData != null],
   );
 
   React.useEffect(() => {
     worklet();
-  }, [data != null]);
+  }, [data != null, unparsedData != null]);
 
   return [jsMemo, isBusySorting] as const;
 }
