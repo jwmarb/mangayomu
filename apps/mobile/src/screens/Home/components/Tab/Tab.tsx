@@ -36,6 +36,7 @@ const icons: Record<
   Sources: () => 'bookshelf',
   Explore: (focused) => (focused ? 'compass' : 'compass-outline'),
   Browse: (focused) => (focused ? 'book-search' : 'book-search-outline'),
+  Library: (focused) => (focused ? 'bookmark' : 'bookmark-outline'),
 };
 
 const themedProps = createThemedProps((theme) => ({
