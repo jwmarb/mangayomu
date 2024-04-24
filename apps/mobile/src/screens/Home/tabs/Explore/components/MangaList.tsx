@@ -12,6 +12,8 @@ import Button from '@/components/primitives/Button';
 import useExploreFetchStatus from '@/screens/Home/tabs/Explore/hooks/useExploreFetchStatus';
 import { ExploreErrorsContext } from '@/screens/Home/tabs/Explore/context';
 import useExploreErrors from '@/screens/Home/tabs/Explore/hooks/useExploreErrors';
+import IconButton from '@/components/primitives/IconButton';
+import Icon from '@/components/primitives/Icon';
 
 const styles = createStyles((theme) => ({
   container: {
@@ -44,6 +46,7 @@ type MangaListProps = {
   data?: FetchedMangaResults['latest'] | FetchedMangaResults['trending'];
   isFetching: boolean;
   type: keyof FetchedMangaResults;
+  onViewErrors: () => void;
 };
 
 const {
@@ -98,6 +101,13 @@ export default function MangaList(props: MangaListProps) {
           <View style={style.title}>
             {props.isFetching && (
               <ActivityIndicator color={theme.palette.primary.main} />
+            )}
+            {props.data != null && props.data.errors.length > 0 && (
+              <IconButton
+                onPress={props.onViewErrors}
+                icon={<Icon type="icon" name="alert-octagon" />}
+                color="secondary"
+              />
             )}
             <Text variant="h4">{titleMapping[props.type]}</Text>
           </View>

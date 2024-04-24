@@ -67,8 +67,8 @@ export default function useExtendedMangaListPagination({
         }
       }
       return filtered.slice(
-        Math.min((pageParam - 1) * ITEMS_PER_PAGE, mangas.length),
-        Math.min(pageParam * ITEMS_PER_PAGE, mangas.length),
+        Math.min(ITEMS_PER_PAGE << (pageParam - 1), mangas.length),
+        Math.min(ITEMS_PER_PAGE << pageParam, mangas.length),
       );
     },
     initialPageParam: 1,
