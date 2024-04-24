@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListRenderItem, View } from 'react-native';
+import { ListRenderItem } from 'react-native';
 import { RefreshControl } from 'react-native-gesture-handler';
 import Screen from '@/components/primitives/Screen';
 import useCollapsibleHeader from '@/hooks/useCollapsibleHeader';

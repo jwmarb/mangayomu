@@ -1,4 +1,4 @@
-import { ListRenderItem, View } from 'react-native';
+import { ListRenderItem } from 'react-native';
 import React from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { TextInput as NativeTextInput } from 'react-native-gesture-handler';

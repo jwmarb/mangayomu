@@ -1,14 +1,14 @@
-import { Q, Query } from '@nozbe/watermelondb';
-import { useDatabase, withObservables } from '@nozbe/watermelondb/react';
+import { Q } from '@nozbe/watermelondb';
+import { useDatabase } from '@nozbe/watermelondb/react';
 import React from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Freeze } from 'react-freeze';
 import { ListRenderItem } from 'react-native';
-import { Manga as MManga, MangaSource } from '@mangayomu/mangascraper';
+import { MangaSource } from '@mangayomu/mangascraper';
 import Screen from '@/components/primitives/Screen';
 import useCollapsibleHeader from '@/hooks/useCollapsibleHeader';
 import { HomeStackProps } from '@/screens/Home/Home';
-import { MANGA_ID, Table } from '@/models/schema';
+import { Table } from '@/models/schema';
 import { Manga } from '@/models/Manga';
 import MangaComponent from '@/components/composites/Manga';
 import { LocalManga } from '@/models/LocalManga';
