@@ -91,7 +91,7 @@ export type UseRowOptions<TDefault, TModel> = {
 };
 
 export const schema = appSchema({
-  version: 6,
+  version: 9,
   tables: [
     tableSchema({
       name: Table.MANGAS,

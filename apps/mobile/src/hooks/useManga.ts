@@ -2,7 +2,10 @@ import { Manga, MangaSource } from '@mangayomu/mangascraper';
 import { isManga, isUnparsedManga } from '@/utils/helpers';
 import { useSourceContext } from '@/components/composites/Manga';
 
-export default function useManga(manga: unknown, source?: MangaSource): Manga {
+export default function useManga(
+  manga: unknown,
+  source?: MangaSource | string,
+): Manga {
   const sourceCtx = useSourceContext();
   if (isManga(manga)) {
     return manga;
@@ -16,6 +19,10 @@ export default function useManga(manga: unknown, source?: MangaSource): Manga {
   if (sourceCtx != null || source != null) {
     if (sourceCtx != null) return sourceCtx.toManga(manga);
     if (source != null) {
+      if (typeof source === 'string') {
+        const s = MangaSource.getSource(source);
+        return s.toManga(manga);
+      }
       if (source != null) return source.toManga(manga);
     }
   }

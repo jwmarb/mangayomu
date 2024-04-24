@@ -30,13 +30,14 @@ import useMangaSource from '@/hooks/useMangaSource';
 
 type MangaProps = {
   manga: unknown;
+  source?: string;
 };
 
 function Manga(props: MangaProps) {
   const navigation = useNavigation();
-  const manga = useManga(props.manga);
+  const manga = useManga(props.manga, props.source);
   const contrast = useContrast();
-  const mangaSource = useMangaSource({ manga });
+  const mangaSource = useMangaSource({ manga, source: props.source });
   const source = manga.imageCover
     ? { uri: manga.imageCover }
     : require('@/assets/no-image-available.png');

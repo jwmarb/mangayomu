@@ -44,11 +44,6 @@ export class Manga extends Model {
 
   @field('new_chapters_count') newChaptersCount!: number;
 
-  @lazy
-  localManga = this.collections
-    .get<LocalManga>(Table.LOCAL_MANGAS)
-    .query(Q.where('link', this.link));
-
   /**
    * Returns an existing manga row or creates and returns it the row does not exist
    * @param manga A manga object from a manga source
