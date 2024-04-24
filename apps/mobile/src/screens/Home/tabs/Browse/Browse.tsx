@@ -1,4 +1,4 @@
-import { ListRenderItem } from 'react-native';
+import { ListRenderItem, View } from 'react-native';
 import React from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { TextInput as NativeTextInput } from 'react-native-gesture-handler';
@@ -24,6 +24,7 @@ import {
   InfiniteMangaError,
 } from '@/screens/SourceBrowser/SourceBrowser';
 import { HomeStackProps } from '@/screens/Home/Home';
+import ListHeaderComponent from '@/screens/Home/tabs/Browse/header';
 
 const styles = createStyles((theme) => ({
   divider: {
@@ -126,6 +127,7 @@ export default function Browse(props: HomeStackProps<'Browse'>) {
   return (
     <MangaQueryContext.Provider value={input}>
       <Screen.FlatList
+        ListHeaderComponent={ListHeaderComponent}
         data={results}
         ItemSeparatorComponent={isDirty ? ItemSeparatorComponent : null}
         keyExtractor={keyExtractor}
