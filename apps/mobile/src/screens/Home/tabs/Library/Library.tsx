@@ -74,4 +74,3 @@ export default function Library(props: HomeStackProps<'Library'>) {
     </Freeze>
   );
 }
-``;
