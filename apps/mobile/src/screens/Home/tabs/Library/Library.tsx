@@ -13,10 +13,9 @@ import { Manga } from '@/models/Manga';
 import MangaComponent from '@/components/composites/Manga';
 import { LocalManga } from '@/models/LocalManga';
 
-const { getItemLayout, keyExtractor, useColumns } =
-  MangaComponent.generateFlatListProps({
-    flexibleColumns: true,
-  });
+const { getItemLayout, useColumns } = MangaComponent.generateFlatListProps({
+  flexibleColumns: true,
+});
 
 const renderItem: ListRenderItem<LocalManga> = ({ item }) => {
   const source = MangaSource.getSource(item.source);
@@ -24,6 +23,8 @@ const renderItem: ListRenderItem<LocalManga> = ({ item }) => {
     <MangaComponent source={item.source} manga={source.toMangaMeta(item.raw)} />
   );
 };
+
+const keyExtractor = (item: LocalManga) => item.id;
 
 export default function Library(props: HomeStackProps<'Library'>) {
   const database = useDatabase();
@@ -65,6 +66,7 @@ export default function Library(props: HomeStackProps<'Library'>) {
     <Freeze freeze={!isFocused}>
       <Screen.FlatList
         key={columns}
+        keyExtractor={keyExtractor}
         numColumns={columns}
         collapsible={collapsible}
         data={mangas}
