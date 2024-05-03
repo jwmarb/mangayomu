@@ -80,7 +80,7 @@ export default async function uploadResolved(
           matches.add(_id);
           prev.push({
             _id,
-            description: x.description,
+            description: x.description as any,
             imageCover: x.imageCover,
             link: x.link,
             source: x.source,

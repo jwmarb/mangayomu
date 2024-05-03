@@ -208,7 +208,7 @@ export default function MangaLibraryInitializer(
           switch (result.status) {
             case 'fulfilled': {
               const x = result.value;
-              p.push(x);
+              p.push(x as any);
               defaultLanguages[x.source] = getMangaHost(
                 x.source,
               ).defaultLanguage;

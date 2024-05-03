@@ -16,7 +16,7 @@ export default function addMissingMangas(
         type: 'manga',
         manga: {
           _id: getSourceMangaId(meta),
-          description: meta.description,
+          description: meta.description as any,
           imageCover: meta.imageCover,
           link: meta.link,
           source: meta.source,

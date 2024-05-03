@@ -122,7 +122,7 @@ export default function ImageResolver({ children }: React.PropsWithChildren) {
                 const d = await host.getMeta({
                   link,
                 });
-                manga.push(d);
+                manga.push(d as any);
               } catch (e) {
                 console.error(`Failed to fetch ${link}`);
               }

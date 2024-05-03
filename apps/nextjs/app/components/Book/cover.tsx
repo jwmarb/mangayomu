@@ -34,7 +34,7 @@ export default function Cover(props: CoverProps) {
   const height = props.compact ? COMPACT_HEIGHT : NORMAL_HEIGHT;
   const resolveImage = useImageResolver((state) => state.queue);
   const [imageCover, setImageCover] = React.useState<string | null>(
-    props.manga.imageCover,
+    props.manga.imageCover as any,
   );
   const [{ opacity }, api] = useSpring(() => ({
     opacity: 1,

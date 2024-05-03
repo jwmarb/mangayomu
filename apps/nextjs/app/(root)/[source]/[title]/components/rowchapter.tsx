@@ -21,7 +21,7 @@ function RowChapter(props: RowChapterProps) {
   const pathName = usePathname();
   const { chapter, isLastItem } = props;
   const { name, date } = chapter;
-  const parsed = Date.parse(date);
+  const parsed = Date.parse(date as any);
   const isRecent = Date.now() - 6.048e7 < parsed;
   const host = useMangaHostContext();
   const isWithinWeek = Date.now() - 6.048e8 < parsed;

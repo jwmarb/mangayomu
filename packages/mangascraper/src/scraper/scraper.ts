@@ -50,7 +50,13 @@ export default abstract class MangaSource<
     unknown,
     unknown
   >[] {
-    return [...this.sources.values()];
+    const iter = this.sources.values(),
+      arr: MangaSource[] = [];
+    let d;
+    while (!(d = iter.next()).done) {
+      arr.push(d.value);
+    }
+    return arr;
   }
 
   /**

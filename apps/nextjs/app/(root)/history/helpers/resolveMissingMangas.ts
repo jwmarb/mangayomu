@@ -24,7 +24,7 @@ export default async function resolveMissingMangas(
         const meta = await host.getMeta({ link: missingManga.manga });
         return [
           meta,
-          meta.chapters.reduce((prev, x) => {
+          meta.chapters.reduce((prev: any, x: any) => {
             prev[x.link] = x;
             return prev;
           }, {} as Record<string, MangaChapter>),

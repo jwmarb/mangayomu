@@ -89,7 +89,7 @@ export default function MangaViewer(props: MangaViewerProps) {
     async function init() {
       const p = await cache(_manga.link, () => host.getMeta(_manga));
       setImageCover(p.imageCover || '/No-Image-Placeholder.png');
-      setMeta(p);
+      setMeta(p as any);
       await user.functions.addSourceManga(p, host.defaultLanguage);
     }
     init();
@@ -114,7 +114,7 @@ export default function MangaViewer(props: MangaViewerProps) {
       return supportedLanguages.map((x) => [x, languages[x].name]);
     }, [meta]);
   const sanitizedDescription = React.useMemo(
-    () => (meta != null ? DOMPurify.sanitize(meta.description) : null),
+    () => (meta != null ? DOMPurify.sanitize(meta.description as any) : null),
     [meta],
   );
   const modal = React.useRef<ModalMethods>(null);
