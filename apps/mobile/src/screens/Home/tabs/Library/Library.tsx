@@ -1,22 +1,21 @@
-import { Q, Query } from '@nozbe/watermelondb';
-import { useDatabase, withObservables } from '@nozbe/watermelondb/react';
+import { Q } from '@nozbe/watermelondb';
+import { useDatabase } from '@nozbe/watermelondb/react';
 import React from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Freeze } from 'react-freeze';
 import { ListRenderItem } from 'react-native';
-import { Manga as MManga, MangaSource } from '@mangayomu/mangascraper';
+import { MangaSource } from '@mangayomu/mangascraper';
 import Screen from '@/components/primitives/Screen';
 import useCollapsibleHeader from '@/hooks/useCollapsibleHeader';
 import { HomeStackProps } from '@/screens/Home/Home';
-import { MANGA_ID, Table } from '@/models/schema';
+import { Table } from '@/models/schema';
 import { Manga } from '@/models/Manga';
 import MangaComponent from '@/components/composites/Manga';
 import { LocalManga } from '@/models/LocalManga';
 
-const { getItemLayout, keyExtractor, useColumns } =
-  MangaComponent.generateFlatListProps({
-    flexibleColumns: true,
-  });
+const { getItemLayout, useColumns } = MangaComponent.generateFlatListProps({
+  flexibleColumns: true,
+});
 
 const renderItem: ListRenderItem<LocalManga> = ({ item }) => {
   const source = MangaSource.getSource(item.source);
@@ -24,6 +23,8 @@ const renderItem: ListRenderItem<LocalManga> = ({ item }) => {
     <MangaComponent source={item.source} manga={source.toMangaMeta(item.raw)} />
   );
 };
+
+const keyExtractor = (item: LocalManga) => item.id;
 
 export default function Library(props: HomeStackProps<'Library'>) {
   const database = useDatabase();
@@ -65,6 +66,7 @@ export default function Library(props: HomeStackProps<'Library'>) {
     <Freeze freeze={!isFocused}>
       <Screen.FlatList
         key={columns}
+        keyExtractor={keyExtractor}
         numColumns={columns}
         collapsible={collapsible}
         data={mangas}
@@ -74,4 +76,3 @@ export default function Library(props: HomeStackProps<'Library'>) {
     </Freeze>
   );
 }
-``;

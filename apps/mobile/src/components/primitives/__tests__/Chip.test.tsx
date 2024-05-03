@@ -1,6 +1,5 @@
 import { render, userEvent } from '@testing-library/react-native';
 import Chip from '@/components/primitives/Chip';
-import Icon from '@/components/primitives/Icon';
 
 beforeAll(() => {
   jest.useFakeTimers();

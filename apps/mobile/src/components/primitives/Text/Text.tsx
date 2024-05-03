@@ -4,7 +4,7 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import useContrast from '@/hooks/useContrast';
 import {
   TextVariants,
