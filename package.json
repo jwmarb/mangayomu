@@ -7,7 +7,7 @@
       "packages/*",
       "components/*",
       "services/*",
-      "apps/mobile-legacy",
+      "apps/mobile",
       "apps/nextjs",
       "apps/backend"
     ],
