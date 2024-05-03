@@ -7,11 +7,13 @@
       "packages/*",
       "components/*",
       "services/*",
-      "apps/mobile",
+      "apps/mobile-legacy",
       "apps/nextjs",
       "apps/backend"
     ],
     "nohoist": [
+      "**/react",
+      "**/react/**",
       "**/react-native",
       "**/react-native/**",
       "**/react-native-*",
