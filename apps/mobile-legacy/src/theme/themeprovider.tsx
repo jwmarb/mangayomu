@@ -117,7 +117,10 @@ export default function ThemeProvider({ children }: React.PropsWithChildren) {
                   colorConstant(value);
                 return prev;
               },
-              {} as UserDefinedPalette<typeof NavigationDefaultTheme.colors>,
+              {} as UserDefinedPalette<
+                typeof NavigationDefaultTheme.colors,
+                Theme
+              >,
             ),
             primary: color('#8DB1D8', '#1996FD'),
             background: color('#071113', '#fafafa'),
@@ -125,7 +128,6 @@ export default function ThemeProvider({ children }: React.PropsWithChildren) {
           }),
         },
       })),
-
     [mode],
   );
 
