@@ -9,7 +9,7 @@ export class LocalChapterSchema extends Realm.Object<ILocalChapterSchema> {
   subname?: string | null;
   index!: number;
   language!: ISOLangCode;
-  date!: string;
+  date!: number;
 
   static schema: Realm.ObjectSchema = {
     name: 'LocalChapter',
@@ -20,7 +20,7 @@ export class LocalChapterSchema extends Realm.Object<ILocalChapterSchema> {
       subname: { type: 'string', optional: true },
       index: 'int',
       language: 'string',
-      date: 'string',
+      date: 'int',
     },
     primaryKey: '_id',
   };

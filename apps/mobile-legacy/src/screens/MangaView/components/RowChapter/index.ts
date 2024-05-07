@@ -3,7 +3,7 @@ export interface RowChapterProps {
   isReading: boolean;
   name: string;
   subname?: string;
-  date: string;
+  date: number;
   chapterKey: string;
   mangaKey?: string;
 }

@@ -13,9 +13,15 @@ import Pressable from '@components/Pressable';
 export const ROW_CHAPTER_HEIGHT = moderateScale(60);
 
 const RowChapter: React.FC<RowChapterProps> = (props) => {
-  const { mangaKey, date, isReading, name, chapterKey, subname } = props;
+  const {
+    mangaKey,
+    date: parsed,
+    isReading,
+    name,
+    chapterKey,
+    subname,
+  } = props;
   const navigation = useRootNavigation();
-  const parsed = Date.parse(date);
   const isRecent = Date.now() - 6.048e7 < parsed;
   const isWithinWeek = Date.now() - 6.048e8 < parsed;
   const k = useQuery(
