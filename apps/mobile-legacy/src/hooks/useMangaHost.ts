@@ -60,7 +60,7 @@ const computeSettledPromised = (
   }
   return JSON.stringify({ errors, mangas });
 };
-const executeParallelTask = Worklets.createRunInContextFn(
+const executeParallelTask = Worklets.defaultContext.createRunAsync(
   computeSettledPromised,
 );
 

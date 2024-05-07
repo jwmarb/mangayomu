@@ -103,7 +103,9 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     }
     if (Worklets != null) {
       if (this.workletFn == null)
-        this.workletFn = Worklets.createRunInContextFn(mapLatestHottestManga);
+        this.workletFn = Worklets.defaultContext.createRunAsync(
+          mapLatestHottestManga,
+        );
       const v = await this.workletFn(
         LatestJSON,
         this.getLink(),
@@ -136,7 +138,9 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     }
     if (Worklets != null) {
       if (this.workletFn == null)
-        this.workletFn = Worklets.createRunInContextFn(mapLatestHottestManga);
+        this.workletFn = Worklets.defaultContext.createRunAsync(
+          mapLatestHottestManga,
+        );
       const v = await this.workletFn(
         HotUpdateJSON,
         this.getLink(),
