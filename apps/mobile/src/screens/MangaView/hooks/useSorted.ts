@@ -1,9 +1,9 @@
 import React from 'react';
 import { Manga, MangaChapter, MangaMeta } from '@mangayomu/mangascraper';
 import {
-  useRunInJS,
+  Worklets,
+  useRunOnJS,
   useSharedValue,
-  useWorklet,
 } from 'react-native-worklets-core';
 import {
   CHAPTER_SORT_OPTIONS,
@@ -31,15 +31,14 @@ export default function useSorted(
 ) {
   const source = useMangaSource({ manga });
 
-  const toChapter = useRunInJS<
-    MangaChapter,
-    [unknown, unknown],
-    typeof source.toChapter
-  >((tchapter, tmangameta) => source.toChapter(tchapter, tmangameta), [source]);
+  const toChapter = useRunOnJS<typeof source.toChapter>(
+    (tchapter, tmangameta) => source.toChapter(tchapter, tmangameta),
+    [source],
+  );
   const memo = useSharedValue<Record<number, unknown[]>>({});
   const [jsMemo, setJSMemo] = React.useState<Record<number, unknown[]>>({});
   const [isBusySorting, toggle] = useBoolean(true);
-  const onFinishCreatingSorts = useRunInJS(() => {
+  const onFinishCreatingSorts = useRunOnJS(() => {
     toggle(false);
     setJSMemo(() => {
       const newJSMemo: typeof jsMemo = {};
@@ -50,9 +49,8 @@ export default function useSorted(
     });
   }, []);
 
-  const worklet = useWorklet(
-    'default',
-    async () => {
+  React.useEffect(() => {
+    Worklets.defaultContext.runAsync(async () => {
       'worklet';
       if (data == null || unparsedData == null) return;
       const copy = [...data.chapters]; // copy onto this thread
@@ -87,12 +85,7 @@ export default function useSorted(
       }
 
       onFinishCreatingSorts();
-    },
-    [data != null, unparsedData != null],
-  );
-
-  React.useEffect(() => {
-    worklet();
+    });
   }, [data != null, unparsedData != null]);
 
   return [jsMemo, isBusySorting] as const;
