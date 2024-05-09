@@ -1,4 +1,6 @@
 import { View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackActions } from '@react-navigation/native';
 import useMangaViewFetchStatus from '@/screens/MangaView/hooks/useMangaViewFetchStatus';
 import { createStyles } from '@/utils/theme';
 import useStyles from '@/hooks/useStyles';
@@ -23,6 +25,7 @@ export default function Genres({ genres }: GenresProps) {
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const source = useMangaViewSource();
+  const navigation = useNavigation();
 
   if (genres != null) {
     return (
@@ -31,6 +34,16 @@ export default function Genres({ genres }: GenresProps) {
           <Chip
             variant="filled"
             key={x}
+            onPress={() => {
+              if (x in source.READABLE_GENRES_MAP) {
+                navigation.dispatch(
+                  StackActions.push('SourceBrowser', {
+                    genre: x,
+                    source: source.NAME,
+                  }),
+                );
+              }
+            }}
             title={source.toReadableGenre(x)}
             color={
               x in source.READABLE_GENRES_MAP === false ? 'error' : undefined

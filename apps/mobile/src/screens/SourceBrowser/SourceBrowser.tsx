@@ -45,8 +45,10 @@ export default function SourceBrowser(props: RootStackProps<'SourceBrowser'>) {
   const ready = useLoadAfterInteractions();
   const bottomSheet = React.useRef<BottomSheet>(null);
   const { input, setInput } = useUserInput(props.route.params.initialQuery);
-  const [filters, setFilters, appliedFilters, finalizeFilters] =
-    useFilters(source);
+  const [filters, setFilters, appliedFilters, finalizeFilters] = useFilters(
+    source,
+    props.route.params.genre,
+  );
   const {
     data,
     isLoading,
