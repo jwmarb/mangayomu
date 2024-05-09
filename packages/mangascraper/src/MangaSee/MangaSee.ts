@@ -352,6 +352,7 @@ class MangaSee extends MangaSource<
     const type = $('a[href*="/search/?type="]').text();
     const imageCover = $('img.img-fluid.bottom-5').attr('src');
     const data = await extractDataFromApplicationLDJson<TMangaMeta>(html);
+    Chapters.reverse();
 
     data.link = payload.link;
     data.chapters = Chapters;
