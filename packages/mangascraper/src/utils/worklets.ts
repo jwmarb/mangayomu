@@ -33,7 +33,7 @@ export async function createWorklet<T extends (...params: any) => string, P>(
     try {
       const Worklets = await useWorklets();
       if (Worklets != null) {
-        const thread = Worklets.createRunInContextFn(workletFn);
+        const thread = Worklets.defaultContext.createRunAsync(workletFn);
         return async (...params: any) => {
           const serialized = await thread(...params);
           return JSON.parse(serialized) as P;
