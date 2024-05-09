@@ -12,6 +12,30 @@ import { Table } from '@/models/schema';
 import { Manga } from '@/models/Manga';
 import MangaComponent from '@/components/composites/Manga';
 import { LocalManga } from '@/models/LocalManga';
+import IconButton from '@/components/primitives/IconButton';
+import Icon from '@/components/primitives/Icon';
+import { createStyles } from '@/utils/theme';
+import useStyles from '@/hooks/useStyles';
+import useContrast from '@/hooks/useContrast';
+import useBoolean from '@/hooks/useBoolean';
+import TextInput from '@/components/primitives/TextInput';
+import useUserInput from '@/hooks/useUserInput';
+
+const styles = createStyles((theme) => ({
+  headerRightStyle: {
+    justifyContent: 'flex-end',
+    flexDirection: 'row',
+  },
+  headerRightStyleWithTextInput: {
+    justifyContent: 'flex-end',
+    flexDirection: 'row',
+    flexShrink: 1,
+    flexGrow: 0,
+  },
+  headerStyle: {
+    gap: theme.style.size.m,
+  },
+}));
 
 const { getItemLayout, useColumns } = MangaComponent.generateFlatListProps({
   flexibleColumns: true,
@@ -29,11 +53,51 @@ const keyExtractor = (item: LocalManga) => item.id;
 export default function Library(props: HomeStackProps<'Library'>) {
   const database = useDatabase();
   const [mangas, setMangas] = React.useState<LocalManga[]>([]);
+  const [showSearch, toggleShowSearch] = useBoolean();
+  const { input, setInput } = useUserInput();
   const columns = useColumns();
   const isFocused = useIsFocused();
-  const collapsible = useCollapsibleHeader({
-    title: 'Library',
-  });
+  const contrast = useContrast();
+  const style = useStyles(styles, contrast);
+  const collapsible = useCollapsibleHeader(
+    {
+      title: 'Library',
+      headerLeft: (
+        <>
+          {!showSearch && (
+            <IconButton
+              icon={<Icon type="icon" name="magnify" />}
+              onPress={() => toggleShowSearch(true)}
+            />
+          )}
+          {showSearch && (
+            <TextInput
+              placeholder="Seach for a title..."
+              onChangeText={setInput}
+              defaultValue={input}
+              iconButton
+              icon={
+                <IconButton
+                  icon={<Icon type="icon" name="arrow-left" />}
+                  onPress={() => toggleShowSearch(false)}
+                  size="small"
+                />
+              }
+            />
+          )}
+        </>
+      ),
+      headerRightStyle: showSearch
+        ? style.headerRightStyleWithTextInput
+        : style.headerRightStyle,
+      showHeaderCenter: !showSearch,
+      headerStyle: style.headerStyle,
+      headerRight: (
+        <IconButton icon={<Icon type="icon" name="filter-menu" />} />
+      ),
+    },
+    [showSearch],
+  );
   React.useEffect(() => {
     async function initialize() {
       const mangas = database
@@ -43,7 +107,13 @@ export default function Library(props: HomeStackProps<'Library'>) {
         .get<LocalManga>(Table.LOCAL_MANGAS)
         .query(
           Q.unsafeSqlQuery(
-            `SELECT localMangas.* from ${Table.LOCAL_MANGAS} localMangas where localMangas.link in (select manga.link from ${Table.MANGAS} manga where manga.is_in_library = 1)`,
+            `SELECT localMangas.* from ${
+              Table.LOCAL_MANGAS
+            } localMangas where localMangas.link in (select manga.link from ${
+              Table.MANGAS
+            } manga where manga.is_in_library = 1) and localMangas.title like '%${Q.sanitizeLikeString(
+              input,
+            )}%'`,
           ),
         );
 
@@ -60,7 +130,7 @@ export default function Library(props: HomeStackProps<'Library'>) {
       };
     }
     initialize();
-  }, []);
+  }, [input]);
 
   return (
     <Freeze freeze={!isFocused}>
