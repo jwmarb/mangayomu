@@ -24,6 +24,7 @@ export const styles = createStyles((theme) => ({
   },
   headerCenterSearchBar: {
     paddingBottom: theme.style.screen.paddingVertical,
+    maxWidth: '82%',
   },
   headerSearchBar: {
     gap: theme.style.size.m,

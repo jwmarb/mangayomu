@@ -32,8 +32,12 @@ const styles = createStyles((theme) => ({
     flexShrink: 1,
     flexGrow: 0,
   },
+  headerLeftStyle: {
+    maxWidth: '82%',
+  },
   headerStyle: {
     gap: theme.style.size.m,
+    maxWidth: '100%',
   },
 }));
 
@@ -62,6 +66,7 @@ export default function Library(props: HomeStackProps<'Library'>) {
   const collapsible = useCollapsibleHeader(
     {
       title: 'Library',
+      headerLeftStyle: style.headerLeftStyle,
       headerLeft: (
         <>
           {!showSearch && (
@@ -107,13 +112,8 @@ export default function Library(props: HomeStackProps<'Library'>) {
         .get<LocalManga>(Table.LOCAL_MANGAS)
         .query(
           Q.unsafeSqlQuery(
-            `SELECT localMangas.* from ${
-              Table.LOCAL_MANGAS
-            } localMangas where localMangas.link in (select manga.link from ${
-              Table.MANGAS
-            } manga where manga.is_in_library = 1) and localMangas.title like '%${Q.sanitizeLikeString(
-              input,
-            )}%'`,
+            `SELECT localMangas.* from ${Table.LOCAL_MANGAS} localMangas where localMangas.link in (select manga.link from ${Table.MANGAS} manga where manga.is_in_library = 1) and localMangas.title like ?`,
+            [`%${input}%`],
           ),
         );
 
