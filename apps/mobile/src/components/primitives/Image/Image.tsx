@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Image as NativeImage } from 'react-native';
 import { ImageProps as NativeImageProps } from 'react-native';
 import React from 'react';
@@ -14,6 +14,7 @@ type ImageProps = NativeImageProps & {
 
 function Image(props: ImageProps, ref: React.ForwardedRef<NativeImage>) {
   const { source, contrast: contrastProp, ...rest } = props;
+  const queryClient = useQueryClient();
   const { data, error, isLoading } = useQuery({
     queryKey: [source],
     queryFn: () =>
@@ -23,6 +24,8 @@ function Image(props: ImageProps, ref: React.ForwardedRef<NativeImage>) {
       source.uri != null
         ? downloadImage(source.uri)
         : source,
+    initialData: queryClient.getQueryCache().find({ queryKey: [source] })?.state
+      .data,
   });
   const contrast = useContrast(contrastProp);
   const style = useStyles(styles, contrast);
