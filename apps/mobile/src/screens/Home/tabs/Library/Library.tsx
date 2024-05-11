@@ -7,39 +7,20 @@ import { ListRenderItem } from 'react-native';
 import { MangaSource } from '@mangayomu/mangascraper';
 import Screen from '@/components/primitives/Screen';
 import useCollapsibleHeader from '@/hooks/useCollapsibleHeader';
-import { HomeStackProps } from '@/screens/Home/Home';
 import { Table } from '@/models/schema';
 import { Manga } from '@/models/Manga';
 import MangaComponent from '@/components/composites/Manga';
 import { LocalManga } from '@/models/LocalManga';
 import IconButton from '@/components/primitives/IconButton';
 import Icon from '@/components/primitives/Icon';
-import { createStyles } from '@/utils/theme';
 import useStyles from '@/hooks/useStyles';
 import useContrast from '@/hooks/useContrast';
 import useBoolean from '@/hooks/useBoolean';
 import TextInput from '@/components/primitives/TextInput';
 import useUserInput from '@/hooks/useUserInput';
-
-const styles = createStyles((theme) => ({
-  headerRightStyle: {
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-  },
-  headerRightStyleWithTextInput: {
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-    flexShrink: 1,
-    flexGrow: 0,
-  },
-  headerLeftStyle: {
-    maxWidth: '82%',
-  },
-  headerStyle: {
-    gap: theme.style.size.m,
-    maxWidth: '100%',
-  },
-}));
+import BottomSheet from '@/components/composites/BottomSheet';
+import { styles } from '@/screens/Home/tabs/Library/styles';
+import LibraryFilterMenu from '@/screens/Home/tabs/Library/components/LibraryFilterMenu';
 
 const { getItemLayout, useColumns } = MangaComponent.generateFlatListProps({
   flexibleColumns: true,
@@ -54,7 +35,7 @@ const renderItem: ListRenderItem<LocalManga> = ({ item }) => {
 
 const keyExtractor = (item: LocalManga) => item.id;
 
-export default function Library(props: HomeStackProps<'Library'>) {
+export default function Library() {
   const database = useDatabase();
   const [mangas, setMangas] = React.useState<LocalManga[]>([]);
   const [showSearch, toggleShowSearch] = useBoolean();
@@ -63,6 +44,7 @@ export default function Library(props: HomeStackProps<'Library'>) {
   const isFocused = useIsFocused();
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
+  const bottomSheet = React.useRef<BottomSheet>(null);
   const collapsible = useCollapsibleHeader(
     {
       title: 'Library',
@@ -98,7 +80,10 @@ export default function Library(props: HomeStackProps<'Library'>) {
       showHeaderCenter: !showSearch,
       headerStyle: style.headerStyle,
       headerRight: (
-        <IconButton icon={<Icon type="icon" name="filter-menu" />} />
+        <IconButton
+          onPress={() => bottomSheet.current?.open()}
+          icon={<Icon type="icon" name="filter-menu" />}
+        />
       ),
     },
     [showSearch],
@@ -133,16 +118,19 @@ export default function Library(props: HomeStackProps<'Library'>) {
   }, [input]);
 
   return (
-    <Freeze freeze={!isFocused}>
-      <Screen.FlatList
-        key={columns}
-        keyExtractor={keyExtractor}
-        numColumns={columns}
-        collapsible={collapsible}
-        data={mangas}
-        renderItem={renderItem}
-        getItemLayout={getItemLayout}
-      />
-    </Freeze>
+    <>
+      <Freeze freeze={!isFocused}>
+        <Screen.FlatList
+          key={columns}
+          keyExtractor={keyExtractor}
+          numColumns={columns}
+          collapsible={collapsible}
+          data={mangas}
+          renderItem={renderItem}
+          getItemLayout={getItemLayout}
+        />
+      </Freeze>
+      <LibraryFilterMenu ref={bottomSheet} />
+    </>
   );
 }
