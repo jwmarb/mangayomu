@@ -1,5 +1,6 @@
 import { StyleSheet, TextStyle } from 'react-native';
 import {
+  ButtonColors,
   TextAlignments,
   TextColors,
   TextVariants,
@@ -53,32 +54,40 @@ export const variants = StyleSheet.create<Record<TextVariants, TextStyle>>({
 });
 
 export const colors = (colorType: 'main' | 'light' | 'dark') =>
-  createStyles<Record<TextColors, TextStyle>>((theme) => ({
-    primary: {
-      color: theme.palette.primary[colorType],
-    },
-    secondary: {
-      color: theme.palette.secondary[colorType],
-    },
-    textPrimary: {
-      color: theme.palette.text.primary,
-    },
-    textSecondary: {
-      color: theme.palette.text.secondary,
-    },
-    disabled: {
-      color: theme.palette.text.disabled,
-    },
-    error: {
-      color: theme.palette.error[colorType],
-    },
-    warning: {
-      color: theme.palette.warning[colorType],
-    },
-    success: {
-      color: theme.palette.success[colorType],
-    },
-  }));
+  createStyles<Record<TextColors | `${ButtonColors}@contrast`, TextStyle>>(
+    (theme) => ({
+      'primary@contrast': {
+        color: theme.palette.primary.contrastText,
+      },
+      'secondary@contrast': {
+        color: theme.palette.secondary.contrastText,
+      },
+      primary: {
+        color: theme.palette.primary[colorType],
+      },
+      secondary: {
+        color: theme.palette.secondary[colorType],
+      },
+      textPrimary: {
+        color: theme.palette.text.primary,
+      },
+      textSecondary: {
+        color: theme.palette.text.secondary,
+      },
+      disabled: {
+        color: theme.palette.text.disabled,
+      },
+      error: {
+        color: theme.palette.error[colorType],
+      },
+      warning: {
+        color: theme.palette.warning[colorType],
+      },
+      success: {
+        color: theme.palette.success[colorType],
+      },
+    }),
+  );
 
 export const alignments = StyleSheet.create<Record<TextAlignments, TextStyle>>({
   left: {

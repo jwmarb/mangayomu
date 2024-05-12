@@ -11,6 +11,7 @@ import {
   TextAlignments,
   TextColors,
   TEXT_COLOR_TYPES,
+  ButtonColors,
 } from '@/components/primitives/types';
 import useStyles from '@/hooks/useStyles';
 import {
@@ -23,7 +24,7 @@ import {
 
 export type TextProps = NativeTextProps & {
   variant?: TextVariants;
-  color?: TextColors;
+  color?: TextColors | `${ButtonColors}@contrast`;
   alignment?: TextAlignments;
   contrast?: boolean;
   bold?: boolean;

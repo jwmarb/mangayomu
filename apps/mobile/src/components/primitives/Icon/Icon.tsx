@@ -11,6 +11,7 @@ import React from 'react';
 import Animated, { AnimatedProps } from 'react-native-reanimated';
 import { sizes } from '@/components/primitives/Icon/styles';
 import {
+  ButtonColors,
   IconSizes,
   TextColorTypes,
   TextColors,
@@ -22,7 +23,7 @@ import { composedColors } from '@/components/primitives/Text';
 export type IconProps = BaseProps & (FontIconProps | ImageIconProps);
 
 type BaseProps = Pick<TextProps, 'style'> & {
-  color?: TextColors;
+  color?: TextColors | `${ButtonColors}@contrast`;
   colorType?: TextColorTypes;
   size?: 'large' | 'medium' | 'small' | number;
   contrast?: boolean;
