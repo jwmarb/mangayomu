@@ -119,7 +119,11 @@ export default abstract class MangaSource<
       this.READABLE_GENRES_MAP[genre] = genre;
     }
     for (const genre in info.mapToReadableGenres) {
-      this.READABLE_GENRES_MAP[genre] = info.mapToReadableGenres?.[genre];
+      const readableGenre = info.mapToReadableGenres?.[genre];
+      this.READABLE_GENRES_MAP[genre] = readableGenre;
+      if (readableGenre != null) {
+        this.READABLE_GENRES_MAP[readableGenre] = genre;
+      }
     }
 
     this._proxy = null;
