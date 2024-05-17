@@ -76,7 +76,10 @@ function toSimpleNoun(s: string) {
 
 const keyExtractor = (item: string) => item;
 
-const getItemLayout: FlatListProps<string>['getItemLayout'] = (data, index) => {
+export const getItemLayout: FlatListProps<string>['getItemLayout'] = (
+  data,
+  index,
+) => {
   return {
     index,
     length: ITEM_HEIGHT,

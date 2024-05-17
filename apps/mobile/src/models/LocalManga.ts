@@ -162,10 +162,24 @@ export class LocalManga extends Model {
 
     const localMangas = database.get(Table.LOCAL_MANGAS);
     const localChapters = database.get(Table.LOCAL_CHAPTERS);
+    const localGenres = database.get<Genre>(Table.GENRES);
     const [existingLocalManga, existingLocalChapters] = await Promise.all([
       localMangas.query(Q.where('link', data.link)),
       localChapters.query(Q.on(Table.LOCAL_MANGAS, Q.where('link', data.link))),
     ]);
+
+    let preparedUpdate: LocalManga;
+
+    // update if exists
+    if (existingLocalManga.length > 0) {
+      preparedUpdate = existingLocalManga[0].prepareUpdate(
+        addFields,
+      ) as LocalManga;
+    }
+    // create since it does not exist
+    else {
+      preparedUpdate = localMangas.prepareCreate(addFields) as LocalManga;
+    }
     const operations: Model[] = existingLocalChapters
       .map((x) => x.prepareDestroyPermanently())
       .concat(
@@ -182,20 +196,16 @@ export class LocalManga extends Model {
             localChapter.manga.set(preparedUpdate);
           }),
         ),
+      )
+      .concat(
+        data.genres?.map((x) =>
+          localGenres.prepareCreate((record) => {
+            record.name = x;
+            record.manga.set(preparedUpdate);
+          }),
+        ) ?? [],
       );
 
-    let preparedUpdate: LocalManga;
-
-    // update if exists
-    if (existingLocalManga.length > 0) {
-      preparedUpdate = existingLocalManga[0].prepareUpdate(
-        addFields,
-      ) as LocalManga;
-    }
-    // create since it does not exist
-    else {
-      preparedUpdate = localMangas.prepareCreate(addFields) as LocalManga;
-    }
     operations.push(preparedUpdate);
     await database.write(async () => {
       await database.batch(operations);
