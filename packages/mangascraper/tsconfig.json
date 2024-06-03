@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
+    "types": ["node", "jest"],
     "downlevelIteration": true,
     "outDir": "./dist",
     "module": "ESNext",

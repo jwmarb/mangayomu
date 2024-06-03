@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["node", "jest"],
+    "types": ["node"],
     "jsx": "preserve",
     "strict": true,
     "module": "CommonJS",
