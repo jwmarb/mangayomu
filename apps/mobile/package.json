@@ -15,8 +15,10 @@
   "dependencies": {
     "@gorhom/bottom-sheet": "5.0.0-alpha.9",
     "@gorhom/portal": "1.0.14",
-    "@mangayomu/mangascraper": "1.0.0",
-    "@mangayomu/theme": "1.0.0",
+    "@mangayomu/algorithms": "workspace:^",
+    "@mangayomu/language-codes": "workspace:^",
+    "@mangayomu/mangascraper": "workspace:^",
+    "@mangayomu/theme": "workspace:^",
     "@nozbe/watermelondb": "0.27.1",
     "@react-native-community/blur": "4.4.0",
     "@react-native-community/netinfo": "11.3.1",
