@@ -11,7 +11,8 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
-.yarn
+.yarn/*
+!.yarn/releases
 yarn-error.log
 .nx
 cosmos.imports.ts
