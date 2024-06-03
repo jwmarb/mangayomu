@@ -17,7 +17,7 @@
     "@types/jest": "^29.5.3",
     "eslint": "^8.57.0",
     "ts-jest": "^29.1.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.5"
   },
   "dependencies": {
     "deepcopy": "^2.1.0"

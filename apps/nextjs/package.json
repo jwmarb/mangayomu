@@ -35,13 +35,13 @@
     "react": "18.2.0",
     "react-aria": "^3.26.0",
     "react-dom": "18.2.0",
-    "react-freeze": "^1.0.3",
+    "react-freeze": "1.0.4",
     "react-hook-form": "^7.47.0",
     "react-icons": "^4.10.1",
     "react-stately": "^3.24.0",
     "realm-web": "^2.0.0",
     "zod": "^3.22.4",
-    "zustand": "^4.4.3"
+    "zustand": "4.5.2"
   },
   "devDependencies": {
     "@types/dompurify": "^3.0.2",
@@ -50,11 +50,11 @@
     "@types/react-dom": "18.2.6",
     "autoprefixer": "^10.4.14",
     "encoding": "^0.1.13",
-    "eslint": "8.43.0",
+    "eslint": "^8.57.0",
     "eslint-config-next": "13.4.7",
     "postcss": "^8.4.24",
     "tailwindcss": "^3.3.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.5"
   },
   "engines": {
     "node": ">=18"
