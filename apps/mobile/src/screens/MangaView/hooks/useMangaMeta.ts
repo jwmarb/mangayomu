@@ -5,15 +5,9 @@ import useManga from '@/hooks/useManga';
 import useMangaSource from '@/hooks/useMangaSource';
 import { LocalManga } from '@/models/LocalManga';
 import { Table } from '@/models/schema';
-import { RootStackProps } from '@/screens/navigator';
 import { SourceTimeoutException } from '@/exceptions/SourceTimeoutException';
 
-export default function useMangaMeta(props: RootStackProps<'MangaView'>) {
-  const {
-    route: {
-      params: { manga: unparsedManga, source: sourceStr },
-    },
-  } = props;
+export default function useMangaMeta(unparsedManga: unknown, sourceStr?: string) {
   const database = useDatabase();
   const source = useMangaSource({ manga: unparsedManga, source: sourceStr });
   const manga = useManga(unparsedManga, source);
