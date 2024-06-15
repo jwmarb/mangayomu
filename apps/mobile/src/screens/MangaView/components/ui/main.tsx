@@ -11,9 +11,9 @@ import { isChapter } from '@/utils/helpers';
 import useItemLayout from '@/screens/MangaView/hooks/useItemLayout';
 import Screen from '@/components/primitives/Screen';
 import useCollapsibleHeader from '@/hooks/useCollapsibleHeader';
+import useMangaViewUnparsedManga from '@/screens/MangaView/hooks/useMangaViewUnparsedManga';
 
 export type MangaViewMainProps = {
-  unparsedManga: unknown;
   source?: string;
   chapters: unknown[];
   onEndReached: () => void;
@@ -25,13 +25,8 @@ const renderItem: ListRenderItem<unknown> = ({ item }) => (
 );
 
 export default function MangaViewMain(props: MangaViewMainProps) {
-  const {
-    unparsedManga,
-    source: sourceStr,
-    chapters,
-    onEndReached,
-    collapsible,
-  } = props;
+  const { source: sourceStr, chapters, onEndReached, collapsible } = props;
+  const unparsedManga = useMangaViewUnparsedManga();
   const { data, refetch, isFetching } = useMangaMeta(unparsedManga, sourceStr);
   const meta = data?.[1];
   const source = useMangaSource({ manga: unparsedManga, source: sourceStr });

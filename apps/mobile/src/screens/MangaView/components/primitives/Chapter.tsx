@@ -1,13 +1,15 @@
 import React from 'react';
 import { View } from 'react-native';
 import { MangaChapter } from '@mangayomu/mangascraper';
-import useMangaViewData from '@/screens/MangaView/hooks/useMangaViewData';
+import { useNavigation } from '@react-navigation/native';
 import useMangaViewSource from '@/screens/MangaView/hooks/useMangaViewSource';
 import Pressable from '@/components/primitives/Pressable';
 import Text from '@/components/primitives/Text';
 import { createStyles } from '@/utils/theme';
 import useStyles from '@/hooks/useStyles';
 import useContrast from '@/hooks/useContrast';
+import useMangaViewUnparsedManga from '@/screens/MangaView/hooks/useMangaViewUnparsedManga';
+import useMangaViewUnparsedData from '@/screens/MangaView/hooks/useMangaViewUnparsedData';
 
 export const BASE_CHAPTER_HEIGHT = 64;
 export const CHAPTER_HEIGHT_EXTENDED = BASE_CHAPTER_HEIGHT + 20;
@@ -66,16 +68,26 @@ function isChapter(x: unknown): x is MangaChapter {
 
 function Chapter(props: ChapterProps) {
   const source = useMangaViewSource();
-  const meta = useMangaViewData();
+  const tmangameta = useMangaViewUnparsedData();
+  const unparsed = useMangaViewUnparsedManga();
   const chapter = isChapter(props.chapter)
     ? props.chapter
-    : source.toChapter(props.chapter, meta);
+    : source.toChapter(props.chapter, tmangameta);
   const contrast = useContrast();
   const style = useStyles(composedStyles[chapter.subname ? 1 : 0], contrast);
   const date = React.useMemo(() => getDate(chapter.date), [chapter.date]);
+  const navigation = useNavigation();
+
+  function handleOnPress() {
+    navigation.navigate('Reader', {
+      manga: unparsed,
+      source: source.NAME,
+      chapter: props.chapter,
+    });
+  }
 
   return (
-    <Pressable style={style.pressable}>
+    <Pressable onPress={handleOnPress} style={style.pressable}>
       <View>
         <Text numberOfLines={1}>{chapter.name}</Text>
         {chapter.subname && (

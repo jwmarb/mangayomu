@@ -30,3 +30,7 @@ export const MangaViewOpenFilterMenuContext = React.createContext<
 export const MangaViewChaptersContext = React.createContext<unknown[] | null>(
   null,
 );
+
+export const MangaViewUnparsedMangaContext = React.createContext<
+  unknown | undefined
+>(undefined);

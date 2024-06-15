@@ -49,7 +49,6 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
       chapters={chapters}
     >
       <MangaViewMain
-        unparsedManga={unparsedManga}
         chapters={chapters}
         onEndReached={onEndReached}
         source={sourceStr}

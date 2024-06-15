@@ -18,6 +18,7 @@ export type RootStackParamList = {
   MangaView: { manga: unknown; source?: string };
   SourceBrowser: { source: string; genre?: string; initialQuery?: string };
   ExtendedMangaList: { type: keyof FetchedMangaResults };
+  Reader: { manga: unknown; source?: string; chapter: unknown };
 };
 
 export type RootStackProps<K extends keyof RootStackParamList> =

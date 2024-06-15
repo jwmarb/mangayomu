@@ -11,6 +11,7 @@ import {
   MangaViewMangaSourceContext,
   MangaViewOpenFilterMenuContext,
   MangaViewUnparsedDataContext,
+  MangaViewUnparsedMangaContext,
 } from '@/screens/MangaView/context';
 import useMangaMeta from '@/screens/MangaView/hooks/useMangaMeta';
 
@@ -48,7 +49,11 @@ export default function MangaViewProvider(props: MangaViewProvidersProps) {
               <MangaViewErrorContext.Provider value={error}>
                 <MangaViewFetchStatusContext.Provider value={fetchStatus}>
                   <MangaViewMangaSourceContext.Provider value={source}>
-                    {children}
+                    <MangaViewUnparsedMangaContext.Provider
+                      value={unparsedManga}
+                    >
+                      {children}
+                    </MangaViewUnparsedMangaContext.Provider>
                   </MangaViewMangaSourceContext.Provider>
                 </MangaViewFetchStatusContext.Provider>
               </MangaViewErrorContext.Provider>
