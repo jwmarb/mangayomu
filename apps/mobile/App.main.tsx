@@ -5,8 +5,10 @@ import MangaView from '@/screens/MangaView';
 import SourceBrowser from '@/screens/SourceBrowser';
 import { initialize } from '@/utils/image';
 import ExtendedMangaList from '@/screens/ExtendedMangaList';
+import Reader from '@/screens/Reader';
 
 const HOME_SCREEN_OPTIONS = { headerShown: false };
+const READER_SCREEN_OPTIONS = { headerShown: false };
 
 function App(): React.JSX.Element {
   React.useEffect(() => {
@@ -24,6 +26,11 @@ function App(): React.JSX.Element {
       <RootStack.Screen
         name="ExtendedMangaList"
         component={ExtendedMangaList}
+      />
+      <RootStack.Screen
+        name="Reader"
+        component={Reader}
+        options={READER_SCREEN_OPTIONS}
       />
     </RootStack.Navigator>
   );
