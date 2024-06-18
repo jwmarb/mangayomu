@@ -2662,6 +2662,7 @@ __metadata:
     "@mangayomu/algorithms": "npm:1.0.0"
     "@mangayomu/language-codes": "npm:1.0.0"
     "@mangayomu/mangascraper": "npm:1.0.0"
+    "@mangayomu/schemas": "workspace:^"
     "@mangayomu/theme": "npm:1.0.0"
     "@nozbe/watermelondb": "npm:0.27.1"
     "@react-native-community/blur": "npm:4.4.0"
@@ -2792,7 +2793,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mangayomu/schemas@npm:1.0.0, @mangayomu/schemas@workspace:packages/schemas":
+"@mangayomu/schemas@npm:1.0.0, @mangayomu/schemas@workspace:^, @mangayomu/schemas@workspace:packages/schemas":
   version: 0.0.0-use.local
   resolution: "@mangayomu/schemas@workspace:packages/schemas"
   dependencies:
