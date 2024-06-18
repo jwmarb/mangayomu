@@ -12,7 +12,7 @@ export type SettingsState = {
   reader: {
     readingDirection: ReadingDirection;
     imageScaling: ImageScaling;
-    screenOrientation: ReaderScreenOrientation;
+    readingOrientation: ReaderScreenOrientation;
     zoomStartPosition: ZoomStartPosition;
   };
 };
@@ -23,7 +23,7 @@ export const useSettingsStore = create(
       reader: {
         readingDirection: ReadingDirection.LEFT_TO_RIGHT,
         imageScaling: ImageScaling.SMART_FIT,
-        screenOrientation: ReaderScreenOrientation.FREE,
+        readingOrientation: ReaderScreenOrientation.FREE,
         zoomStartPosition: ZoomStartPosition.AUTOMATIC,
       },
     }),
