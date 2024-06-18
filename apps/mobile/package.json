@@ -18,6 +18,7 @@
     "@mangayomu/algorithms": "1.0.0",
     "@mangayomu/language-codes": "1.0.0",
     "@mangayomu/mangascraper": "1.0.0",
+    "@mangayomu/schemas": "workspace:^",
     "@mangayomu/theme": "1.0.0",
     "@nozbe/watermelondb": "0.27.1",
     "@react-native-community/blur": "4.4.0",
