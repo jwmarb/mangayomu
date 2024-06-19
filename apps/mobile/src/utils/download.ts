@@ -1,10 +1,8 @@
 import blobUtil from 'react-native-blob-util';
 import { joinPath } from '@/utils/helpers';
-import {
-  FailedToDownloadImageException,
-  FailedToMoveImageException,
-  IMAGE_CACHE_DIR,
-} from '@/utils/image';
+import { IMAGE_CACHE_DIR } from '@/utils/image';
+import { FailedToMoveImageException } from '@/exceptions/FailedToMoveImageException';
+import { FailedToDownloadImageException } from '@/exceptions/FailedToDownloadImageException';
 
 export const download = async (url: string, path: string, fileName: string) => {
   const response = await blobUtil
@@ -24,7 +22,11 @@ export const download = async (url: string, path: string, fileName: string) => {
         return { uri: `file://${fileCachePath}` };
       }
 
-      throw new FailedToMoveImageException(path, fileCachePath);
+      throw new FailedToMoveImageException(
+        path,
+        fileCachePath,
+        new Error('Invalid http status'),
+      );
     }
     default:
       throw new FailedToDownloadImageException(
