@@ -8,7 +8,7 @@ export const MANGA_ID = 'manga_id';
 export const CHAPTER_ID = 'chapter_id';
 export const CURRENTLY_READING_CHAPTER_ID = 'cr_chapter_id';
 
-const globalSetting = 0xf;
+export const globalSetting = 0xf;
 
 export enum ReadingDirection {
   LEFT_TO_RIGHT,

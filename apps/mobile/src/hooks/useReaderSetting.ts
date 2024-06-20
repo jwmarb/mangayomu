@@ -5,6 +5,7 @@ import { Database } from '@nozbe/watermelondb';
 import useBoolean from '@/hooks/useBoolean';
 import { Manga } from '@/models/Manga';
 import { SettingsState, useSettingsStore } from '@/stores/settings';
+import { globalSetting } from '@/models/schema';
 
 type InitOptions = {
   database: Database;
@@ -29,7 +30,7 @@ export async function initialize({
 }
 
 /**
- *
+ * Uses a reader setting locally (from a manga) or globally (global applies to all mangas by default)
  * @param key The name of a reader property
  * @param meta The metadata of the manga to use to change. If not provided, it will default to using reader settings from `useSettingsStore`
  */
@@ -54,6 +55,12 @@ export default function useReaderSetting<
           });
         });
       } else {
+        if (newValue === globalSetting) {
+          console.warn(
+            `Tried setting a global setting named "${key}" to "Use global setting" option, which is not allowed`,
+          );
+          return;
+        }
         setGlobalState(key, newValue);
       }
     },
