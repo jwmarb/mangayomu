@@ -15,7 +15,7 @@ import { FailedToMoveImageException } from '@/exceptions/FailedToMoveImageExcept
 
 const LARGE_SAMPLE_IMAGE =
   'https://images.unsplash.com/photo-1546180147-af9074ff24aa';
-const SMALL_SAMPLE_IMAGE = 'https://via.placeholder.com/120x120';
+const SMALL_SAMPLE_IMAGE = 'https://placehold.co/120x120/png';
 const INVALID_SAMPLE_IMAGE = 'https://svp.icu/placeholder/8192x10932.png';
 
 const largeHashedKey = hash(LARGE_SAMPLE_IMAGE);
