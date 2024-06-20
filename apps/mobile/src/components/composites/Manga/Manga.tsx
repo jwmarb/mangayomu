@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Dimensions,
-  FlatListProps,
   ListRenderItem,
   StyleProp,
   View,
@@ -98,7 +97,9 @@ const MemoizedManga = React.memo(Manga) as ReturnType<
 > & {
   Skeleton: ReturnType<typeof React.memo<typeof Skeleton>>;
   generateFlatListProps: (
-    props?: Partial<FlatListProps<unknown>> & { flexibleColumns?: boolean },
+    props?: Partial<React.ComponentProps<FlatList>> & {
+      flexibleColumns?: boolean;
+    },
   ) => MangaFlatListPreset;
   SourceProvider: SourceProviderComponent;
 };
