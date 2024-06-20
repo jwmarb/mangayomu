@@ -1,9 +1,32 @@
 import { useDatabase } from '@nozbe/watermelondb/react';
 import React from 'react';
+import { Manga as MManga } from '@mangayomu/mangascraper';
+import { Database } from '@nozbe/watermelondb';
 import useBoolean from '@/hooks/useBoolean';
-import useMangaSource from '@/hooks/useMangaSource';
 import { Manga } from '@/models/Manga';
 import { SettingsState, useSettingsStore } from '@/stores/settings';
+
+type InitOptions = {
+  database: Database;
+  dbManga: React.MutableRefObject<Manga | undefined>;
+  manga: MManga;
+  onSubscription: (model: Manga) => void;
+};
+
+export async function initialize({
+  database,
+  manga,
+  onSubscription,
+  dbManga: ref,
+}: InitOptions) {
+  const dbManga = await Manga.toManga(manga, database);
+  ref.current = dbManga;
+  const observer = dbManga.observe();
+  const subscription = observer.subscribe(onSubscription);
+  return () => {
+    subscription.unsubscribe();
+  };
+}
 
 /**
  *
@@ -12,32 +35,50 @@ import { SettingsState, useSettingsStore } from '@/stores/settings';
  */
 export default function useReaderSetting<
   T extends keyof SettingsState['reader'],
->(key: T, manga?: unknown) {
+>(key: T, manga?: MManga) {
   const globalState = useSettingsStore((store) => store.reader[key]);
+  const setGlobalState = useSettingsStore((store) => store.setReaderState);
   const [localState, setLocalState] = React.useState<
     SettingsState['reader'][T] | null
   >(null);
-  const source = useMangaSource({ manga });
+  const dbManga = React.useRef<Manga>();
   const [loading, toggle] = useBoolean(true);
   const database = useDatabase();
+  const setState = React.useCallback(
+    async (newValue: SettingsState['reader'][T]) => {
+      if (manga != null) {
+        await database.write(async () => {
+          await dbManga.current?.update((self) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            self[key] = newValue as any;
+          });
+        });
+      } else {
+        setGlobalState(key, newValue);
+      }
+    },
+    [],
+  );
 
   React.useEffect(() => {
-    async function initialize() {
-      const dbManga = await Manga.toManga(source.toManga(manga), database);
-      const observer = dbManga.observe();
-      const subscription = observer.subscribe((model) => {
-        toggle(false);
-        setLocalState(model[key] as unknown as SettingsState['reader'][T]);
+    if (manga != null) {
+      initialize({
+        dbManga,
+        database,
+        manga,
+        onSubscription: (model) => {
+          toggle(false);
+          setLocalState(model[key]);
+        },
       });
-      return () => {
-        subscription.unsubscribe();
-      };
+    } else {
+      toggle(false);
     }
-    initialize();
   }, []);
   return {
     globalState,
     localState,
+    setState,
     isLoading: loading,
   };
 }
