@@ -2662,7 +2662,7 @@ __metadata:
     "@mangayomu/algorithms": "npm:1.0.0"
     "@mangayomu/language-codes": "npm:1.0.0"
     "@mangayomu/mangascraper": "npm:1.0.0"
-    "@mangayomu/schemas": "workspace:^"
+    "@mangayomu/schema-creator": "workspace:^"
     "@mangayomu/theme": "npm:1.0.0"
     "@nozbe/watermelondb": "npm:0.27.1"
     "@react-native-community/blur": "npm:4.4.0"
@@ -2677,11 +2677,13 @@ __metadata:
     "@react-navigation/native-stack": "npm:6.9.26"
     "@tanstack/react-query": "npm:5.40.1"
     "@testing-library/react-native": "npm:^12.5.1"
+    "@types/jest": "npm:^29.5.12"
     "@types/react": "npm:18.2.14"
     "@types/react-native-vector-icons": "npm:6.4.18"
     "@types/react-test-renderer": "npm:^18.0.0"
     babel-jest: "npm:^29.6.3"
     babel-plugin-module-resolver: "npm:^5.0.0"
+    better-sqlite3: "npm:^11.0.0"
     eslint: "npm:^8.57.0"
     eslint-plugin-import: "npm:^2.29.1"
     jest: "npm:^29.7.0"
@@ -2785,7 +2787,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mangayomu/schema-creator@npm:1.0.0, @mangayomu/schema-creator@workspace:packages/schema-creator":
+"@mangayomu/schema-creator@npm:1.0.0, @mangayomu/schema-creator@workspace:^, @mangayomu/schema-creator@workspace:packages/schema-creator":
   version: 0.0.0-use.local
   resolution: "@mangayomu/schema-creator@workspace:packages/schema-creator"
   dependencies:
@@ -2793,7 +2795,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mangayomu/schemas@npm:1.0.0, @mangayomu/schemas@workspace:^, @mangayomu/schemas@workspace:packages/schemas":
+"@mangayomu/schemas@npm:1.0.0, @mangayomu/schemas@workspace:packages/schemas":
   version: 0.0.0-use.local
   resolution: "@mangayomu/schemas@workspace:packages/schemas"
   dependencies:
@@ -7639,6 +7641,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"better-sqlite3@npm:^11.0.0":
+  version: 11.0.0
+  resolution: "better-sqlite3@npm:11.0.0"
+  dependencies:
+    bindings: "npm:^1.5.0"
+    node-gyp: "npm:latest"
+    prebuild-install: "npm:^7.1.1"
+  checksum: 10/2fe3743ff5744cac0b76a7d4eb0b1318f576bdaf643ab994f4ae257082063c5649a878e3748e55ca2ae1b457afb327ca123d5961d0f6e4b53a165a91c024d1b3
+  languageName: node
+  linkType: hard
+
 "big-integer@npm:^1.6.44":
   version: 1.6.52
   resolution: "big-integer@npm:1.6.52"
@@ -7657,6 +7670,15 @@ __metadata:
   version: 2.3.0
   resolution: "binary-extensions@npm:2.3.0"
   checksum: 10/bcad01494e8a9283abf18c1b967af65ee79b0c6a9e6fcfafebfe91dbe6e0fc7272bafb73389e198b310516ae04f7ad17d79aacf6cb4c0d5d5202a7e2e52c7d98
+  languageName: node
+  linkType: hard
+
+"bindings@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "bindings@npm:1.5.0"
+  dependencies:
+    file-uri-to-path: "npm:1.0.0"
+  checksum: 10/593d5ae975ffba15fbbb4788fe5abd1e125afbab849ab967ab43691d27d6483751805d98cb92f7ac24a2439a8a8678cd0131c535d5d63de84e383b0ce2786133
   languageName: node
   linkType: hard
 
@@ -10466,6 +10488,13 @@ __metadata:
     fs-extra: "npm:11.1.1"
     ramda: "npm:0.29.0"
   checksum: 10/8f0530aaa8bed115ef1b00f69accde8d1311d0eaffc6e37bb0b5057b8be79e6e960823025ea3c980a58147eed0ba690b9906c2229e132f5d96158e9b635a052c
+  languageName: node
+  linkType: hard
+
+"file-uri-to-path@npm:1.0.0":
+  version: 1.0.0
+  resolution: "file-uri-to-path@npm:1.0.0"
+  checksum: 10/b648580bdd893a008c92c7ecc96c3ee57a5e7b6c4c18a9a09b44fb5d36d79146f8e442578bc0e173dc027adf3987e254ba1dfd6e3ec998b7c282873010502144
   languageName: node
   linkType: hard
 
