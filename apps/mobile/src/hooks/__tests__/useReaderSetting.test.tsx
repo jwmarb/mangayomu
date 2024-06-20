@@ -7,7 +7,6 @@ import * as watermelondb from '@nozbe/watermelondb/react';
 import { ReactTestInstance } from 'react-test-renderer';
 import useReaderSetting from '@/hooks/useReaderSetting';
 import { ReadingDirection } from '@/models/schema';
-import { Manga } from '@/models/Manga';
 
 afterEach(async () => {
   await database.write(async () => {
@@ -82,8 +81,6 @@ it('modifies settings specific for manga', async () => {
     source: 'MangaSee',
     language: 'en',
   };
-
-  await Manga.toManga(manga, database);
 
   const tree = await waitFor(() => render(<Component manga={manga} />));
   let localStateEl: ReactTestInstance,
