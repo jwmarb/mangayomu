@@ -1,4 +1,4 @@
-import { date, field, lazy, relation } from '@nozbe/watermelondb/decorators';
+import { date, field, relation } from '@nozbe/watermelondb/decorators';
 import { Collection, Database, Model, Q, Relation } from '@nozbe/watermelondb';
 import { Associations } from '@nozbe/watermelondb/Model';
 import { Manga as MManga } from '@mangayomu/mangascraper';
@@ -16,7 +16,6 @@ import {
   ZoomStartPosition,
 } from '@/models/schema';
 import { Chapter } from '@/models/Chapter';
-import { LocalManga } from '@/models/LocalManga';
 
 export class Manga extends Model {
   static table = Table.MANGAS;
