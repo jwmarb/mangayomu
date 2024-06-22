@@ -19,7 +19,8 @@ export type RootStackParamList = {
   SourceBrowser: { source: string; genre?: string; initialQuery?: string };
   ExtendedMangaList: { type: keyof FetchedMangaResults };
   Reader: { manga: unknown; source?: string; chapter: unknown };
-  Settings: undefined;
+  ReaderSettings: undefined;
+  AppearanceSettings: undefined;
 };
 
 export type RootStackProps<K extends keyof RootStackParamList> =
