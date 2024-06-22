@@ -13,6 +13,6 @@
     "promise-limit": "^2.7.0"
   },
   "devDependencies": {
-    "typescript": "^5.4.5"
+    "typescript": "5.5.2"
   }
 }

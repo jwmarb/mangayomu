@@ -10,7 +10,7 @@
     "lint": "eslint index.ts"
   },
   "devDependencies": {
-    "eslint": "^8.57.0",
-    "typescript": "^5.4.5"
+    "eslint": "^9.5.0",
+    "typescript": "5.5.2"
   }
 }
