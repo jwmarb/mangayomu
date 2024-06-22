@@ -29,7 +29,7 @@ export const styles = (variant: ButtonVariants, color: ButtonColors) =>
       paddingVertical: theme.style.size.l,
     },
     container: {
-      borderWidth: 1.5,
+      borderWidth: theme.style.borderWidth.s,
       borderRadius: theme.style.borderRadius.xxl,
       borderColor:
         variant === 'outlined' ? theme.palette[color].main : 'transparent',
