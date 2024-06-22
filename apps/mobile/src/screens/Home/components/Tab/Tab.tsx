@@ -37,6 +37,8 @@ const icons: Record<
   Explore: (focused) => (focused ? 'compass' : 'compass-outline'),
   Browse: (focused) => (focused ? 'book-search' : 'book-search-outline'),
   Library: (focused) => (focused ? 'bookmark' : 'bookmark-outline'),
+  More: (focused) =>
+    focused ? 'dots-horizontal-circle' : 'dots-horizontal-circle-outline',
 };
 
 const themedProps = createThemedProps((theme) => ({
