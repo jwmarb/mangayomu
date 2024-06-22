@@ -47,13 +47,13 @@ export default function PressableFixture() {
   const rippleRadius = React.useMemo(() => {
     switch (selectedRippleRadius) {
       case 'theme':
-        return theme.style.borderRadius;
+        return theme.style.borderRadius.xxl;
       case 'undefined':
         return undefined;
       default:
         return parseInt(selectedRippleRadius);
     }
-  }, [selectedRippleRadius, theme.style.borderRadius]);
+  }, [selectedRippleRadius, theme.style.borderRadius.xxl]);
   const rippleColor = React.useMemo(() => {
     switch (selectedRippleColor) {
       case 'theme':

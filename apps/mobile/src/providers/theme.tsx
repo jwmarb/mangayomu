@@ -46,7 +46,20 @@ declare module '@mangayomu/theme' {
     helpers: ThemeHelpers;
     style: {
       rippleRadius: number;
-      borderRadius: number;
+      /**
+       * @default 32
+       * @deprecated use `borderRadius`
+       * ```js
+       *  borderRadius: {
+       *    xxl: 32,
+       *     xl: 24,
+       *      l: 16,
+       *      m: 8,
+       *      s: 4
+       *  }
+       * ```
+       */
+      borderRadius_legacy: number;
       screen: {
         paddingVertical: number;
         paddingHorizontal: number;
@@ -56,11 +69,25 @@ declare module '@mangayomu/theme' {
         paddingHorizontal: number;
       };
       size: {
-        s: number;
-        m: number;
-        l: number;
-        xl: number;
-        xxl: number;
+        s: 4;
+        m: 8;
+        l: 12;
+        xl: 16;
+        xxl: 20;
+      };
+      borderWidth: {
+        s: 1.5;
+        m: 2.5;
+        l: 4;
+        xl: 6;
+        xxl: 8;
+      };
+      borderRadius: {
+        xxl: 32;
+        xl: 24;
+        l: 16;
+        m: 8;
+        s: 4;
       };
     };
     reactNavigation: NavigationTheme;
@@ -161,7 +188,21 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
     },
     style: {
       rippleRadius: 16,
-      borderRadius: 32,
+      borderRadius_legacy: 32,
+      borderRadius: {
+        xxl: 32,
+        xl: 24,
+        l: 16,
+        m: 8,
+        s: 4,
+      },
+      borderWidth: {
+        s: 1.5,
+        m: 2.5,
+        l: 4,
+        xl: 6,
+        xxl: 8,
+      },
       screen: {
         paddingVertical: (theme) => theme.style.size.s,
         paddingHorizontal: (theme) => theme.style.size.l,

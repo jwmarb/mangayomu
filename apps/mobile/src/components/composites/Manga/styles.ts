@@ -24,7 +24,7 @@ export const styles = createStyles((theme) => ({
     top: theme.style.size.l,
     right: theme.style.size.l,
     backgroundColor: theme.palette.common.white,
-    borderRadius: theme.style.borderRadius / 8,
+    borderRadius: theme.style.borderRadius.s,
     ...theme.helpers.elevation(4),
   },
   view: {
@@ -43,13 +43,13 @@ export const styles = createStyles((theme) => ({
   skeletonText: {
     backgroundColor: theme.palette.skeleton,
     width: '100%',
-    borderRadius: theme.style.borderRadius,
+    borderRadius: theme.style.borderRadius.xxl,
     height: 14, // to be changed in the future,
   },
   cover: {
     width: COVER_WIDTH,
     height: COVER_HEIGHT,
-    borderRadius: theme.style.borderRadius / 4,
+    borderRadius: theme.style.borderRadius.m,
     alignSelf: 'center',
   },
 }));

@@ -32,7 +32,7 @@ const styles = createStyles((theme) => ({
   },
   chip: {
     borderColor: theme.palette.divider,
-    borderRadius: theme.style.borderRadius / 3,
+    borderRadius: theme.style.borderRadius.m + 2,
     borderWidth: 1.5,
     flexDirection: 'row',
     overflow: 'hidden',

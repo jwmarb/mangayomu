@@ -15,6 +15,6 @@ export const styles = createStyles((theme) => ({
   icon: {
     paddingVertical: theme.style.size.s,
     paddingHorizontal: theme.style.size.xl,
-    borderRadius: theme.style.borderRadius,
+    borderRadius: theme.style.borderRadius.xxl,
   },
 }));

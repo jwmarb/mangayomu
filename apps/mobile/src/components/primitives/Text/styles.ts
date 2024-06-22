@@ -117,7 +117,7 @@ export const styles = createStyles((theme) => ({
     height: '50%',
     left: 0,
     right: 0,
-    borderRadius: theme.style.borderRadius,
+    borderRadius: theme.style.borderRadius.xxl,
   },
   placeholderText: {
     opacity: 0,

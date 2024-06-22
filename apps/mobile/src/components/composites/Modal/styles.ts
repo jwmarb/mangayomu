@@ -24,8 +24,8 @@ export const styles = createStyles((theme) => ({
   input: {
     width: '90%',
     backgroundColor: theme.palette.background.paper,
-    borderTopLeftRadius: theme.style.borderRadius / 2,
-    borderTopRightRadius: theme.style.borderRadius / 2,
+    borderTopLeftRadius: theme.style.borderRadius.l,
+    borderTopRightRadius: theme.style.borderRadius.l,
     overflow: 'hidden',
   },
   textInputStyle: {
@@ -35,16 +35,16 @@ export const styles = createStyles((theme) => ({
     padding: theme.style.size.xxl,
     width: '90%',
     backgroundColor: theme.palette.background.paper,
-    borderTopLeftRadius: theme.style.borderRadius,
-    borderTopRightRadius: theme.style.borderRadius,
+    borderTopLeftRadius: theme.style.borderRadius.xxl,
+    borderTopRightRadius: theme.style.borderRadius.xxl,
   },
   content: {
     padding: theme.style.size.xxl,
     width: '90%',
     maxHeight: '50%',
     backgroundColor: theme.palette.background.paper,
-    borderBottomLeftRadius: theme.style.borderRadius,
-    borderBottomRightRadius: theme.style.borderRadius,
+    borderBottomLeftRadius: theme.style.borderRadius.xxl,
+    borderBottomRightRadius: theme.style.borderRadius.xxl,
   },
   flatListFooter: {
     paddingBottom: theme.style.size.xxl * 2,

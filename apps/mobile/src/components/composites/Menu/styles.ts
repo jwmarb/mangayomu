@@ -11,7 +11,7 @@ export const styles = createStyles((theme) => ({
     ...theme.helpers.elevation(4),
   },
   optionsContainer: {
-    borderRadius: theme.style.borderRadius / 4,
+    borderRadius: theme.style.borderRadius.m,
     backgroundColor: theme.palette.background.menu,
     overflow: 'scroll',
   },

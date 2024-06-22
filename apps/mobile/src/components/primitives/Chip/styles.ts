@@ -6,7 +6,7 @@ export const styles = (color: ChipColors | 'null') =>
     chip_outlined: {
       borderColor:
         color === 'null' ? theme.palette.divider : theme.palette[color].main,
-      borderRadius: theme.style.borderRadius / 3,
+      borderRadius: theme.style.borderRadius.m + 2,
       borderWidth: 1.5,
       flexDirection: 'row',
       overflow: 'hidden',
@@ -16,13 +16,13 @@ export const styles = (color: ChipColors | 'null') =>
         color === 'null'
           ? theme.palette.divider
           : theme.palette[color][theme.mode === 'dark' ? 'dark' : 'light'],
-      borderRadius: theme.style.borderRadius / 3,
+      borderRadius: theme.style.borderRadius.m + 2,
       flexDirection: 'row',
       overflow: 'hidden',
     },
     skeleton: {
       backgroundColor: theme.palette.skeleton,
-      borderRadius: theme.style.borderRadius / 3,
+      borderRadius: theme.style.borderRadius.m + 2,
       paddingVertical: theme.style.size.m,
       paddingHorizontal: theme.style.size.l,
     },

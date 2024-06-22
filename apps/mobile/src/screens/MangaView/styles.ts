@@ -29,7 +29,7 @@ export const styles = createStyles((theme) => ({
   floatingImage: {
     width: 130,
     height: 130 / COVER_WIDTH_HEIGHT_RATIO,
-    borderRadius: theme.style.borderRadius / 4,
+    borderRadius: theme.style.borderRadius.m,
   },
   metaContainer: {
     paddingHorizontal: theme.style.screen.paddingHorizontal,
@@ -41,7 +41,7 @@ export const styles = createStyles((theme) => ({
   },
   actionContainer: {
     backgroundColor: theme.palette.background.menu,
-    borderRadius: theme.style.borderRadius,
+    borderRadius: theme.style.borderRadius.xxl,
     flexDirection: 'row',
   },
   statusContainer: {

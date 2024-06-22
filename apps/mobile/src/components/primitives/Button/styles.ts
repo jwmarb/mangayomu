@@ -30,7 +30,7 @@ export const styles = (variant: ButtonVariants, color: ButtonColors) =>
     },
     container: {
       borderWidth: 1.5,
-      borderRadius: theme.style.borderRadius,
+      borderRadius: theme.style.borderRadius.xxl,
       borderColor:
         variant === 'outlined' ? theme.palette[color].main : 'transparent',
       overflow: 'hidden',

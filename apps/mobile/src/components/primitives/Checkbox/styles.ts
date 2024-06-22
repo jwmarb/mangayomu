@@ -11,7 +11,7 @@ export const styles = createStyles((theme) => ({
   checkboxChecked: {
     padding: theme.style.size.s * 0.5,
     borderColor: 'transparent',
-    borderRadius: theme.style.borderRadius / 4,
+    borderRadius: theme.style.borderRadius.m,
     borderWidth: 1.5,
     backgroundColor: theme.palette.primary.main,
     flex: 0,
@@ -20,7 +20,7 @@ export const styles = createStyles((theme) => ({
     padding: theme.style.size.s * 0.5,
 
     borderColor: theme.palette.divider,
-    borderRadius: theme.style.borderRadius / 4,
+    borderRadius: theme.style.borderRadius.m,
     borderWidth: 1.5,
     flex: 0,
   },
