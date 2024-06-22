@@ -7,7 +7,7 @@ export const styles = (color: ChipColors | 'null') =>
       borderColor:
         color === 'null' ? theme.palette.divider : theme.palette[color].main,
       borderRadius: theme.style.borderRadius.m + 2,
-      borderWidth: 1.5,
+      borderWidth: theme.style.borderWidth.s,
       flexDirection: 'row',
       overflow: 'hidden',
     },
