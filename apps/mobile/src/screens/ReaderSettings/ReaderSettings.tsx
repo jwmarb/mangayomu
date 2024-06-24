@@ -1,15 +1,23 @@
-import { ScrollView } from 'react-native-gesture-handler';
 import GlobalSettings from '@/screens/ReaderSettings/components/ui/GlobalSettings';
-import useStyles from '@/hooks/useStyles';
-import { styles } from '@/screens/ReaderSettings/styles';
-import useContrast from '@/hooks/useContrast';
+import Tabs from '@/components/composites/Tabs';
+import React from 'react';
+import { Route, SceneMap } from 'react-native-tab-view';
+import withScrollable from '@/screens/ReaderSettings/helpers/withScrollable';
+
+const routes: Route[] = [{ key: 'global', title: 'Global' }];
+
+const renderScene = SceneMap({
+  global: withScrollable(GlobalSettings),
+});
 
 export default function ReaderSettings() {
-  const contrast = useContrast();
-  const style = useStyles(styles, contrast);
+  const [index, setIndex] = React.useState<number>(0);
+  const navigationState = { index, routes };
   return (
-    <ScrollView contentContainerStyle={style.container}>
-      <GlobalSettings />
-    </ScrollView>
+    <Tabs
+      onIndexChange={setIndex}
+      navigationState={navigationState}
+      renderScene={renderScene}
+    />
   );
 }
