@@ -1,5 +1,5 @@
 import { createContext } from '@/utils/context';
-import { MangaChapter } from '@mangayomu/mangascraper';
+import { Manga, MangaChapter } from '@mangayomu/mangascraper';
 import React from 'react';
 
 export const {
@@ -11,3 +11,6 @@ export const {
   useContext: useIsFetchingChapter,
   Provider: IsFetchingChapterProvider,
 } = createContext<boolean>();
+
+export const { Provider: ReaderMangaProvider, useContext: useReaderManga } =
+  createContext<Manga>();

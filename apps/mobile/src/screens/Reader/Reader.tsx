@@ -15,6 +15,7 @@ import useCurrentChapter from '@/screens/Reader/hooks/useCurrentChapter';
 import {
   CurrentChapterProvider,
   IsFetchingChapterProvider,
+  ReaderMangaProvider,
 } from '@/screens/Reader/context';
 import usePages from '@/screens/Reader/hooks/usePages';
 import useViewabilityConfigCallbackPairs from '@/screens/Reader/hooks/useViewabilityConfigCallbackPairs';
@@ -22,6 +23,7 @@ import useItemLayout from '@/screens/Reader/hooks/useItemLayout';
 import NoMoreChapters from '@/screens/Reader/components/ui/NoMoreChapters';
 import Page from '@/screens/Reader/components/ui/Page';
 import Overlay from '@/screens/Reader/components/ui/Overlay';
+import useManga from '@/hooks/useManga';
 
 export type Data =
   | { type: 'PAGE'; source: { uri: string }; chapter: MangaChapter }
@@ -66,18 +68,18 @@ const maintainVisibleContentPosition = { minIndexForVisible: 1 };
 export default function Reader(props: RootStackProps<'Reader'>) {
   const {
     route: {
-      params: { manga, source: sourceStr, chapter },
+      params: { manga: unparsedManga, source: sourceStr, chapter },
     },
   } = props;
-
+  const manga = useManga(unparsedManga, sourceStr);
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
-  const { data: metaResult } = useMangaMeta(manga, sourceStr);
+  const { data: metaResult } = useMangaMeta(unparsedManga, sourceStr);
   const [tmangameta, meta] = metaResult ?? [];
   const [currentChapter, setCurrentChapter] = useCurrentChapter({
     chapter,
     source: sourceStr,
-    manga,
+    manga: unparsedManga,
     tmangameta,
   });
   const {
@@ -85,7 +87,7 @@ export default function Reader(props: RootStackProps<'Reader'>) {
     initialPageParam,
     dataLength,
   } = usePages({
-    manga,
+    manga: unparsedManga,
     chapter,
     source: sourceStr,
     currentChapter,
@@ -113,21 +115,24 @@ export default function Reader(props: RootStackProps<'Reader'>) {
   return (
     <IsFetchingChapterProvider value={isFetching}>
       <CurrentChapterProvider value={currentChapter}>
-        <FlatList
-          getItemLayout={getItemLayout}
-          maintainVisibleContentPosition={maintainVisibleContentPosition}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-          data={data?.pages}
-          viewabilityConfigCallbackPairs={
-            viewabilityConfigCallbackPairs.current
-          }
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          initialScrollIndex={initialPageParam === 0 ? 0 : 1}
-        />
-        <Overlay />
+        <ReaderMangaProvider value={manga}>
+          <Overlay>
+            <FlatList
+              getItemLayout={getItemLayout}
+              maintainVisibleContentPosition={maintainVisibleContentPosition}
+              keyExtractor={keyExtractor}
+              renderItem={renderItem}
+              data={data?.pages}
+              viewabilityConfigCallbackPairs={
+                viewabilityConfigCallbackPairs.current
+              }
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              initialScrollIndex={initialPageParam === 0 ? 0 : 1}
+            />
+          </Overlay>
+        </ReaderMangaProvider>
       </CurrentChapterProvider>
     </IsFetchingChapterProvider>
   );
