@@ -4,10 +4,12 @@ import React from 'react';
 import Text from '@/components/primitives/Text';
 import useStyles from '@/hooks/useStyles';
 import { createStyles } from '@/utils/theme';
-import useCurrentChapterContext from '@/screens/Reader/hooks/useCurrentChapterContext';
 import Icon from '@/components/primitives/Icon';
-import useIsFetchingChapter from '@/screens/Reader/hooks/useIsFetchingChapter';
 import Progress from '@/components/primitives/Progress';
+import {
+  useCurrentChapterContext,
+  useIsFetchingChapter,
+} from '@/screens/Reader/context';
 
 const { width, height } = Dimensions.get('window');
 
