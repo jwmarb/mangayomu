@@ -10,17 +10,18 @@ import { styles } from '@/screens/Reader/styles';
 import useContrast from '@/hooks/useContrast';
 import ChapterDivider, {
   ChapterDividerProps,
-} from '@/screens/Reader/components/ChapterDivider';
+} from '@/screens/Reader/components/ui/ChapterDivider';
 import useCurrentChapter from '@/screens/Reader/hooks/useCurrentChapter';
 import {
-  CurrentChapterContext,
-  IsFetchingChapterContext,
+  CurrentChapterProvider,
+  IsFetchingChapterProvider,
 } from '@/screens/Reader/context';
 import usePages from '@/screens/Reader/hooks/usePages';
 import useViewabilityConfigCallbackPairs from '@/screens/Reader/hooks/useViewabilityConfigCallbackPairs';
 import useItemLayout from '@/screens/Reader/hooks/useItemLayout';
-import NoMoreChapters from '@/screens/Reader/components/NoMoreChapters';
-import Page from '@/screens/Reader/components/Page';
+import NoMoreChapters from '@/screens/Reader/components/ui/NoMoreChapters';
+import Page from '@/screens/Reader/components/ui/Page';
+import Overlay from '@/screens/Reader/components/ui/Overlay';
 
 export type Data =
   | { type: 'PAGE'; source: { uri: string }; chapter: MangaChapter }
@@ -110,8 +111,8 @@ export default function Reader(props: RootStackProps<'Reader'>) {
   }
 
   return (
-    <IsFetchingChapterContext.Provider value={isFetching}>
-      <CurrentChapterContext.Provider value={currentChapter}>
+    <IsFetchingChapterProvider value={isFetching}>
+      <CurrentChapterProvider value={currentChapter}>
         <FlatList
           getItemLayout={getItemLayout}
           maintainVisibleContentPosition={maintainVisibleContentPosition}
@@ -123,9 +124,11 @@ export default function Reader(props: RootStackProps<'Reader'>) {
           }
           horizontal
           pagingEnabled
+          showsHorizontalScrollIndicator={false}
           initialScrollIndex={initialPageParam === 0 ? 0 : 1}
         />
-      </CurrentChapterContext.Provider>
-    </IsFetchingChapterContext.Provider>
+        <Overlay />
+      </CurrentChapterProvider>
+    </IsFetchingChapterProvider>
   );
 }
