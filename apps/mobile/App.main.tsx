@@ -34,7 +34,11 @@ function App(): React.JSX.Element {
         component={Reader}
         options={READER_SCREEN_OPTIONS}
       />
-      <RootStack.Screen name="ReaderSettings" component={ReaderSettings} />
+      <RootStack.Screen
+        name="ReaderSettings"
+        component={ReaderSettings}
+        options={{ title: 'Reader settings' }}
+      />
       <RootStack.Screen
         name="AppearanceSettings"
         component={AppearanceSettings}
