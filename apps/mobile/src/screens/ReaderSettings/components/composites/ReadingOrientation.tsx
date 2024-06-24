@@ -29,7 +29,6 @@ const styles = createStyles((theme) => ({
     flex: 1,
     paddingHorizontal: theme.style.screen.paddingHorizontal,
     flexDirection: 'row',
-    gap: theme.style.size.m,
   },
   cellphoneLandscape: {
     backgroundColor: theme.palette.skeleton,
