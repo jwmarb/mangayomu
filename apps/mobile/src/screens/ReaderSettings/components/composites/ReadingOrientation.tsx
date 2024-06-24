@@ -144,9 +144,12 @@ export default function ReadingOrientation(props: ReadingOrientationProps) {
   const { globalState, setState } = useReaderSetting('readingOrientation');
   return (
     <View style={style.container}>
-      <Text style={style.title} variant="h4">
-        Reading orientation
-      </Text>
+      <View style={style.title}>
+        <Text variant="h4">Reading orientation</Text>
+        <Text variant="body2" color="textSecondary">
+          The device orientation while reading
+        </Text>
+      </View>
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}

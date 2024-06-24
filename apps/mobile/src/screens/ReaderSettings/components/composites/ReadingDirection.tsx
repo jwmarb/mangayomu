@@ -78,9 +78,12 @@ export default function ReadingDirection(props: ReadingDirectionProps) {
   const { globalState, setState } = useReaderSetting('readingDirection');
   return (
     <View style={style.container}>
-      <Text style={style.title} variant="h4">
-        Reading direction
-      </Text>
+      <View style={style.title}>
+        <Text variant="h4">Reading direction</Text>
+        <Text variant="body2" color="textSecondary">
+          Determines the page navigation behavior of the reader
+        </Text>
+      </View>
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
