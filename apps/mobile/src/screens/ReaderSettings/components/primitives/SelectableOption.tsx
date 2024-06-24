@@ -9,6 +9,9 @@ import Icon from '@/components/primitives/Icon';
 import useThemedProps from '@/hooks/useThemedProps';
 
 const styles = createStyles((theme) => ({
+  wrapper: {
+    padding: theme.style.size.m,
+  },
   container: {
     ...theme.helpers.elevation(3),
     backgroundColor: theme.palette.background.paper,
@@ -30,9 +33,9 @@ const styles = createStyles((theme) => ({
     position: 'absolute',
     right: 0,
     top: 0,
-    padding: theme.style.size.s,
+    padding: 2,
     backgroundColor: theme.palette.primary.main,
-    borderBottomLeftRadius: theme.style.borderRadius.m,
+    borderRadius: 10000,
   },
 }));
 
@@ -62,7 +65,23 @@ export default function SelectableOption(props: SelectableOptionProps) {
     onSelect?.(value);
   }
   return (
-    <View style={viewStyle}>
+    <View style={style.wrapper}>
+      <View style={viewStyle}>
+        <Pressable
+          style={style.pressable}
+          onPress={handleOnPress}
+          android_ripple={selected ? android_ripple : undefined}
+        >
+          {children}
+          <Text
+            variant="body2"
+            color={selected ? 'primary' : 'textPrimary'}
+            alignment="center"
+          >
+            {title}
+          </Text>
+        </Pressable>
+      </View>
       {selected && (
         <Icon
           color="primary@contrast"
@@ -72,20 +91,6 @@ export default function SelectableOption(props: SelectableOptionProps) {
           size="small"
         />
       )}
-      <Pressable
-        style={style.pressable}
-        onPress={handleOnPress}
-        android_ripple={selected ? android_ripple : undefined}
-      >
-        {children}
-        <Text
-          variant="body2"
-          color={selected ? 'primary' : 'textPrimary'}
-          alignment="center"
-        >
-          {title}
-        </Text>
-      </Pressable>
     </View>
   );
 }
