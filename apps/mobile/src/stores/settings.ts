@@ -8,12 +8,20 @@ import {
   ZoomStartPosition,
 } from '@/models/schema';
 
+export enum BackgroundColor {
+  WHITE,
+  BLACK,
+  GRAY,
+  DEFAULT = BackgroundColor.BLACK,
+}
+
 export type SettingsState = {
   reader: {
     readingDirection: ReadingDirection;
     imageScaling: ImageScaling;
     readingOrientation: ReadingOrientation;
     zoomStartPosition: ZoomStartPosition;
+    backgroundColor: BackgroundColor;
   };
   setReaderState: <T extends keyof SettingsState['reader']>(
     key: T,
@@ -29,6 +37,7 @@ export const useSettingsStore = create(
         imageScaling: ImageScaling.DEFAULT,
         readingOrientation: ReadingOrientation.DEFAULT,
         zoomStartPosition: ZoomStartPosition.DEFAULT,
+        backgroundColor: BackgroundColor.DEFAULT,
       },
       setReaderState: <T extends keyof SettingsState['reader']>(
         key: T,

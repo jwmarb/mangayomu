@@ -26,8 +26,13 @@ const styles = createStyles((theme) => ({
     borderColor: 'transparent',
   },
   pressable: {
-    padding: theme.style.size.l,
     gap: theme.style.size.m,
+  },
+  pressablePadding: {
+    padding: theme.style.size.l,
+  },
+  containerOutline: {
+    borderColor: theme.palette.skeleton,
   },
   check: {
     position: 'absolute',
@@ -46,40 +51,61 @@ const themedProps = createThemedProps((theme) => ({
 }));
 
 export type SelectableOptionProps = {
-  title: string;
+  title?: string;
   selected?: boolean;
   onSelect?: (val: any) => void;
   value?: any;
+  hideTitle?: boolean;
+  noPadding?: boolean;
+  outline?: boolean;
 } & React.PropsWithChildren;
 
 export default function SelectableOption(props: SelectableOptionProps) {
-  const { title, selected, children, onSelect, value } = props;
+  const {
+    noPadding = false,
+    hideTitle = false,
+    outline = false,
+    title,
+    selected,
+    children,
+    onSelect,
+    value,
+  } = props;
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const { android_ripple } = useThemedProps(themedProps, contrast);
   const viewStyle = [
     selected ? style.selectedContainer : style.notSelectedContainer,
+    outline && !selected ? style.containerOutline : undefined,
     style.container,
   ];
   function handleOnPress() {
     onSelect?.(value);
   }
+
+  const pressableStyle = [
+    style.pressable,
+    noPadding ? undefined : style.pressablePadding,
+  ];
+
   return (
     <View style={style.wrapper}>
       <View style={viewStyle}>
         <Pressable
-          style={style.pressable}
+          style={pressableStyle}
           onPress={handleOnPress}
           android_ripple={selected ? android_ripple : undefined}
         >
           {children}
-          <Text
-            variant="body2"
-            color={selected ? 'primary' : 'textPrimary'}
-            alignment="center"
-          >
-            {title}
-          </Text>
+          {!hideTitle && (
+            <Text
+              variant="body2"
+              color={selected ? 'primary' : 'textPrimary'}
+              alignment="center"
+            >
+              {title}
+            </Text>
+          )}
         </Pressable>
       </View>
       {selected && (

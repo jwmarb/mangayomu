@@ -21,6 +21,7 @@ declare module '@mangayomu/theme' {
       common: {
         white: string;
         black: string;
+        gray: string;
       };
       action: {
         disabled: string;
@@ -124,7 +125,7 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
             shadowOpacity: 0.16 + n * 0.2,
             shadowRadius: n / 1.529,
             elevation: n,
-          } as ViewStyle);
+          }) as ViewStyle;
       },
     },
     palette: {
@@ -135,6 +136,7 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
       common: {
         white: colorConstant('#fff'),
         black: colorConstant('#000'),
+        gray: colorConstant('#868686'),
       },
       action: {
         ripple: color('#606060', '#c2c2c2'),
