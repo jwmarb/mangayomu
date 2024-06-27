@@ -1,4 +1,5 @@
 export { default } from './ReaderSettings';
 export type OptionComponentProps = {
-  isSelected: boolean;
+  isSelected?: boolean;
+  isGlobalSelected?: boolean;
 };

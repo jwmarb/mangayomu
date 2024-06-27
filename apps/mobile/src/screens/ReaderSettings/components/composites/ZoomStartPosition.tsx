@@ -10,9 +10,11 @@ import useReaderSetting from '@/hooks/useReaderSetting';
 import { ZoomStartPosition as Zoom } from '@/models/schema';
 import {
   SetStateProvider,
+  useMangaContext,
   useSetState,
 } from '@/screens/ReaderSettings/context';
 import { OptionComponentProps } from '@/screens/ReaderSettings';
+import UseGlobalSetting from '@/screens/ReaderSettings/components/composites/UseGlobalSetting';
 
 const styles = createStyles((theme) => ({
   container: {
@@ -37,9 +39,14 @@ export type ZoomStartPositionProps = {
 
 export default function ZoomStartPosition(props: ZoomStartPositionProps) {
   const { type = 'normal' } = props;
+  const manga = useMangaContext();
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
-  const { globalState, setState } = useReaderSetting('zoomStartPosition');
+  const { localState, globalState, setState } = useReaderSetting(
+    'zoomStartPosition',
+    manga,
+  );
+  const state = manga == null ? globalState : localState;
   return (
     <View style={style.container}>
       <View style={style.title}>
@@ -56,10 +63,23 @@ export default function ZoomStartPosition(props: ZoomStartPositionProps) {
       >
         <SetStateProvider value={setState}>
           <View style={style.scrollViewContainer}>
-            <Automatic isSelected={globalState === Zoom.AUTOMATIC} />
-            <Left isSelected={globalState === Zoom.LEFT} />
-            <Center isSelected={globalState === Zoom.CENTER} />
-            <Right isSelected={globalState === Zoom.RIGHT} />
+            <UseGlobalSetting localState={localState} enum={Zoom} />
+            <Automatic
+              isSelected={state === Zoom.AUTOMATIC}
+              isGlobalSelected={globalState === Zoom.AUTOMATIC}
+            />
+            <Left
+              isSelected={state === Zoom.LEFT}
+              isGlobalSelected={globalState === Zoom.LEFT}
+            />
+            <Center
+              isSelected={state === Zoom.CENTER}
+              isGlobalSelected={globalState === Zoom.CENTER}
+            />
+            <Right
+              isSelected={state === Zoom.RIGHT}
+              isGlobalSelected={globalState === Zoom.RIGHT}
+            />
           </View>
         </SetStateProvider>
       </ScrollView>
@@ -67,12 +87,13 @@ export default function ZoomStartPosition(props: ZoomStartPositionProps) {
   );
 }
 
-function Automatic({ isSelected }: OptionComponentProps) {
+function Automatic({ isSelected, isGlobalSelected }: OptionComponentProps) {
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const setState = useSetState();
   return (
     <SelectableOption
+      globalSelected={isGlobalSelected}
       title="Automatic"
       selected={isSelected}
       value={Zoom.AUTOMATIC}
@@ -81,12 +102,13 @@ function Automatic({ isSelected }: OptionComponentProps) {
   );
 }
 
-function Left({ isSelected }: OptionComponentProps) {
+function Left({ isSelected, isGlobalSelected }: OptionComponentProps) {
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const setState = useSetState();
   return (
     <SelectableOption
+      globalSelected={isGlobalSelected}
       title="Left"
       selected={isSelected}
       value={Zoom.LEFT}
@@ -95,12 +117,13 @@ function Left({ isSelected }: OptionComponentProps) {
   );
 }
 
-function Right({ isSelected }: OptionComponentProps) {
+function Right({ isSelected, isGlobalSelected }: OptionComponentProps) {
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const setState = useSetState();
   return (
     <SelectableOption
+      globalSelected={isGlobalSelected}
       title="Fit Width"
       selected={isSelected}
       value={Zoom.RIGHT}
@@ -109,12 +132,13 @@ function Right({ isSelected }: OptionComponentProps) {
   );
 }
 
-function Center({ isSelected }: OptionComponentProps) {
+function Center({ isSelected, isGlobalSelected }: OptionComponentProps) {
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const setState = useSetState();
   return (
     <SelectableOption
+      globalSelected={isGlobalSelected}
       title="Center"
       selected={isSelected}
       value={Zoom.CENTER}

@@ -10,9 +10,12 @@ import useReaderSetting from '@/hooks/useReaderSetting';
 import { ReadingDirection as Direction } from '@/models/schema';
 import {
   SetStateProvider,
+  useMangaContext,
   useSetState,
 } from '@/screens/ReaderSettings/context';
 import { OptionComponentProps } from '@/screens/ReaderSettings';
+import React from 'react';
+import UseGlobalSetting from '@/screens/ReaderSettings/components/composites/UseGlobalSetting';
 
 const styles = createStyles((theme) => ({
   container: {
@@ -73,9 +76,14 @@ export type ReadingDirectionProps = {
 
 export default function ReadingDirection(props: ReadingDirectionProps) {
   const { type = 'normal' } = props;
+  const manga = useMangaContext();
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
-  const { globalState, setState } = useReaderSetting('readingDirection');
+  const { globalState, localState, setState } = useReaderSetting(
+    'readingDirection',
+    manga,
+  );
+  const state = manga != null ? localState : globalState;
   return (
     <View style={style.container}>
       <View style={style.title}>
@@ -91,10 +99,23 @@ export default function ReadingDirection(props: ReadingDirectionProps) {
       >
         <SetStateProvider value={setState}>
           <View style={style.scrollViewContainer}>
-            <LeftToRight isSelected={globalState === Direction.LEFT_TO_RIGHT} />
-            <RightToLeft isSelected={globalState === Direction.RIGHT_TO_LEFT} />
-            <Vertical isSelected={globalState === Direction.VERTICAL} />
-            <Webtoon isSelected={globalState === Direction.WEBTOON} />
+            <UseGlobalSetting enum={Direction} localState={localState} />
+            <LeftToRight
+              isSelected={state === Direction.LEFT_TO_RIGHT}
+              isGlobalSelected={globalState === Direction.LEFT_TO_RIGHT}
+            />
+            <RightToLeft
+              isSelected={state === Direction.RIGHT_TO_LEFT}
+              isGlobalSelected={globalState === Direction.RIGHT_TO_LEFT}
+            />
+            <Vertical
+              isSelected={state === Direction.VERTICAL}
+              isGlobalSelected={globalState === Direction.VERTICAL}
+            />
+            <Webtoon
+              isSelected={state === Direction.WEBTOON}
+              isGlobalSelected={globalState === Direction.WEBTOON}
+            />
           </View>
         </SetStateProvider>
       </ScrollView>
@@ -102,7 +123,7 @@ export default function ReadingDirection(props: ReadingDirectionProps) {
   );
 }
 
-function LeftToRight({ isSelected }: OptionComponentProps) {
+function LeftToRight({ isSelected, isGlobalSelected }: OptionComponentProps) {
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const setState = useSetState();
@@ -110,6 +131,7 @@ function LeftToRight({ isSelected }: OptionComponentProps) {
     <SelectableOption
       title="Left to right"
       selected={isSelected}
+      globalSelected={isGlobalSelected}
       value={Direction.LEFT_TO_RIGHT}
       onSelect={setState}
     >
@@ -124,7 +146,7 @@ function LeftToRight({ isSelected }: OptionComponentProps) {
   );
 }
 
-function RightToLeft({ isSelected }: OptionComponentProps) {
+function RightToLeft({ isSelected, isGlobalSelected }: OptionComponentProps) {
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const setState = useSetState();
@@ -132,6 +154,7 @@ function RightToLeft({ isSelected }: OptionComponentProps) {
     <SelectableOption
       title="Right to left"
       selected={isSelected}
+      globalSelected={isGlobalSelected}
       value={Direction.RIGHT_TO_LEFT}
       onSelect={setState}
     >
@@ -146,7 +169,7 @@ function RightToLeft({ isSelected }: OptionComponentProps) {
   );
 }
 
-function Vertical({ isSelected }: OptionComponentProps) {
+function Vertical({ isSelected, isGlobalSelected }: OptionComponentProps) {
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const setState = useSetState();
@@ -155,6 +178,7 @@ function Vertical({ isSelected }: OptionComponentProps) {
       title="Vertical"
       selected={isSelected}
       value={Direction.VERTICAL}
+      globalSelected={isGlobalSelected}
       onSelect={setState}
     >
       <View style={style.vertical}>
@@ -168,7 +192,7 @@ function Vertical({ isSelected }: OptionComponentProps) {
   );
 }
 
-function Webtoon({ isSelected }: OptionComponentProps) {
+function Webtoon({ isSelected, isGlobalSelected }: OptionComponentProps) {
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const setState = useSetState();
@@ -177,6 +201,7 @@ function Webtoon({ isSelected }: OptionComponentProps) {
       title="Webtoon"
       selected={isSelected}
       value={Direction.WEBTOON}
+      globalSelected={isGlobalSelected}
       onSelect={setState}
     >
       <View style={style.webtoon}>

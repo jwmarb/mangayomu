@@ -11,9 +11,11 @@ import { ReadingOrientation as Orientation } from '@/models/schema';
 import { OptionComponentProps } from '@/screens/ReaderSettings';
 import {
   SetStateProvider,
+  useMangaContext,
   useSetState,
 } from '@/screens/ReaderSettings/context';
 import { globals } from 'jest.config';
+import UseGlobalSetting from '@/screens/ReaderSettings/components/composites/UseGlobalSetting';
 
 const styles = createStyles((theme) => ({
   container: {
@@ -29,6 +31,7 @@ const styles = createStyles((theme) => ({
     flex: 1,
     paddingHorizontal: theme.style.screen.paddingHorizontal,
     flexDirection: 'row',
+    alignItems: 'center',
   },
   cellphoneLandscape: {
     backgroundColor: theme.palette.skeleton,
@@ -139,9 +142,14 @@ export type ReadingOrientationProps = {
 
 export default function ReadingOrientation(props: ReadingOrientationProps) {
   const { type = 'normal' } = props;
+  const manga = useMangaContext();
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
-  const { globalState, setState } = useReaderSetting('readingOrientation');
+  const { globalState, localState, setState } = useReaderSetting(
+    'readingOrientation',
+    manga,
+  );
+  const state = manga == null ? globalState : localState;
   return (
     <View style={style.container}>
       <View style={style.title}>
@@ -157,9 +165,20 @@ export default function ReadingOrientation(props: ReadingOrientationProps) {
       >
         <SetStateProvider value={setState}>
           <View style={style.scrollViewContainer}>
-            <Free isSelected={globalState === Orientation.FREE} />
-            <Portrait isSelected={globalState === Orientation.PORTRAIT} />
-            <Landscape isSelected={globalState === Orientation.LANDSCAPE} />
+            <UseGlobalSetting enum={Orientation} localState={localState} />
+
+            <Free
+              isGlobalSelected={globalState === Orientation.FREE}
+              isSelected={state === Orientation.FREE}
+            />
+            <Portrait
+              isGlobalSelected={globalState === Orientation.PORTRAIT}
+              isSelected={state === Orientation.PORTRAIT}
+            />
+            <Landscape
+              isGlobalSelected={globalState === Orientation.LANDSCAPE}
+              isSelected={state === Orientation.LANDSCAPE}
+            />
           </View>
         </SetStateProvider>
       </ScrollView>
@@ -167,13 +186,14 @@ export default function ReadingOrientation(props: ReadingOrientationProps) {
   );
 }
 
-function Portrait({ isSelected }: OptionComponentProps) {
+function Portrait({ isSelected, isGlobalSelected }: OptionComponentProps) {
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const setState = useSetState();
   return (
     <SelectableOption
       selected={isSelected}
+      globalSelected={isGlobalSelected}
       title="Portrait"
       value={Orientation.PORTRAIT}
       onSelect={setState}
@@ -195,13 +215,14 @@ function Portrait({ isSelected }: OptionComponentProps) {
   );
 }
 
-function Landscape({ isSelected }: OptionComponentProps) {
+function Landscape({ isSelected, isGlobalSelected }: OptionComponentProps) {
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const setState = useSetState();
   return (
     <SelectableOption
       selected={isSelected}
+      globalSelected={isGlobalSelected}
       title="Landscape"
       value={Orientation.LANDSCAPE}
       onSelect={setState}
@@ -225,13 +246,14 @@ function Landscape({ isSelected }: OptionComponentProps) {
   );
 }
 
-function Free({ isSelected }: OptionComponentProps) {
+function Free({ isSelected, isGlobalSelected }: OptionComponentProps) {
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const setState = useSetState();
   return (
     <SelectableOption
       selected={isSelected}
+      globalSelected={isGlobalSelected}
       title="Free (unlocked)"
       value={Orientation.FREE}
       onSelect={setState}

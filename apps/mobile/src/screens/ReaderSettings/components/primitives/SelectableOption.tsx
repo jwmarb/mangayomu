@@ -22,6 +22,9 @@ const styles = createStyles((theme) => ({
   selectedContainer: {
     borderColor: theme.palette.primary.main,
   },
+  globalSelectedContainer: {
+    borderColor: theme.palette.primary.ripple,
+  },
   notSelectedContainer: {
     borderColor: 'transparent',
   },
@@ -42,6 +45,14 @@ const styles = createStyles((theme) => ({
     backgroundColor: theme.palette.primary.main,
     borderRadius: 10000,
   },
+  checkGlobal: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    padding: 2,
+    backgroundColor: theme.palette.primary.ripple,
+    borderRadius: 10000,
+  },
 }));
 
 const themedProps = createThemedProps((theme) => ({
@@ -53,6 +64,7 @@ const themedProps = createThemedProps((theme) => ({
 export type SelectableOptionProps = {
   title?: string;
   selected?: boolean;
+  globalSelected?: boolean;
   onSelect?: (val: any) => void;
   value?: any;
   hideTitle?: boolean;
@@ -70,12 +82,17 @@ export default function SelectableOption(props: SelectableOptionProps) {
     children,
     onSelect,
     value,
+    globalSelected,
   } = props;
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const { android_ripple } = useThemedProps(themedProps, contrast);
   const viewStyle = [
-    selected ? style.selectedContainer : style.notSelectedContainer,
+    selected
+      ? style.selectedContainer
+      : globalSelected
+        ? style.globalSelectedContainer
+        : style.notSelectedContainer,
     outline && !selected ? style.containerOutline : undefined,
     style.container,
   ];
@@ -100,7 +117,13 @@ export default function SelectableOption(props: SelectableOptionProps) {
           {!hideTitle && (
             <Text
               variant="body2"
-              color={selected ? 'primary' : 'textPrimary'}
+              color={
+                selected
+                  ? 'primary'
+                  : globalSelected
+                    ? 'disabled'
+                    : 'textPrimary'
+              }
               alignment="center"
             >
               {title}
@@ -110,10 +133,16 @@ export default function SelectableOption(props: SelectableOptionProps) {
       </View>
       {selected && (
         <Icon
-          color="primary@contrast"
+          color={selected ? 'primary@contrast' : 'textPrimary'}
           type="icon"
           name="check-bold"
-          style={style.check}
+          style={
+            selected
+              ? style.check
+              : globalSelected
+                ? style.checkGlobal
+                : undefined
+          }
           size="small"
         />
       )}
