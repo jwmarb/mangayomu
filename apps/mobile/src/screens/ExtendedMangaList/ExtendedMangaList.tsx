@@ -22,18 +22,22 @@ import ListEmptyComponent from '@/screens/ExtendedMangaList/empty';
 import useExtendedMangaListCollapsible from '@/screens/ExtendedMangaList/hooks/useExtendedMangaListCollapsible';
 import useExtendedMangaListPagination from '@/screens/ExtendedMangaList/hooks/useExtendedMangaListPagination';
 
-export default function ExtendedMangaList(
-  props: RootStackProps<'ExtendedMangaList'>,
-) {
+export type ExtendedMangaListProps = ReturnType<
+  typeof useExtendedMangaListCollapsible
+> &
+  RootStackProps<'ExtendedMangaList'>;
+
+export default function ExtendedMangaList(props: ExtendedMangaListProps) {
   const {
     route: {
       params: { type },
     },
+    input,
+    collapsible,
   } = props;
   const { data: results, fetchStatus } = useExploreMangas();
   const errors = results?.[type].errors ?? [];
   const columns = useColumns();
-  const { input, collapsible } = useExtendedMangaListCollapsible({ type });
   const {
     onEndReached,
     pages: { pages },

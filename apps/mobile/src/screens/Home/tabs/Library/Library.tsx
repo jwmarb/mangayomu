@@ -21,8 +21,12 @@ import TextInput from '@/components/primitives/TextInput';
 import useUserInput from '@/hooks/useUserInput';
 import BottomSheet from '@/components/composites/BottomSheet';
 import { styles } from '@/screens/Home/tabs/Library/styles';
-import LibraryFilterMenu from '@/screens/Home/tabs/Library/components/filter/LibraryFilterMenu';
 import { mmkv } from '@/utils/persist';
+import { CodeSplitter } from '@/utils/codeSplit';
+const LibraryFilterMenu = React.lazy(
+  () =>
+    import('@/screens/Home/tabs/Library/components/filter/LibraryFilterMenu'),
+);
 
 const { getItemLayout, useColumns } = MangaComponent.generateFlatListProps({
   flexibleColumns: true,
@@ -183,19 +187,25 @@ export default function Library() {
       );
       setSources(result.map((x) => x.source));
       setMangasPerSource(
-        result2.reduce((prev, curr) => {
-          if (curr.source in prev === false) {
-            prev[curr.source] = 0;
-          }
-          prev[curr.source]++;
-          return prev;
-        }, {} as Record<string, number>),
+        result2.reduce(
+          (prev, curr) => {
+            if (curr.source in prev === false) {
+              prev[curr.source] = 0;
+            }
+            prev[curr.source]++;
+            return prev;
+          },
+          {} as Record<string, number>,
+        ),
       );
       setShowSource((stored) =>
-        result.reduce((prev, curr) => {
-          prev[curr.source] = stored?.[curr.source] ?? true;
-          return prev;
-        }, {} as Record<string, boolean>),
+        result.reduce(
+          (prev, curr) => {
+            prev[curr.source] = stored?.[curr.source] ?? true;
+            return prev;
+          },
+          {} as Record<string, boolean>,
+        ),
       );
     }
     init();
@@ -209,7 +219,7 @@ export default function Library() {
   );
 
   return (
-    <>
+    <CodeSplitter>
       <Freeze freeze={!isFocused}>
         <Screen.FlatList
           key={columns}
@@ -232,6 +242,6 @@ export default function Library() {
         mangasPerSource={mangasPerSource}
         ref={bottomSheet}
       />
-    </>
+    </CodeSplitter>
   );
 }

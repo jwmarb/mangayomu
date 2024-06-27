@@ -1,1 +1,3 @@
-export { default } from './SourceBrowser';
+import { withCodeSplitting } from '@/utils/codeSplit';
+
+export default withCodeSplitting(() => import('./SourceBrowser'));

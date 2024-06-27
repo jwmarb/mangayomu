@@ -10,10 +10,15 @@ import headerLeft from '@/screens/MangaView/components/ui/header/headerLeft';
 import HeaderRight from '@/screens/MangaView/components/ui/header/headerRight';
 import BottomSheet from '@/components/composites/BottomSheet';
 import useMangaMeta from '@/screens/MangaView/hooks/useMangaMeta';
-import FilterMenu from '@/screens/MangaView/components/composites/FilterMenu';
 import useChapters from '@/screens/MangaView/hooks/useChapters';
 import MangaViewProvider from '@/screens/MangaView/providers';
-import MangaViewMain from '@/screens/MangaView/components/ui/main';
+import { CodeSplitter } from '@/utils/codeSplit';
+const FilterMenu = React.lazy(
+  () => import('@/screens/MangaView/components/composites/FilterMenu'),
+);
+const MangaViewMain = React.lazy(
+  () => import('@/screens/MangaView/components/ui/main'),
+);
 
 export default function MangaView(props: RootStackProps<'MangaView'>) {
   const {
@@ -48,13 +53,17 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
       unparsedManga={unparsedManga}
       chapters={chapters}
     >
-      <MangaViewMain
-        chapters={chapters}
-        onEndReached={onEndReached}
-        source={sourceStr}
-        collapsible={collapsible}
-      />
-      <FilterMenu ref={bottomSheet} />
+      <CodeSplitter>
+        <MangaViewMain
+          chapters={chapters}
+          onEndReached={onEndReached}
+          source={sourceStr}
+          collapsible={collapsible}
+        />
+      </CodeSplitter>
+      <React.Suspense fallback={null}>
+        <FilterMenu ref={bottomSheet} />
+      </React.Suspense>
     </MangaViewProvider>
   );
 }
