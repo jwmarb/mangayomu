@@ -16,6 +16,7 @@ declare module '@mangayomu/theme' {
     palette: DefaultTheme['palette'] & {
       skeleton: string;
       overlay: string;
+      readerOverlay: string;
       backdrop: string;
       divider: string;
       common: {
@@ -129,6 +130,7 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
       },
     },
     palette: {
+      readerOverlay: colorConstant('rgba(128, 128, 128, 0.5)'),
       overlay: colorConstant('rgba(0, 0, 0, 0.5)'), // experimental
       backdrop: colorConstant('rgba(0, 0, 0, 0.3)'),
       skeleton: color('rgba(255, 255, 255, 0.12)', 'rgba(0, 0, 0, 0.12)'),

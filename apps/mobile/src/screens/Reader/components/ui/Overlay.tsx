@@ -1,25 +1,12 @@
-import Icon from '@/components/primitives/Icon';
-import IconButton from '@/components/primitives/IconButton';
-import Text from '@/components/primitives/Text';
 import useBoolean from '@/hooks/useBoolean';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
-import {
-  useCurrentChapterContext,
-  useReaderManga,
-} from '@/screens/Reader/context';
+import TopOverlay from '@/screens/Reader/components/composites/TopOverlay';
 import { createStyles } from '@/utils/theme';
 import React from 'react';
 import { View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
-  FadeIn,
-  FadeInUp,
-  FadeOut,
-  FadeOutUp,
-  runOnJS,
-} from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { runOnJS } from 'react-native-reanimated';
 
 const styles = createStyles((theme) => ({
   wrapper: {
@@ -35,6 +22,10 @@ const styles = createStyles((theme) => ({
     flexDirection: 'row',
     gap: theme.style.size.s,
     alignItems: 'center',
+  },
+  chapterTitleContainer: {
+    flex: 1,
+    flexDirection: 'column',
   },
 }));
 
@@ -55,27 +46,12 @@ export default function Overlay(props: OverlayProps) {
         .maxDistance(0),
     [],
   );
-  const { top } = useSafeAreaInsets();
-  const manga = useReaderManga();
-  const chapter = useCurrentChapterContext();
   return (
     <>
       <GestureDetector gesture={gesture}>{children}</GestureDetector>
       {show && (
         <View style={style.wrapper}>
-          <Animated.View
-            entering={FadeInUp}
-            exiting={FadeOutUp}
-            style={[style.container, { paddingTop: top }]}
-          >
-            <IconButton icon={<Icon type="icon" name="arrow-left" />} />
-            <View>
-              <Text numberOfLines={2}>{manga.title}</Text>
-              <Text numberOfLines={1} variant="body2" color="textSecondary">
-                {chapter?.name}
-              </Text>
-            </View>
-          </Animated.View>
+          <TopOverlay />
         </View>
       )}
     </>
