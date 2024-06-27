@@ -26,6 +26,7 @@ import Overlay from '@/screens/Reader/components/ui/Overlay';
 import useManga from '@/hooks/useManga';
 import useReaderSetting from '@/hooks/useReaderSetting';
 import { BackgroundColorMap } from '@/stores/settings';
+import useBackgroundColor from '@/screens/Reader/hooks/useBackgroundColor';
 
 export type Data =
   | { type: 'PAGE'; source: { uri: string }; chapter: MangaChapter }
@@ -96,15 +97,13 @@ export default function Reader(props: RootStackProps<'Reader'>) {
     tmangameta,
     meta,
   });
-  const { state } = useReaderSetting('backgroundColor', manga);
   const viewabilityConfigCallbackPairs = useViewabilityConfigCallbackPairs({
     dataLength,
     fetchNextPage,
     fetchPreviousPage,
     setCurrentChapter,
   });
-
-  const contentContainerStyle = { backgroundColor: BackgroundColorMap[state] };
+  const contentContainerStyle = useBackgroundColor(manga);
 
   const getItemLayout = useItemLayout();
 
