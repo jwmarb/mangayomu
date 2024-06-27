@@ -108,40 +108,34 @@ export default function Reader(props: RootStackProps<'Reader'>) {
 
   const getItemLayout = useItemLayout();
 
-  if (isLoading || currentChapter == null) {
-    return (
-      <View style={style.loadingContainer}>
-        <Progress size="large" />
-      </View>
-    );
-  }
-
   return (
     <IsFetchingChapterProvider value={isFetching}>
       <CurrentChapterProvider value={currentChapter}>
         <ReaderMangaProvider value={manga}>
           <Overlay>
-            {!isLoading && currentChapter != null ? (
-              <FlatList
-                contentContainerStyle={contentContainerStyle}
-                getItemLayout={getItemLayout}
-                maintainVisibleContentPosition={maintainVisibleContentPosition}
-                keyExtractor={keyExtractor}
-                renderItem={renderItem}
-                data={data?.pages}
-                viewabilityConfigCallbackPairs={
-                  viewabilityConfigCallbackPairs.current
-                }
-                horizontal
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-                initialScrollIndex={initialPageParam === 0 ? 0 : 1}
-              />
-            ) : (
-              <View style={style.loadingContainer}>
+            <View style={style.loadingContainer}>
+              {!isLoading && currentChapter != null ? (
+                <FlatList
+                  contentContainerStyle={contentContainerStyle}
+                  getItemLayout={getItemLayout}
+                  maintainVisibleContentPosition={
+                    maintainVisibleContentPosition
+                  }
+                  keyExtractor={keyExtractor}
+                  renderItem={renderItem}
+                  data={data?.pages}
+                  viewabilityConfigCallbackPairs={
+                    viewabilityConfigCallbackPairs.current
+                  }
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                  initialScrollIndex={initialPageParam === 0 ? 0 : 1}
+                />
+              ) : (
                 <Progress size="large" />
-              </View>
-            )}
+              )}
+            </View>
           </Overlay>
         </ReaderMangaProvider>
       </CurrentChapterProvider>
