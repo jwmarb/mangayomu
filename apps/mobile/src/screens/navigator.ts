@@ -6,6 +6,7 @@ import {
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
 import { FetchedMangaResults } from '@/stores/explore';
+import { Manga } from '@mangayomu/mangascraper';
 
 declare global {
   namespace ReactNavigation {
@@ -19,7 +20,7 @@ export type RootStackParamList = {
   SourceBrowser: { source: string; genre?: string; initialQuery?: string };
   ExtendedMangaList: { type: keyof FetchedMangaResults };
   Reader: { manga: unknown; source?: string; chapter: unknown };
-  ReaderSettings: undefined;
+  ReaderSettings?: { manga: Manga };
   AppearanceSettings: undefined;
 };
 
