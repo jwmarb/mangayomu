@@ -45,7 +45,7 @@ export default React.memo(function ChapterDivider(props: ChapterDividerProps) {
     <View style={style.container}>
       {isFetching && <Progress size="large" />}
       <View style={style.textContainer}>
-        {next?.link === currentChapter.link && (
+        {next?.link === currentChapter?.link && (
           <>
             <Icon color="primary" type="icon" name="arrow-left" size="large" />
             <Text bold color="textSecondary">
@@ -53,7 +53,7 @@ export default React.memo(function ChapterDivider(props: ChapterDividerProps) {
             </Text>
           </>
         )}
-        {previous?.link === currentChapter.link && (
+        {previous?.link === currentChapter?.link && (
           <>
             <Text bold color="textSecondary">
               Next: <Text>{next?.name}</Text>
