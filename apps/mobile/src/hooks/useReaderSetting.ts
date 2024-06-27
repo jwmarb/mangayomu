@@ -86,6 +86,12 @@ export default function useReaderSetting<
     globalState,
     localState,
     setState,
+    state:
+      localState == null
+        ? globalState
+        : localState === globalSetting
+          ? globalState
+          : localState,
     isLoading: loading,
   };
 }
