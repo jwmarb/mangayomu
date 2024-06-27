@@ -1,4 +1,4 @@
-import { Dimensions, View } from 'react-native';
+import { View } from 'react-native';
 import Text from '@/components/primitives/Text';
 import { createStyles } from '@/utils/theme';
 import ReadingDirection from '@/screens/ReaderSettings/components/composites/ReadingDirection';
