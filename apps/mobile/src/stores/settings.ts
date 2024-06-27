@@ -15,6 +15,12 @@ export enum BackgroundColor {
   DEFAULT = BackgroundColor.BLACK,
 }
 
+export const BackgroundColorMap = {
+  [BackgroundColor.BLACK]: 'black',
+  [BackgroundColor.WHITE]: 'white',
+  [BackgroundColor.GRAY]: 'gray',
+};
+
 export type SettingsState = {
   reader: {
     readingDirection: ReadingDirection;

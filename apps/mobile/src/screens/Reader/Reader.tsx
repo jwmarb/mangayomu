@@ -24,6 +24,8 @@ import NoMoreChapters from '@/screens/Reader/components/ui/NoMoreChapters';
 import Page from '@/screens/Reader/components/ui/Page';
 import Overlay from '@/screens/Reader/components/ui/Overlay';
 import useManga from '@/hooks/useManga';
+import useReaderSetting from '@/hooks/useReaderSetting';
+import { BackgroundColorMap } from '@/stores/settings';
 
 export type Data =
   | { type: 'PAGE'; source: { uri: string }; chapter: MangaChapter }
@@ -94,13 +96,15 @@ export default function Reader(props: RootStackProps<'Reader'>) {
     tmangameta,
     meta,
   });
-
+  const { state } = useReaderSetting('backgroundColor', manga);
   const viewabilityConfigCallbackPairs = useViewabilityConfigCallbackPairs({
     dataLength,
     fetchNextPage,
     fetchPreviousPage,
     setCurrentChapter,
   });
+
+  const contentContainerStyle = { backgroundColor: BackgroundColorMap[state] };
 
   const getItemLayout = useItemLayout();
 
@@ -117,20 +121,27 @@ export default function Reader(props: RootStackProps<'Reader'>) {
       <CurrentChapterProvider value={currentChapter}>
         <ReaderMangaProvider value={manga}>
           <Overlay>
-            <FlatList
-              getItemLayout={getItemLayout}
-              maintainVisibleContentPosition={maintainVisibleContentPosition}
-              keyExtractor={keyExtractor}
-              renderItem={renderItem}
-              data={data?.pages}
-              viewabilityConfigCallbackPairs={
-                viewabilityConfigCallbackPairs.current
-              }
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              initialScrollIndex={initialPageParam === 0 ? 0 : 1}
-            />
+            {!isLoading && currentChapter != null ? (
+              <FlatList
+                contentContainerStyle={contentContainerStyle}
+                getItemLayout={getItemLayout}
+                maintainVisibleContentPosition={maintainVisibleContentPosition}
+                keyExtractor={keyExtractor}
+                renderItem={renderItem}
+                data={data?.pages}
+                viewabilityConfigCallbackPairs={
+                  viewabilityConfigCallbackPairs.current
+                }
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                initialScrollIndex={initialPageParam === 0 ? 0 : 1}
+              />
+            ) : (
+              <View style={style.loadingContainer}>
+                <Progress size="large" />
+              </View>
+            )}
           </Overlay>
         </ReaderMangaProvider>
       </CurrentChapterProvider>

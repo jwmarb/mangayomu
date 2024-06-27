@@ -20,7 +20,6 @@ const styles = createStyles((theme) => ({
     width,
     height,
     resizeMode: 'contain',
-    backgroundColor: theme.palette.background.default,
   },
   progress: {
     position: 'absolute',
