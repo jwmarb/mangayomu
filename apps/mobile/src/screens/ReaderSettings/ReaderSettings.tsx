@@ -11,6 +11,7 @@ import {
   MangaProvider,
 } from '@/screens/ReaderSettings/context';
 import { Manga } from '@/models/Manga';
+import useLoadAfterInteractions from '@/hooks/useLoadAfterInteractions';
 
 const renderScene = SceneMap({
   global: withScrollable(GlobalSettings),
@@ -29,6 +30,11 @@ export default function ReaderSettings(
   ];
   const [index, setIndex] = React.useState<number>(manga == null ? 0 : 1);
   const navigationState = { index, routes };
+  const isReady = useLoadAfterInteractions();
+
+  if (!isReady) {
+    return null;
+  }
 
   if (manga != null) {
     return (
