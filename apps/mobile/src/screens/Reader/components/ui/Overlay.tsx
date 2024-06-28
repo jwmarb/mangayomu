@@ -1,6 +1,7 @@
 import useBoolean from '@/hooks/useBoolean';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
+import PageNavigator from '@/screens/Reader/components/composites/PageNavigator';
 import TopOverlay from '@/screens/Reader/components/composites/TopOverlay';
 import { createStyles } from '@/utils/theme';
 import React from 'react';
@@ -52,6 +53,7 @@ export default function Overlay(props: OverlayProps) {
       {show && (
         <View style={style.wrapper}>
           <TopOverlay />
+          <PageNavigator />
         </View>
       )}
     </>

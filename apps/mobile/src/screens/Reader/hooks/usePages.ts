@@ -9,6 +9,7 @@ import React from 'react';
 import useMangaSource from '@/hooks/useMangaSource';
 import useMangaMeta from '@/screens/MangaView/hooks/useMangaMeta';
 import { Data, Query } from '@/screens/Reader/Reader';
+import determinePageBoundaries from '@/screens/Reader/helpers/determinePageBoundaries';
 
 export type UsePagesParams = {
   manga: unknown;
@@ -41,6 +42,7 @@ export default function usePages(params: UsePagesParams) {
       ) ?? -1,
     [unparsedMeta, chapter, source, meta?.chapters],
   );
+  const indices = React.useRef<Record<string, [number, number]>>({});
   const queryClient = useQueryClient();
   const query = useInfiniteQuery<
     Query,
@@ -94,6 +96,9 @@ export default function usePages(params: UsePagesParams) {
           pages: [],
         };
       }
+
+      indices.current = determinePageBoundaries(data.pages);
+
       const pages: Data[] = [];
       for (let i = 0; i < data.pages.length; i++) {
         if (data.pageParams[i] > 0) {
@@ -141,5 +146,5 @@ export default function usePages(params: UsePagesParams) {
     dataLength.current = query.data?.pages.length ?? 0;
   }, [query.data?.pages]);
 
-  return { query, dataLength, initialPageParam };
+  return { query, dataLength, initialPageParam, indices };
 }

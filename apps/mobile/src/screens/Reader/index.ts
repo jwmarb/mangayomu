@@ -1,3 +1,1 @@
-import { withCodeSplitting } from '@/utils/codeSplit';
-
-export default withCodeSplitting(() => import('./Reader'));
+export { default } from './Reader';
