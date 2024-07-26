@@ -1,3 +1,4 @@
+import { PageProps } from '@/screens/Reader/components/ui/Page';
 import { PageBoundaries } from '@/screens/Reader/helpers/determinePageBoundaries';
 import { createContext } from '@/utils/context';
 import { Manga, MangaChapter } from '@mangayomu/mangascraper';
@@ -26,3 +27,6 @@ export const {
   useContext: useReaderFlatListRef,
   Provider: ReaderFlatListRefProvider,
 } = createContext<React.RefObject<FlatList>>();
+
+export const { useContext: useCurrentPage, Provider: CurrentPageNumber } =
+  createContext<PageProps>(false);

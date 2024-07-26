@@ -2,6 +2,7 @@ import { MangaChapter } from '@mangayomu/mangascraper';
 import React from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import { Data } from '@/screens/Reader/Reader';
+import { PageProps } from '@/screens/Reader/components/ui/Page';
 
 type UseViewabilityConfigCallbackPairsParams = {
   setCurrentChapter: React.Dispatch<React.SetStateAction<MangaChapter | null>>;
@@ -15,6 +16,7 @@ export default function useViewabilityConfigCallbackPairs(
 ) {
   const { setCurrentChapter, dataLength, fetchNextPage, fetchPreviousPage } =
     params;
+  const [currentPage, setCurrentPage] = React.useState<PageProps | null>(null);
   const viewabilityConfigCallbackPairs = React.useRef<
     React.ComponentProps<typeof FlatList>['viewabilityConfigCallbackPairs']
   >([
@@ -29,6 +31,7 @@ export default function useViewabilityConfigCallbackPairs(
 
         switch (item.type) {
           case 'PAGE':
+            setCurrentPage(item);
             setCurrentChapter(item.chapter);
             break;
           case 'CHAPTER_DIVIDER':
@@ -42,9 +45,9 @@ export default function useViewabilityConfigCallbackPairs(
       },
       viewabilityConfig: {
         waitForInteraction: false,
-        viewAreaCoveragePercentThreshold: 100,
+        viewAreaCoveragePercentThreshold: 99,
       },
     },
   ]);
-  return viewabilityConfigCallbackPairs;
+  return { viewabilityConfigCallbackPairs, currentPage };
 }

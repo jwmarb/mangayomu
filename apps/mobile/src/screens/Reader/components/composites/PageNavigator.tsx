@@ -1,8 +1,9 @@
 import Icon from '@/components/primitives/Icon';
 import IconButton from '@/components/primitives/IconButton';
-import Text from '@/components/primitives/Text';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
+import PageNumberTracker from '@/screens/Reader/components/primitives/PageNumberTracker';
+import PageSlider from '@/screens/Reader/components/primitives/PageSlider';
 import {
   useCurrentChapterContext,
   usePageBoundaries,
@@ -31,6 +32,11 @@ const styles = createStyles((theme) => ({
     gap: theme.style.size.m,
     flex: 1,
     flexDirection: 'row',
+  },
+  rightNavContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 }));
 
@@ -68,12 +74,15 @@ function PageNavigator() {
           icon={<Icon type="icon" name="chevron-left" />}
           size="small"
         />
-
-        <IconButton
-          onPress={handleOnEnd}
-          icon={<Icon type="icon" name="chevron-right" />}
-          size="small"
-        />
+        <PageSlider />
+        <View style={style.rightNavContainer}>
+          <PageNumberTracker />
+          <IconButton
+            onPress={handleOnEnd}
+            icon={<Icon type="icon" name="chevron-right" />}
+            size="small"
+          />
+        </View>
       </View>
     </Animated.View>
   );

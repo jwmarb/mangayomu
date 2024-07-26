@@ -11,6 +11,7 @@ export type PageProps = {
   type: 'PAGE';
   source: { uri: string };
   chapter: MangaChapter;
+  page: number;
 };
 
 const { width, height } = Dimensions.get('window');

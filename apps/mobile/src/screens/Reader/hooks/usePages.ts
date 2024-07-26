@@ -117,6 +117,7 @@ export default function usePages(params: UsePagesParams) {
             type: 'PAGE',
             source: { uri: data.pages[i].pages[j] },
             chapter: data.pages[i].chapter,
+            page: j + 1,
           });
         }
         if (data.pageParams[i] >= meta?.chapters.length - 1) {
