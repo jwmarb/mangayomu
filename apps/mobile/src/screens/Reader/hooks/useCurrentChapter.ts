@@ -12,8 +12,9 @@ export type UseCurrentChapterParams = {
 export default function useCurrentChapter(params: UseCurrentChapterParams) {
   const { source: sourceStr, manga, chapter, tmangameta } = params;
   const source = useMangaSource({ source: sourceStr, manga });
-  const [currentChapter, setCurrentChapter] =
-    React.useState<MangaChapter | null>(null);
+  const [currentChapter, setCurrentChapter] = React.useState<MangaChapter>(
+    source.toChapter(chapter, tmangameta),
+  );
 
   React.useEffect(() => {
     setCurrentChapter((prev) =>

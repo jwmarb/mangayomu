@@ -1,5 +1,6 @@
 import Icon from '@/components/primitives/Icon';
 import IconButton from '@/components/primitives/IconButton';
+import useBoolean from '@/hooks/useBoolean';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
 import PageNumberTracker from '@/screens/Reader/components/primitives/PageNumberTracker';
@@ -9,10 +10,21 @@ import {
   usePageBoundaries,
   useReaderFlatListRef,
 } from '@/screens/Reader/context';
+import useScrollToPage from '@/screens/Reader/hooks/useScrollToPage';
 import { createStyles } from '@/utils/theme';
 import React from 'react';
 import { View } from 'react-native';
-import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
+import Animated, {
+  cancelAnimation,
+  Easing,
+  FadeInDown,
+  FadeOutDown,
+  interpolate,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 const styles = createStyles((theme) => ({
   positioner: {
@@ -40,34 +52,44 @@ const styles = createStyles((theme) => ({
   },
 }));
 
-function PageNavigator() {
+export type PageNavigatorMethods = { toggle: () => void };
+
+function PageNavigator(_: any, ref: React.ForwardedRef<PageNavigatorMethods>) {
+  const opacity = useSharedValue<number>(0);
+  const [isVisible, toggle] = useBoolean();
+  const bottomStyle = useDerivedValue(() =>
+    interpolate(opacity.value, [0, 1], [-100, 0]),
+  );
+  React.useImperativeHandle(ref, () => ({
+    toggle() {
+      toggle();
+    },
+  }));
+  React.useEffect(() => {
+    if (isVisible) {
+      opacity.value = withTiming(0, { duration: 150, easing: Easing.linear });
+    } else {
+      opacity.value = withTiming(1, { duration: 150, easing: Easing.linear });
+    }
+    return () => {
+      cancelAnimation(opacity);
+    };
+  }, [isVisible]);
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    bottom: bottomStyle.value,
+  }));
   const contrast = useContrast();
-  const flatListRef = useReaderFlatListRef();
-  const boundaries = usePageBoundaries();
-  const currentChapter = useCurrentChapterContext();
+  const { goToFirstPage, goToLastPage } = useScrollToPage();
   const style = useStyles(styles, contrast);
   function handleOnBeginning() {
-    if (currentChapter != null) {
-      flatListRef.current?.scrollToIndex({
-        animated: false,
-        index: boundaries.current[currentChapter.link][0],
-      });
-    }
+    goToFirstPage();
   }
   function handleOnEnd() {
-    if (currentChapter != null) {
-      flatListRef.current?.scrollToIndex({
-        animated: false,
-        index: boundaries.current[currentChapter.link][1],
-      });
-    }
+    goToLastPage();
   }
   return (
-    <Animated.View
-      entering={FadeInDown}
-      exiting={FadeOutDown}
-      style={style.positioner}
-    >
+    <Animated.View style={[style.positioner, animatedStyle]}>
       <View style={style.container}>
         <IconButton
           onPress={handleOnBeginning}
@@ -88,4 +110,4 @@ function PageNavigator() {
   );
 }
 
-export default React.memo(PageNavigator);
+export default React.memo(React.forwardRef(PageNavigator));

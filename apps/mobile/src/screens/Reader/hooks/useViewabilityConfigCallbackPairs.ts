@@ -5,7 +5,7 @@ import { Data } from '@/screens/Reader/Reader';
 import { PageProps } from '@/screens/Reader/components/ui/Page';
 
 type UseViewabilityConfigCallbackPairsParams = {
-  setCurrentChapter: React.Dispatch<React.SetStateAction<MangaChapter | null>>;
+  setCurrentChapter: React.Dispatch<React.SetStateAction<MangaChapter>>;
   dataLength: React.MutableRefObject<number>;
   fetchPreviousPage: () => void;
   fetchNextPage: () => void;

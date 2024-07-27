@@ -8,7 +8,7 @@ import { FlatList } from 'react-native-gesture-handler';
 export const {
   useContext: useCurrentChapterContext,
   Provider: CurrentChapterProvider,
-} = createContext<MangaChapter | null>();
+} = createContext<MangaChapter>();
 
 export const {
   useContext: useIsFetchingChapter,

@@ -1,8 +1,12 @@
 import useBoolean from '@/hooks/useBoolean';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
-import PageNavigator from '@/screens/Reader/components/composites/PageNavigator';
-import TopOverlay from '@/screens/Reader/components/composites/TopOverlay';
+import PageNavigator, {
+  PageNavigatorMethods,
+} from '@/screens/Reader/components/composites/PageNavigator';
+import TopOverlay, {
+  TopOverlayMethods,
+} from '@/screens/Reader/components/composites/TopOverlay';
 import { createStyles } from '@/utils/theme';
 import React from 'react';
 import { View } from 'react-native';
@@ -36,7 +40,12 @@ export default function Overlay(props: OverlayProps) {
   const { children } = props;
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
-  const [show, toggle] = useBoolean();
+  const topRef = React.useRef<TopOverlayMethods>(null);
+  const pageNavRef = React.useRef<PageNavigatorMethods>(null);
+  function toggle() {
+    topRef.current?.toggle();
+    pageNavRef.current?.toggle();
+  }
   const gesture = React.useMemo(
     () =>
       Gesture.Tap()
@@ -50,12 +59,10 @@ export default function Overlay(props: OverlayProps) {
   return (
     <>
       <GestureDetector gesture={gesture}>{children}</GestureDetector>
-      {show && (
-        <View style={style.wrapper}>
-          <TopOverlay />
-          <PageNavigator />
-        </View>
-      )}
+      <View style={style.wrapper}>
+        <TopOverlay ref={topRef} />
+        <PageNavigator ref={pageNavRef} />
+      </View>
     </>
   );
 }

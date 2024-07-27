@@ -1,6 +1,7 @@
 import Icon from '@/components/primitives/Icon';
 import IconButton from '@/components/primitives/IconButton';
 import Text from '@/components/primitives/Text';
+import useBoolean from '@/hooks/useBoolean';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
 import {
@@ -12,7 +13,17 @@ import { createStyles } from '@/utils/theme';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { View } from 'react-native';
-import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
+import Animated, {
+  cancelAnimation,
+  Easing,
+  FadeInUp,
+  FadeOutUp,
+  interpolate,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const topOverlayStyles = createStyles((theme) => ({
@@ -25,7 +36,33 @@ const topOverlayStyles = createStyles((theme) => ({
   },
 }));
 
-function TopOverlay() {
+export type TopOverlayMethods = { toggle: () => void };
+
+function TopOverlay(_: any, ref: React.ForwardedRef<TopOverlayMethods>) {
+  const opacity = useSharedValue<number>(0);
+  const [isVisible, toggle] = useBoolean();
+  React.useImperativeHandle(ref, () => ({
+    toggle() {
+      toggle();
+    },
+  }));
+  React.useEffect(() => {
+    if (isVisible) {
+      opacity.value = withTiming(0, { duration: 150, easing: Easing.linear });
+    } else {
+      opacity.value = withTiming(1, { duration: 150, easing: Easing.linear });
+    }
+    return () => {
+      cancelAnimation(opacity);
+    };
+  }, [isVisible]);
+  const topStyle = useDerivedValue(() =>
+    interpolate(opacity.value, [0, 1], [-100, 0]),
+  );
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    top: topStyle.value,
+  }));
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const topOverlayStyle = useStyles(topOverlayStyles, contrast);
@@ -50,7 +87,7 @@ function TopOverlay() {
   }
 
   return (
-    <Animated.View entering={FadeInUp} exiting={FadeOutUp} style={viewStyle}>
+    <Animated.View style={[viewStyle, animatedStyle]}>
       <IconButton
         icon={<Icon type="icon" name="arrow-left" />}
         onPress={handleOnBack}
@@ -69,4 +106,4 @@ function TopOverlay() {
   );
 }
 
-export default React.memo(TopOverlay);
+export default React.memo(React.forwardRef(TopOverlay));
