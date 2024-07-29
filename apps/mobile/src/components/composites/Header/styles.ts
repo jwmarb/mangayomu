@@ -11,6 +11,16 @@ export const styles = createStyles((theme) => ({
     height: HEADER_HEIGHT,
     justifyContent: 'space-between',
   },
+  staticHeaderContainer: {
+    backgroundColor: theme.palette.background.paper,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: theme.style.screen.paddingHorizontal,
+    paddingVertical: theme.style.screen.paddingVertical,
+    height: HEADER_HEIGHT,
+    gap: theme.style.size.s,
+  },
   item: {
     flexGrow: 1,
     justifyContent: 'center',

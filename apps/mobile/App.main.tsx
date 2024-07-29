@@ -8,6 +8,7 @@ import ExtendedMangaList from '@/screens/ExtendedMangaList';
 import Reader from '@/screens/Reader';
 import ReaderSettings from '@/screens/ReaderSettings';
 import AppearanceSettings from '@/screens/AppearanceSettings';
+import { StaticHeader } from '@/components/composites/Header';
 
 const HOME_SCREEN_OPTIONS = { headerShown: false };
 const READER_SCREEN_OPTIONS = { headerShown: false };
@@ -17,7 +18,10 @@ function App(): React.JSX.Element {
     initialize();
   }, []);
   return (
-    <RootStack.Navigator initialRouteName="Home">
+    <RootStack.Navigator
+      initialRouteName="Home"
+      screenOptions={{ header: StaticHeader }}
+    >
       <RootStack.Screen
         name="Home"
         component={Home}
@@ -37,7 +41,9 @@ function App(): React.JSX.Element {
       <RootStack.Screen
         name="ReaderSettings"
         component={ReaderSettings}
-        options={{ title: 'Reader settings' }}
+        options={{
+          title: 'Reader settings',
+        }}
       />
       <RootStack.Screen
         name="AppearanceSettings"
