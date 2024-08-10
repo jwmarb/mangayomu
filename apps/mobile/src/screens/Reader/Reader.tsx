@@ -17,6 +17,7 @@ import {
   PageBoundariesProvider,
   ReaderFlatListRefProvider,
   ReaderMangaProvider,
+  ReadingDirectionProvider,
 } from '@/screens/Reader/context';
 import usePages from '@/screens/Reader/hooks/usePages';
 import useViewabilityConfigCallbackPairs from '@/screens/Reader/hooks/useViewabilityConfigCallbackPairs';
@@ -35,6 +36,8 @@ import useBackgroundColor from '@/screens/Reader/hooks/useBackgroundColor';
 import type { PageProps } from '@/screens/Reader/components/ui/Page';
 import { useFocusEffect } from '@react-navigation/native';
 import useImmersiveMode from '@/screens/Reader/hooks/useImmersiveMode';
+import useReaderSetting from '@/hooks/useReaderSetting';
+import { ReadingDirection } from '@/models/schema';
 
 export type Data =
   | PageProps
@@ -85,6 +88,10 @@ export default function Reader(props: RootStackProps<'Reader'>) {
   const manga = useManga(unparsedManga, sourceStr);
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
+  const { state: readingDirection } = useReaderSetting(
+    'readingDirection',
+    manga,
+  );
   useImmersiveMode();
   const { data: metaResult } = useMangaMeta(unparsedManga, sourceStr);
   const [tmangameta, meta] = metaResult ?? [];
@@ -120,45 +127,51 @@ export default function Reader(props: RootStackProps<'Reader'>) {
   const getItemLayout = useItemLayout();
 
   return (
-    <CurrentPageNumber value={currentPage}>
-      <ReaderFlatListRefProvider value={flatListRef}>
-        <PageBoundariesProvider value={indices}>
-          <IsFetchingChapterProvider value={isFetching}>
-            <CurrentChapterProvider value={currentChapter}>
-              <ReaderMangaProvider value={manga}>
-                <Overlay>
-                  <View style={style.loadingContainer}>
-                    <React.Suspense fallback={<Progress size="large" />}>
-                      {!isLoading && currentChapter != null ? (
-                        <FlatList
-                          ref={flatListRef}
-                          contentContainerStyle={contentContainerStyle}
-                          getItemLayout={getItemLayout}
-                          maintainVisibleContentPosition={
-                            maintainVisibleContentPosition
-                          }
-                          keyExtractor={keyExtractor}
-                          renderItem={renderItem}
-                          data={data?.pages}
-                          viewabilityConfigCallbackPairs={
-                            viewabilityConfigCallbackPairs.current
-                          }
-                          horizontal
-                          pagingEnabled
-                          showsHorizontalScrollIndicator={false}
-                          initialScrollIndex={initialPageParam === 0 ? 0 : 1}
-                        />
-                      ) : (
-                        <Progress size="large" />
-                      )}
-                    </React.Suspense>
-                  </View>
-                </Overlay>
-              </ReaderMangaProvider>
-            </CurrentChapterProvider>
-          </IsFetchingChapterProvider>
-        </PageBoundariesProvider>
-      </ReaderFlatListRefProvider>
-    </CurrentPageNumber>
+    <ReadingDirectionProvider value={readingDirection}>
+      <CurrentPageNumber value={currentPage}>
+        <ReaderFlatListRefProvider value={flatListRef}>
+          <PageBoundariesProvider value={indices}>
+            <IsFetchingChapterProvider value={isFetching}>
+              <CurrentChapterProvider value={currentChapter}>
+                <ReaderMangaProvider value={manga}>
+                  <Overlay>
+                    <View style={style.loadingContainer}>
+                      <React.Suspense fallback={<Progress size="large" />}>
+                        {!isLoading && currentChapter != null ? (
+                          <FlatList
+                            ref={flatListRef}
+                            contentContainerStyle={contentContainerStyle}
+                            getItemLayout={getItemLayout}
+                            maintainVisibleContentPosition={
+                              maintainVisibleContentPosition
+                            }
+                            keyExtractor={keyExtractor}
+                            renderItem={renderItem}
+                            data={data?.pages}
+                            viewabilityConfigCallbackPairs={
+                              viewabilityConfigCallbackPairs.current
+                            }
+                            horizontal
+                            inverted={
+                              readingDirection ===
+                              ReadingDirection.RIGHT_TO_LEFT
+                            }
+                            pagingEnabled
+                            showsHorizontalScrollIndicator={false}
+                            initialScrollIndex={initialPageParam === 0 ? 0 : 1}
+                          />
+                        ) : (
+                          <Progress size="large" />
+                        )}
+                      </React.Suspense>
+                    </View>
+                  </Overlay>
+                </ReaderMangaProvider>
+              </CurrentChapterProvider>
+            </IsFetchingChapterProvider>
+          </PageBoundariesProvider>
+        </ReaderFlatListRefProvider>
+      </CurrentPageNumber>
+    </ReadingDirectionProvider>
   );
 }

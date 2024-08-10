@@ -1,3 +1,4 @@
+import { ReadingDirection } from '@/models/schema';
 import { PageProps } from '@/screens/Reader/components/ui/Page';
 import { PageBoundaries } from '@/screens/Reader/helpers/determinePageBoundaries';
 import { createContext } from '@/utils/context';
@@ -30,3 +31,8 @@ export const {
 
 export const { useContext: useCurrentPage, Provider: CurrentPageNumber } =
   createContext<PageProps>(false);
+
+export const {
+  useContext: useReadingDirection,
+  Provider: ReadingDirectionProvider,
+} = createContext<ReadingDirection>();
