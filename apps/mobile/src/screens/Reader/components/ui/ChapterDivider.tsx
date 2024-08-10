@@ -9,7 +9,12 @@ import Progress from '@/components/primitives/Progress';
 import {
   useCurrentChapterContext,
   useIsFetchingChapter,
+  useReaderBackgroundColor,
+  useReaderManga,
 } from '@/screens/Reader/context';
+import useTheme from '@/hooks/useTheme';
+import Contrast from '@/components/primitives/Contrast';
+import { BackgroundColor } from '@/stores/settings';
 
 const { width, height } = Dimensions.get('window');
 
@@ -41,27 +46,49 @@ export default React.memo(function ChapterDivider(props: ChapterDividerProps) {
   const currentChapter = useCurrentChapterContext();
   const isFetching = useIsFetchingChapter();
   const style = useStyles(styles);
+  const theme = useTheme();
+  const manga = useReaderManga();
+  const backgroundColor = useReaderBackgroundColor();
   return (
-    <View style={style.container}>
-      {isFetching && <Progress size="large" />}
-      <View style={style.textContainer}>
-        {next?.link === currentChapter?.link && (
-          <>
-            <Icon color="primary" type="icon" name="arrow-left" size="large" />
-            <Text bold color="textSecondary">
-              Previous: <Text>{previous?.name}</Text>
-            </Text>
-          </>
-        )}
-        {previous?.link === currentChapter?.link && (
-          <>
-            <Text bold color="textSecondary">
-              Next: <Text>{next?.name}</Text>
-            </Text>
-            <Icon color="primary" type="icon" name="arrow-right" size="large" />
-          </>
-        )}
+    <Contrast
+      contrast={
+        (theme.mode === 'light' &&
+          (backgroundColor === BackgroundColor.BLACK ||
+            backgroundColor === BackgroundColor.GRAY)) ||
+        (theme.mode === 'dark' && backgroundColor === BackgroundColor.WHITE)
+      }
+    >
+      <View style={style.container}>
+        {isFetching && <Progress size="large" />}
+        <View style={style.textContainer}>
+          {next?.link === currentChapter?.link && (
+            <>
+              <Icon
+                color="primary"
+                type="icon"
+                name="arrow-left"
+                size="large"
+              />
+              <Text bold color="textSecondary">
+                Previous: <Text>{previous?.name}</Text>
+              </Text>
+            </>
+          )}
+          {previous?.link === currentChapter?.link && (
+            <>
+              <Text bold color="textSecondary">
+                Next: <Text>{next?.name}</Text>
+              </Text>
+              <Icon
+                color="primary"
+                type="icon"
+                name="arrow-right"
+                size="large"
+              />
+            </>
+          )}
+        </View>
       </View>
-    </View>
+    </Contrast>
   );
 });

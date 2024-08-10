@@ -1,9 +1,11 @@
+import Contrast from '@/components/primitives/Contrast';
 import Icon from '@/components/primitives/Icon';
 import IconButton from '@/components/primitives/IconButton';
 import Text from '@/components/primitives/Text';
 import useBoolean from '@/hooks/useBoolean';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
+import useTheme from '@/hooks/useTheme';
 import {
   useCurrentChapterContext,
   useReaderManga,
@@ -64,6 +66,7 @@ function TopOverlay(_: any, ref: React.ForwardedRef<TopOverlayMethods>) {
     top: topStyle.value,
   }));
   const contrast = useContrast();
+  const theme = useTheme();
   const style = useStyles(styles, contrast);
   const topOverlayStyle = useStyles(topOverlayStyles, contrast);
   const { top } = useSafeAreaInsets();
@@ -87,22 +90,24 @@ function TopOverlay(_: any, ref: React.ForwardedRef<TopOverlayMethods>) {
   }
 
   return (
-    <Animated.View style={[viewStyle, animatedStyle]}>
-      <IconButton
-        icon={<Icon type="icon" name="arrow-left" />}
-        onPress={handleOnBack}
-      />
-      <View style={topOverlayStyle.chapterTitleContainer}>
-        <Text numberOfLines={2}>{manga.title}</Text>
-        <Text numberOfLines={1} variant="body2" color="textSecondary">
-          {chapter?.name}
-        </Text>
-      </View>
-      <IconButton
-        icon={<Icon type="icon" name="cog" />}
-        onPress={handleOnSettings}
-      />
-    </Animated.View>
+    <Contrast contrast={theme.mode === 'light'}>
+      <Animated.View style={[viewStyle, animatedStyle]}>
+        <IconButton
+          icon={<Icon type="icon" name="arrow-left" />}
+          onPress={handleOnBack}
+        />
+        <View style={topOverlayStyle.chapterTitleContainer}>
+          <Text numberOfLines={2}>{manga.title}</Text>
+          <Text numberOfLines={1} variant="body2" color="textSecondary">
+            {chapter?.name}
+          </Text>
+        </View>
+        <IconButton
+          icon={<Icon type="icon" name="cog" />}
+          onPress={handleOnSettings}
+        />
+      </Animated.View>
+    </Contrast>
   );
 }
 

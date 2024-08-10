@@ -1,8 +1,10 @@
+import Contrast from '@/components/primitives/Contrast';
 import Icon from '@/components/primitives/Icon';
 import IconButton from '@/components/primitives/IconButton';
 import useBoolean from '@/hooks/useBoolean';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
+import useTheme from '@/hooks/useTheme';
 import PageNumberTracker from '@/screens/Reader/components/primitives/PageNumberTracker';
 import PageSlider from '@/screens/Reader/components/primitives/PageSlider';
 import {
@@ -80,6 +82,7 @@ function PageNavigator(_: any, ref: React.ForwardedRef<PageNavigatorMethods>) {
     bottom: bottomStyle.value,
   }));
   const contrast = useContrast();
+  const theme = useTheme();
   const { goToFirstPage, goToLastPage } = useScrollToPage();
   const style = useStyles(styles, contrast);
   function handleOnBeginning() {
@@ -89,24 +92,26 @@ function PageNavigator(_: any, ref: React.ForwardedRef<PageNavigatorMethods>) {
     goToLastPage();
   }
   return (
-    <Animated.View style={[style.positioner, animatedStyle]}>
-      <View style={style.container}>
-        <IconButton
-          onPress={handleOnBeginning}
-          icon={<Icon type="icon" name="chevron-left" />}
-          size="small"
-        />
-        <PageSlider />
-        <View style={style.rightNavContainer}>
-          <PageNumberTracker />
+    <Contrast contrast={theme.mode === 'light'}>
+      <Animated.View style={[style.positioner, animatedStyle]}>
+        <View style={style.container}>
           <IconButton
-            onPress={handleOnEnd}
-            icon={<Icon type="icon" name="chevron-right" />}
+            onPress={handleOnBeginning}
+            icon={<Icon type="icon" name="chevron-left" />}
             size="small"
           />
+          <PageSlider />
+          <View style={style.rightNavContainer}>
+            <PageNumberTracker />
+            <IconButton
+              onPress={handleOnEnd}
+              icon={<Icon type="icon" name="chevron-right" />}
+              size="small"
+            />
+          </View>
         </View>
-      </View>
-    </Animated.View>
+      </Animated.View>
+    </Contrast>
   );
 }
 

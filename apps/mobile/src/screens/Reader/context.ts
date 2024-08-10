@@ -1,6 +1,7 @@
 import { ReadingDirection } from '@/models/schema';
 import { PageProps } from '@/screens/Reader/components/ui/Page';
 import { PageBoundaries } from '@/screens/Reader/helpers/determinePageBoundaries';
+import { BackgroundColor } from '@/stores/settings';
 import { createContext } from '@/utils/context';
 import { Manga, MangaChapter } from '@mangayomu/mangascraper';
 import React from 'react';
@@ -36,3 +37,8 @@ export const {
   useContext: useReadingDirection,
   Provider: ReadingDirectionProvider,
 } = createContext<ReadingDirection>();
+
+export const {
+  useContext: useReaderBackgroundColor,
+  Provider: ReaderBackgroundColor,
+} = createContext<BackgroundColor>();

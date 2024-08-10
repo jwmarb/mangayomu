@@ -9,5 +9,5 @@ export default function useBackgroundColor(manga: Manga) {
     () => ({ backgroundColor: BackgroundColorMap[state] }),
     [state],
   );
-  return contentContainerStyle;
+  return [contentContainerStyle, state] as const;
 }
