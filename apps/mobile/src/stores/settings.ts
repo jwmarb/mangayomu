@@ -28,6 +28,7 @@ export type SettingsState = {
     readingOrientation: ReadingOrientation;
     zoomStartPosition: ZoomStartPosition;
     backgroundColor: BackgroundColor;
+    hideStatusBar: boolean;
   };
   setReaderState: <T extends keyof SettingsState['reader']>(
     key: T,
@@ -44,6 +45,7 @@ export const useSettingsStore = create(
         readingOrientation: ReadingOrientation.DEFAULT,
         zoomStartPosition: ZoomStartPosition.DEFAULT,
         backgroundColor: BackgroundColor.DEFAULT,
+        hideStatusBar: true,
       },
       setReaderState: <T extends keyof SettingsState['reader']>(
         key: T,
@@ -52,7 +54,17 @@ export const useSettingsStore = create(
     }),
     createPersistConfig({
       name: 'settings',
-      version: 0,
+      version: 1,
+      migrations: {
+        0: (oldState: SettingsState) =>
+          ({
+            ...oldState,
+            reader: {
+              ...oldState.reader,
+              hideStatusBar: true,
+            },
+          }) as SettingsState,
+      } as any,
     }),
   ),
 );

@@ -6,11 +6,7 @@ import withScrollable from '@/screens/ReaderSettings/helpers/withScrollable';
 import Miscellaneous from '@/screens/ReaderSettings/components/ui/Miscellaneous';
 import { RootStackProps } from '@/screens/navigator';
 import ForThisSeries from '@/screens/ReaderSettings/components/ui/ForThisSeries';
-import {
-  ForThisSeriesProvider,
-  MangaProvider,
-} from '@/screens/ReaderSettings/context';
-import { Manga } from '@/models/Manga';
+import { ForThisSeriesProvider } from '@/screens/ReaderSettings/context';
 import useLoadAfterInteractions from '@/hooks/useLoadAfterInteractions';
 
 const renderScene = SceneMap({
