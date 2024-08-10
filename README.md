@@ -8,6 +8,12 @@
   A cross-platform application to make reading mangas easier and more accessible
 </p>
 
+<div style="display: flex;flex-direction: row; gap: 1rem; justify-content: center;">
+<img src="assets/preview1.jpg" width="200">
+<img src="assets/preview2.jpg" width="200">
+<img src="assets/preview3.jpg" width="200">
+</div>
+
 <br>
 <br>
 
