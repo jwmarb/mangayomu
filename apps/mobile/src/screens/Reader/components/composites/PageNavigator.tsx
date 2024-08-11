@@ -5,13 +5,10 @@ import useBoolean from '@/hooks/useBoolean';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
 import useTheme from '@/hooks/useTheme';
+import { ReadingDirection } from '@/models/schema';
 import PageNumberTracker from '@/screens/Reader/components/primitives/PageNumberTracker';
 import PageSlider from '@/screens/Reader/components/primitives/PageSlider';
-import {
-  useCurrentChapterContext,
-  usePageBoundaries,
-  useReaderFlatListRef,
-} from '@/screens/Reader/context';
+import { useReadingDirection } from '@/screens/Reader/context';
 import useScrollToPage from '@/screens/Reader/hooks/useScrollToPage';
 import { createStyles } from '@/utils/theme';
 import React from 'react';
@@ -19,8 +16,6 @@ import { View } from 'react-native';
 import Animated, {
   cancelAnimation,
   Easing,
-  FadeInDown,
-  FadeOutDown,
   interpolate,
   useAnimatedStyle,
   useDerivedValue,
@@ -85,11 +80,20 @@ function PageNavigator(_: any, ref: React.ForwardedRef<PageNavigatorMethods>) {
   const theme = useTheme();
   const { goToFirstPage, goToLastPage } = useScrollToPage();
   const style = useStyles(styles, contrast);
+  const readingDirection = useReadingDirection();
   function handleOnBeginning() {
-    goToFirstPage();
+    if (readingDirection === ReadingDirection.LEFT_TO_RIGHT) {
+      goToFirstPage();
+    } else {
+      goToLastPage();
+    }
   }
   function handleOnEnd() {
-    goToLastPage();
+    if (readingDirection === ReadingDirection.LEFT_TO_RIGHT) {
+      goToLastPage();
+    } else {
+      goToFirstPage();
+    }
   }
   return (
     <Contrast contrast={theme.mode === 'light'}>

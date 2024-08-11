@@ -11,10 +11,12 @@ import {
   useIsFetchingChapter,
   useReaderBackgroundColor,
   useReaderManga,
+  useReadingDirection,
 } from '@/screens/Reader/context';
 import useTheme from '@/hooks/useTheme';
 import Contrast from '@/components/primitives/Contrast';
 import { BackgroundColor } from '@/stores/settings';
+import { ReadingDirection } from '@/models/schema';
 
 const { width, height } = Dimensions.get('window');
 
@@ -49,6 +51,7 @@ export default React.memo(function ChapterDivider(props: ChapterDividerProps) {
   const theme = useTheme();
   const manga = useReaderManga();
   const backgroundColor = useReaderBackgroundColor();
+  const readingDirection = useReadingDirection();
   return (
     <Contrast
       contrast={
@@ -63,28 +66,48 @@ export default React.memo(function ChapterDivider(props: ChapterDividerProps) {
         <View style={style.textContainer}>
           {next?.link === currentChapter?.link && (
             <>
-              <Icon
-                color="primary"
-                type="icon"
-                name="arrow-left"
-                size="large"
-              />
+              {readingDirection === ReadingDirection.LEFT_TO_RIGHT && (
+                <Icon
+                  color="primary"
+                  type="icon"
+                  name="arrow-left"
+                  size="large"
+                />
+              )}
               <Text bold color="textSecondary">
                 Previous: <Text>{previous?.name}</Text>
               </Text>
+              {readingDirection === ReadingDirection.RIGHT_TO_LEFT && (
+                <Icon
+                  color="primary"
+                  type="icon"
+                  name="arrow-right"
+                  size="large"
+                />
+              )}
             </>
           )}
           {previous?.link === currentChapter?.link && (
             <>
+              {readingDirection === ReadingDirection.RIGHT_TO_LEFT && (
+                <Icon
+                  color="primary"
+                  type="icon"
+                  name="arrow-left"
+                  size="large"
+                />
+              )}
               <Text bold color="textSecondary">
                 Next: <Text>{next?.name}</Text>
               </Text>
-              <Icon
-                color="primary"
-                type="icon"
-                name="arrow-right"
-                size="large"
-              />
+              {readingDirection === ReadingDirection.LEFT_TO_RIGHT && (
+                <Icon
+                  color="primary"
+                  type="icon"
+                  name="arrow-right"
+                  size="large"
+                />
+              )}
             </>
           )}
         </View>
