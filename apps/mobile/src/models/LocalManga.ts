@@ -160,8 +160,8 @@ export class LocalManga extends Model {
       model.raw = rawData;
     }
 
-    const localMangas = database.get(Table.LOCAL_MANGAS);
-    const localChapters = database.get(Table.LOCAL_CHAPTERS);
+    const localMangas = database.get<LocalManga>(Table.LOCAL_MANGAS);
+    const localChapters = database.get<LocalChapter>(Table.LOCAL_CHAPTERS);
     const localGenres = database.get<Genre>(Table.GENRES);
     const [existingLocalManga, existingLocalChapters] = await Promise.all([
       localMangas.query(Q.where('link', data.link)),
@@ -181,14 +181,14 @@ export class LocalManga extends Model {
       preparedUpdate = localMangas.prepareCreate(addFields) as LocalManga;
     }
     const operations: Model[] = existingLocalChapters
-      .map((x) => x.prepareDestroyPermanently())
+      .map<Model>((x) => x.prepareDestroyPermanently())
       .concat(
         data.chapters.map((x) =>
           localChapters.prepareCreate((record) => {
             const source = MangaSource.getSource(data.source);
             if (source == null) throw new InvalidSourceException(data.source);
             const localChapter = record as LocalChapter;
-            const l = isChapter(x) ? x : source.toChapter(x, data);
+            const l = isChapter(x) ? x : source.toChapter(x, rawData);
             localChapter.name = l.name;
             localChapter.subname = l.subname;
             localChapter.date = new Date(l.date);
