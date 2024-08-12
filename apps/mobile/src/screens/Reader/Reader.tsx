@@ -40,6 +40,7 @@ import useImmersiveMode from '@/screens/Reader/hooks/useImmersiveMode';
 import useReaderSetting from '@/hooks/useReaderSetting';
 import { ReadingDirection } from '@/models/schema';
 import useHistoryEntry from '@/screens/Reader/hooks/useHistoryEntry';
+import useChapterData from '@/screens/Reader/hooks/useChapterData';
 
 export type Data =
   | PageProps
@@ -129,6 +130,8 @@ export default function Reader(props: RootStackProps<'Reader'>) {
   const getItemLayout = useItemLayout();
 
   useHistoryEntry(currentChapter);
+
+  useChapterData(currentPage, currentChapter);
 
   return (
     <ReaderBackgroundColor value={backgroundColor}>
