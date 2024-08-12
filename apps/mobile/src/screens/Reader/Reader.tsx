@@ -39,6 +39,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import useImmersiveMode from '@/screens/Reader/hooks/useImmersiveMode';
 import useReaderSetting from '@/hooks/useReaderSetting';
 import { ReadingDirection } from '@/models/schema';
+import useHistoryEntry from '@/screens/Reader/hooks/useHistoryEntry';
 
 export type Data =
   | PageProps
@@ -126,6 +127,8 @@ export default function Reader(props: RootStackProps<'Reader'>) {
   const [contentContainerStyle, backgroundColor] = useBackgroundColor(manga);
 
   const getItemLayout = useItemLayout();
+
+  useHistoryEntry(currentChapter);
 
   return (
     <ReaderBackgroundColor value={backgroundColor}>

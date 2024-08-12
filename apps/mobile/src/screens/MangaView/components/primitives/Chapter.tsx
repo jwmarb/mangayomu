@@ -10,6 +10,8 @@ import useStyles from '@/hooks/useStyles';
 import useContrast from '@/hooks/useContrast';
 import useMangaViewUnparsedManga from '@/screens/MangaView/hooks/useMangaViewUnparsedManga';
 import useMangaViewUnparsedData from '@/screens/MangaView/hooks/useMangaViewUnparsedData';
+import useHistoryEntry from '@/screens/MangaView/hooks/useHistoryEntry';
+import useMangaViewManga from '@/screens/MangaView/hooks/useMangaViewManga';
 
 export const BASE_CHAPTER_HEIGHT = 64;
 export const CHAPTER_HEIGHT_EXTENDED = BASE_CHAPTER_HEIGHT + 20;
@@ -29,10 +31,13 @@ const styles = (extended: boolean) =>
     },
   }));
 
-const composedStyles = [true, false].reduce((prev, curr) => {
-  prev[curr ? 1 : 0] = styles(curr);
-  return prev;
-}, {} as Record<number, ReturnType<typeof styles>>);
+const composedStyles = [true, false].reduce(
+  (prev, curr) => {
+    prev[curr ? 1 : 0] = styles(curr);
+    return prev;
+  },
+  {} as Record<number, ReturnType<typeof styles>>,
+);
 
 const MONTHS = [
   'January',
@@ -70,6 +75,7 @@ function Chapter(props: ChapterProps) {
   const source = useMangaViewSource();
   const tmangameta = useMangaViewUnparsedData();
   const unparsed = useMangaViewUnparsedManga();
+  const manga = useMangaViewManga();
   const chapter = isChapter(props.chapter)
     ? props.chapter
     : source.toChapter(props.chapter, tmangameta);
@@ -77,6 +83,7 @@ function Chapter(props: ChapterProps) {
   const style = useStyles(composedStyles[chapter.subname ? 1 : 0], contrast);
   const date = React.useMemo(() => getDate(chapter.date), [chapter.date]);
   const navigation = useNavigation();
+  const historyEntry = useHistoryEntry(chapter.link, manga.link);
 
   function handleOnPress() {
     navigation.navigate('Reader', {
@@ -89,7 +96,12 @@ function Chapter(props: ChapterProps) {
   return (
     <Pressable onPress={handleOnPress} style={style.pressable}>
       <View>
-        <Text numberOfLines={1}>{chapter.name}</Text>
+        <Text
+          numberOfLines={1}
+          color={historyEntry != null ? 'disabled' : 'textSecondary'}
+        >
+          {chapter.name}
+        </Text>
         {chapter.subname && (
           <Text
             numberOfLines={1}
