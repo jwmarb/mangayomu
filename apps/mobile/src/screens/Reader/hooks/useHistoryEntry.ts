@@ -48,7 +48,9 @@ export default function useHistoryEntry(currentChapter: MangaChapter) {
       } else {
         const [historyEntry] = results;
         await database.write(async () => {
-          historyEntry.updatedAt = new Date();
+          await historyEntry.update((self) => {
+            self.updatedAt = new Date();
+          });
         });
       }
     }
