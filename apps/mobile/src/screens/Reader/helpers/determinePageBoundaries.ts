@@ -4,6 +4,7 @@ export type PageBoundaries = Record<string, [number, number]>;
 
 export default function determinePageBoundaries(
   pages: Query[],
+  isOnlyChapter?: boolean,
 ): PageBoundaries {
   const boundaries: PageBoundaries = {};
   let previousEndBoundary = 0;
@@ -12,7 +13,10 @@ export default function determinePageBoundaries(
     switch (i) {
       case 0:
         previousEndBoundary = query.pages.length - 1;
-        boundaries[query.chapter.link] = [0, previousEndBoundary];
+        boundaries[query.chapter.link] = [
+          isOnlyChapter ? 1 : 0,
+          previousEndBoundary,
+        ];
         break;
       default:
         const start = previousEndBoundary + 2; // increment by 2 to skip chapter divider and start at the beginning of the chapter
