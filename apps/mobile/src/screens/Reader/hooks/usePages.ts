@@ -44,6 +44,63 @@ export default function usePages(params: UsePagesParams) {
   );
   const indices = React.useRef<Record<string, [number, number]>>({});
   const queryClient = useQueryClient();
+  const select = React.useCallback(
+    (data: InfiniteData<Query, number>) => {
+      if (meta == null) {
+        return {
+          pageParams: data.pageParams,
+          pages: [],
+        };
+      }
+
+      indices.current = determinePageBoundaries(
+        data.pages,
+        data.pageParams[0] > 0,
+      );
+
+      const pages: Data[] = [];
+      for (let i = 0; i < data.pages.length; i++) {
+        if (data.pageParams[i] > 0) {
+          const previousMetaChapter = meta.chapters[data.pageParams[i] - 1];
+          pages.push({
+            type: 'CHAPTER_DIVIDER',
+            next: data.pages[i]?.chapter,
+            previous:
+              previousMetaChapter != null
+                ? source.toChapter(previousMetaChapter, unparsedMeta)
+                : undefined,
+          });
+        }
+        for (let j = 0; j < data.pages[i].pages.length; j++) {
+          pages.push({
+            type: 'PAGE',
+            source: { uri: data.pages[i].pages[j] },
+            chapter: data.pages[i].chapter,
+            page: j + 1,
+          });
+        }
+        if (data.pageParams[i] >= meta?.chapters.length - 1) {
+          pages.push({ type: 'NO_MORE_CHAPTERS' });
+        } else if (i === data.pages.length - 1) {
+          const nextMetaChapter = meta.chapters[data.pageParams[i] + 1];
+          pages.push({
+            type: 'CHAPTER_DIVIDER',
+            next:
+              nextMetaChapter != null
+                ? source.toChapter(nextMetaChapter, unparsedMeta)
+                : undefined,
+            previous: data.pages[i]?.chapter,
+          });
+        }
+      }
+
+      return {
+        pageParams: data.pageParams,
+        pages,
+      };
+    },
+    [meta, source, unparsedMeta],
+  );
   const query = useInfiniteQuery<
     Query,
     Error,
@@ -89,57 +146,7 @@ export default function usePages(params: UsePagesParams) {
       }
       return firstPage - 1;
     },
-    select: (data) => {
-      if (meta == null) {
-        return {
-          pageParams: data.pageParams,
-          pages: [],
-        };
-      }
-
-      indices.current = determinePageBoundaries(data.pages);
-
-      const pages: Data[] = [];
-      for (let i = 0; i < data.pages.length; i++) {
-        if (data.pageParams[i] > 0) {
-          const previousMetaChapter = meta.chapters[data.pageParams[i] - 1];
-          pages.push({
-            type: 'CHAPTER_DIVIDER',
-            next: data.pages[i]?.chapter,
-            previous:
-              previousMetaChapter != null
-                ? source.toChapter(previousMetaChapter, unparsedMeta)
-                : undefined,
-          });
-        }
-        for (let j = 0; j < data.pages[i].pages.length; j++) {
-          pages.push({
-            type: 'PAGE',
-            source: { uri: data.pages[i].pages[j] },
-            chapter: data.pages[i].chapter,
-            page: j + 1,
-          });
-        }
-        if (data.pageParams[i] >= meta?.chapters.length - 1) {
-          pages.push({ type: 'NO_MORE_CHAPTERS' });
-        } else if (i === data.pages.length - 1) {
-          const nextMetaChapter = meta.chapters[data.pageParams[i] + 1];
-          pages.push({
-            type: 'CHAPTER_DIVIDER',
-            next:
-              nextMetaChapter != null
-                ? source.toChapter(nextMetaChapter, unparsedMeta)
-                : undefined,
-            previous: data.pages[i]?.chapter,
-          });
-        }
-      }
-
-      return {
-        pageParams: data.pageParams,
-        pages,
-      };
-    },
+    select,
   });
 
   const dataLength = React.useRef<number>(0);
