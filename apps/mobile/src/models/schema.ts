@@ -91,7 +91,7 @@ export type UseRowOptions<TDefault, TModel> = {
 };
 
 export const schema = appSchema({
-  version: 9,
+  version: 11,
   tables: [
     tableSchema({
       name: Table.MANGAS,
@@ -329,12 +329,12 @@ export const schema = appSchema({
       name: Table.HISTORY_ENTRIES,
       columns: [
         {
-          name: LOCAL_MANGA_ID,
+          name: 'local_manga_link',
           isIndexed: true,
           type: 'string',
         },
         {
-          name: LOCAL_CHAPTER_ID,
+          name: 'local_chapter_link',
           isIndexed: true,
           type: 'string',
         },

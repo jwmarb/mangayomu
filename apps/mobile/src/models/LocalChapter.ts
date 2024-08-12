@@ -1,9 +1,15 @@
-import { Model, Relation } from '@nozbe/watermelondb';
+import { Model, Query, Relation } from '@nozbe/watermelondb';
 import { Associations } from '@nozbe/watermelondb/Model';
-import { date, field, relation } from '@nozbe/watermelondb/decorators';
+import {
+  children,
+  date,
+  field,
+  relation,
+} from '@nozbe/watermelondb/decorators';
 import type { ISOLangCode } from '@mangayomu/language-codes';
 import { LOCAL_CHAPTER_ID, LOCAL_MANGA_ID, Table } from '@/models/schema';
 import { LocalManga } from '@/models/LocalManga';
+import { HistoryEntry } from '@/models/HistoryEntry';
 
 export class LocalChapter extends Model {
   static table = Table.LOCAL_CHAPTERS;
@@ -11,10 +17,6 @@ export class LocalChapter extends Model {
     [Table.LOCAL_MANGAS]: {
       type: 'belongs_to',
       key: LOCAL_MANGA_ID,
-    },
-    [Table.HISTORY_ENTRIES]: {
-      type: 'has_many',
-      foreignKey: LOCAL_CHAPTER_ID,
     },
   };
 
