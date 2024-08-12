@@ -73,3 +73,14 @@ it('correctly determines page boundaries for multiple chapters with one page onl
     'https://3': [6, 6],
   });
 });
+
+it('correctly determines page boundaries when starting on a non-first chapter', () => {
+  expect(
+    determinePageBoundaries(
+      [{ chapter: generateMockChapter(1), pages: ['1', '2', '3'] }],
+      true,
+    ),
+  ).toEqual({
+    'https://1': [1, 3],
+  });
+});

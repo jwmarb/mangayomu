@@ -12,7 +12,7 @@ export default function determinePageBoundaries(
     const query = pages[i];
     switch (i) {
       case 0:
-        previousEndBoundary = query.pages.length - 1;
+        previousEndBoundary = query.pages.length - (isOnlyChapter ? 0 : 1);
         boundaries[query.chapter.link] = [
           isOnlyChapter ? 1 : 0,
           previousEndBoundary,
