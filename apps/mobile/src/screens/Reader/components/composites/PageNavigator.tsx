@@ -9,6 +9,7 @@ import { ReadingDirection } from '@/models/schema';
 import PageNumberTracker from '@/screens/Reader/components/primitives/PageNumberTracker';
 import PageSlider from '@/screens/Reader/components/primitives/PageSlider';
 import { useReadingDirection } from '@/screens/Reader/context';
+import useMetrics from '@/screens/Reader/hooks/useMetrics';
 import useScrollToPage from '@/screens/Reader/hooks/useScrollToPage';
 import { createStyles } from '@/utils/theme';
 import React from 'react';
@@ -57,21 +58,24 @@ function PageNavigator(_: any, ref: React.ForwardedRef<PageNavigatorMethods>) {
   const bottomStyle = useDerivedValue(() =>
     interpolate(opacity.value, [0, 1], [-100, 0]),
   );
+  const metrics = useMetrics();
   React.useImperativeHandle(ref, () => ({
     toggle() {
       toggle();
     },
   }));
   React.useEffect(() => {
-    if (isVisible) {
-      opacity.value = withTiming(0, { duration: 150, easing: Easing.linear });
-    } else {
-      opacity.value = withTiming(1, { duration: 150, easing: Easing.linear });
+    if (metrics != null) {
+      if (isVisible) {
+        opacity.value = withTiming(0, { duration: 150, easing: Easing.linear });
+      } else {
+        opacity.value = withTiming(1, { duration: 150, easing: Easing.linear });
+      }
+      return () => {
+        cancelAnimation(opacity);
+      };
     }
-    return () => {
-      cancelAnimation(opacity);
-    };
-  }, [isVisible]);
+  }, [isVisible, metrics == null]);
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
     bottom: bottomStyle.value,
@@ -95,6 +99,7 @@ function PageNavigator(_: any, ref: React.ForwardedRef<PageNavigatorMethods>) {
       goToFirstPage();
     }
   }
+
   return (
     <Contrast contrast={theme.mode === 'light'}>
       <Animated.View style={[style.positioner, animatedStyle]}>
