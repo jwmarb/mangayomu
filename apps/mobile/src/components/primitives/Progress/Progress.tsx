@@ -2,12 +2,14 @@ import React from 'react';
 import { ActivityIndicator, ActivityIndicatorProps } from 'react-native';
 import Animated from 'react-native-reanimated';
 import useTheme from '@/hooks/useTheme';
+import useContrast from '@/hooks/useContrast';
 
 function Progress(
   props: ActivityIndicatorProps,
   ref: React.ForwardedRef<ActivityIndicator>,
 ) {
-  const theme = useTheme();
+  const contrast = useContrast();
+  const theme = useTheme(contrast);
   return (
     <ActivityIndicator
       {...props}
