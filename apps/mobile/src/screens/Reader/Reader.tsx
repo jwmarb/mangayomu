@@ -131,7 +131,13 @@ export default function Reader(props: RootStackProps<'Reader'>) {
 
   useHistoryEntry(currentChapter);
 
-  useChapterData(currentPage, currentChapter);
+  const { initialScrollIndex } = useChapterData(
+    currentPage,
+    currentChapter,
+    manga,
+    indices,
+    initialPageParam,
+  );
 
   return (
     <ReaderBackgroundColor value={backgroundColor}>
@@ -145,7 +151,9 @@ export default function Reader(props: RootStackProps<'Reader'>) {
                     <Overlay>
                       <View style={style.loadingContainer}>
                         <React.Suspense fallback={<Progress size="large" />}>
-                          {!isLoading && currentChapter != null ? (
+                          {!isLoading &&
+                          currentChapter != null &&
+                          initialScrollIndex != null ? (
                             <FlatList
                               ref={flatListRef}
                               contentContainerStyle={contentContainerStyle}
@@ -166,9 +174,7 @@ export default function Reader(props: RootStackProps<'Reader'>) {
                               }
                               pagingEnabled
                               showsHorizontalScrollIndicator={false}
-                              initialScrollIndex={
-                                initialPageParam === 0 ? 0 : 1
-                              }
+                              initialScrollIndex={initialScrollIndex}
                             />
                           ) : (
                             <Progress size="large" />

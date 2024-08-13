@@ -54,12 +54,12 @@ export class Manga extends Model {
     database: Database,
     defaults?: Partial<Manga>,
   ) {
-    const mangas = database.get(Table.MANGAS) as Collection<Manga>;
+    const mangas = database.get<Manga>(Table.MANGAS);
     const found = await mangas.query(Q.where('link', manga.link));
 
     if (found.length === 0) {
       return await database.write<Manga>(() => {
-        return this.create(manga, database, defaults);
+        return this.create(manga, mangas, defaults);
       });
     }
     return found[0];
@@ -73,10 +73,10 @@ export class Manga extends Model {
    */
   static create(
     manga: Pick<MManga, 'title' | 'link' | 'language'>,
-    database: Database,
+    mangas: Collection<Manga>,
     defaults?: Partial<Manga>,
   ) {
-    return database.get<Manga>(Table.MANGAS).create((_model) => {
+    return mangas.create((_model) => {
       const model = _model as Manga;
       model.title = manga.title;
       model.link = manga.link;
@@ -94,9 +94,9 @@ export class Manga extends Model {
     });
   }
 
-  static useRow<T>(
+  static useRow<T = Manga>(
     manga: MManga,
-    selector: Selector<T, Manga>,
+    selector?: Selector<T, Manga>,
     options?: Omit<UseRowOptions<T, Manga>, 'default'>,
   ): T | undefined {
     const database = useDatabase();
@@ -114,7 +114,7 @@ export class Manga extends Model {
           } else {
             options?.onUpdate?.(model);
           }
-          setState(selector(model));
+          setState(selector?.(model) ?? (model as T));
         });
 
         return () => {

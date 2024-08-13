@@ -53,8 +53,6 @@ export default function usePages(params: UsePagesParams) {
         };
       }
 
-      console.log(data.pageParams[0]);
-
       indices.current = determinePageBoundaries(
         data.pages,
         data.pageParams[0] > 0,
