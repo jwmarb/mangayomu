@@ -23,6 +23,8 @@ import BottomSheet from '@/components/composites/BottomSheet';
 import { styles } from '@/screens/Home/tabs/Library/styles';
 import { mmkv } from '@/utils/persist';
 import { CodeSplitter } from '@/utils/codeSplit';
+import Text from '@/components/primitives/Text';
+import LibraryEmpty from '@/screens/Home/tabs/Library/components/composites/LibraryEmpty';
 const LibraryFilterMenu = React.lazy(
   () =>
     import('@/screens/Home/tabs/Library/components/filter/LibraryFilterMenu'),
@@ -229,6 +231,12 @@ export default function Library() {
           data={mangas}
           renderItem={renderItem}
           getItemLayout={getItemLayout}
+          ListEmptyComponent={
+            <LibraryEmpty
+              isUsingSearch={input.length > 0}
+              hasFiltersApplied={include.length > 0 || exclude.length > 0}
+            />
+          }
         />
       </Freeze>
       <LibraryFilterMenu
