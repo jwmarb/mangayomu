@@ -14,6 +14,7 @@ import {
   MangaViewUnparsedMangaContext,
 } from '@/screens/MangaView/context';
 import useMangaMeta from '@/screens/MangaView/hooks/useMangaMeta';
+import { Manga } from '@/models/Manga';
 
 type MangaViewProvidersProps = {
   unparsedManga: unknown;

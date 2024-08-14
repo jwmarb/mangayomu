@@ -23,7 +23,6 @@ export default function useHistoryEntry(
     const subscription = observer.subscribe((value) => {
       for (const historyEntry of value) {
         if (historyEntry.localChapterLink === localChapterLink) {
-          console.log(historyEntry);
           setHistoryEntry(historyEntry);
           return;
         }

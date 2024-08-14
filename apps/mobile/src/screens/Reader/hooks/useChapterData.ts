@@ -59,7 +59,7 @@ export default function useChapterData(
       }
     }
     init();
-  }, [currentPage, currentChapter]);
+  }, [currentPage?.page, currentChapter.link]);
 
   return { initialScrollIndex: initialPage };
 }

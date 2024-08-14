@@ -1,4 +1,6 @@
+import { createContext } from '@/utils/context';
 import { Manga, MangaMeta, MangaSource } from '@mangayomu/mangascraper';
+import { Manga as MangaModel } from '@/models/Manga';
 import { FetchStatus } from '@tanstack/react-query';
 import React from 'react';
 export const MangaViewMangaSourceContext =
@@ -34,3 +36,8 @@ export const MangaViewChaptersContext = React.createContext<unknown[] | null>(
 export const MangaViewUnparsedMangaContext = React.createContext<
   unknown | undefined
 >(undefined);
+
+export const {
+  useContext: useMangaViewMangaModel,
+  Provider: MangaViewMangaModel,
+} = createContext<MangaModel>();

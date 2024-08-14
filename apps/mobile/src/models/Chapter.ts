@@ -1,9 +1,17 @@
 import { Collection, Database, Model, Q, Relation } from '@nozbe/watermelondb';
 import { Associations } from '@nozbe/watermelondb/Model';
 import { date, field, relation } from '@nozbe/watermelondb/decorators';
-import { CURRENTLY_READING_CHAPTER_ID, MANGA_ID, Table } from '@/models/schema';
+import {
+  CURRENTLY_READING_CHAPTER_ID,
+  MANGA_ID,
+  Selector,
+  Table,
+} from '@/models/schema';
 import { Manga } from '@/models/Manga';
 import { MangaChapter } from '@mangayomu/mangascraper';
+import { useDatabase } from '@nozbe/watermelondb/react';
+import { Manga as MManga } from '@mangayomu/mangascraper';
+import React from 'react';
 
 type ChapterDefaults = Omit<
   {
@@ -64,5 +72,42 @@ export class Chapter extends Model {
       self.currentPage = defaults.currentPage;
       self.scrollPosition = defaults.scrollPosition;
     });
+  }
+
+  public static useObservation<T = Chapter>(
+    chapter: MangaChapter,
+    selector?: Selector<T, Chapter>,
+    arePropsSame?: (previous: T | undefined, selected: T) => boolean,
+  ): T | undefined {
+    const database = useDatabase();
+    const [state, setState] = React.useState<T>();
+
+    React.useEffect(() => {
+      async function initialize() {
+        const observer = database
+          .get<Chapter>(Table.CHAPTERS)
+          .query(Q.where('link', chapter.link))
+          .observe();
+        const subscription = observer.subscribe((results) => {
+          if (results.length > 0) {
+            const [foundChapter] = results;
+            setState((prev) => {
+              const selected = selector?.(foundChapter) ?? (foundChapter as T);
+              if (arePropsSame?.(prev, selected) ?? selected === prev) {
+                return prev;
+              }
+
+              return selected;
+            });
+          }
+        });
+        return () => {
+          subscription.unsubscribe();
+        };
+      }
+      initialize();
+    }, []);
+
+    return state;
   }
 }

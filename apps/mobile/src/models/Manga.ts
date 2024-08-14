@@ -126,4 +126,42 @@ export class Manga extends Model {
 
     return state;
   }
+
+  public static useObservation<T = Manga>(
+    manga: MManga,
+    selector?: Selector<T, Manga>,
+    arePropsSame?: (previous: T | undefined, selected: T) => boolean,
+    dependencies: React.DependencyList = [],
+  ): T | undefined {
+    const database = useDatabase();
+    const [state, setState] = React.useState<T>();
+
+    React.useEffect(() => {
+      async function initialize() {
+        const observer = database
+          .get<Manga>(Table.MANGAS)
+          .query(Q.where('link', manga.link))
+          .observe();
+        const subscription = observer.subscribe((results) => {
+          if (results.length > 0) {
+            const [foundManga] = results;
+            setState((prev) => {
+              const selected = selector?.(foundManga) ?? (foundManga as T);
+              if (arePropsSame?.(prev, selected) ?? selected === prev) {
+                return prev;
+              }
+
+              return selected;
+            });
+          }
+        });
+        return () => {
+          subscription.unsubscribe();
+        };
+      }
+      initialize();
+    }, dependencies);
+
+    return state;
+  }
 }

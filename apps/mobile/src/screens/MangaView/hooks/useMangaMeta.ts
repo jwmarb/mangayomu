@@ -23,12 +23,13 @@ export const getMangaMeta = async ({
 }: GetMangaMetaOptions) => {
   try {
     const meta = await source.meta(manga, signal);
+
     const parsed = source.toMangaMeta(meta);
 
     // As a side-effect, write to the database locally
     // since this is a cached query. useEffect would be
     // a waste of performance here
-    await LocalManga.toLocalManga(parsed, meta, database);
+    LocalManga.toLocalManga(parsed, meta, database);
 
     return [meta, parsed] as const;
   } catch (e) {

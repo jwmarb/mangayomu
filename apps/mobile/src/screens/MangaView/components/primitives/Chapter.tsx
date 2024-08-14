@@ -12,6 +12,9 @@ import useMangaViewUnparsedManga from '@/screens/MangaView/hooks/useMangaViewUnp
 import useMangaViewUnparsedData from '@/screens/MangaView/hooks/useMangaViewUnparsedData';
 import useHistoryEntry from '@/screens/MangaView/hooks/useHistoryEntry';
 import useMangaViewManga from '@/screens/MangaView/hooks/useMangaViewManga';
+import { Chapter as ChapterModel } from '@/models/Chapter';
+import { Manga } from '@/models/Manga';
+import useIsCurrentlyReadingThisChapter from '@/screens/MangaView/hooks/useIsCurrentlyReadingThisChapter';
 
 export const BASE_CHAPTER_HEIGHT = 64;
 export const CHAPTER_HEIGHT_EXTENDED = BASE_CHAPTER_HEIGHT + 20;
@@ -28,6 +31,12 @@ const styles = (extended: boolean) =>
       height: extended ? CHAPTER_HEIGHT_EXTENDED : BASE_CHAPTER_HEIGHT,
       justifyContent: 'center',
       backgroundColor: theme.palette.background.default,
+    },
+    titleContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      gap: theme.style.size.l,
+      alignItems: 'center',
     },
   }));
 
@@ -84,6 +93,22 @@ function Chapter(props: ChapterProps) {
   const date = React.useMemo(() => getDate(chapter.date), [chapter.date]);
   const navigation = useNavigation();
   const historyEntry = useHistoryEntry(chapter.link, manga.link);
+  const pageInfo = ChapterModel.useObservation(
+    chapter,
+    ({ pagesCount, currentPage, id }) => ({
+      currentPage,
+      pagesCount,
+      id,
+    }),
+    (prev, current) =>
+      prev?.currentPage === current.currentPage &&
+      prev.pagesCount === current.pagesCount &&
+      prev.id === current.id,
+  );
+  const isCurrentlyReadingThisChapter = useIsCurrentlyReadingThisChapter(
+    manga,
+    pageInfo?.id,
+  );
 
   function handleOnPress() {
     navigation.navigate('Reader', {
@@ -93,15 +118,24 @@ function Chapter(props: ChapterProps) {
     });
   }
 
+  // console.log(isCurrentlyReadingThisChapter);
+
   return (
     <Pressable onPress={handleOnPress} style={style.pressable}>
       <View>
-        <Text
-          numberOfLines={1}
-          color={historyEntry != null ? 'disabled' : 'textSecondary'}
-        >
-          {chapter.name}
-        </Text>
+        <View style={style.titleContainer}>
+          <Text color={historyEntry != null ? 'disabled' : 'textPrimary'}>
+            {chapter.name}
+          </Text>
+          {pageInfo != null && (
+            <Text
+              variant="chip"
+              color={isCurrentlyReadingThisChapter ? 'primary' : 'disabled'}
+            >
+              ({pageInfo.currentPage}/{pageInfo.pagesCount})
+            </Text>
+          )}
+        </View>
         {chapter.subname && (
           <Text
             numberOfLines={1}
