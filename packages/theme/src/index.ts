@@ -86,6 +86,7 @@ export interface DefaultTheme extends IThemeHelpers {
     secondary: Color;
     warning: Color;
     error: Color;
+    success: Color;
     background: BackgroundColor;
     text: TextColor;
   };

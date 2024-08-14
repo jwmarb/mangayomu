@@ -10,7 +10,10 @@ import {
   Theme,
   ThemeMode,
   ThemeSchema,
+  Color,
 } from '.';
+
+const COLORS = new Set(['primary', 'secondary', 'success', 'error', 'warning']);
 
 export type ColorSchema = {
   light: string;
@@ -79,18 +82,19 @@ export function readColors(
         }
       }
     }
-    if (typedName === 'primary' || typedName === 'secondary') {
+    if (COLORS.has(typedName)) {
+      const color = converted[typedName] as unknown as Color;
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const rgba = hexToRgb(converted[typedName]!.main!);
+      const rgba = hexToRgb(color.main);
       const yiq = (rgba.red * 299 + rgba.green * 587 + rgba.blue * 114) / 1000;
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      converted[typedName]!.contrastText =
+      color.contrastText =
         yiq > 125 ? obj.text.primary.light : obj.text.primary.dark;
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      converted[typedName]!.ripple = rgbaToString({
+      color.ripple = rgbaToString({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        ...hexToRgb(converted[typedName]![mode ?? 'main']!),
+        ...hexToRgb(color[mode ?? 'main']!),
         alpha: 0.4,
       });
     }

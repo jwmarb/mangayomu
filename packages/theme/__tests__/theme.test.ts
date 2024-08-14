@@ -1,4 +1,5 @@
 import { Colors, createTheme, DefaultTheme, DefaultThemeHelpers } from '../src';
+import { expect, test } from '@jest/globals';
 
 interface TestTheme extends DefaultTheme {
   helpers: typeof helpers & DefaultThemeHelpers;
@@ -116,6 +117,11 @@ test('Theme object created and parsed properly', () => {
         main: colorConstant('#ff7875'),
         dark: colorConstant('#ff4d4f'),
       },
+      success: {
+        light: colorConstant('#ffa39e'),
+        main: colorConstant('#ff7875'),
+        dark: colorConstant('#ff4d4f'),
+      },
       text: {
         primary: color('rgba(255, 255, 255, 1)', 'rgba(0, 0, 0, 0.87)'),
         secondary: color('rgba(255, 255, 255, 0.7)', 'rgba(0, 0, 0, 0.6)'),
@@ -199,6 +205,11 @@ test('palette in a different key is parsed', () => {
           main: colorConstant('#ff7875'),
           dark: colorConstant('#ff4d4f'),
         },
+        success: {
+          light: colorConstant('#ffa39e'),
+          main: colorConstant('#ff7875'),
+          dark: colorConstant('#ff4d4f'),
+        },
         text: {
           primary: color('rgba(255, 255, 255, 1)', 'rgba(0, 0, 0, 0.87)'),
           secondary: color('rgba(255, 255, 255, 0.7)', 'rgba(0, 0, 0, 0.6)'),
@@ -272,6 +283,11 @@ test('Custom palette color', () => {
           light: colorConstant('#69c0ff'),
           main: colorConstant('#1890ff'),
           dark: colorConstant('#0050b3'),
+        },
+        success: {
+          light: colorConstant('#ffa39e'),
+          main: colorConstant('#ff7875'),
+          dark: colorConstant('#ff4d4f'),
         },
         secondary: {
           light: colorConstant('#ffa39e'),
@@ -354,6 +370,11 @@ test('getTheme gets the theme', () => {
         main: colorConstant('#ff7875'),
         dark: colorConstant('#ff4d4f'),
       },
+      success: {
+        light: colorConstant('#ffa39e'),
+        main: colorConstant('#ff7875'),
+        dark: colorConstant('#ff4d4f'),
+      },
       text: {
         primary: color('rgba(255, 255, 255, 1)', 'rgba(0, 0, 0, 0.87)'),
         secondary: color('rgba(255, 255, 255, 0.7)', 'rgba(0, 0, 0, 0.6)'),
@@ -413,6 +434,11 @@ test('getTheme gets the theme', () => {
         main: colorConstant('#ff7875'),
         dark: colorConstant('#ff4d4f'),
       },
+      success: {
+        light: colorConstant('#ffa39e'),
+        main: colorConstant('#ff7875'),
+        dark: colorConstant('#ff4d4f'),
+      },
       text: {
         primary: color('rgba(255, 255, 255, 1)', 'rgba(0, 0, 0, 0.87)'),
         secondary: color('rgba(255, 255, 255, 0.7)', 'rgba(0, 0, 0, 0.6)'),
@@ -458,4 +484,63 @@ test('getTheme gets the theme', () => {
   expect(themeWithReactNavigation.reactNavigation.dark).toEqual(false);
 
   expect(themeWithReactNavigation.opposite.reactNavigation.dark).toEqual(true);
+});
+
+test('ripples created for other colors', () => {
+  theme = createTheme<TestTheme>(({ color, colorConstant }) => ({
+    mode: 'light',
+    palette: {
+      error: {
+        main: color('#f44336', '#d32f2f'),
+        light: color('#e57373', '#ef5350'),
+        dark: color('#d32f2f', '#c62828'),
+      },
+      warning: {
+        main: color('#ed6c02', '#ffa726'),
+        light: color('#ff9800', '#ffb74d'),
+        dark: color('#e65100', '#f57c00'),
+      },
+      primary: {
+        light: colorConstant('#69c0ff'),
+        main: colorConstant('#1890ff'),
+        dark: colorConstant('#0050b3'),
+      },
+      secondary: {
+        light: colorConstant('#ffa39e'),
+        main: colorConstant('#ff7875'),
+        dark: colorConstant('#ff4d4f'),
+      },
+      success: {
+        light: colorConstant('#ffa39e'),
+        main: colorConstant('#ff7875'),
+        dark: colorConstant('#ff4d4f'),
+      },
+      text: {
+        primary: color('rgba(255, 255, 255, 1)', 'rgba(0, 0, 0, 0.87)'),
+        secondary: color('rgba(255, 255, 255, 0.7)', 'rgba(0, 0, 0, 0.6)'),
+        disabled: color('rgba(255, 255, 255, 0.5)', 'rgba(0, 0, 0, 0.38)'),
+        hint: color('rgba(255, 255, 255, 0.5)', 'rgba(0, 0, 0, 0.38)'),
+      },
+      background: {
+        default: color('#141414', '#fafafa'),
+        paper: color('#262626', '#ffffff'),
+        disabled: color('#141414', '#fafafa'),
+      },
+    },
+    style: {
+      borderRadius: 4,
+      borderWidth: 4,
+      spacing: {
+        s: 2,
+        m: 6,
+        l: 10,
+        xl: 16,
+      },
+    },
+    helpers,
+  }));
+
+  expect(theme.palette.error.ripple).toBeDefined();
+  expect(theme.palette.success.ripple).toBeDefined();
+  expect(theme.palette.warning.ripple).toBeDefined();
 });
