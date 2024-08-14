@@ -26,25 +26,35 @@ export type ChipProps = {
   textProps?: TextProps;
 } & Omit<PressableProps, 'style'>;
 
-const composedStyles = [...CHIP_COLORS, 'null'].reduce((prev, curr) => {
-  prev[curr] = styles(curr as ChipColors | 'null');
-  return prev;
-}, {} as Record<string, ReturnType<typeof styles>>);
+const composedStyles = [...CHIP_COLORS, 'null'].reduce(
+  (prev, curr) => {
+    prev[curr] = styles(curr as ChipColors | 'null');
+    return prev;
+  },
+  {} as Record<string, ReturnType<typeof styles>>,
+);
 
-const themedProps = [...CHIP_COLORS, 'null'].reduce((prev, curr) => {
-  prev[curr] = TEXT_COLOR_TYPES.reduce((prev2, curr2) => {
-    prev2[curr2] = createThemedProps((theme) => ({
+const themedProps = [...CHIP_COLORS, 'null'].reduce(
+  (prev, curr) => {
+    prev[curr] = createThemedProps((theme) => ({
       android_ripple: {
         color:
           curr === 'null'
             ? undefined
-            : theme.palette[curr as ChipColors][curr2],
+            : theme.palette[curr as ChipColors].ripple,
       },
     }));
-    return prev2;
-  }, {} as Record<string, ReturnType<typeof createThemedProps<{ android_ripple: { color: string | undefined } }>>>);
-  return prev;
-}, {} as Record<string, Record<string, ReturnType<typeof createThemedProps<{ android_ripple: { color: string | undefined } }>>>>);
+    return prev;
+  },
+  {} as Record<
+    string,
+    ReturnType<
+      typeof createThemedProps<{
+        android_ripple: { color: string | undefined };
+      }>
+    >
+  >,
+);
 
 function Chip(props: ChipProps) {
   const {
@@ -68,10 +78,10 @@ function Chip(props: ChipProps) {
       ? 'dark'
       : 'light'
     : theme.mode === 'dark'
-    ? 'dark'
-    : 'light';
+      ? 'dark'
+      : 'light';
   const { android_ripple } = useThemedProps(
-    themedProps[color == null ? 'null' : color].main,
+    themedProps[color == null ? 'null' : color],
     contrast,
   );
   const pressableStyle = [style.chipPressable, styleProp];
