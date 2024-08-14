@@ -2863,6 +2863,7 @@ __metadata:
     "@types/jest": "npm:^29.5.12"
     deepcopy: "npm:^2.1.0"
     eslint: "npm:^9.5.0"
+    jest: "npm:^29.7.0"
     ts-jest: "npm:^29.1.4"
     typescript: "npm:5.5.2"
   languageName: unknown
