@@ -36,11 +36,6 @@ declare module '@mangayomu/theme' {
         completed: string;
         cancelled: string;
       };
-      success: {
-        light: string;
-        main: string;
-        dark: string;
-      };
       background: DefaultTheme['palette']['background'] & {
         menu: string;
       };
@@ -157,8 +152,8 @@ export const { opposite: lightTheme, ...darkTheme } = createTheme<Theme>(
       },
       error: {
         main: color('#883934', '#e65252'),
-        light: color('#e99090', '#e7a5a4'),
-        dark: color('#553c3c', '#3b2020'),
+        light: color('#e99090', '#ff9e9e'),
+        dark: color('#553c3c', '#be3b3b'),
       },
       success: {
         light: color('#d2f3c0', '#E1F7CF'),
