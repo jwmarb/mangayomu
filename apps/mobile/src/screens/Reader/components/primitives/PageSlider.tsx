@@ -78,7 +78,7 @@ export default function PageSlider() {
       const width =
         (metrics.currentPageNumber - 1) / (metrics.totalPageCount - 1);
 
-      if (readingDirection === ReadingDirection.LEFT_TO_RIGHT) {
+      if (readingDirection !== ReadingDirection.RIGHT_TO_LEFT) {
         percentPosition = width;
       } else {
         percentPosition =
@@ -108,7 +108,7 @@ export default function PageSlider() {
   };
 
   const onBeginning = React.useCallback(() => {
-    if (readingDirection === ReadingDirection.LEFT_TO_RIGHT) {
+    if (readingDirection !== ReadingDirection.RIGHT_TO_LEFT) {
       goToFirstPage();
     } else {
       goToLastPage();
@@ -125,7 +125,7 @@ export default function PageSlider() {
 
   const onPage = React.useCallback(
     (page: number) => {
-      if (readingDirection === ReadingDirection.LEFT_TO_RIGHT) {
+      if (readingDirection !== ReadingDirection.RIGHT_TO_LEFT) {
         goToPage(page);
       } else if (metrics?.totalPageCount != null) {
         goToPage(metrics?.totalPageCount - page - 1);
