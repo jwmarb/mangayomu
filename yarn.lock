@@ -2755,6 +2755,7 @@ __metadata:
     react-native-tab-view: "npm:3.5.2"
     react-native-vector-icons: "npm:10.1.0"
     react-native-worklets-core: "npm:1.3.3"
+    react-native-zoom-toolkit: "npm:^2.1.4"
     react-test-renderer: "npm:18.2.0"
     typescript: "npm:5.5.2"
     zustand: "npm:4.5.2"
@@ -16123,6 +16124,18 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10/5820ef5a38eaaac12ab48bb2512085e7847582ba09efbdbced2f59dc399241ee48211eb394352e64317e67aa72b05fa304e44c62633d39c12043bb327e78c45d
+  languageName: node
+  linkType: hard
+
+"react-native-zoom-toolkit@npm:^2.1.4":
+  version: 2.1.4
+  resolution: "react-native-zoom-toolkit@npm:2.1.4"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-gesture-handler: ">= 2.x.x"
+    react-native-reanimated: ">= 2.x.x"
+  checksum: 10/c664125d5ee95cb4a146e0880b28d536907cc89143b23b3ca2ae80ace3aba740fe693b028da889240929c04c92743133ac31bf8d87b070ebdf9dd5a895c52369
   languageName: node
   linkType: hard
 
