@@ -1,11 +1,17 @@
 import blobUtil from 'react-native-blob-util';
-import { ImageSourcePropType } from 'react-native';
+import {
+  Image,
+  ImageResolvedAssetSource,
+  ImageSourcePropType,
+} from 'react-native';
 import { joinPath } from '@/utils/helpers';
 import { FailedToMoveImageException } from '@/exceptions/FailedToMoveImageException';
 import { FailedToDownloadImageException } from '@/exceptions/FailedToDownloadImageException';
 
 // Uncomment for testing
 // import * as self from '@/utils/image'; // jest is bad at mocking functions dependent on private functions
+
+export type ResolvedImageAsset = Omit<ImageResolvedAssetSource, 'scale'>;
 
 // how long the image should be in storage before it is marked as expired
 // note: in React Native components, memory caching should be handled by react query
@@ -150,3 +156,49 @@ export async function initialize() {
 
   await Promise.all(missingDirs);
 }
+
+/**
+ * Resolves an image that is locally cached
+ * @param url The url of the image
+ * @param onImageResolved Callback when the image is resolved
+ * @returns Returns a unsubscription callback to clean up the listener
+ */
+export const getImageDimensions = (url: string) => {
+  return new Promise<ResolvedImageAsset>((resolve) => {
+    const fileName = hash(url);
+    const imageCachePath = joinPath(IMAGE_CACHE_DIR, fileName);
+    const src = `file://${imageCachePath}`;
+    Image.getSize(
+      src,
+      (width, height) => {
+        resolve({ width, height, uri: src });
+      },
+      () => {
+        const downloadObject = downloadSync.get(fileName);
+        if (downloadObject == null) {
+          throw new Error(
+            'You must invoke `download` first before calling this method.',
+          );
+        }
+
+        // console.log(`Waiting for ${url} to resolve...`);
+
+        downloadObject.then(() => {
+          Image.getSize(
+            src,
+            (width, height) => {
+              resolve({ width, height, uri: src });
+            },
+            () => {
+              throw new Error(
+                'Failed to resolve image because the download failed',
+              );
+            },
+          );
+        });
+      },
+    );
+
+    return null;
+  });
+};
