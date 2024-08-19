@@ -4,5 +4,8 @@
     "source.fixAll.eslint": "explicit"
   },
   "eslint.validate": ["typescript", "javascript"],
-  "java.configuration.updateBuildConfiguration": "automatic"
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "CodeGPT.Autocomplete.provider": "Ollama - codellama:code",
+  "CodeGPT.Autocomplete.enabled": true,
+  "CodeGPT.Autocomplete.maxTokens": 1024
 }
