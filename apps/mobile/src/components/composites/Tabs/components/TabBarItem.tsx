@@ -26,7 +26,7 @@ type TabBarItemProps = {
 
 const themedProps = createThemedProps((theme) => ({
   android_ripple: {
-    color: theme.palette.primary.main,
+    color: theme.palette.primary.ripple,
     borderless: true,
   } as PressableAndroidRippleConfig,
 }));
