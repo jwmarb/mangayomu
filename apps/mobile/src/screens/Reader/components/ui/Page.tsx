@@ -1,15 +1,19 @@
 import { MangaChapter } from '@mangayomu/mangascraper';
 import React from 'react';
-import { Dimensions, View } from 'react-native';
+import { Dimensions, useWindowDimensions, View } from 'react-native';
 import Image from '@/components/primitives/Image';
 import useStyles from '@/hooks/useStyles';
 import { createStyles } from '@/utils/theme';
 import Progress from '@/components/primitives/Progress';
 import useBoolean from '@/hooks/useBoolean';
+import { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { getImageDimensions, ResolvedImageAsset } from '@/utils/image';
+import { useReadingDirection } from '@/screens/Reader/context';
+import { ReadingDirection } from '@/models/schema';
 
 export type PageProps = {
   type: 'PAGE';
-  source: { uri: string };
+  source: ResolvedImageAsset;
   chapter: MangaChapter;
   page: number;
 };
@@ -40,10 +44,23 @@ export default React.memo(function Page(props: PageProps) {
   const style = useStyles(styles);
 
   const [loading, toggle] = useBoolean(true);
+  const { width: deviceWidth, height: deviceHeight } = useWindowDimensions();
+  const readingDirection = useReadingDirection();
+  const width = useSharedValue<number>(deviceWidth);
+  const height = useSharedValue<number>(
+    source.height * (deviceWidth / source.width),
+  );
 
   function handleOnLoadEnd() {
     toggle(false);
   }
+
+  const imageStyle = useAnimatedStyle(() => ({
+    width: width.value,
+    height: height.value,
+    alignSelf:
+      readingDirection !== ReadingDirection.WEBTOON ? 'center' : 'auto',
+  }));
 
   return (
     <>
@@ -52,7 +69,7 @@ export default React.memo(function Page(props: PageProps) {
           <Progress size="large" />
         </View>
       )}
-      <Image source={source} style={style.image} onLoadEnd={handleOnLoadEnd} />
+      <Image source={source} style={imageStyle} onLoadEnd={handleOnLoadEnd} />
     </>
   );
 });

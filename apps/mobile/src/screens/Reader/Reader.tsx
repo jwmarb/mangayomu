@@ -41,13 +41,14 @@ import useReaderSetting from '@/hooks/useReaderSetting';
 import { ReadingDirection } from '@/models/schema';
 import useHistoryEntry from '@/screens/Reader/hooks/useHistoryEntry';
 import useChapterData from '@/screens/Reader/hooks/useChapterData';
+import { ResolvedImageAsset } from '@/utils/image';
 
 export type Data =
   | PageProps
   | ChapterDividerProps
   | { type: 'NO_MORE_CHAPTERS' };
 
-export type Query = { pages: string[]; chapter: MangaChapter };
+export type Query = { pages: ResolvedImageAsset[]; chapter: MangaChapter };
 
 const renderItem: ListRenderItem<Data> = ({ item }) => {
   switch (item.type) {
@@ -127,7 +128,7 @@ export default function Reader(props: RootStackProps<'Reader'>) {
     });
   const [contentContainerStyle, backgroundColor] = useBackgroundColor(manga);
 
-  const getItemLayout = useItemLayout();
+  const getItemLayout = useItemLayout(readingDirection);
 
   useHistoryEntry(currentChapter);
 
@@ -167,12 +168,19 @@ export default function Reader(props: RootStackProps<'Reader'>) {
                               viewabilityConfigCallbackPairs={
                                 viewabilityConfigCallbackPairs.current
                               }
-                              horizontal
+                              horizontal={
+                                readingDirection ===
+                                  ReadingDirection.RIGHT_TO_LEFT ||
+                                readingDirection ===
+                                  ReadingDirection.LEFT_TO_RIGHT
+                              }
                               inverted={
                                 readingDirection ===
                                 ReadingDirection.RIGHT_TO_LEFT
                               }
-                              pagingEnabled
+                              pagingEnabled={
+                                readingDirection !== ReadingDirection.WEBTOON
+                              }
                               showsHorizontalScrollIndicator={false}
                               initialScrollIndex={initialScrollIndex}
                             />

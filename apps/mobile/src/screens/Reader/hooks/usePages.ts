@@ -10,6 +10,7 @@ import useMangaSource from '@/hooks/useMangaSource';
 import useMangaMeta from '@/screens/MangaView/hooks/useMangaMeta';
 import { Data, Query } from '@/screens/Reader/Reader';
 import determinePageBoundaries from '@/screens/Reader/helpers/determinePageBoundaries';
+import { downloadImage, getImageDimensions } from '@/utils/image';
 
 export type UsePagesParams = {
   manga: unknown;
@@ -74,7 +75,7 @@ export default function usePages(params: UsePagesParams) {
         for (let j = 0; j < data.pages[i].pages.length; j++) {
           pages.push({
             type: 'PAGE',
-            source: { uri: data.pages[i].pages[j] },
+            source: data.pages[i].pages[j],
             chapter: data.pages[i].chapter,
             page: j + 1,
           });
@@ -129,7 +130,21 @@ export default function usePages(params: UsePagesParams) {
       );
       const pages = await queryClient.fetchQuery({
         queryKey: [meta.chapters[args.pageParam]],
-        queryFn: () => source.pages(chapter, args.signal),
+        queryFn: () =>
+          source.pages(chapter, args.signal).then((pages) =>
+            Promise.all(
+              pages.map(
+                (uri) =>
+                  downloadImage(uri).then(() =>
+                    getImageDimensions(uri).then((resolved) => ({
+                      uri,
+                      width: resolved.width,
+                      height: resolved.height,
+                    })),
+                  ), // invoke this first to start preloading images
+              ),
+            ),
+          ),
       });
       return { pages, chapter } as Query;
     },
