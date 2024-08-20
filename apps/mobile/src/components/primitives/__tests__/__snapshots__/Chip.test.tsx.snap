@@ -5,7 +5,7 @@ exports[`renders properly 1`] = `
   style={
     {
       "borderColor": "rgba(0, 0, 0, 0.12)",
-      "borderRadius": 10.666666666666666,
+      "borderRadius": 10,
       "borderWidth": 1.5,
       "flexDirection": "row",
       "overflow": "hidden",

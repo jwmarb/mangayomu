@@ -29,6 +29,7 @@ it('gets manga meta and stores it locally in database', async () => {
     source: MangaSee,
     signal: controller.signal,
   });
+  await new Promise(process.nextTick);
   const meta = data[1];
   expect(meta.link).toEqual(manga.link);
   const mangas = database.get<LocalManga>(Table.LOCAL_MANGAS);
@@ -48,6 +49,8 @@ it('falls back to local version', async () => {
     source: MangaSee,
     signal: controller.signal,
   });
+  await new Promise(process.nextTick);
+
   expect(spiedToMangaMeta).toHaveBeenCalledTimes(1);
 
   // mock error from fetch function
@@ -60,6 +63,8 @@ it('falls back to local version', async () => {
     source: MangaSee,
     signal: controller.signal,
   });
+  await new Promise(process.nextTick);
+
   const meta = data[1];
 
   expect(meta.link).toEqual(manga.link);
