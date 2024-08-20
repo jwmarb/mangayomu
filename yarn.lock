@@ -2613,6 +2613,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mangayomu/algorithms@workspace:packages/algorithms"
   dependencies:
+    "@types/jest": "npm:^29.5.12"
     eslint: "npm:^9.5.0"
     jest: "npm:^29.7.0"
     ts-jest: "npm:^29.1.4"
@@ -2624,6 +2625,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mangayomu/async-pool@workspace:packages/async-pool"
   dependencies:
+    "@types/jest": "npm:^29.5.12"
     eslint: "npm:^9.5.0"
     jest: "npm:^29.7.0"
     ts-jest: "npm:^29.1.4"
@@ -2660,6 +2662,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mangayomu/jest-assertions@workspace:packages/jest-assertions"
   dependencies:
+    "@types/jest": "npm:^29.5.12"
     jest: "npm:^29.7.0"
     ts-jest: "npm:^29.1.4"
     typescript: "npm:5.5.2"
