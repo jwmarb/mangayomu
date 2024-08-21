@@ -23,6 +23,17 @@ describe('getErrorMessage', () => {
       'No error code/message has been provided',
     );
   });
+
+  it('returns default message for unknown errors', () => {
+    const customError = new Error();
+    expect(getErrorMessage(customError)).toEqual(customError.stack);
+
+    const customError2 = { not: 'a' } as any;
+    delete (customError2 as any).message;
+    expect(getErrorMessage(customError2)).toEqual(
+      'No error code/message has been provided',
+    );
+  });
 });
 
 describe('isManga', () => {
@@ -61,12 +72,16 @@ describe('isManga', () => {
         source: '',
       } as Manga),
     ).toBeTruthy();
+    expect(isManga({} as any)).toBeFalsy();
   });
 });
 
 describe('isUnparsedManga', () => {
   expect(isUnparsedManga({})).toBeFalsy();
   expect(isUnparsedManga({ __source__: '' })).toBeTruthy();
+
+  expect(isUnparsedManga(null)).toBeFalsy();
+  expect(isUnparsedManga(undefined)).toBeFalsy();
 });
 
 describe('joinPaths', () => {
@@ -94,5 +109,21 @@ describe('joinPaths', () => {
     expect(
       joinPath('C:', 'Users/', 'You', '/test', '/hello_world.png'),
     ).toEqual('C:/Users/You/test/hello_world.png');
+  });
+
+  it('joins empty string paths', () => {
+    expect(joinPath('/')).toEqual('');
+    expect(joinPath('/', '')).toEqual('/');
+    expect(joinPath('/', '', '')).toEqual('/');
+    expect(joinPath('/', '', 'hello')).toEqual('/hello');
+    expect(joinPath('', '/', 'hello')).toEqual('/hello');
+  });
+
+  it('joins invalid paths', () => {
+    expect(joinPath('/', '/', '/', 'hello')).toEqual('/hello');
+    expect(joinPath('', '/', 'hello')).toEqual('/hello');
+    expect(joinPath('', '/', 'hello', '', '/', '/', '/whats-up')).toEqual(
+      '/hello/whats-up',
+    );
   });
 });
