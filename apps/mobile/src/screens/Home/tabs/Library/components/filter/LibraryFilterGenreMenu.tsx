@@ -33,19 +33,30 @@ function LibraryFilterGenreMenu(
     const state: Record<string, LibraryGenreFilterProps['type']> = JSON.parse(
       mmkv.getString(LIBRARY_GENRES_KEY) ?? '{}',
     );
+    const copy: Record<string, LibraryGenreFilterProps['type']> = {};
     for (const source of sources) {
       const mangaSource = MangaSource.getSource(source);
       const sourceGenres = mangaSource.GENRES;
+
       for (const genre of sourceGenres) {
         const readableGenre = mangaSource.READABLE_GENRES_MAP[genre];
         if (readableGenre in state === false) {
-          state[readableGenre] = 'default';
+          copy[readableGenre] = 'default';
+        } else {
+          copy[readableGenre] = state[readableGenre];
         }
       }
     }
+
+    const copyKeys = Object.keys(copy);
+
+    if (copyKeys.length !== Object.keys(state).length) {
+      cache.current.clear();
+    }
+
     return {
-      allGenres: Object.keys(state).sort(AscendingStringComparator),
-      state,
+      allGenres: copyKeys.sort(AscendingStringComparator),
+      state: copy,
     };
   };
   const [{ allGenres, state }, setLibraryState] = React.useState(initializer);
@@ -65,7 +76,7 @@ function LibraryFilterGenreMenu(
       cache.current.set(deferredInput, cached);
     }
     return cached;
-  }, [deferredInput, allGenres, numOfItems]);
+  }, [deferredInput, allGenres, numOfItems, sources]);
 
   const handleOnSelect = React.useCallback((genre: string) => {
     setLibraryState((prev) => ({
@@ -76,8 +87,8 @@ function LibraryFilterGenreMenu(
           prev.state[genre] === 'default'
             ? 'include'
             : prev.state[genre] === 'include'
-            ? 'exclude'
-            : 'default',
+              ? 'exclude'
+              : 'default',
       },
     }));
   }, []);
