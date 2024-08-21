@@ -2,11 +2,13 @@ import { Manga, MangaChapter } from '@mangayomu/mangascraper';
 import { MangaResult } from '@/stores/explore';
 
 export function getErrorMessage(err: unknown): string {
-  if (typeof err === 'string') return err;
+  if (typeof err === 'string' && err) return err;
   if (typeof err === 'object' && err != null) {
-    if ('message' in err && typeof err.message === 'string') return err.message;
-    if ('msg' in err && typeof err.msg === 'string') return err.msg;
-    if ('stack' in err && typeof err.stack === 'string') return err.stack;
+    if ('message' in err && typeof err.message === 'string' && err.message)
+      return err.message;
+    if ('msg' in err && typeof err.msg === 'string' && err.msg) return err.msg;
+    if ('stack' in err && typeof err.stack === 'string' && err.stack)
+      return err.stack;
   }
   return 'No error code/message has been provided';
 }
@@ -61,7 +63,7 @@ export function joinPath(...paths: string[]): string {
       }
     }
   }
-  if (joined[joined.length - 1] === '/') {
+  if (joined[joined.length - 1] === '/' && paths.length < 2) {
     joined = joined.substring(0, joined.length - 1);
   }
   return joined;
