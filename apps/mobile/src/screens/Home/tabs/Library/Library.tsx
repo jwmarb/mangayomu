@@ -53,6 +53,7 @@ export default function Library() {
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   const bottomSheet = React.useRef<BottomSheet>(null);
+  const [isLoading, toggleLoading] = useBoolean(true);
   const [sources, setSources] = React.useState<string[]>([]);
   const [include, setInclude] = React.useState<string[]>([]);
   const [exclude, setExclude] = React.useState<string[]>([]);
@@ -106,90 +107,105 @@ export default function Library() {
     [showSearch],
   );
   React.useEffect(() => {
-    async function initialize() {
-      const mangas = database
-        .get<Manga>(Table.MANGAS)
-        .query(Q.where('is_in_library', 1));
-      const query = database.get<LocalManga>(Table.LOCAL_MANGAS).query(
-        Q.experimentalJoinTables([Table.GENRES]),
-        Q.unsafeSqlQuery(
-          `SELECT localMangas.* FROM (SELECT DISTINCT localManga.* FROM (SELECT d.* FROM ${
-            Table.LOCAL_MANGAS
-          } d WHERE d.id NOT IN (SELECT DISTINCT localManga.id FROM ${
-            Table.LOCAL_MANGAS
-          } localManga INNER JOIN ${
-            Table.GENRES
-          } genre ON genre.${LOCAL_MANGA_ID} = localManga.id WHERE genre.name IN (${[
-            ...exclude.reduce((prev, curr) => {
-              for (const source of sources) {
-                const genre =
-                  MangaSource.getSource(source).READABLE_GENRES_MAP[curr];
-                if (genre != null) {
-                  prev.add(`'${genre}'`);
-                }
+    const mangas = database
+      .get<Manga>(Table.MANGAS)
+      .query(Q.where('is_in_library', 1));
+    const query = database.get<LocalManga>(Table.LOCAL_MANGAS).query(
+      Q.experimentalJoinTables([Table.GENRES]),
+      Q.unsafeSqlQuery(
+        `SELECT localMangas.* FROM (SELECT DISTINCT localManga.* FROM (SELECT d.* FROM ${
+          Table.LOCAL_MANGAS
+        } d WHERE d.id NOT IN (SELECT DISTINCT localManga.id FROM ${
+          Table.LOCAL_MANGAS
+        } localManga INNER JOIN ${
+          Table.GENRES
+        } genre ON genre.${LOCAL_MANGA_ID} = localManga.id WHERE genre.name IN (${[
+          ...exclude.reduce((prev, curr) => {
+            for (const source of sources) {
+              const genre =
+                MangaSource.getSource(source).READABLE_GENRES_MAP[curr];
+              if (genre != null) {
+                prev.add(`'${genre}'`);
               }
-              return prev;
-            }, new Set<string>()),
-          ].join(', ')}))) localManga INNER JOIN ${
-            Table.GENRES
-          } genre ON genre.${LOCAL_MANGA_ID}=localManga.id${
-            include.length > 0
-              ? ` WHERE genre.name IN (${[
-                  ...include.reduce((prev, curr) => {
-                    for (const source of sources) {
-                      const genre =
-                        MangaSource.getSource(source).READABLE_GENRES_MAP[curr];
-                      if (genre != null) {
-                        prev.add(`'${genre}'`);
-                      }
+            }
+            return prev;
+          }, new Set<string>()),
+        ].join(', ')}))) localManga INNER JOIN ${
+          Table.GENRES
+        } genre ON genre.${LOCAL_MANGA_ID}=localManga.id${
+          include.length > 0
+            ? ` WHERE genre.name IN (${[
+                ...include.reduce((prev, curr) => {
+                  for (const source of sources) {
+                    const genre =
+                      MangaSource.getSource(source).READABLE_GENRES_MAP[curr];
+                    if (genre != null) {
+                      prev.add(`'${genre}'`);
                     }
-                    return prev;
-                  }, new Set<string>()),
-                ].join(', ')})`
-              : ''
-          }) localMangas WHERE localMangas.link IN (SELECT manga.link FROM ${
-            Table.MANGAS
-          } manga WHERE manga.is_in_library = 1) AND localMangas.title like ? AND localMangas.source IN (${sources
-            .filter((x) => showSource?.[x] ?? true)
-            .map((x) => `'${x}'`)
-            .join(', ')})`,
-          [`%${input}%`],
-        ),
-      );
+                  }
+                  return prev;
+                }, new Set<string>()),
+              ].join(', ')})`
+            : ''
+        }) localMangas WHERE localMangas.link IN (SELECT manga.link FROM ${
+          Table.MANGAS
+        } manga WHERE manga.is_in_library = 1) AND localMangas.title like ? AND localMangas.source IN (${sources
+          .filter((x) => showSource?.[x] ?? true)
+          .map((x) => `'${x}'`)
+          .join(', ')})`,
+        [`%${input}%`],
+      ),
+    );
 
-      const observer = mangas.observeWithColumns([
-        'is_in_library',
-        'new_chapters_count',
-      ]);
-      const subscription = observer.subscribe(async () => {
-        const results = await query.fetch();
-        setMangas(results);
-      });
-      return () => {
-        subscription.unsubscribe();
-      };
-    }
-    initialize();
+    const observer = mangas.observeWithColumns([
+      'is_in_library',
+      'new_chapters_count',
+    ]);
+    const subscription = observer.subscribe(async () => {
+      const results = await query.fetch();
+      setMangas(results);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [input, showSource, sources, include, exclude]);
 
   React.useEffect(() => {
-    async function init() {
-      const localMangas = database.get<LocalManga>(Table.LOCAL_MANGAS);
+    const localMangas = database.get<LocalManga>(Table.LOCAL_MANGAS);
+    const mangas = database.get<Manga>(Table.MANGAS);
 
-      const result = await localMangas.query(
-        // If you cant read this, that's okay. This is a query for getting all distinct manga sources in the user's library.
-        Q.unsafeSqlQuery(
-          `SELECT * FROM (SELECT *, row_number() OVER (PARTITION BY source ORDER BY id) as row_number FROM (SELECT localMangas.* from ${Table.LOCAL_MANGAS} localMangas where localMangas.link in (select manga.link from ${Table.MANGAS} manga where manga.is_in_library = 1))) AS rows WHERE row_number = 1`,
+    const libraryObserver = mangas
+      .query()
+      .observeWithColumns(['is_in_library']);
+
+    const subscription = libraryObserver.subscribe(async () => {
+      const [results, results2] = await Promise.all([
+        localMangas.query(
+          // If you cant read this, that's okay. This is a query for getting all distinct manga sources in the user's library.
+          Q.unsafeSqlQuery(
+            `SELECT * FROM (SELECT *, row_number() OVER (PARTITION BY source ORDER BY id) as row_number FROM (SELECT localMangas.* from ${Table.LOCAL_MANGAS} localMangas where localMangas.link in (select manga.link from ${Table.MANGAS} manga where manga.is_in_library = 1))) AS rows WHERE row_number = 1`,
+          ),
+        ),
+        localMangas.query(
+          Q.unsafeSqlQuery(
+            `SELECT localMangas.* FROM ${Table.LOCAL_MANGAS} localMangas JOIN (SELECT manga.link AS manga_link FROM ${Table.MANGAS} manga WHERE manga.is_in_library = 1) manga_links ON localMangas.link = manga_links.manga_link`,
+          ),
+        ),
+      ]);
+
+      setSources(results.map((x) => x.source));
+      setShowSource((stored) =>
+        results.reduce(
+          (prev, curr) => {
+            prev[curr.source] = stored?.[curr.source] ?? true;
+            return prev;
+          },
+          {} as Record<string, boolean>,
         ),
       );
-      const result2 = await localMangas.query(
-        Q.unsafeSqlQuery(
-          `SELECT localMangas.* FROM ${Table.LOCAL_MANGAS} localMangas WHERE localMangas.link IN (SELECT manga.link FROM ${Table.MANGAS} manga WHERE manga.is_in_library = 1)`,
-        ),
-      );
-      setSources(result.map((x) => x.source));
+
       setMangasPerSource(
-        result2.reduce(
+        results2.reduce(
           (prev, curr) => {
             if (curr.source in prev === false) {
               prev[curr.source] = 0;
@@ -200,17 +216,12 @@ export default function Library() {
           {} as Record<string, number>,
         ),
       );
-      setShowSource((stored) =>
-        result.reduce(
-          (prev, curr) => {
-            prev[curr.source] = stored?.[curr.source] ?? true;
-            return prev;
-          },
-          {} as Record<string, boolean>,
-        ),
-      );
-    }
-    init();
+      toggleLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleOnCheckSource = React.useCallback(
@@ -221,7 +232,7 @@ export default function Library() {
   );
 
   return (
-    <CodeSplitter>
+    <CodeSplitter isLoading={isLoading}>
       <Freeze freeze={!isFocused}>
         <Screen.FlatList
           key={columns}
