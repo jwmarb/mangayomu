@@ -13,21 +13,29 @@ const styles = createStyles(() => ({
   },
 }));
 
-type CodeSplitterProps = React.PropsWithChildren;
+type CodeSplitterProps = React.PropsWithChildren<{
+  isLoading?: boolean;
+}>;
+
+function LoadingComponent() {
+  const style = useStyles(styles);
+
+  return (
+    <View style={style.container}>
+      <Progress size="large" />
+    </View>
+  );
+}
 
 export function CodeSplitter(props: CodeSplitterProps) {
-  const { children } = props;
-  const style = useStyles(styles);
+  const { children, isLoading } = props;
+
+  if (isLoading) {
+    return <LoadingComponent />;
+  }
+
   return (
-    <React.Suspense
-      fallback={
-        <View style={style.container}>
-          <Progress size="large" />
-        </View>
-      }
-    >
-      {children}
-    </React.Suspense>
+    <React.Suspense fallback={<LoadingComponent />}>{children}</React.Suspense>
   );
 }
 
