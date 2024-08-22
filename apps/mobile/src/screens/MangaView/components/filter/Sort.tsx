@@ -7,8 +7,8 @@ import {
   ChapterSortOptionStrings,
   Table,
 } from '@/models/schema';
-import useMangaViewManga from '@/screens/MangaView/hooks/useMangaViewManga';
 import useBoolean from '@/hooks/useBoolean';
+import { useMangaViewManga } from '@/screens/MangaView/context';
 
 const sortOptions = [
   ...new Set(

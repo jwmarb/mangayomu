@@ -1,6 +1,6 @@
 import React from 'react';
 import Text from '@/components/primitives/Text';
-import useMangaViewFetchStatus from '@/screens/MangaView/hooks/useMangaViewFetchStatus';
+import { useMangaViewFetchStatus } from '@/screens/MangaView/context';
 
 export type AuthorsProps = {
   authors?: string[];

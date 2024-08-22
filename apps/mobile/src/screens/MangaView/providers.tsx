@@ -3,15 +3,15 @@ import BottomSheet from '@/components/composites/BottomSheet';
 import useManga from '@/hooks/useManga';
 import useMangaSource from '@/hooks/useMangaSource';
 import {
-  MangaViewChaptersContext,
-  MangaViewDataContext,
-  MangaViewErrorContext,
-  MangaViewFetchStatusContext,
-  MangaViewMangaContext,
-  MangaViewMangaSourceContext,
-  MangaViewOpenFilterMenuContext,
-  MangaViewUnparsedDataContext,
-  MangaViewUnparsedMangaContext,
+  MangaViewChaptersProvider,
+  MangaViewDataProvider,
+  MangaViewErrorProvider,
+  MangaViewFetchStatusProvider,
+  MangaViewMangaProvider,
+  MangaViewMangaSourceProvider,
+  MangaViewOpenFilterMenuProvider,
+  MangaViewUnparsedDataProvider,
+  MangaViewUnparsedMangaProvider,
 } from '@/screens/MangaView/context';
 import useMangaMeta from '@/screens/MangaView/hooks/useMangaMeta';
 import { Manga } from '@/models/Manga';
@@ -42,26 +42,24 @@ export default function MangaViewProvider(props: MangaViewProvidersProps) {
   }, []);
 
   return (
-    <MangaViewChaptersContext.Provider value={chapters}>
-      <MangaViewUnparsedDataContext.Provider value={unparsed}>
-        <MangaViewOpenFilterMenuContext.Provider value={openFilterMenu}>
-          <MangaViewMangaContext.Provider value={manga}>
-            <MangaViewDataContext.Provider value={meta}>
-              <MangaViewErrorContext.Provider value={error}>
-                <MangaViewFetchStatusContext.Provider value={fetchStatus}>
-                  <MangaViewMangaSourceContext.Provider value={source}>
-                    <MangaViewUnparsedMangaContext.Provider
-                      value={unparsedManga}
-                    >
+    <MangaViewChaptersProvider value={chapters}>
+      <MangaViewUnparsedDataProvider value={unparsed}>
+        <MangaViewOpenFilterMenuProvider value={openFilterMenu}>
+          <MangaViewMangaProvider value={manga}>
+            <MangaViewDataProvider value={meta}>
+              <MangaViewErrorProvider value={error}>
+                <MangaViewFetchStatusProvider value={fetchStatus}>
+                  <MangaViewMangaSourceProvider value={source}>
+                    <MangaViewUnparsedMangaProvider value={unparsedManga}>
                       {children}
-                    </MangaViewUnparsedMangaContext.Provider>
-                  </MangaViewMangaSourceContext.Provider>
-                </MangaViewFetchStatusContext.Provider>
-              </MangaViewErrorContext.Provider>
-            </MangaViewDataContext.Provider>
-          </MangaViewMangaContext.Provider>
-        </MangaViewOpenFilterMenuContext.Provider>
-      </MangaViewUnparsedDataContext.Provider>
-    </MangaViewChaptersContext.Provider>
+                    </MangaViewUnparsedMangaProvider>
+                  </MangaViewMangaSourceProvider>
+                </MangaViewFetchStatusProvider>
+              </MangaViewErrorProvider>
+            </MangaViewDataProvider>
+          </MangaViewMangaProvider>
+        </MangaViewOpenFilterMenuProvider>
+      </MangaViewUnparsedDataProvider>
+    </MangaViewChaptersProvider>
   );
 }

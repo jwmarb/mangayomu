@@ -2,19 +2,21 @@ import React from 'react';
 import { View } from 'react-native';
 import { MangaChapter } from '@mangayomu/mangascraper';
 import { useNavigation } from '@react-navigation/native';
-import useMangaViewSource from '@/screens/MangaView/hooks/useMangaViewSource';
 import Pressable from '@/components/primitives/Pressable';
 import Text from '@/components/primitives/Text';
 import { createStyles } from '@/utils/theme';
 import useStyles from '@/hooks/useStyles';
 import useContrast from '@/hooks/useContrast';
-import useMangaViewUnparsedManga from '@/screens/MangaView/hooks/useMangaViewUnparsedManga';
-import useMangaViewUnparsedData from '@/screens/MangaView/hooks/useMangaViewUnparsedData';
 import useHistoryEntry from '@/screens/MangaView/hooks/useHistoryEntry';
-import useMangaViewManga from '@/screens/MangaView/hooks/useMangaViewManga';
 import { Chapter as ChapterModel } from '@/models/Chapter';
 import { Manga } from '@/models/Manga';
 import useIsCurrentlyReadingThisChapter from '@/screens/MangaView/hooks/useIsCurrentlyReadingThisChapter';
+import {
+  useMangaViewManga,
+  useMangaViewSource,
+  useMangaViewUnparsedData,
+  useMangaViewUnparsedManga,
+} from '@/screens/MangaView/context';
 
 export const BASE_CHAPTER_HEIGHT = 64;
 export const CHAPTER_HEIGHT_EXTENDED = BASE_CHAPTER_HEIGHT + 20;

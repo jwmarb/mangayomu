@@ -5,9 +5,11 @@ import IconButton from '@/components/primitives/IconButton';
 import Text from '@/components/primitives/Text';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
-import useMangaViewData from '@/screens/MangaView/hooks/useMangaViewData';
 import { styles } from '@/screens/MangaView/styles';
-import useOpenFilterMenu from '@/screens/MangaView/hooks/useOpenFilterMenu';
+import {
+  useMangaViewData,
+  useOpenFilterMenu,
+} from '@/screens/MangaView/context';
 
 export default function ChapterHeader() {
   const data = useMangaViewData();

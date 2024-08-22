@@ -1,5 +1,5 @@
 import Chapter from '@/screens/MangaView/components/primitives/Chapter';
-import useMangaViewFetchStatus from '@/screens/MangaView/hooks/useMangaViewFetchStatus';
+import { useMangaViewFetchStatus } from '@/screens/MangaView/context';
 
 export default function ListEmptyComponent() {
   const status = useMangaViewFetchStatus();

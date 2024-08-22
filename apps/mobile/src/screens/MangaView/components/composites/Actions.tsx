@@ -5,8 +5,8 @@ import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
 import Action from '@/screens/MangaView/components/primitives/Action';
 import { styles } from '@/screens/MangaView/styles';
-import useMangaViewManga from '@/screens/MangaView/hooks/useMangaViewManga';
 import useIsInLibrary from '@/screens/MangaView/hooks/useIsInLibrary';
+import { useMangaViewManga } from '@/screens/MangaView/context';
 
 const READ_ICON = <Icon type="icon" name="book-play-outline" />;
 const SAVE_ICON = <Icon type="icon" name="bookmark-outline" />;

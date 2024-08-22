@@ -2,7 +2,7 @@ import { View } from 'react-native';
 import Text from '@/components/primitives/Text';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
-import useMangaViewFetchStatus from '@/screens/MangaView/hooks/useMangaViewFetchStatus';
+import { useMangaViewFetchStatus } from '@/screens/MangaView/context';
 import { createStyles } from '@/utils/theme';
 
 const styles = (color: string) =>
@@ -29,10 +29,13 @@ const composedStyles = [
   'discontinued',
   'completed',
   'loading',
-].reduce((prev, curr) => {
-  prev[curr] = styles(curr);
-  return prev;
-}, {} as Record<string, ReturnType<typeof styles>>);
+].reduce(
+  (prev, curr) => {
+    prev[curr] = styles(curr);
+    return prev;
+  },
+  {} as Record<string, ReturnType<typeof styles>>,
+);
 
 type StatusProps = {
   status?: string | null;

@@ -11,7 +11,7 @@ import { isChapter } from '@/utils/helpers';
 import useItemLayout from '@/screens/MangaView/hooks/useItemLayout';
 import Screen from '@/components/primitives/Screen';
 import useCollapsibleHeader from '@/hooks/useCollapsibleHeader';
-import useMangaViewUnparsedManga from '@/screens/MangaView/hooks/useMangaViewUnparsedManga';
+import { useMangaViewUnparsedManga } from '@/screens/MangaView/context';
 
 export type MangaViewMainProps = {
   source?: string;

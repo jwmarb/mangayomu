@@ -1,14 +1,16 @@
 import React from 'react';
 import { View } from 'react-native';
-import useMangaViewFetchStatus from '@/screens/MangaView/hooks/useMangaViewFetchStatus';
+import { useMangaViewFetchStatus } from '@/screens/MangaView/context';
 import Text from '@/components/primitives/Text';
 import { createStyles } from '@/utils/theme';
 import useStyles from '@/hooks/useStyles';
 import useContrast from '@/hooks/useContrast';
 import Button from '@/components/primitives/Button';
 import Icon from '@/components/primitives/Icon';
-import { SynopsisExpandedContext } from '@/screens/MangaView/context';
-import useMangaViewError from '@/screens/MangaView/hooks/useMangaViewError';
+import {
+  SynopsisExpandedProvider,
+  useMangaViewError,
+} from '@/screens/MangaView/context';
 import { getErrorMessage } from '@/utils/helpers';
 const HTMLRenderer = React.lazy(
   () => import('@/screens/MangaView/components/renderers/HTMLRenderer'),
@@ -61,7 +63,7 @@ export default React.memo(function Synopsis(props: SynopsisProps) {
         )}
       </View>
       {description != null && (
-        <SynopsisExpandedContext.Provider value={expanded}>
+        <SynopsisExpandedProvider value={expanded}>
           <React.Suspense
             fallback={
               <>
@@ -80,7 +82,7 @@ export default React.memo(function Synopsis(props: SynopsisProps) {
               setShowExpanded={setShowExpanded}
             />
           </React.Suspense>
-        </SynopsisExpandedContext.Provider>
+        </SynopsisExpandedProvider>
       )}
       {(status === 'idle' || status === 'paused') && description == null && (
         <Text color="textSecondary" italic>

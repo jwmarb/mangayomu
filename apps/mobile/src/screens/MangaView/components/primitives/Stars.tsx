@@ -4,8 +4,8 @@ import Icon from '@/components/primitives/Icon';
 import Text from '@/components/primitives/Text';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
-import useMangaViewData from '@/screens/MangaView/hooks/useMangaViewData';
 import { createStyles } from '@/utils/theme';
+import { useMangaViewData } from '@/screens/MangaView/context';
 
 export type StarsProps = {
   rating: number;

@@ -3,39 +3,53 @@ import { Manga, MangaMeta, MangaSource } from '@mangayomu/mangascraper';
 import { Manga as MangaModel } from '@/models/Manga';
 import { FetchStatus } from '@tanstack/react-query';
 import React from 'react';
-export const MangaViewMangaSourceContext =
-  React.createContext<MangaSource | null>(null);
-MangaViewMangaSourceContext.displayName = 'MangaViewMangaSourceContext';
+export const {
+  Provider: MangaViewMangaSourceProvider,
+  useContext: useMangaViewSource,
+} = createContext<MangaSource>();
 
-export const MangaViewFetchStatusContext =
-  React.createContext<FetchStatus | null>(null);
-MangaViewFetchStatusContext.displayName = 'MangaViewFetchStatusContext';
+export const {
+  Provider: MangaViewFetchStatusProvider,
+  useContext: useMangaViewFetchStatus,
+} = createContext<FetchStatus>();
 
-export const SynopsisExpandedContext = React.createContext<boolean>(false);
+export const {
+  Provider: SynopsisExpandedProvider,
+  useContext: useSynopsisExpanded,
+} = createContext<boolean, false>(false, false);
 
-export const MangaViewErrorContext = React.createContext<Error | null>(null);
+export const {
+  Provider: MangaViewErrorProvider,
+  useContext: useMangaViewError,
+} = createContext<Error | null>(false);
 
-export const MangaViewDataContext = React.createContext<
-  (Manga & MangaMeta<unknown>) | null | undefined
->(null);
+export const { Provider: MangaViewDataProvider, useContext: useMangaViewData } =
+  createContext<(Manga & MangaMeta<unknown>) | null | undefined>(false);
 
-export const MangaViewUnparsedDataContext = React.createContext<
-  unknown | undefined
->(undefined);
+export const {
+  Provider: MangaViewUnparsedDataProvider,
+  useContext: useMangaViewUnparsedData,
+} = createContext<unknown | undefined>(false);
 
-export const MangaViewMangaContext = React.createContext<Manga | null>(null);
+export const {
+  Provider: MangaViewMangaProvider,
+  useContext: useMangaViewManga,
+} = createContext<Manga>();
 
-export const MangaViewOpenFilterMenuContext = React.createContext<
-  (() => void) | null
->(null);
+export const {
+  Provider: MangaViewOpenFilterMenuProvider,
+  useContext: useOpenFilterMenu,
+} = createContext<(() => void) | null>(false);
 
-export const MangaViewChaptersContext = React.createContext<unknown[] | null>(
-  null,
-);
+export const {
+  Provider: MangaViewChaptersProvider,
+  useContext: useMangaViewChapters,
+} = createContext<unknown[] | null>();
 
-export const MangaViewUnparsedMangaContext = React.createContext<
-  unknown | undefined
->(undefined);
+export const {
+  Provider: MangaViewUnparsedMangaProvider,
+  useContext: useMangaViewUnparsedManga,
+} = createContext<unknown | undefined>(undefined);
 
 export const {
   useContext: useMangaViewMangaModel,

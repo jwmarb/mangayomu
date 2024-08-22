@@ -10,13 +10,15 @@ import useThemedProps from '@/hooks/useThemedProps';
 import AltTitle from '@/screens/MangaView/components/primitives/AltTitle';
 import Authors from '@/screens/MangaView/components/primitives/Authors';
 import Status from '@/screens/MangaView/components/primitives/Status';
-import useMangaViewData from '@/screens/MangaView/hooks/useMangaViewData';
-import useMangaViewManga from '@/screens/MangaView/hooks/useMangaViewManga';
 import { styles } from '@/screens/MangaView/styles';
 import { createThemedProps } from '@/utils/theme';
 import Icon from '@/components/primitives/Icon';
-import useMangaViewSource from '@/screens/MangaView/hooks/useMangaViewSource';
 import Stars from '@/screens/MangaView/components/primitives/Stars';
+import {
+  useMangaViewData,
+  useMangaViewManga,
+  useMangaViewSource,
+} from '@/screens/MangaView/context';
 
 const themedProps = createThemedProps((theme) => ({
   colors: ['rgba(0, 0, 0, 0.25)', theme.palette.background.paper],

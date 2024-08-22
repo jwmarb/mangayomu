@@ -1,12 +1,14 @@
 import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackActions } from '@react-navigation/native';
-import useMangaViewFetchStatus from '@/screens/MangaView/hooks/useMangaViewFetchStatus';
+import {
+  useMangaViewFetchStatus,
+  useMangaViewSource,
+} from '@/screens/MangaView/context';
 import { createStyles } from '@/utils/theme';
 import useStyles from '@/hooks/useStyles';
 import useContrast from '@/hooks/useContrast';
 import Chip from '@/components/primitives/Chip';
-import useMangaViewSource from '@/screens/MangaView/hooks/useMangaViewSource';
 
 const styles = createStyles((theme) => ({
   container: {
