@@ -37,6 +37,7 @@ import { ReadingDirection } from '@/models/schema';
 import useHistoryEntry from '@/screens/Reader/hooks/useHistoryEntry';
 import useChapterData from '@/screens/Reader/hooks/useChapterData';
 import { ResolvedImageAsset } from '@/utils/image';
+import Display from '@/screens/Reader/components/ui/Display';
 
 export type Data =
   | PageProps
@@ -44,39 +45,6 @@ export type Data =
   | { type: 'NO_MORE_CHAPTERS' };
 
 export type Query = { pages: ResolvedImageAsset[]; chapter: MangaChapter };
-
-const renderItem: ListRenderItem<Data> = ({ item }) => {
-  switch (item.type) {
-    case 'CHAPTER_DIVIDER':
-      return <ChapterDivider {...item} />;
-    case 'NO_MORE_CHAPTERS':
-      return <NoMoreChapters />;
-    case 'PAGE':
-      return <Page {...item} />;
-  }
-};
-
-const keyExtractor = (i: Data) => {
-  switch (i.type) {
-    case 'CHAPTER_DIVIDER':
-      if (i.next && i.previous) {
-        return i.next?.link + i.previous?.link;
-      }
-      if (i.next) {
-        return 'next';
-      }
-      if (i.previous) {
-        return 'previous';
-      }
-      return 'undefined';
-    case 'NO_MORE_CHAPTERS':
-      return i.type;
-    case 'PAGE':
-      return i.source.uri;
-  }
-};
-
-const maintainVisibleContentPosition = { minIndexForVisible: 1 };
 
 export default function Reader(props: RootStackProps<'Reader'>) {
   const {
@@ -123,8 +91,6 @@ export default function Reader(props: RootStackProps<'Reader'>) {
     });
   const [contentContainerStyle, backgroundColor] = useBackgroundColor(manga);
 
-  const getItemLayout = useItemLayout(readingDirection);
-
   useHistoryEntry(currentChapter);
 
   const { initialScrollIndex } = useChapterData(
@@ -134,6 +100,9 @@ export default function Reader(props: RootStackProps<'Reader'>) {
     indices,
     initialPageParam,
   );
+
+  const isReady =
+    !isLoading && currentChapter != null && initialScrollIndex != null;
 
   return (
     <ReaderBackgroundColor value={backgroundColor}>
@@ -146,36 +115,14 @@ export default function Reader(props: RootStackProps<'Reader'>) {
                   <ReaderMangaProvider value={manga}>
                     <Overlay>
                       <View style={style.loadingContainer}>
-                        {!isLoading &&
-                        currentChapter != null &&
-                        initialScrollIndex != null ? (
-                          <FlatList
-                            ref={flatListRef}
+                        {isReady ? (
+                          <Display
+                            pages={data?.pages}
                             contentContainerStyle={contentContainerStyle}
-                            getItemLayout={getItemLayout}
-                            maintainVisibleContentPosition={
-                              maintainVisibleContentPosition
-                            }
-                            keyExtractor={keyExtractor}
-                            renderItem={renderItem}
-                            data={data?.pages}
+                            manga={manga}
                             viewabilityConfigCallbackPairs={
-                              viewabilityConfigCallbackPairs.current
+                              viewabilityConfigCallbackPairs
                             }
-                            horizontal={
-                              readingDirection ===
-                                ReadingDirection.RIGHT_TO_LEFT ||
-                              readingDirection ===
-                                ReadingDirection.LEFT_TO_RIGHT
-                            }
-                            inverted={
-                              readingDirection ===
-                              ReadingDirection.RIGHT_TO_LEFT
-                            }
-                            pagingEnabled={
-                              readingDirection !== ReadingDirection.WEBTOON
-                            }
-                            showsHorizontalScrollIndicator={false}
                             initialScrollIndex={initialScrollIndex}
                           />
                         ) : (
