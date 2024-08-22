@@ -32,7 +32,7 @@
     "immer": "^10.0.3",
     "jsdom": "^22.1.0",
     "next": "^13.5.4",
-    "react": "18.2.0",
+    "react": "18.3.1",
     "react-aria": "^3.26.0",
     "react-dom": "18.2.0",
     "react-freeze": "1.0.4",
@@ -41,7 +41,7 @@
     "react-stately": "^3.24.0",
     "realm-web": "^2.0.0",
     "zod": "^3.22.4",
-    "zustand": "4.5.2"
+    "zustand": "4.5.5"
   },
   "devDependencies": {
     "@types/dompurify": "^3.0.2",
