@@ -23,14 +23,9 @@ import {
 import usePages from '@/screens/Reader/hooks/usePages';
 import useViewabilityConfigCallbackPairs from '@/screens/Reader/hooks/useViewabilityConfigCallbackPairs';
 import useItemLayout from '@/screens/Reader/hooks/useItemLayout';
-
-const NoMoreChapters = React.lazy(
-  () => import('@/screens/Reader/components/ui/NoMoreChapters'),
-);
-const ChapterDivider = React.lazy(
-  () => import('@/screens/Reader/components/ui/ChapterDivider'),
-);
-const Page = React.lazy(() => import('@/screens/Reader/components/ui/Page'));
+import Page from '@/screens/Reader/components/ui/Page';
+import NoMoreChapters from '@/screens/Reader/components/ui/NoMoreChapters';
+import ChapterDivider from '@/screens/Reader/components/ui/ChapterDivider';
 import Overlay from '@/screens/Reader/components/ui/Overlay';
 import useManga from '@/hooks/useManga';
 import useBackgroundColor from '@/screens/Reader/hooks/useBackgroundColor';
@@ -151,43 +146,41 @@ export default function Reader(props: RootStackProps<'Reader'>) {
                   <ReaderMangaProvider value={manga}>
                     <Overlay>
                       <View style={style.loadingContainer}>
-                        <React.Suspense fallback={<Progress size="large" />}>
-                          {!isLoading &&
-                          currentChapter != null &&
-                          initialScrollIndex != null ? (
-                            <FlatList
-                              ref={flatListRef}
-                              contentContainerStyle={contentContainerStyle}
-                              getItemLayout={getItemLayout}
-                              maintainVisibleContentPosition={
-                                maintainVisibleContentPosition
-                              }
-                              keyExtractor={keyExtractor}
-                              renderItem={renderItem}
-                              data={data?.pages}
-                              viewabilityConfigCallbackPairs={
-                                viewabilityConfigCallbackPairs.current
-                              }
-                              horizontal={
-                                readingDirection ===
-                                  ReadingDirection.RIGHT_TO_LEFT ||
-                                readingDirection ===
-                                  ReadingDirection.LEFT_TO_RIGHT
-                              }
-                              inverted={
-                                readingDirection ===
-                                ReadingDirection.RIGHT_TO_LEFT
-                              }
-                              pagingEnabled={
-                                readingDirection !== ReadingDirection.WEBTOON
-                              }
-                              showsHorizontalScrollIndicator={false}
-                              initialScrollIndex={initialScrollIndex}
-                            />
-                          ) : (
-                            <Progress size="large" />
-                          )}
-                        </React.Suspense>
+                        {!isLoading &&
+                        currentChapter != null &&
+                        initialScrollIndex != null ? (
+                          <FlatList
+                            ref={flatListRef}
+                            contentContainerStyle={contentContainerStyle}
+                            getItemLayout={getItemLayout}
+                            maintainVisibleContentPosition={
+                              maintainVisibleContentPosition
+                            }
+                            keyExtractor={keyExtractor}
+                            renderItem={renderItem}
+                            data={data?.pages}
+                            viewabilityConfigCallbackPairs={
+                              viewabilityConfigCallbackPairs.current
+                            }
+                            horizontal={
+                              readingDirection ===
+                                ReadingDirection.RIGHT_TO_LEFT ||
+                              readingDirection ===
+                                ReadingDirection.LEFT_TO_RIGHT
+                            }
+                            inverted={
+                              readingDirection ===
+                              ReadingDirection.RIGHT_TO_LEFT
+                            }
+                            pagingEnabled={
+                              readingDirection !== ReadingDirection.WEBTOON
+                            }
+                            showsHorizontalScrollIndicator={false}
+                            initialScrollIndex={initialScrollIndex}
+                          />
+                        ) : (
+                          <Progress size="large" />
+                        )}
                       </View>
                     </Overlay>
                   </ReaderMangaProvider>
