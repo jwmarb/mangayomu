@@ -7,11 +7,13 @@ import PageNavigator, {
 import TopOverlay, {
   TopOverlayMethods,
 } from '@/screens/Reader/components/composites/TopOverlay';
+import { useSettingsStore } from '@/stores/settings';
 import { createStyles } from '@/utils/theme';
 import React from 'react';
-import { View } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-reanimated';
+import NavigationBar from '@/utils/navbar';
 
 const styles = createStyles((theme) => ({
   wrapper: {
@@ -42,7 +44,10 @@ export default function Overlay(props: OverlayProps) {
   const style = useStyles(styles, contrast);
   const topRef = React.useRef<TopOverlayMethods>(null);
   const pageNavRef = React.useRef<PageNavigatorMethods>(null);
+  const hideStatusBar = useSettingsStore((state) => state.reader.hideStatusBar);
+  const [isHidden, toggleHidden] = useBoolean();
   function toggle() {
+    toggleHidden();
     topRef.current?.toggle();
     pageNavRef.current?.toggle();
   }
@@ -56,6 +61,19 @@ export default function Overlay(props: OverlayProps) {
         .maxDistance(0),
     [],
   );
+
+  React.useEffect(() => {
+    if (hideStatusBar) {
+      if (isHidden) {
+        StatusBar.setHidden(true);
+        NavigationBar.hide();
+      } else {
+        StatusBar.setHidden(false);
+        NavigationBar.show();
+      }
+    }
+  }, [isHidden]);
+
   return (
     <>
       <GestureDetector gesture={gesture}>{children}</GestureDetector>
