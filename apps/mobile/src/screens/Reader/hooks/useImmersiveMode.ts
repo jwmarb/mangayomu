@@ -1,10 +1,9 @@
-import { BackgroundColor, useSettingsStore } from '@/stores/settings';
+import { useSettingsStore } from '@/stores/settings';
 import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import NavigationBar from '@/utils/navbar';
 import useBoolean from '@/hooks/useBoolean';
-import { useReaderBackgroundColor } from '@/screens/Reader/context';
 import useTheme from '@/hooks/useTheme';
 
 export default function useImmersiveMode() {
