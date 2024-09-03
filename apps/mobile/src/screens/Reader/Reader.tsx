@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlatList } from 'react-native-gesture-handler';
-import { ListRenderItem, StatusBar, View } from 'react-native';
+import { View } from 'react-native';
 import { MangaChapter } from '@mangayomu/mangascraper';
 import useMangaMeta from '@/screens/MangaView/hooks/useMangaMeta';
 import { RootStackProps } from '@/screens/navigator';
@@ -22,16 +22,10 @@ import {
 } from '@/screens/Reader/context';
 import usePages from '@/screens/Reader/hooks/usePages';
 import useViewabilityConfigCallbackPairs from '@/screens/Reader/hooks/useViewabilityConfigCallbackPairs';
-import useItemLayout from '@/screens/Reader/hooks/useItemLayout';
-import Page from '@/screens/Reader/components/ui/Page';
-import NoMoreChapters from '@/screens/Reader/components/ui/NoMoreChapters';
-import ChapterDivider from '@/screens/Reader/components/ui/ChapterDivider';
 import Overlay from '@/screens/Reader/components/ui/Overlay';
 import useManga from '@/hooks/useManga';
 import useBackgroundColor from '@/screens/Reader/hooks/useBackgroundColor';
 import type { PageProps } from '@/screens/Reader/components/ui/Page';
-import { useFocusEffect } from '@react-navigation/native';
-import useImmersiveMode from '@/screens/Reader/hooks/useImmersiveMode';
 import useReaderSetting from '@/hooks/useReaderSetting';
 import { ReadingDirection } from '@/models/schema';
 import useHistoryEntry from '@/screens/Reader/hooks/useHistoryEntry';
@@ -59,7 +53,6 @@ export default function Reader(props: RootStackProps<'Reader'>) {
     'readingDirection',
     manga,
   );
-  useImmersiveMode();
   const { data: metaResult } = useMangaMeta(unparsedManga, sourceStr);
   const [tmangameta, meta] = metaResult ?? [];
   const [currentChapter, setCurrentChapter] = useCurrentChapter({
