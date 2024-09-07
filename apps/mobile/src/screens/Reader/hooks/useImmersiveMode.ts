@@ -13,6 +13,7 @@ export default function useImmersiveMode() {
   const [isHidden, toggleHidden] = useBoolean();
   const theme = useTheme();
 
+  // Changes the status bar and navbar visibility if the overlay is displayed or not
   React.useEffect(() => {
     if (hideStatusBar) {
       if (isHidden) {
