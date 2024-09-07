@@ -2,6 +2,7 @@ import Text from '@/components/primitives/Text';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
 import { OptionComponentProps } from '@/screens/ReaderSettings';
+import MiscellaneousOption from '@/screens/ReaderSettings/components/primitives/MiscellaneousOption';
 import SelectableOption from '@/screens/ReaderSettings/components/primitives/SelectableOption';
 import {
   SetStateProvider,
@@ -14,34 +15,17 @@ import {
 import { createStyles } from '@/utils/theme';
 import React from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
 
 const styles = createStyles((theme) => ({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: theme.style.size.m,
-  },
   blockContainer: {
-    flex: 1,
+    flexGrow: 1,
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  title: {
-    paddingVertical: theme.style.size.m,
-    paddingHorizontal: theme.style.screen.paddingHorizontal,
-  },
-  scrollViewContainer: {
-    flex: 1,
-    paddingHorizontal: theme.style.screen.paddingHorizontal,
-    flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   block: {
-    width: 48,
-    height: 48,
+    width: 36,
+    height: 36,
   },
   white: {
     backgroundColor: theme.palette.common.white,
@@ -73,11 +57,9 @@ export default function BackgroundColor() {
   const grayBoxStyle = [style.block, style.gray];
 
   return (
-    <View style={style.container}>
-      <Text style={style.title} variant="h4">
-        Background color
-      </Text>
-      <View style={style.blockContainer}>
+    <MiscellaneousOption>
+      <MiscellaneousOption.Title title="Background color" />
+      <MiscellaneousOption.Content style={style.blockContainer}>
         <SetStateProvider value={setBackgroundColor}>
           <Color
             value={BGColor.WHITE}
@@ -95,8 +77,8 @@ export default function BackgroundColor() {
             isSelected={BGColor.GRAY === backgroundColor}
           />
         </SetStateProvider>
-      </View>
-    </View>
+      </MiscellaneousOption.Content>
+    </MiscellaneousOption>
   );
 }
 
