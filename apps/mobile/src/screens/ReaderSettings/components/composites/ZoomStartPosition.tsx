@@ -38,7 +38,6 @@ export type ZoomStartPositionProps = {
 };
 
 export default function ZoomStartPosition(props: ZoomStartPositionProps) {
-  const { type = 'normal' } = props;
   const manga = useMangaContext();
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
@@ -103,8 +102,6 @@ function Automatic({ isSelected, isGlobalSelected }: OptionComponentProps) {
 }
 
 function Left({ isSelected, isGlobalSelected }: OptionComponentProps) {
-  const contrast = useContrast();
-  const style = useStyles(styles, contrast);
   const setState = useSetState();
   return (
     <SelectableOption
@@ -118,8 +115,6 @@ function Left({ isSelected, isGlobalSelected }: OptionComponentProps) {
 }
 
 function Right({ isSelected, isGlobalSelected }: OptionComponentProps) {
-  const contrast = useContrast();
-  const style = useStyles(styles, contrast);
   const setState = useSetState();
   return (
     <SelectableOption
@@ -133,8 +128,6 @@ function Right({ isSelected, isGlobalSelected }: OptionComponentProps) {
 }
 
 function Center({ isSelected, isGlobalSelected }: OptionComponentProps) {
-  const contrast = useContrast();
-  const style = useStyles(styles, contrast);
   const setState = useSetState();
   return (
     <SelectableOption
