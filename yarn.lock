@@ -3051,7 +3051,7 @@ __metadata:
     "@mangayomu/schema-creator": "npm:1.0.0"
     "@mangayomu/theme": "npm:1.0.0"
     "@nozbe/watermelondb": "npm:0.27.1"
-    "@react-native-community/blur": "npm:4.4.0"
+    "@react-native-community/blur": "npm:4.4.1"
     "@react-native-community/netinfo": "npm:11.3.2"
     "@react-native-menu/menu": "npm:1.1.2"
     "@react-native/babel-preset": "npm:0.75.2"
@@ -3061,7 +3061,7 @@ __metadata:
     "@react-navigation/bottom-tabs": "npm:6.6.1"
     "@react-navigation/native": "npm:6.1.18"
     "@react-navigation/native-stack": "npm:6.11.0"
-    "@tanstack/react-query": "npm:5.52.0"
+    "@tanstack/react-query": "npm:5.53.3"
     "@testing-library/react-native": "npm:^12.5.1"
     "@types/jest": "npm:^29.5.12"
     "@types/react": "npm:18.2.14"
@@ -3080,19 +3080,18 @@ __metadata:
     react-freeze: "npm:1.0.4"
     react-native: "npm:0.75.2"
     react-native-blob-util: "npm:0.19.11"
-    react-native-gesture-handler: "npm:2.18.1"
+    react-native-gesture-handler: "npm:2.19.0"
     react-native-linear-gradient: "npm:2.8.3"
-    react-native-mmkv: "npm:2.12.2"
-    react-native-pager-view: "npm:6.4.0"
+    react-native-mmkv: "npm:3.0.2"
+    react-native-pager-view: "npm:6.4.1"
     react-native-popup-menu: "npm:0.16.1"
-    react-native-reanimated: "npm:3.15.0"
+    react-native-reanimated: "npm:3.15.1"
     react-native-render-html: "npm:6.3.4"
     react-native-safe-area-context: "npm:4.10.9"
     react-native-screens: "npm:3.34.0"
     react-native-tab-view: "npm:3.5.2"
     react-native-vector-icons: "npm:10.1.0"
     react-native-worklets-core: "npm:1.3.3"
-    react-native-zoom-toolkit: "npm:^2.1.4"
     react-test-renderer: "npm:18.3.1"
     typescript: "npm:5.5.2"
     zustand: "npm:4.5.5"
@@ -4665,13 +4664,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/blur@npm:4.4.0":
-  version: 4.4.0
-  resolution: "@react-native-community/blur@npm:4.4.0"
+"@react-native-community/blur@npm:4.4.1":
+  version: 4.4.1
+  resolution: "@react-native-community/blur@npm:4.4.1"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10/73083ea3a52431f45565bcc4aabacc46d1d2ef20250b67604f1f658841c702fbb53ec890404d052f6bba33738e47f0717a5b83c93e663d18b543b3151c986ee2
+  checksum: 10/6fa84036db480af765df08d680955e9b5acaa631a54678b8eef970799fc04bdc7f906cb06a94f2da9af097c52ddb56ca4cff2172372d1d5f7717864f43965e0a
   languageName: node
   linkType: hard
 
@@ -6351,21 +6350,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.52.0":
-  version: 5.52.0
-  resolution: "@tanstack/query-core@npm:5.52.0"
-  checksum: 10/cd21e87ad7a0bbb262dea21704352eb1bbaafc26776ae1602b4be9a2d0d1f16a89cc4b5951f69083e26f970d75386431240d5a573ed9bce5a37ba2dc862e376a
+"@tanstack/query-core@npm:5.53.3":
+  version: 5.53.3
+  resolution: "@tanstack/query-core@npm:5.53.3"
+  checksum: 10/4a611ae1efbebb1f39578b0d679d75e713f9e9d1788c9b91644c6745964c35483ea2739cf20c643e72a7beb9baec8fa5892d1eeacb6dcb85daa1c98f9829f2ee
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:5.52.0":
-  version: 5.52.0
-  resolution: "@tanstack/react-query@npm:5.52.0"
+"@tanstack/react-query@npm:5.53.3":
+  version: 5.53.3
+  resolution: "@tanstack/react-query@npm:5.53.3"
   dependencies:
-    "@tanstack/query-core": "npm:5.52.0"
+    "@tanstack/query-core": "npm:5.53.3"
   peerDependencies:
-    react: ^18.0.0
-  checksum: 10/6976d309d306f0dd70f25e0de820812c47bfc39b654294e1512d4bb5320d0abad1bc3d6de16a25b7ae6766eb9b928c5e396e996d7d6689d33a1c1436de68cf7b
+    react: ^18 || ^19
+  checksum: 10/5ff7b315efaf6e34069a85a6fc4ef785cbac4d8ea0f0d5bf096d915392f2fd2b2883458f63a9cea2e8df18400a2b94c784f8fef381ad6e8a215d590611fbc473
   languageName: node
   linkType: hard
 
@@ -16334,9 +16333,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@npm:2.18.1":
-  version: 2.18.1
-  resolution: "react-native-gesture-handler@npm:2.18.1"
+"react-native-gesture-handler@npm:2.19.0":
+  version: 2.19.0
+  resolution: "react-native-gesture-handler@npm:2.19.0"
   dependencies:
     "@egjs/hammerjs": "npm:^2.0.17"
     hoist-non-react-statics: "npm:^3.3.0"
@@ -16345,7 +16344,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10/d97cb20ed32c58a66c21a53727ce22cb7ece104bea296b72f4a95a3b3b61d03561e46b437f818603bcc58518dc5cd5bd42aaddb9755fb9eca467ce45358d4765
+  checksum: 10/25c237976b4f41b592e1216d4bd36c1a87233ce15fc18bf0576a2b97138e2064e1f7d013fede6b2a9629b801b2c0df497b0fe44ddf588bcb90c259ed251eca55
   languageName: node
   linkType: hard
 
@@ -16359,23 +16358,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-mmkv@npm:2.12.2":
-  version: 2.12.2
-  resolution: "react-native-mmkv@npm:2.12.2"
-  peerDependencies:
-    react: "*"
-    react-native: ">=0.71.0"
-  checksum: 10/c1ebb8e81905ee8ce17858ff6096525cbdd0e51892dca80a3cd6e26feb5e979a9c7d609c5a55886150efb0136c5899de174c71115f81607019ed7af68678797b
-  languageName: node
-  linkType: hard
-
-"react-native-pager-view@npm:6.4.0":
-  version: 6.4.0
-  resolution: "react-native-pager-view@npm:6.4.0"
+"react-native-mmkv@npm:3.0.2":
+  version: 3.0.2
+  resolution: "react-native-mmkv@npm:3.0.2"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10/0d40a9fcc42118961271db715cb99ea878b1d5c08c7459b0f9afd39a27cf1dfcfb9ad11a66ae72db7e82763e715a159d5518943be257b0615601e7487aa5c01c
+  checksum: 10/8c68bbac30e57b26742dcfa40d59c8cad191ba234f67449fe6785462e596e4f0bf2282d4abea60ce2dab3e831e9d8175efbfdc39277d3f21b7a075a1023da308
+  languageName: node
+  linkType: hard
+
+"react-native-pager-view@npm:6.4.1":
+  version: 6.4.1
+  resolution: "react-native-pager-view@npm:6.4.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10/5f9cbce2d49d607fb9f241a37fee393024e13c77c8f1bea9a11c8de7e737dcdabe2590c95f282868ac119cf4d520fc83439a537d034563254ab34527351d80ae
   languageName: node
   linkType: hard
 
@@ -16386,9 +16385,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:3.15.0":
-  version: 3.15.0
-  resolution: "react-native-reanimated@npm:3.15.0"
+"react-native-reanimated@npm:3.15.1":
+  version: 3.15.1
+  resolution: "react-native-reanimated@npm:3.15.1"
   dependencies:
     "@babel/plugin-transform-arrow-functions": "npm:^7.0.0-0"
     "@babel/plugin-transform-class-properties": "npm:^7.0.0-0"
@@ -16405,7 +16404,7 @@ __metadata:
     "@babel/core": ^7.0.0-0
     react: "*"
     react-native: "*"
-  checksum: 10/f40a19983d859109e3dc5809999cc2f06a5e5f985a7bb08a672d6f218fccc240f86835d28a6e521fe09d8e40bac36799e9e1efff8a8ba272e2874fefe62340f0
+  checksum: 10/8310e0cfa63bfd16eda19437599388ed92fc8c3031be62270894290e63f4b353474e0b94cef67c676d26cea82353e6c4a6e03c4bf11e3532dc26e8b5881ec5fc
   languageName: node
   linkType: hard
 
@@ -16489,18 +16488,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10/5820ef5a38eaaac12ab48bb2512085e7847582ba09efbdbced2f59dc399241ee48211eb394352e64317e67aa72b05fa304e44c62633d39c12043bb327e78c45d
-  languageName: node
-  linkType: hard
-
-"react-native-zoom-toolkit@npm:^2.1.4":
-  version: 2.1.4
-  resolution: "react-native-zoom-toolkit@npm:2.1.4"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-    react-native-gesture-handler: ">= 2.x.x"
-    react-native-reanimated: ">= 2.x.x"
-  checksum: 10/c664125d5ee95cb4a146e0880b28d536907cc89143b23b3ca2ae80ace3aba740fe693b028da889240929c04c92743133ac31bf8d87b070ebdf9dd5a895c52369
   languageName: node
   linkType: hard
 
