@@ -29,6 +29,7 @@ export type SettingsState = {
     zoomStartPosition: ZoomStartPosition;
     backgroundColor: BackgroundColor;
     hideStatusBar: boolean;
+    shouldFetchAhead: boolean;
   };
   setReaderState: <T extends keyof SettingsState['reader']>(
     key: T,
@@ -46,6 +47,7 @@ export const useSettingsStore = create(
         zoomStartPosition: ZoomStartPosition.DEFAULT,
         backgroundColor: BackgroundColor.DEFAULT,
         hideStatusBar: true,
+        shouldFetchAhead: true,
       },
       setReaderState: <T extends keyof SettingsState['reader']>(
         key: T,
@@ -54,7 +56,7 @@ export const useSettingsStore = create(
     }),
     createPersistConfig({
       name: 'settings',
-      version: 1,
+      version: 2,
       migrations: {
         0: (oldState: SettingsState) =>
           ({
@@ -64,6 +66,13 @@ export const useSettingsStore = create(
               hideStatusBar: true,
             },
           }) as SettingsState,
+        1: (oldState: SettingsState) => ({
+          ...oldState,
+          reader: {
+            ...oldState.reader,
+            shouldFetchAhead: true,
+          },
+        }),
       } as any,
     }),
   ),
