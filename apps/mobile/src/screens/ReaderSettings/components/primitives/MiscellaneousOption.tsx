@@ -1,6 +1,6 @@
 import Pressable from '@/components/primitives/Pressable';
 import { PressableProps } from '@/components/primitives/Pressable/Pressable';
-import Text from '@/components/primitives/Text';
+import Text, { TextProps } from '@/components/primitives/Text';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
 import { createStyles } from '@/utils/theme';
@@ -9,6 +9,8 @@ import { View, ViewProps } from 'react-native';
 export type MiscellaneousTitleProps = {
   title: string;
   description?: string;
+  isSubtitle?: boolean;
+  alignment?: TextProps['alignment'];
 };
 
 export type MiscellaneousProps = React.PropsWithChildren & PressableProps;
@@ -49,13 +51,19 @@ function MiscellaneousOption(props: MiscellaneousProps) {
 }
 
 MiscellaneousOption.Title = function (props: MiscellaneousTitleProps) {
-  const { title, description } = props;
+  const { title, description, isSubtitle = false, alignment = 'left' } = props;
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
   return (
     <View style={style.title}>
-      <Text variant="h4">{title}</Text>
-      {description && <Text color="textSecondary">{description}</Text>}
+      <Text variant={isSubtitle ? 'body1' : 'h4'} alignment={alignment}>
+        {title}
+      </Text>
+      {description && (
+        <Text color="textSecondary" variant={isSubtitle ? 'body2' : 'body1'}>
+          {description}
+        </Text>
+      )}
     </View>
   );
 };
