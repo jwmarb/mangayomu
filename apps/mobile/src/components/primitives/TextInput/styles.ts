@@ -20,6 +20,14 @@ export const styles = createStyles((theme) => ({
     color: theme.palette.text.primary,
     ...variants.body1,
   },
+  numpadContainer: {
+    paddingHorizontal: theme.style.size.xl,
+    height: theme.style.size.xl * 3,
+    borderRadius: theme.style.borderRadius.m,
+    backgroundColor: theme.palette.action.textInput,
+    color: theme.palette.text.primary,
+    ...variants.body1,
+  },
   containerNoIcon: {
     paddingRight: theme.style.size.xxl * 2.5,
     paddingLeft: theme.style.size.xxl,
