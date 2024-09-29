@@ -40,6 +40,8 @@ export type Data =
 
 export type Query = { pages: ResolvedImageAsset[]; chapter: MangaChapter };
 
+export type Indices = React.MutableRefObject<Record<string, [number, number]>>;
+
 export default function Reader(props: RootStackProps<'Reader'>) {
   const {
     route: {
@@ -75,12 +77,14 @@ export default function Reader(props: RootStackProps<'Reader'>) {
     tmangameta,
     meta,
   });
+
   const { viewabilityConfigCallbackPairs, currentPage } =
     useViewabilityConfigCallbackPairs({
       dataLength,
       fetchNextPage,
       fetchPreviousPage,
       setCurrentChapter,
+      indices,
     });
   const [contentContainerStyle, backgroundColor] = useBackgroundColor(manga);
 
