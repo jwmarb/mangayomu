@@ -54,7 +54,8 @@ export default function useMangaMeta(
   const manga = useManga(unparsedManga, source);
   const query = useQuery({
     queryKey: [manga.link],
-    queryFn: ({ signal }) => getMangaMeta({ database, source, manga, signal }),
+    queryFn: ({ signal }: { signal: AbortSignal }) =>
+      getMangaMeta({ database, source, manga, signal }),
   });
 
   return query;
