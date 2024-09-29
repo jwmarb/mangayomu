@@ -1,6 +1,6 @@
 import orientation from 'react-native-orientation-locker';
 import useReaderSetting from '@/hooks/useReaderSetting';
-import { ReadingDirection, ReadingOrientation } from '@/models/schema';
+import { ReadingOrientation } from '@/models/schema';
 import React from 'react';
 import { Manga } from '@mangayomu/mangascraper';
 
@@ -21,5 +21,8 @@ export default function useDeviceOrientation(manga: Manga) {
         orientation.lockToPortrait();
         break;
     }
+    return () => {
+      orientation.unlockAllOrientations();
+    };
   }, [readingOrientation]);
 }
