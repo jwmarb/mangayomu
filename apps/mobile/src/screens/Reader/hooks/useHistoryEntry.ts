@@ -6,6 +6,12 @@ import { Q } from '@nozbe/watermelondb';
 import { useDatabase } from '@nozbe/watermelondb/react';
 import React from 'react';
 
+function generateTomorrowDate() {
+  const r = new Date();
+  r.setDate(r.getDate() + 1);
+  return r.setHours(0, 0, 0, 0);
+}
+
 export default function useHistoryEntry(currentChapter: MangaChapter) {
   const database = useDatabase();
   React.useEffect(() => {
@@ -14,18 +20,7 @@ export default function useHistoryEntry(currentChapter: MangaChapter) {
       const localMangas = database.get<LocalManga>(Table.LOCAL_MANGAS);
       const results = await historyEntries.query(
         Q.where('local_chapter_link', currentChapter.link),
-        Q.and(
-          Q.where(
-            'updated_at',
-            Q.lt(
-              (() => {
-                const r = new Date();
-                r.setDate(r.getDate() + 1);
-                return r.setHours(0, 0, 0, 0);
-              })(),
-            ),
-          ),
-        ),
+        Q.and(Q.where('updated_at', Q.lt(generateTomorrowDate()))),
       );
 
       if (results.length === 0) {

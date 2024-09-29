@@ -32,6 +32,7 @@ import useHistoryEntry from '@/screens/Reader/hooks/useHistoryEntry';
 import useChapterData from '@/screens/Reader/hooks/useChapterData';
 import { ResolvedImageAsset } from '@/utils/image';
 import Display from '@/screens/Reader/components/ui/Display';
+import useDeviceOrientation from '@/screens/Reader/hooks/useDeviceOrientation';
 
 export type Data =
   | PageProps
@@ -50,6 +51,7 @@ export default function Reader(props: RootStackProps<'Reader'>) {
   } = props;
   const manga = useManga(unparsedManga, sourceStr);
   const contrast = useContrast();
+  useDeviceOrientation(manga);
   const style = useStyles(styles, contrast);
   const { state: readingDirection } = useReaderSetting(
     'readingDirection',
