@@ -35,6 +35,7 @@ function TextInput(
     iconButton = false,
     closeButtonProps,
     style: styleProp,
+    keyboardType,
     ...rest
   } = props;
   const [hasInput, setHasInput] = React.useState<boolean>(false);
@@ -68,6 +69,21 @@ function TextInput(
     inputRef.current = r;
     if (ref && 'current' in ref) ref.current = r;
   }
+
+  if (keyboardType === 'number-pad') {
+    return (
+      <View style={style.view}>
+        <NativeTextInput
+          style={[style.numpadContainer, styleProp]}
+          cursorColor={cursorColor}
+          onChangeText={handleOnChangeText}
+          keyboardType={keyboardType}
+          {...rest}
+        />
+      </View>
+    );
+  }
+
   return (
     <View style={style.view}>
       <NativeTextInput
@@ -75,6 +91,7 @@ function TextInput(
         style={textInputStyle}
         cursorColor={cursorColor}
         onChangeText={handleOnChangeText}
+        keyboardType={keyboardType}
         {...rest}
       />
       {icon != null &&

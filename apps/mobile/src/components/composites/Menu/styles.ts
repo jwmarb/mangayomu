@@ -8,7 +8,6 @@ export const styles = createStyles((theme) => ({
     backgroundColor: theme.palette.background.menu,
     marginVertical: theme.style.size.m,
     maxHeight: 500,
-    ...theme.helpers.elevation(4),
   },
   optionsContainer: {
     borderRadius: theme.style.borderRadius.m,

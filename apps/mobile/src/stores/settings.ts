@@ -15,6 +15,12 @@ export enum BackgroundColor {
   DEFAULT = BackgroundColor.BLACK,
 }
 
+export enum FetchAheadBehavior {
+  IMMEDIATELY = 'Immediately',
+  FROM_START = 'From start',
+  FROM_END = 'From end',
+}
+
 export const BackgroundColorMap = {
   [BackgroundColor.BLACK]: 'black',
   [BackgroundColor.WHITE]: 'white',
@@ -30,6 +36,8 @@ export type SettingsState = {
     backgroundColor: BackgroundColor;
     hideStatusBar: boolean;
     shouldFetchAhead: boolean;
+    fetchAheadBehavior: FetchAheadBehavior;
+    fetchAheadPageOffset: number;
   };
   setReaderState: <T extends keyof SettingsState['reader']>(
     key: T,
@@ -48,6 +56,8 @@ export const useSettingsStore = create(
         backgroundColor: BackgroundColor.DEFAULT,
         hideStatusBar: true,
         shouldFetchAhead: true,
+        fetchAheadBehavior: FetchAheadBehavior.FROM_END,
+        fetchAheadPageOffset: 3,
       },
       setReaderState: <T extends keyof SettingsState['reader']>(
         key: T,
@@ -71,6 +81,14 @@ export const useSettingsStore = create(
           reader: {
             ...oldState.reader,
             shouldFetchAhead: true,
+          },
+        }),
+        2: (oldState: SettingsState) => ({
+          ...oldState,
+          reader: {
+            ...oldState.reader,
+            fetchAheadBehavior: FetchAheadBehavior.FROM_END,
+            fetchAheadPageOffset: 3,
           },
         }),
       } as any,

@@ -32,6 +32,7 @@ import useHistoryEntry from '@/screens/Reader/hooks/useHistoryEntry';
 import useChapterData from '@/screens/Reader/hooks/useChapterData';
 import { ResolvedImageAsset } from '@/utils/image';
 import Display from '@/screens/Reader/components/ui/Display';
+import useDeviceOrientation from '@/screens/Reader/hooks/useDeviceOrientation';
 
 export type Data =
   | PageProps
@@ -39,6 +40,8 @@ export type Data =
   | { type: 'NO_MORE_CHAPTERS' };
 
 export type Query = { pages: ResolvedImageAsset[]; chapter: MangaChapter };
+
+export type Indices = React.MutableRefObject<Record<string, [number, number]>>;
 
 export default function Reader(props: RootStackProps<'Reader'>) {
   const {
@@ -48,6 +51,7 @@ export default function Reader(props: RootStackProps<'Reader'>) {
   } = props;
   const manga = useManga(unparsedManga, sourceStr);
   const contrast = useContrast();
+  useDeviceOrientation(manga);
   const style = useStyles(styles, contrast);
   const { state: readingDirection } = useReaderSetting(
     'readingDirection',
@@ -75,12 +79,14 @@ export default function Reader(props: RootStackProps<'Reader'>) {
     tmangameta,
     meta,
   });
+
   const { viewabilityConfigCallbackPairs, currentPage } =
     useViewabilityConfigCallbackPairs({
       dataLength,
       fetchNextPage,
       fetchPreviousPage,
       setCurrentChapter,
+      indices,
     });
   const [contentContainerStyle, backgroundColor] = useBackgroundColor(manga);
 
