@@ -16,8 +16,9 @@ import {
   ZoomStartPosition,
 } from '@/models/schema';
 import { Chapter } from '@/models/Chapter';
+import { ReaderSettingsState } from '@/stores/settings';
 
-export class Manga extends Model {
+export class Manga extends Model implements ReaderSettingsState {
   static table = Table.MANGAS;
   static associations: Associations = {
     [Table.CHAPTERS]: { type: 'belongs_to', key: CURRENTLY_READING_CHAPTER_ID },

@@ -27,18 +27,21 @@ export const BackgroundColorMap = {
   [BackgroundColor.GRAY]: 'gray',
 };
 
+export type ReaderSettingsState = {
+  readingDirection: ReadingDirection;
+  imageScaling: ImageScaling;
+  readingOrientation: ReadingOrientation;
+  zoomStartPosition: ZoomStartPosition;
+};
+
 export type SettingsState = {
   reader: {
-    readingDirection: ReadingDirection;
-    imageScaling: ImageScaling;
-    readingOrientation: ReadingOrientation;
-    zoomStartPosition: ZoomStartPosition;
     backgroundColor: BackgroundColor;
     hideStatusBar: boolean;
     shouldFetchAhead: boolean;
     fetchAheadBehavior: FetchAheadBehavior;
     fetchAheadPageOffset: number;
-  };
+  } & ReaderSettingsState;
   setReaderState: <T extends keyof SettingsState['reader']>(
     key: T,
     value: SettingsState['reader'][T],
