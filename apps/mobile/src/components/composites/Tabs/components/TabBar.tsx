@@ -19,6 +19,9 @@ export default function TabBar<T extends Route>(props: TabBarProps<T>) {
   const { jumpTo } = props;
   const contrast = useContrast();
   const style = useStyles(styles, contrast);
+  const jumpToFn = (key: string) => {
+    jumpTo(key);
+  };
   const renderTabBarItem: React.ComponentProps<
     typeof DefaultTabBar<T>
   >['renderTabBarItem'] = (tabBarProps) => (
@@ -30,12 +33,9 @@ export default function TabBar<T extends Route>(props: TabBarProps<T>) {
         props.navigationState.routes[props.navigationState.index].key
       }
       routeTitle={tabBarProps.route.title}
-      jumpTo={memoizedJumpTo}
+      jumpTo={jumpToFn}
     />
   );
-  const memoizedJumpTo = React.useCallback((key: string) => {
-    jumpTo(key);
-  }, []);
 
   return (
     <DefaultTabBar
