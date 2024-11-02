@@ -28,13 +28,32 @@ export const downloadSync = new Map<string, Promise<ImageSourcePropType>>();
 
 // stores all mapping of hashes to prevent expensive computations
 const hashMemo = new Map<string, string>();
+
+/**
+ * Generates a unique hash for a given URL.
+ *
+ * This function removes query parameters and non-alphanumeric characters from the URL,
+ * then appends the file extension (if present) before encoding it as a valid URI component.
+ * The result is stored in a memoization map to avoid redundant computations.
+ *
+ * @param url - The URL to hash.
+ * @returns A unique hash string for the given URL.
+ * @pre url.length > 0
+ */
 export function hash(url: string) {
+  // Find the index of the query parameters (if any)
   const parametersIndex = url.indexOf('?');
+
+  // Check if the hashed value is already memoized
   let hashed = hashMemo.get(
     parametersIndex !== -1 ? url : url.substring(0, parametersIndex),
   );
+
+  // If the hash is not in the memoization map, compute it
   if (hashed == null) {
     const fileExtIdx = url.lastIndexOf('.');
+
+    // Extract the file extension from the URL
     const fileExt = url.substring(
       fileExtIdx,
       parametersIndex === -1 ? undefined : parametersIndex,
@@ -43,12 +62,24 @@ export function hash(url: string) {
     hashed = encodeURIComponent(
       url.substring(0, fileExtIdx).replace(/[^a-zA-Z0-9]/g, '') + fileExt,
     );
+
+    // Store the computed hash in the memoization map
     hashMemo.set(url, hashed);
   }
 
   return hashed;
 }
 
+/**
+ * Downloads an image from a given URL and saves it to the specified path.
+ *
+ * @param url - The URL of the image to download.
+ * @param path - The temporary path where the image will be initially saved.
+ * @param fileName - The name of the file to save in the cache directory.
+ * @returns An object containing the URI of the cached image.
+ * @throws {FailedToMoveImageException} If there is an error moving the image from the temporary path to the cache directory.
+ * @throws {FailedToDownloadImageException} If the download request fails or returns a status code other than 200 or 304.
+ */
 export const _download = async (
   url: string,
   path: string,
@@ -68,10 +99,8 @@ export const _download = async (
       const fileCachePath = joinPath(IMAGE_CACHE_DIR, fileName);
       try {
         await blobUtil.fs.cp(response.path(), fileCachePath);
-        // console.log(`Success ${url}...`);
         return { uri: `file://${fileCachePath}` };
       } catch (e) {
-        // console.error(e);
         throw new FailedToMoveImageException(path, fileCachePath, e);
       }
     }
@@ -84,18 +113,31 @@ export const _download = async (
   }
 };
 
+/**
+ * Downloads an image from a given URL and ensures it is available in the cache.
+ *
+ * This function generates a unique hash for the URL, checks if the image is currently
+ * being downloaded or already exists in the cache. If not, it downloads the image,
+ * moves it to the cache directory, and returns the URI of the cached image.
+ *
+ * @param url - The URL of the image to download.
+ * @returns A Promise that resolves to an object containing the URI of the cached image.
+ * @throws {FailedToMoveImageException} If there is an error moving the image from the temporary path to the cache directory.
+ * @throws {FailedToDownloadImageException} If the download request fails or returns a status code other than 200 or 304.
+ */
 export const downloadImage = async (
   url: string,
 ): Promise<ImageSourcePropType> => {
+  // Generate a unique hash for the URL
   const fileName = hash(url);
 
-  // Checks if this is downloading
+  // Check if this image is currently being downloaded
   let downloadingObject = downloadSync.get(fileName);
   if (downloadingObject != null) {
     return downloadingObject;
   }
 
-  // Check if this is in the cache directory
+  // Check if the image already exists in the cache directory
   const imageCachePath = joinPath(IMAGE_CACHE_DIR, fileName);
   const exists = await blobUtil.fs.exists(imageCachePath);
   if (exists) {
@@ -104,13 +146,14 @@ export const downloadImage = async (
     };
   }
 
-  // Otherwise download the file
+  // If the image is not in the cache, download it
   const fileDownloadPath = joinPath(DOWNLOAD_DIR, fileName);
   downloadingObject = _download(url, fileDownloadPath, fileName);
 
-  // Uncomment this code below for testing
+  // Uncomment this code below to run in a testing environment
   // downloadingObject = self._download(url, fileDownloadPath, fileName);
   downloadSync.set(fileName, downloadingObject);
+
   try {
     const result = await downloadingObject;
     downloadSync.delete(fileName);
@@ -124,46 +167,59 @@ export const downloadImage = async (
 };
 
 export async function initialize() {
+  // Check if the download and image cache directories exist
   const [downloadDirExists, imageDirExists] = await Promise.all([
     blobUtil.fs.exists(DOWNLOAD_DIR),
     blobUtil.fs.exists(IMAGE_CACHE_DIR),
   ]);
 
-  // creates directories if missing
+  // Array to hold promises for creating missing directories
   const missingDirs: Promise<void>[] = [];
 
+  // If the download directory does not exist, create it
   if (!downloadDirExists) {
     missingDirs.push(blobUtil.fs.mkdir(DOWNLOAD_DIR));
   } else {
+    // If the download directory exists, clear it and recreate it to ensure a clean state
     await blobUtil.fs.unlink(DOWNLOAD_DIR);
     await blobUtil.fs.mkdir(DOWNLOAD_DIR);
   }
+
+  // If the image cache directory does not exist, create it
   if (!imageDirExists) {
     missingDirs.push(blobUtil.fs.mkdir(IMAGE_CACHE_DIR));
   } else {
-    // load all into a hashmap
+    // Load all images in the cache directory into a list and check for expiration
     const images = await blobUtil.fs.lstat(IMAGE_CACHE_DIR);
     const dateNow = Date.now();
     for (let i = 0, n = images.length; i < n; i++) {
       const { lastModified } = images[i];
       const expiration = lastModified + TTL;
       if (expiration < dateNow) {
-        // the file past expiration
+        // If the file has passed its expiration time, delete it
         blobUtil.fs.unlink(joinPath(images[i].path, images[i].filename));
       }
     }
   }
 
+  // Wait for all missing directories to be created
   await Promise.all(missingDirs);
 }
 
 /**
- * Resolves an image that is locally cached
- * @param url The url of the image
- * @param onImageResolved Callback when the image is resolved
- * @returns Returns a unsubscription callback to clean up the listener
+ * Retrieves the dimensions of an image from a given URL.
+ *
+ * This function first checks if the image is available in the cache. If it is, it retrieves the dimensions and returns them.
+ * If the image is not yet downloaded or is currently being downloaded, it waits for the download to complete before
+ * retrieving the dimensions.
+ *
+ * @param url - The URL of the image to retrieve dimensions for.
+ * @returns A Promise that resolves to an object containing the width, height, and URI of the cached image.
+ * @throws {Error} If the image is not available in the cache and has not been downloaded yet.
  */
-export const getImageDimensions = (url: string) => {
+export const getImageDimensions = (
+  url: string,
+): Promise<ResolvedImageAsset> => {
   return new Promise<ResolvedImageAsset>((resolve) => {
     const fileName = hash(url);
     const imageCachePath = joinPath(IMAGE_CACHE_DIR, fileName);
@@ -174,6 +230,7 @@ export const getImageDimensions = (url: string) => {
         resolve({ width, height, uri: src });
       },
       () => {
+        // Check if the image is currently being downloaded
         const downloadObject = downloadSync.get(fileName);
         if (downloadObject == null) {
           throw new Error(
@@ -181,6 +238,7 @@ export const getImageDimensions = (url: string) => {
           );
         }
 
+        // Log a message indicating that we are waiting for the image to resolve
         // console.log(`Waiting for ${url} to resolve...`);
 
         downloadObject.then(() => {
