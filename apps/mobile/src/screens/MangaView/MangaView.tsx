@@ -61,9 +61,10 @@ export default function MangaView(props: RootStackProps<'MangaView'>) {
           collapsible={collapsible}
         />
       </CodeSplitter>
-      <React.Suspense fallback={null}>
+      {/* DO NOT UNCOMMENT UNTIL `react-native-tab-view` fixes crashing! */}
+      {/* <React.Suspense fallback={null}>
         <FilterMenu ref={bottomSheet} />
-      </React.Suspense>
+      </React.Suspense> */}
     </MangaViewProvider>
   );
 }
