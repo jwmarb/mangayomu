@@ -4,11 +4,7 @@ import { Manga as MManga } from '@mangayomu/mangascraper';
 import { Database } from '@nozbe/watermelondb';
 import useBoolean from '@/hooks/useBoolean';
 import { Manga } from '@/models/Manga';
-import {
-  ReaderSettingsState,
-  SettingsState,
-  useSettingsStore,
-} from '@/stores/settings';
+import { ReaderSettingsState, useSettingsStore } from '@/stores/settings';
 import { globalSetting } from '@/models/schema';
 
 type InitOptions = {
