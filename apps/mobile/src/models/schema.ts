@@ -64,11 +64,9 @@ export const ChapterSortOptionStrings: Record<ChapterSortOption, string> = {
 
 export const sortOptionComparators: Record<number, Comparator<MangaChapter>> = {
   [ChapterSortOption.DATE]: (a, b) => {
-    'worklet';
     return a.date - b.date;
   },
   [ChapterSortOption.NAME]: (a, b) => {
-    'worklet';
     return a.name.localeCompare(b.name);
   },
 };
