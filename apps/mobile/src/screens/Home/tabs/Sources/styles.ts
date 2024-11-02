@@ -8,6 +8,7 @@ export const styles = createStyles(() => ({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   headerLeft: {
     flexGrow: 1,

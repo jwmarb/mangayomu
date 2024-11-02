@@ -4,10 +4,12 @@ export const styles = createStyles((theme) => ({
   headerRightStyle: {
     justifyContent: 'flex-end',
     flexDirection: 'row',
+    alignItems: 'center',
   },
   headerRightStyleWithTextInput: {
     justifyContent: 'flex-end',
     flexDirection: 'row',
+    alignItems: 'center',
     flexShrink: 1,
     flexGrow: 0,
   },

@@ -24,10 +24,12 @@ export const styles = createStyles((theme) => ({
   item: {
     flexGrow: 1,
     justifyContent: 'center',
+    paddingTop: theme.style.size.xxl, // TEMP FIX for SafeAreaView not working
   },
   itemShrink: {
     flexShrink: 1,
     justifyContent: 'center',
+    paddingTop: theme.style.size.xxl, // TEMP FIX for SafeAreaView not working
   },
   headerLeft: {
     gap: theme.style.size.s,
