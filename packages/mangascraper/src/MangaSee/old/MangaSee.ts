@@ -26,7 +26,6 @@ import {
   AscendingStringComparator,
 } from '@mangayomu/algorithms';
 import { sortChapters } from '../../scraper/scraper.helpers';
-import { WorkletFn, useWorklets } from '../../utils/worklets';
 
 export const mapLatestHottestManga = (
   x: (HotUpdateJSON | LatestJSON)[],
@@ -45,18 +44,11 @@ export const mapLatestHottestManga = (
     });
   }
   return JSON.stringify(p);
-  // x.map((x) => ({
-  //   link: `https://${super.getLink()}/manga/${x.IndexName}`,
-  //   title: x.SeriesName,
-  //   imageCover: this.getImageCover(html, x.IndexName),
-  //   source: this.name,
-  // }))
 };
 
 class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
   private memoizedDir: Directory[] | null = null;
   private imageURLBase: string | null = null;
-  private workletFn: WorkletFn<typeof mapLatestHottestManga> | null = null;
   private mapDirectory(x: Directory): MangaSeeManga {
     return {
       title: x.s,
@@ -93,27 +85,6 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     const html = $('body').html();
     const { variable } = processScript(html);
     const LatestJSON = await variable<LatestJSON[]>('vm.LatestJSON');
-
-    const Worklets = await useWorklets();
-    if (this.imageURLBase == null) {
-      if (html == null) throw Error('HTML cannot be null to get image cover');
-      const linkURL = html.match(/https:\/\/.*\/{{Result.i}}.jpg/g);
-      if (linkURL == null) throw Error('Image URL base is null');
-      this.imageURLBase = linkURL[0];
-    }
-    if (Worklets != null) {
-      if (this.workletFn == null)
-        this.workletFn = Worklets.defaultContext.createRunAsync(
-          mapLatestHottestManga,
-        );
-      const v = await this.workletFn(
-        LatestJSON,
-        this.getLink(),
-        this.imageURLBase,
-        this.name,
-      );
-      return JSON.parse(v);
-    }
     return Promise.resolve<Manga[]>(
       LatestJSON.map((x) => ({
         link: `https://${super.getLink()}/manga/${x.IndexName}`,
@@ -129,26 +100,26 @@ class MangaSee extends MangaHostWithFilters<MangaSeeFilter> {
     const html = $('body').html();
     const { variable } = processScript(html);
     const HotUpdateJSON = await variable<HotUpdateJSON[]>('vm.HotUpdateJSON');
-    const Worklets = await useWorklets();
+    // const Worklets = await useWorklets();
     if (this.imageURLBase == null) {
       if (html == null) throw Error('HTML cannot be null to get image cover');
       const linkURL = html.match(/https:\/\/.*\/{{Result.i}}.jpg/g);
       if (linkURL == null) throw Error('Image URL base is null');
       this.imageURLBase = linkURL[0];
     }
-    if (Worklets != null) {
-      if (this.workletFn == null)
-        this.workletFn = Worklets.defaultContext.createRunAsync(
-          mapLatestHottestManga,
-        );
-      const v = await this.workletFn(
-        HotUpdateJSON,
-        this.getLink(),
-        this.imageURLBase,
-        this.name,
-      );
-      return JSON.parse(v);
-    }
+    // if (Worklets != null) {
+    //   if (this.workletFn == null)
+    //     this.workletFn = Worklets.defaultContext.createRunAsync(
+    //       mapLatestHottestManga,
+    //     );
+    //   const v = await this.workletFn(
+    //     HotUpdateJSON,
+    //     this.getLink(),
+    //     this.imageURLBase,
+    //     this.name,
+    //   );
+    //   return JSON.parse(v);
+    // }
     return Promise.resolve<Manga[]>(
       HotUpdateJSON.map((x) => ({
         link: `https://${super.getLink()}/manga/${x.IndexName}`,
