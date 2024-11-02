@@ -36,7 +36,7 @@ function BottomSheetComponent(
       bottomSheetRef.current?.close();
     },
     expand() {
-      bottomSheetRef.current?.snapToIndex(1);
+      bottomSheetRef.current?.snapToIndex(0);
     },
   }));
 
