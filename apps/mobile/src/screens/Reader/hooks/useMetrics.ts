@@ -1,32 +1,21 @@
 import {
   useCurrentChapterContext,
   useCurrentPage,
-  usePageBoundaries,
 } from '@/screens/Reader/context';
-import { PageBoundaries } from '@/screens/Reader/helpers/determinePageBoundaries';
-
-export function getPageCount(
-  chapterLink: string,
-  boundaries: React.MutableRefObject<PageBoundaries>,
-) {
-  const [startPageNumber, endPageNumber] = boundaries.current[chapterLink];
-
-  return endPageNumber - startPageNumber + 1;
-}
+import ExtraReaderInfo from '@/screens/Reader/helpers/ExtraReaderInfo';
 
 export default function useMetrics() {
-  const boundaries = usePageBoundaries();
   const currentPage = useCurrentPage();
   const currentChapter = useCurrentChapterContext();
 
   if (
     currentChapter == null ||
-    currentChapter.link in boundaries.current === false
+    !ExtraReaderInfo.containsChapter(currentChapter)
   ) {
     return null;
   }
 
-  const totalPageCount = getPageCount(currentChapter.link, boundaries);
+  const totalPageCount = ExtraReaderInfo.getNumOfPages(currentChapter);
 
   return {
     currentPageNumber: currentPage?.page ?? 1,

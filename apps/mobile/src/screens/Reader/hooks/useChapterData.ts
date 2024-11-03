@@ -2,7 +2,7 @@ import { Chapter } from '@/models/Chapter';
 import { Manga } from '@/models/Manga';
 import { PageProps } from '@/screens/Reader/components/ui/Page';
 import { PageBoundaries } from '@/screens/Reader/helpers/determinePageBoundaries';
-import { getPageCount } from '@/screens/Reader/hooks/useMetrics';
+import ExtraReaderInfo from '@/screens/Reader/helpers/ExtraReaderInfo';
 import { Manga as MManga, MangaChapter } from '@mangayomu/mangascraper';
 import { useDatabase } from '@nozbe/watermelondb/react';
 import React from 'react';
@@ -11,8 +11,6 @@ export default function useChapterData(
   currentPage: PageProps | null,
   currentChapter: MangaChapter,
   manga: MManga,
-  boundaries: React.MutableRefObject<PageBoundaries>,
-  initialPageParam: number,
 ) {
   const database = useDatabase();
 
@@ -24,11 +22,12 @@ export default function useChapterData(
         const foundChapter = await Chapter.toChapter(currentChapter, database);
         // formula: initialPage = (currentPage - 1) + initialPageParam
         setInitialPage(
-          foundChapter.currentPage + (initialPageParam === 0 ? -1 : 0),
+          foundChapter.currentPage +
+            (ExtraReaderInfo.getInitialPageParam() === 0 ? -1 : 0),
         );
       } catch (e) {
         // will fallback here because `Chapter` doesnt exist
-        setInitialPage(initialPageParam === 0 ? 0 : 1);
+        setInitialPage(ExtraReaderInfo.getInitialPageParam() === 0 ? 0 : 1);
       }
     }
     init();
@@ -38,7 +37,7 @@ export default function useChapterData(
     async function init() {
       // Note: `currentPage` can be null when the user has not loaded the chapter yet
       if (currentPage != null) {
-        const totalPageCount = getPageCount(currentChapter.link, boundaries);
+        const totalPageCount = ExtraReaderInfo.getNumOfPages(currentChapter);
         const foundChapter = await Chapter.toChapter(currentChapter, database, {
           currentPage: currentPage.page,
           pagesCount: totalPageCount,

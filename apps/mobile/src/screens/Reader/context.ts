@@ -21,11 +21,6 @@ export const { Provider: ReaderMangaProvider, useContext: useReaderManga } =
   createContext<Manga>();
 
 export const {
-  useContext: usePageBoundaries,
-  Provider: PageBoundariesProvider,
-} = createContext<React.MutableRefObject<PageBoundaries>>();
-
-export const {
   useContext: useReaderFlatListRef,
   Provider: ReaderFlatListRefProvider,
 } = createContext<React.RefObject<FlatList>>();

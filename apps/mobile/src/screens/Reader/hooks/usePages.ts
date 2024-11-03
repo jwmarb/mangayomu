@@ -9,41 +9,19 @@ import React from 'react';
 import useMangaSource from '@/hooks/useMangaSource';
 import useMangaMeta from '@/screens/MangaView/hooks/useMangaMeta';
 import { Data, Query } from '@/screens/Reader/Reader';
-import determinePageBoundaries from '@/screens/Reader/helpers/determinePageBoundaries';
 import { downloadImage, getImageDimensions } from '@/utils/image';
+import ExtraReaderInfo from '@/screens/Reader/helpers/ExtraReaderInfo';
 
 export type UsePagesParams = {
   manga: unknown;
-  source?: string;
-  chapter: unknown;
-  currentChapter: MangaChapter | null;
-  tmangameta: unknown;
-  meta?: NonNullable<ReturnType<typeof useMangaMeta>['data']>[1];
 };
 
 export default function usePages(params: UsePagesParams) {
-  const {
-    manga,
-    source: sourceStr,
-    chapter,
-    currentChapter,
-    tmangameta: unparsedMeta,
-    meta,
-  } = params;
-  const source = useMangaSource({ manga, source: sourceStr });
+  const { manga } = params;
+  const source = ExtraReaderInfo.getSource();
+  const meta = ExtraReaderInfo.getMangaMeta();
+  const tmangameta = ExtraReaderInfo.getTMangaMeta();
 
-  const isQueryEnabled = unparsedMeta != null && currentChapter != null;
-
-  const initialPageParam = React.useMemo(
-    () =>
-      meta?.chapters.findIndex(
-        (item) =>
-          source.toChapter(item, unparsedMeta).link ===
-          source.toChapter(chapter, unparsedMeta).link,
-      ) ?? -1,
-    [unparsedMeta, chapter, source, meta?.chapters],
-  );
-  const indices = React.useRef<Record<string, [number, number]>>({});
   const queryClient = useQueryClient();
   const select = React.useCallback(
     (data: InfiniteData<Query, number>) => {
@@ -54,7 +32,7 @@ export default function usePages(params: UsePagesParams) {
         };
       }
 
-      indices.current = determinePageBoundaries(
+      ExtraReaderInfo.determinePageBoundaries(
         data.pages,
         data.pageParams[0] > 0,
       );
@@ -68,7 +46,7 @@ export default function usePages(params: UsePagesParams) {
             next: data.pages[i]?.chapter,
             previous:
               previousMetaChapter != null
-                ? source.toChapter(previousMetaChapter, unparsedMeta)
+                ? source.toChapter(previousMetaChapter, tmangameta)
                 : undefined,
           });
         }
@@ -88,7 +66,7 @@ export default function usePages(params: UsePagesParams) {
             type: 'CHAPTER_DIVIDER',
             next:
               nextMetaChapter != null
-                ? source.toChapter(nextMetaChapter, unparsedMeta)
+                ? source.toChapter(nextMetaChapter, tmangameta)
                 : undefined,
             previous: data.pages[i]?.chapter,
           });
@@ -100,7 +78,7 @@ export default function usePages(params: UsePagesParams) {
         pages,
       };
     },
-    [meta, source, unparsedMeta],
+    [meta, source, tmangameta],
   );
   const query = useInfiniteQuery<
     Query,
@@ -109,11 +87,11 @@ export default function usePages(params: UsePagesParams) {
     QueryKey,
     number
   >({
-    enabled: isQueryEnabled,
-    queryKey: [manga, initialPageParam],
+    enabled: ExtraReaderInfo.shouldFetchChapter(),
+    queryKey: [manga],
     gcTime: 0,
     queryFn: async (args) => {
-      if (meta == null || unparsedMeta == null)
+      if (meta == null || tmangameta == null)
         return {
           pages: [],
           chapter: {
@@ -126,8 +104,10 @@ export default function usePages(params: UsePagesParams) {
         };
       const chapter = source.toChapter(
         meta.chapters[args.pageParam],
-        unparsedMeta,
+        tmangameta,
       );
+      console.log(args.pageParam, chapter.link);
+      ExtraReaderInfo.setPageParam(args.pageParam);
       const pages = await queryClient.fetchQuery({
         queryKey: [meta.chapters[args.pageParam]],
         queryFn: () =>
@@ -148,7 +128,7 @@ export default function usePages(params: UsePagesParams) {
       });
       return { pages, chapter } as Query;
     },
-    initialPageParam,
+    initialPageParam: ExtraReaderInfo.getInitialPageParam(),
     getNextPageParam: (_, __, lastPage) => {
       if (meta == null || meta.chapters.length <= lastPage) {
         return undefined;
@@ -164,10 +144,7 @@ export default function usePages(params: UsePagesParams) {
     select,
   });
 
-  const dataLength = React.useRef<number>(0);
-  React.useEffect(() => {
-    dataLength.current = query.data?.pages.length ?? 0;
-  }, [query.data?.pages]);
+  ExtraReaderInfo.setDataLength(query.data?.pages.length ?? 0);
 
-  return { query, dataLength, initialPageParam, indices };
+  return query;
 }
