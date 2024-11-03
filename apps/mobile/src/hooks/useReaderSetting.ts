@@ -4,7 +4,7 @@ import { Manga as MManga } from '@mangayomu/mangascraper';
 import { Database } from '@nozbe/watermelondb';
 import useBoolean from '@/hooks/useBoolean';
 import { Manga } from '@/models/Manga';
-import { ReaderSettingsState, useSettingsStore } from '@/stores/settings';
+import { SettingsState, useSettingsStore } from '@/stores/settings';
 import { globalSetting } from '@/models/schema';
 
 type InitOptions = {
@@ -46,10 +46,9 @@ export async function initialize({
  * @param {MManga} meta - The metadata of the manga. If not provided, it will use settings from `useSettingsStore`.
  * @returns {any} The value of the specified reader setting.
  */
-export default function useReaderSetting<T extends keyof ReaderSettingsState>(
-  key: T,
-  manga?: MManga,
-) {
+export default function useReaderSetting<
+  T extends keyof SettingsState['reader'],
+>(key: T, manga?: MManga) {
   // Get global state from the settings store
   const globalState = useSettingsStore((store) => store.reader[key]);
 
@@ -58,7 +57,7 @@ export default function useReaderSetting<T extends keyof ReaderSettingsState>(
 
   // Local state for storing the manga's specific setting
   const [localState, setLocalState] = React.useState<
-    ReaderSettingsState[T] | null
+    SettingsState['reader'][T] | null
   >(null);
 
   // Reference to store the Manga object
@@ -70,13 +69,13 @@ export default function useReaderSetting<T extends keyof ReaderSettingsState>(
   // Get the WatermelonDB database instance
   const database = useDatabase();
   const setState = React.useCallback(
-    async (newValue: ReaderSettingsState[T]) => {
+    async (newValue: SettingsState['reader'][T]) => {
       if (manga != null) {
         await database.write(async () => {
           await dbManga.current?.update((self) => {
             // Update the manga's specific setting with the new value
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            self[key] = newValue as any;
+            (self as any)[key] = newValue as any;
           });
         });
       } else {
@@ -103,7 +102,7 @@ export default function useReaderSetting<T extends keyof ReaderSettingsState>(
         manga,
         onSubscription: (model) => {
           toggle(false);
-          setLocalState(model[key]);
+          setLocalState((model as any)[key]);
         },
       });
     } else {
