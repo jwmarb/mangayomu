@@ -57,6 +57,17 @@ export function isManga(obj: unknown): obj is Manga {
   );
 }
 
+/**
+ * Determines whether the given object is an unparsed manga result.
+ *
+ * This function checks if the input object meets the criteria to be considered an unparsed manga result. Specifically,
+ * it verifies that the object is not null, is of type 'object', contains a '__source__' property, and that this property
+ * is a string. If all these conditions are met, the function returns true; otherwise, it returns false.
+ *
+ * @param  obj          The object to be checked for being an unparsed manga result.
+ *
+ * @returns A boolean indicating whether the input object is an unparsed manga result.
+ */
 export function isUnparsedManga(obj: unknown): obj is MangaResult {
   return (
     obj != null &&
@@ -66,6 +77,32 @@ export function isUnparsedManga(obj: unknown): obj is MangaResult {
   );
 }
 
+/**
+ * Joins multiple path segments into a single path string.
+ * This function ensures that there are no redundant slashes between segments and
+ * handles edge cases such as leading and trailing slashes appropriately.
+ *
+ * @pre    At least one path segment must be provided; each path segment is a non-empty string.
+ * @post   The resulting path will have no redundant slashes and will maintain the correct structure.
+ *         If only one path segment is provided and it ends with a slash, that slash will be removed.
+ * @param  {...paths} - A variable number of path segments to join. Each segment should be a string.
+ *                      The first segment can start with or without a leading slash; subsequent segments
+ *                      can have a leading slash which will be handled appropriately.
+ *
+ * @returns A single, correctly formatted path string that combines all provided segments.
+ *
+ * @example
+ * // Returns "folder/subfolder/file"
+ * joinPath("folder", "subfolder", "file");
+ *
+ * @example
+ * // Returns "/folder/subfolder/file"
+ * joinPath("/folder", "subfolder", "file");
+ *
+ * @example
+ * // Returns "folder/subfolder/file/"
+ * joinPath("folder", "subfolder/", "file/");
+ */
 export function joinPath(...paths: string[]): string {
   let joined = paths[0];
   for (let i = 1, n = paths.length; i < n; i++) {
@@ -94,6 +131,22 @@ export function joinPath(...paths: string[]): string {
   return joined;
 }
 
+/**
+ * Determines whether the given object is a valid MangaChapter.
+ *
+ * This function checks if the input object has all the necessary properties
+ * that define a MangaChapter. Specifically, it ensures that the object:
+ * - Is of type 'object'
+ * - Is not null
+ * - Contains a 'name' property that is a string
+ * - Contains a 'date' property (type is not checked)
+ * - Contains a 'link' property that is a string
+ *
+ * @post   The function returns a boolean value indicating whether `x` is a valid MangaChapter.
+ * @param  x - The object to check. This can be any type, but the function will only return true if it matches the structure of a MangaChapter.
+ *
+ * @returns A boolean value: `true` if `x` is a valid MangaChapter, otherwise `false`.
+ */
 export function isChapter(x: unknown): x is MangaChapter {
   return (
     typeof x === 'object' &&
