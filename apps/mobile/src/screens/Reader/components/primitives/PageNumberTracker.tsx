@@ -1,11 +1,6 @@
 import Text from '@/components/primitives/Text';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
-import {
-  useCurrentChapterContext,
-  useCurrentPage,
-  usePageBoundaries,
-} from '@/screens/Reader/context';
 import useMetrics from '@/screens/Reader/hooks/useMetrics';
 import { createStyles } from '@/utils/theme';
 

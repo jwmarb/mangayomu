@@ -2,69 +2,46 @@ import useMangaMeta from '@/screens/MangaView/hooks/useMangaMeta';
 import determinePageBoundaries, {
   PageBoundaries,
 } from '@/screens/Reader/helpers/determinePageBoundaries';
+import MangaMetaHandler from '@/screens/Reader/helpers/MangaMetaHandler';
 import type { Query } from '@/screens/Reader/Reader';
+import { useCurrentChapter } from '@/screens/Reader/stores/chapter';
 import { isChapter } from '@/utils/helpers';
 import { MangaChapter, MangaMeta, MangaSource } from '@mangayomu/mangascraper';
 
 class ExtraReaderInfo {
-  private tmangameta: unknown;
-  private meta: MangaMeta | null;
   private highestPageParam: number;
   private lowestPageParam: number;
   private source: MangaSource | null;
   private indices: PageBoundaries;
   private dataLength: number;
   private initialPageParam: number | null;
-  private currentChapter: MangaChapter | null;
   public constructor() {
     this.indices = {};
     this.highestPageParam = Number.MIN_SAFE_INTEGER;
     this.lowestPageParam = Number.MAX_SAFE_INTEGER;
-    this.tmangameta = null;
-    this.meta = null;
     this.source = null;
     this.dataLength = 0;
     this.initialPageParam = null;
-    this.currentChapter = null;
   }
 
   public cleanup() {
     this.highestPageParam = Number.MIN_SAFE_INTEGER;
     this.lowestPageParam = Number.MAX_SAFE_INTEGER;
     this.indices = {};
-    this.tmangameta = null;
-    this.meta = null;
     this.source = null;
     this.dataLength = 0;
     this.initialPageParam = null;
-    this.currentChapter = null;
-  }
-
-  public setCurrentChapter(chapter: MangaChapter) {
-    this.currentChapter = chapter;
-  }
-
-  public getCurrentChapter() {
-    return this.currentChapter!;
   }
 
   public shouldFetchChapter() {
-    return this.currentChapter != null && this.tmangameta != null;
+    return (
+      useCurrentChapter.getState().currentChapter != null &&
+      MangaMetaHandler.getMangaMeta() != null
+    );
   }
 
   public determinePageBoundaries(pages: Query[], isOnlyChapter?: boolean) {
     this.indices = determinePageBoundaries(pages, isOnlyChapter);
-  }
-
-  /**
-   * @pre setSource has been called before this method
-   * @param meta
-   */
-  public setMangaMeta(meta: ReturnType<typeof useMangaMeta>['data']) {
-    if (meta != null) {
-      this.tmangameta = meta[0];
-      this.meta = meta[1];
-    }
   }
 
   /**
@@ -75,10 +52,12 @@ class ExtraReaderInfo {
   public setInitialPageParam(chapter: unknown) {
     if (this.initialPageParam == null) {
       this.initialPageParam =
-        this.meta!.chapters.findIndex(
+        MangaMetaHandler.getMangaMeta()!.chapters.findIndex(
           (item) =>
-            this.source!.toChapter(item, this.tmangameta).link ===
-            this.source!.toChapter(chapter, this.tmangameta).link,
+            this.source!.toChapter(item, MangaMetaHandler.getTMangaMeta())
+              .link ===
+            this.source!.toChapter(chapter, MangaMetaHandler.getTMangaMeta())
+              .link,
         ) ?? -1;
     }
   }
@@ -142,23 +121,16 @@ class ExtraReaderInfo {
    * @returns Returns a boolean indicating whether or not the current pointer to fetch the next chapter is `chapter`
    */
   public isNextFetched(chapter: MangaChapter | string): boolean {
-    const latestFetchedChapter = this.meta!.chapters[this.highestPageParam];
+    const latestFetchedChapter =
+      MangaMetaHandler.getMangaMeta()!.chapters[this.highestPageParam];
     const parsedLatest = this.source!.toChapter(
       latestFetchedChapter,
-      this.tmangameta,
+      MangaMetaHandler.getTMangaMeta(),
     );
     if (isChapter(chapter)) {
       return parsedLatest.link === chapter.link;
     }
     return parsedLatest.link === chapter;
-  }
-
-  public getTMangaMeta() {
-    return this.tmangameta;
-  }
-
-  public getMangaMeta() {
-    return this.meta;
   }
 }
 

@@ -1,12 +1,12 @@
-import {
-  useCurrentChapterContext,
-  useCurrentPage,
-} from '@/screens/Reader/context';
+import { useCurrentPage } from '@/screens/Reader/context';
 import ExtraReaderInfo from '@/screens/Reader/helpers/ExtraReaderInfo';
+import { useCurrentChapter } from '@/screens/Reader/stores/chapter';
 
 export default function useMetrics() {
   const currentPage = useCurrentPage();
-  const currentChapter = useCurrentChapterContext();
+  const currentChapter = useCurrentChapter(
+    (selector) => selector.currentChapter,
+  );
 
   if (
     currentChapter == null ||

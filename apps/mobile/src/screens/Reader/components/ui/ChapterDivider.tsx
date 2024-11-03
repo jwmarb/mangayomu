@@ -7,7 +7,6 @@ import { createStyles } from '@/utils/theme';
 import Icon from '@/components/primitives/Icon';
 import Progress from '@/components/primitives/Progress';
 import {
-  useCurrentChapterContext,
   useIsFetchingChapter,
   useReaderBackgroundColor,
   useReaderManga,
@@ -17,6 +16,7 @@ import useTheme from '@/hooks/useTheme';
 import Contrast from '@/components/primitives/Contrast';
 import { BackgroundColor } from '@/stores/settings';
 import { ReadingDirection } from '@/models/schema';
+import { useCurrentChapter } from '@/screens/Reader/stores/chapter';
 
 const { width, height } = Dimensions.get('window');
 
@@ -45,7 +45,9 @@ export type ChapterDividerProps = {
 
 export default React.memo(function ChapterDivider(props: ChapterDividerProps) {
   const { previous, next } = props;
-  const currentChapter = useCurrentChapterContext();
+  const currentChapter = useCurrentChapter(
+    (selector) => selector.currentChapter,
+  );
   const isFetching = useIsFetchingChapter();
   const style = useStyles(styles);
   const theme = useTheme();

@@ -3,23 +3,26 @@ import { Manga } from '@/models/Manga';
 import { PageProps } from '@/screens/Reader/components/ui/Page';
 import { PageBoundaries } from '@/screens/Reader/helpers/determinePageBoundaries';
 import ExtraReaderInfo from '@/screens/Reader/helpers/ExtraReaderInfo';
+import { useCurrentChapter } from '@/screens/Reader/stores/chapter';
 import { Manga as MManga, MangaChapter } from '@mangayomu/mangascraper';
 import { useDatabase } from '@nozbe/watermelondb/react';
 import React from 'react';
 
 export default function useChapterData(
   currentPage: PageProps | null,
-  currentChapter: MangaChapter,
   manga: MManga,
 ) {
   const database = useDatabase();
+  const currentChapter = useCurrentChapter(
+    (selector) => selector.currentChapter,
+  );
 
   const [initialPage, setInitialPage] = React.useState<number | null>(null);
 
   React.useEffect(() => {
     async function init() {
       try {
-        const foundChapter = await Chapter.toChapter(currentChapter, database);
+        const foundChapter = await Chapter.toChapter(currentChapter!, database);
         // formula: initialPage = (currentPage - 1) + initialPageParam
         setInitialPage(
           foundChapter.currentPage +
@@ -31,12 +34,12 @@ export default function useChapterData(
       }
     }
     init();
-  }, []);
+  }, [currentChapter != null]);
 
   React.useEffect(() => {
     async function init() {
       // Note: `currentPage` can be null when the user has not loaded the chapter yet
-      if (currentPage != null) {
+      if (currentPage != null && currentChapter != null) {
         const totalPageCount = ExtraReaderInfo.getNumOfPages(currentChapter);
         const foundChapter = await Chapter.toChapter(currentChapter, database, {
           currentPage: currentPage.page,
@@ -58,7 +61,7 @@ export default function useChapterData(
       }
     }
     init();
-  }, [currentPage?.page, currentChapter.link]);
+  }, [currentPage?.page, currentChapter?.link]);
 
   return { initialScrollIndex: initialPage };
 }

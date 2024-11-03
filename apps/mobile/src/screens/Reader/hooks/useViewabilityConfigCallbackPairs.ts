@@ -5,9 +5,9 @@ import { Data } from '@/screens/Reader/Reader';
 import { PageProps } from '@/screens/Reader/components/ui/Page';
 import { FetchAheadBehavior, useSettingsStore } from '@/stores/settings';
 import ExtraReaderInfo from '@/screens/Reader/helpers/ExtraReaderInfo';
+import { useCurrentChapter } from '@/screens/Reader/stores/chapter';
 
 type UseViewabilityConfigCallbackPairsParams = {
-  setCurrentChapter: React.Dispatch<React.SetStateAction<MangaChapter>>;
   fetchPreviousPage: () => void;
   fetchNextPage: () => void;
 };
@@ -15,7 +15,10 @@ type UseViewabilityConfigCallbackPairsParams = {
 export default function useViewabilityConfigCallbackPairs(
   params: UseViewabilityConfigCallbackPairsParams,
 ) {
-  const { setCurrentChapter, fetchNextPage, fetchPreviousPage } = params;
+  const { fetchNextPage, fetchPreviousPage } = params;
+  const setCurrentChapter = useCurrentChapter(
+    (selector) => selector.setCurrentChapter,
+  );
   const [currentPage, setCurrentPage] = React.useState<PageProps | null>(null);
 
   const handleOnFetchAhead = (page: PageProps, index: number | null) => {

@@ -6,10 +6,8 @@ import useBoolean from '@/hooks/useBoolean';
 import useContrast from '@/hooks/useContrast';
 import useStyles from '@/hooks/useStyles';
 import useTheme from '@/hooks/useTheme';
-import {
-  useCurrentChapterContext,
-  useReaderManga,
-} from '@/screens/Reader/context';
+import { useReaderManga } from '@/screens/Reader/context';
+import { useCurrentChapter } from '@/screens/Reader/stores/chapter';
 import { styles } from '@/screens/Reader/styles';
 import { createStyles } from '@/utils/theme';
 import { useNavigation } from '@react-navigation/native';
@@ -71,7 +69,7 @@ function TopOverlay(_: any, ref: React.ForwardedRef<TopOverlayMethods>) {
   const topOverlayStyle = useStyles(topOverlayStyles, contrast);
   const { top } = useSafeAreaInsets();
   const manga = useReaderManga();
-  const chapter = useCurrentChapterContext();
+  const chapter = useCurrentChapter((selector) => selector.currentChapter);
   const navigation = useNavigation();
   const viewStyle = [
     style.overlay,

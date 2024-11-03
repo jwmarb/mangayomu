@@ -8,9 +8,7 @@ import useStyles from '@/hooks/useStyles';
 import { styles } from '@/screens/Reader/styles';
 import useContrast from '@/hooks/useContrast';
 import type { ChapterDividerProps } from '@/screens/Reader/components/ui/ChapterDivider';
-import useCurrentChapter from '@/screens/Reader/hooks/useCurrentChapter';
 import {
-  CurrentChapterProvider,
   CurrentPageNumber,
   IsFetchingChapterProvider,
   ReaderBackgroundColor,
@@ -32,6 +30,7 @@ import Display from '@/screens/Reader/components/ui/Display';
 import useDeviceOrientation from '@/screens/Reader/hooks/useDeviceOrientation';
 import ExtraReaderInfo from '@/screens/Reader/helpers/ExtraReaderInfo';
 import useReaderMangaMeta from '@/screens/Reader/hooks/useReaderMangaMeta';
+import { useCurrentChapter } from '@/screens/Reader/stores/chapter';
 
 export type Data =
   | PageProps
@@ -57,9 +56,10 @@ export default function Reader(props: RootStackProps<'Reader'>) {
   );
   const isFetched = useReaderMangaMeta({ manga: unparsedManga, chapter });
 
-  const [currentChapter, setCurrentChapter] = useCurrentChapter({
-    chapter,
-  });
+  useCurrentChapter((selector) => selector.onInitialize)(chapter);
+  const currentChapter = useCurrentChapter(
+    (selector) => selector.currentChapter,
+  );
   const flatListRef = React.useRef<FlatList>(null);
   const { isFetching, isLoading, fetchNextPage, fetchPreviousPage, data } =
     usePages({
@@ -70,17 +70,12 @@ export default function Reader(props: RootStackProps<'Reader'>) {
     useViewabilityConfigCallbackPairs({
       fetchNextPage,
       fetchPreviousPage,
-      setCurrentChapter,
     });
   const [contentContainerStyle, backgroundColor] = useBackgroundColor(manga);
 
-  useHistoryEntry(currentChapter);
+  useHistoryEntry();
 
-  const { initialScrollIndex } = useChapterData(
-    currentPage,
-    currentChapter,
-    manga,
-  );
+  const { initialScrollIndex } = useChapterData(currentPage, manga);
 
   const isReady =
     !isLoading &&
@@ -94,27 +89,25 @@ export default function Reader(props: RootStackProps<'Reader'>) {
         <CurrentPageNumber value={currentPage}>
           <ReaderFlatListRefProvider value={flatListRef}>
             <IsFetchingChapterProvider value={isFetching}>
-              <CurrentChapterProvider value={currentChapter}>
-                <ReaderMangaProvider value={manga}>
-                  <Overlay>
-                    <View style={style.loadingContainer}>
-                      {isReady ? (
-                        <Display
-                          pages={data?.pages}
-                          contentContainerStyle={contentContainerStyle}
-                          manga={manga}
-                          viewabilityConfigCallbackPairs={
-                            viewabilityConfigCallbackPairs
-                          }
-                          initialScrollIndex={initialScrollIndex}
-                        />
-                      ) : (
-                        <Progress size="large" />
-                      )}
-                    </View>
-                  </Overlay>
-                </ReaderMangaProvider>
-              </CurrentChapterProvider>
+              <ReaderMangaProvider value={manga}>
+                <Overlay>
+                  <View style={style.loadingContainer}>
+                    {isReady ? (
+                      <Display
+                        pages={data?.pages}
+                        contentContainerStyle={contentContainerStyle}
+                        manga={manga}
+                        viewabilityConfigCallbackPairs={
+                          viewabilityConfigCallbackPairs
+                        }
+                        initialScrollIndex={initialScrollIndex}
+                      />
+                    ) : (
+                      <Progress size="large" />
+                    )}
+                  </View>
+                </Overlay>
+              </ReaderMangaProvider>
             </IsFetchingChapterProvider>
           </ReaderFlatListRefProvider>
         </CurrentPageNumber>

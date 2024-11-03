@@ -1,4 +1,3 @@
-import { MangaChapter } from '@mangayomu/mangascraper';
 import {
   InfiniteData,
   QueryKey,
@@ -6,11 +5,10 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import React from 'react';
-import useMangaSource from '@/hooks/useMangaSource';
-import useMangaMeta from '@/screens/MangaView/hooks/useMangaMeta';
 import { Data, Query } from '@/screens/Reader/Reader';
 import { downloadImage, getImageDimensions } from '@/utils/image';
 import ExtraReaderInfo from '@/screens/Reader/helpers/ExtraReaderInfo';
+import MangaMetaHandler from '@/screens/Reader/helpers/MangaMetaHandler';
 
 export type UsePagesParams = {
   manga: unknown;
@@ -19,8 +17,8 @@ export type UsePagesParams = {
 export default function usePages(params: UsePagesParams) {
   const { manga } = params;
   const source = ExtraReaderInfo.getSource();
-  const meta = ExtraReaderInfo.getMangaMeta();
-  const tmangameta = ExtraReaderInfo.getTMangaMeta();
+  const meta = MangaMetaHandler.getMangaMeta();
+  const tmangameta = MangaMetaHandler.getTMangaMeta();
 
   const queryClient = useQueryClient();
   const select = React.useCallback(
@@ -80,6 +78,7 @@ export default function usePages(params: UsePagesParams) {
     },
     [meta, source, tmangameta],
   );
+
   const query = useInfiniteQuery<
     Query,
     Error,
