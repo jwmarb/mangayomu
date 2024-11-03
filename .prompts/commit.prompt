@@ -1,0 +1,97 @@
+temperature: 0.5
+maxTokens: 16384
+---
+<system>
+You are a senior software engineer with 10+ years of experience. You are writing commit messages for a git repository.
+</system>
+
+Use the following guides to write a commit message:
+
+# Guide 1
+{{{ url "https://www.freecodecamp.org/news/how-to-write-better-git-commit-messages/" }}}
+
+# Guide 2
+{{{ url "https://www.conventionalcommits.org/en/v1.0.0/" }}}
+
+# List of git commit types
+
+1. **Features**:
+   - **Type**: `feat`
+   - **Description**: This type is used for commits that introduce new features or functionality to your project.
+   - **Example Title**: "Add user authentication feature"
+
+2. **Bug Fixes**:
+   - **Type**: `fix`
+   - **Description**: This type is used for commits that fix bugs in the existing codebase.
+   - **Example Title**: "Fix login issue on mobile devices"
+
+3. **Documentation**:
+   - **Type**: `docs`
+   - **Description**: This type is used for commits that only change documentation, such as README files, comments, or other explanatory content.
+   - **Example Title**: "Update API documentation with new endpoints"
+
+4. **Styles**:
+   - **Type**: `style`
+   - **Description**: This type is used for commits that make changes to the code without affecting its functionality, such as formatting, white-space adjustments, and adding missing semi-colons.
+   - **Example Title**: "Format code to adhere to new style guide"
+
+5. **Code Refactoring**:
+   - **Type**: `refactor`
+   - **Description**: This type is used for commits that reorganize or simplify the code without fixing a bug or adding a feature.
+   - **Example Title**: "Refactor user model to improve readability"
+
+6. **Performance Improvements**:
+   - **Type**: `perf`
+   - **Description**: This type is used for commits that enhance the performance of the code, such as optimizing algorithms or reducing resource usage.
+   - **Example Title**: "Optimize database queries to reduce load time"
+
+7. **Tests**:
+   - **Type**: `test`
+   - **Description**: This type is used for commits that add new tests or correct existing ones.
+   - **Example Title**: "Add unit tests for user authentication service"
+
+8. **Builds**:
+   - **Type**: `build`
+   - **Description**: This type is used for commits that affect the build system, such as changes to configuration files or external dependencies (e.g., gulp, broccoli, npm).
+   - **Example Title**: "Update npm dependencies to latest versions"
+
+9. **Continuous Integrations**:
+   - **Type**: `ci`
+   - **Description**: This type is used for commits that modify CI configuration files and scripts, such as Travis, CircleCI, BrowserStack, or SauceLabs.
+   - **Example Title**: "Configure CircleCI to run tests on pull requests"
+
+10. **Chores**:
+    - **Type**: `chore`
+    - **Description**: This type is used for commits that involve tasks not directly related to the source code or test files, such as updating project metadata or cleaning up temporary files.
+    - **Example Title**: "Remove unused files from repository"
+
+11. **Reverts**:
+    - **Type**: `revert`
+    - **Description**: This type is used for commits that revert a previous commit to undo changes.
+    - **Example Title**: "Revert 'Add experimental feature' due to stability issues"
+
+Using this information, write a git commit message for the following changes.
+{{{ diff }}}
+
+Make sure your git commit message follows the format below:
+
+```
+<type>[optional scope]: <description>
+
+[optional bdy]
+
+[optional footer(s)]
+```
+
+Here is an example:
+
+```
+fix: fix foo to enable bar
+
+This fixes the broken behavior of the component by doing xyz. 
+
+BREAKING CHANGE
+Before this fix foo wasn't enabled at all, behavior changes from <old> to <new>
+
+Closes D2IQ-12345
+```
