@@ -105,7 +105,6 @@ export default function usePages(params: UsePagesParams) {
         meta.chapters[args.pageParam],
         tmangameta,
       );
-      console.log(args.pageParam, chapter.link);
       ExtraReaderInfo.setPageParam(args.pageParam);
       const pages = await queryClient.fetchQuery({
         queryKey: [meta.chapters[args.pageParam]],
