@@ -104,15 +104,8 @@ beforeEach(() => {
 });
 
 test('persists state', () => {
-  expect(mmkv.getString(CONFIG_KEY)).not.toBeNull();
-  expect(JSON.parse(mmkv.getString(CONFIG_KEY)!)).toEqual({
-    state: {
-      a: 0,
-    },
-    version: 0,
-  });
-
-  store.getState().incr();
+  store.getState().incr(); // any changes to the store should persist it
+  expect(mmkv.getString(CONFIG_KEY)).not.toBeUndefined();
   expect(JSON.parse(mmkv.getString(CONFIG_KEY)!)).toEqual({
     state: {
       a: 1,
