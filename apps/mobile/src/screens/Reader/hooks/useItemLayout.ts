@@ -68,5 +68,5 @@ export default function useItemLayout(readingDirection: ReadingDirection) {
     [getPageOffset, getPageOffsetFromOrigin],
   );
 
-  return getItemLayout;
+  return { getItemLayout };
 }

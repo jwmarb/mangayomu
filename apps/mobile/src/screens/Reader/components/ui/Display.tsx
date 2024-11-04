@@ -4,11 +4,14 @@ import ChapterDivider from '@/screens/Reader/components/ui/ChapterDivider';
 import NoMoreChapters from '@/screens/Reader/components/ui/NoMoreChapters';
 import Page from '@/screens/Reader/components/ui/Page';
 import { useReaderFlatListRef } from '@/screens/Reader/context';
+import GestureManager from '@/screens/Reader/helpers/GestureManager';
 import useItemLayout from '@/screens/Reader/hooks/useItemLayout';
 import { Data } from '@/screens/Reader/Reader';
 import { Manga } from '@mangayomu/mangascraper';
+import React from 'react';
 import { ListRenderItem, ViewabilityConfigCallbackPairs } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList } from 'react-native';
+import { GestureDetector } from 'react-native-gesture-handler';
 
 export type DisplayProps = {
   manga: Manga;
@@ -53,6 +56,11 @@ const keyExtractor = (i: Data) => {
   }
 };
 
+const WINDOW_SIZE = 5;
+const MAX_TO_RENDER_PER_BATCH = 2;
+const UPDATE_CELLS_BATCHING_PERIOD = 100;
+const SHOWS_HORIZONTAL_SCROLL_INDICATOR = false;
+
 export default function Display(props: DisplayProps) {
   const {
     manga,
@@ -66,7 +74,7 @@ export default function Display(props: DisplayProps) {
     manga,
   );
   const flatListRef = useReaderFlatListRef();
-  const getItemLayout = useItemLayout(readingDirection);
+  const { getItemLayout } = useItemLayout(readingDirection);
 
   /**
    * Determines whether or not the reader should be displayed in horizontal mode
@@ -86,20 +94,26 @@ export default function Display(props: DisplayProps) {
   const pagingEnabled = readingDirection !== ReadingDirection.WEBTOON;
 
   return (
-    <FlatList
-      ref={flatListRef}
-      contentContainerStyle={contentContainerStyle}
-      getItemLayout={getItemLayout}
-      maintainVisibleContentPosition={maintainVisibleContentPosition}
-      keyExtractor={keyExtractor}
-      renderItem={renderItem}
-      data={pages}
-      viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
-      horizontal={horizontal}
-      inverted={inverted}
-      pagingEnabled={pagingEnabled}
-      showsHorizontalScrollIndicator={false}
-      initialScrollIndex={initialScrollIndex}
-    />
+    <GestureDetector gesture={GestureManager.getFlatListGesture()}>
+      <FlatList
+        removeClippedSubviews
+        ref={flatListRef}
+        contentContainerStyle={contentContainerStyle}
+        getItemLayout={getItemLayout}
+        windowSize={WINDOW_SIZE}
+        maxToRenderPerBatch={MAX_TO_RENDER_PER_BATCH}
+        updateCellsBatchingPeriod={UPDATE_CELLS_BATCHING_PERIOD}
+        maintainVisibleContentPosition={maintainVisibleContentPosition}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        data={pages}
+        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
+        horizontal={horizontal}
+        inverted={inverted}
+        pagingEnabled={pagingEnabled}
+        showsHorizontalScrollIndicator={SHOWS_HORIZONTAL_SCROLL_INDICATOR}
+        initialScrollIndex={initialScrollIndex}
+      />
+    </GestureDetector>
   );
 }

@@ -1,5 +1,6 @@
 import useMangaMeta from '@/screens/MangaView/hooks/useMangaMeta';
 import ExtraReaderInfo from '@/screens/Reader/helpers/ExtraReaderInfo';
+import GestureManager from '@/screens/Reader/helpers/GestureManager';
 import MangaMetaHandler from '@/screens/Reader/helpers/MangaMetaHandler';
 import React from 'react';
 
@@ -20,6 +21,7 @@ export default function useReaderMangaMeta(params: UseReaderMangaMetaOptions) {
     return () => {
       ExtraReaderInfo.cleanup();
       MangaMetaHandler.cleanup();
+      GestureManager.cleanup();
     };
   }, []);
   return isFetched;

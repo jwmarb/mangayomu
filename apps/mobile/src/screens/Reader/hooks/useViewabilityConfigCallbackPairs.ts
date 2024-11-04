@@ -6,6 +6,7 @@ import { PageProps } from '@/screens/Reader/components/ui/Page';
 import { FetchAheadBehavior, useSettingsStore } from '@/stores/settings';
 import ExtraReaderInfo from '@/screens/Reader/helpers/ExtraReaderInfo';
 import { useCurrentChapter } from '@/screens/Reader/stores/chapter';
+import GestureManager from '@/screens/Reader/helpers/GestureManager';
 
 type UseViewabilityConfigCallbackPairsParams = {
   fetchPreviousPage: () => void;
@@ -61,6 +62,7 @@ export default function useViewabilityConfigCallbackPairs(
             setCurrentPage(item);
             setCurrentChapter(item.chapter);
             handleOnFetchAhead(item, viewable.index);
+            GestureManager.setCurrentPage(item.source);
             break;
           case 'CHAPTER_DIVIDER':
             if (ExtraReaderInfo.isAtEnd(viewable.index)) {

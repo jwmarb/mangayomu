@@ -31,6 +31,7 @@ import useDeviceOrientation from '@/screens/Reader/hooks/useDeviceOrientation';
 import ExtraReaderInfo from '@/screens/Reader/helpers/ExtraReaderInfo';
 import useReaderMangaMeta from '@/screens/Reader/hooks/useReaderMangaMeta';
 import { useCurrentChapter } from '@/screens/Reader/stores/chapter';
+import GestureManager from '@/screens/Reader/helpers/GestureManager';
 
 export type Data =
   | PageProps
@@ -46,6 +47,7 @@ export default function Reader(props: RootStackProps<'Reader'>) {
     },
   } = props;
   ExtraReaderInfo.setSource(sourceStr);
+  GestureManager.createSharedGestures();
   const manga = useManga(unparsedManga, sourceStr);
   const contrast = useContrast();
   useDeviceOrientation(manga);

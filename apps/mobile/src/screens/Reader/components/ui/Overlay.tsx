@@ -15,6 +15,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-reanimated';
 import NavigationBar from '@/utils/navbar';
 import useImmersiveMode from '@/screens/Reader/hooks/useImmersiveMode';
+import GestureManager from '@/screens/Reader/helpers/GestureManager';
 
 const styles = createStyles((theme) => ({
   wrapper: {
@@ -51,7 +52,23 @@ export default function Overlay(props: OverlayProps) {
     topRef.current?.toggle();
     pageNavRef.current?.toggle();
   }
-  const gesture = React.useMemo(
+
+  const invokeGesture: typeof GestureManager.invoke = (eventType, e) => {
+    GestureManager.invoke(eventType, e);
+  };
+
+  const doubleTapGesture = React.useMemo(
+    () =>
+      Gesture.Tap()
+        .numberOfTaps(2)
+        .maxDelay(150)
+        .onStart((e) => {
+          runOnJS(invokeGesture)('onDoubleTap', e);
+        }),
+    [],
+  );
+
+  const tapGesture = React.useMemo(
     () =>
       Gesture.Tap()
         .onStart(() => {
@@ -60,6 +77,15 @@ export default function Overlay(props: OverlayProps) {
         .cancelsTouchesInView(false)
         .maxDistance(0),
     [],
+  );
+
+  const gesture = React.useMemo(
+    () =>
+      Gesture.Simultaneous(
+        GestureManager.getPinchGesture(),
+        Gesture.Exclusive(doubleTapGesture, tapGesture),
+      ),
+    [doubleTapGesture, tapGesture],
   );
 
   return (
