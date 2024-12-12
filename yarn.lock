@@ -4083,13 +4083,13 @@ __metadata:
     react-native-linear-gradient: "npm:2.8.3"
     react-native-mmkv: "npm:3.1.0"
     react-native-orientation-locker: "npm:^1.7.0"
-    react-native-pager-view: "npm:6.4.1"
+    react-native-pager-view: "npm:6.6.1"
     react-native-popup-menu: "npm:0.16.1"
-    react-native-reanimated: "npm:3.16.1"
+    react-native-reanimated: "npm:3.16.5"
     react-native-render-html: "npm:6.3.4"
     react-native-safe-area-context: "npm:4.14.0"
     react-native-screens: "npm:3.35.0"
-    react-native-tab-view: "npm:4.0.0-rc.13"
+    react-native-tab-view: "npm:4.0.5"
     react-native-vector-icons: "npm:10.2.0"
     react-test-renderer: "npm:18.3.1"
     typescript: "npm:5.5.2"
@@ -17450,13 +17450,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-pager-view@npm:6.4.1":
-  version: 6.4.1
-  resolution: "react-native-pager-view@npm:6.4.1"
+"react-native-pager-view@npm:6.6.1":
+  version: 6.6.1
+  resolution: "react-native-pager-view@npm:6.6.1"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10/5f9cbce2d49d607fb9f241a37fee393024e13c77c8f1bea9a11c8de7e737dcdabe2590c95f282868ac119cf4d520fc83439a537d034563254ab34527351d80ae
+  checksum: 10/f56c3598a0e88fc66bdea806abacb0dd366bbd16a0c371a9a0c4dc21b2e53b020321bb896e1ae0f07c75caea16aaed292ae66c1a7546ade9c6d2a14aee8b9d63
   languageName: node
   linkType: hard
 
@@ -17467,9 +17467,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:3.16.1":
-  version: 3.16.1
-  resolution: "react-native-reanimated@npm:3.16.1"
+"react-native-reanimated@npm:3.16.5":
+  version: 3.16.5
+  resolution: "react-native-reanimated@npm:3.16.5"
   dependencies:
     "@babel/plugin-transform-arrow-functions": "npm:^7.0.0-0"
     "@babel/plugin-transform-class-properties": "npm:^7.0.0-0"
@@ -17486,7 +17486,7 @@ __metadata:
     "@babel/core": ^7.0.0-0
     react: "*"
     react-native: "*"
-  checksum: 10/3e46c32655a5e3d89dd79606179ebd6da96cedf31f15c64a32d4cea2c35ec5724411099aeaa59e5f8220c93fc268ee1b391b3210e7e87e43544e279edd2a2ccc
+  checksum: 10/6e7dec6447a6881ceb138e6a5624b951a4cf92ab85b084ed488da4a0f61b9d42766f2e486aad4d088bb37d3eca5ef58ec7389308926c07a27904b1ec03f10958
   languageName: node
   linkType: hard
 
@@ -17533,16 +17533,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-tab-view@npm:4.0.0-rc.13":
-  version: 4.0.0-rc.13
-  resolution: "react-native-tab-view@npm:4.0.0-rc.13"
+"react-native-tab-view@npm:4.0.5":
+  version: 4.0.5
+  resolution: "react-native-tab-view@npm:4.0.5"
   dependencies:
     use-latest-callback: "npm:^0.2.1"
   peerDependencies:
     react: ">= 18.2.0"
     react-native: "*"
     react-native-pager-view: ">= 6.0.0"
-  checksum: 10/91dea84786002f2654b20eff5f214575d09b80ce6c83d3108a48cc5828fbe6f99ed82f099f5f910eb4e6e4d50a80c28f612505b7008bda8665105c0758c65686
+  checksum: 10/464545c05ff2bc9b5c0ba4f615b206a8aca8c24f76fb7fc553dcae726e971cbae84571d27f5cb7021d21b81786155fbc82b44bbbc32db0c7620ca967c8596b8b
   languageName: node
   linkType: hard
 
