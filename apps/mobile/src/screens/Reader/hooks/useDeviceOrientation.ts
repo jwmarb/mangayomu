@@ -5,8 +5,16 @@ import React from 'react';
 import { Manga } from '@mangayomu/mangascraper';
 
 /**
- * Hook to manage the device orientation based on the reading setting
- * @param manga - The current manga being read
+ * Hook to manage the device orientation based on the reading setting.
+ *
+ * This hook reads the 'readingOrientation' setting for the provided manga and
+ * locks or unlocks the device orientation accordingly. The possible orientations
+ * are FREE, LANDSCAPE, and PORTRAIT. When the component unmounts, it ensures that
+ * all orientations are unlocked.
+ *
+ * @post   The device orientation is set according to the 'readingOrientation' setting.
+ *         On component unmount, all orientations are unlocked.
+ * @param manga - The current manga being read, which includes the reading settings.
  */
 export default function useDeviceOrientation(manga: Manga) {
   const { state: readingOrientation } = useReaderSetting(

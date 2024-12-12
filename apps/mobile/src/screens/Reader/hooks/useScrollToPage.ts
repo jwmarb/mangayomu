@@ -3,6 +3,14 @@ import ExtraReaderInfo from '@/screens/Reader/helpers/ExtraReaderInfo';
 import { useCurrentChapter } from '@/screens/Reader/stores/chapter';
 import React from 'react';
 
+/**
+ * Provides functions to scroll to specific pages within a chapter in a reader application.
+ *
+ * @returns An object containing the following methods:
+ *          - goToPage(page: number): Scrolls to the specified page number within the current chapter.
+ *          - goToFirstPage(): Scrolls to the first page of the current chapter.
+ *          - goToLastPage(): Scrolls to the last page of the current chapter.
+ */
 export default function useScrollToPage() {
   const flatListRef = useReaderFlatListRef();
   const currentChapter = useCurrentChapter(

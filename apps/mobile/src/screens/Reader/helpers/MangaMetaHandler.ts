@@ -1,6 +1,9 @@
 import useMangaMeta from '@/screens/MangaView/hooks/useMangaMeta';
 import { MangaMeta } from '@mangayomu/mangascraper';
 
+/**
+ *  The MangaMetaHandler class is responsible for managing and handling metadata of manga.
+ */
 class MangaMetaHandler {
   private tmangameta: unknown;
   private meta: MangaMeta | null;

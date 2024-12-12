@@ -1,13 +1,26 @@
 import { Chapter } from '@/models/Chapter';
 import { Manga } from '@/models/Manga';
 import { PageProps } from '@/screens/Reader/components/ui/Page';
-import { PageBoundaries } from '@/screens/Reader/helpers/determinePageBoundaries';
 import ExtraReaderInfo from '@/screens/Reader/helpers/ExtraReaderInfo';
 import { useCurrentChapter } from '@/screens/Reader/stores/chapter';
-import { Manga as MManga, MangaChapter } from '@mangayomu/mangascraper';
+import { Manga as MManga } from '@mangayomu/mangascraper';
 import { useDatabase } from '@nozbe/watermelondb/react';
 import React from 'react';
 
+/**
+ *  Manages and retrieves chapter data for the reader screen, initializing the initial page
+ *  based on the current chapter and manga data. It updates the chapter's current page and
+ *  the manga's currently reading chapter in the database.
+ *
+ *  @pre    currentPage is either a PageProps object or null; manga is a valid MManga object.
+ *          currentChapter is available and not null.
+ *  @post   initialPage is set based on the current chapter's page and the initial page parameter.
+ *          The chapter's current page and the manga's currently reading chapter are updated in the database.
+ *  @param currentPage    the current page properties or null if not loaded yet.
+ *  @param manga          the manga object representing the manga being read.
+ *
+ *  @returns  An object containing the initial scroll index (initialPage) for the reader.
+ */
 export default function useChapterData(
   currentPage: PageProps | null,
   manga: MManga,

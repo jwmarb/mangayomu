@@ -24,9 +24,16 @@ export type GestureEvents = {
 };
 
 class GestureManager {
+  // Maps page identifiers to their associated gesture events.
   private pages: Record<string, GestureEvents>;
+
+  // Holds the currently active image asset being displayed or interacted with.
   private currentPage: ResolvedImageAsset | null;
+
+  // Manages gesture interactions for a flat list component.
   private flatListGesture: NativeGesture | null;
+
+  // Handles pinch gestures to enable zooming functionality.
   private pinchGesture: PinchGesture | null;
   public constructor() {
     this.pages = {};
@@ -35,6 +42,20 @@ class GestureManager {
     this.pinchGesture = null;
   }
 
+  /**
+   * Subscribes a page to manage gesture events. If the page is not already subscribed,
+   * it initializes an entry for it in the pages dictionary.
+   *
+   * @pre The provided `page` object contains a valid `uri`.
+   * @post The page is registered in the GestureManager's pages dictionary if not already present.
+   *       The returned object allows subscription and unsubscription of gesture events for the page.
+   *
+   * @param page The ResolvedImageAsset representing the page to subscribe. It must contain a unique `uri`.
+   *
+   * @returns An object containing:
+   *          - on: A method to subscribe an event handler to a specific gesture event type.
+   *          - unsubscribe: A method to remove the page's entry from the GestureManager, effectively unsubscribing all gesture events.
+   */
   public subscribe(page: ResolvedImageAsset) {
     if (page.uri in this.pages === false) {
       this.pages[page.uri] = {} as GestureEvents;
@@ -52,6 +73,12 @@ class GestureManager {
     };
   }
 
+  /**
+   * Cleans up the GestureManager by resetting all related properties to their initial states.
+   *
+   * @pre    The GestureManager instance has been initialized and possibly used for managing gestures.
+   * @post   All gesture-related properties (pages, currentPage, flatListGesture, pinchGesture) are reset.
+   */
   public cleanup() {
     this.pages = {};
     this.currentPage = null;

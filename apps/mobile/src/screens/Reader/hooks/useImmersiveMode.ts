@@ -6,6 +6,15 @@ import NavigationBar from '@/utils/navbar';
 import useBoolean from '@/hooks/useBoolean';
 import useTheme from '@/hooks/useTheme';
 
+/**
+ * Manages the immersive mode for the Reader screen by controlling the visibility
+ * and style of the status bar and navigation bar based on user settings and focus state.
+ *
+ * @post   The status bar and navigation bar visibility and style are adjusted according to the settings
+ *         and focus state of the Reader screen.
+ *
+ * @returns A function to toggle the visibility of the status bar and navigation bar.
+ */
 export default function useImmersiveMode() {
   const hideStatusBar = useSettingsStore(
     (selector) => selector.reader.hideStatusBar,

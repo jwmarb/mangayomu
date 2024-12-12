@@ -1,8 +1,19 @@
 import React from 'react';
-import { Dimensions, useWindowDimensions } from 'react-native';
+import { Dimensions } from 'react-native';
 import { Data } from '@/screens/Reader/Reader';
 import { ReadingDirection } from '@/models/schema';
 
+/**
+ * Hook to calculate the layout of items based on the reading direction.
+ * The layout includes the index, length, and offset of each item.
+ *
+ * @pre    The readingDirection is one of the values from the ReadingDirection enum.
+ * @post   The functions getPageOffset, getPageOffsetFromOrigin, and getItemLayout are initialized.
+ *
+ * @param readingDirection  The direction in which the items are read (LEFT_TO_RIGHT, RIGHT_TO_LEFT, VERTICAL, WEBTOON, GLOBAL).
+ *
+ * @returns An object containing the getItemLayout function which calculates the layout of items.
+ */
 export default function useItemLayout(readingDirection: ReadingDirection) {
   const getPageOffset = React.useCallback(
     (page: Data) => {
