@@ -87,6 +87,7 @@ class GestureManager {
     // Check if there is no current page or if the event type is not registered for the current page.
     if (
       this.currentPage === null ||
+      this.currentPage.uri in this.pages === false ||
       eventType in this.pages[this.currentPage.uri] === false
     )
       return;
