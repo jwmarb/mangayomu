@@ -1,8 +1,5 @@
-import {
-  PressableProps as NativeButtonProps,
-  PressableAndroidRippleConfig,
-  View,
-} from 'react-native';
+import { PressableAndroidRippleConfig, View } from 'react-native';
+import type { PressableProps as NativeButtonProps } from 'react-native-gesture-handler';
 import React from 'react';
 import { styles, variants } from '@/components/primitives/Button/styles';
 import {
@@ -36,26 +33,44 @@ const themedProps = (color: ButtonColors) =>
     } as PressableAndroidRippleConfig,
   }));
 
-const composedVariants = BUTTON_COLORS.reduce((prev1, curr1) => {
-  prev1[curr1] = (['disabled', 'enabled'] as const).reduce((prev2, curr2) => {
-    prev2[curr2] = variants(curr1, curr2);
-    return prev2;
-  }, {} as Record<'disabled' | 'enabled', ReturnType<typeof variants>>);
-  return prev1;
-}, {} as Record<ButtonColors, Record<'disabled' | 'enabled', ReturnType<typeof variants>>>);
+const composedVariants = BUTTON_COLORS.reduce(
+  (prev1, curr1) => {
+    prev1[curr1] = (['disabled', 'enabled'] as const).reduce(
+      (prev2, curr2) => {
+        prev2[curr2] = variants(curr1, curr2);
+        return prev2;
+      },
+      {} as Record<'disabled' | 'enabled', ReturnType<typeof variants>>,
+    );
+    return prev1;
+  },
+  {} as Record<
+    ButtonColors,
+    Record<'disabled' | 'enabled', ReturnType<typeof variants>>
+  >,
+);
 
-const composedRippleColors = BUTTON_COLORS.reduce((prev, curr) => {
-  prev[curr] = themedProps(curr);
-  return prev;
-}, {} as Record<ButtonColors, ReturnType<typeof themedProps>>);
+const composedRippleColors = BUTTON_COLORS.reduce(
+  (prev, curr) => {
+    prev[curr] = themedProps(curr);
+    return prev;
+  },
+  {} as Record<ButtonColors, ReturnType<typeof themedProps>>,
+);
 
-const composedStyles = BUTTON_VARIANTS.reduce((prev1, curr1) => {
-  prev1[curr1] = BUTTON_COLORS.reduce((prev2, curr2) => {
-    prev2[curr2] = styles(curr1, curr2);
-    return prev2;
-  }, {} as Record<ButtonColors, ReturnType<typeof styles>>);
-  return prev1;
-}, {} as Record<ButtonVariants, Record<ButtonColors, ReturnType<typeof styles>>>);
+const composedStyles = BUTTON_VARIANTS.reduce(
+  (prev1, curr1) => {
+    prev1[curr1] = BUTTON_COLORS.reduce(
+      (prev2, curr2) => {
+        prev2[curr2] = styles(curr1, curr2);
+        return prev2;
+      },
+      {} as Record<ButtonColors, ReturnType<typeof styles>>,
+    );
+    return prev1;
+  },
+  {} as Record<ButtonVariants, Record<ButtonColors, ReturnType<typeof styles>>>,
+);
 
 export default function Button(props: ButtonProps) {
   const {
@@ -83,8 +98,8 @@ export default function Button(props: ButtonProps) {
   const textColor = disabled
     ? 'disabled'
     : variantProp === 'contained'
-    ? 'textPrimary'
-    : color;
+      ? 'textPrimary'
+      : color;
 
   return (
     <View style={btnStyles.container}>

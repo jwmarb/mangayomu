@@ -1,8 +1,8 @@
+import { PressableAndroidRippleConfig } from 'react-native';
 import {
   Pressable as NativePressable,
-  PressableAndroidRippleConfig,
   PressableProps as NativePressableProps,
-} from 'react-native';
+} from 'react-native-gesture-handler';
 import { pressableStyles } from '@/components/primitives/Pressable/styles';
 import { createThemedProps } from '@/utils/theme';
 import useThemedProps from '@/hooks/useThemedProps';
