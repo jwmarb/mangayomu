@@ -58,7 +58,7 @@ Screen.FlatList = function <T>(
     <Animated.FlatList
       onScroll={collapsible.onScroll}
       contentContainerStyle={contentContainerStyle}
-      {...rest}
+      {...(rest as React.ComponentProps<typeof Animated.FlatList>)}
     />
   );
 };

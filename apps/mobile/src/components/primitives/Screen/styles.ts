@@ -3,7 +3,7 @@ import { createStyles } from '@/utils/theme';
 
 export const styles = createStyles((theme) => ({
   contentContainerStyle: {
-    paddingBottom: theme.style.screen.paddingVertical,
+    paddingBottom: HEADER_HEIGHT + theme.style.screen.paddingVertical,
     paddingTop: HEADER_HEIGHT + theme.style.screen.paddingVertical,
   },
   contentContainerStyleIgnoreHeading: {
