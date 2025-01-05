@@ -188,6 +188,26 @@ export class LocalManga extends Model {
   }
 
   /**
+   * Converts the properties of the LocalManga object into a standardized Manga object.
+   *
+   * @returns A new Manga object containing:
+   *   - `source`: The source identifier of the manga.
+   *   - `imageCover`: The URL or path to the manga cover image.
+   *   - `language`: The language of the manga.
+   *   - `link`: A link associated with the manga entry.
+   *   - `title`: The title of the manga.
+   */
+  public toManga(): Manga {
+    return {
+      source: this.source,
+      imageCover: this.imageCover,
+      language: this.language,
+      link: this.link,
+      title: this.title,
+    } as Manga;
+  }
+
+  /**
    * Converts and synchronizes manga data to the LocalManga model in the database.
    * This method takes raw manga data and metadata, processes it, and either updates an existing
    * LocalManga entry or creates a new one. It also handles the creation of associated chapters and genres.
