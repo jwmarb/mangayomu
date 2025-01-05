@@ -39,6 +39,7 @@ const icons: Record<
   Library: (focused) => (focused ? 'bookmark' : 'bookmark-outline'),
   More: (focused) =>
     focused ? 'dots-horizontal-circle' : 'dots-horizontal-circle-outline',
+  History: (focused) => (focused ? 'clock' : 'clock-outline'),
 };
 
 const themedProps = createThemedProps((theme) => ({

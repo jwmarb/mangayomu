@@ -9,12 +9,14 @@ import BottomTab from '@/screens/Home/components/BottomTab';
 import Browse from '@/screens/Home/tabs/Browse';
 import Library from '@/screens/Home/tabs/Library';
 import More from '@/screens/Home/tabs/More';
+import History from '@/screens/Home/tabs/History';
 
 export type HomeStackParamList = {
   Explore: undefined;
   Sources: undefined;
   Browse: undefined;
   Library: undefined;
+  History: undefined;
   More: undefined;
 };
 
@@ -30,6 +32,7 @@ export default function Home() {
       <HomeStack.Screen name="Library" component={Library} />
       <HomeStack.Screen name="Browse" component={Browse} />
       <HomeStack.Screen name="Sources" component={Sources} />
+      <HomeStack.Screen name="History" component={History} />
       <HomeStack.Screen name="More" component={More} />
     </HomeStack.Navigator>
   );
