@@ -75,7 +75,7 @@ export default function Reader(props: RootStackProps<'Reader'>) {
     });
   const [contentContainerStyle, backgroundColor] = useBackgroundColor(manga);
 
-  useHistoryEntry();
+  useHistoryEntry(manga);
 
   const { initialScrollIndex } = useChapterData(currentPage, manga);
 

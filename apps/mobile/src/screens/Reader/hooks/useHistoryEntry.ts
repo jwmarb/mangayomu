@@ -2,6 +2,7 @@ import { HistoryEntry } from '@/models/HistoryEntry';
 import { LocalManga } from '@/models/LocalManga';
 import { Table } from '@/models/schema';
 import { useCurrentChapter } from '@/screens/Reader/stores/chapter';
+import { Manga } from '@mangayomu/mangascraper';
 import { Q } from '@nozbe/watermelondb';
 import { useDatabase } from '@nozbe/watermelondb/react';
 import React from 'react';
@@ -28,8 +29,7 @@ function generateTomorrowDate() {
  *         The database instance is available and properly configured.
  * @post   A history entry is either updated with the current timestamp or a new entry is created.
  */
-export default function useHistoryEntry() {
-  // Retrieve the current chapter using the useCurrentChapter hook.
+export default function useHistoryEntry(manga: Manga) {
   const currentChapter = useCurrentChapter(
     (selector) => selector.currentChapter,
   );
@@ -41,46 +41,31 @@ export default function useHistoryEntry() {
     // Define an asynchronous function to handle changes in the current chapter.
     async function change() {
       // Proceed only if a current chapter is available.
+      // Fetch history entries and local mangas from the database.
+      const historyEntries = database.get<HistoryEntry>(Table.HISTORY_ENTRIES);
+
+      // Query history entries for the current manga updated before tomorrow.
+      const results = await historyEntries.query(
+        Q.where('local_manga_link', manga.link),
+        Q.and(Q.where('updated_at', Q.lt(generateTomorrowDate()))),
+      );
+
+      // If no history entries are found, create a new one.
       if (currentChapter != null) {
-        // Fetch history entries and local mangas from the database.
-        const historyEntries = database.get<HistoryEntry>(
-          Table.HISTORY_ENTRIES,
-        );
-        const localMangas = database.get<LocalManga>(Table.LOCAL_MANGAS);
-
-        // Query history entries for the current chapter link updated before tomorrow.
-        const results = await historyEntries.query(
-          Q.where('local_chapter_link', currentChapter.link),
-          Q.and(Q.where('updated_at', Q.lt(generateTomorrowDate()))),
-        );
-
-        // If no history entries are found, create a new one.
         if (results.length === 0) {
           await database.write(async () => {
-            // Find the local manga associated with the current chapter.
-            const foundLocalMangas = await localMangas.query(
-              Q.on(Table.LOCAL_CHAPTERS, 'link', currentChapter.link),
-            );
-            if (foundLocalMangas.length > 0) {
-              const [localManga] = foundLocalMangas;
-              // Create a new history entry linking the current chapter and manga.
-              return await historyEntries.create((model) => {
-                model.localChapterLink = currentChapter.link;
-                model.localMangaLink = localManga.link;
-              });
-            } else {
-              // Log an error if no local manga or chapter is found.
-              console.error(
-                "Couldn't find either a local manga or local chapter. Data will not be persisted.",
-              );
-            }
+            await historyEntries.create((model) => {
+              model.localChapterLink = currentChapter.link;
+              model.localMangaLink = manga.link;
+            });
           });
         } else {
-          // If a history entry is found, update its last updated timestamp.
+          // If a history entry is found, update its last updated timestamp and chapter just in case.
           const [historyEntry] = results;
           await database.write(async () => {
             await historyEntry.update((self) => {
               self.updatedAt = new Date();
+              self.localChapterLink = currentChapter.link;
             });
           });
         }
@@ -88,5 +73,5 @@ export default function useHistoryEntry() {
     }
     // Execute the change function whenever the current chapter changes.
     change();
-  }, [currentChapter]);
+  }, [currentChapter?.link]);
 }
