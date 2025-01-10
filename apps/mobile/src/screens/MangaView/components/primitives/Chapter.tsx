@@ -94,7 +94,6 @@ function Chapter(props: ChapterProps) {
   const style = useStyles(composedStyles[chapter.subname ? 1 : 0], contrast);
   const date = React.useMemo(() => getDate(chapter.date), [chapter.date]);
   const navigation = useNavigation();
-  const historyEntry = useHistoryEntry(chapter.link, manga.link);
   const pageInfo = ChapterModel.useObservation(
     chapter,
     ({ pagesCount, currentPage, id }) => ({
@@ -126,7 +125,15 @@ function Chapter(props: ChapterProps) {
     <Pressable onPress={handleOnPress} style={style.pressable}>
       <View>
         <View style={style.titleContainer}>
-          <Text color={historyEntry != null ? 'disabled' : 'textPrimary'}>
+          <Text
+            color={
+              pageInfo != null
+                ? isCurrentlyReadingThisChapter
+                  ? 'disabled'
+                  : 'textSecondary'
+                : 'textPrimary'
+            }
+          >
             {chapter.name}
           </Text>
           {pageInfo != null && (
