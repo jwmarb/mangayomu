@@ -33,24 +33,24 @@ export default function History() {
   const database = useDatabase();
   const collapsible = useCollapsibleHeader({
     title: 'History',
-    headerRight: (
-      <IconButton
-        icon={<Icon type="icon" name="magnify" />}
-        onPress={() => {
-          console.log('clearing database');
-          database
-            .write(async () => {
-              await database
-                .get<HistoryEntry>(Table.HISTORY_ENTRIES)
-                .query()
-                .markAllAsDeleted();
-            })
-            .then(() => {
-              console.log('cleared database');
-            });
-        }}
-      />
-    ),
+    // headerRight: (
+    //   <IconButton
+    //     icon={<Icon type="icon" name="magnify" />}
+    //     onPress={() => {
+    //       console.log('clearing database');
+    //       database
+    //         .write(async () => {
+    //           await database
+    //             .get<HistoryEntry>(Table.HISTORY_ENTRIES)
+    //             .query()
+    //             .markAllAsDeleted();
+    //         })
+    //         .then(() => {
+    //           console.log('cleared database');
+    //         });
+    //     }}
+    //   />
+    // ),
   });
 
   React.useEffect(() => {
