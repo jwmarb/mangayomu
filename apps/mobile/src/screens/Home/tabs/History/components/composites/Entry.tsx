@@ -10,6 +10,7 @@ import { LocalManga } from '@/models/LocalManga';
 import { useQuery } from '@tanstack/react-query';
 import Pressable from '@/components/primitives/Pressable';
 import { useNavigation } from '@react-navigation/native';
+import { format } from 'date-fns';
 
 type EntryProps = {
   entry: HistoryEntry;
@@ -51,7 +52,7 @@ function Entry(props: EntryProps) {
               {localChapter?.subname}
             </Text>
             <Text variant="body2" color="textSecondary">
-              {entry.updatedAt.toString()}
+              {format(entry.updatedAt, 'MMMM dd, yyyy / h:mm a')}
             </Text>
           </View>
         </View>
