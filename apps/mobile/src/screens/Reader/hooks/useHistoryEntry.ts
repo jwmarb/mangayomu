@@ -12,9 +12,9 @@ import React from 'react';
  *
  * @returns  The Date object set to midnight of the following day.
  */
-function generateTomorrowDate() {
+function generateTodayDate() {
   const r = new Date();
-  r.setDate(r.getDate() + 1);
+  r.setDate(r.getDate());
   return r.setHours(0, 0, 0, 0);
 }
 
@@ -47,7 +47,7 @@ export default function useHistoryEntry(manga: Manga) {
       // Query history entries for the current manga updated before tomorrow.
       const results = await historyEntries.query(
         Q.where('local_manga_link', manga.link),
-        Q.and(Q.where('updated_at', Q.lt(generateTomorrowDate()))),
+        Q.and(Q.where('created_at', Q.gte(generateTodayDate()))),
       );
 
       // If no history entries are found, create a new one.
